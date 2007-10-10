@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>State Machine</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:statemachine[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:statemachine[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:statemachine[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget allows for the definition of a state machine with declaritive transitions.  This is useful as it:
+		<ul>
+			<li>centrally controlling the transition of states based upon messages
+			<li>can reference the state transition in "on" handlers throughout the application
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:statemachine[show=example] then show else hide">
+		<app:statemachine id="statemac" initial="first_state">  
+			<state name="first_state" if="l:my.state.message[message_defined_data=first]"></state>  
+			<state name="second_state" if="l:my.state.message[message_defined_data=second]"></state>  
+			<state name="third_state" if="l:my.state.message[message_defined_data=third]"></state>  
+		</app:statemachine>  
+		<div id="link_bar">  
+			Go to: <a on="click then l:my.state.message[message_defined_data=first]">State 1</a> |   
+			<a on="click then l:my.state.message[message_defined_data=second]">State 2</a> |   
+			<a on="click then l:my.state.message[message_defined_data=third]">State 3</a>   
+		</div>  
+		<div><a on="click then statechange[statemac=second_state]">Click me</a> to programmatically set the state to 2</div>  
+		<div id="state_test">  
+			<div class="state_box" on="statemac[first_state] then show else hide">I show up if only if the current state is "first_state"</div>  
+			<div class="state_box" on="statemac[second_state] then show else hide">I show up if only if the current state is "second_state"</div>  
+			<div class="state_box" on="statemac[third_state] then show else hide">I show up if only if the current state is "third_state"</div>  
+		</div>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:statemachine[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:statemachine id="statemac" initial="first_state">  
+					<state name="first_state" if="l:my.state.message[message_defined_data=first]"></state>  
+					<state name="second_state" if="l:my.state.message[message_defined_data=second]"></state>  
+					<state name="third_state" if="l:my.state.message[message_defined_data=third]"></state>  
+				</app:statemachine>  
+				<div id="link_bar">  
+					Go to: <a on="click then l:my.state.message[message_defined_data=first]">State 1</a> |   
+					<a on="click then l:my.state.message[message_defined_data=second]">State 2</a> |   
+					<a on="click then l:my.state.message[message_defined_data=third]">State 3</a>   
+				</div>  
+				<div><a on="click then statechange[statemac=second_state]">Click me</a> to programmatically set the state to 2</div>  
+				<div id="state_test">  
+					<div class="state_box" on="statemac[first_state] then show else hide">I show up if only if the current state is "first_state"</div>  
+					<div class="state_box" on="statemac[second_state] then show else hide">I show up if only if the current state is "second_state"</div>  
+					<div class="state_box" on="statemac[third_state] then show else hide">I show up if only if the current state is "third_state"</div>  
+				</div>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:statemachine[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">id</td>
+					  <td class="def">the name for the statemachine</td>
+					</tr>
+					<tr>
+					  <td class="term">initial</td>
+					  <td class="def">the name of the starting state</td>
+					</tr>
+					<tr>
+					  <td class="term">state.name</td>
+					  <td class="def">the name for the substate</td>
+					</tr>
+					<tr>
+					  <td class="term">state.if</td>
+					  <td class="def">guard for transitioning the substate</td>
+					</tr>
+				</table>
+		</p>
+<!--
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

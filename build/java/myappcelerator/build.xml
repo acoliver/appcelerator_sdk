@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<!-- ==================================================================== -->
+<!-- MyAppcelerator Project                                               -->	
+<!-- ==================================================================== -->
+
+<project name="MyAppcelerator" default="dist" basedir=".">
+
+    <description>MyAppcelerator</description>
+
+    <property file="${user.home}/.ant.properties"/>
+    <property file="build.properties"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
+
+	<target name="dist">
+		<antcall target="init"/>
+		<antcall target="copy_web_files"/>
+		<antcall target="java_compile"/>
+		<antcall target="build_services_jar"/>
+		<antcall target="build_app_jar"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${stage.dir}"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${stage.dir}"/>
+	</target>
+	
+	<target name="copy_web_files">
+		<copy todir="${stage.dir}/assemble/web" filtering="no">
+			<fileset dir="${src.web.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="java_compile" description="Compiles your java source files">
+		<mkdir dir="${stage.dir}/assemble/java/classes"/>
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/assemble/java/classes" classpathref="classpath"/>
+		<jar destfile="${stage.dir}/assemble/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
+			<fileset dir="${stage.dir}/assemble/java/classes">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${src.java.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="build_app_jar">
+		<mkdir dir="${stage.dir}/assemble/web"/>
+		<appc srcdir="${stage.dir}/assemble/web" destdir="${stage.dir}/assemble/web-compiled"/> 
+		<jar destfile="${stage.dir}/${app.name}-app.jar">
+			<fileset dir="${stage.dir}/assemble/web">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="build_services_jar">
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<copy todir="${stage.dir}/assemble/lib">
+			<fileset dir="${lib.dir}" includes="*.jar"/>
+		</copy>
+		<jar destfile="${stage.dir}/${app.name}-services.jar">
+			<fileset dir="${stage.dir}/assemble/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="appcelerator-services.xml"/>
+			</fileset>
+		</jar>
+	</target>
+</project>

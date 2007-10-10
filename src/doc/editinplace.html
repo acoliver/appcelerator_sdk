@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Edit-in-Place</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:editinplace[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:editinplace[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:editinplace[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget allows for the direct mutation of text to toggle between editing and standard text display.
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:editinplace[show=example] then show else hide">
+		<p>
+			Edit the text below and click 'save'. You should see a passed message below with the value of the text.
+		</p>
+
+			<app:editinplace type="text" id="foo" saveOn="click then l:editinplace1.foo.save" cancelOn="click then l:editinplace1.foo.cancel" 
+				validator="required" position="right" defaultClassName="default" editClassName="default" defaultValue="edit this default text">
+			</app:editinplace>
+			<app:script on="l:editinplace1.foo.save then execute">
+				alert("you saved");
+			</app:script>
+			<app:script on="l:editinplace1.foo.cancel then execute">
+				alert("you cancelled");
+			</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:editinplace[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:editinplace type="text" id="foo" saveOn="click then l:editinplace1.foo.save" cancelOn="click then l:editinplace1.foo.cancel" 
+					validator="required" position="right" defaultClassName="default" editClassName="default" defaultValue="edit this default text">
+				</app:editinplace>
+				<app:script>
+				<app:script on="l:editinplace1.foo.save then execute">
+					alert("you saved");
+				</app:script>
+				<app:script on="l:editinplace1.foo.cancel then execute">
+					alert("you cancelled");
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:editinplace[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">id</td>
+					  <td class="def">the identifier for the dom element</td>
+					</tr>
+					<tr>
+					  <td class="term">saveOn</td>
+					  <td class="def">the handler for when the Edit-in-Place widget is saved</td>
+					</tr>
+					<tr>
+					  <td class="term">cancelOn</td>
+					  <td class="def">the handler for when the Edit-in-Place widget is cancelled</td>
+					</tr>
+					<tr>
+					  <td class="term">validator</td>
+					  <td class="def">the name of the validator for the field</td>
+					</tr>
+					<tr>
+					  <td class="term">defaultValue</td>
+					  <td class="def">initial value for the control</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">type</td>
+					  <td class="def">The form control type (defaults to text)</td>
+					</tr>
+					<tr>
+					  <td class="term">position</td>
+					  <td class="def">position for the div element (defaults to right)</td>
+					</tr>
+					<tr>
+					  <td class="term">errorPosition</td>
+					  <td class="def">position for the div element if an error occurs (defaults to top)</td>
+					</tr>
+					<tr>
+					  <td class="term">defaultClassName</td>
+					  <td class="def">the css class whilst idle (defualts to '')</td>
+					</tr>
+					<tr>
+					  <td class="term">editClassName</td>
+					  <td class="def">the css class whilst editing (defaults to '')</td>
+					</tr>
+					<tr>
+					  <td class="term">buttonClassName</td>
+					  <td class="def">the css class for the save and cancel buttons (defaults to '')</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

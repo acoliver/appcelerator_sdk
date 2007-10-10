@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Template</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:template[show=example] and add[class=active] or l:template[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:template[show=code] and add[class=active] or l:template[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:template[show=usage] and add[class=active] or l:template[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget allows for the reuse of html pages  by replacing items in the template html page with elements in the widget body with the same id.  This is useful for example if:
+		<ul>
+			<li>you want to reuse a header and footer of a page, but replace the body
+			<li>customization is beyond simple parameter manipulation and rather at the DOM element level
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:template[show=example] then show else hide">
+		<app:template src="content/template.html" args="{result:'first one'}">
+		</app:template>
+		<app:template src="content/template.html" args="{result:'second one'}">
+			<html:div id="body">
+				<html:img srcexpr="Appcelerator.ImagePath + 'confirm.png'"></html:img> This overwrote the body from the template.
+			</html:div>
+		</app:template>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:template[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:template src="content/template.html" args="{result:'first one'}">
+				</app:template>
+				<app:template src="content/template.html" args="{result:'second one'}">
+					<html:div id="body">
+						<html:img srcexpr="Appcelerator.ImagePath + 'confirm.png'"></html:img> This overwrote the body from the template.
+					</html:div>
+				</app:template>
+			</textarea>	
+		</p>
+		<p>Here's template.html:
+			<textarea name="code" class="xml:nocontrols">
+				<html>
+				<body>
+					<div id="body">
+						This is the default body. 
+					</div>
+					<div><img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> Your result is #{result}</div>
+				</body>
+				</html>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:template[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">handler that controls the visibility usually of the form "&lt;state&gt; then show else hide"</td>
+					</tr>
+					<tr>
+					  <td class="term">src</td>
+					  <td class="def">uri for the content source (should be html)</td>
+					</tr>
+					<tr>
+					  <td class="term">lazy</td>
+					  <td class="def">whether or not to lazy load the content file (true|false)</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+	<style>
+		#background
+		{
+			background-image:url(../images/appcelerator_gray_logo_small.png);
+			background-repeat:no-repeat;
+			background-color:#000;
+			height:53px;
+		}
+	</style>
+</head>
+<body>
+
+<h3> Image tests </h3> 
+<p>
+	These tests exercise cross-browser image capabilities.
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" width="35%" valign="middle">
+			Transparent PNG
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+			<div>The image below should be transparent on black background</div>
+			<div style="background-color:#000;">
+				<img src="../images/appcelerator_gray_logo_small.png"/>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="35%" valign="middle">
+			Dynamic Transparent PNG
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+			<div>The image below should be transparent on black background</div>
+			<div style="background-color:#000;">
+				<img srcexpr="Appcelerator.ImagePath + 'appcelerator_gray_logo_small.png'"/>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="35%" valign="middle">
+			Inline CSS background Transparent PNG
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+			<div>The image below should be transparent on black background</div>
+			<div style="background-color:#000;background-image:url(../images/appcelerator_gray_logo_small.png);background-repeat:no-repeat;height:53px;"></div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="35%" valign="middle">
+			Stylesheet CSS background Transparent PNG
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+			<div>The image below should be transparent on black background</div>
+			<div id="background"></div>
+		</td>
+	</tr>
+</table>
+
+</body>
+</html>

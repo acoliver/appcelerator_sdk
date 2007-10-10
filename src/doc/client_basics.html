@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Appcelerator Explorer</title>
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+
+	<h2>Client Messaging Basics</h2>
+	<p>
+	Everything in Appcelerator is accomplished via messaging.  In this section, we will describe the basics
+	of how messaging works in an Applcelerator Client.
+	</p>
+
+	<h3>The <tt>on</tt> Attribute</h3>
+	<p>
+	The <tt>on</tt> attribute is the only attribute you need to know when developing clients with Appcelerator.  It turns simple HTML elements into powerful Ajax and DHTML components.
+	</p>	
+	<p>
+		All <tt>on</tt> attributes must have at least one <b>condition</b> and one <b>action</b> separated
+		by a <tt>then</tt> like so:
+	</p>
+	<p>
+		<tt>on="[condition] then [action]"</tt>
+	</p>
+	<p>
+	  Using the <tt>on</tt> attribute you can enable HTML elements and Appcelerator widgets to both send
+	  and receive messages.  
+	</p>
+	<h3>Publish and Subscribe Made Easy</h3>
+	<p>
+	Specifying a Message as a condition is how an element subscribes to message.  Specifying a Message as an action is how an element
+	publishes a messages.  See, it's simple.
+	</p>
+	
+	<h3>Message Format</h3>
+	<p>
+	All Appcelerator Messages are required to have a <b>type</b>.  A <b>type</b> is nothing more than a string that you
+	define. We typically use dotted notation.  Client generated message types are prefixed with either a <b>l:</b> or a 
+	<b>r:</b>.  The <b>"l:"</b> stands for LOCAL and the <b>"r:"</b> stands for REMOTE.  Local messages are those which are 
+	only sent to UI elements.  Remote messages are sent to both UI elements and the Appcelerator services.  Here is an 
+	example message string
+	</p>
+
+	<p>
+		<tt>r:save.user.request</tt>  
+	</p>
+	<p>
+		This message will be sent to all client and service listeners since 
+		it has the <b>r:</b> prefix for remote.
+		
+	</p>
+	<h3>Message Data Payload</h3>
+	Messages can also have a data payload.  All data payloads are JSON-based, but we have greatly simplified the
+	syntax for adding or reading payload data.  The example below show how you can generate a message with a 
+	data payload
+	
+	<textarea name="code" class="xml:nocontrols">
+		<input type="button" 
+		on="click then r:save.user.request[newuser=true,key=$key_id]"/>
+	</textarea>
+	</p>
+	<p>
+	In the above example, a message will be sent when the button is clicked.  The message will have two 
+	items in the data payload <tt>newuser=true</tt> and <tt>key=$key_id</tt>.  Notice that the latter 
+	uses the "$".  Appcelerator allows you to prefix the element ID of an HTML element with a "$" to get its
+	value, so in this example, we send the actual value of an element with an element ID = "key_id" along with the 
+	messages's data payload.
+	
+	</p>
+	
+	<p>
+	You can also easily evaluate the data payload in a message in order to determine if a particular
+	condition is met.  Here's an example:
+	
+	<textarea name="code" class="xml:nocontrols">
+		<div on="r:save.user.request[newuser=true] then effect[Fade] else hide">
+	</textarea>
+	</p>
+	<p>
+	In the above example, the DIV will perform a "Fade" effect ONLY when it receives the message 
+	<tt>r:save.user.request</tt> with the value <tt>newuser=true</tt> in its data payload, otherwise it 
+	will hide itself.
+	</p>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+<div class="item" style="display:none" on="l:folder[name=@parent@] then toggle[display]
+	or click then l:item[name=@name@,src='@name@.html'] or l:item[name=@name@] then
+	add[class=open] else remove[class=open]">
+	<img src="images/page_white.png" 
+		on="l:item[name!=@name@] then set[display=inline] else set[display=none]"/>
+	<img src="images/bullet_go.png" 
+		on="l:item[name=@name@] then set[display=inline] else set[display=none]" style="display:none"/>
+	@title@
+</div>

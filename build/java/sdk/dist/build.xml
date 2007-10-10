@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+
+<!-- ==================================================================== -->
+<!-- Appcelerator Project Build                                           -->	
+<!--                                                                      -->	
+<!-- @APPNAME@                                                            -->	
+<!-- ==================================================================== -->
+
+<project name="@APPNAME@" default="dist" basedir=".">
+
+    <description>@APPNAME@ Build File</description>
+
+    <property file="${user.home}/.ant.properties"/>
+    <property file="build.properties"/>
+	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
+	<property name="appcelerator.dist.dir" value="${appcelerator.dir}/dist/server"/>
+	<property name="dist.dir" value="${stage.dir}"/>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
+
+	<target name="dist" depends="init,build_composite_bundle,build_merged_bundle" description="* Builds the service and application deployment archives"></target>
+
+	<target name="banner">
+		<echo>Appcelerator Platform SDK for Java</echo>
+		<echo>Licensed under the GNU GPL version 2</echo>
+		<echo>Please read LICENSE for more details on usage</echo>
+	</target>
+
+	<target name="clean">
+		<delete dir="${stage.dir}"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${stage.dir}"/>
+	</target>
+	
+	
+	<target name="build_merged_bundle" depends="build_composite_bundle"  description="* Builds the merged appcelerator war bundle">
+		<copy todir="${dist.dir}">
+			<fileset dir="${appcelerator.dist.dir}" includes="appcelerator.war"/>
+		</copy>
+		<zip update="true" destfile="${dist.dir}/appcelerator.war">
+			<zipfileset dir="${stage.dir}" includes="${app.name}.aar" prefix="WEB-INF/deploy"/>
+		</zip>
+	</target>
+	<target name="prompt.deploy.dir" unless="deploy.dir">
+		<echo>Deploy the Appcelerator Server</echo>
+		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
+	</target>
+	
+	<target name="deploy_server" depends="banner" description="* Deploy the original Appcelerator Server war">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${appcelerator.dist.dir}" includes="*.war" />
+		</copy>
+	</target>
+	<target name="deploy_server_merged" depends="banner" description="* Deploy the merged Appcelerator Server war">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${dist.dir}" includes="*.war" />
+		</copy>
+	</target>
+	
+	<target name="undeploy_server" depends="banner" description="* Undeploy the Appcelerator Server">
+		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war"/>
+		<antcall target="undeploy.dir"/>
+	</target>
+	
+	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
+		<delete dir="${deploy.dir}/appcelerator"/>
+	</target>
+	
+	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
+		<delete file="${deploy.dir}/appcelerator.war"/>
+	</target>
+	
+	<target name="deploy_service" depends="build_services_bundle" description="* Deploy Service Bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}-services.jar" />
+		</copy>
+	</target>
+	
+	<target name="deploy_app" depends="build_app_bundle" description="* Deploy Application Bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}-app.jar" />
+		</copy>
+	</target>
+	
+	<target name="deploy_composite" depends="build_composite_bundle" description="* Deploy Composite Bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}.aar" />
+		</copy>
+	</target>
+
+	<!--
+	<target name="undeploy_server" description="** Undeploy the Appcelerator Server">
+		<available file="${server.deploy.dir}" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war"/>
+		<antcall target="undeploy.dir"/>
+	</target>
+	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
+		<delete dir="${deploy.dir}/appcelerator"/>
+	</target>
+	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
+		<delete file="${deploy.dir}/appcelerator.war"/>
+	</target>
+-->
+
+
+	
+	<target name="copy_web_files" depends="init">
+		<copy todir="${stage.dir}/assemble/web" filtering="no">
+			<fileset dir="${src.web.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="java_compile" depends="init">
+		<mkdir dir="${stage.dir}/assemble/java/classes"/>
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/assemble/java/classes" classpathref="classpath"/>
+		<jar destfile="${stage.dir}/assemble/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
+			<fileset dir="${stage.dir}/assemble/java/classes">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${src.java.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="build_app_bundle" depends="copy_web_files" description="* Builds the application bundle">
+		<mkdir dir="${stage.dir}/assemble/web"/>
+		<appc srcdir="${stage.dir}/assemble/web" destdir="${stage.dir}/assemble/web-compiled"/> 
+		<jar destfile="${stage.dir}/${app.name}-app.jar">
+			<fileset dir="${stage.dir}/assemble/web">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="build_services_bundle" depends="java_compile" description="* Builds the service bundle">
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<copy todir="${stage.dir}/assemble/lib">
+			<fileset dir="${lib.dir}" includes="*.jar"/>
+		</copy>
+		<jar destfile="${stage.dir}/${app.name}-services.jar">
+			<fileset dir="${stage.dir}/assemble/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="appcelerator-services.xml"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="build_composite_bundle" depends="build_app_bundle,build_services_bundle" description="* Builds the composite bundle">
+		<jar destfile="${stage.dir}/${app.name}.aar">
+			<fileset dir="${stage.dir}"> 
+				<include name="${app.name}-services.jar"/>
+				<include name="${app.name}-app.jar"/>
+			</fileset>
+		</jar>
+	</target>
+	
+</project>

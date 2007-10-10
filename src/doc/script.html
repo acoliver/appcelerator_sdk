@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Script</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:script[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:script[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:script[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget allows for you to execute javascript when a particular "on" handler occurs.  This is useful for:
+		<ul>
+			<li>interacting with elements across scope boundaries
+			<li>performing complicated execution logic
+			<li>integrating with 3rd party javascript components
+			<li>invoking the appcelerator API
+		</ul>
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:script[show=example] then show else hide">
+		Click the links to run simple Javascript code: <a on="click then l:instant.hello">Instant Hello World</a> | <a on="click then l:delayed.hello">Delayed Hello World</a>  
+		<app:script on="l:instant.hello then execute">  
+			alert('Instant Hello World');  
+		</app:script>  
+		<app:script on="l:delayed.hello then execute after 5s">  
+			alert('Hello World delayed 5 seconds');  
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:script[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				Click the links to run simple Javascript code: <a on="click then l:instant.hello">Instant Hello World</a> | <a on="click then l:delayed.hello">Delayed Hello World</a>  
+				<app:script on="l:instant.hello then execute">  
+					alert('Instant Hello World');  
+				</app:script>  
+				<app:script on="l:delayed.hello then execute after 5s">  
+					alert('Hello World delayed 5 seconds');  
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:script[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">The message that contains the data to populate the chart </td>
+					</tr>
+				</table>
+		</p>
+<!--
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

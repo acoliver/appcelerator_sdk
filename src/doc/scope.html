@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Scope</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:scope[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:scope[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> <!-- |
+	
+	<a  on="click then l:scope[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+-->
+	</p>
+
+	<p>
+		Scope is part of the header of every message that is enqueued.  This allows for you to restrict messaging beyond the message type.  
+		Scope is propigated in both local and remote messages.  
+		You can add a scope attribute to elements and the framework will ensure that child elements in the DOM will inherit the scope unless they override it.  
+		This attribute will be used for both the  "on" handler as well as any messages that are created by the defined on handler or widget.  
+		<ul>
+			<li><b>appcelerator</b>: the default scope for all elements if not explicitly annotated
+			<li><b>*</b>: this means that the on handler will receive messages regardless of scope
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:scope[show=example] then show else hide">
+		<a on="click then l:scope.example[message=hi]">non defined scope</a>
+		<div scope="scopeexample">
+			<a on="click then l:scope.example[message=hi]">inherited scope</a>
+			<br/>
+			<span on="l:scope.example then value[message]"></span>
+		</div>
+		<app:script on="l:scope.example then execute" scope="*">
+			alert('you send a messsage with scope '+this.scope);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:scope[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<a on="click then l:scope.example[message=hi]">non defined scope</a>
+				<div scope="scopeexample">
+					<a on="click then l:scope.example[message=hi]">inherited scope</a>
+					<br/>
+					<span on="l:scope.example then value[message]"></span>
+				</div>
+				<app:script on="l:scope.example then execute" scope="*">
+					alert('you send a messsage with scope '+this.scope);
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:scope[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term"></td>
+					  <td class="def"></td>
+					</tr>
+				</table>
+		</p>
+<!--		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term"></td>
+					  <td class="def"></td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

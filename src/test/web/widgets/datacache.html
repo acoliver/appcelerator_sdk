@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Datacache Widget </h3> 
+<p>
+	These tests exercise the datacache widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:datacache1.request">Reload Data</a>			
+			Basic Cache (with default keepAlive)
+		</td>
+		<td class="result" >
+			<app:datacache request="l:datacache1.request" response="l:datacache1.response"></app:datacache>
+			Count should stay at 1 
+			<span id="datacache1" on="l:datacache1.response then value[result]"></span>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:datacache2.request">Reload Data</a>			
+			Basic Cache (with keepAlive=30s)
+		</td>
+		<td class="result" >
+			<app:datacache request="l:datacache2.request" keepAlive="30000" response="l:datacache2.response"></app:datacache>
+			Count should increment every ~30s: 
+			<span id="datacache2" on="l:datacache2.response then value[result]"></span>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:datacache3.request">Click Once</a>			
+			Basic Cache (with keepAlive=30s)
+		</td>
+		<td class="result" >
+			<app:datacache request="l:datacache3.request" keepAlive="30000" autoRefresh="true" 
+			response="l:datacache3.response"></app:datacache>
+			Count should auto-increment every ~30s: 
+			<span id="datacache3" on="l:datacache3.response then value[result]"></span>
+		</td>
+	</tr>
+
+</table>
+<script>
+var count = 0;
+var count2= 0;
+var count3= 0;
+</script>
+
+<app:script on="l:datacache1.request then execute">
+	count++;
+	$MQ('l:datacache1.response',{'result':count})
+</app:script>
+<app message name="l:datacache1.request"></app:message>
+
+<app:script on="l:datacache2.request then execute">
+	count2++;
+	$MQ('l:datacache2.response',{'result':count2})
+</app:script>
+<app message name="l:datacache2.request"></app:message>
+
+<app:script on="l:datacache3.request then execute">
+	count3++;
+	$MQ('l:datacache3.response',{'result':count3})
+</app:script>
+<app message name="l:datacache3.request"></app:message>
+
+</body>
+
+</html>

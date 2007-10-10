@@ -1,0 +1,123 @@
+<html>
+<body>
+
+	<div class="header_bar">Basic Statistics 
+		<span class="refresh" on="click then l:reload.dashboard
+			or r:$appcelerator.server.stats.request then hide
+			or r:$appcelerator.server.stats.response then show">									
+			<img src="images/arrow_refresh.png" style="position:relative;top:3px"/>
+			<a>Refresh</a>
+		</span>
+		<span class="refresh_indicator" on="r:$appcelerator.server.stats.request then show
+			or r:$appcelerator.server.stats.response then hide"
+			style="display:none">Reloading...
+		</span>
+	</div>
+	<table width="100%">
+		<tr>
+			<td valign="top" class="label">
+				Server Start Time:	
+			</td>
+			<td valign="top" class="value">
+			 	<span  on="r:$appcelerator.server.stats.response then value[start_time]">loading...</span>
+			</td>
+			<td valign="top" class="label">
+				Uptime:	
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[uptime]">loading...</span>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top" class="label">
+				Page Requests:	
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[page_requests]">loading...</span>
+			</td>
+			<td valign="top" class="label">
+				Service Requests
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[service_requests]">loading...</span>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top" class="label">
+				Avg. Service Response Time:	
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[avg_response_time]">loading...</span>
+			</td>
+			<td valign="top" class="label">
+				Avg. Response Message Size
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[avg_message_size]">loading...</span>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top" class="label">
+				Unique Visitors:	
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[unique]">loading...</span>
+			</td>
+			<td valign="top" class="label">
+				Avg. Requests/Visitor
+			</td>
+			<td valign="top" class="value">
+				<span on="r:$appcelerator.server.stats.response then value[avg_request_visitor]">loading...</span>
+			</td>
+		</tr>
+
+	</table>
+	<div id="graphs">
+		<div id="left_graph" on="r:$appcelerator.graph.visitors.request then hide
+				or r:$appcelerator.graph.visitors.response then show">
+			<app:chart on="r:$appcelerator.graph.visitors.response then execute" 
+			type="line" property="rows" indicator="true" height="250px" width="350px"
+			 title="Unique Visitors (last 7 days)" marginBottom="20px">									
+			</app:chart>
+
+		</div>
+		<div id="graph_status_left" class="label" 
+				on="r:$appcelerator.graph.visitors.request then show
+				or r:$appcelerator.graph.visitors.response then hide">
+			<img src="images/indicator2.gif"/>
+		</div>
+
+		<div id="right_graph" on="r:$appcelerator.graph.usage.request then hide
+				or r:$appcelerator.graph.usage.response then show">
+			<app:chart on="r:$appcelerator.graph.usage.response then execute" 
+			type="line" property="rows" indicator="true" height="250px" width="350px"
+			legend="true" chartTitles="titles" title="Page Views and Service Requests (last 7 days)"
+			marginBottom="20px" legendHighlght="true">
+			</app:chart>
+
+		</div>
+		<div id="graph_status_right" class="label" on="r:$appcelerator.graph.usage.request then show
+				or r:$appcelerator.graph.usage.response then hide">
+			<img src="images/indicator2.gif"/>
+		</div>
+		
+	</div>
+
+	<app:message name="r:$appcelerator.server.stats.request" interval="300000">
+	</app:message>
+
+	<app:message name="r:$appcelerator.graph.usage.request" interval="300000">
+	</app:message>
+
+	<app:message name="r:$appcelerator.graph.visitors.request" interval="300000">
+	</app:message>
+
+	<!-- LOCAL DASHBOARD RELOAD -->
+	<app:script on="l:reload.dashboard then execute">
+	$MQ('r:$appcelerator.graph.visitors.request');
+	$MQ('r:$appcelerator.graph.usage.request');
+	$MQ('r:$appcelerator.server.stats.request');	
+	</app:script>
+
+</body>
+</html>

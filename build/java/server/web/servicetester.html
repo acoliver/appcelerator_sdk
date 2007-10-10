@@ -1,0 +1,67 @@
+
+<html>
+<body>
+
+	<div class="header_bar">Service Tester</div>
+	<div class="instruction_text">
+		Use this page to send a message and see its response data
+	</div>
+	<form>
+		<span class="label">Message Name:</span>
+		<input id="messagetype" fieldset="myform" type="text" validator="required" 
+			on="l:show[fromService=true] then value[service]"
+			value="remote:app.test.message.request" style="width:250px"/>
+		<span class="label">Service Version:</span>
+		<input id="version" type="text" value="1.0" style="width:50px"/>
+		<span class="label">Message Scope:</span>
+		<input id="scopename" type="text" value="appcelerator" style="width:100px"/>
+		<div style="padding-top:10px" 
+			class="label">Optional: Message Arguments (JSON format)
+		</div>											
+		<textarea cols="10" name="message" id="messageargs"></textarea>
+		<div></div>
+		<input type="button" fieldset="myform" on="click then l:send.test.message"
+			activators="messagetype" value="Send Message"/>
+		<input type="button" value="Clear Message Args" on="click then clear[id=messageargs]"/>
+		<div id="trace" style="padding-top:15px">
+			<div class="label">Message Trace Log</div>
+			<textarea id="tracelog" readonly="true" rows="8" scope="*"
+						   on="r:~.* then value[append=true,value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + this.data+'\n')]
+						or l:show[x=st] then reset"></textarea>
+						
+		</div>
+		<div>
+			<input type="button" value="Clear Trace Log" on="click then clear[id=tracelog]"/>
+		</div>
+
+	</form>
+	
+		<app:script on="local:send.test.message then execute" style="display:none">
+			try
+			{
+				var type = $("messagetype").value;
+				var args = $('messageargs');
+				var value = args.value;
+				var data = {};
+				if (value.charAt(0)=='{')
+				{
+					data = value.evalJSON();
+				}
+				else
+				{
+					data = {message:value};
+				}
+				var scope = $('scopename').value;
+				var version = $('version').value;
+				$MQ(type, data, scope, version);
+			}
+			catch (e)
+			{
+				Logger.error ('Oops! Error received: '+e+'\n'+(e.stack||'no stack trace available'));
+				alert ('Oops! Error received: '+e+'\n'+(e.stack||'no stack trace available'));
+			}
+		</app:script>
+
+		
+</body>
+</html>

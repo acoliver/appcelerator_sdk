@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Message Publication</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:message_publication[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:message_publication[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:message_publication[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+		Sometimes you will need to publish messages outside of the standard "on" handler and widgets.  To do this, you can leverage an app:script widget or directly in javascript and use the MessageBroker API.  
+		This may be usefull for
+		<ul>
+			<li>message indirection (rebroadcasting of messages)
+			<li>publishing multiple messages
+			<li>interacting with 3rd party scripting
+			<li>performing complex logic before propigation
+			<li>mocking out remote interactions (as done in many of the examples you see in the reference documentation)
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:message_publication[show=example] then show else hide">
+		<a on="click then l:messagepublication.example.indrect">send indirect</a>
+		<span on="l:messagepublication.example then value[result]"></span>
+		<app:script on="l:messagepublication.example.indrect then execute">
+			$MQ('l:messagepublication.example',{'result':'hello from $MQ','from':'$MQ'},"appcelerator");
+			Appcelerator.Util.ServiceBroker.queue({'type':'l:messagepublication.example','data':{'result':'hello from util','from':'util'},'scope':"bogus"});
+		</app:script>
+		<app:script on="l:messagepublication.example[from=util] then execute" scope="*">
+			alert('you sent with scope: '+this.scope+' and payload'+this.data);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:message_publication[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<a on="click then l:messagepublication.example.indrect">send indirect</a>
+				<span on="l:messagepublication.example then value[result]"></span>
+				<app:script on="l:messagepublication.example.indrect then execute">
+					$MQ('l:messagepublication.example',{'result':'hello from $MQ','from':'$MQ'},"appcelerator");
+					Appcelerator.Util.ServiceBroker.queue({'type':'l:messagepublication.example',
+						'data':{'result':'hello from util','from':'util'},'scope':"bogus"});
+				</app:script>
+				<app:script on="l:messagepublication.example[from=util] then execute" scope="*">
+					alert('you sent with scope: '+this.scope+' and payload'+this.data);
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:message_publication[show=usage] then show else hide" style="display:none">
+		<p>
+			 $MQ takes the following parameters:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">type</td>
+					  <td class="def">the message type</td>
+					</tr>
+				</table>
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">data</td>
+					  <td class="def">a JSON object</td>
+					</tr>
+				</table>
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">scope</td>
+					  <td class="def">the message scope</td>
+					</tr>
+				</table>
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">version</td>
+					  <td class="def">optional: defualts to '1.0'</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Appcelerator.Util.ServiceBroker.queue:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">message</td>
+					  <td class="def">JSON object representing the message</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

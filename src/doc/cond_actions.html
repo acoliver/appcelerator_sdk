@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Appcelerator Explorer</title>
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Client Conditions and Actions</h2>
+	<p>
+		As we stated before, all <tt>on</tt> attributes must have at least one <b>condition</b> and one <b>action</b> separated
+		by a <tt>then</tt> like so:
+		
+	</p>
+	<p>
+		<tt>on="[condition] then [action]"</tt>
+	</p>
+
+	<h3>Conditions</h3>
+
+	<p>
+		Conditions are what trigger the action for a given <tt>on</tt> attribute definition.  A condition is either the receipt of an Appcelerator message or one of the predefined Appcelerator conditions.  Below is an example of a Message-based Condition:
+	</p>
+	<p>
+		<textarea name="code" class="xml:nocontrols">
+			<div on="l:save.user.request then show" style="display:none">
+				Hello.  I'm hidden until I receive "l:save.user.request"
+			</div>
+		</textarea>
+	</p>
+	<p>
+	When the DIV above receives the message <tt>l:save.user.request</tt>, it will trigger the action <tt>show</tt>,
+	which means the DIV will be displayed.
+	</p>
+	
+	<p>
+	Appcelerator also supports a number of predefined conditions based on standard Javascript events.
+	Here's a list:
+	<tt><ul>
+	<li>click</li>
+	<li>focus</li>
+	<li>blur</li>
+	<li>dblclick</li>
+	<li>mousedown</li>
+	<li>resize</li>
+	<li>mouseout</li>
+	<li>mouseover</li>
+	<li>mousemove</li>
+	<li>change</li>
+	<li>scroll</li>
+	<li>keyup</li>
+	<li>keypress</li>
+	<li>keydown</li>
+	<li>contextmenu</li>
+	<li>mousewheel</li>
+	<li>input</li>
+	<li>paste</li>
+    </ul></tt>
+
+	</p>
+
+	<h3>Actions</h3>
+
+	<p>
+			Actions define what happens when a Condition is satisfied.  Actions can either be Appcelerator Messages or one or more of the supported Appcelerator Actions.  Here's a list of Actions that are currently supported:
+			<table cellspacing="5px">
+				<tr>
+				  <td class="term">show</td>
+				  <td class="def">Show an element by changing its  CSS display property to "block". </td>
+				</tr>
+				<tr>
+				  <td class="term">hide</td>
+				  <td class="def">Hide an element by changing its  CSS display property to "none". </td>
+				</tr>
+				<tr>
+				  <td class="term">visible</td>
+				  <td class="def">Show an element by changing its  CSS visibility property to "visible". </td>
+				</tr>
+				<tr>
+				  <td class="term">hidden</td>
+				  <td class="def">Hide an element by changing its  CSS visibility property to "hidden". </td>
+				</tr>
+				<tr>
+				  <td class="term">effect</td>
+				  <td class="def">Execute a Scriptaculous effect.  The syntax is <tt>effect[effectName]</tt>.  For example, <tt>effect[Appear]</tt> </td>
+				</tr>
+				<tr>
+				  <td class="term">toggle</td>
+				  <td class="def">Toggle an element's display or visibility property.</td>
+				</tr>
+				<tr>
+				  <td class="term">value</td>
+				  <td class="def">Set the value of the element.  The property that is set will vary based on the element.  For example, input fields will have their <tt>value</tt> attribute set.  DIVs will have their <tt>innerHTML</tt> attribute set.  The syntax is <tt>value[newValue]</tt>  </td>
+				</tr>
+				<tr>
+				  <td class="term">add</td>
+				  <td class="def">Add an attribute or a CSS class to an element.  For example, <tt>add[class=myclass]</tt> or <tt>add[myattribute=myvalue]</tt> </td>
+				</tr>
+				<tr>
+				  <td class="term">remove</td>
+				  <td class="def">Opposite of add.  It will remove an attribute or a CSS class from an element</td>
+				</tr>
+				<tr>
+				  <td class="term">set</td>
+				  <td class="def">Set the value of any CSS attribute, Javascript object attribute or custom attribute.  For example, to set the border of an element, you would do <tt>set[border='1px solid #ccc']</tt>.  To set the selectedIndex of a SELECT element, you would do <tt>set[selectedIndex=0]</tt></td>
+				</tr>
+				<tr>
+				  <td class="term">clear</td>
+				  <td class="def">Clear the value for an element</td>
+				</tr>
+				<tr>
+				  <td class="term">reset</td>
+				  <td class="def">Reset the value for an element</td>
+				</tr>
+				<tr>
+				  <td class="term">popup</td>
+				  <td class="def">Display a popup window. </td>
+				</tr>
+				<tr>
+				  <td class="term">enable</td>
+				  <td class="def">Enable an element</td>
+				</tr>
+				<tr>
+				  <td class="term">disable</td>
+				  <td class="def">Disable an element</td>
+				</tr>
+				<tr>
+				  <td class="term">focus</td>
+				  <td class="def">Set the focus on the input element</td>
+				</tr>
+				<tr>
+				  <td class="term">blur</td>
+				  <td class="def">Leave the current input element</td>
+				</tr>
+				<tr>
+				  <td class="term">selectOption</td>
+				  <td class="def">Used in SELECT elements.  It will set the selected value based on data in the payload -					<tt>on="r:load.data then selectOption[name]"</tt></td>
+				</tr>
+
+				<tr>
+				  <td class="term">javascript</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">function</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">script</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">execute</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">execute</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">select</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">selected</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">unselect</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">click</td>
+				  <td class="def">TBD</td>
+				</tr>
+				<tr>
+				  <td class="term">submit</td>
+				  <td class="def">TBD</td>
+				</tr>
+
+
+			</table>
+		
+	</p>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

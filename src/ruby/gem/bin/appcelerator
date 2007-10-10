@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+freeze   = ARGV.any? { |option| %w(--freeze -f).include?(option) }
+app_path = ARGV.first
+
+require 'rubygems'
+gem 'rails', '>= 1.2.3'
+
+# find the path to RAILS
+rails_gem = Gem.cache.search('rails').last
+RAILS = rails_gem.full_gem_path
+
+require RAILS + '/lib/ruby_version_check'
+Signal.trap("INT") { puts; exit }
+
+require RAILS + '/lib/rails/version'
+if %w(--version -v).include? ARGV.first
+  puts "Rails #{Rails::VERSION::STRING}"
+  exit(0)
+end
+
+
+require RAILS + '/lib/rails_generator'
+require 'rails_generator/scripts/generate'
+
+Rails::Generator::Base.use_application_sources!
+
+path = File.dirname(__FILE__) + '/../'
+
+Rails::Generator::Base.sources << Rails::Generator::PathSource.new('', path)
+
+# execute the appcelerator generator
+Rails::Generator::Scripts::Generate.new.run(ARGV, {:generator => 'appcelerator', :source => path + 'appcelerator', :source_root => path + 'appcelerator', 'railspath'=>'../../rails-'+rails_gem.version.to_s})
+
+Dir.chdir(app_path) { `rake rails:freeze:gems`; puts "froze" } if freeze
+

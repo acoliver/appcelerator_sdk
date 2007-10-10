@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Message</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:message[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:message[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:message[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget will publish a message when the page is loaded.  This can be is useful for example:
+		<ul>
+			<li>sending a remote data request to initially populate a control in the page
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:message[show=example] then show else hide">
+		<app:message name="l:message.example.request" args="{'foo':'test'}"></app:message>
+		<app:script on="l:message.example.request then execute">
+			alert("you sent me "+this.data.foo);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:message[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:message name="l:message.example.request" args="{'foo':'test'}"></app:message>
+				<app:script on="l:message.example.request then execute">
+					alert("you sent me "+this.data.foo);
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:message[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">name</td>
+					  <td class="def">The name of the message to automatically generate</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation for the message payload</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

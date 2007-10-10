@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Data Cache</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:datacache[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:datacache[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:datacache[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget is useful for caching results for a given type of request.  It is capable of specifying intervals and cache invalidation.  This can be useful for:
+		<ul>
+			<li>data oriented requests that happen throughout the application (especially static/stale datasets)
+			
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:datacache[show=example] then show else hide">
+		<table>
+			<tr>
+			<td class="test" valign="middle">
+				<a on="click then l:datacache2.request">Reload Data</a>			
+				Basic Cache (with keepAlive=30s)
+			</td>
+			<td class="result" >
+				<app:datacache request="l:datacache2.request" keepAlive="30000" response="l:datacache2.response"></app:datacache>
+				Count should increment every ~30s: 
+				<span id="datacache2" on="l:datacache2.response then value[result]"></span>
+			</td>
+			</tr>
+		</table>
+		<script>
+		var count2= 0;
+		</script>
+		<app:script on="l:datacache2.request then execute">
+			count2++;
+			$MQ('l:datacache2.response',{'result':count2})
+		</app:script>
+		<app message name="l:datacache2.request"></app:message>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:datacache[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<table>
+					<tr>
+					<td class="test" valign="middle">
+						<a on="click then l:datacache2.request">Reload Data</a>			
+						Basic Cache (with keepAlive=30s)
+					</td>
+					<td class="result" >
+						<app:datacache request="l:datacache2.request" keepAlive="30000" response="l:datacache2.response"></app:datacache>
+						Count should increment every ~30s: 
+						<span id="datacache2" on="l:datacache2.response then value[result]"></span>
+					</td>
+					</tr>
+				</table>
+				<script>
+				var count2= 0;
+				</script>
+				<app:script on="l:datacache2.request then execute">
+					count2++;
+					$MQ('l:datacache2.response',{'result':count2})
+				</app:script>
+				<app message name="l:datacache2.request"></app:message>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:datacache[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">request</td>
+					  <td class="def">message for the request</td>
+					</tr>
+					<tr>
+					  <td class="term">keepAlive</td>
+					  <td class="def">interval in milliseconds</td>
+					</tr>
+					<tr>
+					  <td class="term">response</td>
+					  <td class="def">message for the response</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">autoRefresh</td>
+					  <td class="def">this should be (true|false) and defaults to false</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

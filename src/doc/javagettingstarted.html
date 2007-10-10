@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Java</h2>
+	</p>
+	<h3>Pre-requisettes</h3>
+	<p>
+	It is assumed that you already have the following installed:
+	<ul>
+		<li><a href="http://tomcat.apache.org/">apache tomcat</a> 6.0 or higher (or another j2ee web container)
+		<li><a href="http://ant.apache.org">apache ant</a> 1.6.5 or higher
+		<li>JDK 1.5
+	</ul>
+	</p>
+	
+	<h3>Get the distribution</h3>
+	<p>
+	Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+	<ul>
+		<!--<li>appcelerator_server_2.0.0.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
+		<li>appcelerator_sdk_java_2.0.0.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
+	</ul>
+	<h3>Create your proejct</h3>
+	unzip the distribution and create your project (ex: myapp)
+	<pre class="command">unzip appcelerator_sdk_java_2.0.0.zip -d appcelerator_sdk_java_2.0.0
+cd appcelerator_sdk_java_2.0.0
+ant create
+[input] What would you like to name the project?
+myapp
+[input] Where would you like to create?
+./projects/myapp</pre>
+	this will create a project workspace for you with an eclipse project and ant build file. 
+	
+	lets build the distribution
+	<pre class="command">cd ./projects/myapp
+ant dist</pre>
+	This project will build the following for you in stage/
+	<ul>
+		<li>myapp-app.aar - the composite archive that contains the service and application
+		<ul>
+			<li>myapp-services.jar - an appcelerator java service(s) deployment archive
+			<li>myapp-app.jar - the web application deployment archive
+		</ul>
+		<li>appcelerator.war - a merged version of appcelerator.war with the composite (myapp-app.aar) in it
+	</ul>
+	
+	<h3>start your web container</h3>
+	set your deploy.dir in your ~/.ant.properties (this will be used later in deployment)
+	<pre class="command">deploy.dir=/Applications/apache-tomcat-6.0.14/webapps</pre>
+	first lets begin by starting your web container
+	<pre class="command">cd /Applications/apache-tomcat-6.0.14/bin
+./catalina.sh run</pre>
+
+	<h3>deploying your solution</h3>
+	You have 2 choices for deployment
+	<ul>
+		<li>single war - simpler
+		<li>composite - more comprehensive functionality
+	</ul>
+	
+	<h4>Single War deployment</h4>
+	this will embed your application along with the appcelerator service broker
+	<pre class="command">ant deploy_server_merged</pre>
+	
+	<h4>Composite deployment</h4>
+	This will make use of the appcelerator deployment services which will enable service management and versioning
+	<pre class="command">ant deploy_server</pre>
+	now you can deploy the composite
+	<pre class="command">ant deploy_composite</pre>
+you should now be able to see your deployed application <a href="http://localhost:8080/appcelerator/a/myapp/current/index.html">http://localhost:8080/appcelerator/a/myapp/current/index.html</a>
+	</p>
+	
+	<h3>Testing</h3>
+	At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/appcelerator/servicetester.html">http://localhost:8080/appcelerator/servicetester.html</a> and use the following:
+	<ul>
+		<li><b>message type</b>: remote:sample.hello.request
+	</ul>
+	You should see a log message in your web container and a response in your web browser with the following
+	<ul>
+		<li><b>message type</b>:remote:app.test.message
+		<li><b>data.message</b>:"I received from you: Hello,world"
+		<li><b>data.success</b>:"true"
+	</ul>
+	If you look in the following you can see how to implement services
+	<ul>
+		<li>myapp/src/java/SampleService.java (the bean itself)
+		<li>myapp/appcelerator-services.xml (the bean definition)
+	</ul>
+</body>
+
+</html>

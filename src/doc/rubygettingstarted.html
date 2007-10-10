@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Ruby</h2>
+
+	<h3>Pre-requisettes</h3>
+	<p>
+	It is assumed that you already have the following installed:
+	<ul>
+		<li>Ruby 1.8.6 or higer
+		<li>Gems
+	</ul>
+	</p>
+
+	<h3>Get the distribution</h3>
+	<p>
+	Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+	<ul>
+		<li>appcelerator-2.0.0.gem - this is the distribution for creating your ruby services (which are deployed as appcelerator services and applications)
+	</ul>
+	<h3>Install the appcelerator service manager</h3>
+	<p>
+		First lets install the gem
+		<pre class="command">gem install -l appcelerator-2.0.0.gem</pre>
+		Now create your project workspace
+		<pre class="command">appcelerator myapp</pre>
+		now you can start the service
+		<pre class="command">cd myapp
+script/server</pre>
+		You can take a look at the starting page at <a href="http://localhost:3000">http://localhost:3000</a>
+	</p>
+	
+	<h3>Testing</h3>
+	You should now be able to hit the test service.  Goto <a href="http://localhost:3000/servicetester.html">http://localhost:3000/servicetester.html</a> and put the following in
+	<ul>
+		<li><b>message type</b>:remote:app.test.message.request
+	</ul>
+	you should get the following back
+	<ul>
+		<li><b>message type</b>:remote:app.test.message
+		<li><b>data.message</b>:"I received from you: Hello,world"
+		<li><b>data.success</b>:"true"
+	</ul>
+	If you look in the following you can see how to implement services
+	<ul>
+		<li>myapp/app/services/test_service.rb - the ruby service
+	</ul>
+</body>
+
+</html>

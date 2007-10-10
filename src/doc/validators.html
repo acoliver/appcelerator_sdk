@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Validators</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:validators[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:validators[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:validators[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		Validators allow you to specify input requirements for form elements.  For more information please also see the validation widget.
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:validators[show=example] then show else hide">
+		<table width="90%">
+			<tr>
+				<td class="test" width="35%" valign="middle">
+					Required (String)
+				</td>
+				<td class="result">
+					<input type="text" validator="required"  style="width:30%"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="test" width="35%" valign="middle">
+					Required (boolean)
+				</td>
+				<td class="result">
+					<input type="checkbox" validator="required"/>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:validators[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<table width="90%">
+					<tr>
+						<td class="test" width="35%" valign="middle">
+							Required (String)
+						</td>
+						<td class="result">
+							<input type="text" validator="required"  style="width:30%"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="test" width="35%" valign="middle">
+							Required (boolean)
+						</td>
+						<td class="result">
+							<input type="checkbox" validator="required"/>
+						</td>
+					</tr>
+				</table>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:validators[show=usage] then show else hide" style="display:none">
+		<p>
+				Add the following attribute to a form element:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">validator</td>
+					  <td class="def">the name of the validator</td>
+					</tr>
+				</table>
+		</p>
+<!--
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

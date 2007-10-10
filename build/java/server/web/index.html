@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Appcelerator&trade; Server</title>
+	<script type="text/javascript" src="js/appcelerator.js"></script> 
+	<link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+<body>
+	
+	<!-- MOCK -->
+	<app:content src="message_interface.html" lazy="false"></app:content>
+
+	<!-- HEADER -->
+	<div id="header">
+		<div id="logo">
+			<a href="http://www.appcelerator.org/index.html" title="Appcelerator Developer Community">
+				<img border="0" src="images/appcelerator_logo.png" alt="Appcelerator.org"/>
+			</a>
+		</div>
+	</div>
+	
+	<!-- BODY -->
+	<div id="body">
+		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<!-- NAV -->
+				<td valign="top" >
+					<div class="nav_item" 
+						on="click then l:show[x=db] or l:show[x=db] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/chart_line.png"/> 
+						Dashboard
+					</div>
+					<div class="nav_item inactive"
+						on="click then l:show[x=ab] or l:show[x=ab] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/html.png"/> 
+						Application Bundles
+					</div>
+					<div class="nav_item inactive"
+						on="click then l:show[x=sb] or l:show[x=sb] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/folder_database.png"/> 
+						Service Bundles
+					</div>
+					<div class="nav_item inactive"
+						on="click then l:show[x=sr] or l:show[x=sr] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/database.png"/>
+						Service Registry
+					</div>
+					<div class="nav_item inactive"
+						on="click then l:show[x=st] or l:show[x=st] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/magnifier.png"/>
+						Service Tester
+					</div>
+					<div class="nav_item inactive"
+						on="click then l:show[x=rd] or l:show[x=rd] then remove[class=inactive] else add[class=inactive]">
+						<img src="images/lightning.png"/>
+						Remote Deployer
+					</div>
+
+				</td>
+				<!-- CONTENT -->
+				<td valign="top" width="85%" id="container">
+					<div class="content">
+						<app:content src="services.html" on="l:show[x=sr] then show else hide"></app:content>
+						<app:content src="dashboard.html" on="l:show[x=db] then show else hide"></app:content>
+						<app:content src="deployer.html" on="l:show[x=rd] then show else hide"></app:content>
+						<app:content src="servicetester.html" on="l:show[x=st] then show else hide"></app:content>
+						<app:content src="appbundle.html" on="l:show[x=ab] then show else hide"></app:content>
+						<app:content src="servicebundle.html" on="l:show[x=sb] then show else hide"></app:content>
+
+
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<app:message name="l:show" args="{'x':'db'}"></app:message>
+
+	<!-- FOOTER -->
+	<div id="footer">
+		<div id="footer_logo">
+			<a href="http://www.appcelerator.com" title="Appcelerator Corporate Website">
+				<img border="0" src="images/footer.png" alt="appcelerator.com"/>
+			</a>
+		</div>
+		<div id="copyright">Copyright &copy; 2007 by 
+			<a href="http://www.appcelerator.com" title="Appcelerator Corporate Website">Appcelerator, Inc.</a> All Rights Reserved.
+		</div>
+	</div>
+
+</body>
+
+</html>

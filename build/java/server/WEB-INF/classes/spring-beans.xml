@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+        "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!--  this spring bean will manage special annotations  -->
+    <bean id="appBeanPostProcessor" class="org.appcelerator.spring.AppBeanPostProcessor"/>
+
+    <!-- Hibernate SessionFactory 
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mappingResources">
+        	<list/>
+        </property>
+        <property name="annotatedClasses">
+        	<list/>
+        </property>
+        <property name="annotatedPackages">
+            <list/>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">#{hibernate.database.dialect}</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="hibernateSessionUtil" class="org.appcelerator.hibernate.HibernateSessionUtil"></bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="#{database.jdbc.driver}"/>
+        <property name="url" value="#{database.jdbc.url}"/>
+        <property name="username" value="#{database.username}"/>
+        <property name="password" value="#{database.password}"/>
+		<property name="maxActive" value="10"/>
+    </bean>
+	-->
+	
+    <bean id="sessionExecutorFactory" class="org.appcelerator.session.SingleThreadedSessionExecutorFactory"/>
+    <bean id="executableSessionFactory" class="org.appcelerator.session.ExecutableSessionFactory"/>
+    <bean id="executableSessionManager" class="org.appcelerator.session.ExecutableSessionManager"/>
+    <bean id="serviceBroker" class="org.appcelerator.messaging.InMemoryServiceBroker"/>
+    
+
+    <bean id="serviceDeployer" class="org.appcelerator.deployment.ServiceDeployer"/>
+    <bean id="applicationDeployer" class="org.appcelerator.deployment.ApplicationDeployer"/>
+    <bean id="compositeDeployer" class="org.appcelerator.deployment.CompositeDeployer"/>
+    
+    <bean id="deploymentManager" class="org.appcelerator.deployment.DeploymentManager">
+    	<property name="deployers">
+	    	<list>
+	    		<ref bean="serviceDeployer"/>
+	    		<ref bean="applicationDeployer"/>
+	    		<ref bean="compositeDeployer"/>
+	    	</list>
+    	</property>
+    </bean>
+    
+    <bean id="serviceServlet" class="org.appcelerator.servlet.service.ServiceDispatcherServlet">
+        <property name="urlPattern" value="/servicebroker"/>
+        <property name="executableSessionFactory" ref="executableSessionFactory"/>
+        <property name="sessionExecutorFactory" ref="sessionExecutorFactory"/>
+        <property name="sharedSecret" value="#{shared.secret}"/>
+    </bean>
+    
+    <bean id="uploadServlet" class="org.appcelerator.servlet.upload.UploadServlet">
+        <property name="urlPattern" value="/upload"/>
+        <property name="authenticationRequired" value="false"/>
+    </bean>
+
+    <bean id="downloadServlet" class="org.appcelerator.servlet.download.DownloadServlet">
+        <property name="urlPattern" value="/download"/>
+    </bean>
+
+    <bean id="routerService" class="org.appcelerator.router.ServiceRouter">
+        <property name="sharedSecret" value="#{shared.secret}"/>
+    </bean>
+
+    <bean id="registererService" class="org.appcelerator.router.ServiceRegisterer">
+        <property name="sharedSecret" value="#{shared.secret}"/>
+    	<property name="routers">
+    		<list>
+    		</list>
+    	</property>
+    	<property name="location" value="http://#{ipaddress}:8080/#{webapp.name}/-/servicebroker" />
+    </bean>
+    
+    <bean id="serverStatsService" class="org.appcelerator.server.ServerStatsService"></bean>
+
+
+</beans>

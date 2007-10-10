@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:app="http://www.appcelerator.org/appcelerator"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.appcelerator.org/appcelerator
+     http://www.appcelerator.org/appcelerator/spring-appcelerator.xsd">
+
+  <app:service id="myservice" bean="simple" request="hello.request" response="hello.response" method="hello" />
+
+  <bean id="simple" class="org.appcelerator.spring.handler.Simple">
+  </bean>
+</beans>

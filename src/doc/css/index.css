@@ -1,0 +1,373 @@
+body
+{
+	background-color:#5e5e5e;
+	font-family:tahoma,arial;
+	font:12px;
+	color:#696969;
+	margin:0;
+	padding:0;
+}
+
+/*
+** Container Styles
+** 
+**
+*/
+#header
+{
+	background-image: url(../images/header.png);
+	background-repeat: repeat-x;
+	background-color: #5e5e5e;
+	height: 55px;
+	position:relative;
+	margin:0;
+	padding:0;
+}
+
+/* main container */
+#container
+{
+	position:relative;
+	top:0px;
+	margin-left:10px;
+	margin-right:20px;
+	padding-top:5px;
+	color:#696969;
+}
+
+/* outer navigation container */
+#nav_container
+{
+	background-color:#ddd;
+	border:1px solid #aaa;
+	width:95%;
+	font-size:12px;
+	line-height:5px;
+	padding:5px;
+	margin-right:15px;
+}
+
+/* inner navigation container */
+#nav
+{
+	margin:5px;
+	padding:10px;
+	padding-left:2px;
+	padding-top:2px;
+	height:490px;
+	overflow:auto;
+	background-color:#fff;
+	border:1px solid #aaa
+}
+
+/* navigation folder class */
+#nav > .folder
+{
+	padding-left:5px;
+	cursor:pointer;
+	padding-bottom:8px;
+}
+
+/* navigation folder hover */
+#nav > .folder:hover
+{
+	background-color:#ffffcc;
+}
+
+/* navigation foler open */
+#nav .open
+{
+	background-color:#ddd;
+	border:1px solid #999;
+}
+
+/* navigation item (below a folder) */
+#nav > .item
+{
+	cursor:pointer;
+	position:relative;
+	left:15px;
+	width:200px;
+	clear:both;
+	padding-bottom:8px;
+
+}
+/* navigation item hover */
+#nav > .item:hover
+{
+	background-color:#ddd;
+}
+
+/* detail container (right side of the app) */
+#detail_container
+{
+	width:100%;
+	background-color:#ddd;
+	border:1px solid #aaa;
+	line-height:5px;
+	font-size:12px;
+	padding:5px;
+	
+}
+
+/* detail content containers */
+#detail 
+{
+	margin:5px;
+	padding:10px;
+	padding-left:20px;
+	padding-top:2px;
+	height:490px;
+/*	overflow:auto;*/	
+	background-color:#fff;
+	border:1px solid #aaa;
+	
+}
+/* progress container */
+#progress
+{
+	margin:5px;
+	padding:10px;
+	padding-left:20px;
+	padding-top:2px;
+	height:450px;
+	overflow:auto;	
+	background-color:#fff;
+	border:1px solid #aaa;
+	
+}
+
+/*
+**  Element styles
+**
+**
+*/
+
+a
+{
+	text-decoration:underline;
+	cursor:pointer;
+}
+/* generic image style */
+img
+{
+	position:relative;
+	top:3px;
+}
+
+.small_text
+{
+   font-size: 85%;
+}
+/* status text for messages */
+.status_text
+{
+	font-size:150%;
+	color:#696969;
+}
+.bold_value
+{
+	color:#0f3c71;
+	font-size:12px;
+	font-weight:bold;
+}
+.bold_value_grey_lg
+{
+	color:#696969;
+	font-size:14px;
+	font-weight:bold;
+	
+}
+
+.bold_value_grey
+{
+	color:#696969;
+	font-size:12px;
+	font-weight:bold;
+}
+
+.editable_value
+{
+	background-color:#ffffcc;
+	padding:5px;
+	color:#333;
+}
+
+.active_link
+{
+	background-color:#ffffcc;
+	padding:3px;
+	text-decoration:none;
+	color:#333;
+}
+/* generic p style */
+p
+{
+	color:#696969;
+}
+
+/* generic h styles */
+h2
+{
+	color:#0f3c71;
+}
+h4
+{
+	color:#0f3c71;
+}
+
+h3
+{
+	color:#696969;
+	margin-bottom:8px;
+}
+
+/* validator style */
+.field_error
+{
+	font-size:11px;
+	color:#ff0000;
+	font-weight:normal;
+}
+
+.row_entry:hover
+{
+	border:1px solid #666;	
+}
+.row_entry
+{
+	border-left:1px solid #ccc;
+	border-top:1px solid #ccc;
+	border-right:1px solid #aaa;
+	border-bottom:1px solid #aaa;
+	padding:17px;
+	padding-bottom:20px;
+	line-height:5px;
+	margin-bottom:7px;
+	cursor:pointer;
+	vertical-align:middle;
+}
+.row_selected
+{
+	border:1px solid #666;
+	background-color:#fff;
+}
+
+/*
+** Standard INPUT, SELECT and TEXTAREA Styles
+** includng focus styles
+**
+*/
+
+input[type=text]:focus
+{
+	background-color:#ffffcc;
+}
+input[type=password]:focus
+{
+	background-color:#ffffcc;
+}
+
+input[type=button]
+{
+   border-width:1px;
+   padding: 2px 7.5px 2px 7.5px;
+   margin: 0;
+}
+
+select:focus
+{
+	background-color:#ffffcc;
+}
+select
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:300px;
+}
+
+input[type="text"] 
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:280px;
+}
+input[type="password"] 
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:280px;
+}
+textarea:focus
+{
+	background-color:#ffffcc;
+}
+textarea
+{
+		border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+		border-style:solid;
+		border-width:1px;
+		font-size:14px;
+		margin:1px;
+		padding:3px 3px 3px 10px;
+		width:300px;
+}
+
+.find_entries > input[type=text]
+	{
+		border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+		border-style:solid;
+		border-width:1px;
+		font-size:12px;
+		margin:1px;
+		padding:2px 2px 2px 2px;
+		width:80px;
+}
+.find_entries > select
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:12px;
+	margin:1px;
+	padding:2px 2px 2px 2px;
+	width:200px;
+
+}
+.find_entries > input[type=button]
+{
+	border-style:1px solid #aaa;
+	border-width:1px;
+	font-size:11px;
+	margin:1px;
+	padding:2px 2px 2px 2px;
+
+}
+
+.edit_box
+{
+	padding:10px;
+	border: 1px solid #ccc;
+	background-color:#f6f6f6;
+}
+.noteBox 
+{ 
+   margin:5px auto; 
+   padding:10px; 
+   border-style: solid; 
+   border-width: 1px; 
+   border-color: #3c78b5; 
+   background-color: #D8E4F1; 
+}		

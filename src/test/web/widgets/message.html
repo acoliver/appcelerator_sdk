@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Message Widget </h3> 
+<p>
+	These tests exercise the message widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Generate an empty message on load
+		</td>
+		<td class="result">
+			<div on="l:datamodel1 then show" style="display: none">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed
+			</div>
+			<app:message name="l:datamodel1">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Generate a message with a payload
+		</td>
+		<td class="result">
+			<img src="" on="l:datamodel2 then value[src]"/> 
+			<span id="datamodel2" on="l:datamodel2 then value[name]">		
+				Data will be here
+			</span>
+			<app:message name="l:datamodel2" args="{'name':'This test passed','src':'../images/confirm.png'}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Generate a recurring message
+		</td>
+		<td class="result">
+			<span id="datamodel3">		
+				Data will be here
+			</span>
+			<app:message name="l:datamodel3" interval="1500">
+			</app:message>
+			<app:script>
+				datamodel_test3 = 0;
+			</app:script>
+			<app:script on="l:datamodel3 then execute">
+				datamodel_test3++; 
+				$('datamodel3').innerHTML = datamodel_test3;
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:load.datamodel4">Run Test</a>
+			Generate a message trigger by a message
+		</td>
+		<td class="result">
+			<img src="" on="l:datamodel4 then value[src]"/> 
+			<span id="datamodel4" on="l:datamodel4 then value[name]">		
+				Data will be here
+			</span>
+			<app:message on="l:load.datamodel4 then execute" name="l:datamodel4" args="{'name':'This test passed','src':'../images/confirm.png'}">
+			</app:message>
+
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+
+</html>

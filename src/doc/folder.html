@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Folder</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:folder[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:folder[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:folder[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget is used for rendering the equivalent of a treeview.
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:folder[show=example] then show else hide">
+		to see the messages, start clicking the folder below<br/>
+		<app:folder id="folder_example">
+			<folder name="Overview">
+				<item onopen="l:folder.example[name=what,src='what_is_appcelerator.html']">What is Appcelerator?</item>
+				<item onopen="l:folder.example[name=client_basics,src='client_basics.html']">Client Messaging Basics</item>
+			</folder>
+		</app:folder>
+		<br/><br/>
+		<textarea cols="100" rows="20" id="myfolder_div"></textarea>
+		<app:script on="l:folder.example then execute">
+			$('myfolder_div').value = $('myfolder_div').value+ '\n' + this.data.name+":"+this.data.src;
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:folder[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:folder id="folder_example">
+					<folder name="Overview">
+						<item onopen="l:folder.example[name=what,src='what_is_appcelerator.html']">What is Appcelerator?</item>
+						<item onopen="l:folder.example[name=client_basics,src='client_basics.html']">Client Messaging Basics</item>
+					</folder>
+				</app:folder>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:folder[show=usage] then show else hide" style="display:none">
+		<p>
+			The folder widget has both &lt;folder&gt; and &lt;item&gt; elements for which they both have the same required and optional attributes.
+		</p>
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">id</td>
+					  <td class="def">the identifier for the widget</td>
+					</tr>
+					<tr>
+					  <td class="term">&lt;folder&gt; name</td>
+					  <td class="def">the displayed name of a folder</td>
+					</tr>
+					<tr>
+					  <td class="term">&lt;item&gt; onopen</td>
+					  <td class="def">hanlder for the open of the item : where you usually put your message</td>
+					</tr>
+					<tr>
+					  <td class="term">&lt;item&gt; TEXT</td>
+					  <td class="def">the innerHTML for the &lt;item&gt; element is the displayed name for the item</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">&lt;folder&gt; or &lt;item&gt; opened_icon</td>
+					  <td class="def">location of the image to use for when item or folder is open</td>
+					</tr>
+					<tr>
+					  <td class="term">&lt;folder&gt; or &lt;item&gt; closeed_icon</td>
+					  <td class="def">location of the image to use for when item or folder is closed</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

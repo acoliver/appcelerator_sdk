@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Field</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:field[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:field[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:field[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget provides a rich wrapper for field input including such things as:
+		<ul>
+			<li>auto complete fields (useful for searching)
+		</ul>
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:field[show=example] then show else hide">
+		<table width="90%">
+			<tr>
+				<td class="test" valign="middle">
+				 	Field (autocomplete with delay and indicator)
+				</td>
+				<td class="result" >
+					<app:field  type="autocomplete" autocomplete="l:autocomplete.search"
+					delay="1000ms" indicator="auto_indicator">
+						<header>
+							Search:
+							<span id="auto_indicator" on="l:autocomplete.search then show or l:autocomplete.response then hide"
+								style="font-size:11px;color:#999;display:none">Searching...</span>
+						</header>
+						<footer>
+							fill it out, you dig?
+						</footer>
+					</app:field>
+					<app:script on="l:autocomplete.search then execute after 1s">
+					$MQ('l:autocomplete.response');
+					</app:script>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:field[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<td class="test" valign="middle">
+				 	Field (autocomplete with delay and indicator)
+				</td>
+				<td class="result" >
+					<app:field  type="autocomplete" autocomplete="l:autocomplete.search"
+					delay="1000ms" indicator="auto_indicator">
+						<header>
+							Search:
+							<span id="auto_indicator" on="l:autocomplete.search then show or l:autocomplete.response then hide"
+								style="font-size:11px;color:#999;display:none">Searching...</span>
+						</header>
+						<footer>
+							fill it out, you dig?
+						</footer>
+					</app:field>
+					<app:script on="l:autocomplete.search then execute after 1s">
+					$MQ('l:autocomplete.response');
+					</app:script>
+				</td>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:field[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">type</td>
+					  <td class="def">one of the following (text|password|select|dropdown|autocomplete) (defaults to text)</td>
+					</tr>
+					<tr>
+					  <td class="term">fieldClass</td>
+					  <td class="def">css class for the field</td>
+					</tr>
+					<tr>
+					  <td class="term">fieldDefaultLangId</td>
+					  <td class="def">css class for the default value</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			Standard Options:
+			<table cellspacing="5px">
+				<tr>
+				  <td class="term">validator</td>
+				  <td class="def"></td>
+				</tr>
+				<tr>
+				  <td class="term">fieldset</td>
+				  <td class="def"></td>
+				</tr>
+				<tr>
+				  <td class="term">on</td>
+				  <td class="def"></td>
+				</tr>
+				<tr>
+				  <td class="term">id</td>
+				  <td class="def"></td>
+				</tr>
+			</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">parameters</td>
+					  <td class="def"></td>
+					</tr>
+					<tr>
+					  <td class="term">activeClassName</td>
+					  <td class="def">the focus class (defaults to 'selected')</td>
+					</tr>
+					<tr>
+					  <td class="term">inactiveClassName</td>
+					  <td class="def">the blur class</td>
+					</tr>
+					<tr>
+					  <td class="term">fieldActiveClassName</td>
+					  <td class="def"></td>
+					</tr>
+					<tr>
+					  <td class="term">fieldInactiveClassName</td>
+					  <td class="def"></td>
+					</tr>
+					<tr>
+					  <td class="term">fieldDefaultClassName</td>
+					  <td class="def"></td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

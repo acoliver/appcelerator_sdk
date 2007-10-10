@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Modal Dialog</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:modal[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:modal[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:modal[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<p>
+		This widget allows for you to display a div modally in your application to restrict interaction with other UI components. Some examples:
+		<ul>
+			<li>displaying a standard error dialog
+			<li>contextual help
+		</ul>
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:modal[show=example] then show else hide">
+		<p>
+			<a on="click then l:modaldialog1.test">click me to display the modal dialog</a>
+			<app:modaldialog on="l:modaldialog1.test then execute">
+				<html:div style="border:3px solid #777; background-color:#fff; width: 625px; height:400px; margin: auto;">
+					<html:table style="width: 625px;" align="center" valign="top">
+						<html:tr>
+							<html:td align="right" style="padding-right: 10px">
+								<html:a style="font-size:11px" on="click then l:appcelerator.modaldialog.hide" href="javascript:void(0)">Close</html:a>
+							</html:td>
+						</html:tr>
+						<html:tr>
+							<html:td align="left" valign="top" style="padding: 5px 20px 20px 20px;">
+								<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> Good things.
+							</html:td>
+						</html:tr>
+					</html:table>
+				</html:div>		
+			</app:modaldialog>
+		</p>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:modal[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<a on="click then l:modaldialog1.test">click me to display the modal dialog</a>
+				<app:modaldialog on="l:modaldialog1.test then execute">
+					<html:div style="border:3px solid #777; background-color:#fff; width: 625px; height:400px; margin: auto;">
+						<html:table style="width: 625px;" align="center" valign="top">
+							<html:tr>
+								<html:td align="right" style="padding-right: 10px">
+									<html:a style="font-size:11px" on="click then l:appcelerator.modaldialog.hide" href="javascript:void(0)">Close</html:a>
+								</html:td>
+							</html:tr>
+							<html:tr>
+								<html:td align="left" valign="top" style="padding: 5px 20px 20px 20px;">
+									<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> Good things.
+								</html:td>
+							</html:tr>
+						</html:table>
+					</html:div>		
+				</app:modaldialog>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:modal[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">The handler for the widget usually of the form "&lt;event&gt; then execute"</td>
+					</tr>
+				</table>
+		</p>
+<!--
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

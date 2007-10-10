@@ -1,0 +1,53 @@
+<html>
+<body>
+	<div class="header_bar">Registered Services 
+		(<span on="r:$appcelerator.service.list.response then value[count]"></span> total)
+		<span class="refresh" on="click then r:$appcelerator.service.list.request
+			or r:$appcelerator.service.list.request then hide
+			or r:$appcelerator.service.list.response then show">
+			<img src="images/arrow_refresh.png" style="position:relative;top:3px"/>
+			<a>Refresh</a>
+		</span>
+		<span class="refresh_indicator" on="r:$appcelerator.service.list.request then show
+			or r:$appcelerator.service.list.response then hide" 
+			style="display:none">Reloading...
+		</span>
+		
+	</div>
+	<div style="height:350px;overflow:auto">
+		<app:iterator on="r:$appcelerator.service.list.response then execute after 500ms" 
+			property="rows">
+			<html:div class="service_row" 
+				on="r:$appcelerator.service.list.response then effect[drop-out]">
+				<html:div class="service_doc">
+					#{doc}
+				</html:div>
+				<html:div class="service_version">
+					<html:img src="images/layers.png"></html:img>
+					version #{version}
+				</html:div>
+				<html:div>
+					<html:img src="images/arrow_right.png"></html:img> 
+					<html:a on="click then l:show[x=st,service=#{request},fromService=true]">
+						<html:tt>#{request}</html:tt>
+					</html:a> 
+				</html:div>
+				<html:div>
+					<html:img src="images/arrow_left.png"></html:img> 			
+					<html:tt>#{response}</html:tt>
+				</html:div>
+			</html:div>
+		</app:iterator>
+	</div>
+
+	<!--
+	<app:message name="r:$appcelerator.service.list.request" interval="300000">
+	</app:message>
+
+	-->
+
+</body>
+
+<app:message name="r:$appcelerator.service.list.request">
+</app:message>
+</html>

@@ -1,0 +1,88 @@
+<html>
+<body>
+
+	<div class="header_bar">Client Bundles
+		(<span on="r:$appcelerator.appbundle.query.response then value[count]"></span> total)
+		<span class="refresh" on="click then r:$appcelerator.appbundle.query.request
+			or r:$appcelerator.appbundle.query.request then hide
+			or r:$appcelerator.appbundle.query.response then show">
+			<img src="images/arrow_refresh.png" style="position:relative;top:3px"/>
+			<a>Refresh</a>
+		</span>
+		<span class="refresh_indicator" on="r:$appcelerator.appbundle.query.request then show
+			or r:$appcelerator.appbundle.query.response then hide" 
+			style="display:none">Reloading...
+		</span>
+	</div>
+	<img src="images/pencil.png"/><span style="font-size:13px;color:#555">Click row to edit</span>
+	<div style="padding:7px"></div>
+	<!-- EDIT BOX -->
+	<div class="edit_box" on="l:app.edit.show then effect[Appear] 
+		or l:app.edit.close then effect[Fade] 
+		or r:$appcelerator.appbundle.edit.response then effect[Fade]" style="display:none">
+		Currently Editing: <b>
+		<span on="l:app.edit.show then value[name]" style="padding-right:8px"></span></b>								
+		Change Active Version:
+		<select on="l:app.edit.show then value[property=releases,text=release,value=release]
+							 	or l:app.edit.show then selectOption[version]" 
+				fieldset="app_bundle"
+				id="app_bundle_version">
+		</select>
+		Change Bundle Status:
+		<select on="l:app.edit.show then selectOption[status]" fieldset="app_bundle"
+			id="app_bundle_status">
+			<option value="Active">Active</option>
+			<option value="In-Active">In-Active</option>
+		</select>
+		<input type="hidden" id="app_bundle_name"
+			on="l:app.edit.show then value[name]" fieldset="app_bundle"/>
+		<input type="button" value="Save" fieldset="app_bundle"
+			on="click then r:$appcelerator.appbundle.edit.request"/>
+		<input type="button" value="Cancel" on="click then l:app.edit.close"/>	
+		<img src="images/indicator.gif" on="r:$appcelerator.appbundle.edit.request then show
+			 or r:$appcelerator.appbundle.edit.response then hide" 
+			style="display:none;position:relative;top:3px">							
+	</div>
+
+	<!-- APP BUNDLE ITERATOR -->
+	<div style="height:350px;overflow:auto">
+		<app:iterator on="r:$appcelerator.appbundle.query.response then execute after 500ms" 
+				property="apps">
+				<html:div class="service_row" 
+					on="click then l:app.row.selected[idx=#{iterator_index}] 
+					or r:$appcelerator.appbundle.edit.response[name='#{name}'] then effect[Pulsate]
+					or r:$appcelerator.appbundle.query.response then effect[drop-out]">
+					<html:div class="service_doc">				
+						#{name} 
+					</html:div>
+					<html:div class="service_version">
+							<html:span class="app_service_status" 
+							id="app_status_#{iterator_index}"
+							on="r:$appcelerator.appbundle.edit.response[name='#{name}'] then value[status]">
+							#{status}																				
+							</html:span>
+							<html:img src="images/layers.png"></html:img>
+							version 
+							<html:span 
+							on="r:$appcelerator.appbundle.edit.response[name='#{name}'] then value[version]">#{active}</html:span>.0 
+					</html:div>
+				</html:div>
+				<html:input type="hidden" id="ab_status_#{iterator_index}" value="#{status}"
+					on="r:$appcelerator.appbundle.edit.response[name='#{name}'] then value[status]">
+				</html:input>
+				<html:input type="hidden" id="ab_version_#{iterator_index}" value="#{active}"
+					on="r:$appcelerator.appbundle.edit.response[name='#{name}'] then value[version]">
+				</html:input>
+				<app:script on="l:app.row.selected[idx=#{iterator_index}] then execute">
+					var status = $('ab_status_#{iterator_index}').value;
+					var version = $('ab_version_#{iterator_index}').value;										
+					$MQ('l:app.edit.show',{'releases':#{releases}, 
+					'name':'#{name}','status':status,'version':version});
+				</app:script>
+			</app:iterator>
+		</div>
+		<app:message name="r:$appcelerator.appbundle.query.request" interval="300000">
+		</app:message>
+
+</body>
+</html>

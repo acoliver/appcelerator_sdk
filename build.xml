@@ -1,0 +1,489 @@
+<?xml version="1.0"?>
+
+<!-- ==================================================================== -->
+<!-- Appcelerator Platform SDK                                            -->	
+<!-- ==================================================================== -->
+
+<project name="Appcelerator Platform SDK" default="dist" basedir=".">
+
+    <description>Appcelerator Platform SDK</description>
+
+    <property file="${user.home}/.ant.properties"/>
+    <property file="build.properties"/>
+
+	<path id="classpath">
+		<fileset dir="${build.java.dir}/lib" includes="*.jar"/>
+	</path>
+
+	<target name="dist" depends="build_sdk,build_server"></target>
+	
+	<target name="clean" description="* Removes temporary build directories">
+		<delete dir="${stage.dir}"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${stage.dir}"/>
+		<tstamp/>
+        <property name="APP_VERSION" value="${version.major}.${version.minor}.${version.rev}"/>
+        <property name="APP_DATE" value="${DSTAMP} ${TSTAMP}"/>
+        <property name="VERSION" value="${APP_VERSION}"/>		
+	</target>
+	
+	<target name="build_core_javascript" depends="init" description="* Builds the core JS framework">
+		<delete file="${stage.dir}/web/js/appcelerator.js" failonerror="no"/>
+		<delete file="${stage.dir}/web/js/appcelerator-temp.js" failonerror="no"/>
+		<delete file="${stage.dir}/web/js/appcelerator-debug.js" failonerror="no"/>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="no">
+			<fileset file="${build.dir}/license_header.txt"/>
+		</concat>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes" fixlastline="yes">
+/* The following files are subject to license agreements by their respective license owners */
+		</concat>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
+			<fileset file="${build.web.dir}/prototype/prototype.js"/>
+			<fileset file="${build.web.dir}/scriptaculous/scriptaculous.js"/>
+			<fileset file="${build.web.dir}/scriptaculous/effects.js"/>
+			<fileset file="${build.web.dir}/scriptaculous/dragdrop.js"/>
+		</concat>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes" fixlastline="yes">
+/* END THIRD PARTY SOURCE */
+		</concat>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
+			<fileset file="${src.web.dir}/js/bootstrap.js"/>
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</concat>
+		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
+			<fileset file="${src.web.dir}/js/core.js"/>
+			<fileset file="${src.web.dir}/js/debug.js"/>
+			<fileset file="${src.web.dir}/js/string.js"/>
+			<fileset file="${src.web.dir}/js/object.js"/>
+			<fileset file="${src.web.dir}/js/datetime.js"/>
+			<fileset file="${src.web.dir}/js/config.js" />
+			<fileset file="${src.web.dir}/js/compiler.js"/>
+			<fileset file="${src.web.dir}/js/dom.js"/>
+			<fileset file="${src.web.dir}/js/cookie.js"/>
+			<fileset file="${src.web.dir}/js/servicebroker.js"/>
+			<fileset dir="${src.web.dir}/js">
+				<include name="**/*.js"/>
+				<exclude name="bootstrap.js"/>
+				<exclude name="core.js"/>
+				<exclude name="compiler.js"/>
+				<exclude name="dom.js"/>
+				<exclude name="debug.js"/>
+				<exclude name="string.js"/>
+				<exclude name="cookie.js"/>
+				<exclude name="config.js"/>
+				<exclude name="datetime.js"/>
+				<exclude name="object.js"/>
+				<exclude name="servicebroker.js"/>
+			</fileset>
+		</concat>
+		<antcall target="jsmin"/>
+		<antcall target="nojsmin"/>
+	</target>
+	<target name="nomin">
+		<property name="dont.jsmin" value="anything"/>
+	</target>
+	<target name="jsmin" unless="dont.jsmin">
+    	<exec executable="ruby" failonerror="true" failifexecutionfails="true">
+    		<arg line="${build.bin.dir}/jsmin.rb"/>
+    		<arg line="${stage.dir}/web/js/appcelerator-debug.js"/>
+    		<arg line="${stage.dir}/web/js/appcelerator-temp.js"/>
+    	</exec>
+		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
+			<fileset file="${build.dir}/license_header.txt"/>
+    		<fileset file="${stage.dir}/web/js/appcelerator-temp.js"/>
+    	</concat>
+		<delete file="${stage.dir}/web/js/appcelerator-temp.js"/>
+		<echo message="minimized"/>
+	</target>
+	<target name="nojsmin" if="dont.jsmin">
+		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
+			<fileset file="${build.dir}/license_header.txt"/>
+    		<fileset file="${stage.dir}/web/js/appcelerator-debug.js"/>
+    	</concat>
+		<echo message="didn't minimize"/>
+	</target>
+	<target name="copy_web_files">
+		<copy todir="${stage.dir}/web" filtering="no">
+			<fileset dir="${src.web.dir}">
+				<include name="**/*"/>
+				<exclude name="**/js/**"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="java_compile" depends="init" description="* Compiles the Java code">
+		<mkdir dir="${stage.dir}/java/classes"/>
+		<copy todir="${stage.dir}/src-java" filtering="true">
+			<fileset dir="${src.java.dir}">
+				<include name="**/*.java"/>
+			</fileset>
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</copy>
+		<javac debug="true" srcdir="${stage.dir}/src-java" destdir="${stage.dir}/java/classes" classpathref="classpath" excludes="**/myappcelerator/*"/>
+		<jar destfile="${stage.dir}/java/appcelerator-${version.major}.${version.minor}.${version.rev}.jar">
+			<fileset dir="${stage.dir}/java/classes">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${src.java.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="test_compile" depends="java_compile">
+		<path id="c">
+			<path refid="classpath"/>
+			<fileset dir="${stage.dir}/java/" includes="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
+		</path>
+		<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="c" />
+		<appc srcdir="${stage.dir}/web" destdir="test"/>
+	</target>
+	
+	<target name="build_myappcelerator_java" depends="build_core_javascript,copy_web_files,java_compile" description="* Builds a test project">
+		<mkdir dir="${stage.dir}/myappcelerator/java"/>
+		<copy todir="${stage.dir}/myappcelerator/java" filtering="no">
+			<fileset dir="${build.java.dir}/myappcelerator">
+				<include name="**/*"/>
+				<exclude name="**/ant-*.jar"/>
+				<exclude name="appcelerator.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/myappcelerator/java/src/web" filtering="no">
+			<fileset dir="${build.java.dir}/myappcelerator">
+				<include name="appcelerator.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/myappcelerator/java/lib/build" filtering="no">
+			<fileset dir="${stage.dir}/java">
+				<include name="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
+			</fileset>
+			<fileset dir="${build.java.dir}/lib">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/myappcelerator/java/src/web" filtering="no">
+			<fileset dir="${stage.dir}/web">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${stage.dir}/myappcelerator/java/src/java"/>
+		<copy todir="${stage.dir}/myappcelerator/java/src/java" filtering="no">
+			<fileset dir="${src.java.dir}">
+				<include name="**/myappcelerator/**"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="build_server.nomin" depends="nomin,build_server"/>
+	<target name="build_server" depends="build_myappcelerator_java,build_doc" description="* Builds the Java Server">
+		<mkdir dir="${stage.dir}/java/server/web"/>
+		<copy todir="${stage.dir}/java/server/web">
+			<fileset dir="${stage.dir}/web" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/java/server/web" overwrite="true">
+			<fileset dir="${build.java.dir}/server/web" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/java/server/web" overwrite="true">
+			<fileset dir="${build.java.dir}/server" includes="appcelerator.xml"/>
+		</copy>
+		<mkdir dir="${stage.dir}/java/server/WEB-INF"/>
+		<mkdir dir="${stage.dir}/java/server/WEB-INF/logs"/>
+		<copy todir="${stage.dir}/java/server/WEB-INF">
+			<fileset dir="${build.java.dir}/server/WEB-INF">
+				<include name="**/*"/>
+				<exclude name="**/*web.xml"/>
+			</fileset>
+		</copy>
+		<war destfile="${stage.dir}/java/server/appcelerator.war" webxml="${build.java.dir}/server/WEB-INF/web.xml">
+			<lib dir="${build.java.dir}/lib">
+				<include name="*.jar"/>
+				<exclude name="servlet*.jar"/>
+				<exclude name="js-*.jar"/>
+				<exclude name="ant-*.jar"/>
+			</lib>
+			<lib dir="${stage.dir}/java">
+				<include name="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
+			</lib>
+			<fileset dir="${stage.dir}/java/server/web">
+				<include name="**/**"/>
+			</fileset>
+			<fileset dir="${stage.dir}/java/server">
+				<include name="WEB-INF/**"/>
+			</fileset>
+		</war>
+	</target>
+	<target name="server_dist.nomin" depends="nomin,server_dist"/>
+	<target name="server_dist" depends="build_server" description="* Builds the Java SDK distribution">
+		<zip destfile="${stage.dir}/appcelerator_server_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
+			<zipfileset dir="stage/java/server" includes="appcelerator.war" prefix="dist/server"/>
+			<zipfileset dir="${build.java.dir}/server" includes="build.xml,README" prefix=""/>
+			<fileset dir="stage" includes="doc/**"/>
+		</zip>
+	</target>
+	<target name="build_web_unit" depends="build_myappcelerator_java" description="* Builds the web unit test suite">
+		<mkdir dir="${stage.dir}/test/web"/>
+		<copy todir="${stage.dir}/test/web">
+			<fileset dir="${stage.dir}/web">
+				<include name="**/*"/>
+				<exclude name="*.html"/>
+			</fileset>
+			<fileset dir="${stage.dir}/web">
+				<include name="blank.html"/>
+			</fileset>
+			<fileset dir="${src.test.web.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="build_doc.nomin" depends="nomin,build_doc"/>
+	<target name="build_doc" depends="build_myappcelerator_java" description="* Builds the documentation">
+		<mkdir dir="${stage.dir}/doc"/>
+		<copy todir="${stage.dir}/doc">
+			<fileset dir="${stage.dir}/web">
+				<include name="**/*"/>
+				<exclude name="*.html"/>
+			</fileset>
+			<fileset dir="src/doc">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+<!--		<copy todir="${stage.dir}/doc" overwrite="true">
+			<fileset dir="src/doc" includes="css/*.*"/>
+		</copy>
+-->
+	</target>
+	
+
+	<target name="build_sdk" depends="init,build_web_unit,build_doc,build_java_sdk" description="* Builds all language SDKs"></target>
+	
+	<target name="build_java_sdk" depends="build_web_unit,build_doc,build_server" description="* Builds the SDK for Java">
+		<mkdir dir="${stage.dir}/sdk/java"/>
+		<mkdir dir="${stage.dir}/sdk/java/dist/lib"/>
+		<mkdir dir="${stage.dir}/sdk/java/dist/lib/appcelerator"/>
+		<mkdir dir="${stage.dir}/sdk/java/dist/web"/>
+		<mkdir dir="${stage.dir}/sdk/java/dist/server"/>
+		<mkdir dir="${stage.dir}/sdk/java/doc"/>
+		<mkdir dir="${stage.dir}/sdk/java/test"/>
+		<copy todir="${stage.dir}/sdk/java" filtering="true"> 
+			<fileset dir="${build.java.dir}/sdk">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir=".">
+				<include name="LICENSE"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist/lib/appcelerator" filtering="false"> 
+			<fileset dir="${build.java.dir}/lib">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${stage.dir}/java">
+				<include name="appcelerator-${VERSION}.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist/web" filtering="false"> 
+			<fileset dir="${stage.dir}/web">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${build.java.dir}/server">
+				<include name="appcelerator.xml"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist" filtering="false"> 
+			<fileset dir="${build.java.dir}/sdk/dist">
+				<include name="**/*"/>
+				<exclude name=".classpath"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist" filtering="true"> 
+			<fileset dir="${build.java.dir}/sdk/dist">
+				<include name=".classpath"/>
+			</fileset>
+			<filterchain>
+				<expandproperties/>
+			</filterchain>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist/server" filtering="false"> 
+			<fileset dir="${stage.dir}/java/server">
+				<include name="*.war"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/doc" filtering="false"> 
+			<fileset dir="${stage.dir}/doc">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/test" filtering="false"> 
+			<fileset dir="${stage.dir}/test/web">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+		
+	</target>
+	
+	<target name="sdk_java_dist" depends="build_sdk" description="* Builds the Java SDK distribution">
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
+			<fileset dir="stage/sdk/java">
+				<include name="**/*"/>
+				<exclude name="stage/**"/>
+				<exclude name="output/**"/>
+				<exclude name=".server.id"/>
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="sdk_php_dist" depends="build_sdk" description="* Builds the PHP SDK distribution">
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
+			<fileset dir="stage/sdk/php">
+				<include name="**/*"/>
+				<exclude name="stage/**"/>
+				<exclude name="output/**"/>
+				<exclude name=".server.id"/>
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="sdk_ruby_dist" depends="build_core_javascript" description="* Builds the Ruby on Rails SDK distribution">
+		<mkdir dir="${stage.dir}/ruby"/>
+        <property name="ruby_gem_version" value="${APP_VERSION}"/>
+        <copy todir="${stage.dir}/ruby" filtering="true">
+            <fileset dir="${src.ruby.dir}/gem">
+                 <include name="**/*"/>
+            </fileset>
+            <fileset dir="${build.ruby.dir}">
+                 <include name="**/*"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
+             <fileset dir="${stage.dir}/web">
+                 <include name="js/appcelerator.js"/>
+             </fileset>
+             <fileset dir="${src.web.dir}">
+                 <include name="modules**/**"/>
+             </fileset>
+             <fileset dir="${src.web.dir}">
+                 <include name="css/**"/>
+                 <include name="images/**"/>
+                 <include name="index.html"/>
+             </fileset>
+        	 <fileset dir="${build.ruby.dir}">
+                 <include name="appcelerator.xml"/>
+                 <include name="dist/README"/>
+             </fileset>
+             <fileset dir="${build.java.dir}/server/web">
+                 <include name="servicetester.html"/>
+             </fileset>
+        </copy>
+		<antcall target="gem"/>
+	</target>
+	<target name="gem" depends="init">
+		<exec dir="${stage.dir}/ruby" executable="rake">
+			<arg line="version=${APP_VERSION}"/>
+		</exec>
+		<copy todir="${stage.dir}">
+			<fileset dir="${stage.dir}/ruby/pkg" includes="*.gem"/>
+		</copy>
+	</target>
+	<target name="sdk_dotnet_dist" depends="build_sdk" description="* Builds the .NET SDK distribution">
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET">
+			<fileset dir="stage/sdk/dotnet">
+				<include name="**/*"/>
+				<exclude name="stage/**"/>
+				<exclude name="output/**"/>
+				<exclude name=".server.id"/>
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="nightly_dist" description="* Builds the nightlighty source distribution">
+		<tstamp>
+			<format property="TODAY" pattern="MMddyyyy"/>
+		</tstamp>
+		<echo>Building the Appcelerator Platform SDK source code nightly distribution</echo>
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_source_${TODAY}.zip" comment="Appcelerator Platform SDK sourcecode for ${TODAY}">
+			<fileset dir=".">
+				<include name="**/*"/>
+				<exclude name="stage/**"/>
+				<exclude name="output/**"/>
+				<exclude name=".server.id"/>
+			</fileset>
+		</zip>
+	</target>
+	<target name="gendoc_widget">
+		<input message="what is the title (ex: Tree View)?" addproperty="title"/>
+		<input message="what is the name (ex: treeview)?" addproperty="name"/>
+		<input message="what is the tree parent name (ex: overview,started,framework,forms,charts,visual,nonvisual,services)?" addproperty="parent"/>
+		<copy file="src/doc/gendoc-templates/widget.html" tofile="src/doc/${name}.html" overwrite="true">
+			<filterchain>
+			    <replacetokens>
+			      <token key="widget.title" value="${title}"/>
+			      <token key="widget.name" value="${name}"/>
+			    </replacetokens>
+			  </filterchain>
+		</copy>
+		<antcall target="gendoc_treechild"/>
+	</target>
+	<target name="gendoc_treechild">
+		<copy file="src/doc/gendoc-templates/treechild.html" tofile="src/doc/treechild/${name}.html" overwrite="true">
+			<filterchain>
+			    <replacetokens>
+			      <token key="title" value="${title}"/>
+			      <token key="name" value="${name}"/>
+			      <token key="parent" value="${parent}"/>
+			    </replacetokens>
+			  </filterchain>
+		</copy>
+		<loadfile property="treechild" srcFile="src/doc/treechild/${name}.html"/>
+		<echo>you may want to past the following into index.html
+${treechild}
+cat src/doc/treechild/${name}.html</echo>
+	</target>
+	<target name="promptnametitle">
+		<input message="what is the title (ex: .NET)?" addproperty="title"/>
+		<input message="what is the name (ex: dotnet)?" addproperty="name"/>
+		<input message="what is the tree parent name (ex: overview,started,framework,forms,charts,visual,nonvisual,services)?" addproperty="parent"/>
+	</target>
+	<target name="gendoc_lang" depends="promptnametitle,gendoc_service,gendoc_gettingstarted,gendoc_treechild"/>
+	<target name="gendoc_service" depends="promptnametitle">
+		<copy file="src/doc/gendoc-templates/service.html" tofile="src/doc/${name}service.html" overwrite="true">
+			<filterchain>
+			    <replacetokens>
+			      <token key="title" value="${title}"/>
+			      <token key="name" value="${name}service"/>
+			    </replacetokens>
+			  </filterchain>
+		</copy>
+	</target>
+	<target name="gendoc_gettingstarted" depends="promptnametitle">
+		<copy file="src/doc/gendoc-templates/gettingstarted.html" tofile="src/doc/${name}gettingstarted.html" overwrite="true">
+			<filterchain>
+			    <replacetokens>
+			      <token key="title" value="${title}"/>
+			      <token key="name" value="${name}gettingstarted"/>
+			    </replacetokens>
+			  </filterchain>
+		</copy>
+	</target>
+	<target name="build_spring_jar" depends="java_compile">
+		<mkdir dir="${stage.dir}/appcelerator-spring"/>
+		<mkdir dir="${stage.dir}/appcelerator-spring/META-INF"/>
+		<copy todir="${stage.dir}/appcelerator-spring/META-INF">
+			<fileset dir="src/java/org/appcelerator/spring/handler" includes="spring.handlers,spring.schemas"/>
+		</copy>
+		<jar destfile="${stage.dir}/appcelerator-spring.jar">
+			<fileset dir="${stage.dir}/appcelerator-spring"/>
+			<fileset dir="${stage.dir}/java" includes="classes/**"/>
+		</jar>
+	</target>
+</project>

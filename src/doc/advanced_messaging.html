@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Appcelerator Explorer</title>
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body>
+	<h2>Advanced Client Messaging</h2>
+
+	<p>
+		In this section we will review some advanced messaging features, but don't worry even advanced
+		messaging in Appcelerator is simple.
+	</p>
+	<h3>Using Compound Actions</h3>
+
+	<p>
+		Appcelerator allows you to trigger any number of actions when a given condition is met.  This is 
+		accomplished by stringing actions together with an <tt>and</tt>.  Here's an example:
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<div on="l:user.logged.in then add[class=logged_in] and effect[Pulsate]">
+	</textarea>
+	</p>
+	<p>
+		In this example, the DIV will add a CSS class to itself and trigger the Pulsate effect
+		when it receives the message <tt>l:user.logged.in</tt>.  Simple.
+	</p>
+
+	<h3>Using <tt>else</tt></h3>
+
+	<p>
+		Appcelerator allows you to perform an alternate action in the case that your condition
+		evaluates to false.  Here's an example:
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<div on="l:user.logged.in[success=true] then show else hide">
+	</textarea>
+	</p>
+	<p>
+		In this example, the DIV will show if the <tt>l:user.logged.in</tt> is received
+		and it contains the <b>success=true</b> in its data payload, otherwise it will hide itself.
+	</p>
+
+	<h3>Using <tt>if</tt></h3>
+
+	<p>
+		Appcelerator provides a way to add a secondary condition to a Condition/Action statement.  It's accomplished
+		by using a <tt>if</tt>.  Here's an example:
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<input type="button" on="click then r:logout.request 
+		if expr[confirm('Are your sure you want to logout?')]">
+	</textarea>
+	</p>
+	<p>
+		In this example, the message <tt>r:logout.request</tt> will be sent when the button is clicked
+		only if the user confirms via Javascript popup.  This example also introduces the keyword <tt>expr</tt>,
+		which will evaluate any valid Javascript, which is a pretty cool feature.
+	</p>
+
+
+	<h3>Using Compound <tt>[condition] then [action]</tt> Statements</h3>
+
+	<p>
+		Appcelerator allows you to define multiple <tt>[condition] then [action]</tt>
+		statements for a single element.  Here's an example:
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<div on="l:user.logged.in[success=true] then show else hide
+			  or l:user.logged.out then hide">
+		</div>
+	</textarea>
+	</p>
+	<p>
+		In this example, the DIV will show if the <tt>l:user.logged.in</tt> is received
+		and it contains the <b>success=true</b> in its data payload, otherwise it will hide itself.
+	</p>
+	<p>
+	If you noticed there is a second Condition/Action statement: <tt>or l:user.logged.out then hide</tt>.  
+	This allows the DIV to perform an entirely different action based on an entirely different condition; in 
+	this case the DIV will hide itself when it receives the message <tt>l:user.logged.out</tt>.
+	</p>
+	<p>
+	  The <tt>or</tt> is what allows you to add as many <tt>[condition] then [action]</tt> statements as you want -
+	just separate each statement with an <tt>or</tt> and you're on your way.
+	</p>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

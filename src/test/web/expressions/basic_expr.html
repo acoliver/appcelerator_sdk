@@ -1,0 +1,727 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Basic Expressions </h3> 
+<p>
+	These tests exercise basic expressions like <tt>[cond then action]</tt>
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test1">Run Test</a>
+			Hide Action
+		</td>
+		<td class="result">
+			<div on="l:test1 then hide">
+				I should go away
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test2">Run Test</a>
+			Show Action
+		</td>
+		<td class="result">
+			<div on="l:test2 then show" style="display:none">
+				I should be displayed
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test3">Run Test</a>
+			Visible Action
+		</td>
+		<td class="result">
+			<div on="l:test3 then visible" style="visibility:hidden">
+				I should be visible
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test4">Run Test</a>
+			Hidden Action
+		</td>
+		<td class="result">
+			<div on="l:test4 then hidden">
+				I should be hidden
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test5">Run Test</a>
+			Effect Action (with Appear)
+		</td>
+		<td class="result">
+			<div on="l:test5 then effect[Appear]" style="display:none">
+				I should appear
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test6">Run Test</a>
+			Toggle Action
+		</td>
+		<td class="result">
+			<div on="l:test6 then toggle[display]" style="display:none">
+				I should appear
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test7">Run Test</a>
+			Toggle Action (Inline)
+		</td>
+		<td class="result">
+			<div>
+				I am text <span style="display:none" on="l:test7 then toggle[display=inline]"> I should be inline</span>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test8[payload=test]">Run Test</a>
+			Value Action (span)
+		</td>
+		<td class="result">
+			<div>
+				Value should be set: <span on="l:test8 then value[payload]"> I am unset, click Run Test</span>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test23[src='../images/confirm.png']">Run Test</a>
+			Value Action (image)
+		</td>
+		<td class="result">	
+			<img src="" on="l:test23 then value[src]"/>
+			You should see an image
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test24[value=true]">Run Test</a>
+			Value Action (checkbox) 
+		</td>
+		<td class="result">	
+			<input type="checkbox"  on="l:test24 then value[value]"/>
+			The checkbox should be checked
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test25[value=text_text]">Run Test</a>
+			Value Action (textarea)
+		</td>
+		<td class="result">	
+			<textarea on="l:test25 then value[value]"></textarea>
+			Should see "text_text"
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test26">Run Test</a>
+			Value Action (select) 
+		</td>
+		<td class="result">	
+			The select should have values
+			<select on="l:load.test26 then value[property=rows,text=text,value=id]">
+			</select>
+
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test9[payload=test]">Run Test</a>
+			Value Action (input)
+		</td>
+		<td class="result">
+			<div>
+				Value should be set <input type="text" on="l:test9 then value[payload]"></input>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test10[option=3]">Run Test</a>
+			SelectOption Action
+		</td>
+		<td class="result">
+			Value should be 3
+			<select on="l:test10 then selectOption[option]">
+				<option value="1">one</option>
+				<option value="2">two</option>
+				<option value="3">three</option>
+				
+			</select>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test11">Run Test</a>
+			Add Action (class)
+		</td>
+		<td class="result">
+			<div on="l:test11 then add[class=myclass]">
+				Class should be added
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test12">Run Test</a>
+			Remove Action (class)
+		</td>
+		<td class="result">
+			<div on="l:test12 then remove[class=myclass]" class="myclass">
+				Class should be removed
+			</div>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test13">Run Test</a>
+			Set Action (JS Object Property)
+		</td>
+		<td class="result">
+			<div on="l:test13 then set[border='1px solid red']" >
+				My border should change
+			</div>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test14">Run Test</a>
+			State Change Action
+		</td>
+		<td class="result">	
+			<div on="l:test14 then statechange[test=invalid]" >
+				You should see an alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test15">Run Test</a>
+			Javascript Action
+		</td>
+		<td class="result">	
+			<div on="l:test15 then javascript[alert('i ran some javascript')]" >
+				You should see an alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test16">Run Test</a>
+			Script Action
+		</td>
+		<td class="result">	
+			<div on="l:test16 then script[alert('i ran some javascript')]" >
+				You should see an alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test17">Run Test</a>
+			Function Action
+		</td>
+		<td class="result">	
+			<div on="l:test17 then function[myfunction()]" >
+				You should see an alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test18">Run Test</a>
+			Reset Action (input)
+		</td>
+		<td class="result">	
+			<input type="text" on="l:test18 then reset"
+				value="I should disappear"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test19">Run Test</a>
+			Reset Action (select) 
+		</td>
+		<td class="result">	
+			<select on="l:test19 then reset">
+				<option value="1">I should be selected</option>
+				<option value="2" selected>two</option>
+				<option value="3">three</option>
+				
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test20">Run Test</a>
+			Reset Action (form). Change the text on either of the input fields and they should go away.
+		</td>
+		<td class="result">	
+			<form on="l:test20 then reset" autocomplete="off">
+			<input type="text" value=""/>
+			<input type="text" value=""/>
+			</form>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test21">Run Test</a>
+			Clear Action (input)
+		</td>
+		<td class="result">	
+			<input type="text" on="l:test21 then clear"
+				value="I should disappear"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test22">Run Test</a>
+			Clear Action (select)
+		</td>
+		<td class="result">	
+			<select on="l:test22 then clear">
+				<option value="1">I should be selected</option>
+				<option value="2" selected>two</option>
+				<option value="3">three</option>
+				
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Popup Action
+		</td>
+		<td class="result">	
+			<div id="mypopup" style="border:1px solid blue;background-color:#f6f6f6;display:none">
+				I am a popup
+			</div>
+			<a on="click then popup[id=mypopup,effect=grow,x=-10,y=-13]">Run Test</a>
+
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test27">Run Test</a>
+			Enable Action
+		</td>
+		<td class="result">	
+			<input type="button" value="enable me" id="enablebutton"on="l:test27 then enable[id=enablebutton]" disabled/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test28">Run Test</a>
+			Disable Action
+		</td>
+		<td class="result">	
+			<input type="button" value="disable me" id="disablebutton" on="l:test28 then disable[id=disablebutton]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test29">Run Test</a>
+			Focus Action
+		</td>
+		<td class="result">	
+			<input type="text" value="I should get focus" id="focusfield" on="l:test29 then focus[id=focusfield]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Blur Action (put cursor in field and type )
+		</td>
+		<td class="result">	
+			<input type="text" value="I should get focus" id="blurfield" on="keyup then blur after 1s"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test35">Run Test</a>
+			Select Action 
+		</td>
+		<td class="result">	
+			<input type="text" on="l:test35 then select" value="select me"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test38">Run Test</a>
+			Click Action 
+		</td>
+		<td class="result">	
+			<input type="button"  value="button" id="mylink" on="l:test38 then click[id=mylink] or click then script[alert('test passed')]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test39">Run Test</a>
+			Submit Action (Page will be reloaded)
+		</td>
+		<td class="result">	
+			<form on="l:test39 then submit" autocomplete="off">
+			<input type="text" />
+			<input type="text" />
+			<input type="submit" value="submit"/>
+			</form>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			<a href="#test">Run Test</a>
+			History Action
+		</td>
+		<td class="result">	
+			<div on="history:test then show" style="display:none">
+				I should be visible
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then history[test2]">Run Test</a>
+			History Action and Condition
+		</td>
+		<td class="result">	
+			<div on="history:test2 then show" style="display:none">
+					I should be visible
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Dragstart Action - see red
+		</td>
+		<td class="result">	
+			<div on="dragstart then set[color=#ff0000]" draggable="true"
+				style="border:1px dashed #ccc;background-color:#999;cursor: move">
+				Drag Start Test
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Dragend Action - see red
+		</td>
+		<td class="result">	
+			<div on="dragend then set[color=#ff0000]" draggable="true"
+				style="border:1px dashed #ccc;background-color:#999;cursor: move">
+				Drag End Test
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Dragover Action - see red
+		</td>
+		<td class="result">	
+			<div id="droparea1"  style="border:1px solid #333;cursor: move" draggable="true">
+				Drag Me
+			</div>
+			<div on="dragover then set[color=#ff0000]" droppable="true"
+				style="border:1px dashed #ccc;background-color:#999">
+				Dragover Me
+			</div>
+
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Drag Action - see red
+		</td>
+		<td class="result">	
+			<div on="drag then set[color=#ff0000]" draggable="true"
+				style="border:1px dashed #ccc;background-color:#999;cursor: move">
+				Drag Test
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Drop Action - see red
+		</td>
+		<td class="result">	
+			<div  draggable="true" style="border:1px solid #333;cursor: move">
+				Drag Me
+			</div>
+			<div on="drop then set[color=#ff0000]" droppable="true"
+				style="border:1px dashed #ccc;background-color:#999">
+				Drop Here
+			</div>
+
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+		Enter Condition (hit enter see alert)
+		</td>
+		<td class="result" >	
+
+			<form on="enter then click[id=mybutton]">
+			<input type="text" />
+			<input type="text" />
+			<input type="button" value="hit enter" id="mybutton" on="click then script[alert('it worked')]"/>
+			</form>
+
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Click Condition
+		</td>
+		<td class="result">	
+			<input type="button" value="click me see alert" on="click then script[alert('you clicked me')]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Focus Condition
+		</td>
+		<td class="result">	
+			<input type="text" value="focus on me to see alert" on="focus then script[alert('you set focus on me')]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Blur Condition
+		</td>
+		<td class="result">	
+			<input type="text" value="blur me to see alert" on="blur then script[alert('you blur-red on me')]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Double Click Condition
+		</td>
+		<td class="result">	
+			<input type="button" value="double click me me to see alert" 
+			on="dblclick then script[alert('you dblclicked me')]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Mousedown Condition
+		</td>
+		<td class="result">	
+			<div on="mousedown then script[alert('you mousedowned me')]">
+			Mousedown me
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Mouseout Condition
+		</td>
+		<td class="result">	
+			<div on="mouseout then set[color=#ff0000] or mouseover then set[color=#fff]">
+		Mouseout and see red
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Mouseover Condition
+		</td>
+		<td class="result">	
+			<div on="mouseover then set[color=#ff0000] or mouseout then set[color=#fff]">
+		Mouseover and see red
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Change Condition
+		</td>
+		<td class="result">	
+			<input type="text" on="change then set[color=#ff0000]" value="change me to see red"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Change Condition (select)
+		</td>
+		<td class="result">	
+			<select on="change then script[alert('test passed')]">
+				<option value="1">one</option>
+				<option value="2">two</option>
+			</select>
+				
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			Keyup Condition
+		</td>
+		<td class="result">	
+			<input type="text" on="keyup then set[color=#ff0000]" value="keyup to see red"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Keypress Condition
+		</td>
+		<td class="result">	
+			<input type="text" on="keypress then set[color=#ff0000]" value="keypress to see red"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Keydown Condition
+		</td>
+		<td class="result">	
+			<input type="text" on="keydown then set[color=#ff0000]" value="keydown to see red"/>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test30">Run Test</a>
+			Message Condition
+		</td>
+		<td class="result">	
+			<div  on="l:test30 then script[alert('received message')]">
+				should see alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test31[payload=success]">Run Test</a>
+			Message Condition With Payload (Positive)
+		</td>
+		<td class="result">	
+			<div  on="l:test31[payload=success] then script[alert('received message')]">
+				should see alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test32[payload=failure]">Run Test</a>
+			Message Condition With Payload (Negative)
+		</td>
+		<td class="result">	
+			<div  on="l:test32[payload=success] then script[alert('received message')]">
+				should not see alert
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test33">Run Test</a>
+			State Machine Condition
+		</td>
+		<td class="result">	
+			<div  on="test[invalid] then set[color=red]">
+				i should turn red
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Resize Condition (resize window)
+		</td>
+		<td class="result">	
+			<div width="10%" on="resize then set[color=red]">
+				i should turn red
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Scroll Condition (scroll textarea see alert)
+		</td>
+		<td class="result">	
+			<textarea on="scroll then script[alert('test passed')]" rows="2">
+				scrollme
+				scrollme
+				scrollme
+				scrollme
+				scrollme
+				scrollme
+				scrollme
+			</textarea>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			Contextmenu Condition
+		</td>
+		<td class="result">	
+			<div on="contextmenu then set[innerHTML=passed]">
+				rightclick on me
+			</div>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
+			Selected Condition
+		</td>
+		<td class="result">	
+			<div selectable="mytest">
+				<div on="selected then set[color=red]">select me - see red</div>
+				<div on="selected then set[color=red]">select me - see red</div>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Sortable Test
+		</td>
+		<td class="result">	
+			<div sortable="true" style="cursor: move">
+				<div >move me - 1</div>
+				<div >move me - 2</div>
+				<div >move me - 3</div>
+			</div>
+		</td>
+	</tr>	
+</table>
+
+<app:script on="l:test26 then execute">
+$MQ('l:load.test26',{rows:[{'text':'row1','id':1},{'text':'row2','id':2},{'text':'row3','id':3}]})
+</app:script>
+<app:script on="test[invalid] then execute">
+	alert("state changed");
+</app:script>
+
+<app:statemachine id="test" initial="valid">
+	<state name="invalid" if="l:test33"></state>
+	<state name="valid" ></state>
+</app:statemachine>
+
+<script>
+	function myfunction()
+	{
+		alert('hello from myfunction');
+	}
+</script>
+
+</body>
+
+</html>

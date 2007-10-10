@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Advanced Expressions </h3> 
+<p>
+	These tests exercise advanced expressions 
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Multiple Expressions (5)
+		</td>
+		<td class="result">
+			<a on="click then l:test1">Hide</a> |
+			<a on="click then l:test2">Show</a> | 
+			<a on="click then l:test3">Pulsate</a>
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" on="l:test1 then hide
+				or l:test2 then show
+				or l:test3 then effect[Pulsate]
+				or click then script[alert('yo')]
+				or mouseover then set[border='1px solid red']">
+				Click me to see an alert.
+				Mouseover to change my border
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Multiple Actions (5)
+		</td>
+		<td class="result">
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px" 
+				on="click then script[alert('yo')] and set[border='1px solid red'] 
+				and effect[Pulsate] and  set[color=green] and set[innerHTML='it worked'] ">
+				Click me to see an alert, change my border, pulsate me, change my text
+				and change my color to green
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			"After" Test (unit=s)
+		</td>
+		<td class="result">
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px" 
+				on="click then effect[Fade] after 2s ">
+				Click me and I will disappear after 2 seconds
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			"After" Test (unit=ms)
+		</td>
+		<td class="result">
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px" 
+				on="click then effect[Fade] after 1500ms ">
+				Click me and I will disappear after 1.5 seconds
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			"After" Test (unit=notdefined)
+		</td>
+		<td class="result">
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px" 
+				on="click then effect[Fade] after 3100 ">
+				Click me and I will disappear after 3.1 seconds
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			"If" Test
+		</td>
+		<td class="result">
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px" 
+				on="click then script[alert('yo')] and set[border='1px solid red'] 
+				and effect[Pulsate] and  set[color=green] and set[innerHTML='it worked']
+				if expr[confirm('hide me?')] ">
+				Click me to see an alert, change my border, pulsate me, change my text
+				and change my color to green (only if you say so)
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			"else" Test (message)
+		</td>
+		<td class="result">
+			<a on="click then l:green[turn=true]">Turn color green</a> |
+			<a on="click then l:green[turn=false]">Turn color blue</a> 
+
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+				on="l:green[turn=true] then set[color=green] and set[innerHTML='test 1 passed']
+				else set[color=blue] and set[innerHTML='test 2 passed']">
+				Hello
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			"else" Test (state machine)
+		</td>
+		<td class="result">
+			<a on="click then l:statetest[valid=true]">State Valid</a> |
+			<a on="click then l:statetest[valid=false]">State Invalid</a> 
+
+			<div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+				on="test[valid] then set[innerHTML='state valid, test passed']
+				else set[innerHTML='state invalid, test passed']">
+				Hello
+			</div>
+		</td>
+	</tr>
+
+</table>
+
+<app:statemachine id="test" initial="valid">
+	<state name="invalid" if="l:statetest[valid=false]"></state>
+	<state name="valid" if="l:statetest[valid=true]"></state>
+</app:statemachine>
+
+</body>
+</html>

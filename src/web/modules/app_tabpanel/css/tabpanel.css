@@ -1,0 +1,52 @@
+.tabpanel, .tabpanel ul 
+{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.tabpanel a 
+{
+	display: block;
+	width: 10em;
+	text-decoration:none;
+	font-size:12px;
+	color:#000;
+}
+
+.tabpanel li 
+{
+	float: left;
+	width: 10em;
+	padding:4px 7px 6px;
+	margin-right:15px;
+	border-style:solid;
+	border-width:1px;
+	text-align:center;
+	margin-bottom:0;
+	cursor:pointer;
+}
+
+.tabpanel li ul 
+{
+	position: absolute;
+	width: 10em;
+	left: -999em;
+}
+
+.tab_inactive
+{
+	border-color:#999;
+	border-bottom:1px solid #999; /* make this the same as the outer border */
+	background-color:#aaa;
+	color:#111;
+}
+
+.tab_active
+{
+	border-color:#999;
+	border-bottom:1px solid #fff; /* make this the same as the background */
+	background-color:#fff;
+	color:#111;
+	font-weight:bold;
+}

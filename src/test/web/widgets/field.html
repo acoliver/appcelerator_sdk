@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<script type="text/javascript" src="../locale/en.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css"></link>
+	<style>
+		.my_active
+		{
+			background-color:#f6f6f6;
+			border:1px solid #999;
+		}
+		.my_inactive
+		{
+			border:1px solid #aaa;
+		}
+		.my_field_active
+		{
+			background-color:blue;
+			color:white;
+		}
+		.my_field_inactive
+		{
+			background-color:pink;
+		
+		}
+		.my_header
+		{
+			font-size:15px;
+			font-weight:bold;
+			color:red;
+		}
+		.my_footer
+		{
+			font-size:11px;
+			color:#ff9900;
+		}
+	</style>
+</head>
+<body>
+
+<h3> Field Widget </h3> 
+<p>
+	These tests exercise the field widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic Field (text)
+		</td>
+		<td class="result" >
+			<app:field validator="required" type="text">
+				<header>
+					Name:
+				</header>
+				<footer>
+					fill it out, you dig?
+				</footer>
+			</app:field>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Field (custom error)
+		</td>
+		<td class="result" >
+			<app:field validator="required" type="text">
+				<header>
+					Name:
+				</header>
+				<error>
+					this is my custom error
+				</error>
+				<footer>
+					fill it out, you dig?
+				</footer>
+			</app:field>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Field (drop down populate via message)
+		</td>
+		<td class="result" >
+			<app:field validator="required" type="dropdown" message="l:populate.field"
+				property="rows" value="id" text="text">
+				<header>
+					Name:
+				</header>
+				<error>
+					this is my custom error
+				</error>
+				<footer>
+					fill it out, you dig?
+				</footer>
+			</app:field>
+			<app:message name="l:populate.field" args="{'rows':[{'id':'','text':'select a value'},{'id':1,'text':'value 2'},{'id':2,'text':'value 3'}]}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Field (drop down populate via langid)
+		</td>
+		<td class="result" >
+			<app:field validator="required" type="dropdown" langid="my.dropdown">
+				<header>
+					Name:
+				</header>
+				<error>
+					this is my custom error
+				</error>
+				<footer>
+					fill it out, you dig?
+				</footer>
+			</app:field>
+		</td>
+	</tr>
+<tr>
+	<td class="test" valign="middle">
+	 	Field (autocomplete with delay and indicator)
+	</td>
+	<td class="result" >
+		<app:field  type="autocomplete" autocomplete="l:autocomplete.search"
+		delay="1000ms" indicator="auto_indicator">
+			<header>
+				Search:
+				<span id="auto_indicator" on="l:autocomplete.search then show or l:autocomplete.response then hide"
+					style="font-size:11px;color:#999;display:none">Searching...</span>
+			</header>
+			<footer>
+				fill it out, you dig?
+			</footer>
+		</app:field>
+		<app:script on="l:autocomplete.search then execute after 1s">
+		$MQ('l:autocomplete.response');
+		</app:script>
+	</td>
+</tr>
+<tr>
+	<td class="test" valign="middle">
+	 	Field (styled - but not well)
+	</td>
+	<td class="result" >
+		<app:field  type="text" activeClassName="my_active" inactiveClassName="my_inactive" fieldInactiveClassName="my_field_inactive" fieldActiveClassName="my_field_active" >
+			<header class="my_header">
+				Name:
+			</header>
+			<footer class="my_footer">
+				fill it out, you dig?
+			</footer>
+		</app:field>
+	</td>
+</tr>
+</table>
+
+
+</body>
+
+</html>

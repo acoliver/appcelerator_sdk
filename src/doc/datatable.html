@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org/appcelerator">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/seamless2.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+</head>
+<body>
+	<h2>Datatable</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:datatable[show=example] and add[class=active] or l:datatable[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:datatable[show=code] and add[class=active] or l:datatable[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:datatable[show=usage] and add[class=active] or l:datatable[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+		A Datatable provides a simple way of rendering a table for a collection with the added ability to sort and simply control formatting with css.  Some examples of using this widget are:
+		<ul>
+			<li>the creation of reports
+			<li>displaying resultsets that do not require significant alteration or formatting
+		</ul>
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:datatable[show=example] then show else hide">
+		<p>
+		Here's an Appcelerator Datatable:
+		</p>
+		<app:datatable on="l:load.datatable then execute" width="50%" property="rows" sort="client" 
+			rowEvenClass="table_row_even" rowOddClass="table_row_odd">
+			<header property="col1" align="left" width="40%"><b>Name</b></header>
+			<header property="col2" align="right" width="30%">Age</header>
+			<header property="col3" align="right" width="30%">Height</header>
+		</app:datatable>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:datatable[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:datatable on="l:load.datatable then execute" width="50%" property="rows" sort="client" 
+					rowEvenClass="table_row_even" rowOddClass="table_row_odd">
+					<header property="col1" align="left" width="40%"><b>Name</b></header>
+					<header property="col2" align="right" width="30%">Age</header>
+					<header property="col3" align="right" width="30%">Height</header>
+				</app:datatable>
+			</textarea>		
+		</p>
+		<p>Here's the local Appcelerator message that populated the datatable:
+			<textarea name="code" class="xml:nocontrols">
+				<app:script style="display:none;">
+					$MQ('l:load.datatable',{'rows':[{'col1':'Sam','col2':'18','col3':'5.5 feet'},
+					{'col1':'Vanessa','col2':'22','col3':'6.5 feet'},
+					{'col1':'Joe','col2':'18','col3':'5.0 feet'},
+					{'col1':'Bill','col2':'40','col3':'5.2 feet'},
+					{'col1':'James','col2':'33','col3':'6.1 feet'},
+					{'col1':'Mary','col2':'25','col3':'5.7 feet'}]});
+				</app:script>
+			</textarea>		
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:datatable[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Attributes:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">The handler that controls the activation of the widget usually of the form "&gt;dataevent&lt; then execute"</td>
+					</tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">The array property that contains the table data </td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Attributes:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">sort</td>
+					  <td class="def">The sort mode used by the data table. Possible values are 'client', 'server', and 'none'; if server is specified, then sortRequest must also be specified.  Defaults to client sort </td>
+					</tr>
+					  <td class="term">sortRequest</td>
+					  <td class="def">The sort message sent by the datatable to the corresponding service when a header is clicked.  The message contains two values in its payload: 'property' and 'direction'. The property value is the name of the header property by which the table should be sorted.  The direction is either 'asc' or 'desc' for ascending or descending orders, respectively.</td>
+					</tr>
+					<tr>
+					  <td class="term">width</td>
+					  <td class="def">The percentage the width of the table relative to its container. Default is 100% </td>
+					</tr>
+					<tr>
+					  <td class="term">rowEvenClass</td>
+					  <td class="def">The CSS class to be used on even rows of the table </td>
+					</tr>
+					<tr>
+					  <td class="term">rowOddClass</td>
+					  <td class="def">The CSS class to be used on odd rows of the table </td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Required Header Definition:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">header elements</td>
+					  <td class="def">The set of elements specifying the header property, text, alignment and width </td>
+					</tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">The array property that contains the column data </td>
+					</tr>
+					<tr>
+					  <td class="term">text</td>
+					  <td class="def">The text to be placed in the header cell. This is the value of the header element. </td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Header Definition:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">width</td>
+					  <td class="def">Specifies the width of a given column </td>
+					</tr>
+					<tr>
+					  <td class="term">align</td>
+					  <td class="def">Specifies the alignment of the text in each cell of a given column </td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Style Definition (simply override the following CSS classes):
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">table_row</td>
+					  <td class="def">The style applied to each html <b>tr</b> element table row</td>
+					</tr>
+					<tr>
+					  <td class="term">table_cell</td>
+					  <td class="def">The style applied to each html <b>td</b> element table cell. This is the default class for <b>cells</b> if rowOddClass or rowEvenClass are not provided </td>
+					</tr>
+					<tr>
+					  <td class="term">table_row_header</td>
+					  <td class="def">The style applied to each html <b>tr</b> element header row </td>
+					</tr>
+					<tr>
+					  <td class="term">table_cell_header</td>
+					  <td class="def">The style applied to each html <b>td</b> element header cell  </td>
+					</tr>
+				</table>
+		</p>
+	</div>		
+	
+		<app:script style="display:none;">
+			$MQ('l:load.datatable',{'rows':[{'col1':'Sam','col2':'18','col3':'5.5 feet'},
+			{'col1':'Vanessa','col2':'22','col3':'6.5 feet'},
+			{'col1':'Joe','col2':'18','col3':'5.0 feet'},
+			{'col1':'Bill','col2':'40','col3':'5.2 feet'},
+			{'col1':'James','col2':'33','col3':'6.1 feet'},
+			{'col1':'Mary','col2':'25','col3':'5.7 feet'}]});
+		</app:script>
+
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>
