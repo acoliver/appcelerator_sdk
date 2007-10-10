@@ -282,14 +282,14 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 			delete Appcelerator.Compiler.oncompileListeners;
 		}
 		if (typeof(onFinishCompiled)=='function') onFinishCompiled();
-		
-		// re-adjust display after compile is complete
-		if (Appcelerator._originalDisplay!=null && document.body.style.display=='none')
-		{
-			document.body.style.display = Appcelerator._originalDisplay;
-		}
 	};
 	Appcelerator.Compiler.checkLoadState(state);
+		
+	// re-adjust display after compile is complete
+	if (Appcelerator._originalDisplay!=null && document.body.style.display=='none')
+	{
+		document.body.style.display = Appcelerator._originalDisplay;
+	}
 };
 
 Appcelerator.Compiler.compileInterceptors=[];
