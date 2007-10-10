@@ -1,5 +1,6 @@
 /**
  * Appcelerator Compiler
+ *
  */
 Appcelerator.Compiler = {};
 Appcelerator.Module = {};
