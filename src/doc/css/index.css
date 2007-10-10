@@ -1,23 +1,40 @@
+*
+{
+	margin:0;
+	padding:0;
+	font-family:tahoma,arial,helvetica;
+}
 body
 {
-	background-color:#5e5e5e;
+	background-color:#717171;
 	font-family:tahoma,arial;
 	font:12px;
 	color:#696969;
 	margin:0;
-	padding:0;
+	min-height:400px;
+	height:400px;
+	padding-top:0px;
+	
 }
+
 
 /*
 ** Container Styles
 ** 
 **
 */
+#logo
+{
+	position:absolute;
+	top:0px;
+	left:-13px;
+	z-index:2;
+}
 #header
 {
-	background-image: url(../images/header.png);
+	background-image: url(../images/header_stripes.png);
 	background-repeat: repeat-x;
-	background-color: #5e5e5e;
+	background-color:#717171;
 	height: 55px;
 	position:relative;
 	margin:0;
@@ -29,25 +46,22 @@ body
 {
 	position:relative;
 	top:0px;
-	margin-left:10px;
+	margin-left:15px;
 	margin-right:20px;
 	padding-top:5px;
 	color:#696969;
 }
 
-/* outer navigation container */
 #nav_container
 {
-	background-color:#ddd;
-	border:1px solid #aaa;
+	background-color:#dadada;
+	border:1px solid #888; 	
 	width:95%;
 	font-size:12px;
 	line-height:5px;
 	padding:5px;
 	margin-right:15px;
 }
-
-/* inner navigation container */
 #nav
 {
 	margin:5px;
@@ -57,9 +71,28 @@ body
 	height:490px;
 	overflow:auto;
 	background-color:#fff;
-	border:1px solid #aaa
+	border:1px solid #888; 
+	position:relative;
 }
-
+#detail_container
+{
+	background-color:#dadada;
+	border:1px solid #888; 
+	line-height:5px;
+	font-size:12px;
+	padding:5px;
+	margin-left:10px;
+}
+#detail 
+{
+	margin:5px;
+	padding:10px;
+	padding-left:20px;
+	padding-top:2px;
+	height:490px;
+	background-color:#fff;
+	border:1px solid #888; 
+}
 /* navigation folder class */
 #nav > .folder
 {
@@ -98,31 +131,6 @@ body
 	background-color:#ddd;
 }
 
-/* detail container (right side of the app) */
-#detail_container
-{
-	width:100%;
-	background-color:#ddd;
-	border:1px solid #aaa;
-	line-height:5px;
-	font-size:12px;
-	padding:5px;
-	
-}
-
-/* detail content containers */
-#detail 
-{
-	margin:5px;
-	padding:10px;
-	padding-left:20px;
-	padding-top:2px;
-	height:490px;
-/*	overflow:auto;*/	
-	background-color:#fff;
-	border:1px solid #aaa;
-	
-}
 /* progress container */
 #progress
 {

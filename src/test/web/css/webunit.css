@@ -10,32 +10,36 @@ img
 }
 body
 {
-	background-color:#eee;
+	background-color:#717171;
+	font-family:tahoma,arial;
+	font:12px;
+	color:#696969;
+	margin:0;
 }
+
+
 #header
 {
-	background-image:url(../images/header_bg.png);
-/*	height:89px; */
-	height:73px;
+	background-image:url(../images/header_stripes.png);
+	height: 55px;
 	background-repeat:repeat-x;
 	position:relative;
-	background-color:#fff;
+	background-color:#717171;
 }
 #logo
 {
 	position:absolute;
-	top:5px;
-	left:30px;
+	top:0px;
+	left:-13px;
+	z-index:2;
 }
 #body
 {
 /*	background-image:url(../images/body_bg.png);
 	background-repeat:repeat-x; */
-	background-color:#bbb;	
+	background-color:#717171;	
 	min-height:400px;
 	height:400px;
-	padding:20px; 
-	padding-left:30px;
 	padding-top:0px;
 }
 body > #body
@@ -94,8 +98,7 @@ a
 #nav_container
 {
 	background-color:#ddd;
-	border:1px solid #888; 
-	
+	border:1px solid #888; 	
 	width:95%;
 	font-size:12px;
 	line-height:5px;

@@ -147,16 +147,13 @@ Appcelerator.Validator =
         return (value.length >= 6);
     },
 
+ 	decimal_regexp: /^[-]?([1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|\.[0-9]{1,2})$/,
+
     number: function (value)
     {
-		if (!value || value.trim().length == 0)return false;
+		if (!value || value.trim().length == 0 || value < 0)return false;
+		return Appcelerator.Validator.decimal_regexp.test(value);
 		
-		for (var i = 0; i < value.length; i++)
-		{   
-			var c = value.charAt(i);
-		    if (((c < "0") || (c > "9"))) return false;
-		}
-		return true;
 	},
 
     number_optional: function (value)
@@ -173,7 +170,15 @@ Appcelerator.Validator =
 		
     wholenumber: function (value)
     {
-        return (Appcelerator.Validator.number(value) && value >= 0);
+		if (value < 0) return false;
+		
+		for (var i = 0; i < value.length; i++)
+		{   
+			var c = value.charAt(i);
+		    if (((c < "0") || (c > "9"))) return false;
+		}
+		return true;
+
     },
 
     uri_regexp: /(ftp|http|https|file):(\/){1,2}(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
