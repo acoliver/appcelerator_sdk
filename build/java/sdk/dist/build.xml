@@ -17,10 +17,9 @@
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
-
 	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
 
-	<target name="dist" depends="init,build_composite_bundle,build_merged_bundle,bundle_simplewar" description="* Builds the service and application deployment archives"></target>
+	<target name="dist" depends="init,build_composite_bundle,build_merged_bundle,bundle_simplewar,cleanup" description="* Builds the service and application deployment archives"></target>
 
 	<target name="banner">
 		<echo>Appcelerator Platform SDK for Java</echo>
@@ -56,17 +55,21 @@
 		<copy todir="stage/setupfiles_extracted">
 			<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
 		</copy>
-		<war destfile="${stage.dir}/appcelerator_single.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
+		<war destfile="${stage.dir}/${app.name}.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
 			<lib dir="stage/setupfiles_extracted/lib" includes="*.jar"/>
 			<fileset dir="stage/setupfiles_extracted" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
 		</war>
 		<delete dir="stage/setupfiles_extracted"/>
 	</target>
-	
-	
+	<target name="cleanup">
+		<delete>
+			<fileset dir="stage" includes="*_merged.war,*.jar,*.aar"/>
+		</delete>
+	</target>
+
 	<target name="build_merged_bundle" depends="build_composite_bundle">
-		<copy tofile="${dist.dir}/appcelerator.war" file="server/setupfiles"/>
-		<zip update="true" destfile="${dist.dir}/appcelerator.war">
+		<copy tofile="${dist.dir}/${app.name}_merged.war" file="server/setupfiles"/>
+		<zip update="true" destfile="${dist.dir}/${app.name}_merged.war">
 			<zipfileset dir="${stage.dir}" includes="${app.name}.aar" prefix="WEB-INF/deploy"/>
 		</zip>
 	</target>
@@ -74,45 +77,54 @@
 		<echo>Deploy the Appcelerator Server</echo>
 		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
 	</target>
-	
+
 	<target name="deploy" depends="banner" description="* Deploy the Appcelerator Server war">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
-		<copy tofile="${deploy.dir}/appcelerator.war" file="stage/appcelerator_single.war"/>
+		<copy tofile="${deploy.dir}/${app.name}.war" file="stage/${app.name}.war"/>
 	</target>
 	<target name="deploy_server" depends="banner">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
-		<copy todir="${deploy.dir}">
-			<fileset dir="${appcelerator.dist.dir}" includes="*.war" />
-		</copy>
+		<copy tofile="${deploy.dir}/appcelerator.war" file="server/setupfiles"/>
 	</target>
 	<target name="deploy_server_merged" depends="banner">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
-		<copy todir="${deploy.dir}">
-			<fileset dir="${dist.dir}" includes="*.war" />
-		</copy>
+		<copy tofile="${deploy.dir}/${app.name}.war" file="${dist.dir}/${app.name}_merged.war"/>
 	</target>
-	<target name="undeploy" depends="undeploy_server" description="* Undeploy the Appcelerator Server war"/>
+	<target name="undeploy" description="* Undeploy the Appcelerator Server war">
+		<available file="${deploy.dir}/${app.name}" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/${app.name}.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war">
+			<param name="file" value="${app.name}.war"/>
+		</antcall>
+		<antcall target="undeploy.dir">
+			<param name="dir" value="${app.name}"/>
+		</antcall>
+	</target>
 	<target name="undeploy_server" depends="banner">
 		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
 		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
-		<antcall target="undeploy.war"/>
-		<antcall target="undeploy.dir"/>
+		<antcall target="undeploy.war">
+			<param name="file" value="appcelerator.war"/>
+		</antcall>
+		<antcall target="undeploy.dir">
+			<param name="dir" value="appcelerator"/>
+		</antcall>
 	</target>
-	
+
 	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
 		<delete dir="${deploy.dir}/appcelerator"/>
 	</target>
-	
+
 	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
 		<delete file="${deploy.dir}/appcelerator.war"/>
 	</target>
-	
+
 	<target name="deploy_service" depends="build_services_bundle">
 		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
 		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
@@ -120,7 +132,7 @@
 			<fileset dir="stage" includes="${app.name}-services.jar" />
 		</copy>
 	</target>
-	
+
 	<target name="deploy_app" depends="build_app_bundle">
 		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
 		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
@@ -128,7 +140,7 @@
 			<fileset dir="stage" includes="${app.name}-app.jar" />
 		</copy>
 	</target>
-	
+
 	<target name="deploy_composite" depends="build_composite_bundle">
 		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
 		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
@@ -144,7 +156,7 @@
 			</fileset>
 		</copy>
 	</target>
-	
+
 	<target name="java_compile" depends="init">
 		<mkdir dir="${stage.dir}/assemble/java/classes"/>
 		<mkdir dir="${stage.dir}/assemble/lib"/>
@@ -161,10 +173,10 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="build_app_bundle" depends="copy_web_files">
 		<mkdir dir="${stage.dir}/assemble/web"/>
-		<appc srcdir="${stage.dir}/assemble/web" destdir="${stage.dir}/assemble/web-compiled"/> 
+		<!--<appc srcdir="${stage.dir}/assemble/web" destdir="${stage.dir}/assemble/web-compiled"/> -->
 		<jar destfile="${stage.dir}/${app.name}-app.jar">
 			<fileset dir="${stage.dir}/assemble/web">
 				<include name="**/*"/>
@@ -174,7 +186,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="build_services_bundle" depends="java_compile">
 		<mkdir dir="${stage.dir}/assemble/lib"/>
 		<copy todir="${stage.dir}/assemble/lib">
@@ -189,7 +201,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="build_composite_bundle" depends="build_app_bundle,build_services_bundle">
 		<jar destfile="${stage.dir}/${app.name}.aar">
 			<fileset dir="${stage.dir}"> 
@@ -198,5 +210,5 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 </project>
