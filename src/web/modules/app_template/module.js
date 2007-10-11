@@ -40,6 +40,7 @@ Appcelerator.Module.Template =
 		var args = element.getAttribute('args');
 		var payload = {};
 
+		element.innerHTML = Appcelerator.Compiler.getHtml(element);		
 		if (element.childNodes.length > 0)
 		{
 			for (var c=0;c<element.childNodes.length;c++)
@@ -51,7 +52,7 @@ Appcelerator.Module.Template =
 					payload[id] = Appcelerator.Compiler.getHtml(node,true);
 				}
 			}
-		}		
+		}
 
 		Appcelerator.Module.Template.fetch(element.id,element.scope,src,args,payload,state);
 

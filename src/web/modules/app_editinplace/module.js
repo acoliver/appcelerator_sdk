@@ -189,7 +189,7 @@ Appcelerator.Module.EditinPlace =
 		code += 'editinplace_input.value = editinplace_text.innerHTML;';
 		code += 'if (error_div.style.visibility!="hidden")';
 		code += '{';
-		code += 'error_div.style.display = "hidden";';
+		code += 'error_div.style.visibility = "hidden";';
 		code += '}';
 		code += 'if (error_div.style.display!="none")';
 		code += '{';
