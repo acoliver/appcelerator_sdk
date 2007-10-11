@@ -13,7 +13,6 @@
     <property file="${user.home}/.ant.properties"/>
     <property file="build.properties"/>
 	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
-	<property name="appcelerator.dist.dir" value="${appcelerator.dir}/dist/server"/>
 	<property name="dist.dir" value="${stage.dir}"/>
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -66,7 +65,7 @@
 	
 	<target name="build_merged_bundle" depends="build_composite_bundle">
 		<copy todir="${dist.dir}">
-			<fileset dir="${appcelerator.dist.dir}" includes="appcelerator.war"/>
+			<fileset dir="server" includes="appcelerator.war"/>
 		</copy>
 		<zip update="true" destfile="${dist.dir}/appcelerator.war">
 			<zipfileset dir="${stage.dir}" includes="${app.name}.aar" prefix="WEB-INF/deploy"/>
