@@ -59,11 +59,7 @@
 		<mkdir dir="${create.dir}/src/java" />
 		<mkdir dir="${create.dir}/src/web" />
 		<copy todir="${create.dir}" filtering="true">
-			<fileset dir="dist">
-				<include name="build.*"/>
-				<include name=".project"/>
-				<include name=".classpath"/>
-		    </fileset>
+			<fileset dir="dist" includes="*.*"/>
 			<filterset>
 				<filter token="APPNAME" value="${app.name}"/>
 				<filter token="APPCELERTOR_DIR" value="${basedir}"/>
