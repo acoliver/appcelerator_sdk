@@ -64,7 +64,7 @@ Appcelerator.Module.Folder =
 				html+='<img class="folder_image" src="'+folder_opened_icon+'" id="'+parentid+'_opened" style="display:none"/>';
 				html+='<span class="folder_name" id="'+parentid+'_name">'+node.getAttribute('name')+'</span></div>';
 				html+='<div class="folder_children" id="'+parentid+'_children" style="display:none">';
-				var children = $A(node.childNodes).findAll(function(n){ return n.nodeType == 1 && n.nodeName=='ITEM'; });
+				var children = $A(node.childNodes).findAll(function(n){ return n.nodeType == 1 && n.nodeName.toLowerCase()=='item'; });
 				var childcloser='';
 				children.each(function(child,b)
 				{
