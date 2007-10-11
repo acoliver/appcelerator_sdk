@@ -52,8 +52,12 @@
 		<copy todir="stage/setupfiles_extracted/lib">
 			<fileset dir="${stage.dir}/assemble/lib" includes="*.jar"/>
 		</copy>
-		<copy todir="stage/setupfiles_extracted">
-			<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
+			<!--<copy todir="stage/setupfiles_extracted">
+				<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
+			</copy>
+		-->
+		<copy todir="stage/setupfiles_extracted" overwrite="true">
+			<fileset dir="src/web" includes="**/*"/>
 		</copy>
 		<war destfile="${stage.dir}/${app.name}.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
 			<lib dir="stage/setupfiles_extracted/lib" includes="*.jar"/>
@@ -61,7 +65,7 @@
 		</war>
 		<delete dir="stage/setupfiles_extracted"/>
 	</target>
-	<target name="cleanup">
+	<target name="cleanup" unless="dont.cleanup">
 		<delete>
 			<fileset dir="stage" includes="*_merged.war,*.jar,*.aar"/>
 		</delete>
@@ -118,11 +122,11 @@
 	</target>
 
 	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
-		<delete dir="${deploy.dir}/appcelerator"/>
+		<delete dir="${deploy.dir}/${dir}"/>
 	</target>
 
 	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
-		<delete file="${deploy.dir}/appcelerator.war"/>
+		<delete file="${deploy.dir}/${file}"/>
 	</target>
 
 	<target name="deploy_service" depends="build_services_bundle">

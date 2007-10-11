@@ -59,12 +59,7 @@ myapp
 ant dist</pre>
 	This project will build the following for you in stage/
 	<ul>
-		<li>myapp-app.aar - the composite archive that contains the service and application
-		<ul>
-			<li>myapp-services.jar - an appcelerator java service(s) deployment archive
-			<li>myapp-app.jar - the web application deployment archive
-		</ul>
-		<li>appcelerator.war - a merged version of appcelerator.war with the composite (myapp-app.aar) in it
+		<li>myapp.war - a properly built war file that you can deploy with your services and the appcelerator framework
 	</ul>
 	
 	<h3>start your web container</h3>
@@ -75,28 +70,13 @@ ant dist</pre>
 ./catalina.sh run</pre>
 
 	<h3>deploying your solution</h3>
-	You have 2 choices for deployment
-	<ul>
-		<li>single war - simpler
-		<li>composite - more comprehensive functionality
-	</ul>
-	
-	<h4>Single War deployment</h4>
-	this will embed your application along with the appcelerator service broker
-	<pre class="command">ant deploy_server_merged</pre>
-	
-	<h4>Composite deployment</h4>
-	This will make use of the appcelerator deployment services which will enable service management and versioning
-	<pre class="command">ant deploy_server</pre>
-	now you can deploy the composite
-	<pre class="command">ant deploy_composite</pre>
-you should now be able to see your deployed application <a href="http://localhost:8080/appcelerator/a/myapp/current/index.html">http://localhost:8080/appcelerator/a/myapp/current/index.html</a>
-	</p>
+	Very simple ant task
+	<pre class="command">ant deploy</pre>
 	
 	<h3>Testing</h3>
-	At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/appcelerator/servicetester.html">http://localhost:8080/appcelerator/servicetester.html</a> and use the following:
+	At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html">http://localhost:8080/myapp/servicetester.html</a> and use the following:
 	<ul>
-		<li><b>message type</b>: remote:sample.hello.request
+		<li><b>message type</b>: remote:app.test.message.request
 	</ul>
 	You should see a log message in your web container and a response in your web browser with the following
 	<ul>
