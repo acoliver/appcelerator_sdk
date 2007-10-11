@@ -39,8 +39,8 @@
 		<delete failonerror="false">
 			<fileset dir="stage/transform" includes="*"/>
 		</delete>
-		<unwar src="server/appcelerator.war" dest="stage/appcelerator_war"/>
-		<xslt in="stage/appcelerator_war/WEB-INF/classes/spring-beans.xml" out="stage/transform/spring-beans.xml" style="merge_spring.xslt">
+		<unwar src="server/setupfiles" dest="stage/setupfiles_extracted"/>
+		<xslt in="stage/setupfiles_extracted/WEB-INF/classes/spring-beans.xml" out="stage/transform/spring-beans.xml" style="merge_spring.xslt">
 			<outputproperty name="indent" value="yes"/>
 			<outputproperty name="method" value="xml"/>
 			<outputproperty name="encoding" value="UTF-8"/>
@@ -49,24 +49,23 @@
 			<outputproperty name="indent" value="yes"/>
 			<param name="mergefile" expression="appcelerator-services.xml"/>
 		</xslt>
-		<copy todir="stage/appcelerator_war/WEB-INF/classes" file="stage/transform/spring-beans.xml"/>
-		<copy todir="stage/appcelerator_war/lib">
+		<copy todir="stage/setupfiles_extracted/WEB-INF/classes" file="stage/transform/spring-beans.xml"/>
+		<copy todir="stage/setupfiles_extracted/lib">
 			<fileset dir="${stage.dir}/assemble/lib" includes="*.jar"/>
 		</copy>
-		<copy todir="stage/appcelerator_war">
+		<copy todir="stage/setupfiles_extracted">
 			<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
 		</copy>
-		<war destfile="${stage.dir}/appcelerator_single.war" webxml="stage/appcelerator_war/WEB-INF/web.xml">
-			<lib dir="stage/appcelerator_war/lib" includes="*.jar"/>
-			<fileset dir="stage/appcelerator_war" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
+		<war destfile="${stage.dir}/appcelerator_single.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
+			<lib dir="stage/setupfiles_extracted/lib" includes="*.jar"/>
+			<fileset dir="stage/setupfiles_extracted" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
 		</war>
+		<delete dir="stage/setupfiles_extracted"/>
 	</target>
 	
 	
 	<target name="build_merged_bundle" depends="build_composite_bundle">
-		<copy todir="${dist.dir}">
-			<fileset dir="server" includes="appcelerator.war"/>
-		</copy>
+		<copy tofile="${dist.dir}/appcelerator.war" file="server/setupfiles"/>
 		<zip update="true" destfile="${dist.dir}/appcelerator.war">
 			<zipfileset dir="${stage.dir}" includes="${app.name}.aar" prefix="WEB-INF/deploy"/>
 		</zip>
@@ -138,23 +137,6 @@
 		</copy>
 	</target>
 
-	<!--
-	<target name="undeploy_server" description="** Undeploy the Appcelerator Server">
-		<available file="${server.deploy.dir}" type="dir" property="appcelerator.deploy.dir.exists"/>
-		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
-		<antcall target="undeploy.war"/>
-		<antcall target="undeploy.dir"/>
-	</target>
-	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
-		<delete dir="${deploy.dir}/appcelerator"/>
-	</target>
-	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
-		<delete file="${deploy.dir}/appcelerator.war"/>
-	</target>
--->
-
-
-	
 	<target name="copy_web_files" depends="init">
 		<copy todir="${stage.dir}/assemble/web" filtering="no">
 			<fileset dir="${src.web.dir}">

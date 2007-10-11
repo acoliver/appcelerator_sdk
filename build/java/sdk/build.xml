@@ -12,7 +12,7 @@
 		<fileset dir="dist/lib" includes="*.jar"/>
 	</path>
 	
-	<target name="clean" description="** Cleanup the temporary stage directory">
+	<target name="clean">
 		<delete dir="stage"/>
 	</target>
 		
@@ -26,7 +26,7 @@
 		<echo>Deploy the Appcelerator Server</echo>
 		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
 	</target>
-	<target name="deploy_server" depends="banner" description="** Deploy the Appcelerator Server">
+	<target name="deploy_server" depends="banner">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
@@ -34,7 +34,7 @@
 			<fileset dir="${dist.dir}" includes="*.war" />
 		</copy>
 	</target>
-	<target name="undeploy_server" description="** Undeploy the Appcelerator Server">
+	<target name="undeploy_server">
 		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
 		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
 		<antcall target="undeploy.war"/>
@@ -59,7 +59,7 @@
 		<mkdir dir="${create.dir}/src/java" />
 		<mkdir dir="${create.dir}/src/web" />
 		<copy todir="${create.dir}" filtering="true">
-			<fileset dir="dist" includes="*.*"/>
+			<fileset dir="dist" includes="*.*,server/*"/>
 			<filterset>
 				<filter token="APPNAME" value="${app.name}"/>
 				<filter token="APPCELERTOR_DIR" value="${basedir}"/>

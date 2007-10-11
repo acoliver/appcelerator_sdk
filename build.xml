@@ -307,11 +307,7 @@
 				<expandproperties/>
 			</filterchain>
 		</copy>
-		<copy todir="${stage.dir}/sdk/java/dist/server" filtering="false"> 
-			<fileset dir="${stage.dir}/java/server">
-				<include name="*.war"/>
-			</fileset>
-		</copy>
+		<copy tofile="${stage.dir}/sdk/java/dist/server/setupfiles" file="${stage.dir}/java/server/appcelerator.war"/>
 		<copy todir="${stage.dir}/sdk/java/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc">
 				<include name="**/*"/>
