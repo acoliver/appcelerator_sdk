@@ -239,6 +239,10 @@
 				<include name="**/*"/>
 			</fileset>
 		</copy>
+		<war destfile="${stage.dir}/unittest.war" webxml="${build.java.dir}/unittest/WEB-INF/web.xml">
+			<fileset dir="${stage.dir}/test/web" includes="**/**"/>
+			<fileset dir="${build.java.dir}/unittest" includes="*.*"/>
+		</war>
 	</target>
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
 	<target name="build_doc" depends="build_myappcelerator_java" description="* Builds the documentation">
@@ -252,10 +256,10 @@
 				<include name="**/*"/>
 			</fileset>
 		</copy>
-<!--		<copy todir="${stage.dir}/doc" overwrite="true">
-			<fileset dir="src/doc" includes="css/*.*"/>
-		</copy>
--->
+		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/doc/WEB-INF/web.xml">
+			<fileset dir="${stage.dir}/doc" includes="**/**"/>
+			<fileset dir="${build.java.dir}/doc" includes="*.*"/>
+		</war>
 	</target>
 	
 
@@ -482,4 +486,44 @@ cat src/doc/treechild/${name}.html</echo>
 			<fileset dir="${stage.dir}/java" includes="classes/**"/>
 		</jar>
 	</target>
+	<target name="undeploy_doc">
+		<available file="${deploy.dir}/doc" type="dir" property="doc.deploy.dir.exists"/>
+		<available file="${deploy.dir}/doc.war" type="file" property="doc.deploy.war.exists"/>
+		<antcall target="undeploy.war.doc"/>
+		<antcall target="undeploy.dir.doc"/>
+	</target>
+	<target name="undeploy.dir.doc" if="doc.deploy.dir.exists">
+		<delete dir="${deploy.dir}/doc"/>
+	</target>
+	<target name="undeploy.war.doc" if="doc.deploy.war.exists">
+		<delete file="${deploy.dir}/doc.war"/>
+	</target>
+	<target name="undeploy_web_unit">
+		<available file="${deploy.dir}/unittest" type="dir" property="unittest.deploy.dir.exists"/>
+		<available file="${deploy.dir}/unittest.war" type="file" property="unittest.deploy.war.exists"/>
+		<antcall target="undeploy.war.unittest"/>
+		<antcall target="undeploy.dir.unittest"/>
+	</target>
+	<target name="undeploy.dir.unittest" if="unittest.deploy.dir.exists">
+		<delete dir="${deploy.dir}/unittest"/>
+	</target>
+	<target name="undeploy.war.unittest" if="unittest.deploy.war.exists">
+		<delete file="${deploy.dir}/unittest.war"/>
+	</target>
+
+	<target name="deploy_doc">
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="stage" includes="doc.war" />
+		</copy>
+	</target>
+	<target name="deploy_web_unit">
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="stage" includes="unittest.war" />
+		</copy>
+	</target>
+	
 </project>
