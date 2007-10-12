@@ -60,3 +60,127 @@ pre.command {
  padding: .25em;
  overflow: auto;
 }
+
+.bold_value
+{
+	color:#0f3c71;
+	font-size:12px;
+	font-weight:bold;
+}
+.bold_value_grey_lg
+{
+	color:#696969;
+	font-size:14px;
+	font-weight:bold;
+	
+}
+.bold_value_grey
+{
+	color:#696969;
+	font-size:12px;
+	font-weight:bold;
+}
+
+
+/* validator style */
+.field_error
+{
+	font-size:11px;
+	color:#ff0000;
+	font-weight:normal;
+}
+
+.row_entry:hover
+{
+	border:1px solid #666;	
+}
+.row_entry
+{
+	border-left:1px solid #ccc;
+	border-top:1px solid #ccc;
+	border-right:1px solid #aaa;
+	border-bottom:1px solid #aaa;
+	padding:17px;
+	padding-bottom:20px;
+	line-height:5px;
+	margin-bottom:7px;
+	cursor:pointer;
+	vertical-align:middle;
+}
+.row_selected
+{
+	border:1px solid #666;
+	background-color:#fff;
+}
+
+/*
+** Standard INPUT, SELECT and TEXTAREA Styles
+** includng focus styles
+**
+*/
+
+input[type=text]:focus
+{
+	background-color:#ffffcc;
+}
+input[type=password]:focus
+{
+	background-color:#ffffcc;
+}
+
+input[type=button]
+{
+   border-width:1px;
+   padding: 2px 7.5px 2px 7.5px;
+   margin: 0;
+}
+
+select:focus
+{
+	background-color:#ffffcc;
+}
+select
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:300px;
+}
+
+input[type="text"] 
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:280px;
+}
+input[type="password"] 
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:280px;
+}
+textarea:focus
+{
+	background-color:#ffffcc;
+}
+textarea
+{
+		border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+		border-style:solid;
+		border-width:1px;
+		font-size:14px;
+		margin:1px;
+		padding:3px 3px 3px 10px;
+		width:300px;
+}

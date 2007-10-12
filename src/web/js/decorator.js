@@ -49,7 +49,7 @@ Appcelerator.Decorator =
             if (!div)
             {
                 // only insert the first time through
-                new Insertion.After(element.id, '<span id="' + id + '" style="font-size:11px" class="error_color"></span>');
+                new Insertion.After(element.id, '<span id="' + id + '" style="font-size:11px;color:#ff0000"></span>');
                 div = $(id);
             }
 
@@ -63,7 +63,7 @@ Appcelerator.Decorator =
                 if (!valid)
                 {
                     // update the message if not valid
-                    Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '"/> ' + msg);
+                    Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '" style="position:relative;top:3px"/> ' + msg);
 					Appcelerator.Compiler.dynamicCompile(div);
                 }
 

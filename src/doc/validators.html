@@ -24,38 +24,74 @@
 
 </head>
 <body>
-	<h2>Validators</h2>
+	<h2>Validation</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:validators[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:validators[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:validators[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:validators[show=example] and add[class=active] or l:validators[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:validators[show=code] and add[class=active] or l:validators[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:validators[show=usage] and add[class=active] or l:validators[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		Validators allow you to specify input requirements for form elements.  For more information please also see the validation widget.
-	</p>
 	
 	<!-- EXAMPLE -->
 	<div on="l:validators[show=example] then show else hide">
-		<table width="90%">
+		<p>
+			Appcelerator comes with a built-in Validation framework that allows you to perform
+			client-side validation of input element values.  The Validation framework has two components:
+			<tt>validator</tt> and <tt>decorator</tt>.  A <tt>validator</tt> simply validates the 
+			value of an input element.  A <tt>decorator</tt> can be used in conjunction with a <tt>validator</tt>
+			to display an error message when a field is invalid.
+			
+		</p>
+		<p>
+			You can also create a custom decorated message by using <tt>decorator="custom" decoratorId="[element_id of your decorator]"</tt>.
+		</p>
+		<h3> Example of using Validators and Decorators</h3>
+
+		<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 			<tr>
-				<td class="test" width="35%" valign="middle">
-					Required (String)
+				<td class="bold_value_grey">
+					Required Date:
 				</td>
-				<td class="result">
-					<input type="text" validator="required"  style="width:30%"/>
+				<td>
+					<input type="text" validator="date" decorator="date"/>
 				</td>
 			</tr>
 			<tr>
-				<td class="test" width="35%" valign="middle">
-					Required (boolean)
+				<td class="bold_value_grey">
+					Optional Email:
 				</td>
-				<td class="result">
-					<input type="checkbox" validator="required"/>
+				<td>
+					<input type="text" validator="email_optional" decorator="email"/>
 				</td>
 			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Required  (at least 1 character):
+				</td>
+				<td>
+					<input type="text" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Optional Number  (decimal > 0):
+				</td>
+				<td>
+					<input type="text" validator="number_optional" decorator="number"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Custom Decorator:
+				</td>
+				<td>
+					<input type="text" validator="required" decorator="custom" decoratorId="my_custom_decorator"/>
+					<span id="my_custom_decorator" style="color:green;font-size:16px">wrong answer, pal...</span>
+				</td>
+			</tr>
+			
 		</table>
 	</div>
 
@@ -63,24 +99,50 @@
 	<div on="l:validators[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<table width="90%">
+				<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 					<tr>
-						<td class="test" width="35%" valign="middle">
-							Required (String)
+						<td class="bold_value_grey">
+							Required Date:
 						</td>
-						<td class="result">
-							<input type="text" validator="required"  style="width:30%"/>
+						<td>
+							<input type="text" validator="date" decorator="date"/>
 						</td>
 					</tr>
 					<tr>
-						<td class="test" width="35%" valign="middle">
-							Required (boolean)
+						<td class="bold_value_grey">
+							Optional Email:
 						</td>
-						<td class="result">
-							<input type="checkbox" validator="required"/>
+						<td>
+							<input type="text" validator="email_optional" decorator="email"/>
 						</td>
 					</tr>
-				</table>
+					<tr>
+						<td class="bold_value_grey">
+							Required  (at least 1 character):
+						</td>
+						<td>
+							<input type="text" validator="required" decorator="required"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Optional Number  (decimal > 0):
+						</td>
+						<td>
+							<input type="text" validator="number_optional" decorator="number"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Custom Decorator:
+						</td>
+						<td>
+							<input type="text" validator="required" decorator="custom" decoratorId="my_custom_decorator"/>
+							<span id="my_custom_decorator" style="color:green;font-size:16px">wrong answer, pal...</span>
+						</td>
+					</tr>
+
+				</table>	
 			</textarea>	
 		</p>
 	</div>
@@ -88,25 +150,121 @@
 	<!-- USAGE -->
 	<div on="l:validators[show=usage] then show else hide" style="display:none">
 		<p>
-				Add the following attribute to a form element:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term">validator</td>
-					  <td class="def">the name of the validator</td>
-					</tr>
-				</table>
+			Required Options:
+			<table cellspacing="5px">
+				<tr>
+					<td class="term">validator</td>
+				 	<td class="def">the name of the validator</td>
+				</tr>
+				<tr>
+					<td class="term">decorator</td>
+				 	<td class="def">the name of the decorator</td>
+				</tr>
+			</table>
 		</p>
-<!--
 		<p>
-			 Optional Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term">args</td>
-					  <td class="def">json representation of parameters</td>
-					</tr>
-				</table>
+			Optional Options:
+			<table cellspacing="5px">
+				<tr>
+					<td class="term">decoratorId</td>
+				 	<td class="def">the element ID of your decorator element</td>
+				</tr>
+			</table>
 		</p>
--->
+
+		<p>
+			Pre-built Validators and Decorators:
+			<table cellspacing="5px">
+				<tr>
+					<td class="term">required</td>
+				 	<td class="def">field must contain at least one character</td>
+				</tr>
+				<tr>
+					<td class="term">email</td>
+				 	<td class="def">field must contain a valid email address</td>
+				</tr>
+				<tr>
+					<td class="term">email_optional</td>
+				 	<td class="def">field must contain a valid email address or blank</td>
+				</tr>
+				<tr>
+					<td class="term">fullname</td>
+				 	<td class="def">field must contain at least two strings separated by a space</td>
+				</tr>
+				<tr>
+					<td class="term">fullname_optional</td>
+				 	<td class="def">field must contain at least two strings separated by a space or blank</td>
+				</tr>
+				<tr>
+					<td class="term">noSpaces</td>
+				 	<td class="def">field must not contain any spaces</td>
+				</tr>
+				<tr>
+					<td class="term">noSpaces_optional</td>
+				 	<td class="def">field must not contain any spaces or blank</td>
+				</tr>
+				<tr>
+					<td class="term">password</td>
+				 	<td class="def">field must have at least 6 characters</td>
+				</tr>
+				<tr>
+					<td class="term">password_optional</td>
+				 	<td class="def">field must have at least 6 characters or blank</td>
+				</tr>
+				<tr>
+					<td class="term">number</td>
+				 	<td class="def">field must be a positive decimal number (2 decimal places)</td>
+				</tr>
+				<tr>
+					<td class="term">number_optional</td>
+				 	<td class="def">field must be a positive decimal number (2 decimal places) or blank</td>
+				</tr>
+				<tr>
+					<td class="term">wholenumber</td>
+				 	<td class="def">field must be a positive whole number (no decimals)</td>
+				</tr>
+				<tr>
+					<td class="term">wholenumber_optional</td>
+				 	<td class="def">field must be a positive whole number (no decimals) or blank</td>
+				</tr>
+				<tr>
+					<td class="term">url</td>
+				 	<td class="def">field must have a valid URL format</td>
+				</tr>
+				<tr>
+					<td class="term">url_optional</td>
+				 	<td class="def">field must have a valid URL format or blank</td>
+				</tr>
+				<tr>
+					<td class="term">checked</td>
+				 	<td class="def">field must must be checked</td>
+				</tr>
+				<tr>
+					<td class="term">length</td>
+				 	<td class="def">field must have valid length.  You can specify a min required length with
+					<tt>validatorMinLength</tt> and a max required length with <tt>validatorMaxLength</tt>
+					</td>
+				</tr>
+				<tr>
+					<td class="term">alphanumeric</td>
+				 	<td class="def">field must contain numbers and letters</td>
+				</tr>
+				<tr>
+					<td class="term">alphanumeric_optional</td>
+				 	<td class="def">field must contain numbers and letters or blank</td>
+				</tr>
+				<tr>
+					<td class="term">date</td>
+				 	<td class="def">field must a date formated like MM/DD/YYYY </td>
+				</tr>
+				<tr>
+					<td class="term">date_optional</td>
+				 	<td class="def">field must a date formated like MM/DD/YYYY or blank </td>
+				</tr>
+
+			</table>
+		</p>
+
 	</div>	
 	
 	<script>

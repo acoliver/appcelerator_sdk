@@ -20,6 +20,47 @@
 <script type="text/javascript" src="js/sh/shBrushJava.js"></script>
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 
+<style>
+<!--
+
+
+.tabpanel a:hover
+{
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+.tab_inactive
+{
+	border-bottom:1px solid #999; 
+	background-color:#fff;
+	color:#111;
+	font-weight:bold;
+	opacity:0.4;
+}
+
+.tab_active
+{
+	border-bottom:2px solid #3B5998; 
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+#my_tab_divider
+{
+	border:1px solid #999;
+	border-top:none;
+	padding-bottom:5px;
+	height:3px;
+	background-color:#3B5998;
+	clear:both
+}
+-->
+</style>
 
 
 </head>
@@ -33,39 +74,40 @@
 	<a  on="click then l:content[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		The content widget is useful for segregating your application into individual pages.  This is useful as it allows for:
-		<ul>
-			<li>decomposition of your application into individual sets for developers to work on
-			<li>the lazy loading of portions of the application
-			<li>tying application content to a state machine to conditionally display segmented content
-			<li>pass parameters into content for reuse 
-		</ul>
-	</p>
 	<!-- EXAMPLE -->
 	<div on="l:content[show=example] then show else hide">
-		<app:tabpanel id="contentmenu" initial="main">
-			<tab name="main">main</tab>
-			<tab name="contacts1">contacts one</tab>
-			<tab name="contacts2">contacts two</tab>
+		<p>
+			The Content Widget allows you to create re-usable HTML code snippets that can be included throughout your
+			application. The example below shows a tab panel (see Tab Panel for more information) that displays different
+			HTML files based on the active tab.  When you click a tab, it triggers the display of an external HTML file
+			specified in the Content Widgets definition.  You can also pass arguments to a content file to do things like
+			set page titles (like in the example below) or anything else you can think up.
+		</p>
+		<app:tabpanel id="contentmenu" initial="movies">
+			<tab name="movies">Favorite Movies</tab>
+			<tab name="music">Favorite Music</tab>
+			<tab name="banjo">Banjo Sonatas in D</tab>
 		</app:tabpanel>
+		<div id="my_tab_divider"></div>
 		<app:content
 			lazy="false"
-			src="content/main.html" 
-			on="contentmenu[main] then show else hide">
+			args="{'title':'These movies do not suck'}"
+			src="content/movies.html" 
+			on="contentmenu[movies] then show else hide">
 		</app:content>
 		<app:content
 			lazy="false"
-			  args="{'prefix':'contacts_one'}"
-			src="content/contacts.html" 
-			on="contentmenu[contacts1] then show else hide">
+			args="{'title':'These albums do not suck'}"
+			src="content/music.html" 
+			on="contentmenu[music] then show else hide">
 		</app:content>
 		<app:content
 			lazy="false"
-			  args="{'prefix':'contacts_two'}"
-			src="content/contacts.html" 
-			on="contentmenu[contacts2] then show else hide">
-		</app:content>
+			args="{'title':'Banjo - the new Cow Bell'}"
+			src="content/banjo.html" 
+			on="contentmenu[banjo] then show else hide">
+		</app:content>			
+
 	</div>
 
 	<!-- CODE -->
@@ -73,46 +115,33 @@
 
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<app:tabpanel id="contentmenu" initial="main">
-					<tab name="main">main</tab>
-					<tab name="contacts1">contacts one</tab>
-					<tab name="contacts2">contacts two</tab>
+				<app:tabpanel id="contentmenu" initial="movies">
+					<tab name="movies">Favorite Movies</tab>
+					<tab name="music">Favorite Music</tab>
+					<tab name="banjo">Banjo Sonatas in D</tab>
 				</app:tabpanel>
+				<div id="my_tab_divider"></div>
 				<app:content
 					lazy="false"
-					src="content/main.html" 
-					on="contentmenu[main] then show else hide">
+					args="{'title':'These movies do not suck'}"
+					src="content/movies.html" 
+					on="contentmenu[movies] then show else hide">
 				</app:content>
 				<app:content
 					lazy="false"
-					  args="{'prefix':'contacts_one'}"
-					src="content/contacts.html" 
-					on="contentmenu[contacts1] then show else hide">
+					args="{'title':'These albums do not suck'}"
+					src="content/music.html" 
+					on="contentmenu[music] then show else hide">
 				</app:content>
 				<app:content
 					lazy="false"
-					  args="{'prefix':'contacts_two'}"
-					src="content/contacts.html" 
-					on="contentmenu[contacts2] then show else hide">
-				</app:content>
+					args="{'title':'Banjo - the new Cow Bell'}"
+					src="content/banjo.html" 
+					on="contentmenu[banjo] then show else hide">
+				</app:content>			
 			</textarea>	
 		</p>
-		<p>Here's main.html:
-			<textarea name="code" class="xml:nocontrols">
-				<body>
-					<h2>main</h2>
-					welcome to main
-				</body>
-			</textarea>	
-		</p>
-		<p>Here's contacts.html:
-			<textarea name="code" class="xml:nocontrols">
-				<body>
-					<h2>contacts</h2>
-					your prefix #{prefix}
-				</body>
-			</textarea>	
-		</p>
+
 	</div>
 
 	<!-- USAGE -->
@@ -122,11 +151,13 @@
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">on</td>
-					  <td class="def">handler that controls the visibility usually of the form "&lt;state&gt; then show else hide"</td>
+					  <td class="def">the expression that determines what message will trigger the execution
+						of the Content Widget.  The correct syntax is :<tt>on="[message_name] then execute"</tt>
+					</td>
 					</tr>
 					<tr>
 					  <td class="term">src</td>
-					  <td class="def">uri for the content source (should be html)</td>
+					  <td class="def">URI for the content source (should reference a HTML file)</td>
 					</tr>
 					<tr>
 					  <td class="term">lazy</td>
@@ -139,7 +170,7 @@
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">args</td>
-					  <td class="def">json representation of parameters</td>
+					  <td class="def">JSON representation of parameters.  For example: <tt>args="{'id':'123'}"</tt></td>
 					</tr>
 				</table>
 		</p>

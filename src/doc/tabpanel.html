@@ -21,73 +21,173 @@
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 
 
+<style>
+<!--
 
+
+
+#styled .tabpanel a:hover
+{
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+#styled .tab_inactive
+{
+	border-bottom:none; 
+	background-color:#fff;
+	color:#111;
+	font-weight:bold;
+	opacity:0.4;
+}
+
+#styled .tab_active
+{
+	border-bottom:2px solid #3B5998; 
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+#my_tab_divider
+{
+	border:1px solid #999;
+	border-top:none;
+	padding-bottom:5px;
+	height:3px;
+	background-color:#3B5998;
+	clear:both
+}
+-->
+</style>
 </head>
 <body>
 	<h2>Tab Panel</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:content[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:content[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:content[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:tabpanel[show=example] and add[class=active] or l:tabpanel[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:tabpanel[show=code] and add[class=active] or l:tabpanel[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:tabpanel[show=usage] and add[class=active] or l:tabpanel[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		This widget provides a simple control for displaying a tab.  It implements a state machine that can be referenced in your application to control the visibility of content.
-	</p>
 	<!-- EXAMPLE -->
-	<div on="l:content[show=example] then show else hide">
-		<app:tabpanel id="contentmenu" initial="main">
-			<tab name="main">main</tab>
-			<tab name="contacts1">contacts one</tab>
-			<tab name="contacts2">contacts two</tab>
+	<div on="l:tabpanel[show=example] then show else hide">
+		<p>
+			The Tab Panel widget allows you to easily create tab-based navigational controls.  Here's an
+			example of a basic tab panel with no custom styling
+		</p>
+
+		<app:tabpanel id="contentmenu" initial="tab1">
+			<tab name="tab1">Tab 1</tab>
+			<tab name="tab2">Tab 2</tab>
+			<tab name="tab3">Tab 3</tab>
 		</app:tabpanel>
+
+		<div style="padding:5px;clear:both"></div>
+		<p>
+			 Here's an example of a basic tab panel with custom styling
+		</p>
+		<div id="styled">
+			<app:tabpanel id="styled_tab" initial="tab1">
+				<tab name="tab1">Look</tab>
+				<tab name="tab2">at Me</tab>
+				<tab name="tab3">I'm so pretty</tab>
+			</app:tabpanel>
+			<div id="my_tab_divider"></div>	
+		</div>
 	</div>
 
 	<!-- CODE -->
-	<div on="l:content[show=code] then show else hide" style="display:none">
+	<div on="l:tabpanel[show=code] then show else hide" style="display:none">
 
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<app:tabpanel id="contentmenu" initial="main">
-					<tab name="main">main</tab>
-					<tab name="contacts1">contacts one</tab>
-					<tab name="contacts2">contacts two</tab>
+				<style>
+				<!--
+				#styled .tabpanel a:hover
+				{
+					background-color:#3B5998;
+					color:#fff;
+					font-weight:bold;
+					opacity:0.99;
+				}
+
+				#styled .tab_inactive
+				{
+					border-bottom:none; 
+					background-color:#fff;
+					color:#111;
+					font-weight:bold;
+					opacity:0.4;
+				}
+
+				#styled .tab_active
+				{
+					border-bottom:2px solid #3B5998; 
+					background-color:#3B5998;
+					color:#fff;
+					font-weight:bold;
+					opacity:0.99;
+				}
+
+				#my_tab_divider
+				{
+					border:1px solid #999;
+					border-top:none;
+					padding-bottom:5px;
+					height:3px;
+					background-color:#3B5998;
+					clear:both
+				}
+				-->
+				</style>
+				<app:tabpanel id="contentmenu" initial="tab1">
+					<tab name="tab1">Tab 1</tab>
+					<tab name="tab2">Tab 2</tab>
+					<tab name="tab3">Tab 3</tab>
 				</app:tabpanel>
+
+				<div style="padding:5px;clear:both"></div>
+				<p>
+					 Here's an example of a basic tab panel with custom styling
+				</p>
+				<div id="styled">
+					<app:tabpanel id="styled_tab" initial="tab1">
+						<tab name="tab1">Look</tab>
+						<tab name="tab2">at Me</tab>
+						<tab name="tab3">I'm so pretty</tab>
+					</app:tabpanel>
+					<div id="my_tab_divider"></div>	
+				</div>
 			</textarea>	
 		</p>
 	</div>
 
 	<!-- USAGE -->
-	<div on="l:content[show=usage] then show else hide" style="display:none">
+	<div on="l:tabpanel[show=usage] then show else hide" style="display:none">
 		<p>
-			 Required Options:
+			 Required Tabpanel Options:
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">id</td>
-					  <td class="def">the name for the tabpanel statemachine</td>
-					</tr>
-					<tr>
-					  <td class="term">tab.name</td>
-					  <td class="def">the substate that maps to the tabpanel</td>
+					  <td class="def">The ID for the Tab Panel</td>
 					</tr>
 					<tr>
 					  <td class="term">initial</td>
-					  <td class="def">the name of the starting state/tab.name</td>
+					  <td class="def">The name of the initial active tab</td>
 					</tr>
 				</table>
 		</p>
 		<p>
-			 Optional Options:
+			 Required Tab Options (for each tab definition within a Tab Panel):
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term">tab.langid</td>
-					  <td class="def">if using localization, this is the resource key to use for the text in the tab control itself</td>
-					</tr>
-					<tr>
-					  <td class="term">tab text</td>
-					  <td class="def">the displayed text for the tab control itself</td>
+					  <td class="term">name</td>
+					  <td class="def">Name used to identify the tab</td>
 					</tr>
 				</table>
 		</p>

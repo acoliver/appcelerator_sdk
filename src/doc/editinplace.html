@@ -21,53 +21,73 @@
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 
 
+<style>
+<!--
+input[type=text]
+{
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:26px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:350px;
+}
 
+-->
+</style>
 </head>
 <body>
 	<h2>Edit-in-Place</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:editinplace[show=example] and add[class=active] or l:datacache[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:editinplace[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:editinplace[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:editinplace[show=example] and add[class=active] or l:editinplace[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:editinplace[show=code] and add[class=active] or l:editinplace[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:editinplace[show=usage] and add[class=active] or l:editinplace[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		This widget allows for the direct mutation of text to toggle between editing and standard text display.
-	</p>
 	
 	<!-- EXAMPLE -->
 	<div on="l:editinplace[show=example] then show else hide">
 		<p>
-			Edit the text below and click 'save'. You should see a passed message below with the value of the text.
+			The Edit-in-Place widget allows you to dynamically edit a text value.  To activate edit-mode, you
+			just click on the text value.  Here's an example:
 		</p>
-
-			<app:editinplace type="text" id="foo" saveOn="click then l:editinplace1.foo.save" cancelOn="click then l:editinplace1.foo.cancel" 
-				validator="required" position="right" defaultClassName="default" editClassName="default" defaultValue="edit this default text">
+		<div style="padding:20px;border:1px dashed #bbb;background-color:#f6f6f6;">
+			<app:editinplace type="text" id="foo" saveOn="click then l:save" cancelOn="click then l:cancel" 
+				validator="required" position="right" defaultClassName="bold_value_grey_lg" defaultValue="Click Me or Take a Hike">
 			</app:editinplace>
-			<app:script on="l:editinplace1.foo.save then execute">
-				alert("you saved");
-			</app:script>
-			<app:script on="l:editinplace1.foo.cancel then execute">
-				alert("you cancelled");
-			</app:script>
+		</div>
+		<div style="padding:10px;padding-left:none"></div>
+		<span class="bold_value" style="display:none" on="l:save then show or l:save then effect[Fade] after 2s ">
+			You clicked saved
+		</span>
+		<span class="bold_value" style="display:none"  on="l:cancel then show or l:cancel then effect[Fade] after 2s ">
+			You clicked cancel
+		</span>
+
 	</div>
 
 	<!-- CODE -->
 	<div on="l:editinplace[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<app:editinplace type="text" id="foo" saveOn="click then l:editinplace1.foo.save" cancelOn="click then l:editinplace1.foo.cancel" 
-					validator="required" position="right" defaultClassName="default" editClassName="default" defaultValue="edit this default text">
-				</app:editinplace>
-				<app:script>
-				<app:script on="l:editinplace1.foo.save then execute">
-					alert("you saved");
-				</app:script>
-				<app:script on="l:editinplace1.foo.cancel then execute">
-					alert("you cancelled");
-				</app:script>
+				<div style="padding:20px;border:1px dashed #bbb;background-color:#f6f6f6;">
+					<app:editinplace type="text" id="foo" saveOn="click then l:save" cancelOn="click then l:cancel" 
+						validator="required" position="right" 
+						defaultClassName="bold_value_grey_lg" defaultValue="Click Me or Take a Hike">
+					</app:editinplace>
+				</div>
+				<div style="padding:10px;padding-left:none"></div>
+				<span class="bold_value" style="display:none" 
+					on="l:save then show or l:save then effect[Fade] after 2s ">
+					You clicked saved
+				</span>
+				<span class="bold_value" style="display:none" 
+				 	on="l:cancel then show or l:cancel then effect[Fade] after 2s ">
+					You clicked cancel
+				</span>
 			</textarea>	
 		</p>
 	</div>
@@ -78,24 +98,12 @@
 			 Required Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term">id</td>
-					  <td class="def">the identifier for the dom element</td>
-					</tr>
-					<tr>
 					  <td class="term">saveOn</td>
-					  <td class="def">the handler for when the Edit-in-Place widget is saved</td>
+					  <td class="def">"on" expression for when the user clicks Save</td>
 					</tr>
 					<tr>
 					  <td class="term">cancelOn</td>
-					  <td class="def">the handler for when the Edit-in-Place widget is cancelled</td>
-					</tr>
-					<tr>
-					  <td class="term">validator</td>
-					  <td class="def">the name of the validator for the field</td>
-					</tr>
-					<tr>
-					  <td class="term">defaultValue</td>
-					  <td class="def">initial value for the control</td>
+					  <td class="def">"on" expression for when the user clicks Cancel</td>
 					</tr>
 				</table>
 		</p>
@@ -103,28 +111,53 @@
 			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
+					  <td class="term">defaultValue</td>
+					  <td class="def">Initial value for the field. </td>
+					</tr>
+
+					<tr>
+					  <td class="term">validator</td>
+					  <td class="def">The name of the validator for the field</td>
+					</tr>
+
+					<tr>
+					  <td class="term">message</td>
+					  <td class="def">Appcelerator message name that will contain the data to populate the field 
+						dyamically</td>
+					</tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">Appcelerator message property that contains the value for the field</td>
+					</tr>
+					<tr>
 					  <td class="term">type</td>
 					  <td class="def">The form control type (defaults to text)</td>
 					</tr>
 					<tr>
 					  <td class="term">position</td>
-					  <td class="def">position for the div element (defaults to right)</td>
+					  <td class="def">position for the div element (defaults to "right").
+						Valid values are: top, left, right, bottom</td>
 					</tr>
 					<tr>
 					  <td class="term">errorPosition</td>
-					  <td class="def">position for the div element if an error occurs (defaults to top)</td>
+					  <td class="def">position for the div element if an error occurs (defaults to "top").
+						Valid values are: top or bottom</td>
+					</tr>
+					<tr>
+					  <td class="term">errorMessage</td>
+					  <td class="def">Custom error message displayed when the specified Validator fails</td>
 					</tr>
 					<tr>
 					  <td class="term">defaultClassName</td>
-					  <td class="def">the css class whilst idle (defualts to '')</td>
+					  <td class="def">the css class used to style the text in non-edit mode</td>
 					</tr>
 					<tr>
 					  <td class="term">editClassName</td>
-					  <td class="def">the css class whilst editing (defaults to '')</td>
+					  <td class="def">the css class used to style the input field while in edit mode</td>
 					</tr>
 					<tr>
 					  <td class="term">buttonClassName</td>
-					  <td class="def">the css class for the save and cancel buttons (defaults to '')</td>
+					  <td class="def">the css class used to style the buttons while in edit mode</td>
 					</tr>
 				</table>
 		</p>
