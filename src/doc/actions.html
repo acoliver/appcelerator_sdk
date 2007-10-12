@@ -48,7 +48,7 @@
 
 </head>
 <body>
-	<h2>Actions and Conditions</h2>
+	<h2>Actions</h2>
 
 	<!-- NAVIGATION -->
 	<p>
@@ -61,7 +61,7 @@
 			The Appcelerator Platform uses an expression language to unleash the power
 			of Ajax and DHTML.  As mentioned earlier, Appcelerator expressions take the form of
 			<tt>on="[condition] then [action]"</tt>.  The examples below demonstrate our
-			basic Actions and Conditions.
+			standard Actions.
 		</p>
 		<p>
 			Here are Action examples
@@ -509,216 +509,7 @@
 				</td>
 			</tr>	
 			</table>
-			<p>
-				Here are Condition examples
-			</p>
 
-			<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
-
-			<tr>
-				<td class="test" valign="middle">
-				Enter Condition (hit enter see alert)
-				</td>
-				<td class="result" >	
-
-					<form on="enter then click[id=mybutton]">
-					<input type="text" />
-					<input type="text" />
-					<input type="button" value="hit enter" id="mybutton" on="click then script[alert('you hit enter')]"/>
-					</form>
-
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Click Condition
-				</td>
-				<td class="result">	
-					<input type="button" value="click me see alert" on="click then script[alert('you clicked me')]"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Focus Condition
-				</td>
-				<td class="result">	
-					<input type="text" value="focus on me to see alert" on="focus then script[alert('you set focus on me')]"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Blur Condition
-				</td>
-				<td class="result">	
-					<input type="text" value="blur me to see alert" on="blur then script[alert('you blurred me')]"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Double Click Condition
-				</td>
-				<td class="result">	
-					<input type="button" value="double click me me to see alert" 
-					on="dblclick then script[alert('you dblclicked me')]"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Mousedown Condition
-				</td>
-				<td class="result">	
-					<div on="mousedown then script[alert('you mousedowned me')]">
-					Mousedown me
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Mouseout Condition
-				</td>
-				<td class="result">	
-					<div on="mouseout then set[color=#ff0000] or mouseover then set[color=#fff]">
-				Mouseout and see red
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Mouseover Condition
-				</td>
-				<td class="result">	
-					<div on="mouseover then set[color=#ff0000] or mouseout then set[color=#fff]">
-				Mouseover and see red
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Change Condition
-				</td>
-				<td class="result">	
-					<input type="text" on="change then set[color=#ff0000]" value="change me to see red"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Change Condition (select)
-				</td>
-				<td class="result">	
-					<select on="change then script[alert('you changed my value')]">
-						<option value="1">one</option>
-						<option value="2">two</option>
-					</select>
-
-				</td>
-			</tr>	
-
-			<tr>
-				<td class="test" valign="middle">
-					Keyup Condition
-				</td>
-				<td class="result">	
-					<input type="text" on="keyup then set[color=#ff0000]" value="keyup to see red"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Keypress Condition
-				</td>
-				<td class="result">	
-					<input type="text" on="keypress then set[color=#ff0000]" value="keypress to see red"/>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Keydown Condition
-				</td>
-				<td class="result">	
-					<input type="text" on="keydown then set[color=#ff0000]" value="keydown to see red"/>
-				</td>
-			</tr>	
-
-			<tr>
-				<td class="test" valign="middle">
-					<a on="click then l:test30">Run Test</a>
-					Message Condition
-				</td>
-				<td class="result">	
-					<div  on="l:test30 then script[alert('received message')]">
-						should see alert
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					<a on="click then l:test31[payload=success]">Run Test</a>
-					Message Condition With Payload (Positive)
-				</td>
-				<td class="result">	
-					<div  on="l:test31[payload=success] then script[alert('received message')]">
-						should see alert
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					<a on="click then l:test32[payload=failure]">Run Test</a>
-					Message Condition With Payload (Negative)
-				</td>
-				<td class="result">	
-					<div  on="l:test32[payload=success] then script[alert('received message')]">
-						should not see alert
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					<a on="click then l:test33">Run Test</a>
-					State Machine Condition
-				</td>
-				<td class="result">	
-					<div  on="test[invalid] then set[color=red]">
-						i should turn red
-					</div>
-				</td>
-			</tr>	
-
-			<tr>
-				<td class="test" valign="middle">
-					Contextmenu Condition
-				</td>
-				<td class="result">	
-					<div on="contextmenu then set[innerHTML='you right clicked me] and set[color=red]">
-						rightclick on me
-					</div>
-				</td>
-			</tr>	
-
-			<tr>
-				<td class="test" valign="middle">
-					Selected Condition
-				</td>
-				<td class="result">	
-					<div selectable="mytest">
-						<div on="selected then set[color=red]">select me - see red</div>
-						<div on="selected then set[color=red]">select me - see red</div>
-					</div>
-				</td>
-			</tr>	
-			<tr>
-				<td class="test" valign="middle">
-					Sortable Attribute
-				</td>
-				<td class="result">	
-					<div sortable="true" style="cursor: move">
-						<div >move me - 1</div>
-						<div >move me - 2</div>
-						<div >move me - 3</div>
-					</div>
-				</td>
-			</tr>	
-	
-		</table>
 		<app:script on="l:test26 then execute">
 		$MQ('l:load.test26',{rows:[{'text':'row1','id':1},{'text':'row2','id':2},{'text':'row3','id':3}]})
 		</app:script>
@@ -1168,243 +959,29 @@
 								</td>
 							</tr>	
 							</table>
+							<app:script on="l:test26 then execute">
+							$MQ('l:load.test26',{rows:[{'text':'row1','id':1},{'text':'row2','id':2},{'text':'row3','id':3}]})
+							</app:script>
+							<app:script on="test[invalid] then execute">
+								alert("state changed");
+							</app:script>
+
+							<app:statemachine id="test" initial="valid">
+								<state name="invalid" if="l:test33"></state>
+								<state name="valid" ></state>
+							</app:statemachine>
+
+							<script>
+								function myfunction()
+								{
+									alert('hello from myfunction');
+								}
+							</script>
 
 
 			</textarea>	
 		</p>
-		<p>Here's the Condition code.
-			<textarea name="code" class="xml:nocontrols">
-					<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 
-					<tr>
-						<td class="test" valign="middle">
-						Enter Condition (hit enter see alert)
-						</td>
-						<td class="result" >	
-
-							<form on="enter then click[id=mybutton]">
-							<input type="text" />
-							<input type="text" />
-							<input type="button" value="hit enter" id="mybutton" 
-							on="click then script[alert('you hit enter')]"/>
-							</form>
-
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Click Condition
-						</td>
-						<td class="result">	
-							<input type="button" value="click me see alert" 
-							  on="click then script[alert('you clicked me')]"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Focus Condition
-						</td>
-						<td class="result">	
-							<input type="text" value="focus on me to see alert" 
-							  on="focus then script[alert('you set focus on me')]"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Blur Condition
-						</td>
-						<td class="result">	
-							<input type="text" value="blur me to see alert" 
-							  on="blur then script[alert('you blurred me')]"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Double Click Condition
-						</td>
-						<td class="result">	
-							<input type="button" value="double click me me to see alert" 
-							on="dblclick then script[alert('you dblclicked me')]"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Mousedown Condition
-						</td>
-						<td class="result">	
-							<div on="mousedown then script[alert('you mousedowned me')]">
-							Mousedown me
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Mouseout Condition
-						</td>
-						<td class="result">	
-							<div on="mouseout then set[color=#ff0000] or mouseover then set[color=#fff]">
-						Mouseout and see red
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Mouseover Condition
-						</td>
-						<td class="result">	
-							<div on="mouseover then set[color=#ff0000] or mouseout then set[color=#fff]">
-						Mouseover and see red
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Change Condition
-						</td>
-						<td class="result">	
-							<input type="text" on="change then set[color=#ff0000]" value="change me to see red"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Change Condition (select)
-						</td>
-						<td class="result">	
-							<select on="change then script[alert('you changed my value')]">
-								<option value="1">one</option>
-								<option value="2">two</option>
-							</select>
-
-						</td>
-					</tr>	
-
-					<tr>
-						<td class="test" valign="middle">
-							Keyup Condition
-						</td>
-						<td class="result">	
-							<input type="text" on="keyup then set[color=#ff0000]" value="keyup to see red"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Keypress Condition
-						</td>
-						<td class="result">	
-							<input type="text" on="keypress then set[color=#ff0000]" value="keypress to see red"/>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Keydown Condition
-						</td>
-						<td class="result">	
-							<input type="text" on="keydown then set[color=#ff0000]" value="keydown to see red"/>
-						</td>
-					</tr>	
-
-					<tr>
-						<td class="test" valign="middle">
-							<a on="click then l:test30">Run Test</a>
-							Message Condition
-						</td>
-						<td class="result">	
-							<div  on="l:test30 then script[alert('received message')]">
-								should see alert
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							<a on="click then l:test31[payload=success]">Run Test</a>
-							Message Condition With Payload (Positive)
-						</td>
-						<td class="result">	
-							<div  on="l:test31[payload=success] then script[alert('received message')]">
-								should see alert
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							<a on="click then l:test32[payload=failure]">Run Test</a>
-							Message Condition With Payload (Negative)
-						</td>
-						<td class="result">	
-							<div  on="l:test32[payload=success] then script[alert('received message')]">
-								should not see alert
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							<a on="click then l:test33">Run Test</a>
-							State Machine Condition
-						</td>
-						<td class="result">	
-							<div  on="test[invalid] then set[color=red]">
-								i should turn red
-							</div>
-						</td>
-					</tr>	
-
-					<tr>
-						<td class="test" valign="middle">
-							Contextmenu Condition
-						</td>
-						<td class="result">	
-							<div on="contextmenu then set[innerHTML='you right clicked me] and set[color=red]">
-								rightclick on me
-							</div>
-						</td>
-					</tr>	
-
-					<tr>
-						<td class="test" valign="middle">
-							Selected Condition
-						</td>
-						<td class="result">	
-							<div selectable="mytest">
-								<div on="selected then set[color=red]">select me - see red</div>
-								<div on="selected then set[color=red]">select me - see red</div>
-							</div>
-						</td>
-					</tr>	
-					<tr>
-						<td class="test" valign="middle">
-							Sortable Attribute
-						</td>
-						<td class="result">	
-							<div sortable="true" style="cursor: move">
-								<div >move me - 1</div>
-								<div >move me - 2</div>
-								<div >move me - 3</div>
-							</div>
-						</td>
-					</tr>	
-
-				</table>
-				<app:script on="l:test26 then execute">
-				$MQ('l:load.test26',{rows:[{'text':'row1','id':1},{'text':'row2','id':2},{'text':'row3','id':3}]})
-				</app:script>
-				<app:script on="test[invalid] then execute">
-					alert("state changed");
-				</app:script>
-
-				<app:statemachine id="test" initial="valid">
-					<state name="invalid" if="l:test33"></state>
-					<state name="valid" ></state>
-				</app:statemachine>
-
-				<script>
-					function myfunction()
-					{
-						alert('hello from myfunction');
-					}
-				</script>
-
-
-			</textarea>
 		
 	</div>
 

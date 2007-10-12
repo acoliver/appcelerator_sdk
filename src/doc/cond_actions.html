@@ -58,19 +58,15 @@
 	<li>blur</li>
 	<li>dblclick</li>
 	<li>mousedown</li>
-	<li>resize</li>
 	<li>mouseout</li>
 	<li>mouseover</li>
 	<li>mousemove</li>
 	<li>change</li>
-	<li>scroll</li>
 	<li>keyup</li>
 	<li>keypress</li>
 	<li>keydown</li>
 	<li>contextmenu</li>
 	<li>mousewheel</li>
-	<li>input</li>
-	<li>paste</li>
     </ul></tt>
 
 	</p>
@@ -82,100 +78,119 @@
 			<table cellspacing="5px">
 				<tr>
 				  <td class="term">show</td>
-				  <td class="def">Show an element by changing its  CSS display property to "block". </td>
+				  <td class="def">Show an element by changing its  CSS display property to "block". 
+					<p>Usage: <tt>on="[condition] then show"</tt></p> </td>
 				</tr>
 				<tr>
 				  <td class="term">hide</td>
-				  <td class="def">Hide an element by changing its  CSS display property to "none". </td>
+				  <td class="def">Hide an element by changing its  CSS display property to "none". 
+					<p>Usage: <tt>on="[condition] then hide"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">visible</td>
-				  <td class="def">Show an element by changing its  CSS visibility property to "visible". </td>
+				  <td class="def">Show an element by changing its  CSS visibility property to "visible". 
+					<p>Usage: <tt>on="[condition] then visible"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">hidden</td>
-				  <td class="def">Hide an element by changing its  CSS visibility property to "hidden". </td>
+				  <td class="def">Hide an element by changing its  CSS visibility property to "hidden". 
+					<p>Usage: <tt>on="[condition] then hidden"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">effect</td>
-				  <td class="def">Execute a Scriptaculous effect.  The syntax is <tt>effect[effectName]</tt>.  For example, <tt>effect[Appear]</tt> </td>
+				  <td class="def">Execute a Scriptaculous effect.   
+					<p>Usage: <tt>on="[condition] then effect[effect_name]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">toggle</td>
-				  <td class="def">Toggle an element's display or visibility property.</td>
+				  <td class="def">Toggle an element's display or visibility property.
+					<p>Usage: <tt>on="[condition] then toggle[display]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">value</td>
-				  <td class="def">Set the value of the element.  The property that is set will vary based on the element.  For example, input fields will have their <tt>value</tt> attribute set.  DIVs will have their <tt>innerHTML</tt> attribute set.  The syntax is <tt>value[newValue]</tt>  </td>
+				  <td class="def">Set the value of the element.  The property that is set will vary based on the element.  For example, input fields will have their <tt>value</tt> attribute set.  DIVs will have their <tt>innerHTML</tt> attribute set.  The syntax is <tt>value[newValue]</tt>  
+					<p>Usage: <tt>on="[condition] then value[value_property]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">add</td>
-				  <td class="def">Add an attribute or a CSS class to an element.  For example, <tt>add[class=myclass]</tt> or <tt>add[myattribute=myvalue]</tt> </td>
+				  <td class="def">Add an attribute or a CSS class to an element. 
+					<p>Usage: <tt>on="[condition] then add[className=myclass]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">remove</td>
-				  <td class="def">Opposite of add.  It will remove an attribute or a CSS class from an element</td>
+				  <td class="def">Opposite of add.  It will remove an attribute or a CSS class from an element
+					<p>Usage: <tt>on="[condition] then remove[className=myclass]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">set</td>
-				  <td class="def">Set the value of any CSS attribute, Javascript object attribute or custom attribute.  For example, to set the border of an element, you would do <tt>set[border='1px solid #ccc']</tt>.  To set the selectedIndex of a SELECT element, you would do <tt>set[selectedIndex=0]</tt></td>
+				  <td class="def">Set the value of any CSS attribute, Javascript object attribute or custom attribute.  For example, to set the border of an element, you would do <tt>set[border='1px solid #ccc']</tt>.  To set the selectedIndex of a SELECT element, you would do <tt>set[selectedIndex=0]</tt>
+					<p>Usage: <tt>on="[condition] then set[attribute=value]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">clear</td>
-				  <td class="def">Clear the value for an element</td>
+				  <td class="def">Clear the value for an element
+					<p>Usage: <tt>on="[condition] then clear"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">reset</td>
-				  <td class="def">Reset the value for an element</td>
+				  <td class="def">Reset the value for an element
+					<p>Usage: <tt>on="[condition] then reset"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">popup</td>
-				  <td class="def">Display a popup window. </td>
+				  <td class="def">Display a popup window. 
+					<p>Usage: <tt>on="[condition] then popup[id=id_of_popup_elemet]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">enable</td>
-				  <td class="def">Enable an element</td>
+				  <td class="def">Enable an element
+					<p>Usage: <tt>on="[condition] then enable"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">disable</td>
-				  <td class="def">Disable an element</td>
+				  <td class="def">Disable an element
+					<p>Usage: <tt>on="[condition] then disable"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">focus</td>
-				  <td class="def">Set the focus on the input element</td>
+				  <td class="def">Set the focus on the input element
+					<p>Usage: <tt>on="[condition] then focus"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">blur</td>
-				  <td class="def">Leave the current input element</td>
+				  <td class="def">Leave the current input element
+					<p>Usage: <tt>on="[condition] then blur"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">selectOption</td>
-				  <td class="def">Used in SELECT elements.  It will set the selected value based on data in the payload -					<tt>on="r:load.data then selectOption[name]"</tt></td>
+				  <td class="def">Used in SELECT elements.  It will set the selected value based on data in the payload 
+					<p>Usage: <tt>on="[condition] then selectOption[property]"</tt></p></td>
 				</tr>
 
 				<tr>
 				  <td class="term">javascript</td>
-				  <td class="def">run some javascript</td>
+				  <td class="def">run some javascript. 
+					<p>Usage: <tt>on="[condition] then javascript[alert('hello')]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">function</td>
-				  <td class="def">call a javascript function</td>
+				  <td class="def">call a javascript function. 
+					<p>Usage: <tt>on="[condition] then function[myfunction()]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">script</td>
-				  <td class="def">run some javascript</td>
+				  <td class="def">run some javascript. 
+					<p>Usage: <tt>on="[condition] then script[alert('hello')]"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">select</td>
-				  <td class="def">select the contents of an input field</td>
-				</tr>
-				<tr>
-				  <td class="term">selected</td>
-				  <td class="def">TBD</td>
+				  <td class="def">select the contents of an input field
+					<p>Usage: <tt>on="[condition] then select"</tt></p></td>
 				</tr>
 				<tr>
 				  <td class="term">click</td>
-				  <td class="def">simulate a button click</td>
+				  <td class="def">simulate a button click
+					<p>Usage: <tt>on="[condition] then click[id=my_button_id]"</tt></p></td>
 				</tr>
 
 
