@@ -125,7 +125,7 @@ Appcelerator.Compiler.forwardToAttributeListener = function(element,array)
 		if (result)
 		{
 			if (!code) code = '';
-			code+=result;
+			code+=result.toFunctionString(Appcelerator.Compiler.functionId++);
 		}
 	}
 	return code;
