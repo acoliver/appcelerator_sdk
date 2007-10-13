@@ -45,7 +45,12 @@ input[type=button]
 	line-height:20px;
 	text-align:middle;
 }
--->
+th
+{
+	border:1px solid #999;
+	background-color:#bbb;
+	color:white;
+}
 </style>
 </head>
 <body>
@@ -134,6 +139,26 @@ input[type=button]
 		</td>
 	</tr>
 
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator5">Run Test</a>
+			Table Iterators
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator5 then execute" property="rows" table="true" headers="name,city" 
+				cellspacing="1" width="100%">
+				<html:td style="border:1px solid #ccc">
+					<html:a on="click then script[alert('hello')]">#{name}</html:a>
+				</html:td>
+				<html:td style="border:1px solid #ccc">#{city}</html:td>
+			</app:iterator>
+			
+			<app:script on="l:load.iterator5 then execute">
+				$MQ('l:iterator5',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+
+			</app:script>
+		</td>
+	</tr>
 
 
 </table>

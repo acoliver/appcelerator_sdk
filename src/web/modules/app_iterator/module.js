@@ -60,7 +60,8 @@ Appcelerator.Module.Iterator =
 		{
 			if (table)
 			{
-				html+='<table width="'+width+'"><tr>';
+				
+				html+='<table width="'+width+'" cellspacing="'+parameterMap['cellspacing']+'"><tr>';
 				headers.each(function(h)
 				{
 					html+='<th>'+h+'</th>';
@@ -111,6 +112,8 @@ Appcelerator.Module.Iterator =
 		{
 			parameters['width'] = element.getAttribute('width') || '100%';
 			parameters['headers'] = (element.getAttribute('headers') || '').split(',');
+			parameters['cellspacing'] = element.getAttribute('cellspacing') || '0';
+			
 		}
 		parameters['selectable'] = element.getAttribute('selectable');
 		
