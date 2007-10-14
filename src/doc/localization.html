@@ -27,89 +27,79 @@
 </head>
 <body>
 	<h2>Localization</h2>
-
-	<!-- NAVIGATION -->
+	
+	<p>The Appcelerator Platform comes with a simple framework for externalizing application strings.
 	<p>
-	<a class="active" on="click then l:localization[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:localization[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> <!-- |
-	<a  on="click then l:localization[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> -->
 
-	</p>
-
-	<p>To add localication to your application, simply 
-		<ul>
-			<li>define an attribute named "langid" on the element for which you would like the inner html to have the localized resource.  This will cover a majority of the scenarios where the localization is a simple one for one replacement
-			<li>define your resource bundles in a javascript file and call   Appcelerator.Localization.addLanguageBundle
-			<li>for more complex formatting call Appcelerator.Localization.getWithFormat to render the message
-		</ul>
-		<br/>
-	</p>
-	<!-- EXAMPLE -->
-	<div on="l:localization[show=example] then show else hide">
-		<a on="click then l:localization.example[age=29,name=john]">formatted localization</a>
-		<span langid="localization.example.title"> </span>
-		<span id="localcation_example_span"> </span>
-		<app:script on="l:localization.example then execute">
-			var message = Appcelerator.Localization.getWithFormat('localization.example.message',null,null,this.data);
-			$('localcation_example_span').innerHTML = message;
-		</app:script>
-	</div>
-
-	<!-- CODE -->
-	<div on="l:localization[show=code] then show else hide" style="display:none">
-		<p>Here's the code:
-			<textarea name="code" class="xml:nocontrols">
-				<a on="click then l:localization.example[age=29,name=john]">formatted localization</a>
-				<span langid="localization.example.title"> </span>
-				<span id="localcation_example_span"> </span>
-				<app:script on="l:localization.example then execute">
-					var message = Appcelerator.Localization.getWithFormat('localization.example.message',null,null,this.data);
-					$('localcation_example_span').innerHTML = message;
-				</app:script>
-			</textarea>	
-		</p>
-		<p>Here's the contents of en.js
-			<textarea name="code" class="xml:nocontrols">
-				var en_lang_bundle = 
-				{
-					'localization.example.title': 'Hi there',
-					'localization.example.message': 'Dear #{name} you are #{age}.',
-					'BYEBYE':''
-				};
-				Appcelerator.Localization.addLanguageBundle('en','English',$H(en_lang_bundle));
-
-			</textarea>	
-		</p>
-		<p>Here's the javascript reference
-			<textarea name="code" class="xml:nocontrols">
-				<script type="text/javascript" src="js/locale/en.js"></script>
-			</textarea>	
-		</p>
+	<h3>Locale File</h3>
+	
+	<p>
+		First your need to create a file to store your externalized strings.
+		This file should be a Javascript file and it should be included in your application.
 		
-	</div>
+	</p>
+	
+	<p>Here's are contents of a sample locale file
+		<textarea name="code" class="xml:nocontrols">
+			var en_lang_bundle = 
+			{
+				'login.username.label': 'Username:',
+				'login.password.label': 'Password',
+				'login.success.message': 'Welcome #{user}'
+			};
+			Appcelerator.Localization.addLanguageBundle('en','English',$H(en_lang_bundle));
 
-	<!-- USAGE -->
-	<div on="l:localization[show=usage] then show else hide" style="display:none">
-		<p>
-			 Required Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
-				</table>
-		</p>
-<!--		<p>
-			 Optional Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
-				</table>
-		</p>
--->
-	</div>	
+		</textarea>	
+	</p>
+	
+	<h3>Accessing Localized Values</h3>
+	
+	<p>
+		There are two ways to get localized values from your locale file.  First, you can add the <tt>langid</tt>
+		attribute to any element and its value  will be set to the value of the localized string matching the
+		key provided.  Here's an example:
+	</p>
+	<textarea name="code" class="xml:nocontrols">
+		<span langid="login.username.label"></span>
+	</textarea>	
+	<p>
+		Second, you can programmatically get the value using Javascript.  The Appcelerator Localization framework
+		provides two functions for getting localized string values.  Here they are:
+	</p>
+	<textarea name="code" class="javascript:nocontrols">
+
+		//
+		// get a language bundle key value or return defaultValue if not found
+		//
+		// key - the key for the localized string you want to retrieve
+		// defaultValue - the default value if the key is not found
+		// lang - the locale for the localized string
+		Appcelerator.Localization.get = function(key,defaultValue,lang)
+
+
+		//
+		// get a language bundle key value and pass in JSON-based data that can
+		// be used to replace tokens in your localized string.  The token format
+		// should be #{my_token}.
+		//
+		// key - the key for the localized string you want to retrieve
+		// defaultValue - the default value if the key is not found
+		// lang - the locale for the localized string
+		// args - the JSON-based data payload that can be used to replace tokens in your localized string
+		Appcelerator.Localization.getWithFormat = function (key, defValue, lang, args)
+
+	</textarea>	
+
+	<p> You can call either of these functions from a Script Widget like so:</p>
+	<textarea name="code" class="xml:nocontrols">
+		<app:script>
+			<span id="login_password_label"></span>
+			
+			// set the value of the password label for english
+			Appcelerator.Localization.get('user.password.label','Password','en');
+		</app:script>
+	</textarea>
+	
 	
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';

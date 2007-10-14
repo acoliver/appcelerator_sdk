@@ -24,79 +24,39 @@
 
 </head>
 <body>
-	<h2>Debugging</h2>
+	<h2>Debugging and Logging</h2>
 
 	<p>
-		Throughout the framework, it is possible to view debugging statements by adding the debug=1 query parameter.  Viewing the console is subject to which browser you are using.  In firefox for example, you can open the firebug window and click the Console tab.  For example:
-		<div class="noteBox">
-			file://localhost/Users/azuercher/workspace/appcelerator_sdk/stage/doc/index.html?debug=1
-		</div>	
+		The Appcelerator Platform allows you view debug level information from the platform
+		and from your application, including messages that are sent and received by your
+		application.
+		
 	</p>
-	<h2>Logging</h2>
 	<p>
-		To publish your own logging statements you can use the following syntax
+		Currently, the Appcelerator Platform only logs messages to the Firebug console in Firefox, so 
+		you must run Firefox and install the Firebug plugin.
+	<h3>Debug Mode</h3>
+	<p>
+		To enable Debug mode, simply add <tt>?debug=1</tt> to the end of your URL and open the Firebug
+		console to see all debug statements.
+	</p>
+
+	<h3>Javascript-based Logging</h3>
+	<p>
+		You can also access our Logging API within Script Widgets  if you want to log statements to the console.  Here's 
+		an example of logging (one for each supported log level):
+	</p>
 		<textarea name="code" class="xml:nocontrols">
-			 Logger.info('hi info');
+			<app:script>
+			 Logger.fatal('fatal message');
+			 Logger.error('error message');
+			 Logger.warn('warning message');
+			 Logger.info('info message');
+			 Logger.debug('debug message');
+			 Logger.trace('trace message');
+			</app:script>
 		</textarea>	
-		The following levels are currently supported
-		<ul>
-			<li>info
-			<li>warn
-			<li>error
-			<li>debug
-			<li>trace
-			<li>fatal
-		</ul>
-	</p>
-	<app:script>
-		Logger.info('hi info');
-	</app:script>
-	<!-- NAVIGATION -->
-<!--	<p>
-	<a class="active" on="click then l:debugging[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:debugging[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:debugging[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
-
-	</p>
--->
-
-	<!-- EXAMPLE -->
-<!--	<div on="l:debugging[show=example] then show else hide">
-		debugging example placeholder
-	</div>
--->
-
-	<!-- CODE -->
-<!--	<div on="l:debugging[show=code] then show else hide" style="display:none">
-		<p>Here's the code:
-			<textarea name="code" class="xml:nocontrols">
-				debugging code placeholder
-			</textarea>	
-		</p>
-	</div>
--->
-
-	<!-- USAGE -->
-<!--	<div on="l:debugging[show=usage] then show else hide" style="display:none">
-		<p>
-			 Required Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
-				</table>
-		</p>
-			 Optional Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
-				</table>
-		</p>
-	</div>	
--->
+	
 	
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
