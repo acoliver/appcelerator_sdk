@@ -105,6 +105,24 @@
 	  The <tt>or</tt> is what allows you to add as many <tt>[condition] then [action]</tt> statements as you want -
 	just separate each statement with an <tt>or</tt> and you're on your way.
 	</p>
+
+	<h3>Using the <tt>after</tt> Keyword</h3>
+
+	<p>
+		Appcelerator allows you to execute actions with a configurable time delay using the <tt>after</tt>
+		keyword.  Here's an example
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<div on="l:user.logged.in[success=true] then effect[Fade] after 2s">
+		</div>
+	</textarea>
+	</p>
+
+	<p>
+		In this example, the DIV will fade 2 seconds after the <tt>l:user.logged.in</tt> is received
+		with <b>success=true</b> in its data payload.
+	</p>
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
 

@@ -58,10 +58,11 @@
 	<!-- EXAMPLE -->
 	<div on="l:conditions[show=example] then show else hide">
 		<p>
-			The Appcelerator Platform uses an expression language to unleash the power
-			of Ajax and DHTML.  As mentioned earlier, Appcelerator expressions take the form of
+			The Appcelerator Expression Language allows you to unleash the power
+			of Ajax and DHTML without writing any Javascript.  
+			As mentioned earlier, Appcelerator expressions take the form of
 			<tt>on="[condition] then [action]"</tt>.  The examples below demonstrate our
-			standard Conditions.
+			standard <b>conditions</b>.
 		</p>
 			<p>
 				Here are Condition examples
@@ -131,7 +132,7 @@
 					Mouseout Condition
 				</td>
 				<td class="result">	
-					<div on="mouseout then set[color=#ff0000] or mouseover then set[color=#fff]">
+					<div on="mouseout then set[color=#ff0000] or mouseover then set[color=blue]">
 				Mouseout and see red
 					</div>
 				</td>
@@ -141,7 +142,7 @@
 					Mouseover Condition
 				</td>
 				<td class="result">	
-					<div on="mouseover then set[color=#ff0000] or mouseout then set[color=#fff]">
+					<div on="mouseover then set[color=#ff0000] or mouseout then set[color=blue]">
 				Mouseover and see red
 					</div>
 				</td>
@@ -273,7 +274,10 @@
 			</tr>	
 	
 		</table>
-		
+		<app:statemachine id="test" initial="valid">
+			<state name="invalid" if="l:test33"></state>
+			<state name="valid" ></state>
+		</app:statemachine>
 	</div>
 
 	<!-- CODE -->
@@ -349,7 +353,7 @@
 							Mouseout Condition
 						</td>
 						<td class="result">	
-							<div on="mouseout then set[color=#ff0000] or mouseover then set[color=#fff]">
+							<div on="mouseout then set[color=#ff0000] or mouseover then set[color=blue]">
 						Mouseout and see red
 							</div>
 						</td>
@@ -359,7 +363,7 @@
 							Mouseover Condition
 						</td>
 						<td class="result">	
-							<div on="mouseover then set[color=#ff0000] or mouseout then set[color=#fff]">
+							<div on="mouseover then set[color=#ff0000] or mouseout then set[color=blue]">
 						Mouseover and see red
 							</div>
 						</td>
@@ -491,6 +495,10 @@
 					</tr>	
 
 				</table>
+				<app:statemachine id="test" initial="valid">
+					<state name="invalid" if="l:test33"></state>
+					<state name="valid" ></state>
+				</app:statemachine>
 		
 
 			</textarea>

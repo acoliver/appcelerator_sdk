@@ -304,6 +304,68 @@ input[type="text"]
 					</tr>
 				</table>
 		</p>
+
+		<p>
+			You can also build standard HTML tables using the iterator.  These options are specific to 
+			implementing an HTML table using the Iterator widget.
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">table</td>
+					  <td class="def">set to "true" to create an HTML table</td>
+					</tr>
+					<tr>
+					  <td class="term">headers</td>
+					  <td class="def">a comma-delimited list of table header names (e.g.,
+						headers="Name,Address,City")
+					 </td>
+					</tr>
+					<tr>
+					  <td class="term">cellspacing</td>
+					  <td class="def">a numeric value for the table attribute "cellspacing"
+					 </td>
+					</tr>
+					<tr>
+					  <td class="term">width</td>
+					  <td class="def">HTML table width (e.g., "100%")
+					 </td>
+					</tr>
+
+					<tr>
+					  <td class="term">rowEvenClassName</td>
+					  <td class="def">a class for the even table rows.  Using this attribute
+						does require that you properly define your CSS styles.  Your TR styles
+						should be defined as follows:
+						<textarea name="code" class="xml:nocontrols">
+							tr.even_row td
+							{
+								background-color:#ffffcc;
+							}
+						</textarea>
+						In this example, you would say <tt>rowEvenClassName="even_row"</tt>
+					 </td>
+					</tr>
+					<tr>
+					  <td class="term">rowOddClassName</td>
+					  <td class="def">a class for the odd table rows.  Using this attribute
+						does require that you properly define your CSS styles.  Your TR styles
+						should be defined as follows:
+						<textarea name="code" class="xml:nocontrols">
+							tr.odd_row td
+							{
+								background-color:#f6f6f6;
+							}
+						</textarea>
+						In this example, you would say <tt>rowOddClassName="odd_row"</tt>
+					 </td>
+					</tr>
+
+				</table>
+		</p>
+		
+		<app:iterator on="r:job.filter.response then execute" property="rows" table="true" width="100%"
+			headers="ID,Type,Status,Delivery Type,Completed,List Name,#Items,Action" cellspacing="1"
+			rowEvenClassName="even" rowOddClassName="odd">
+		
 	</div>	
 	
 	<script>
