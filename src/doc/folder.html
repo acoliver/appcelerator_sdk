@@ -28,29 +28,36 @@
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:folder[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:folder[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:folder[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:folder[show=example] and add[class=active] or l:folder[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:folder[show=code] and add[class=active] or l:folder[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:folder[show=usage] and add[class=active] or l:folder[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		This widget is used for rendering the equivalent of a treeview.
-	</p>
 	
 	<!-- EXAMPLE -->
 	<div on="l:folder[show=example] then show else hide">
-		to see the messages, start clicking the folder below<br/>
+		<p>
+			The Folder widget allows you to easily build a simple Folder/Tree structure.  Here's an example:
+		</p>
+		
 		<app:folder id="folder_example">
 			<folder name="Overview">
-				<item onopen="l:folder.example[name=what,src='what_is_appcelerator.html']">What is Appcelerator?</item>
-				<item onopen="l:folder.example[name=client_basics,src='client_basics.html']">Client Messaging Basics</item>
+				<item onopen="l:test.folder[name=my]">My Documents</item>
+				<item onopen="l:test.folder[name=your]">Your Documents</item>
 			</folder>
 		</app:folder>
-		<br/><br/>
-		<textarea cols="100" rows="20" id="myfolder_div"></textarea>
-		<app:script on="l:folder.example then execute">
-			$('myfolder_div').value = $('myfolder_div').value+ '\n' + this.data.name+":"+this.data.src;
-		</app:script>
+
+		<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+			<span on="l:test.folder then hide" >
+				Click a folder item to see a message here
+			</span>
+			<span on="l:test.folder[name=my] then show else hide" style="color:green;display:none">
+				You clicked "My Documents"
+			</span>
+			<span on="l:test.folder[name=your] then show else hide" style="color:green;display:none">
+				You click "Your Documents"
+			</span>
+		</div>
 	</div>
 
 	<!-- CODE -->
@@ -59,10 +66,22 @@
 			<textarea name="code" class="xml:nocontrols">
 				<app:folder id="folder_example">
 					<folder name="Overview">
-						<item onopen="l:folder.example[name=what,src='what_is_appcelerator.html']">What is Appcelerator?</item>
-						<item onopen="l:folder.example[name=client_basics,src='client_basics.html']">Client Messaging Basics</item>
+						<item onopen="l:test.folder[name=my]">My Documents</item>
+						<item onopen="l:test.folder[name=your]">Your Documents</item>
 					</folder>
 				</app:folder>
+
+				<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+					<span on="l:test.folder then hide" >
+						Click a folder item to see a message here
+					</span>
+					<span on="l:test.folder[name=my] then show else hide" style="color:green;display:none">
+						You clicked "My Documents"
+					</span>
+					<span on="l:test.folder[name=your] then show else hide" style="color:green;display:none">
+						You click "Your Documents"
+					</span>
+				</div>
 			</textarea>	
 		</p>
 	</div>
@@ -76,20 +95,16 @@
 			 Required Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term">id</td>
-					  <td class="def">the identifier for the widget</td>
+					  <td class="term">name</td>
+					  <td class="def">The display name of a folder</td>
 					</tr>
 					<tr>
-					  <td class="term">&lt;folder&gt; name</td>
-					  <td class="def">the displayed name of a folder</td>
+					  <td class="term">onopen</td>
+					  <td class="def">The message to be publish when the item is selected</td>
 					</tr>
 					<tr>
-					  <td class="term">&lt;item&gt; onopen</td>
-					  <td class="def">hanlder for the open of the item : where you usually put your message</td>
-					</tr>
-					<tr>
-					  <td class="term">&lt;item&gt; TEXT</td>
-					  <td class="def">the innerHTML for the &lt;item&gt; element is the displayed name for the item</td>
+					  <td class="term">&lt;item&gt; TEXT &lt;/item&gt;</td>
+					  <td class="def">The innerHTML for the &lt;item&gt; element is the display name for the item</td>
 					</tr>
 				</table>
 		</p>
@@ -97,12 +112,14 @@
 			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term">&lt;folder&gt; or &lt;item&gt; opened_icon</td>
-					  <td class="def">location of the image to use for when item or folder is open</td>
+					  <td class="term">opened_icon</td>
+					  <td class="def">Location of the image to use for when item or folder is open.
+						This attribute can be applied to the Folder and the Item</td>
 					</tr>
 					<tr>
-					  <td class="term">&lt;folder&gt; or &lt;item&gt; closeed_icon</td>
-					  <td class="def">location of the image to use for when item or folder is closed</td>
+					  <td class="term">closed_icon</td>
+					  <td class="def">Location of the image to use for when item or folder is closed.
+						This attribute can be applied to the Folder and the Item</td>
 					</tr>
 				</table>
 		</p>

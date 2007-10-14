@@ -28,30 +28,42 @@
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:script[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:script[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:script[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:script[show=example] and add[class=active] or l:script[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:script[show=code] and add[class=active] or l:script[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:script[show=usage] and add[class=active] or l:script[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 
-	<p>
-		This widget allows for you to execute javascript when a particular "on" handler occurs.  This is useful for:
-		<ul>
-			<li>interacting with elements across scope boundaries
-			<li>performing complicated execution logic
-			<li>integrating with 3rd party javascript components
-			<li>invoking the appcelerator API
-		</ul>
-	</p>
 	
 	<!-- EXAMPLE -->
 	<div on="l:script[show=example] then show else hide">
-		Click the links to run simple Javascript code: <a on="click then l:instant.hello">Instant Hello World</a> | <a on="click then l:delayed.hello">Delayed Hello World</a>  
-		<app:script on="l:instant.hello then execute">  
-			alert('Instant Hello World');  
-		</app:script>  
-		<app:script on="l:delayed.hello then execute after 5s">  
-			alert('Hello World delayed 5 seconds');  
+		<p>
+			The Appcelerator Platform allows you to build RIAs without using Javascript, but we certainly
+			do not mind if you want to write Javascript.  To make this easy for you, we created a Script Widget.  
+			Within a Script Widget, you can write any valid Javascript code.   The Script
+			Widget is powerful because it allows you to trigger the execution of Javascript using our Expression 
+			Language like so <tt>on="[condition] then execute</tt>"
+		</p>
+		<p>Here's an example</p>
+		<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer"
+			on="click then l:get.current.datetime
+			or l:show.current.datetime then hide 
+			or l:reset.script.example then show">
+			Click me to get the current date and time
+		</div>
+		<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;display:none"
+			on="l:show.current.datetime then show and effect[Highlight] or l:reset.script.example then hide">
+			<span style="color:#000">
+				Current Date Time = <span on="l:show.current.datetime then value[datetime]"></span>
+				<a on="click then l:reset.script.example">Reset Example</a>
+			</span>
+		</div>
+
+		<!-- get current date time and send a message with the value -->
+		<app:script on="l:get.current.datetime then execute">
+			var date = new Date();
+			$MQ('l:show.current.datetime',{'datetime':date});
 		</app:script>
+
 	</div>
 
 	<!-- CODE -->
@@ -59,12 +71,24 @@
 
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				Click the links to run simple Javascript code: <a on="click then l:instant.hello">Instant Hello World</a> | <a on="click then l:delayed.hello">Delayed Hello World</a>  
-				<app:script on="l:instant.hello then execute">  
-					alert('Instant Hello World');  
-				</app:script>  
-				<app:script on="l:delayed.hello then execute after 5s">  
-					alert('Hello World delayed 5 seconds');  
+				<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer"
+					on="click then l:get.current.datetime
+					or l:show.current.datetime then hide 
+					or l:reset.script.example then show">
+					Click me to get the current date and time
+				</div>
+				<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;display:none"
+					on="l:show.current.datetime then show and effect[Highlight] or l:reset.script.example then hide">
+					<span style="color:#000">
+						Current Date Time = <span on="l:show.current.datetime then value[datetime]"></span>
+						<a on="click then l:reset.script.example">Reset Example</a>
+					</span>
+				</div>
+
+				<!-- get current date time and send a message with the value -->
+				<app:script on="l:get.current.datetime then execute">
+					var date = new Date();
+					$MQ('l:show.current.datetime',{'datetime':date});
 				</app:script>
 			</textarea>	
 		</p>
@@ -73,11 +97,19 @@
 	<!-- USAGE -->
 	<div on="l:script[show=usage] then show else hide" style="display:none">
 		<p>
-			 Required Options:
+			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">on</td>
-					  <td class="def">The message that contains the data to populate the chart </td>
+					  <td class="def">If the Script Widget does not have a <tt>on</tt> expression
+						defined. The script will be executed when the page is loaded.  If the expression
+						is defined the script will be executed when the <tt>on</tt> condition is met.
+						<p>Usage: <tt>on="[condition] then execute"</tt>.  </p>  
+						<p>You can add an optional <tt>after</tt> that will execute the script
+							when its condition is met after some defined amount of time - e.g.,
+							<tt>on="l:my.message then execute after 2s"</tt>
+						</p>
+						</td>
 					</tr>
 				</table>
 		</p>
