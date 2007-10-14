@@ -59,8 +59,7 @@ Appcelerator.Module.Iterator =
 		else
 		{
 			if (table)
-			{
-				
+			{				
 				html+='<table width="'+width+'" cellspacing="'+parameterMap['cellspacing']+'"><tr>';
 				headers.each(function(h)
 				{
@@ -76,7 +75,10 @@ Appcelerator.Module.Iterator =
 				o['iterator_odd_even']=(c%2==0)?'even':'odd';
 				if (table)
 				{
-					html+='<tr>';
+					if (o['iterator_odd_even'] == 'odd')
+						html+='<tr class="'+parameterMap['rowOddClassName']+'">';
+					else
+						html+='<tr class="'+parameterMap['rowEvenClassName']+'">';
 				}
 				html += compiled(o);
 				if (table)
@@ -101,10 +103,8 @@ Appcelerator.Module.Iterator =
 	{
 		var parameters = {};
 		
-		// FIXME
-		//	var rowEvenClassName = element.getAttribute('rowEvenClassName');
-		//	var rowOddClassName = element.getAttribute('rowOddClassName');
-		
+		parameters['rowEvenClassName'] = element.getAttribute('rowEvenClassName');
+		parameters['rowOddClassName'] = element.getAttribute('rowOddClassName');
 		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);
 		parameters['property'] = element.getAttribute('property');
 		parameters['table'] = element.getAttribute('table') == 'true';
