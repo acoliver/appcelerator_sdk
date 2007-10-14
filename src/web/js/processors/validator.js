@@ -61,7 +61,7 @@ Appcelerator.Compiler.wireValidator = function(element,value)
 		var value = Appcelerator.Compiler.getInputFieldValue(element,true,true);
 		var valid = validatorFunc(value, element);
 		var same = valid == element.validatorValid;
-		Logger.warn("in revalidate for element = " + element.id + " validatorValid = " + element.validatorValid);
+
 		element.validatorValid = valid;
 		if (decorator)
 		{
