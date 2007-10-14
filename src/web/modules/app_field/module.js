@@ -49,7 +49,7 @@ Appcelerator.Module.Field =
 		var title = '';
 		var description = '';
 		var errorIcon = Appcelerator.Module.Field.modulePath + 'images/bullet_error.png';	
-		var error = "<img style='position:relative;top:-2px' src='" + errorIcon + "'/> Required";
+		var error = "<img src='" + errorIcon + "'/> Required";
 		var html = '';
 		var headerClass = 'medium_text info_color';
 		var errorClass = 'error_color small_text';

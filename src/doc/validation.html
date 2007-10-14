@@ -28,68 +28,145 @@
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:validation[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:validation[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:validation[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:validation[show=example] and add[class=active] or l:validation[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:validation[show=code] and add[class=active] or l:validation[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:validation[show=usage] and add[class=active] or l:validation[show!=usage] then remove[class=active]">Usage</a> 
 	</p>
 	
-	<p>
-		This widget allows for you to group the validators of multiple input fields to publish a message.  This is useful for:
-		<ul>
-			<li>enabling a save button for a form
-		</ul>
-	</p>
 	<!-- EXAMPLE -->
 	<div on="l:validation[show=example] then show else hide">
-		You should see a ready to progress message when all three input fields are filled.
-		<div>
-			<input type="text" id="validation_test1_1" value="" validator="required"/>
-		</div>
-		<div>
-			<input type="text" id="validation_test1_2" value="" validator="required"/>
-		</div>
-		<div>
-			<input type="text" id="validation_test1_3" value="" validator="required"/>
+		<p>
+			The Validation widget allows you to build a state machine around validation.  As members of the
+			Validation widget are being validated you can publish messages.  This allows you to  publish
+			a message when all fields are valid or when one or more fields are invalid.
+		</p>
+		<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+			<tr>
+				<td class="bold_value_grey">
+					Required Date:
+				</td>
+				<td>
+					<input type="text" validator="date" decorator="date" id="date"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Optional Email:
+				</td>
+				<td>
+					<input type="text" validator="email_optional" decorator="email" id="email"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Required  (at least 1 character):
+				</td>
+				<td>
+					<input type="text" validator="required" decorator="required" id="required_field"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Optional Number  (decimal > 0):
+				</td>
+				<td>
+					<input type="text" validator="number_optional" decorator="number" id="number"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Custom Decorator:
+				</td>
+				<td>
+					<input type="text" validator="required" decorator="custom" decoratorId="my_custom_decorator"
+						id="custom"/>
+					<span id="my_custom_decorator" style="color:green;font-size:16px">wrong answer, pal...</span>
+				</td>
+			</tr>
+			
+		</table>
+		<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+			<span on="l:validation.test[valid=true] then show else hide" style="color:green;display:none">
+				All Fields Valid
+			</span>
+			<span on="l:validation.test[valid=false] then show else hide" style="color:red;display:none">
+				1 or more Fields Invalid
+			</span>
+				
 		</div>
 
-		<app:validation on="valid then l:validation1.test[valid=true] else l:validation1.test[valid=false]">
+		<app:validation on="valid then l:validation.test[valid=true] else l:validation.test[valid=false]">
 			<members>
-				 validation_test1_1 validation_test1_2 validation_test1_3
+				 date email required_field number custom
 			</members>
 		</app:validation>
-		<div on="l:validation1.test[valid=true] then show else hide" style="display: none; padding: 20px">
-			Ready to proceed
-		</div>
-		<div on="l:validation1.test[valid=true] then hide else show" style="20px">
-			Required data is missing
-		</div>
 	</div>
 
 	<!-- CODE -->
 	<div on="l:validation[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<div>
-					<input type="text" id="validation_test1_1" value="" validator="required"/>
-				</div>
-				<div>
-					<input type="text" id="validation_test1_2" value="" validator="required"/>
-				</div>
-				<div>
-					<input type="text" id="validation_test1_3" value="" validator="required"/>
+				<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+					<tr>
+						<td class="bold_value_grey">
+							Required Date:
+						</td>
+						<td>
+							<input type="text" validator="date" decorator="date" id="date"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Optional Email:
+						</td>
+						<td>
+							<input type="text" validator="email_optional" decorator="email" id="email"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Required  (at least 1 character):
+						</td>
+						<td>
+							<input type="text" validator="required" decorator="required" id="required_field"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Optional Number  (decimal > 0):
+						</td>
+						<td>
+							<input type="text" validator="number_optional" decorator="number" id="number"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Custom Decorator:
+						</td>
+						<td>
+							<input type="text" validator="required" decorator="custom" decoratorId="my_custom_decorator"
+								id="custom"/>
+							<span id="my_custom_decorator" style="color:green;font-size:16px">wrong answer, pal...</span>
+						</td>
+					</tr>
+
+				</table>
+				<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+					<span on="l:validation.test[valid=true] then show else hide" style="color:green;display:none">
+						All Fields Valid
+					</span>
+					<span on="l:validation.test[valid=false] then show else hide" style="color:red;display:none">
+						1 or more Fields Invalid
+					</span>
+
 				</div>
 
-				<app:validation on="valid then l:validation1.test[valid=true] else l:validation1.test[valid=false]">
+				<app:validation on="valid then l:validation.test[valid=true] else l:validation.test[valid=false]">
 					<members>
-						 validation_test1_1 validation_test1_2 validation_test1_3
+						 date email required_field number custom
 					</members>
 				</app:validation>
-				<div on="l:validation1.test[valid=true] then show else hide" style="display: none; padding: 20px">
-					Ready to proceed
-				</div>
-				<div on="l:validation1.test[valid=true] then hide else show" style="20px">
-					Required data is missing
-				</div>
+	
 			</textarea>	
 		</p>
 	</div>
@@ -101,24 +178,22 @@
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">on</td>
-					  <td class="def">the handler for the valid event</td>
+					  <td class="def">The expression that allows you to publish a message
+						when all fields are valid or when at least 1 field is invalid.
+						When all fields are valid you can use the built-in condition <tt>valid</tt>
+						<p>Usage: <tt>on="valid then l:fields.valid[valid=true] else l:fields.valid[valid=false]"</tt>
+						</p>
+					 </td>
 					</tr>
 					<tr>
-					  <td class="term">members element</td>
-					  <td class="def">a space delimited listing of named input elements</td>
+					  <td class="term">members elements</td>
+					  <td class="def">A space-delimited list of the element IDs that should be part of
+						the Validation widget.  Each element ID must have a validator defined
+						<p> Usage: <tt>&lt;members&gt; field1 field2 field3 &lt;/members&gt;
+						</p></td>
 					</tr>
 				</table>
 		</p>
-<!--		<p>
-			 Optional Options:
-				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
-				</table>
-		</p>
--->
 	</div>	
 	
 	<script>
