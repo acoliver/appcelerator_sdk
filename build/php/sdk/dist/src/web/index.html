@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<title>Appcelerator&trade; Server</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<script src="js/appcelerator.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+	<div>
+		
+		<div on="r:app.test.message.response then show" style="display:none">You suck. #{message}</div>
+		
+		
+		<script>
+			$MQ('r:app.test.message.request[message=hi]');
+		</script>
+	
+	</div>
+</body>
+</html>

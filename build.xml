@@ -108,10 +108,7 @@
 	</target>
 	<target name="copy_web_files">
 		<copy todir="${stage.dir}/web" filtering="no">
-			<fileset dir="${src.web.dir}">
-				<include name="**/*"/>
-				<exclude name="**/js/**"/>
-			</fileset>
+			<fileset dir="${src.web.dir}" includes="**/*" excludes="**/js/**"/>
 		</copy>
 	</target>
 	
@@ -145,76 +142,27 @@
 		<appc srcdir="${stage.dir}/web" destdir="test"/>
 	</target>
 	
-	<target name="build_myappcelerator_java" depends="build_core_javascript,copy_web_files,java_compile" description="* Builds a test project">
-		<mkdir dir="${stage.dir}/myappcelerator/java"/>
-		<copy todir="${stage.dir}/myappcelerator/java" filtering="no">
-			<fileset dir="${build.java.dir}/myappcelerator">
-				<include name="**/*"/>
-				<exclude name="**/ant-*.jar"/>
-				<exclude name="appcelerator.xml"/>
-			</fileset>
-		</copy>
-		<copy todir="${stage.dir}/myappcelerator/java/src/web" filtering="no">
-			<fileset dir="${build.java.dir}/myappcelerator">
-				<include name="appcelerator.xml"/>
-			</fileset>
-		</copy>
-		<copy todir="${stage.dir}/myappcelerator/java/lib/build" filtering="no">
-			<fileset dir="${stage.dir}/java">
-				<include name="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
-			</fileset>
-			<fileset dir="${build.java.dir}/lib">
-				<include name="*.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="${stage.dir}/myappcelerator/java/src/web" filtering="no">
-			<fileset dir="${stage.dir}/web">
-				<include name="**/*"/>
-			</fileset>
-		</copy>
-		<mkdir dir="${stage.dir}/myappcelerator/java/src/java"/>
-		<copy todir="${stage.dir}/myappcelerator/java/src/java" filtering="no">
-			<fileset dir="${src.java.dir}">
-				<include name="**/myappcelerator/**"/>
-			</fileset>
-		</copy>
-	</target>
+	<target name="build_java" depends="build_core_javascript,copy_web_files,java_compile"/>
 	<target name="build_server.nomin" depends="nomin,build_server"/>
-	<target name="build_server" depends="build_myappcelerator_java,build_doc" description="* Builds the Java Server">
+	<target name="build_server" depends="build_java,build_doc" description="* Builds the Java Server">
 		<mkdir dir="${stage.dir}/java/server/web"/>
 		<copy todir="${stage.dir}/java/server/web">
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/java/server/web" overwrite="true">
 			<fileset dir="${build.java.dir}/server/web" includes="**/*"/>
-		</copy>
-		<copy todir="${stage.dir}/java/server/web" overwrite="true">
 			<fileset dir="${build.java.dir}/server" includes="appcelerator.xml"/>
 		</copy>
 		<mkdir dir="${stage.dir}/java/server/WEB-INF"/>
 		<mkdir dir="${stage.dir}/java/server/WEB-INF/logs"/>
 		<copy todir="${stage.dir}/java/server/WEB-INF">
-			<fileset dir="${build.java.dir}/server/WEB-INF">
-				<include name="**/*"/>
-				<exclude name="**/*web.xml"/>
-			</fileset>
+			<fileset dir="${build.java.dir}/server/WEB-INF" includes="**/*" excludes="**/*web.xml"/>
 		</copy>
 		<war destfile="${stage.dir}/java/server/appcelerator.war" webxml="${build.java.dir}/server/WEB-INF/web.xml">
-			<lib dir="${build.java.dir}/lib">
-				<include name="*.jar"/>
-				<exclude name="servlet*.jar"/>
-				<exclude name="js-*.jar"/>
-				<exclude name="ant-*.jar"/>
-			</lib>
-			<lib dir="${stage.dir}/java">
-				<include name="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
-			</lib>
-			<fileset dir="${stage.dir}/java/server/web">
-				<include name="**/**"/>
-			</fileset>
-			<fileset dir="${stage.dir}/java/server">
-				<include name="WEB-INF/**"/>
-			</fileset>
+			<lib dir="${build.java.dir}/lib" includes="*.jar" excludes="servlet*.jar,js-*.jar,ant-*.jar"/>
+			<lib dir="${stage.dir}/java" includes="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
+			<fileset dir="${stage.dir}/java/server/web" includes="**/**"/>
+			<fileset dir="${stage.dir}/java/server" includes="WEB-INF/**"/>
 		</war>
 	</target>
 	<target name="server_dist.nomin" depends="nomin,server_dist"/>
@@ -225,7 +173,7 @@
 			<fileset dir="stage" includes="doc/**"/>
 		</zip>
 	</target>
-	<target name="build_web_unit" depends="build_myappcelerator_java" description="* Builds the web unit test suite">
+	<target name="build_web_unit" depends="build_java" description="* Builds the web unit test suite">
 		<mkdir dir="${stage.dir}/test/web"/>
 		<copy todir="${stage.dir}/test/web">
 			<fileset dir="${stage.dir}/web">
@@ -245,7 +193,7 @@
 		</war>
 	</target>
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
-	<target name="build_doc" depends="build_myappcelerator_java" description="* Builds the documentation">
+	<target name="build_doc" depends="build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
 		<copy todir="${stage.dir}/doc">
 			<fileset dir="${stage.dir}/web">
@@ -263,66 +211,66 @@
 	</target>
 	
 
-	<target name="build_sdk" depends="init,build_web_unit,build_doc,build_java_sdk" description="* Builds all language SDKs"></target>
+	<target name="build_sdk" depends="init,build_web_unit,build_doc,build_java_sdk,build_php_sdk" description="* Builds all language SDKs"></target>
 	
 	<target name="build_java_sdk" depends="build_web_unit,build_doc,build_server" description="* Builds the SDK for Java">
 		<mkdir dir="${stage.dir}/sdk/java"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib/appcelerator"/>
-		<mkdir dir="${stage.dir}/sdk/java/dist/web"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/server"/>
 		<mkdir dir="${stage.dir}/sdk/java/doc"/>
 		<mkdir dir="${stage.dir}/sdk/java/test"/>
 		<copy todir="${stage.dir}/sdk/java" filtering="true"> 
-			<fileset dir="${build.java.dir}/sdk">
-				<include name="**/*"/>
-			</fileset>
-			<fileset dir=".">
-				<include name="LICENSE"/>
-			</fileset>
+			<fileset dir="${build.java.dir}/sdk" includes="*.*,dist/*.*,dist/src/java/**"/>
+			<fileset dir="." includes="LICENSE"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist/lib/appcelerator" filtering="false"> 
-			<fileset dir="${build.java.dir}/lib">
-				<include name="**/*"/>
-			</fileset>
-			<fileset dir="${stage.dir}/java">
-				<include name="appcelerator-${VERSION}.jar"/>
-			</fileset>
+			<fileset dir="${build.java.dir}/lib" includes="**/*"/>
+			<fileset dir="${stage.dir}/java" includes="appcelerator-${VERSION}.jar"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/java/dist/web" filtering="false"> 
-			<fileset dir="${stage.dir}/web">
-				<include name="**/*"/>
-			</fileset>
-			<fileset dir="${build.java.dir}/server">
-				<include name="appcelerator.xml"/>
-			</fileset>
+		<copy todir="${stage.dir}/sdk/java/dist/src/web" filtering="false"> 
+			<fileset dir="${stage.dir}/web" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/java/dist" filtering="false"> 
-			<fileset dir="${build.java.dir}/sdk/dist">
-				<include name="**/*"/>
-				<exclude name=".classpath"/>
-			</fileset>
+		<copy todir="${stage.dir}/sdk/java/dist" filtering="false" overwrite="true"> 
+			<fileset dir="${build.java.dir}/sdk/dist" includes="**" excludes=".classpath"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist" filtering="true"> 
-			<fileset dir="${build.java.dir}/sdk/dist">
-				<include name=".classpath"/>
-			</fileset>
+			<fileset dir="${build.java.dir}/sdk/dist" includes=".classpath"/>
 			<filterchain>
 				<expandproperties/>
 			</filterchain>
 		</copy>
 		<copy tofile="${stage.dir}/sdk/java/dist/server/setupfiles" file="${stage.dir}/java/server/appcelerator.war"/>
 		<copy todir="${stage.dir}/sdk/java/doc" filtering="false"> 
-			<fileset dir="${stage.dir}/doc">
-				<include name="**/*"/>
-			</fileset>
+			<fileset dir="${stage.dir}/doc" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/test" filtering="false"> 
-			<fileset dir="${stage.dir}/test/web">
-				<include name="**/*"/>
-			</fileset>
+			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
 		</copy>
-		
+	</target>
+	<target name="build_php_sdk" depends="build_web_unit,build_doc" description="* Builds the SDK for PHP">
+		<mkdir dir="${stage.dir}/sdk/php"/>
+		<mkdir dir="${stage.dir}/sdk/php/doc"/>
+		<mkdir dir="${stage.dir}/sdk/php/test"/>
+		<copy todir="${stage.dir}/sdk/php" filtering="true"> 
+			<fileset dir="${build.php.dir}/sdk" includes="*.*/**/**" excludes="dist/src/web"/>
+			<fileset dir="." includes="LICENSE"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php/dist/src/web" filtering="false"> 
+			<fileset dir="${stage.dir}/web" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php/dist/src/php" filtering="false"> 
+			<fileset dir="${src.php.dir}" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php/dist" filtering="false" overwrite="true"> 
+			<fileset dir="${build.php.dir}/sdk/dist" includes="**" excludes=".classpath"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
+			<fileset dir="${stage.dir}/doc" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php/test" filtering="false"> 
+			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
+		</copy>
 	</target>
 	
 	<target name="sdk_java_dist" depends="build_sdk" description="* Builds the Java SDK distribution">
@@ -525,5 +473,21 @@ cat src/doc/treechild/${name}.html</echo>
 			<fileset dir="stage" includes="unittest.war" />
 		</copy>
 	</target>
-	
+	<target name="deploy_php" description="deploys php src and web files to ${php.deploy.dir}">
+		<available file="${php.deploy.dir}" type="dir" property="php.deploy.dir.exists" />
+		<fail unless="php.deploy.dir.exists">Directory ${php.deploy.dir} doesn't exist.</fail>
+		<copy todir="${php.deploy.dir}">
+			<fileset dir="stage/sdk/php/dist/src/web" includes="**/**,*.*" />
+			<fileset dir="stage/sdk/php/dist/src/php" includes="**/**,*.*" />
+		</copy>
+	</target>
+	<target name="undeploy_php">
+		<available file="${php.deploy.dir}" type="dir" property="php.deploy.dir.exists"/>
+		<antcall target="undeploy.dir.php"/>
+	</target>
+	<target name="undeploy.dir.php" if="php.deploy.dir.exists">
+		<delete>
+			<fileset dir="${php.deploy.dir}" includes="**/**"/>
+		</delete>
+	</target>
 </project>

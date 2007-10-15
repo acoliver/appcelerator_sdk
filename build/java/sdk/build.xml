@@ -67,10 +67,6 @@
 		</copy>
 		<copy todir="${create.dir}" filtering="false">
 			<fileset dir="dist" includes="lib/**,server/**,src/**"/>
-			<!--<fileset dir="dist" includes="**/*" excludes="build.*,.project,.classpath,web/*"/>-->
-		</copy>
-		<copy todir="${create.dir}/src/web" filtering="false">
-			<fileset dir="dist/web" includes="**/*"/>
 		</copy>
 	</target>
 		
