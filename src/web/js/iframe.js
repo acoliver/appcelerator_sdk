@@ -9,7 +9,11 @@ Appcelerator.Util.IFrame =
 		var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
 		var frame = document.createElement('iframe');
 	   	frame.setAttribute('id', frameid);
-	   	frame.setAttribute('name', frameid);
+	   	//This prevents Firefox 1.5 from getting stuck while trying to get the contents of the new iframe
+	   	if(!Appcelerator.Browser.isFirefox)
+	   	{
+	   		frame.setAttribute('name', frameid);
+	   	}
 	   	frame.setAttribute('src',Appcelerator.DocumentPath+src);
 	   	frame.style.position = 'absolute';
 	   	frame.style.width = frame.style.height = frame.borderWidth = '1px';
