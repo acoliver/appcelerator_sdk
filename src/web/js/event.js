@@ -3,7 +3,7 @@ Object.extend(Event, {
     getEvent: function (e)
     {
     	e = e || window.event;
-    	return typeof(e.inspect)=='function' ? e : Event.extend(e);
+    	return e ? typeof(e.inspect)=='function' ? e : Event.extend(e) : null;
     },
     isEventObject: function (e)
 	{
