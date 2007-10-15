@@ -6,11 +6,11 @@
 		 *
 		 * @Service(request=app.test.message.request,response=app.test.message.response,version=1.0)
 		 */
-		public function myServiceMethod ($request,$response)
+		public function myServiceMethod (&$request,&$response)
 		{
 			$data = &$response['data'];
-			$message = &$request['message'];
-			$data['message']='I recieved from you '+ $message;
+			$requestdata = $request['data'];
+			$data['message']='I recieved from you: ' . $requestdata['message'];
 			$data['success']='true';
 		}
 	}

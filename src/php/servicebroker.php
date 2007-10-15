@@ -141,7 +141,7 @@
 		private $method;
 		private $metadata;
 		
-		public function __construct($service,$method,$metadata)
+		public function __construct(&$service,&$method,&$metadata)
 		{
 			$this->service = $service;
 			$this->method = $method;
@@ -155,7 +155,7 @@
 		{
 			return $this->metadata['response'];
 		}
-		public function dispatch ($request,$response)
+		public function dispatch (&$request,&$response)
 		{
 			$this->method->invoke($this->service,$request,$response);
 		}
@@ -163,7 +163,7 @@
 
 	$services = array();
 
-	function registerService ($type, $handler, $handlers)
+	function registerService ($type, &$handler, &$handlers)
 	{
 		if (!array_key_exists($type,$handlers))
 		{
@@ -206,8 +206,8 @@
 						$comment = $rm->getDocComment();
 						$metadata = getServiceMetadata($comment);
 						$request = $metadata['request'];
-						$adapter = new ServiceAdapter($instance,$rm,&$metadata);
-						registerService($request,$adapter,&$services);
+						$adapter = new ServiceAdapter($instance,$rm,$metadata);
+						registerService($request,$adapter,$services);
 					}
 				}
 			}
@@ -266,7 +266,8 @@
 				$request = array();
 				$request['scope'] = $node->getAttribute('scope');
 				$request['version'] = $node->getAttribute('version');
-				$request['data'] = json_decode($cdata);
+				$request['data'] = json_decode($cdata,true);
+				//echo("decode:" . var_dump($request['data']));
 				$request['requestid'] = $node->getAttribute('requestid');
 				$array = $services[$type];
 				foreach ($array as $handler)
@@ -290,8 +291,8 @@
 							$response['type']=$responseType;
 							$response['requestid']=$request['requestid'];
 							$response['data']=&$data;
-							$handler->dispatch($request,&$response);
-							$element = toXML($responseDom, &$response);
+							$handler->dispatch($request,$response);
+							$element = toXML($responseDom, $response);
 							$responseElement->appendChild($element);
 							$count++;
 						}
