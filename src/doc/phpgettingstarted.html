@@ -31,7 +31,7 @@
 	It is assumed that you already have the following installed:
 	<ul>
 		<li>apache
-		<li>php bindings for apache
+		<li>php5 support for apache (ex: http://www.entropy.ch/software/macosx/php/)
 	</ul>
 	</p>
 
@@ -39,19 +39,37 @@
 	<p>
 	Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
 	<ul>
-		<li>appcelerator_server_php_2.0.0.zip - this is the distribution for the appcelerator service manager
-		<li>appcelerator_sdk_php_2.0.0.zip - this is the distribution for creating your php services (which are deployed as appcelerator services and applications)
+		<li>appcelerator_sdk_php_2.0.0.zip - this is the distribution for creating your php services
 	</ul>
-	<h3>Install the appcelerator service manager</h3>
+	<h3>Extract</h3>
 	<p>
-		to be completed
+		<pre class="command">unzip appcelerator_sdk_php_2.0.0.zip -d appcelerator_sdk_php_2.0.0
+cd appcelerator_sdk_php_2.0.0</pre>
 	</p>
 	
-	<h3>Create your own project</h3>
+	<h3>Deploy</h3>
 	<p>
-		to be completed
-	</p>
+	If you are running apache with the php5 support then you can simply copy to your sites directory
+		<pre class="command">cp -R src/web/* ~/Sites
+cp -R src/php/* ~/Sites</pre>
+	Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html">http://localhost/~myname/index.html</a>
 
+	<h3>Testing</h3>
+	You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html">http://localhost/~myname/servicetester.html</a> and put the following in
+	<ul>
+		<li><b>message type</b>:remote:app.test.message.request
+	</ul>
+	you should get the following back
+	<ul>
+		<li><b>message type</b>:remote:app.test.message
+		<li><b>data.message</b>:"I received from you: Hello,world"
+		<li><b>data.success</b>:"true"
+	</ul>
+	If you look in the following you can see how to implement services
+	<ul>
+		<li>src/php/services/sample_service.php
+	</ul>
+	You can add new services by creating files in the services directory and making sure that they end with _service.php and follow the same method declaration (including the comments).
 </body>
 
 </html>

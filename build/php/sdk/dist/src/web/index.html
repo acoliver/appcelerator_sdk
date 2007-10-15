@@ -10,12 +10,10 @@
 
 	<div>
 		
-		<div on="r:app.test.message.response then show" style=""><a on="click then r:app.test.message.request[message='Hello, World']">click to send</a>. 
-			<p>
-				<span on="r:app.test.message.response then value[message]"></span>
-			</p>
-		</div>
-
+		<a on="click then r:app.test.message.request[message='Hello, World']">click to send</a>. 
+		<p>
+			<span on="r:app.test.message then value[message]"></span>
+		</p>
 	</div>
 </body>
 </html>
