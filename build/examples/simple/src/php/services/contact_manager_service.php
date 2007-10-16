@@ -1,5 +1,5 @@
 <?php 
-	class ContactManager
+	class ContactManagerService
 	{
 		/**
 		 * this is a example service method

@@ -195,19 +195,21 @@
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
 	<target name="build_doc" depends="build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
+		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
-		<loadfile property="contact_manager.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager.rb"/>
-		<copy todir="${stage.dir}/doc" filtering="true">
+		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
+		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
 			<fileset dir="${stage.dir}/web">
 				<include name="**/*"/>
 				<exclude name="*.html"/>
 			</fileset>
 			<fileset dir="src/doc" includes="**/*"/>
 			<filterset>
+				<filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
 				<filter token="appcelerator.xml" value="${appcelerator.xml}"/>
 				<filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
@@ -215,7 +217,7 @@
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
 				<filter token="VERSION" value="${VERSION}"/>
 				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
-				<filter token="contact_manager.rb" value="${contact_manager.rb}"/>
+				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 			</filterset>
 		</copy>
 		
@@ -333,7 +335,7 @@
              <fileset dir="${src.web.dir}" includes="modules**/**"/>
              <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
         	 <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
-             <fileset dir="${build.java.dir}/server/web" includes="servicetester.html"/>
+             <fileset dir="${build.ruby.dir}/dist/src/web" includes="**/**"/>
         </copy>
 		<antcall target="gem"/>
 	</target>
@@ -372,7 +374,7 @@
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
 	</target>
 	<target name="install_java_examples" depends="install_java">
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myjavaapp">
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" overwrite="true">
 			<fileset dir="build/examples/simple" includes="src/**,appcelerator-services.xml"/>
 		</copy>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="dist"/>
@@ -385,18 +387,19 @@
 			<arg line="uninstall appcelerator"/>
 		</exec>
 		<exec dir="${stage.dir}" executable="gem" failonerror="false">
-			<arg line="install -l appcelerator"/>
+			<arg line="install -l appcelerator-${VERSION}.gem"/>
 		</exec>
+		<mkdir dir="${stage.dir}/sdkprojects"/>
 		<exec dir="${stage.dir}/sdkprojects" executable="appcelerator" failonerror="false">
 			<arg line="myrubyapp"/>
 		</exec>
 	</target>
 	<target name="install_ruby_examples" depends="install_ruby">
 		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/app">
-			<fileset dir="build/examples/simple/src/ruby" includes="**"/>
+			<fileset dir="build/examples/simple/src/ruby" includes="**/**"/>
 		</copy>
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/public">
-			<fileset dir="build/examples/simple/src/web" includes="**"/>
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/public" overwrite="true">
+			<fileset dir="build/examples/simple/src/web" includes="**/**"/>
 		</copy>
 	</target>
 	<target name="install_php" depends="sdk_php_dist">

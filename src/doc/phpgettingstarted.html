@@ -73,17 +73,28 @@ cp -R src/php/* ~/Sites</pre>
 	</div>
 	<div on="l:phpgettingstarted[show=service] then show else hide" style="display:none">
 		<h3>PHP Service</h3>
-		If you look in the following you can see how to implement services
+		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
 		<ul>
-			<li>src/php/services/sample_service.php
+			<li>the file ends with <tt>_service.php</tt>
+			<li>the class ends with <tt>Service</tt>
+			<li>you put the proper method signature <tt>method_name(&amp;$request,&amp;$response)</tt>
+			<li>you put the proper comments directly above the method <tt>@Service(request=xxx,response=xxx,version=xx) </tt>
 		</ul>
-		You can add new services by creating files in the services directory and making sure that they end with _service.php and follow the same method declaration (including the comments).
 
 		<h3>src/php/services/contact_manager_service.php</h3>
-		You could create a new class ContactManager with the following source
+		You could create a new class ContactManagerService with the following source
 		<textarea name="code" class="xml:nocontrols">
 @contact_manager_service.php@
 		</textarea>
+		
+		<h3>Next Steps</h3>
+		Copy over your php files
+		<pre class="command">cp -R src/php/* ~/Sites</pre>
+
+		<h3>Troubleshooting</h3>
+		On apache, you can view the logs to see what exceptions may occur based upon your ErrorLog config (/etc/httpd/httpd.conf)
+		<pre class="command">ErrorLog "/private/var/log/httpd/error_log"</pre>
+		You may want to restart apache (rarely needed)
 	</div>
 	<div on="l:phpgettingstarted[show=client] then show else hide" style="display:none">
 		<p>
@@ -107,6 +118,11 @@ cp -R src/php/* ~/Sites</pre>
 			<textarea name="code" class="xml:nocontrols">
 @index.html@
 			</textarea>
+
+			<h3>Next Steps</h3>
+			Copy over your web files
+			<pre class="command">cp -R src/web/* ~/Sites</pre>
+			You are now ready to proceed to creating your PHP Service
 		</p>
 	</div>
 	<script>

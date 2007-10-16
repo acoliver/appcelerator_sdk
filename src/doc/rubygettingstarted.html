@@ -75,38 +75,44 @@ script/server</pre>
 			<h3>Web Implementation</h3>
 			Once you have created the java project, your web source will exist in:
 			<ul>
-				<li><b>src/web</b>: directory where all your html exists
-				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
-				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+				<li><b>public</b>: directory where all your html exists
+				<li><b>public/appcelerator.xml</b>: defines the location and behaviour of the service broker
 			</ul>
 
-			<h3>src/web/appcelerator.xml</h3>
+			<h3>public/appcelerator.xml</h3>
 			You should not have to make any changes to this file
 			<textarea name="code" class="xml:nocontrols">
-@appcelerator.xml@
+@ruby_appcelerator.xml@
 			</textarea>
 
-			<h3>src/web/index.html</h3>
-			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
-			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<h3>public/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.
 			<textarea name="code" class="xml:nocontrols">
 @index.html@
 			</textarea>
+			<h3>Next Steps</h3>
+			You are now ready to proceed to creating your Ruby Service
 		</p>
 	</div>
 	<div on="l:rubygettingstarted[show=service] then show else hide" style="display:none">
 		<p>
 			<h3>Ruby Service</h3>
-			
-			If you look in the following you can see how to implement services
+			To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
 			<ul>
-				<li>myapp/app/services/test_service.rb - the ruby service
+				<li>the file ends with <tt>_service.rb</tt>
+				<li>the class ends with <tt>Service</tt> and extends <tt>Appcelerator::Service</tt>
+				<li>you put the proper method signature <tt>method_name(message,request)</tt>
+				<li>you make the appropriate call to <tt>handles_message</tt>
 			</ul>
-			<h3>app/services/contact_manager.rb</h3>
-			You could create a new class ContactManager with the following source
+			<h3>app/services/contact_manager_service.rb</h3>
+			You could create a new class ContactManagerService with the following source
 			<textarea name="code" class="xml:nocontrols">
-@contact_manager.rb@
+@contact_manager_service.rb@
 			</textarea>
+			
+			<h3>Next Steps</h3>
+			You may want to kill and restart rails
+			<pre class="command">script/server</pre>
 		</p>
 	</div>
 	<script>

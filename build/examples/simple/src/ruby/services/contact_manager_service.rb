@@ -1,5 +1,5 @@
 
-class ContactManager < Appcelerator::Service
+class ContactManagerService < Appcelerator::Service
   
   handles_message 'example.createcontact.request', :create_contact, 'example.createcontact.response'
   
