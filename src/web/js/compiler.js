@@ -33,8 +33,8 @@ function bootAppcelerator()
 {
 	if (!Appcelerator.Compiler.bootstrapped && Appcelerator.Compiler.compileOnLoad)
 	{
-		Appcelerator._originalDisplay = document.body.style.display || '';
-		document.body.style.display='none';
+		Appcelerator._originalDisplay = document.body.style.visibility || '';
+		document.body.style.visibility='hidden';
 		Appcelerator.Compiler.bootstrapped = true;
 	}
 }
@@ -286,9 +286,9 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 	Appcelerator.Compiler.checkLoadState(state);
 		
 	// re-adjust display after compile is complete
-	if (Appcelerator._originalDisplay!=null && document.body.style.display=='none')
+	if (Appcelerator._originalDisplay!=null && document.body.style.visibility=='hidden')
 	{
-		document.body.style.display = Appcelerator._originalDisplay;
+		document.body.style.visibility = Appcelerator._originalDisplay;
 	}
 };
 
@@ -770,6 +770,30 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 	
 	if (module)
 	{
+		if (Appcelerator.Compiler.isInterpretiveMode && module.flashRequired)
+		{
+			var version = module.flashVersion || 9.0;
+			var error = null;
+			
+			if (!Appcelerator.Browser.isFlash)
+			{  
+				error = 'Flash version ' + version + ' or greater is required';
+			}
+			else if (Appcelerator.Browser.flashVersion < version)
+			{
+				error = 'Flash version ' + version + ' or greater is required. Your version is: '+Appcelerator.Browser.flashVersion;
+			}
+			
+			if (error)
+			{
+				error = error + '. <a href="http://www.adobe.com/products/flashplayer/" target="_NEW">Download Flash Now</a>'
+				var html = '<div class="flash_error" style="border:1px solid #c00;padding:5px;background-color:#fcc;text-align:center;margin:5px;">' + error + '</div>';
+				new Insertion.Before(element,html);
+				Element.remove(element);
+				return;
+			}
+		}
+		
 		if (element.style) element.style.display='none';
 		
 		var id = element.id || Appcelerator.Compiler.generateId();

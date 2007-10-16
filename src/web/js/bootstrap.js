@@ -152,16 +152,35 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isFlash = false;
 	Appcelerator.Browser.flashVersion = 0;
 
-	var plugin = (navigator.mimeTypes && 
-                    navigator.mimeTypes["application/x-shockwave-flash"] &&
-                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin) ?
-                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
-	if (plugin && plugin.description) 
+	if (Appcelerator.Browser.isIE)
 	{
-		Appcelerator.Browser.isFlash = true;
-    	Appcelerator.Browser.flashVersion = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1));
+			try
+			{
+				var flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
+				var ver = flash.GetVariable("$version");
+				var idx = ver.indexOf(' ');
+				var tokens = ver.substring(idx+1).split(',');
+				var version = tokens[0];
+				Appcelerator.Browser.flashVersion = parseInt(version);
+				Appcelerator.Browser.isFlash = true;
+			}
+			catch(e)
+			{
+				// we currently don't support lower than 7 anyway
+			}
 	}
-
+	else
+	{
+		var plugin = (navigator.mimeTypes && 
+	                    navigator.mimeTypes["application/x-shockwave-flash"] &&
+	                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin) ?
+	                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
+		if (plugin && plugin.description) 
+		{
+			Appcelerator.Browser.isFlash = true;
+	    	Appcelerator.Browser.flashVersion = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1));
+		}
+	}
 	Appcelerator.Browser.isBrowserSupported = Appcelerator.Browser.isOpera || Appcelerator.Browser.isSafari || Appcelerator.Browser.isIE6 || Appcelerator.Browser.isIE7 || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isCamino;
 	Appcelerator.Browser.unsupportedBrowserMessage = "<h1>Browser Upgrade Required</h1><p>We're sorry, but your browser version is not supported by this application.</p><p>This application requires a modern browser, such as <a href='http://www.getfirefox.com'>Firefox 2.0+</a>, <a href='http://www.apple.com/safari/'>Safari 2.0+</a>, <a href='http://www.microsoft.com/windows/products/winfamily/ie/default.mspx'>Internet Explorer 6.0+</a> or <a href='http://www.opera.com'>Opera 9.0+</a>.</p><p>Your browser reported: <font face='courier'>" + ua + "</font></p>";
 	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';

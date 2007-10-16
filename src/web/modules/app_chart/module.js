@@ -1,6 +1,9 @@
 
 Appcelerator.Module.Chart =
 {
+	flashRequired: true,
+	flashVersion: 9.0,
+	
 	getName: function()
 	{
 		return 'appcelerator chart';
