@@ -195,15 +195,26 @@
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
 	<target name="build_doc" depends="build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
-		<copy todir="${stage.dir}/doc">
+		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
+		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
+		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
+		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
+		
+		<copy todir="${stage.dir}/doc" filtering="true">
 			<fileset dir="${stage.dir}/web">
 				<include name="**/*"/>
 				<exclude name="*.html"/>
 			</fileset>
-			<fileset dir="src/doc">
-				<include name="**/*"/>
-			</fileset>
+			<fileset dir="src/doc" includes="**/*"/>
+			<filterset>
+				<filter token="appcelerator.xml" value="${appcelerator.xml}"/>
+				<filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
+				<filter token="ContactManager.java" value="${ContactManager.java}"/>
+				<filter token="index.html" value="${index.html}"/>
+				<filter token="ContactManager.java" value="${ContactManager.java}"/>
+			</filterset>
 		</copy>
+		
 		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/doc/WEB-INF/web.xml">
 			<fileset dir="${stage.dir}/doc" includes="**/**"/>
 			<fileset dir="${build.java.dir}/doc" includes="*.*"/>
@@ -233,6 +244,9 @@
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist" filtering="false" overwrite="true"> 
 			<fileset dir="${build.java.dir}/sdk/dist" includes="**" excludes=".classpath"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist" filtering="false" overwrite="true"> 
+			<fileset dir="build" includes="examples/**"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist" filtering="true"> 
 			<fileset dir="${build.java.dir}/sdk/dist" includes=".classpath"/>
@@ -339,11 +353,20 @@
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<delete dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
 		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
 			<property name="app.name" value="myapp"/>
 			<property name="create.dir" value="${basedir}/${stage.dir}/sdkprojects/myjavaapp"/>
 		</ant>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="dist"/>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
+	</target>
+	<target name="install_java_examples" depends="install_java">
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myjavaapp">
+			<fileset dir="build/examples/simple" includes="src/**,appcelerator-services.xml"/>
+		</copy>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="dist"/>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>

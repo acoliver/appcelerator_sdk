@@ -23,49 +23,69 @@
 </head>
 <body>
 	<h2>Ruby</h2>
-
-	<h3>Pre-requisites</h3>
 	<p>
-	It is assumed that you already have the following installed:
-	<ul>
-		<li>Ruby 1.8.6 or higher</li>
-		<li>RubyGems</li>
-	</ul>
+	<a class="active" on="click then l:rubygettingstarted[show=install] and add[class=active] or l:rubygettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:rubygettingstarted[show=client] and add[class=active] or l:rubygettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:rubygettingstarted[show=service] and add[class=active] or l:rubygettingstarted[show!=service] then remove[class=active]">Java Service</a> 
 	</p>
 
-	<h3>Get the distribution</h3>
-	<p>
-	Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
-	<ul>
-		<li>appcelerator-2.0.0.gem - this is the distribution for creating your ruby services (which are deployed as appcelerator services and applications)
-	</ul>
-	<h3>Install the appcelerator service manager</h3>
-	<p>
-		First lets install the gem
-		<pre class="command">gem install -l appcelerator-2.0.0.gem</pre>
-		Now create your project workspace
-		<pre class="command">appcelerator myapp</pre>
-		now you can start the service
-		<pre class="command">cd myapp
+
+	<div on="l:rubygettingstarted[show=install] then show else hide">
+		<h3>Pre-requisites</h3>
+		<p>
+		It is assumed that you already have the following installed:
+		<ul>
+			<li><a href="http://www.ruby-lang.org">Ruby</a> 1.8.6 or higher</li>
+			<li><a href="http://www.rubygems.org/">Ruby Gems</a> 0.9.4 or higher</li>
+		</ul>
+		</p>
+
+		<h3>Get the Distribution</h3>
+		<p>
+		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+		<ul>
+			<li>appcelerator-2.0.0.gem - this is the distribution for creating your ruby services (which are deployed as appcelerator services and applications)
+		</ul>
+		<h3>Create the Appcelerator Ruby Service</h3>
+		<p>
+			First lets install the gem
+			<pre class="command">gem install -l appcelerator-2.0.0.gem</pre>
+			Now create your project workspace
+			<pre class="command">appcelerator myapp</pre>
+			now you can start the service
+			<pre class="command">cd myapp
 script/server</pre>
-		You can take a look at the starting page at <a href="http://localhost:3000">http://localhost:3000</a>
-	</p>
+			You can take a look at the starting page at <a href="http://localhost:3000">http://localhost:3000</a>
+		</p>
 	
-	<h3>Testing</h3>
-	You should now be able to hit the test service.  Goto <a href="http://localhost:3000/servicetester.html">http://localhost:3000/servicetester.html</a> and put the following in
-	<ul>
-		<li><b>message type</b>:remote:app.test.message.request
-	</ul>
-	you should get the following back
-	<ul>
-		<li><b>message type</b>:remote:app.test.message
-		<li><b>data.message</b>:"I received from you: Hello,world"
-		<li><b>data.success</b>:"true"
-	</ul>
-	If you look in the following you can see how to implement services
-	<ul>
-		<li>myapp/app/services/test_service.rb - the ruby service
-	</ul>
+		<h3>Testing</h3>
+		You should now be able to hit the test service.  Goto <a href="http://localhost:3000/servicetester.html">http://localhost:3000/servicetester.html</a> and put the following in
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request
+		</ul>
+		you should get the following back
+		<ul>
+			<li><b>message type</b>: remote:app.test.message
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+	</div>
+	<div on="l:rubygettingstarted[show=client] then show else hide" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			This is how you implement the web
+		</p>
+	</div>
+	<div on="l:rubygettingstarted[show=service] then show else hide" style="display:none">
+		<p>
+			<h3>Ruby Service</h3>
+			
+			If you look in the following you can see how to implement services
+			<ul>
+				<li>myapp/app/services/test_service.rb - the ruby service
+			</ul>
+		</p>
+	</div>
 </body>
 
 </html>

@@ -7,7 +7,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <script type="text/javascript" src="js/appcelerator.js"></script>
 
-<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
 <link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
 <link rel="stylesheet" type="text/css" href="css/doc_content.css" />
 
@@ -24,70 +23,124 @@
 </head>
 <body>
 	<h2>Java</h2>
-	</p>
-	<h3>Pre-requisettes</h3>
 	<p>
-	It is assumed that you already have the following installed:
-	<ul>
-		<li><a href="http://tomcat.apache.org/">apache tomcat</a> 6.0 or higher (or another j2ee web container)
-		<li><a href="http://ant.apache.org">apache ant</a> 1.6.5 or higher
-		<li>JDK 1.5
-	</ul>
+	<a class="active" on="click then l:javagettingstarted[show=install] and add[class=active] or l:javagettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:javagettingstarted[show=client] and add[class=active] or l:javagettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:javagettingstarted[show=service] and add[class=active] or l:javagettingstarted[show!=service] then remove[class=active]">Java Service</a> 
 	</p>
+
+	<div on="l:javagettingstarted[show=install] then show else hide">
+		<h3>Pre-requisettes</h3>
+		<p>
+		It is assumed that you already have the following installed:
+		<ul>
+			<li><a href="http://tomcat.apache.org/">apache tomcat</a> 6.0 or higher (or another j2ee web container)
+			<li><a href="http://ant.apache.org">apache ant</a> 1.6.5 or higher
+			<li><a href="http://java.sun.com/">JDK</a> 1.5
+		</ul>
+		</p>
 	
-	<h3>Get the distribution</h3>
-	<p>
-	Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
-	<ul>
-		<!--<li>appcelerator_server_2.0.0.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
-		<li>appcelerator_sdk_java_2.0.0.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
-	</ul>
-	<h3>Create your proejct</h3>
-	unzip the distribution and create your project (ex: myapp)
-	<pre class="command">unzip appcelerator_sdk_java_2.0.0.zip -d appcelerator_sdk_java_2.0.0
+		<h3>Get the Distribution</h3>
+		<p>
+		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+		<ul>
+			<!--<li>appcelerator_server_2.0.0.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
+			<li>appcelerator_sdk_java_2.0.0.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
+		</ul>
+		<h3>Create a Project</h3>
+		unzip the distribution and create your project (ex: myapp)
+		<pre class="command">unzip appcelerator_sdk_java_2.0.0.zip -d appcelerator_sdk_java_2.0.0
 cd appcelerator_sdk_java_2.0.0
 ant create
 [input] What would you like to name the project?
 myapp
 [input] Where would you like to create?
 ./projects/myapp</pre>
-	this will create a project workspace for you with an eclipse project and ant build file. 
+		this will create a project workspace for you with an eclipse project and ant build file. 
 	
-	lets build the distribution
-	<pre class="command">cd ./projects/myapp
-ant dist</pre>
-	This project will build the following for you in stage/
-	<ul>
-		<li>myapp.war - a properly built war file that you can deploy with your services and the appcelerator framework
-	</ul>
-	
-	<h3>start your web container</h3>
-	set your deploy.dir in your ~/.ant.properties (this will be used later in deployment)
-	<pre class="command">deploy.dir=/Applications/apache-tomcat-6.0.14/webapps</pre>
-	first lets begin by starting your web container
-	<pre class="command">cd /Applications/apache-tomcat-6.0.14/bin
+		<h3>Start the Web Container</h3>
+		set your deploy.dir in your ~/.ant.properties (this will be used later in deployment)
+		<pre class="command">deploy.dir=/Applications/apache-tomcat-6.0.14/webapps</pre>
+		first lets begin by starting your web container
+		<pre class="command">cd /Applications/apache-tomcat-6.0.14/bin
 ./catalina.sh run</pre>
 
-	<h3>deploying your solution</h3>
-	Very simple ant task
-	<pre class="command">ant deploy</pre>
+		<h3>Build and Deploy the Solution</h3>
+			Lets build the distribution
+				<pre class="command">cd ./projects/myapp
+ant dist</pre>
+				This project will build a properly built war file that you can deploy with your services and the appcelerator framework in
+				<ul>
+					<li> stage/myapp.war
+				</ul>
+		Now you can deploy with the simple ant task (requires that you set deploy.dir in ~/.ant.properties from the above step)
+		<pre class="command">ant deploy</pre>
 	
-	<h3>Testing</h3>
-	At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html">http://localhost:8080/myapp/servicetester.html</a> and use the following:
-	<ul>
-		<li><b>message type</b>: remote:app.test.message.request
-	</ul>
-	You should see a log message in your web container and a response in your web browser with the following
-	<ul>
-		<li><b>message type</b>:remote:app.test.message
-		<li><b>data.message</b>:"I received from you: Hello,world"
-		<li><b>data.success</b>:"true"
-	</ul>
-	If you look in the following you can see how to implement services
-	<ul>
-		<li>myapp/src/java/SampleService.java (the bean itself)
-		<li>myapp/appcelerator-services.xml (the bean definition)
-	</ul>
+		<h3>Testing</h3>
+		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html">http://localhost:8080/myapp/servicetester.html</a> and use the following:
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request
+		</ul>
+		You should see a log message in your web container and a response in your web browser with the following
+		<ul>
+			<li><b>message type</b>: remote:app.test.message
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+	</div>
+	<div on="l:javagettingstarted[show=client] then show else hide" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/web</b>: directory where all your html exists
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behviour of the service broker
+				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+			</ul>
+			
+			<h3>src/web/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator.xml@
+			</textarea>
+			
+			<h3>src/web/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
+			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+		</p>
+	</div>
+	<div on="l:javagettingstarted[show=service] then show else hide" style="display:none">
+		<p>
+			<h3>Java Implementation</h3>
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/java</b>: directory for your java source
+				<li><b>lib/appcelerator</b>: directory where you will provide your 3rd party jars
+				<li><b>appcelerator-services.xml</b>: a spring definition file for your service pojos
+			</ul>
+			In the example below we will create a new service to support the example in the web client
+			
+			<h3>src/java/ContactManager.java</h3>
+			You could create a new class ContactManager with the following source
+			<textarea name="code" class="xml:nocontrols">
+@ContactManager.java@
+			</textarea>
+			
+			<h3>appcelerator-services.xml</h3>
+			We now need to add an entry for our ContactManager class above
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator-services.xml@
+			</textarea>
+		</p>
+	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
 </body>
 
 </html>

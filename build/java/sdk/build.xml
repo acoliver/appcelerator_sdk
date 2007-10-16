@@ -69,7 +69,8 @@
 			</filterset>
 		</copy>
 		<copy todir="${create.dir}" filtering="false">
-			<fileset dir="dist" includes="lib/**,server/**,src/**"/>
+			<fileset dir="dist" includes="lib/**,server/**,src/**,examples/**"/>
+			<fileset dir="." includes="test/**,doc/**"/>
 		</copy>
 	</target>
 		
