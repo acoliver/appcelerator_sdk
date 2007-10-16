@@ -301,35 +301,18 @@
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
-            <fileset dir="${src.ruby.dir}/gem">
-                 <include name="**/*"/>
-            </fileset>
-            <fileset dir="${build.ruby.dir}">
-                 <include name="**/*"/>
-            </fileset>
+            <fileset dir="${src.ruby.dir}/gem" includes="**/*"/>
+            <fileset dir="${build.ruby.dir}" includes="**/*"/>
             <filterchain>
                 <expandproperties/>
             </filterchain>
         </copy>
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
-             <fileset dir="${stage.dir}/web">
-                 <include name="js/appcelerator.js"/>
-             </fileset>
-             <fileset dir="${src.web.dir}">
-                 <include name="modules**/**"/>
-             </fileset>
-             <fileset dir="${src.web.dir}">
-                 <include name="css/**"/>
-                 <include name="images/**"/>
-                 <include name="index.html"/>
-             </fileset>
-        	 <fileset dir="${build.ruby.dir}">
-                 <include name="appcelerator.xml"/>
-                 <include name="dist/README"/>
-             </fileset>
-             <fileset dir="${build.java.dir}/server/web">
-                 <include name="servicetester.html"/>
-             </fileset>
+             <fileset dir="${stage.dir}/web" includes="js/appcelerator.js"/>
+             <fileset dir="${src.web.dir}" includes="modules**/**"/>
+             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
+        	 <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
+             <fileset dir="${build.java.dir}/server/web" includes="servicetester.html"/>
         </copy>
 		<antcall target="gem"/>
 	</target>
@@ -352,7 +335,38 @@
 			</fileset>
 		</zip>
 	</target>
-
+	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="install_all" depends="install_java,install_ruby,install_php"/>
+	<target name="install_java" depends="sdk_java_dist">
+		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
+			<property name="app.name" value="myapp"/>
+			<property name="create.dir" value="${basedir}/${stage.dir}/sdkprojects/myjavaapp"/>
+		</ant>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="dist"/>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
+		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
+	</target>
+	<target name="install_ruby" depends="sdk_ruby_dist">
+		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<exec dir="${stage.dir}" executable="gem" failonerror="false">
+			<arg line="uninstall appcelerator"/>
+		</exec>
+		<exec dir="${stage.dir}" executable="gem" failonerror="false">
+			<arg line="install -l appcelerator"/>
+		</exec>
+		<exec dir="${stage.dir}/sdkprojects" executable="appcelerator" failonerror="false">
+			<arg line="myrubyapp"/>
+		</exec>
+	</target>
+	<target name="install_php" depends="sdk_php_dist">
+		<delete dir="${stage.dir}/appcelerator_sdk_php_${VERSION}" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
+		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp"/>
+		<antcall target="undeploy_php"/>
+		<antcall target="deploy_php"/>
+	</target>
 	<target name="nightly_dist" description="* Builds the nightlighty source distribution">
 		<tstamp>
 			<format property="TODAY" pattern="MMddyyyy"/>
@@ -474,11 +488,13 @@ cat src/doc/treechild/${name}.html</echo>
 		</copy>
 	</target>
 	<target name="deploy_php" description="deploys php src and web files to ${php.deploy.dir}">
+		<property name="php.project.dir" value="stage/sdk/php"/>
 		<available file="${php.deploy.dir}" type="dir" property="php.deploy.dir.exists" />
 		<fail unless="php.deploy.dir.exists">Directory ${php.deploy.dir} doesn't exist.</fail>
+		<echo>using src dir of ${php.project.dir}</echo>
 		<copy todir="${php.deploy.dir}">
-			<fileset dir="stage/sdk/php/dist/src/web" includes="**/**,*.*" />
-			<fileset dir="stage/sdk/php/dist/src/php" includes="**/**,*.*" />
+			<fileset dir="${php.project.dir}/dist/src/web" includes="**/**,*.*" />
+			<fileset dir="${php.project.dir}/dist/src/php" includes="**/**,*.*" />
 		</copy>
 	</target>
 	<target name="undeploy_php">
