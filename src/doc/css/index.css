@@ -378,4 +378,22 @@ textarea
    border-width: 1px; 
    border-color: #3c78b5; 
    background-color: #D8E4F1; 
-}		
+}
+		
+#footer
+{
+   margin-left:20px;	
+   margin-top:30px;
+   color:#333;
+   font-size:11px;
+}
+
+#footer a
+{
+	color:#400;
+}
+
+img
+{
+	border:0;
+}
