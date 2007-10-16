@@ -176,11 +176,15 @@ textarea:focus
 }
 textarea
 {
-		border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
-		border-style:solid;
-		border-width:1px;
-		font-size:14px;
-		margin:1px;
-		padding:3px 3px 3px 10px;
-		width:300px;
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	font-size:14px;
+	margin:1px;
+	padding:3px 3px 3px 10px;
+	width:300px;
+}
+img
+{
+	border:0;
 }

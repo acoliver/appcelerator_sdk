@@ -293,7 +293,7 @@ public class RESTServlet extends DispatchServlet
             {
                 // return the JSON response object
                 response.setContentType("text/javascript");
-                response.setHeader("X-Seamless-Response-Type",responseType);
+                response.setHeader("X-Appcelerator-Response-Type",responseType);
                 response.getWriter().print(responseData.toDataString());
             }
         }
