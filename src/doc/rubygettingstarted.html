@@ -26,7 +26,7 @@
 	<p>
 	<a class="active" on="click then l:rubygettingstarted[show=install] and add[class=active] or l:rubygettingstarted[show!=install] then remove[class=active]">Installation</a> |
 	<a  on="click then l:rubygettingstarted[show=client] and add[class=active] or l:rubygettingstarted[show!=client] then remove[class=active]">Web Client</a> |
-	<a  on="click then l:rubygettingstarted[show=service] and add[class=active] or l:rubygettingstarted[show!=service] then remove[class=active]">Java Service</a> 
+	<a  on="click then l:rubygettingstarted[show=service] and add[class=active] or l:rubygettingstarted[show!=service] then remove[class=active]">Ruby Service</a> 
 	</p>
 
 
@@ -65,7 +65,7 @@ script/server</pre>
 		</ul>
 		you should get the following back
 		<ul>
-			<li><b>message type</b>: remote:app.test.message
+			<li><b>message type</b>: remote:app.test.message.response
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
@@ -73,7 +73,25 @@ script/server</pre>
 	<div on="l:rubygettingstarted[show=client] then show else hide" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
-			This is how you implement the web
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/web</b>: directory where all your html exists
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+			</ul>
+
+			<h3>src/web/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator.xml@
+			</textarea>
+
+			<h3>src/web/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
+			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
 		</p>
 	</div>
 	<div on="l:rubygettingstarted[show=service] then show else hide" style="display:none">
@@ -84,8 +102,18 @@ script/server</pre>
 			<ul>
 				<li>myapp/app/services/test_service.rb - the ruby service
 			</ul>
+			<h3>app/services/contact_manager.rb</h3>
+			You could create a new class ContactManager with the following source
+			<textarea name="code" class="xml:nocontrols">
+@contact_manager.rb@
+			</textarea>
 		</p>
 	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
 </body>
 
 </html>

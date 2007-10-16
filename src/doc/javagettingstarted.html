@@ -44,13 +44,13 @@
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
 		<ul>
-			<!--<li>appcelerator_server_2.0.0.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
-			<li>appcelerator_sdk_java_2.0.0.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
+			<!--<li>appcelerator_server_@VERSION@.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
+			<li>appcelerator_sdk_java_@VERSION@.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
 		</ul>
 		<h3>Create a Project</h3>
 		unzip the distribution and create your project (ex: myapp)
-		<pre class="command">unzip appcelerator_sdk_java_2.0.0.zip -d appcelerator_sdk_java_2.0.0
-cd appcelerator_sdk_java_2.0.0
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip -d appcelerator_sdk_java_@VERSION@
+cd appcelerator_sdk_java_@VERSION@
 ant create
 [input] What would you like to name the project?
 myapp
@@ -83,7 +83,7 @@ ant dist</pre>
 		</ul>
 		You should see a log message in your web container and a response in your web browser with the following
 		<ul>
-			<li><b>message type</b>: remote:app.test.message
+			<li><b>message type</b>: remote:app.test.message.response
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
@@ -94,7 +94,7 @@ ant dist</pre>
 			Once you have created the java project, your web source will exist in:
 			<ul>
 				<li><b>src/web</b>: directory where all your html exists
-				<li><b>src/web/appcelerator.xml</b>: defines the location and behviour of the service broker
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
 				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
 			</ul>
 			

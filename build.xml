@@ -195,11 +195,12 @@
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
 	<target name="build_doc" depends="build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
+		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
-		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
-		
+		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
+		<loadfile property="contact_manager.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager.rb"/>
 		<copy todir="${stage.dir}/doc" filtering="true">
 			<fileset dir="${stage.dir}/web">
 				<include name="**/*"/>
@@ -212,6 +213,9 @@
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
 				<filter token="index.html" value="${index.html}"/>
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
+				<filter token="VERSION" value="${VERSION}"/>
+				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
+				<filter token="contact_manager.rb" value="${contact_manager.rb}"/>
 			</filterset>
 		</copy>
 		
@@ -267,23 +271,26 @@
 		<mkdir dir="${stage.dir}/sdk/php/doc"/>
 		<mkdir dir="${stage.dir}/sdk/php/test"/>
 		<copy todir="${stage.dir}/sdk/php" filtering="true"> 
-			<fileset dir="${build.php.dir}/sdk" includes="*.*/**/**" excludes="dist/src/web"/>
+			<fileset dir="${build.php.dir}/sdk" includes="*.*"/>
 			<fileset dir="." includes="LICENSE"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php/dist/src/web" filtering="false"> 
+		<copy todir="${stage.dir}/sdk/php/src/web" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php/dist/src/php" filtering="false"> 
+		<copy todir="${stage.dir}/sdk/php/src/php" filtering="false"> 
 			<fileset dir="${src.php.dir}" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php/dist" filtering="false" overwrite="true"> 
-			<fileset dir="${build.php.dir}/sdk/dist" includes="**" excludes=".classpath"/>
+		<copy todir="${stage.dir}/sdk/php" filtering="false" overwrite="true"> 
+			<fileset dir="${build.php.dir}/sdk/dist" includes="**"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/test" filtering="false"> 
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/php" filtering="false"> 
+			<fileset dir="build" includes="examples/**"/>
 		</copy>
 	</target>
 	
@@ -351,6 +358,7 @@
 	</target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
+	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<delete dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" failonerror="false"/>
@@ -383,10 +391,25 @@
 			<arg line="myrubyapp"/>
 		</exec>
 	</target>
+	<target name="install_ruby_examples" depends="install_ruby">
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/app">
+			<fileset dir="build/examples/simple/src/ruby" includes="**"/>
+		</copy>
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/public">
+			<fileset dir="build/examples/simple/src/web" includes="**"/>
+		</copy>
+	</target>
 	<target name="install_php" depends="sdk_php_dist">
-		<delete dir="${stage.dir}/appcelerator_sdk_php_${VERSION}" failonerror="false"/>
+		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
 		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp"/>
+		<antcall target="undeploy_php"/>
+		<antcall target="deploy_php"/>
+	</target>
+	<target name="install_php_examples" depends="install_php">
+		<copy todir="${basedir}/${stage.dir}/sdkprojects/myphpapp/src/php" overwrite="true">
+			<fileset dir="build/examples/simple/src/php" includes="**"/>
+		</copy>
 		<antcall target="undeploy_php"/>
 		<antcall target="deploy_php"/>
 	</target>
@@ -516,8 +539,8 @@ cat src/doc/treechild/${name}.html</echo>
 		<fail unless="php.deploy.dir.exists">Directory ${php.deploy.dir} doesn't exist.</fail>
 		<echo>using src dir of ${php.project.dir}</echo>
 		<copy todir="${php.deploy.dir}">
-			<fileset dir="${php.project.dir}/dist/src/web" includes="**/**,*.*" />
-			<fileset dir="${php.project.dir}/dist/src/php" includes="**/**,*.*" />
+			<fileset dir="${php.project.dir}/src/web" includes="**/**,*.*" />
+			<fileset dir="${php.project.dir}/src/php" includes="**/**,*.*" />
 		</copy>
 	</target>
 	<target name="undeploy_php">

@@ -26,10 +26,10 @@
 	<p>
 	<a class="active" on="click then l:phpgettingstarted[show=install] and add[class=active] or l:phpgettingstarted[show!=install] then remove[class=active]">Installation</a> |
 	<a  on="click then l:phpgettingstarted[show=client] and add[class=active] or l:phpgettingstarted[show!=client] then remove[class=active]">Web Client</a> |
-	<a  on="click then l:phpgettingstarted[show=service] and add[class=active] or l:phpgettingstarted[show!=service] then remove[class=active]">Java Service</a> 
+	<a  on="click then l:phpgettingstarted[show=service] and add[class=active] or l:phpgettingstarted[show!=service] then remove[class=active]">PHP Service</a> 
 	</p>
 
-	<div on="l:rubygettingstarted[show=install] then show else hide">
+	<div on="l:phpgettingstarted[show=install] then show else hide">
 
 		<h3>Pre-requisettes</h3>
 		<p>
@@ -44,12 +44,12 @@
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
 		<ul>
-			<li>appcelerator_sdk_php_2.0.0.zip - this is the distribution for creating your php services
+			<li>appcelerator_sdk_php_@VERSION@.zip - this is the distribution for creating your php services
 		</ul>
 		<h3>Extract</h3>
 		<p>
-			<pre class="command">unzip appcelerator_sdk_php_2.0.0.zip -d appcelerator_sdk_php_2.0.0
-cd appcelerator_sdk_php_2.0.0</pre>
+			<pre class="command">unzip appcelerator_sdk_php_@VERSION@.zip -d appcelerator_sdk_php_2.0.0
+cd appcelerator_sdk_php_@VERSION@</pre>
 		</p>
 	
 		<h3>Deploy</h3>
@@ -62,26 +62,58 @@ cp -R src/php/* ~/Sites</pre>
 		<h3>Testing</h3>
 		You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html">http://localhost/~myname/servicetester.html</a> and put the following in
 		<ul>
-			<li><b>message type</b>: remote:app.test.message.request
+			<li><b>message type</b>: remote:app.test.message.request.response
 		</ul>
 		you should get the following back
 		<ul>
-			<li><b>message type</b>: remote:app.test.message
+			<li><b>message type</b>: remote:app.test.message.response
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
 	</div>
-	<div on="l:rubygettingstarted[show=service] then show else hide" style="display:none">
-		<h3>Ruby Service</h3>
+	<div on="l:phpgettingstarted[show=service] then show else hide" style="display:none">
+		<h3>PHP Service</h3>
 		If you look in the following you can see how to implement services
 		<ul>
 			<li>src/php/services/sample_service.php
 		</ul>
 		You can add new services by creating files in the services directory and making sure that they end with _service.php and follow the same method declaration (including the comments).
+
+		<h3>src/php/services/contact_manager_service.php</h3>
+		You could create a new class ContactManager with the following source
+		<textarea name="code" class="xml:nocontrols">
+@contact_manager_service.php@
+		</textarea>
 	</div>
-	<div on="l:rubygettingstarted[show=client] then show else hide" style="display:none">
-		<h3>Web Client</h3>
+	<div on="l:phpgettingstarted[show=client] then show else hide" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/web</b>: directory where all your html exists
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+			</ul>
+
+			<h3>src/web/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator.xml@
+			</textarea>
+
+			<h3>src/web/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
+			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+		</p>
 	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
 </body>
 
 </html>
