@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-
-<appcelerator version="1.0" xmlns="http://www.appcelerator.org/config">
-	<servicebroker poll="false" disabled="true">@{rootPath}-/servicebroker</servicebroker>
-	<upload>@{rootPath}-/upload</upload>
-	<download>@{rootPath}-/download</download>
-	<sessionid>JSESSIONID</sessionid>
-</appcelerator>

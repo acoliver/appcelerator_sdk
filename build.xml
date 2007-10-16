@@ -522,14 +522,14 @@ cat src/doc/treechild/${name}.html</echo>
 		<delete file="${deploy.dir}/unittest.war"/>
 	</target>
 
-	<target name="deploy_doc">
+	<target name="deploy_doc" description="* deploys the doc as a war to ${deploy.dir}">
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
 		<copy todir="${deploy.dir}">
 			<fileset dir="stage" includes="doc.war" />
 		</copy>
 	</target>
-	<target name="deploy_web_unit">
+	<target name="deploy_web_unit" description="* deploys the unittest as a war to ${deploy.dir}">
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
 		<copy todir="${deploy.dir}">
@@ -555,4 +555,7 @@ cat src/doc/treechild/${name}.html</echo>
 			<fileset dir="${php.deploy.dir}" includes="**/**"/>
 		</delete>
 	</target>
+	<target name="publish_doc" depends="build_doc,undeploy_doc,deploy_doc"/>
+	<target name="publish_web_unit" depends="build_web_unit,undeploy_web_unit,deploy_web_unit"/>
+	<target name="publish_all" depends="publish_doc,publish_web_unit"/>
 </project>
