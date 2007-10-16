@@ -171,14 +171,37 @@ Appcelerator.Parameters = $H({});
 	}
 	else
 	{
-		var plugin = (navigator.mimeTypes && 
-	                    navigator.mimeTypes["application/x-shockwave-flash"] &&
-	                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin) ?
-	                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
-		if (plugin && plugin.description) 
+		var plugin = navigator.plugins && navigator.plugins.length;
+		if (plugin)
 		{
-			Appcelerator.Browser.isFlash = true;
-	    	Appcelerator.Browser.flashVersion = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1));
+			 plugin = navigator.plugins["Shockwave Flash"] || navigator.plugins["Shockwave Flash 2.0"];
+			 if (plugin)
+			 {
+				if (plugin.description)
+				{
+					var ver = plugin.description;
+					Appcelerator.Browser.flashVersion = parseInt(ver.charAt(ver.indexOf('.')-1));
+					Appcelerator.Browser.isFlash = true;
+				}			 	
+				else
+				{
+					// not sure what version... ?
+					Appcelerator.Browser.flashVersion = 7;
+					Appcelerator.Browser.isFlash = true;
+				}
+			 }
+		}
+		else
+		{
+			plugin = (navigator.mimeTypes && 
+		                    navigator.mimeTypes["application/x-shockwave-flash"] &&
+		                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin) ?
+		                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
+			if (plugin && plugin.description) 
+			{
+				Appcelerator.Browser.isFlash = true;
+		    	Appcelerator.Browser.flashVersion = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1));
+			}
 		}
 	}
 	Appcelerator.Browser.isBrowserSupported = Appcelerator.Browser.isOpera || Appcelerator.Browser.isSafari || Appcelerator.Browser.isIE6 || Appcelerator.Browser.isIE7 || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isCamino;
