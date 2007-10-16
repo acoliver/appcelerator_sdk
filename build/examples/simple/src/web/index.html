@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<script src="js/appcelerator.js" type="text/javascript"></script>
+</head>
+<body>
+	<div>Appcelerator Initial Application Starter Page</div>
+	<a on="click then r:example.createcontact.request[name='billy bob']">create</a>
+	
+	<div on="r:example.createcontact.response then show" style="display:none;">
+		created contact with id <span on="r:example.createcontact.response then value[id]"></span>
+	</div>
+</body>
+</html>
