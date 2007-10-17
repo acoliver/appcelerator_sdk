@@ -558,4 +558,21 @@ cat src/doc/treechild/${name}.html</echo>
 	<target name="publish_doc" depends="build_doc,undeploy_doc,deploy_doc"/>
 	<target name="publish_web_unit" depends="build_web_unit,undeploy_web_unit,deploy_web_unit"/>
 	<target name="publish_all" depends="publish_doc,publish_web_unit"/>
+	<target name="publish_scp" depends="copy.scp">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
+		    <fileset dir="stage" includes="doc.war"/>
+		</scp>
+		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
+		    <fileset dir="stage" includes="unittest.war"/>
+		</scp>
+	</target>
+	<target name="copy.scp">
+		<copy todir="${ant.home}/lib">
+			<fileset dir="${build.java.dir}/lib" includes="jsch*.jar"/>
+		</copy>
+	</target>
 </project>
