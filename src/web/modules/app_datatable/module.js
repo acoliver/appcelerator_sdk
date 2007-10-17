@@ -330,7 +330,14 @@ Appcelerator.Module.Datatable =
 			{
 				var header_object = {};
 				//Header cell data				
-				header_object['cell'] = element_children[i].innerHTML;					
+				header_langid = element_children[i].getAttribute('langid')||'';
+				if (header_langid == '')
+				{
+					header_object['cell'] = Appcelerator.Compiler.getHtml(element_children[i],true);					
+				} else
+				{
+					header_object['cell'] = Appcelerator.Localization.get(header_langid);
+				}
 				//Header's 'on' attribute, compile it later
 				header_object['on'] =  element_children[i].getAttribute('on')||''; 
 				//Header's class attribute
