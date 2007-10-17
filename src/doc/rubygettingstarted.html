@@ -30,7 +30,7 @@
 	</p>
 
 
-	<div on="l:rubygettingstarted[show=install] then show else hide">
+	<div on="l:rubygettingstarted[show=install] then effect[Appear] else effect[Fade]">
 		<h3>Pre-requisites</h3>
 		<p>
 		It is assumed that you already have the following installed:
@@ -69,8 +69,10 @@ script/server</pre>
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:rubygettingstarted[show=client]">Web Client</a>
 	</div>
-	<div on="l:rubygettingstarted[show=client] then show else hide" style="display:none">
+	<div on="l:rubygettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
 			Once you have created the java project, your web source will exist in:
@@ -91,10 +93,10 @@ script/server</pre>
 @index.html@
 			</textarea>
 			<h3>Next Steps</h3>
-			You are now ready to proceed to creating your Ruby Service
+			You are now ready to proceed to creating your <a on="click then l:rubygettingstarted[show=service]">Ruby Service</a>
 		</p>
 	</div>
-	<div on="l:rubygettingstarted[show=service] then show else hide" style="display:none">
+	<div on="l:rubygettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Ruby Service</h3>
 			To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that

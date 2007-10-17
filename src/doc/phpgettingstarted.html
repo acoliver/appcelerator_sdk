@@ -29,7 +29,7 @@
 	<a  on="click then l:phpgettingstarted[show=service] and add[class=active] or l:phpgettingstarted[show!=service] then remove[class=active]">PHP Service</a> 
 	</p>
 
-	<div on="l:phpgettingstarted[show=install] then show else hide">
+	<div on="l:phpgettingstarted[show=install] then effect[Appear] else effect[Fade]">
 
 		<h3>Pre-requisettes</h3>
 		<p>
@@ -70,8 +70,11 @@ cp -R src/php/* ~/Sites</pre>
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
+
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=client]">Web Client</a>
 	</div>
-	<div on="l:phpgettingstarted[show=service] then show else hide" style="display:none">
+	<div on="l:phpgettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<h3>PHP Service</h3>
 		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
 		<ul>
@@ -96,7 +99,7 @@ cp -R src/php/* ~/Sites</pre>
 		<pre class="command">ErrorLog "/private/var/log/httpd/error_log"</pre>
 		You may want to restart apache (rarely needed)
 	</div>
-	<div on="l:phpgettingstarted[show=client] then show else hide" style="display:none">
+	<div on="l:phpgettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
 			Once you have created the java project, your web source will exist in:
@@ -122,7 +125,7 @@ cp -R src/php/* ~/Sites</pre>
 			<h3>Next Steps</h3>
 			Copy over your web files
 			<pre class="command">cp -R src/web/* ~/Sites</pre>
-			You are now ready to proceed to creating your PHP Service
+			You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=service]">PHP Service</a>
 		</p>
 	</div>
 	<script>

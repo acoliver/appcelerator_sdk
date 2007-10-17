@@ -29,7 +29,7 @@
 	<a  on="click then l:javagettingstarted[show=service] and add[class=active] or l:javagettingstarted[show!=service] then remove[class=active]">Java Service</a> 
 	</p>
 
-	<div on="l:javagettingstarted[show=install] then show else hide">
+	<div on="l:javagettingstarted[show=install] then effect[Appear] else effect[Fade]">
 		<h3>Pre-requisettes</h3>
 		<p>
 		It is assumed that you already have the following installed:
@@ -87,8 +87,11 @@ ant dist</pre>
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
+
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:javagettingstarted[show=client]">Web Client</a>
 	</div>
-	<div on="l:javagettingstarted[show=client] then show else hide" style="display:none">
+	<div on="l:javagettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
 			Once you have created the java project, your web source will exist in:
@@ -111,11 +114,11 @@ ant dist</pre>
 @index.html@
 			</textarea>
 			<h3>Next Steps</h3>
-			You are now ready to proceed to creating your Java Service
+			You are now ready to proceed to creating your <a on="click then l:javagettingstarted[show=service]">Java Service</a>
 			
 		</p>
 	</div>
-	<div on="l:javagettingstarted[show=service] then show else hide" style="display:none">
+	<div on="l:javagettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Java Implementation</h3>
 			Once you have created the java project, the following file structure will exist:
