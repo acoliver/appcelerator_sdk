@@ -214,5 +214,45 @@
 			</fileset>
 		</jar>
 	</target>
+	<target name="deploy_scp">
+		<antcall target="-deploy_scp">
+			<param name="dir" value="stage"/>
+			<param name="includes" value="${app.name}.war"/>
+		</antcall>
+	</target>
+	<target name="undeploy_ssh">
+		<antcall target="-undeploy_ssh">
+			<param name="file" value="${app.name}.war"/>
+			<param name="dir" value="${app.name}"/>
+		</antcall>
+	</target>
+
+	<target name="-undeploy_ssh" depends="get_jsch">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
+			command="rm -rf ${scp.dir}/${dir}/*;rm -rf ${scp.dir}/${file}"/>
+	</target>
+	<target name="get_jsch">
+		<available file="${ant.home}/lib/jsch-0.1.35.jar" type="file" property="jsch.exists" />
+		<antcall target="-get_jsch"/>
+	</target>
+	<target name="-get_jsch" unless="jsch.exists">
+		<get src="http://superb-east.dl.sourceforge.net/sourceforge/jsch/jsch-0.1.35.jar" dest="${ant.home}/lib/jsch-0.1.35.jar"/>
+	</target>
+	<target name="echoproperties">
+		<echoproperties/>
+	</target>
+	<target name="-deploy_scp" depends="get_jsch">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
+		    <fileset dir="${dir}" includes="${includes}"/>
+		</scp>
+	</target>
 
 </project>

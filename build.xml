@@ -558,21 +558,59 @@ cat src/doc/treechild/${name}.html</echo>
 	<target name="publish_doc" depends="build_doc,undeploy_doc,deploy_doc"/>
 	<target name="publish_web_unit" depends="build_web_unit,undeploy_web_unit,deploy_web_unit"/>
 	<target name="publish_all" depends="publish_doc,publish_web_unit"/>
-	<target name="publish_scp" depends="copy.scp">
+	<target name="publish_web_unit_scp" depends="build_web_unit,undeploy_web_unit_ssh,deploy_web_unit_scp"/>
+	<target name="publish_doc_scp" depends="build_doc,undeploy_doc_ssh,deploy_doc_scp"/>
+	<target name="publish_all_scp" depends="publish_doc_scp,publish_web_unit_scp"/>
+	<target name="deploy_doc_scp">
+		<antcall target="-deploy_scp">
+			<param name="dir" value="stage"/>
+			<param name="includes" value="doc.war"/>
+		</antcall>
+	</target>
+	<target name="deploy_web_unit_scp">
+		<antcall target="-deploy_scp">
+			<param name="dir" value="stage"/>
+			<param name="includes" value="unittest.war"/>
+		</antcall>
+	</target>
+	<target name="undeploy_doc_ssh">
+		<antcall target="-undeploy_ssh">
+			<param name="file" value="doc.war"/>
+			<param name="dir" value="doc"/>
+		</antcall>
+	</target>
+	<target name="undeploy_web_unit_ssh">
+		<antcall target="-undeploy_ssh">
+			<param name="file" value="unittest.war"/>
+			<param name="dir" value="unittest"/>
+		</antcall>
+	</target>
+
+	<target name="-undeploy_ssh" depends="get_jsch">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
+			command="rm -rf ${scp.dir}/${dir}/*;rm -rf ${scp.dir}/${file}"/>
+	</target>
+	<target name="get_jsch">
+		<available file="${ant.home}/lib/jsch-0.1.35.jar" type="file" property="jsch.exists" />
+		<antcall target="-get_jsch"/>
+	</target>
+	<target name="-get_jsch" unless="jsch.exists">
+		<get src="http://superb-east.dl.sourceforge.net/sourceforge/jsch/jsch-0.1.35.jar" dest="${ant.home}/lib/jsch-0.1.35.jar"/>
+	</target>
+	<target name="echoproperties">
+		<echoproperties/>
+	</target>
+	<target name="-deploy_scp" depends="get_jsch">
 		<fail message="must define scp.dir" unless="scp.dir"/>
 		<fail message="must define scp.host" unless="scp.host"/>
 		<fail message="must define scp.user" unless="scp.user"/>
 		<fail message="must define scp.pwd" unless="scp.pwd"/>
 		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
-		    <fileset dir="stage" includes="doc.war"/>
+		    <fileset dir="${dir}" includes="${includes}"/>
 		</scp>
-		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
-		    <fileset dir="stage" includes="unittest.war"/>
-		</scp>
-	</target>
-	<target name="copy.scp">
-		<copy todir="${ant.home}/lib">
-			<fileset dir="${build.java.dir}/lib" includes="jsch*.jar"/>
-		</copy>
 	</target>
 </project>
