@@ -386,6 +386,65 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	}
 };
 
+Appcelerator.Compiler.destroy = function(element, recursive)
+{
+	recursive = recursive==null ? true : recursive;
+
+	if (element.trashcan && element.trashcan.length > 0)
+	{
+		for (var c=0,len=element.trashcan.length;c<len;c++)
+		{
+			try
+			{
+				element.trashcan[c]();
+			}
+			catch(e)
+			{
+				// gulp
+			}
+		}
+		element.trashcan = null;
+		try
+		{
+			delete element.trashcan;
+		}
+		catch(e)
+		{
+			// yummy!
+		}
+	}
+
+	if (recursive)
+	{
+		if (element.childNodes && element.childNodes.length > 0)
+		{
+			for (var c=0,len=element.childNodes.length;c<len;c++)
+			{
+				var node = element.childNodes[c];
+				if (node && node.nodeType && node.nodeType == 1)
+				{
+					try
+					{
+						Seamless.destroy(node,true);
+					}
+					catch(e) 
+					{
+					}
+				}
+			}
+		}
+	}	
+};
+
+Appcelerator.Compiler.addTrash = function(element,trash)
+{
+	if (!element.trashcan)
+	{
+		element.trashcan = [];
+	}
+	element.trashcan.push(trash);
+};
+
 Appcelerator.Compiler.templateRE = /#\{(.*?)\}/g;
 Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)			 
 {
@@ -611,6 +670,11 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 	}) : logWrapper;
 	
 	Event.observe(element,event,functionWrapper,false);
+	
+	Appcelerator.Compiler.addTrash(element,function()
+	{
+		Event.stopObserving(element,event,functionWrapper);
+	});
 }
 
 // 
