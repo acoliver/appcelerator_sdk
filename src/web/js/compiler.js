@@ -425,7 +425,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 				{
 					try
 					{
-						Seamless.destroy(node,true);
+						Appcelerator.Compiler.destroy(node,true);
 					}
 					catch(e) 
 					{
@@ -433,7 +433,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 				}
 			}
 		}
-	}	
+	}
 };
 
 Appcelerator.Compiler.addTrash = function(element,trash)
