@@ -118,13 +118,18 @@ ant dist</pre>
 	<div on="l:javagettingstarted[show=service] then show else hide" style="display:none">
 		<p>
 			<h3>Java Implementation</h3>
-			Once you have created the java project, your web source will exist in:
+			Once you have created the java project, the following file structure will exist:
 			<ul>
 				<li><b>src/java</b>: directory for your java source
 				<li><b>lib/appcelerator</b>: directory where you will provide your 3rd party jars
 				<li><b>appcelerator-services.xml</b>: a spring definition file for your service pojos
 			</ul>
-			In the example below we will create a new service to support the example in the web client
+			To add a new service, simply define message handler methods in a class.  The key things for this are that
+			<ul>
+				<li>methods have the proper <tt>@Service</tt> annotation
+				<li>methods have the signature <tt>methodName (Message request, Message response)</tt>
+				<li>your class is defined as a bean in the appcelerator-service.xml spring file
+			</ul>
 			
 			<h3>src/java/ContactManager.java</h3>
 			You could create a new class ContactManager with the following source
@@ -133,7 +138,7 @@ ant dist</pre>
 			</textarea>
 			
 			<h3>appcelerator-services.xml</h3>
-			We now need to add an entry for our ContactManager class above
+			We now need to add an entry for our ContactManager class above (line 21)
 			<textarea name="code" class="xml:nocontrols">
 @appcelerator-services.xml@
 			</textarea>
