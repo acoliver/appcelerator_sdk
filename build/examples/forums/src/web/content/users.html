@@ -7,19 +7,19 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<div id="users_container" on="main[users] then effect[appear] else hide" style="display:none;">
-		<div id="forums_header">
-			<div id="forums_header_forums"><span>User</span></div>
-			<div id="forums_header_lastpost"><span>Details</span></div>
+	<div class="forums_container" on="main[users] then effect[appear] else hide" style="display:none;">
+		<div class="forums_header">
+			<div class="forums_header_forums"><span>User</span></div>
+			<div class="forums_header_lastpost"><span>Details</span></div>
 		</div>
-		<div id="users_content" on="l:users.getdata.response then show" style="display:none;">
-			<app:iterator on="l:users.getdata.response then execute" property="rows">
+		<div class="forums_content" on="l:users.response then show" style="display:none;">
+			<app:iterator on="l:users.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:user.request[userid=#{id}]" class="title">#{username}</html:a>
-							<html:div class="stats">#{threadCount} threads posted (<html:a class="smalllink" on="click then l:userthreads.request[userid=#{id}]">view threads</html:a>) </html:div>
+							<html:a on="click then l:user.request[userid=#{id},username='#{username}']" class="title">#{username}</html:a>
+							<html:div class="stats">#{threadCount} threads posted (<html:a class="smalllink" on="click then l:threads.request[type=byuser,userid=#{id},username='#{username}']">view threads</html:a>) </html:div>
 							<html:div class="description">#{fullName}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
@@ -30,6 +30,4 @@
 			</app:iterator>
 		</div>
 	</div>
-	<app:message name="l:users.getdata.request" args="">
-	</app:message>
 </body>

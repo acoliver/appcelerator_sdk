@@ -7,13 +7,13 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<div id="threads_container" on="main[threads] then effect[appear] else hide" style="display:none;">
-		<div id="forums_header">
-			<div id="forums_header_forums"><span>Threads</span></div>
-			<div id="forums_header_lastpost"><span>Last Post</span></div>
+	<div class="forums_container" on="main[threads] then effect[appear] else hide" style="display:none;">
+		<div class="forums_header">
+			<div class="forums_header_forums"><span>Threads</span></div>
+			<div class="forums_header_lastpost"><span>Last Post</span></div>
 		</div>
-		<div id="threads_content" on="l:threads.getdata.response then effect[appear] after 2s or l:threads.getdata.request then hide or l:search.request then hide" style="display:none;">
-			<app:iterator on="l:threads.getdata.response then execute" property="rows">
+		<div class="forums_content" on="l:threads.response then effect[appear] after 2s or l:threads.request then hide" style="display:none;">
+			<app:iterator on="l:threads.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
@@ -30,7 +30,4 @@
 			</app:iterator>
 		</div>
 	</div>
-	<app:script on="l:threads.request then execute">
-		$MQ('l:threads.getdata.request',{'forumid':this.data.forumid});
-	</app:message>
 </body>

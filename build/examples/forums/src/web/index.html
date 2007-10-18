@@ -16,10 +16,11 @@
 	    <li><a on="click then l:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>
 	    <li><a on="click then l:users.request or main[users] then hide else effect[appear]">Users</a></li>
 	    <li on="search[on] then effect[appear] else hide">
-			<input name="q" size="15" type="text" fieldset="search" />
+			<input name="query" size="15" type="text" fieldset="search" />
+			<input name="type" value="search" type="hidden" fieldset="search" />
 		</li>
 	    <li on="search[on] then effect[appear] else hide">
-			<a fieldset="search" on="click then l:search.request"/>go</a>
+			<a fieldset="search" on="click then l:threads.request"/>go</a>
 		</li>
 	    <li><a on="click then l:showsearch.request or search[off] then effect[appear] else hide">Search</a></li>
 	    <li><a on="click then l:hidesearch.request or search[on] then effect[appear] else hide">Dont Search</a></li>

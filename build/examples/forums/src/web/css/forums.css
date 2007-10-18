@@ -1,4 +1,4 @@
-#forums_header
+.forums_header
 {
 	background-color:#333;
 	padding:3px 10px;
@@ -7,20 +7,20 @@
 	font-size:0.8em;
 	height:17px;
 }
-#forums_header_forums
+.forums_header_forums
 {
 	float:left;
 }
-#forums_header_lastpost
+.forums_header_lastpost
 {
 	float:right;
 	width:30%;
 }
-#forums_header_lastpost span
+.forums_header_lastpost span
 {
 	padding-left:15px;
 }
-#forums_content #users_content #threads_content
+.forums_content
 {
 	border-left:1px solid #ccc;
 	border-right:1px solid #ccc;
