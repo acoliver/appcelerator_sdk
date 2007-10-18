@@ -8,6 +8,22 @@
 </head>
 <body>
 	<div class="forums_container" on="main[threads] then effect[appear] else hide" style="display:none;">
+		<div on="l:threads.response[type=byforum] then show else hide" style="display:none">
+			<h1 style="margin-top:0;" on="l:threads.response then value[forumname]"></h1>
+		</div>
+		<div on="l:threads.response[type=byuser] then show else hide" style="display:none">
+			<h1 style="margin-top:0;" on="l:threads.response then value[username]"></h1>
+		</div>
+		<div on="l:threads.response[type=search] then show else hide" style="display:none">
+			<h1 style="margin-top:0;" id="threads_query_header"></h1>
+		</div>
+		<app:script on="l:threads.response[type=search] then execute">
+			$('threads_query_header').innerHTML='results for query "'+ this.data.query+'"';
+		</app:script>
+		<p class="subtitle">
+		<span on="l:threads.response then value[threads]"></span> thread(s), 
+		<span on="l:threads.response then value[posts]"></span> post(s), <span on="l:threads.response then value[users]"></span> voice(s)
+		</p>
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Threads</span></div>
 			<div class="forums_header_lastpost"><span>Last Post</span></div>

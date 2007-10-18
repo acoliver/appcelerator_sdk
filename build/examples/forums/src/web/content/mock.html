@@ -5,6 +5,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <script type="text/javascript" src="js/appcelerator.js"></script>
+<script type="text/javascript" src="js/forums.js"></script>
 </head>
 <body>
 	<app:script on="l:forums.request then execute">
@@ -12,31 +13,31 @@
 			{'id':'2','name':'Appcelerator','count':'212','description':'Open source web2.0 RIA.','lastModifiedDate':'Last posted at 2pm','lastModifiedUsername':'leeroy','lastModifiedUserid':'2'},
 			{'id':'3','name':'Apache','count':'22','description':'THE open source web server.','lastModifiedDate':'Last posted at 1pm','lastModifiedUsername':'maryann','lastModifiedUserid':'3'},
 			{'id':'4','name':'Sexy Sites','count':'6','description':'Hot rated web2.0 RIA sites.','lastModifiedDate':'Last posted at 7pm','lastModifiedUsername':'billybob','lastModifiedUserid':'1'}];
-		$MQ("l:forums.response",{"rows":data});
+		$MQ("l:forums.response",{"rows":data,'threads':'4','posts':'2008','users':'5'});
 	</app:script>
 	<app:script on="l:users.request then execute">
 		var users = [{'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon','threadCount':'3'},
 		{'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April','threadCount':'33'},
 		{'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday','threadCount':'27'}];
-		$MQ("l:users.response",{"rows":users});
+		$MQ("l:users.response",{"rows":users,'users':'5','active':'3','lurking':'2'});
 	</app:script>
 	
 	<app:script on="l:threads.request[type=byuser] then execute">
 		/*alert('simulating a search for userid "'+this.data.userid+'" and username '+this.data.username);*/
 		var threads=[{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':this.data.username}];
-		$MQ("l:threads.response",{"rows":threads});
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':'1','posts':'5','users':'1','username':this.data.username});
 	</app:script>
 	<app:script on="l:threads.request[type=byforum] then execute">
 		var data = [{'id':'1','name':'Widget Question','count':'4','description':'how do i include the property names in enclosed widgets?','lastModifiedDate':'Last posted at noon','lastUsername':'billybob'},
 			{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'},
 			{'id':'3','name':'localization formatter','count':'22','description':'how do i format complicated resource messages?','lastModifiedDate':'Last posted at 1pm','lastUsername':'leeroy'}];
 		/*alert('simulating threads request for forum "'+this.data.forumid+'"');*/
-		$MQ("l:threads.response",{"rows":data});
+		$MQ("l:threads.response",{"rows":data,'type':this.data.type,'threads':'3','posts':'31','users':'4','forumname':this.data.forumname});
 	</app:script>
 	<app:script on="l:threads.request[type=search] then execute">
 		/*alert('simulating a search for "'+this.data.query+'".');*/
 		var threads=[{'id':'2','name':'calling '+this.data.query,'count':'5','description':'What does "'+this.data.query+'" mean?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'}];
-		$MQ("l:threads.response",{"rows":threads});
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':'1','posts':'5','users':'2','query':this.data.query});
 	</app:script>
 	<app:script on="l:forum.request then execute">
 		/*alert(this.data);*/
@@ -44,19 +45,19 @@
 	<app:script on="l:user.request then execute">
 		/*alert(this.data);*/
 	</app:script>
-	<app:script on="l:logout.request then execute">
-		/*alert("simulating a successfull logout");*/
-		$MQ("l:logout.response",{'success':'true'});
-	</app:script>
 	<app:script on="l:login.request then execute">
 		Logger.info('simulating login with '+this.data);  
 		var data={"success":"true","username":this.data.username};
 		/*alert("simulating a successfull login as mary ann");*/
+		Forums.user.username=this.data.username;
+		Forums.user.password=this.data.password;
 		$MQ("l:login.response",data);
 	</app:script>
+	<app:script on="l:editaccount.request then execute">
+		$MQ("l:editaccount.response",{"success":"true","user":Forums.user});
+	</app:script>
 	<app:script on="l:signup.request then execute">
-		Logger.info('simulating signup with '+this.data.signupusername+'/'+this.data.signuppassword);  
-		/*alert("simulating a successfull signup as billybob");*/
+		Forums.user={'name':this.data.name,'username':this.data.signupusername,'password':this.data.signuppassword,'email':this.data.email};
 		$MQ("l:signup.response",{"success":"true","username":this.data.signupusername});
 	</app:script>
 	<app:script on="l:thread.request then execute">

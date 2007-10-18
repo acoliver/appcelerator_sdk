@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+	<div on="main[users] then show else hide" style="display:none;">
+		<h5>so many voices...</h5>
+		<p>
+			knowledge is power, let the people speak!
+		</p>
+	</div>
+	<div on="main[forums] then show else hide" style="display:none;">
+		<h5>bunch of forums</h5>
+		<p>
+			interesting topics, i'm sure you agree, RIGHT?!!!
+		</p>
+	</div>
+	<div on="main[threads] then show else hide" style="display:none;">
+		<h5>scheck it out</h5>
+		<p>
+			gots lots o threads 4 u....
+		</p>
+	</div>
+	<div on="main[login] then show else hide">
+		<div on="login[in] then hide or l:showlogin.request then show else hide" style="display:none;">
+			<h5>interested?</h5>
+			<p>
+				welcome back if you've seen me b4, otherwize sign on up....
+			</p>
+		</div>
+		<div on="login[out] then hide else show" style="display:none;">
+			<h5>howdy</h5>
+			<p>
+				feel free to change yer account
+			</p>
+		</div>
+	</div>
+</body>

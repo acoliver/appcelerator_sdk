@@ -8,6 +8,12 @@
 </head>
 <body>
 	<div class="forums_container" on="main[forums] then show else hide" style="display:none;">
+		<h1 style="margin-top:0;">Forums</h1>
+		<p class="subtitle">
+		<span on="l:forums.response then value[threads]"></span> threads(s), 
+		<span on="l:forums.response then value[posts]"></span> post(s), <span on="l:forums.response then value[users]"></span> voice(s)
+		</p>
+		
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Forums</span></div>
 			<div class="forums_header_lastpost"><span>Last Post</span></div>
@@ -18,7 +24,7 @@
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:threads.request[forumid=#{id},type=byforum]" class="title">#{name}</html:a>
+							<html:a on="click then l:threads.request[forumid=#{id},type=byforum,forumname='#{name}']" class="title">#{name}</html:a>
 							<html:div class="stats">#{count} threads in forum</html:div>
 							<html:div class="description">#{description}</html:div>
 						</html:td>
@@ -30,4 +36,28 @@
 			</app:iterator>
 		</div>
 	</div>
+	<!--
+	<div style="display:none" class="edit_box find_entries" 
+		on="l:employee.row.selected then effect[appear] or l:hide.employee.edit then effect[Fade]
+		or r:employee.search.request then hide">
+		<input type="hidden" id="emp_id" on="l:employee.row.selected then value[emp_id]" fieldset="edit_emp"/>
+		<span class="bold_value_grey">Email: </span>
+		<input id="edit_emp_email" type="text" on="l:employee.row.selected then value[email]" 
+			fieldset="edit_emp" validator="email" style="width:130px"/>
+		<span class="bold_value_grey">Name: </span>
+		<input id="edit_emp_name" type="text" on="l:employee.row.selected then value[name]" 
+			fieldset="edit_emp" validator="required" style="width:130px"/>
+		<span class="bold_value_grey">Start Date: </span>
+		<input id="edit_emp_date" type="text" on="l:employee.row.selected then value[date]" 
+			fieldset="edit_emp" validator="date"/>
+		<input type="button" value="Save" on="click then r:edit.employee.request" fieldset="edit_emp"
+			activators="edit_emp_name,edit_emp_email,edit_emp_date"/>
+		<input type="button" value="Cancel" on="click then l:hide.employee.edit"/>
+		<span on="r:edit.employee.request then show or r:edit.employee.response then hide and l:hide.employee.edit" 
+			 style="display:none">
+			<img src="images/indicator.gif"/> saving employee...
+		</span>
+	</div>
+-->
+
 </body>

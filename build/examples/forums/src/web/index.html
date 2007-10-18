@@ -9,52 +9,74 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 <link rel="stylesheet" type="text/css" href="css/forums.css" />
 <link rel="stylesheet" type="text/css" href="css/header.css" />
+<link rel="stylesheet" type="text/css" href="css/container.css" />
+<script type="text/javascript" src="js/forums.js"></script>
 </head>
 <body>
 	<div id="header">
 	  <ul id="nav">
 	    <li><a on="click then l:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>
 	    <li><a on="click then l:users.request or main[users] then hide else effect[appear]">Users</a></li>
-	    <li on="search[on] then effect[appear] else hide">
-			<input name="query" size="15" type="text" fieldset="search" />
+	    <li on="search[on] then effect[appear] else effect[fade]">
+			<input name="query" size="15" type="text" fieldset="search" class="search_box"/>
 			<input name="type" value="search" type="hidden" fieldset="search" />
 		</li>
-	    <li on="search[on] then effect[appear] else hide">
+	    <li on="search[on] then effect[appear] else effect[fade]">
 			<a fieldset="search" on="click then l:threads.request"/>go</a>
 		</li>
 	    <li><a on="click then l:showsearch.request or search[off] then effect[appear] else hide">Search</a></li>
 	    <li><a on="click then l:hidesearch.request or search[on] then effect[appear] else hide">Dont Search</a></li>
-        <li><a on="click then l:showlogin.request[type=signup] or login[out] then effect[appear] else hide">Signup</a></li>
-		<li><a on="click then l:showlogin.request[type=login] or login[out] then effect[appear] else hide">Login</a></li>
-	    <li><a on="click then l:logout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span></li>
+        <li><a on="click then l:showlogin.request[type=signup] or login[out] then effect[appear] else hide">Signup/Login</a></li>
+	    <li><a on="click then l:logout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;
+			<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span>
+		</li>
+	    <li><a on="click then l:showaccount.request or login[in] then effect[appear] else hide" style="display:none">Account</a></li>
 		</ul>
 	  <h1>AppForums</h1>
 	</div>
-	<app:statemachine id="main" initial="null">
+	<app:statemachine id="main" initial="welcome">
 		<state name="forums" if="l:forums.request"></state>
 		<state name="users" if="l:users.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
-		<state name="login" if="l:showlogin.request"></state>
-		<state name="null" if="l:login.response or l:signup.response"></state>
+		<state name="login" if="l:showlogin.request or l:showaccount.request"></state>
+		<state name="welcome" if="l:showwelcome.request"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
-		<state name="out" if="l:logout.response"></state>
+		<state name="out" if="l:logout.response or l:login.init"></state>
 		<state name="in" if="l:login.response or l:signup.response"></state>
 	</app:statemachine>
 	<app:statemachine id="search" initial="off">    
 		<state name="on" if="l:showsearch.request"></state>
 		<state name="off" if="l:hidesearch.request or l:search.request"></state>
 	</app:statemachine>
-	<app:content src="content/mock.html">
-	</app:content>
-	<app:content src="content/forums.html" on="main[forums] then effect[appear] else hide" lazy="false">
-	</app:content>
-	<app:content src="content/users.html" on="main[users] then effect[appear] else hide" lazy="false">
-	</app:content>
-	<app:content src="content/threads.html" on="main[threads] then effect[appear] else hide" lazy="false">
-	</app:content>
-	<app:content src="content/login.html" on="l:showlogin.request then effect[appear] else hide" lazy="false">
-	</app:content>
-	
+	<div id="container">
+		<div id="content">
+			<app:content src="content/mock.html"></app:content>
+			<app:content src="content/forums.html" lazy="false"></app:content>
+			<app:content src="content/users.html" lazy="false"></app:content>
+			<app:content src="content/threads.html" lazy="false"></app:content>
+			<app:content src="content/login.html" lazy="false"></app:content>
+			<table width="100%"><tr><td  height="470px" valign="middle" align="center" on="main[welcome] then show else hide">
+			<img src="images/logo.png" on="main[welcome] then show else hide"/>
+			</td></tr></table>
+		</div>
+		<div id="right">
+			<app:content src="content/summary.html"></app:content>
+			<div on="main[forums] then hide or main[users] then hide or main[threads] then hide or main[login] then hide">
+				<h5>weclome to AppForums</h5>
+				<p>
+					  A small, light-weight forum in appcelerator.
+				</p>
+			</div>
+		</div>
+		<br style="clear:both;" />
+	</div>
+	<div id="footer">
+		<div>
+			<a href="http://www.appcelerator.org">Appcelerator</a> is Copyright &copy; 2007 by <a href="http://www.appcelerator.com">Appcelerator, Inc.</a> and is 
+			licensed under the <a href="http://www.fsf.org/licensing/licenses/info/GPLv2.html">GNU Public License, version 2</a>.
+		</div>
+		<div>Appcelerator is a trademark of Appcelerator, Inc.</div>
+	</div>
 </body>
 </html>

@@ -8,6 +8,12 @@
 </head>
 <body>
 	<div class="forums_container" on="main[users] then effect[appear] else hide" style="display:none;">
+		<h1 style="margin-top:0;">Users</h1>
+		<p class="subtitle">
+		<span on="l:users.response then value[users]"></span> users(s), 
+		<span on="l:users.response then value[active]"></span> active, <span on="l:users.response then value[lurking]"></span> lurking
+		</p>
+
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>User</span></div>
 			<div class="forums_header_lastpost"><span>Details</span></div>
