@@ -24,8 +24,8 @@
 		</li>
 	    <li><a on="click then l:showsearch.request or search[off] then effect[appear] else hide">Search</a></li>
 	    <li><a on="click then l:hidesearch.request or search[on] then effect[appear] else hide">Dont Search</a></li>
-        <li><a on="click then l:signup.request or login[out] then effect[appear] else hide">Signup</a></li>
-		<li><a on="click then l:login.request or login[out] then effect[appear] else hide">Login</a></li>
+        <li><a on="click then l:showlogin.request[type=signup] or login[out] then effect[appear] else hide">Signup</a></li>
+		<li><a on="click then l:showlogin.request[type=login] or login[out] then effect[appear] else hide">Login</a></li>
 	    <li><a on="click then l:logout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span></li>
 		</ul>
 	  <h1>AppForums</h1>
@@ -51,6 +51,8 @@
 	<app:content src="content/users.html" on="main[users] then effect[appear] else hide" lazy="false">
 	</app:content>
 	<app:content src="content/threads.html" on="main[threads] then effect[appear] else hide" lazy="false">
+	</app:content>
+	<app:content src="content/login.html" on="l:showlogin.request then effect[appear] else hide" lazy="false">
 	</app:content>
 	
 </body>

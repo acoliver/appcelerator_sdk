@@ -34,8 +34,8 @@
 		$MQ("l:threads.response",{"rows":data});
 	</app:script>
 	<app:script on="l:threads.request[type=search] then execute">
-		/*alert('simulating a search for "'+this.data.q+'".');*/
-		var threads=[{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'}];
+		/*alert('simulating a search for "'+this.data.query+'".');*/
+		var threads=[{'id':'2','name':'calling '+this.data.query,'count':'5','description':'What does "'+this.data.query+'" mean?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'}];
 		$MQ("l:threads.response",{"rows":threads});
 	</app:script>
 	<app:script on="l:forum.request then execute">
@@ -49,13 +49,15 @@
 		$MQ("l:logout.response",{'success':'true'});
 	</app:script>
 	<app:script on="l:login.request then execute">
-		var data={"id":"whatthefuck","success":"true","username":"maryann"};
+		Logger.info('simulating login with '+this.data);  
+		var data={"success":"true","username":this.data.username};
 		/*alert("simulating a successfull login as mary ann");*/
 		$MQ("l:login.response",data);
 	</app:script>
 	<app:script on="l:signup.request then execute">
+		Logger.info('simulating signup with '+this.data.signupusername+'/'+this.data.signuppassword);  
 		/*alert("simulating a successfull signup as billybob");*/
-		$MQ("l:signup.response",{"success":"true","username":"billybob"});
+		$MQ("l:signup.response",{"success":"true","username":this.data.signupusername});
 	</app:script>
 	<app:script on="l:thread.request then execute">
 		alert('not implemented for thread "'+this.data.threadid+'"');

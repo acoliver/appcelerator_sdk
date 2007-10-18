@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+	<div class="forums_container" on="l:showlogin.request[type=login] then show else hide or login[in] then hide" style="display:none;">
+		<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+			<tr>
+				<td class="bold_value_grey">
+					username:
+				</td>
+				<td>
+					<input type="text" fieldset="login" id="username"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					password:
+				</td>
+				<td>
+					<input type="text" fieldset="login" id="password"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="left" >
+					<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request"/>
+				</td>
+				<td colspan="2" align="left" >
+					<input type="button" value="cancel" style="margin-top:10px" on="click then l:showlogin.request[type=cancel]"/>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="forums_container" on="l:showlogin.request[type=signup] then show else hide or login[in] then hide" style="display:none;">
+		<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+			<tr>
+				<td class="bold_value_grey">
+					name:
+				</td>
+				<td>
+					<input type="text" fieldset="signup" id="name" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					username:
+				</td>
+				<td>
+					<input type="text" fieldset="signup" id="signupusername" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					email:
+				</td>
+				<td>
+					<input type="text" fieldset="signup" id="email" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					password:
+				</td>
+				<td>
+					<input type="text" fieldset="signup" id="signuppassword" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="left" >
+					<input type="button" value="signup now!" fieldset="signup" style="margin-top:10px" on="click then l:signup.request"
+						activators="name,signupusername,email,signuppassword"/>
+				</td>
+				<td colspan="2" align="left" >
+					<input type="button" value="cancel" style="margin-top:10px" on="click then l:showlogin.request[type=cancel]"/>
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
