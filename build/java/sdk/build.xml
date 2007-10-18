@@ -52,6 +52,7 @@
 		<echo message=""/>
 		<input message="What would you like to name the project?" addproperty="app.name" />
 		<input message="Where would you like to create?" addproperty="create.dir" defaultvalue="${user.home}${file.separator}${app.name}"/>
+		<antcall target="create.silent"/>
 	</target>
 	<target name="create.silent" depends="banner">
 		<fail unless="app.name" message="property ${app.name} is not defined"/>
