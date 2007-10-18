@@ -14,7 +14,7 @@
 					username:
 				</td>
 				<td>
-					<input type="text" fieldset="login" id="username"/>
+					<input type="text" fieldset="login" id="username" validator="required" decorator="required"/>
 				</td>
 			</tr>
 			<tr>
@@ -22,12 +22,12 @@
 					password:
 				</td>
 				<td>
-					<input type="text" fieldset="login" id="password"/>
+					<input type="password" fieldset="login" id="password" validator="required" decorator="required"/>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2" align="left" >
-					<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request"/>
+					<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request" activators="username,password"/>
 				</td>
 				<td colspan="2" align="left" >
 					<input type="button" value="cancel" style="margin-top:10px" on="click then l:showlogin.request[type=cancel]"/>
@@ -66,7 +66,7 @@
 					password:
 				</td>
 				<td>
-					<input type="text" fieldset="signup" id="signuppassword" validator="required" decorator="required"/>
+					<input type="password" fieldset="signup" id="signuppassword" validator="required" decorator="required"/>
 				</td>
 			</tr>
 			<tr>
