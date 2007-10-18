@@ -5,7 +5,7 @@
 <head>
 <noscript><meta http-equiv="refresh" content="0;URL=upgrade_script.html"></noscript>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title>AppXplorer by Appcelerator&trade;</title>
+<title>AppForums by Appcelerator&trade;</title>
 <script type="text/javascript" src="js/appcelerator.js"></script>
 <link rel="stylesheet" type="text/css" href="css/forums.css" />
 <link rel="stylesheet" type="text/css" href="css/header.css" />
@@ -13,29 +13,30 @@
 <body>
 	<div id="header">
 	  <ul id="nav">
-	    <li><a on="click then l:forums.request">Forums</a></li>
-	    <li><a on="click then l:users.request">Users</a></li>
-	    <li on="search[on] then show else hide">
+	    <li><a on="click then l:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>
+	    <li><a on="click then l:users.request or main[users] then hide else effect[appear]">Users</a></li>
+	    <li on="search[on] then effect[appear] else hide">
 			<input name="q" size="15" type="text" fieldset="search" />
 		</li>
-	    <li on="search[on] then show else hide">
+	    <li on="search[on] then effect[appear] else hide">
 			<a fieldset="search" on="click then l:search.request"/>go</a>
 		</li>
-	    <li><a on="click then l:showsearch.request or search[off] then show else hide">Search</a></li>
-	    <li><a on="click then l:hidesearch.request or search[on] then show else hide">Dont Search</a></li>
-        <li><a on="click then l:signup.request or login[out] then show else hide">Signup</a></li>
-		<li><a on="click then l:login.request or login[out] then show else hide">Login</a></li>
-	    <li><a on="click then l:logout.request or login[in] then show else hide" style="display:none">Logout</a>&nbsp;<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span></li>
+	    <li><a on="click then l:showsearch.request or search[off] then effect[appear] else hide">Search</a></li>
+	    <li><a on="click then l:hidesearch.request or search[on] then effect[appear] else hide">Dont Search</a></li>
+        <li><a on="click then l:signup.request or login[out] then effect[appear] else hide">Signup</a></li>
+		<li><a on="click then l:login.request or login[out] then effect[appear] else hide">Login</a></li>
+	    <li><a on="click then l:logout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span></li>
 		</ul>
 	  <h1>AppForums</h1>
 	</div>
-	<app:statemachine id="main" initial="forums">
+	<app:statemachine id="main" initial="null">
 		<state name="forums" if="l:forums.request or l:login.response or l:signup.response or l:logout.response"></state>
-		<state name="search" if="l:search.request"></state>
 		<state name="users" if="l:users.request"></state>
 		<state name="signup" if="l:signup.request"></state>
 		<state name="login" if="l:login.request"></state>
 		<state name="logout" if="l:logout.request"></state>
+		<state name="threads" if="l:threads.request or l:search.request"></state>
+		<state name="null"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
 		<state name="out" if="l:logout.response"></state>
@@ -47,7 +48,12 @@
 	</app:statemachine>
 	<app:content src="content/mock.html">
 	</app:content>
-	<app:content src="content/forums.html" on="main[forums] then show else hide">
+	<app:content src="content/forums.html" on="main[forums] then effect[appear] else hide" lazy="false">
 	</app:content>
+	<app:content src="content/users.html" on="main[users] then effect[appear] else hide" lazy="false">
+	</app:content>
+	<app:content src="content/threads.html" on="main[threads] then effect[appear] else hide" lazy="false">
+	</app:content>
+	
 </body>
 </html>

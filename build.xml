@@ -345,13 +345,12 @@
 		</zip>
 	</target>
 	
-	<target name="examples_dist" depends="build_examples" description="* Builds the PHP SDK distribution">
+	<target name="examples_dist" depends="build_examples" description="* Builds the examples distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_examples_${VERSION}.zip" comment="Appcelerator Examples">
 			<fileset dir="stage/examples" includes="**/*"/>
 		</zip>
 	</target>
-	
 
 	<target name="sdk_ruby_dist" depends="build_core_javascript,build_examples" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
