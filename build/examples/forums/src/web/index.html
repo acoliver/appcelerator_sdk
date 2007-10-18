@@ -34,6 +34,7 @@
 		<state name="forums" if="l:forums.request"></state>
 		<state name="users" if="l:users.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
+		<state name="login" if="l:showlogin.request"></state>
 		<state name="null"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
