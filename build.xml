@@ -203,11 +203,8 @@
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
 		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
-			<fileset dir="${stage.dir}/web">
-				<include name="**/*"/>
-				<exclude name="*.html"/>
-			</fileset>
-			<fileset dir="src/doc" includes="**/*"/>
+			<fileset dir="${stage.dir}/web" includes="**/*" excludes="images/**"/>
+			<fileset dir="src/doc" includes="**/*" excludes="images/**"/>
 			<filterset>
 				<filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
 				<filter token="appcelerator.xml" value="${appcelerator.xml}"/>
@@ -220,11 +217,30 @@
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 			</filterset>
 		</copy>
-		
+		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
+			<fileset dir="${stage.dir}/web" includes="images/**"/>
+			<fileset dir="src/doc" includes="images/**"/>
+		</copy>
 		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/doc/WEB-INF/web.xml">
 			<fileset dir="${stage.dir}/doc" includes="**/**"/>
 			<fileset dir="${build.java.dir}/doc" includes="*.*"/>
 		</war>
+	</target>
+	<target name="build_examples.nomin" depends="nomin,build_examples"/>
+	<target name="build_examples" depends="build_java" description="* Builds the examples">
+		<antcall target="build_example">
+			<param name="example" value="forums"/>
+		</antcall>
+	</target>
+	<target name="build_example">
+		<delete dir="${stage.dir}/examples/${example}" failonerror="false"/>
+		<mkdir dir="${stage.dir}/examples/${example}"/>
+		<copy todir="${stage.dir}/examples/${example}/src/web">
+			<fileset dir="${stage.dir}/web" includes="**"/>
+		</copy>
+		<copy todir="${stage.dir}/examples" filtering="true" overwrite="true">
+			<fileset dir="build/examples" includes="${example}/**"/>
+		</copy>
 	</target>
 	
 
