@@ -46,7 +46,46 @@
 	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
 		<delete file="${deploy.dir}/appcelerator.war"/>
 	</target>
-	
+	<target name="update" description="** updates an existing appcelerator project to this version of the sdk">
+		<echo>Updating an existing Appcelerator Java project.</echo>
+		<echo message=""/>
+		<input message="Where does the project exist?" addproperty="create.dir"/>
+		<available file="${create.dir}/build.properties" type="file" property="create.dir.exists" />
+		<fail unless="create.dir.exists">Directory ${create.dir} doesn't exist.</fail>
+		<property file ="${create.dir}/build.properties"/>
+		<echo>updating application ${app.name}</echo>
+
+		<input message="would you like to overwrite project specific src/web and build scripts including build.xml, build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?" validargs="y,n" addproperty="overwrite.projectspecific.input"/>
+		<condition property="overwrite.projectspecific">
+			<equals arg1="y" arg2="${overwrite.projectspecific.input}"/>
+		</condition> 
+
+		<input message="would you like to overwrite the lib, examples, server, sample java, test, doc and platform web source?" validargs="y,n" addproperty="overwrite.plat.input"/>
+		<condition property="overwrite.plat">
+			<equals arg1="y" arg2="${overwrite.plat.input}"/>
+		</condition> 
+
+		<antcall target="overwrite.projectspecific"/>
+		<antcall target="overwrite.plat"/>
+		<echo>congrads you are set</echo>
+	</target>
+	<target name="overwrite.plat" if="overwrite.plat">
+		<echo>overwriting platform</echo>
+		<delete>
+			<fileset dir="${create.dir}/lib/appcelerator"/>
+			<fileset dir="${create.dir}/doc"/>
+			<fileset dir="${create.dir}/examples"/>
+			<fileset dir="${create.dir}/server"/>
+			<fileset dir="${create.dir}/src/java" includes="SampleService.java"/>
+			<fileset dir="${create.dir}/src/web/modules"/>
+			<fileset dir="${create.dir}/src/web/js" includes="appcelerator*.*"/>
+		</delete>
+		<antcall target="create.silent.plat"/>
+	</target>
+	<target name="overwrite.projectspecific" if="overwrite.projectspecific">
+		<echo>overwriting projectspecific items</echo>
+		<antcall target="create.silent.projectspecific"/>
+	</target>
 	<target name="create" depends="banner" description="** Create a new Appcelerator for Java project">
 		<echo>Creating a new Appcelerator Java project.</echo>
 		<echo message=""/>
@@ -57,20 +96,35 @@
 	<target name="create.silent" depends="banner">
 		<fail unless="app.name" message="property ${app.name} is not defined"/>
 		<available file="${create.dir}" type="dir" property="create.dir.exists" />
-		<fail if="create.dir.exists">Directory ${create.dir} already exists. Please delete it to continue...</fail>
+ 		<fail if="create.dir.exists">Directory ${create.dir} already exists. Please delete it to continue...</fail>
+		<antcall target="create.silent.plat"/>
+		<antcall target="create.silent.projectspecific"/>
+	</target>
+	<target name="create.silent.projectspecific" depends="banner">
+		<echo>${create.dir}</echo>
 		<mkdir dir="${create.dir}" />
 		<mkdir dir="${create.dir}/lib/appcelerator" />
 		<mkdir dir="${create.dir}/src/java" />
 		<mkdir dir="${create.dir}/src/web" />
-		<copy todir="${create.dir}" filtering="true">
-			<fileset dir="dist" includes="*.*,server/*"/>
+		<copy todir="${create.dir}" filtering="true" overwrite="true">
+			<fileset dir="dist" includes="*.*"/>
 			<filterset>
 				<filter token="APPNAME" value="${app.name}"/>
 				<filter token="APPCELERTOR_DIR" value="${basedir}"/>
 			</filterset>
 		</copy>
-		<copy todir="${create.dir}" filtering="false">
-			<fileset dir="dist" includes="lib/**,server/**,src/**,examples/**"/>
+		<copy todir="${create.dir}" filtering="false" overwrite="true">
+			<fileset dir="dist" includes="src/**"/>
+		</copy>
+	</target>
+
+	<target name="create.silent.plat" depends="banner">
+		<mkdir dir="${create.dir}" />
+		<mkdir dir="${create.dir}/lib/appcelerator" />
+		<mkdir dir="${create.dir}/src/java" />
+		<mkdir dir="${create.dir}/src/web" />
+		<copy todir="${create.dir}" filtering="false" overwrite="true">
+			<fileset dir="dist" includes="lib/**,server/**,examples/**"/>
 			<fileset dir="." includes="test/**,doc/**"/>
 		</copy>
 	</target>
