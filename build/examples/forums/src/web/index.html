@@ -27,7 +27,7 @@
 		<li><a on="click then l:login.request or login[out] then show else hide">Login</a></li>
 	    <li><a on="click then l:logout.request or login[in] then show else hide" style="display:none">Logout</a>&nbsp;<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span></li>
 		</ul>
-	  <h1><a href="/">AppForums</a></h1>
+	  <h1>AppForums</h1>
 	</div>
 	<app:statemachine id="main" initial="forums">
 		<state name="forums" if="l:forums.request or l:login.response or l:signup.response or l:logout.response"></state>

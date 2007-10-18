@@ -231,6 +231,12 @@
 		<antcall target="build_example">
 			<param name="example" value="forums"/>
 		</antcall>
+		<antcall target="build_example">
+			<param name="example" value="simple"/>
+		</antcall>
+		<antcall target="build_example">
+			<param name="example" value="starter"/>
+		</antcall>
 	</target>
 	<target name="build_example">
 		<delete dir="${stage.dir}/examples/${example}" failonerror="false"/>
@@ -246,7 +252,7 @@
 
 	<target name="build_sdk" depends="init,build_web_unit,build_doc,build_java_sdk,build_php_sdk" description="* Builds all language SDKs"></target>
 	
-	<target name="build_java_sdk" depends="build_web_unit,build_doc,build_server" description="* Builds the SDK for Java">
+	<target name="build_java_sdk" depends="build_web_unit,build_doc,build_server,build_examples" description="* Builds the SDK for Java">
 		<mkdir dir="${stage.dir}/sdk/java"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib/appcelerator"/>
@@ -268,7 +274,7 @@
 			<fileset dir="${build.java.dir}/sdk/dist" includes="**" excludes=".classpath"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist" filtering="false" overwrite="true"> 
-			<fileset dir="build" includes="examples/**"/>
+			<fileset dir="stage" includes="examples/**"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist" filtering="true"> 
 			<fileset dir="${build.java.dir}/sdk/dist" includes=".classpath"/>
@@ -284,7 +290,7 @@
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
 		</copy>
 	</target>
-	<target name="build_php_sdk" depends="build_web_unit,build_doc" description="* Builds the SDK for PHP">
+	<target name="build_php_sdk" depends="build_web_unit,build_doc,build_examples" description="* Builds the SDK for PHP">
 		<mkdir dir="${stage.dir}/sdk/php"/>
 		<mkdir dir="${stage.dir}/sdk/php/doc"/>
 		<mkdir dir="${stage.dir}/sdk/php/test"/>
@@ -303,6 +309,10 @@
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
+		</copy>
+		<input message="${stage.dir}/examples"/>
+		<copy todir="${stage.dir}/sdk/php/examples" filtering="false"> 
+			<fileset dir="${stage.dir}/examples" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/test" filtering="false"> 
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
