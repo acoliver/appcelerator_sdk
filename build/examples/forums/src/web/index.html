@@ -45,26 +45,9 @@
 		<state name="on" if="l:showsearch.request"></state>
 		<state name="off" if="l:hidesearch.request"></state>
 	</app:statemachine>
+	<app:content src="content/mock.html">
+	</app:content>
 	<app:content src="content/forums.html" on="main[forums] then show else hide">
 	</app:content>
-	<app:script on="l:forum.request then execute">
-		alert(this.data);
-	</app:script>
-	<app:script on="l:search.request then execute">
-		alert("search parameters:" + this.data);
-	</app:script>
-	<app:script on="l:logout.request then execute">
-		alert("simulating a successfull logout");
-		$MQ("l:logout.response",{'success':'true'});
-	</app:script>
-	<app:script on="l:login.request then execute">
-		var data={"id":"whatthefuck","success":"true","username":"maryann"};
-		alert("simulating a successfull login as mary ann");
-		$MQ("l:login.response",data);
-	</app:script>
-	<app:script on="l:signup.request then execute">
-		alert("simulating a successfull signup as billybob");
-		$MQ("l:signup.response",{"success":"true","username":"billybob"});
-	</app:script>
 </body>
 </html>

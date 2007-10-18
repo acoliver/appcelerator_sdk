@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+	<app:script on="l:forums.request then execute">
+		var cats = [{'id':'1','categoryName':'Beast','topicCount':'403','categoryDescription':'Bug Reports, features, etc.','lastPostDate':'Last posted at noon'},
+			{'id':'2','categoryName':'Appcelerator','topicCount':'212','categoryDescription':'Open source web2.0 RIA.','lastPostDate':'Last posted at 2pm'},
+			{'id':'3','categoryName':'Apache','topicCount':'22','categoryDescription':'THE open source web server.','lastPostDate':'Last posted at 1pm'},
+			{'id':'4','categoryName':'Sexy Sites','topicCount':'6','categoryDescription':'Hot rated web2.0 RIA sites.','lastPostDate':'Last posted at 7pm'}];
+		$MQ("l:forums.response",{"rows":cats});
+	</app:script>
+	<app:script on="l:forum.request then execute">
+		alert(this.data);
+	</app:script>
+	<app:script on="l:search.request then execute">
+		alert("search parameters:" + this.data);
+	</app:script>
+	<app:script on="l:logout.request then execute">
+		alert("simulating a successfull logout");
+		$MQ("l:logout.response",{'success':'true'});
+	</app:script>
+	<app:script on="l:login.request then execute">
+		var data={"id":"whatthefuck","success":"true","username":"maryann"};
+		alert("simulating a successfull login as mary ann");
+		$MQ("l:login.response",data);
+	</app:script>
+	<app:script on="l:signup.request then execute">
+		alert("simulating a successfull signup as billybob");
+		$MQ("l:signup.response",{"success":"true","username":"billybob"});
+	</app:script>
+</body>
