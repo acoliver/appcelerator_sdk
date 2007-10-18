@@ -7,29 +7,29 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<div id="forums_container" on="main[forums] then effect[appear] else hide" style="display:none;">
+	<div id="users_container" on="main[users] then effect[appear] else hide" style="display:none;">
 		<div id="forums_header">
-			<div id="forums_header_forums"><span>Forums</span></div>
-			<div id="forums_header_lastpost"><span>Last Post</span></div>
+			<div id="forums_header_forums"><span>User</span></div>
+			<div id="forums_header_lastpost"><span>Details</span></div>
 		</div>
-		<div id="forums_content" on="l:forums.getdata.response then show" style="display:none;">
-			<app:iterator on="l:forums.getdata.response then execute" property="rows">
+		<div id="users_content" on="l:users.getdata.response then show" style="display:none;">
+			<app:iterator on="l:users.getdata.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:threads.request[forumid=#{id}]" class="title">#{name}</html:a>
-							<html:div class="stats">#{count}</html:div>
-							<html:div class="description">#{description}</html:div>
+							<html:a on="click then l:user.request[id=#{id}]" class="title">#{username}</html:a>
+							<html:div class="stats"> </html:div>
+							<html:div class="description">#{fullName}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastModifiedDate}
+							#{lastLogin}
 						</html:td>
 					</html:tr>
 				</html:table>
 			</app:iterator>
 		</div>
 	</div>
-	<app:message name="l:forums.getdata.request" args="">
+	<app:message name="l:users.getdata.request" args="">
 	</app:message>
 </body>

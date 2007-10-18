@@ -7,30 +7,51 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<app:script on="l:forums.request then execute">
-		var cats = [{'id':'1','categoryName':'AppForums','topicCount':'403','categoryDescription':'Bug Reports, features, etc.','lastPostDate':'Last posted at noon'},
-			{'id':'2','categoryName':'Appcelerator','topicCount':'212','categoryDescription':'Open source web2.0 RIA.','lastPostDate':'Last posted at 2pm'},
-			{'id':'3','categoryName':'Apache','topicCount':'22','categoryDescription':'THE open source web server.','lastPostDate':'Last posted at 1pm'},
-			{'id':'4','categoryName':'Sexy Sites','topicCount':'6','categoryDescription':'Hot rated web2.0 RIA sites.','lastPostDate':'Last posted at 7pm'}];
-		$MQ("l:forums.response",{"rows":cats});
+	<app:script on="l:forums.getdata.request then execute">
+		var data = [{'id':'1','name':'AppForums','count':'403','description':'Bug Reports, features, etc.','lastModifiedDate':'Last posted at noon'},
+			{'id':'2','name':'Appcelerator','count':'212','description':'Open source web2.0 RIA.','lastModifiedDate':'Last posted at 2pm'},
+			{'id':'3','name':'Apache','count':'22','description':'THE open source web server.','lastModifiedDate':'Last posted at 1pm'},
+			{'id':'4','name':'Sexy Sites','count':'6','description':'Hot rated web2.0 RIA sites.','lastModifiedDate':'Last posted at 7pm'}];
+		$MQ("l:forums.getdata.response",{"rows":data});
 	</app:script>
-	<app:script on="l:forum.request then execute">
-		alert(this.data);
+	<app:script on="l:threads.getdata.request then execute">
+		var data = [{'id':'1','name':'Widget Question','count':'4','description':'how do i include the property names in enclosed widgets?','lastModifiedDate':'Last posted at noon','lastUsername':'billybob'},
+			{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'},
+			{'id':'3','name':'localization formatter','count':'22','description':'how do i format complicated resource messages?','lastModifiedDate':'Last posted at 1pm','lastUsername':'leeroy'}];
+		/*alert('simulating threads request for forum "'+this.data.forumid+'"');*/
+		$MQ("l:threads.getdata.response",{"rows":data});
+	</app:script>
+	<app:script on="l:users.getdata.request then execute">
+		var users = [{'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon'},
+		{'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April'},
+		{'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday'}];
+		$MQ("l:users.getdata.response",{"rows":users});
 	</app:script>
 	<app:script on="l:search.request then execute">
-		alert("search parameters:" + this.data);
+		/*alert('simulating a search for "'+this.data.q+'".');*/
+		var threads=[{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'}];
+		$MQ("l:threads.getdata.response",{"rows":threads});
+	</app:script>
+	<app:script on="l:forum.request then execute">
+		/*alert(this.data);*/
+	</app:script>
+	<app:script on="l:user.request then execute">
+		/*alert(this.data);*/
 	</app:script>
 	<app:script on="l:logout.request then execute">
-		alert("simulating a successfull logout");
+		/*alert("simulating a successfull logout");*/
 		$MQ("l:logout.response",{'success':'true'});
 	</app:script>
 	<app:script on="l:login.request then execute">
 		var data={"id":"whatthefuck","success":"true","username":"maryann"};
-		alert("simulating a successfull login as mary ann");
+		/*alert("simulating a successfull login as mary ann");*/
 		$MQ("l:login.response",data);
 	</app:script>
 	<app:script on="l:signup.request then execute">
-		alert("simulating a successfull signup as billybob");
+		/*alert("simulating a successfull signup as billybob");*/
 		$MQ("l:signup.response",{"success":"true","username":"billybob"});
+	</app:script>
+	<app:script on="l:thread.request then execute">
+		alert('not implemented for thread "'+this.data.threadid+'"');
 	</app:script>
 </body>

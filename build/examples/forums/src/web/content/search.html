@@ -7,13 +7,13 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<div id="forums_container" on="main[forums] then effect[appear] else hide" style="display:none;">
-		<div id="forums_header">
-			<div id="forums_header_forums"><span>Forums</span></div>
+	<div id="threads_container" on="main[search] then effect[appear] else hide" style="display:none;">
+		<div id="search_header">
+			<div id="forums_header_forums"><span>Threads</span></div>
 			<div id="forums_header_lastpost"><span>Last Post</span></div>
 		</div>
-		<div id="forums_content" on="l:forums.getdata.response then show" style="display:none;">
-			<app:iterator on="l:forums.getdata.response then execute" property="rows">
+		<div id="search_content" on="l:threads.getdata.response then show" style="display:none;">
+			<app:iterator on="l:threads.getdata.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
@@ -23,13 +23,11 @@
 							<html:div class="description">#{description}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastModifiedDate}
+							#{lastModifiedDate} by #{lastUsername}
 						</html:td>
 					</html:tr>
 				</html:table>
 			</app:iterator>
 		</div>
 	</div>
-	<app:message name="l:forums.getdata.request" args="">
-	</app:message>
 </body>
