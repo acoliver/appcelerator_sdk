@@ -30,11 +30,8 @@
 	  <h1>AppForums</h1>
 	</div>
 	<app:statemachine id="main" initial="null">
-		<state name="forums" if="l:forums.request or l:login.response or l:signup.response or l:logout.response"></state>
+		<state name="forums" if="l:forums.request"></state>
 		<state name="users" if="l:users.request"></state>
-		<state name="signup" if="l:signup.request"></state>
-		<state name="login" if="l:login.request"></state>
-		<state name="logout" if="l:logout.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
 		<state name="null"></state>
 	</app:statemachine>
@@ -44,7 +41,7 @@
 	</app:statemachine>
 	<app:statemachine id="search" initial="off">    
 		<state name="on" if="l:showsearch.request"></state>
-		<state name="off" if="l:hidesearch.request"></state>
+		<state name="off" if="l:hidesearch.request or l:search.request"></state>
 	</app:statemachine>
 	<app:content src="content/mock.html">
 	</app:content>

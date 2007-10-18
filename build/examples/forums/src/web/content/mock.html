@@ -8,10 +8,10 @@
 </head>
 <body>
 	<app:script on="l:forums.getdata.request then execute">
-		var data = [{'id':'1','name':'AppForums','count':'403','description':'Bug Reports, features, etc.','lastModifiedDate':'Last posted at noon'},
-			{'id':'2','name':'Appcelerator','count':'212','description':'Open source web2.0 RIA.','lastModifiedDate':'Last posted at 2pm'},
-			{'id':'3','name':'Apache','count':'22','description':'THE open source web server.','lastModifiedDate':'Last posted at 1pm'},
-			{'id':'4','name':'Sexy Sites','count':'6','description':'Hot rated web2.0 RIA sites.','lastModifiedDate':'Last posted at 7pm'}];
+		var data = [{'id':'1','name':'AppForums','count':'403','description':'Bug Reports, features, etc.','lastModifiedDate':'Last posted at noon','lastModifiedUsername':'billybob','lastModifiedUserid':'1'},
+			{'id':'2','name':'Appcelerator','count':'212','description':'Open source web2.0 RIA.','lastModifiedDate':'Last posted at 2pm','lastModifiedUsername':'leeroy','lastModifiedUserid':'2'},
+			{'id':'3','name':'Apache','count':'22','description':'THE open source web server.','lastModifiedDate':'Last posted at 1pm','lastModifiedUsername':'maryann','lastModifiedUserid':'3'},
+			{'id':'4','name':'Sexy Sites','count':'6','description':'Hot rated web2.0 RIA sites.','lastModifiedDate':'Last posted at 7pm','lastModifiedUsername':'billybob','lastModifiedUserid':'1'}];
 		$MQ("l:forums.getdata.response",{"rows":data});
 	</app:script>
 	<app:script on="l:threads.getdata.request then execute">
@@ -22,9 +22,9 @@
 		$MQ("l:threads.getdata.response",{"rows":data});
 	</app:script>
 	<app:script on="l:users.getdata.request then execute">
-		var users = [{'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon'},
-		{'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April'},
-		{'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday'}];
+		var users = [{'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon','threadCount':'3'},
+		{'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April','threadCount':'33'},
+		{'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday','threadCount':'27'}];
 		$MQ("l:users.getdata.response",{"rows":users});
 	</app:script>
 	<app:script on="l:search.request then execute">
@@ -53,5 +53,11 @@
 	</app:script>
 	<app:script on="l:thread.request then execute">
 		alert('not implemented for thread "'+this.data.threadid+'"');
+	</app:script>
+	<app:script on="l:userthreads.request then execute">
+		alert('not implemented for userid "'+this.data.userid+'"');
+	</app:script>
+	<app:script on="l:user.request then execute">
+		alert('not implemented for userid "'+this.data.userid+'"');
 	</app:script>
 </body>

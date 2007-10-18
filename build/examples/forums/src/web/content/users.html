@@ -18,8 +18,8 @@
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:user.request[id=#{id}]" class="title">#{username}</html:a>
-							<html:div class="stats"> </html:div>
+							<html:a on="click then l:user.request[userid=#{id}]" class="title">#{username}</html:a>
+							<html:div class="stats">#{threadCount} threads posted (<html:a class="smalllink" on="click then l:userthreads.request[userid=#{id}]">view threads</html:a>) </html:div>
 							<html:div class="description">#{fullName}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
