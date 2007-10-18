@@ -7,7 +7,7 @@
 <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body>
-	<div class="forums_container" on="l:showlogin.request[type=login] then show else hide or login[in] then hide" style="display:none;">
+	<div class="forums_container" on="l:showlogin.request[type=login] then show else hide or main[login] then show else hide" style="display:none;">
 		<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 			<tr>
 				<td class="bold_value_grey">
@@ -35,7 +35,7 @@
 			</tr>
 		</table>
 	</div>
-	<div class="forums_container" on="l:showlogin.request[type=signup] then show else hide or login[in] then hide" style="display:none;">
+	<div class="forums_container" on="l:showlogin.request[type=signup] then show else hide or main[login] then show else hide" style="display:none;">
 		<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 			<tr>
 				<td class="bold_value_grey">

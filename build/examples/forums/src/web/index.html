@@ -35,7 +35,7 @@
 		<state name="users" if="l:users.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
 		<state name="login" if="l:showlogin.request"></state>
-		<state name="null"></state>
+		<state name="null" if="l:login.response or l:signup.response"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
 		<state name="out" if="l:logout.response"></state>
