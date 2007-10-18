@@ -88,6 +88,22 @@ ant dist</pre>
 			<li><b>data.success</b>: "true"
 		</ul>
 
+		<h3>Updating the project</h3>
+		You can alternatively update your project to a new version of the sdk very simply.  Just extract the new sdk and run the update task
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip -d appcelerator_sdk_java_@VERSION@_new
+cd appcelerator_sdk_java_@VERSION@_bew
+ant update</pre>
+		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: /Users/azuercher/workspace/myapp)
+		<pre class="command">
+[input] Where does the project exist?
+/Users/azuercher/workspace/myapp
+[echo] updating application az
+[input] would you like to overwrite project specific src/web and build scripts including build.xml, 
+build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?(y,n)
+y
+[input] would you like to overwrite the lib, examples, server, sample java, test, doc and platform web source?(y,n)
+n</pre>
+		
 		<h3>Next Steps</h3>
 		You are now ready to proceed to creating your <a on="click then l:javagettingstarted[show=client]">Web Client</a>
 	</div>
