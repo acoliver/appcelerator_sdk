@@ -310,7 +310,6 @@
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
 		</copy>
-		<input message="${stage.dir}/examples"/>
 		<copy todir="${stage.dir}/sdk/php/examples" filtering="false"> 
 			<fileset dir="${stage.dir}/examples" includes="**/*"/>
 		</copy>
@@ -346,7 +345,15 @@
 		</zip>
 	</target>
 	
-	<target name="sdk_ruby_dist" depends="build_core_javascript" description="* Builds the Ruby on Rails SDK distribution">
+	<target name="examples_dist" depends="build_examples" description="* Builds the PHP SDK distribution">
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_examples_${VERSION}.zip" comment="Appcelerator Examples">
+			<fileset dir="stage/examples" includes="**/*"/>
+		</zip>
+	</target>
+	
+
+	<target name="sdk_ruby_dist" depends="build_core_javascript,build_examples" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
@@ -356,6 +363,9 @@
                 <expandproperties/>
             </filterchain>
         </copy>
+        <copy todir="${stage.dir}/ruby">
+			<fileset dir="stage" includes="examples/**"/>
+		</copy>
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator.js"/>
              <fileset dir="${src.web.dir}" includes="modules**/**"/>
@@ -384,7 +394,7 @@
 			</fileset>
 		</zip>
 	</target>
-	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
