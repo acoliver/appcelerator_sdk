@@ -16,7 +16,7 @@
 			<app:iterator on="l:threads.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
-						<html:td class="forum_icon"></html:td>
+						<html:td class="thread_icon"></html:td>
 						<html:td class="forum_title">
 							<html:a on="click then l:thread.request[threadid=#{id}]" class="title">#{name}</html:a>
 							<html:div class="stats">#{count} messages in thread</html:div>

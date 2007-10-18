@@ -39,6 +39,22 @@
 	background-repeat:no-repeat;
 	background-position:8px 15px;
 }
+.thread_icon
+{
+	width:2%;
+	padding:15px;
+	background-image:url(../images/email.png);
+	background-repeat:no-repeat;
+	background-position:8px 15px;
+}
+.user_icon
+{
+	width:2%;
+	padding:15px;
+	background-image:url(../images/user.png);
+	background-repeat:no-repeat;
+	background-position:8px 15px;
+}
 .forums_postdate
 {
 	width:30%;
