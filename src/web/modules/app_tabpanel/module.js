@@ -53,7 +53,7 @@ Appcelerator.Module.Tabpanel =
 		}
 
 		var html = '<div id="parent_'+id+'">';
-		html += '<ul id="' + id + '" ' + (className ? 'class="' + className + '"' : '')+' ' + (on ? 'on="' + on + '"' : '') + '>\n';
+		html += '<div id="' + id + '" ' + (className ? 'class="' + className + '"' : '')+' ' + (on ? 'on="' + on + '"' : '') + '><table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr>\n';
 
 		if (Appcelerator.Browser.isIE)
 		{
@@ -86,7 +86,7 @@ Appcelerator.Module.Tabpanel =
 					tabHtml = Appcelerator.Compiler.getHtml(node);
 				}
 				var tabId = id + '_' + name;
-				html+='<li id="' + tabId + '" ' + (inactiveClassName?'class="'+inactiveClassName+'" ':'')+' '+Appcelerator.Util.Dom.getAttributesString(element)+'><a>' + tabHtml + '</a></li>\n';
+				html+='<td><div id="' + tabId + '" ' + (inactiveClassName?'class="tabpanel_tab '+inactiveClassName+'" ':'tabpanel_tab')+' '+Appcelerator.Util.Dom.getAttributesString(element)+'><a>' + tabHtml + '</a></div></td>\n';
 				
 				if (!initialFound && initial && initial == name)
 				{
@@ -104,7 +104,7 @@ Appcelerator.Module.Tabpanel =
 			}
 		}
 		
-		html+='</ul></div>';
+		html+='</tr></table></div></div>';
 
 		if (initial)
 		{
@@ -160,12 +160,14 @@ Appcelerator.Module.Tabpanel =
 			code += '};';
 			
 			code += 'tab.onmouseover = function()';
-			code += '{ this.className+=" tab_active";';
+			code += '{ if (selectedTab'+id+' != this) { this.className+=" tab_active"; }';
 			code += '};';
 
 			code += 'tab.onmouseout = function(e)';
-			code += '{ this.className=this.className.replace(new RegExp(" tab_active\\\\b"), "");';
-			code += '};';			
+			code += '{;';
+			code += 'if (selectedTab'+id+' != this)';
+			code += '{ this.className=this.className.replace(new RegExp(" tab_active\\\\b"), "");}';
+			code += '};';
 			
 			// delegate to any attribute listeners
 			code += Appcelerator.Compiler.delegateToAttributeListeners(tabs[c][2])+";";			
