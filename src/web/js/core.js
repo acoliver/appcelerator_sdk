@@ -137,7 +137,6 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 				for (var i = 0; i < document.styleSheets.length; i++)
 				{
 					arr.push (document.styleSheets[i].owningElement.outerHTML);
-					if (document.styleSheets[i].owningElement.nodeName != 'STYLE') document.styleSheets[i].cssText = '';
 				}				
 			} catch (e) { throw 'Failed to gather CSS: ' + e.message; }
 
