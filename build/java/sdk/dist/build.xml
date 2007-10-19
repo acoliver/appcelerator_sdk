@@ -47,6 +47,9 @@
 			<outputproperty name="doctype-system" value="http://www.springframework.org/dtd/spring-beans.dtd"/>
 			<outputproperty name="indent" value="yes"/>
 			<param name="mergefile" expression="appcelerator-services.xml"/>
+			<xmlcatalog>
+				<dtd publicId="-//SPRING//DTD BEAN//EN" location="./spring-beans.dtd"/>
+			</xmlcatalog>
 		</xslt>
 		<copy todir="stage/setupfiles_extracted/WEB-INF/classes" file="stage/transform/spring-beans.xml"/>
 		<copy todir="stage/setupfiles_extracted/lib">
