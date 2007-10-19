@@ -1,2 +1,2 @@
 var Forums = Class.create();
-Forums.user={'name':'','username':'','password':'','email':''};
+Forums.user={'id':0,'name':'','username':'','password':'','email':''};

@@ -47,5 +47,32 @@
 				</html:table>
 			</app:iterator>
 		</div>
+		<!-- create a new forum -->
+		<div class="forums_container" on="l:threads.response[type=byforum] then show else hide" style="display:none;">
+			
+			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+				<input type="hidden" fieldset="thread" id="newthread_forumid" on="l:threads.response[type=byforum] then value[forumid]"></input>
+				<tr>
+					<td class="bold_value_grey">title:</td>
+					<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"/></td>
+				</tr>
+				<tr>
+					<td class="bold_value_grey">post body:</td>
+					<td><input type="text" fieldset="thread" id="newthread_body" validator="required" decorator="required"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="left" >
+						<input type="button" value="create new thread" fieldset="thread" style="margin-top:10px" on="click then l:createthread.request"
+							activators="newthread_name,newthread_body"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<app:script on="l:threads.request then execute">
+			Forums.lastthreadrequest=this.data;
+		</app:script>
+ 		<app:script on="l:createthread.response then execute">
+			$MQ('l:threads.request',Forums.lastthreadrequest);
+		</app:script>
 	</div>
 </body>

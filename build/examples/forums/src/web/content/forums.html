@@ -35,29 +35,25 @@
 				</html:table>
 			</app:iterator>
 		</div>
+		<!-- create a new forum -->
+		<div class="forums_container">
+			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+				<tr>
+					<td class="bold_value_grey">name:</td>
+					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required"/></td>
+				</tr>
+				<tr>
+					<td class="bold_value_grey">description:</td>
+					<td><input type="text" fieldset="forum" id="newforum_description" validator="required" decorator="required"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="left" >
+						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then l:createforum.request"
+							activators="newforum_name,newforum_description"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+ 		<app:message on="l:createforum.response then execute" name="l:forums.request"></app:message>
 	</div>
-	<!--
-	<div style="display:none" class="edit_box find_entries" 
-		on="l:employee.row.selected then effect[appear] or l:hide.employee.edit then effect[Fade]
-		or r:employee.search.request then hide">
-		<input type="hidden" id="emp_id" on="l:employee.row.selected then value[emp_id]" fieldset="edit_emp"/>
-		<span class="bold_value_grey">Email: </span>
-		<input id="edit_emp_email" type="text" on="l:employee.row.selected then value[email]" 
-			fieldset="edit_emp" validator="email" style="width:130px"/>
-		<span class="bold_value_grey">Name: </span>
-		<input id="edit_emp_name" type="text" on="l:employee.row.selected then value[name]" 
-			fieldset="edit_emp" validator="required" style="width:130px"/>
-		<span class="bold_value_grey">Start Date: </span>
-		<input id="edit_emp_date" type="text" on="l:employee.row.selected then value[date]" 
-			fieldset="edit_emp" validator="date"/>
-		<input type="button" value="Save" on="click then r:edit.employee.request" fieldset="edit_emp"
-			activators="edit_emp_name,edit_emp_email,edit_emp_date"/>
-		<input type="button" value="Cancel" on="click then l:hide.employee.edit"/>
-		<span on="r:edit.employee.request then show or r:edit.employee.response then hide and l:hide.employee.edit" 
-			 style="display:none">
-			<img src="images/indicator.gif"/> saving employee...
-		</span>
-	</div>
--->
-
 </body>

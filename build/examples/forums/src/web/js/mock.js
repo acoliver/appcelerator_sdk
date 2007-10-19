@@ -4,10 +4,10 @@ Mock.forums = new Array();
 Mock.threads = new Array();
 Mock.posts = new Array();
 
-createUser(1,'billybob','Billy Bob Jackson','Last Login at noon','active');
-createUser(2,'leeroy','Leeroy Brown','Last Login April','active');
-createUser(3,'maryann','Mary Ann Shaw','Last Login yesteray','active');
-createUser(4,'john','John Smith','Last Login January 2005','lurking');
+createUser(1,'billybob','Billy Bob Jackson','Last Login at noon','active','pwd','email');
+createUser(2,'leeroy','Leeroy Brown','Last Login April','active','pwd','email');
+createUser(3,'maryann','Mary Ann Shaw','Last Login yesteray','active','pwd','email');
+createUser(4,'john','John Smith','Last Login January 2005','lurking','pwd','email');
 
 createForum(1,'AppForums','Bug Reports, features, etc.');
 createForum(2,'Appcelerator','Open source web2.0 RIA.');
@@ -20,6 +20,7 @@ createThread(2,2,2,'Appcelerator .NET deployment');
 createThread(2,3,3,'Appcelerator Iterator question');
 createThread(4,2,4,'check this site out');
 createThread(3,1,5,'Apache versions....');
+createThread(3,1,6,'Tomcat support...');
 
 /* threadid,userid,id,date,body */
 createPost(1,1,1,'Oct 22, 2007 2:13pm','boy this is really good stuff');
@@ -28,6 +29,9 @@ createPost(3,2,3,'Sep 20, 2007 1:14pm','What are the differences betweeen 1.3 an
 createPost(4,2,4,'Oct 22, 2007 2:13pm','When will the .Net server implementation be ready?');
 createPost(5,1,5,'Oct 22, 2007 2:13pm','How soon will it be here?');
 createPost(5,3,6,'Oct 22, 2007 2:13pm','Soon....');
+createPost(6,3,7,'Oct 22, 2007 2:13pm','Is tomcat supported?');
+createPost(6,2,8,'Oct 22, 2007 2:13pm','I think so any tips?');
+createPost(6,1,9,'Oct 22, 2007 2:13pm','Make sure that you bump up the -Xmx256m and use apache ajp for proxy....');
 
 function getById(id,collection)
 {
@@ -60,20 +64,23 @@ function createForum(id,name,desc)
 	Mock.forums.push(forum);
 }
 /* state is (active|lurking) */
-function createUser(id,username,fullName,lastLogin,state)
+function createUser(id,username,fullName,lastLogin,state,password,email)
 {
-	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0};
+	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0,'password':password,'email':email};
 	Mock.users.push(user);
 }
 function createThread(forumid,userid,id,name)
 {
+	Logger.info('forumid:'+forumid+' userid:'+userid+' id:'+id+' name:'+name);  
 	var forum = getById(forumid,Mock.forums);
 	forum.threads+=1;
 	var thread = {'id':id,'name':name,'forum':forum,'posts':0};
 	Mock.threads.push(thread);
+	return thread;
 }
 function createPost(threadid,userid,id,date, body)
 {
+	Logger.info('threadid:'+threadid+' userid:'+userid+' id:'+id+' date:'+date+' body:'+body);  
 	var thread = getById(threadid,Mock.threads);
 	var user = getById(userid,Mock.users);
 	var post = {'id':id,'body':body,'user':user,'thread':thread,'date':date};
@@ -178,3 +185,4 @@ function sortPost(a,b)
 {
 	return a.id - b.id;
 }
+Forums.user=getById(1,Mock.users);

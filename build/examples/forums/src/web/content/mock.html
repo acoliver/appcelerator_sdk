@@ -26,7 +26,7 @@
 		var posts = postsByForum(this.data.forumid);
 		var threads = uniqueThreads(posts);
 		var users = uniqueUsers(posts);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forumname':this.data.forumname});
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forumname':this.data.forumname,'forumid':this.data.forumid});
 	</app:script>
 	<app:script on="l:threads.request[type=search] then execute">
 		var posts=postsByQuery(this.data.query);
@@ -52,7 +52,7 @@
 		$MQ("l:editaccount.response",{"success":"true","user":Forums.user});
 	</app:script>
 	<app:script on="l:signup.request then execute">
-		Forums.user={'name':this.data.name,'username':this.data.signupusername,'password':this.data.signuppassword,'email':this.data.email};
+		Forums.user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email};
 		$MQ("l:signup.response",{"success":"true","username":this.data.signupusername});
 	</app:script>
 	<app:script on="l:thread.request then execute">
@@ -66,6 +66,18 @@
 		var posts = postsByThread(thread);
 		var users = uniqueUsers(posts);
 		$MQ("l:posts.response",{"posts":posts,'users':users,'thread':thread,'type':this.data.type,'forum':thread.forum});
-		
+	</app:script>
+	<app:script on="l:createforum.request then execute">
+		createForum(Mock.forums.length+1,this.data.newforum_name,this.data.newforum_description);
+		$MQ("l:createforum.response",{});
+	</app:script>
+	<app:script on="l:createthread.request then execute">
+		var thread = createThread(this.data.newthread_forumid,Forums.user.id,Mock.threads.length+1,this.data.newthread_name);
+		var post = createPost(thread.id,Forums.user.id,Mock.posts.length+1,'Oct 22, 2007 7:07pm',this.data.newthread_body);
+		$MQ("l:createthread.response",{});
+	</app:script>
+	<app:script on="l:createpost.request then execute">
+		var post = createPost(this.data.newpost_threadid,Forums.user.id,Mock.posts.length+1,'Oct 22, 2007 7:07pm',this.data.newpost_body);
+		$MQ("l:createpost.response",{});
 	</app:script>
 </body>
