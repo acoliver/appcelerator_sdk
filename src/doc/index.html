@@ -10,13 +10,17 @@
 <link rel="stylesheet" type="text/css" href="css/index.css" />
 </head>
 <body>
-<div id="body">
+<div id="body" style="visibility:hidden" on="l:app.compiled then visible">
 	<div id="logo"><a href="http://www.appcelerator.org" title="Visit the Appcelerator Developer Community"><img src="images/app_logo_BW_noBG.png" alt="Appcelerator Documentation"/></a></div>
 	<!-- header logo -->
 	<div id="header"></div>
 	
 	<!-- MAIN CONTAINER -->
 	<div id="container">
+
+        <div id="status">
+            <div on="l:item then show or l:item.loaded then hide" style="display:none"><img src="images/indicator3.gif"/> <span>Loading...</span></div>
+        </div>
 	
 		<!-- MAIN TABLE - TWO CELLS -->
 		<table width="100%">
@@ -112,7 +116,7 @@
 								</td></tr></table>
 							</div>
 							<div on="l:item then show" style="display:none">
-								<iframe id="editor" src="" on="l:item then set[src=src]"
+								<iframe id="editor" src="" on="l:item then set[src=src]" onloaded="l:item.loaded"
 									frameborder="0" style="margin:0;padding:0;margin-top:0px;width:100%;height:490px">
 								</iframe>
 							</div>

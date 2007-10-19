@@ -12,7 +12,7 @@
 <link rel="stylesheet" type="text/css" href="css/container.css" />
 <script type="text/javascript" src="js/forums.js"></script>
 </head>
-<body>
+<body style="visibility:hidden" on="l:app.compiled then visible">
 	<div id="header">
 	  <ul id="nav">
 	    <li><a on="click then l:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>

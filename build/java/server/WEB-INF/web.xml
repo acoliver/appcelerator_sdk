@@ -30,10 +30,28 @@
     <filter>
       <filter-name>Compress</filter-name>
       <filter-class>org.appcelerator.servlet.filter.GZIPFilter</filter-class>
+      <description>Filter for applying GZIP compression if requested by client</description>
+    </filter>
+
+    <filter>
+      <filter-name>Tracker</filter-name>
+      <filter-class>org.appcelerator.servlet.filter.CookieTrackerFilter</filter-class>
+      <description>Filter for adding a unique, lifetime tracking cookie for new visitors</description>
+      <init-param>
+        <param-name>cookieName</param-name>
+        <param-value>AUID</param-value>
+        <param-name>cookieDuration</param-name>
+        <param-value>5y</param-value>
+      </init-param>
     </filter>
    
     <filter-mapping>
       <filter-name>Compress</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Tracker</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
 

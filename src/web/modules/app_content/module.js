@@ -81,7 +81,14 @@ Appcelerator.Module.Content =
 				var t = Appcelerator.Compiler.compileTemplate(html);
 				html = t(args.evalJSON());
 			}
+			// turn off until we're done compiling
+			target.style.visibility='hidden';
 			target.innerHTML = html;
+			state.onafterfinish=function()
+			{
+				// turn it back on once we're done compiling
+			     target.style.visibility='visible';
+			};
 			Appcelerator.Compiler.compileElement(target.firstChild,state,false);
 			state.scanned=true;
 			Appcelerator.Compiler.checkLoadState(state);

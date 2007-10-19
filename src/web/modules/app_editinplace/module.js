@@ -85,9 +85,15 @@ Appcelerator.Module.EditinPlace =
 			case 'text':
 			{
 				editinplace_html = '<input class="'+editClassName+'" style="display:none" id="' + id + '_editinplace_input" '+(validator?'validator="'+validator+'"':'')+' decorator="custom" decoratorId="'+errorId+'" type="text" value="'+defaultValue+'"/>';
-				editinplace_html += '<div  style="cursor:pointer" class="'+defaultClassName+'" id="' + id + '_editinplace_text">' + defaultValue + '</div>';
+				editinplace_html += '<div style="cursor:pointer" class="'+defaultClassName+'" id="' + id + '_editinplace_text">' + defaultValue + '</div>';
 				break;
 			}
+            case 'textarea':
+            {
+                editinplace_html = '<textarea class="'+editClassName+'" style="display:none" id="' + id + '_editinplace_input" '+(validator?'validator="'+validator+'"':'')+' decorator="custom" decoratorId="'+errorId+'">'+defaultValue+'</textarea>';
+                editinplace_html += '<div style="cursor:pointer" class="'+defaultClassName+'" id="' + id + '_editinplace_text">' + defaultValue + '</div>';
+                break;
+            }
 			default:
 			{
 				throw "unsupported field type: '" + type +"'";

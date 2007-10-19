@@ -187,6 +187,12 @@ var addsetBuilder =
 		else
 		{
 			var code = 'var e = $("'+id+'"); if (!e) throw "syntax error: element with ID: '+id+' doesn\'t exist";'
+            code+="if (e.nodeName=='IFRAME' && '"+key+"'=='src'){";
+            code+="var onload=e.getAttribute('onloaded');";
+            code+="if (onload){";
+            code+="Appcelerator.Util.IFrame.monitor(e,function(){$MQ(onload,{},e.scope);});";
+            code+="}";
+            code+="}";
 			code+='if (e["'+key+'"]!=null){';
 			switch(key)
 			{
@@ -199,7 +205,7 @@ var addsetBuilder =
 					code+='e.'+key + " = " + Appcelerator.Compiler.generateSetter(value);
 			}
 			code+='} else {';
-			code+="$('" + id + "').setAttribute('"+key+"'," + Appcelerator.Compiler.generateSetter(value) + ")";
+			code+="e.setAttribute('"+key+"'," + Appcelerator.Compiler.generateSetter(value) + ")";
 			code+='}';
 			return code;
 		}		

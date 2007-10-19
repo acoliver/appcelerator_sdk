@@ -199,30 +199,40 @@
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
-		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
 		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
 			<fileset dir="${stage.dir}/web" includes="**/*" excludes="images/**"/>
-			<fileset dir="src/doc" includes="**/*" excludes="images/**"/>
 			<filterset>
 				<filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
 				<filter token="appcelerator.xml" value="${appcelerator.xml}"/>
 				<filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
-				<filter token="index.html" value="${index.html}"/>
 				<filter token="ContactManager.java" value="${ContactManager.java}"/>
-				<filter token="VERSION" value="${VERSION}"/>
+				<filter token="VERSION" value="${VERSION}"/> 
 				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 			</filterset>
 		</copy>
-		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
+        <copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
+            <fileset dir="${src.doc.dir}" includes="**/*" excludes="images/**"/>
+            <filterset>
+                <filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
+                <filter token="appcelerator.xml" value="${appcelerator.xml}"/>
+                <filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
+                <filter token="ContactManager.java" value="${ContactManager.java}"/>
+                <filter token="ContactManager.java" value="${ContactManager.java}"/>
+                <filter token="VERSION" value="${VERSION}"/> 
+                <filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
+                <filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+            </filterset>
+        </copy>
+		<copy todir="${stage.dir}/doc" filtering="false" overwrite="true">
 			<fileset dir="${stage.dir}/web" includes="images/**"/>
-			<fileset dir="src/doc" includes="images/**"/>
+			<fileset dir="${src.doc.dir}" includes="images/**"/>
 		</copy>
 		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/doc/WEB-INF/web.xml">
-			<fileset dir="${stage.dir}/doc" includes="**/**"/>
+			<fileset dir="${stage.dir}/doc" includes="**/**" />
 			<fileset dir="${build.java.dir}/doc" includes="*.*"/>
 		</war>
 	</target>
@@ -470,7 +480,7 @@
 		<input message="what is the title (ex: Tree View)?" addproperty="title"/>
 		<input message="what is the name (ex: treeview)?" addproperty="name"/>
 		<input message="what is the tree parent name (ex: overview,started,framework,forms,charts,visual,nonvisual,services)?" addproperty="parent"/>
-		<copy file="src/doc/gendoc-templates/widget.html" tofile="src/doc/${name}.html" overwrite="true">
+		<copy file="${src.doc.dir}/gendoc-templates/widget.html" tofile="${src.doc.dir}/${name}.html" overwrite="true">
 			<filterchain>
 			    <replacetokens>
 			      <token key="widget.title" value="${title}"/>
@@ -481,7 +491,7 @@
 		<antcall target="gendoc_treechild"/>
 	</target>
 	<target name="gendoc_treechild">
-		<copy file="src/doc/gendoc-templates/treechild.html" tofile="src/doc/treechild/${name}.html" overwrite="true">
+		<copy file="${src.doc.dir}/gendoc-templates/treechild.html" tofile="${src.doc.dir}/treechild/${name}.html" overwrite="true">
 			<filterchain>
 			    <replacetokens>
 			      <token key="title" value="${title}"/>
@@ -490,10 +500,10 @@
 			    </replacetokens>
 			  </filterchain>
 		</copy>
-		<loadfile property="treechild" srcFile="src/doc/treechild/${name}.html"/>
+		<loadfile property="treechild" srcFile="${src.doc.dir}/treechild/${name}.html"/>
 		<echo>you may want to past the following into index.html
 ${treechild}
-cat src/doc/treechild/${name}.html</echo>
+cat ${src.doc.dir}/treechild/${name}.html</echo>
 	</target>
 	<target name="promptnametitle">
 		<input message="what is the title (ex: .NET)?" addproperty="title"/>
@@ -502,7 +512,7 @@ cat src/doc/treechild/${name}.html</echo>
 	</target>
 	<target name="gendoc_lang" depends="promptnametitle,gendoc_service,gendoc_gettingstarted,gendoc_treechild"/>
 	<target name="gendoc_service" depends="promptnametitle">
-		<copy file="src/doc/gendoc-templates/service.html" tofile="src/doc/${name}service.html" overwrite="true">
+		<copy file="${src.doc.dir}/gendoc-templates/service.html" tofile="${src.doc.dir}/${name}service.html" overwrite="true">
 			<filterchain>
 			    <replacetokens>
 			      <token key="title" value="${title}"/>
@@ -512,7 +522,7 @@ cat src/doc/treechild/${name}.html</echo>
 		</copy>
 	</target>
 	<target name="gendoc_gettingstarted" depends="promptnametitle">
-		<copy file="src/doc/gendoc-templates/gettingstarted.html" tofile="src/doc/${name}gettingstarted.html" overwrite="true">
+		<copy file="${src.doc.dir}/gendoc-templates/gettingstarted.html" tofile="${src.doc.dir}/${name}gettingstarted.html" overwrite="true">
 			<filterchain>
 			    <replacetokens>
 			      <token key="title" value="${title}"/>

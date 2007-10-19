@@ -35,6 +35,18 @@ Appcelerator.Util.IFrame =
 	  		iframe.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
   		}
 	},
+	monitor: function(frame,onload)
+	{
+        var scope = {iframe:frame,frameid:frame.id,onload:onload,removeOnLoad:false};
+        if (!Appcelerator.Browser.isFirefox)
+        {
+            setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
+        }
+        else
+        {
+            frame.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
+        }
+	},
 	doIFrameLoad: function()
 	{
 		var doc = this.iframe.contentDocument || this.iframe.document;

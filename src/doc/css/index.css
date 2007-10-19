@@ -397,3 +397,22 @@ img
 {
 	border:0;
 }
+
+#status
+{
+    position:relative;
+}
+
+#status img
+{
+    position:absolute;
+    top:10px;
+    right:40px;
+}
+#status span
+{
+    position:absolute;
+    top:19px;
+    right:75px;
+    font-size:11px;
+}

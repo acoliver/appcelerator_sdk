@@ -256,18 +256,9 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 	var state = Appcelerator.Compiler.createCompilerState();
 	var container = document.body;	
 	var containerChildren = [];
-    for (var i = 0, length = container.childNodes.length; i < length; i++)
-	{
-    	containerChildren.push(container.childNodes[i]);
-	}
-	for (var c=0,len=containerChildren.length;c<len;c++)
-	{
-		var element = containerChildren[c];
-		if (element && element.nodeType == 1)
-		{
-			Appcelerator.Compiler.compileElement(element,state);
-		}
-	}
+    
+	// start scanning at the body
+	Appcelerator.Compiler.compileElement(container,state);
 
 	// mark it as complete and check the loading state
 	state.scanned = true;
@@ -282,6 +273,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 			delete Appcelerator.Compiler.oncompileListeners;
 		}
 		if (typeof(onFinishCompiled)=='function') onFinishCompiled();
+		$MQ('l:app.compiled');
 	};
 	Appcelerator.Compiler.checkLoadState(state);
 		
@@ -350,6 +342,7 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	var name = Appcelerator.Compiler.getTagname(element);
 	if (name.indexOf(':')>0)
 	{
+		element.style.originalDisplay = element.style.display || 'block';
 		if (Appcelerator.Compiler.isCompiledMode)
 		{
 			Appcelerator.Compiler.compileWidget(element,state);
@@ -540,85 +533,6 @@ Appcelerator.Compiler.getWidgetHTML = function(element,stripHTMLPrefix)
 	return Appcelerator.Compiler.getHtml(element,stripHTMLPrefix);
 };
 
-Appcelerator.Compiler.getWidgetNodes = function(element)
-{
-	return Appcelerator.Compiler.getWidgetElement(element).childNodes;
-};
-
-Appcelerator.Compiler.getWidgetElement = function(element)
-{
-	if (!Appcelerator.Browser.isIE || Appcelerator.Compiler.isHTMLTag(element))
-	{
-		return element;
-	}
-	if (element instanceof DomMockElement)
-	{
-		return element;
-	}
-	var children = $A(element.childNodes);
-
-	var stack = new Stack();
-	var current = null;
-	var nodes = [];
-
-	for (var c=0;c<children.length;c++)
-	{
-		var child = children[c];
-		var begin = child.nodeName.charAt(0)!='/';
-
-		switch(child.nodeType)
-		{
-			case 1:
-			{
-				if (begin)
-				{
-					var newChild = new DomMockElement(child,false);
-
-					if (current)
-					{
-						current.appendChild(newChild);
-					}
-					stack.push(newChild);
-					current = newChild;
-				}
-				else
-				{
-					var previous = current;
-					stack.pop();
-					current = stack.end();
-					if (current == null)
-					{
-						nodes.push(previous);
-					}
-				}
-				break;
-			}
-			case 3:
-			{
-				if (current)
-				{
-					var newChild = new DomMockElement(child,false);
-					current.appendChild(newChild);
-				}
-			}
-		}
-	}
-
-	if (current)
-	{
-		nodes.push(current);
-	}
-
-	// now build the main element
-	var newReturn = new DomMockElement(element,false);
-	nodes.each(function(n)
-	{
-		if (n) newReturn.appendChild(n);
-	});
-	
-	return newReturn;
-};
-
 Appcelerator.Compiler.isHTMLTag = function(element)
 {
 	if (Appcelerator.Browser.isIE)
@@ -693,7 +607,7 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
 	{
 		case 'radio':
 		case 'checkbox':
-		{
+		{ 
 			Appcelerator.Compiler.addEventListener(element,'click',action);
 			break;
 		}
@@ -858,8 +772,6 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			}
 		}
 		
-		if (element.style) element.style.display='none';
-		
 		var id = element.id || Appcelerator.Compiler.generateId();
 		var instructions = module.buildWidget(element,state);
 		id = element.id; // allow the widget to change the id
@@ -1021,6 +933,11 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			// fix any issues from the new HTML (only matters in IE6 otherwise no-op)
 			Appcelerator.Browser.fixImageIssues();
 		}
+	}
+	else
+	{
+		// reset to the original
+		if (element.style) element.style.display = element.style.originalDisplay;
 	}
 }; 
 

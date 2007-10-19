@@ -1053,7 +1053,8 @@ else
 					 },
 					'os': platform,
 					'referrer': document.referrer,
-					'path': window.location.href
+					'path': window.location.href,
+					'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}})
 				};
 				$MQ('remote:appcelerator.status.report',data);
 			}
