@@ -43,7 +43,7 @@
 {
 	width:2%;
 	padding:15px;
-	background-image:url(../images/email.png);
+	background-image:url(../images/folder.png);
 	background-repeat:no-repeat;
 	background-position:8px 15px;
 }
@@ -63,12 +63,21 @@
 	font-size:0.85em;
 	background:#eee none repeat scroll 0%;
 }
+
 .forum_title a.title
 {
 	font-size:1.45em;
 	text-decoration:underline;
 	color:#0000FF;
 }
+
+.forums_container a.title
+{
+	font-size:1.45em;
+	text-decoration:underline;
+	color:#0000FF;
+}
+
 .forum_title a.smalllink
 {
 	text-decoration:underline;
