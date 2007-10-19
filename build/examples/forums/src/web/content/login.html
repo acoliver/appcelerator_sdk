@@ -22,12 +22,13 @@
 			</div>
 			<div class="forums_container" on="l:showaccount.request then show or l:logout.request then hide" style="display:none;">
 				<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+					<input type="hidden" fieldset="account" id="account_id" validator="required" decorator="required" on="l:editaccount.response then value[user.id]"/>
 					<tr>
 						<td class="bold_value_grey">
 							name:
 						</td>
 						<td>
-							<input type="text" fieldset="account" id="account_name" validator="required" decorator="required" on="l:editaccount.response then value[user.name]"/>
+							<input type="text" fieldset="account" id="account_name" validator="required" decorator="required" on="l:editaccount.response then value[user.fullName]"/>
 						</td>
 					</tr>
 					<tr>

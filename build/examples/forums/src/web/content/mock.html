@@ -52,8 +52,9 @@
 		$MQ("l:editaccount.response",{"success":"true","user":Forums.user});
 	</app:script>
 	<app:script on="l:signup.request then execute">
-		Forums.user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email};
-		$MQ("l:signup.response",{"success":"true","username":this.data.signupusername});
+		Forums.user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email);
+		alert("serid"+Forums.user.id+" "+Forums.user);
+		$MQ("l:signup.response",{"success":"true"});
 	</app:script>
 	<app:script on="l:thread.request then execute">
 		alert('not implemented for thread "'+this.data.threadid+'"');

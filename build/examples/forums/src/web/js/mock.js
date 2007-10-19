@@ -62,12 +62,14 @@ function createForum(id,name,desc)
 {
 	var forum = {'id':id,'name':name,'description':desc,'threads':0,'posts':0};
 	Mock.forums.push(forum);
+	return forum;
 }
 /* state is (active|lurking) */
 function createUser(id,username,fullName,lastLogin,state,password,email)
 {
 	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0,'password':password,'email':email};
 	Mock.users.push(user);
+	return user;
 }
 function createThread(forumid,userid,id,name)
 {
