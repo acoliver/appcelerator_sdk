@@ -35,11 +35,11 @@
 						<html:td class="thread_icon"></html:td>
 						<html:td class="forum_title">
 							<html:a on="click then l:thread.request[threadid=#{id}]" class="title">#{name}</html:a>
-							<html:div class="stats">#{count} messages in thread</html:div>
-							<html:div class="description">#{description}</html:div>
+							<html:div class="stats">#{posts} messages in thread</html:div>
+							<html:div class="description">#{lastpost.body}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastModifiedDate} by #{lastUsername}
+							#{lastpost.date} by #{lastpost.user.username}
 						</html:td>
 					</html:tr>
 				</html:table>

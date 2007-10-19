@@ -25,7 +25,7 @@
 						<html:td class="user_icon"></html:td>
 						<html:td class="forum_title">
 							<html:a on="click then l:user.request[userid=#{id},username='#{username}']" class="title">#{username}</html:a>
-							<html:div class="stats">#{threadCount} threads posted (<html:a class="smalllink" on="click then l:threads.request[type=byuser,userid=#{id},username='#{username}']">view threads</html:a>) </html:div>
+							<html:div class="stats">#{posts} threads posted (<html:a class="smalllink" on="click then l:threads.request[type=byuser,userid=#{id},username='#{username}']">view threads</html:a>) </html:div>
 							<html:div class="description">#{fullName}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">

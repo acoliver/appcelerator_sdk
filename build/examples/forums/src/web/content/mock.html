@@ -9,35 +9,30 @@
 </head>
 <body>
 	<app:script on="l:forums.request then execute">
-		var data = [{'id':'1','name':'AppForums','count':'403','description':'Bug Reports, features, etc.','lastModifiedDate':'Last posted at noon','lastModifiedUsername':'billybob','lastModifiedUserid':'1'},
-			{'id':'2','name':'Appcelerator','count':'212','description':'Open source web2.0 RIA.','lastModifiedDate':'Last posted at 2pm','lastModifiedUsername':'leeroy','lastModifiedUserid':'2'},
-			{'id':'3','name':'Apache','count':'22','description':'THE open source web server.','lastModifiedDate':'Last posted at 1pm','lastModifiedUsername':'maryann','lastModifiedUserid':'3'},
-			{'id':'4','name':'Sexy Sites','count':'6','description':'Hot rated web2.0 RIA sites.','lastModifiedDate':'Last posted at 7pm','lastModifiedUsername':'billybob','lastModifiedUserid':'1'}];
-		$MQ("l:forums.response",{"rows":data,'threads':'4','posts':'2008','users':'5'});
+		$MQ("l:forums.response",{"rows":Mock.forums,'threads':Mock.threads.length,'posts':Mock.posts.length,'users':Mock.users.length});
 	</app:script>
 	<app:script on="l:users.request then execute">
-		var users = [{'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon','threadCount':'3'},
-		{'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April','threadCount':'33'},
-		{'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday','threadCount':'27'}];
-		$MQ("l:users.response",{"rows":users,'users':'5','active':'3','lurking':'2'});
+		var lurking = getUsersByState('lurking').length;
+		var active = getUsersByState('active').length;
+		$MQ("l:users.response",{"rows":Mock.users,'users':Mock.users.length,'active':active,'lurking':lurking});
 	</app:script>
 	
 	<app:script on="l:threads.request[type=byuser] then execute">
-		/*alert('simulating a search for userid "'+this.data.userid+'" and username '+this.data.username);*/
-		var threads=[{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':this.data.username}];
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':'1','posts':'5','users':'1','username':this.data.username});
+		var posts = postsByUser(this.data.userid);
+		var threads = uniqueThreads(posts);
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','username':this.data.username});
 	</app:script>
 	<app:script on="l:threads.request[type=byforum] then execute">
-		var data = [{'id':'1','name':'Widget Question','count':'4','description':'how do i include the property names in enclosed widgets?','lastModifiedDate':'Last posted at noon','lastUsername':'billybob'},
-			{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'},
-			{'id':'3','name':'localization formatter','count':'22','description':'how do i format complicated resource messages?','lastModifiedDate':'Last posted at 1pm','lastUsername':'leeroy'}];
-		/*alert('simulating threads request for forum "'+this.data.forumid+'"');*/
-		$MQ("l:threads.response",{"rows":data,'type':this.data.type,'threads':'3','posts':'31','users':'4','forumname':this.data.forumname});
+		var posts = postsByForum(this.data.forumid);
+		var threads = uniqueThreads(posts);
+		var users = uniqueUsers(posts);
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forumname':this.data.forumname});
 	</app:script>
 	<app:script on="l:threads.request[type=search] then execute">
-		/*alert('simulating a search for "'+this.data.query+'".');*/
-		var threads=[{'id':'2','name':'calling '+this.data.query,'count':'5','description':'What does "'+this.data.query+'" mean?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'}];
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':'1','posts':'5','users':'2','query':this.data.query});
+		var posts=postsByQuery(this.data.query);
+		var threads = uniqueThreads(posts);
+		var users = uniqueUsers(posts);
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'query':this.data.query});
 	</app:script>
 	<app:script on="l:forum.request then execute">
 		/*alert(this.data);*/
@@ -65,5 +60,17 @@
 	</app:script>
 	<app:script on="l:user.request then execute">
 		alert('not implemented for userid "'+this.data.userid+'"');
+	</app:script>
+	<app:script on="l:posts.request[type=bythread] then execute">
+		var user={}
+		var billybob = {'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon','threadCount':'3'};
+		var leeroy = {}'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April','threadCount':'33'};
+		var maryann = {'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday','threadCount':'27'};
+		var post1 = {'date':'October 22nd','user':billybob},
+			{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'},
+			{'id':'3','name':'localization formatter','count':'22','description':'how do i format complicated resource messages?','lastModifiedDate':'Last posted at 1pm','lastUsername':'leeroy'}];
+		/*alert('simulating threads request for forum "'+this.data.forumid+'"');*/
+		$MQ("l:threads.response",{"rows":data,'type':this.data.type,'threads':'3','posts':'31','users':'4','forumname':this.data.forumname});
+		
 	</app:script>
 </body>

@@ -11,6 +11,7 @@
 <link rel="stylesheet" type="text/css" href="css/header.css" />
 <link rel="stylesheet" type="text/css" href="css/container.css" />
 <script type="text/javascript" src="js/forums.js"></script>
+<script type="text/javascript" src="js/mock.js"></script>
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<div id="header">
@@ -39,7 +40,8 @@
 		<state name="users" if="l:users.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
 		<state name="login" if="l:showlogin.request or l:showaccount.request"></state>
-		<state name="welcome" if="l:showwelcome.request"></state>
+		<state name="welcome" if=""></state>
+		<state name="posts" if="l:posts.request"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
 		<state name="out" if="l:logout.response or l:login.init"></state>
@@ -56,8 +58,9 @@
 			<app:content src="content/users.html" lazy="false"></app:content>
 			<app:content src="content/threads.html" lazy="false"></app:content>
 			<app:content src="content/login.html" lazy="false"></app:content>
+			<app:content src="content/posts.html" lazy="false"></app:content>
 			<table width="100%"><tr><td  height="470px" valign="middle" align="center" on="main[welcome] then show else hide">
-			<img src="images/logo.png" on="main[welcome] then show else hide"/>
+			<img src="images/logo.png"/>
 			</td></tr></table>
 		</div>
 		<div id="right">
