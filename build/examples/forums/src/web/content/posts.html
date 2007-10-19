@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+<link rel="stylesheet" type="text/css" href="css/forums.css" />
+<link rel="stylesheet" type="text/css" href="css/posts.css" />
+</head>
+<body>
+	<div class="forums_container" on="main[posts] then effect[appear] else hide" style="display:none;">
+		<a class="title" id="posts_forum" on="click then l:threads.indirect.request"></a>
+		<h1 style="margin-top:0;" on="l:posts.response then value[thread.name]"></h1>
+		<p class="subtitle">
+		<span on="l:posts.response then value[posts.length]"></span> post(s), <span on="l:posts.response then value[users.length]"></span> voice(s)
+		</p>
+		<div class="posts_header">
+			<div class="posts_header_by"><span>By</span></div>
+			<div class="posts_header_details"><span>Details</span></div>
+		</div>
+		<div class="posts_content" on="l:posts.response then effect[appear]" style="display:none;">
+			<app:iterator on="l:posts.response then execute" property="posts">
+				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
+					<html:tr class="posts_content_row">	
+						<html:td class="posts_icon"></html:td>
+						<html:td class="posts_title">
+							<html:span class="title">#{user.username}</html:span>
+							<html:div class="stats">posted on #{date}</html:div>
+						</html:td>
+						<html:td class="posts_details">
+							#{body}
+						</html:td>
+					</html:tr>
+				</html:table>
+			</app:iterator>
+		</div>
+		<!--
+		<app:iterator on="l:posts.response then execute" property="users">
+			<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
+				<html:tr class="forum_content_row">	
+					<html:td class="thread_icon"></html:td>
+					<html:td class="forum_title">#{username}</html:td>
+					<html:td class="forums_postdate">#{fullName}</html:td>
+				</html:tr>
+			</html:table>
+		</app:iterator>
+		-->
+	</div>
+	<app:script on="l:threads.indirect.request then execute">
+		$MQ('l:threads.request',{'forumid':Forums.lastpost.forum.id,'type':'byforum','forumname':Forums.lastpost.forum.name});
+	</app:script>
+	<app:script on="l:posts.response then execute">
+		Forums.lastpost = this.data;
+		$('posts_forum').innerHTML = this.data.forum.name;
+	</app:script>
+</body>

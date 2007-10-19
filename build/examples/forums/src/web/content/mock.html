@@ -61,16 +61,11 @@
 	<app:script on="l:user.request then execute">
 		alert('not implemented for userid "'+this.data.userid+'"');
 	</app:script>
-	<app:script on="l:posts.request[type=bythread] then execute">
-		var user={}
-		var billybob = {'id':'1','username':'billybob','fullName':'Billy Bob Jackson','lastLogin':'Last login at noon','threadCount':'3'};
-		var leeroy = {}'id':'2','username':'leeroy','fullName':'Leeroy Brown','lastLogin':'Last login April','threadCount':'33'};
-		var maryann = {'id':'3','username':'maryann','fullName':'Mary Ann Shaw','lastLogin':'Last login yesterday','threadCount':'27'};
-		var post1 = {'date':'October 22nd','user':billybob},
-			{'id':'2','name':'.NET deployment','count':'5','description':'When will the .NET deployent be ready?','lastModifiedDate':'Last posted at 2pm','lastUsername':'maryann'},
-			{'id':'3','name':'localization formatter','count':'22','description':'how do i format complicated resource messages?','lastModifiedDate':'Last posted at 1pm','lastUsername':'leeroy'}];
-		/*alert('simulating threads request for forum "'+this.data.forumid+'"');*/
-		$MQ("l:threads.response",{"rows":data,'type':this.data.type,'threads':'3','posts':'31','users':'4','forumname':this.data.forumname});
+ 	<app:script on="l:posts.request[type=bythread] then execute">
+		var thread = getById(this.data.threadid,Mock.threads);
+		var posts = postsByThread(thread);
+		var users = uniqueUsers(posts);
+		$MQ("l:posts.response",{"posts":posts,'users':users,'thread':thread,'type':this.data.type,'forum':thread.forum});
 		
 	</app:script>
 </body>

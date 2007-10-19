@@ -9,9 +9,11 @@
 <body>
 	<div class="forums_container" on="main[threads] then effect[appear] else hide" style="display:none;">
 		<div on="l:threads.response[type=byforum] then show else hide" style="display:none">
+			<a class="title" on="click then l:forums.request">Forums</a>
 			<h1 style="margin-top:0;" on="l:threads.response then value[forumname]"></h1>
 		</div>
 		<div on="l:threads.response[type=byuser] then show else hide" style="display:none">
+			<a class="title" on="click then l:users.request">Users</a>
 			<h1 style="margin-top:0;" on="l:threads.response then value[username]"></h1>
 		</div>
 		<div on="l:threads.response[type=search] then show else hide" style="display:none">
@@ -28,13 +30,13 @@
 			<div class="forums_header_forums"><span>Threads</span></div>
 			<div class="forums_header_lastpost"><span>Last Post</span></div>
 		</div>
-		<div class="forums_content" on="l:threads.response then effect[appear] after 2s or l:threads.request then hide" style="display:none;">
+		<div class="forums_content" on="l:threads.response then effect[appear] or l:threads.request then hide" style="display:none;">
 			<app:iterator on="l:threads.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="thread_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:thread.request[threadid=#{id}]" class="title">#{name}</html:a>
+							<html:a on="click then l:posts.request[threadid=#{id},type=bythread]" class="title">#{name}</html:a>
 							<html:div class="stats">#{posts} messages in thread</html:div>
 							<html:div class="description">#{lastpost.body}</html:div>
 						</html:td>

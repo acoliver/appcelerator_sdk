@@ -26,8 +26,8 @@ createPost(1,1,1,'Oct 22, 2007 2:13pm','boy this is really good stuff');
 createPost(2,1,2,'Oct 22, 2007 2:13pm','i like it too');
 createPost(3,2,3,'Sep 20, 2007 1:14pm','What are the differences betweeen 1.3 and 2.0?');
 createPost(4,2,4,'Oct 22, 2007 2:13pm','When will the .Net server implementation be ready?');
-createPost(5,3,5,'Oct 22, 2007 2:13pm','Soon....');
-createPost(5,1,6,'Oct 22, 2007 2:13pm','How soon will it be here?');
+createPost(5,1,5,'Oct 22, 2007 2:13pm','How soon will it be here?');
+createPost(5,3,6,'Oct 22, 2007 2:13pm','Soon....');
 
 function getById(id,collection)
 {
@@ -120,7 +120,7 @@ function postsByThread(thread)
 			result.push(post);
 		}
 	}
-	return result;
+	return result.sort(sortPost);
 }
 function postsByQuery(query)
 {
@@ -173,4 +173,8 @@ function uniqueUsers(posts)
 		addUnique(result, post.user);
 	}
 	return result;
+}
+function sortPost(a,b)
+{
+	return a.id - b.id;
 }
