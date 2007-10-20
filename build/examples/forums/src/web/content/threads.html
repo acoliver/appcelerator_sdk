@@ -58,12 +58,14 @@
 				</tr>
 				<tr>
 					<td class="bold_value_grey">post body:</td>
-					<td><input type="text" fieldset="thread" id="newthread_body" validator="required" decorator="required"/></td>
+					<td>
+						<textarea fieldset="thread" id="newthread_body"></textarea>
+					</td>
 				</tr>
 				<tr>
 					<td colspan="2" align="left" >
 						<input type="button" value="create new thread" fieldset="thread" style="margin-top:10px" on="click then l:createthread.request"
-							activators="newthread_name,newthread_body"/>
+							activators="newthread_name"/>
 					</td>
 				</tr>
 			</table>
