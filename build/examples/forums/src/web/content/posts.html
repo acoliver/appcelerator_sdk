@@ -35,23 +35,25 @@
 				</html:table>
 			</app:iterator>
 		</div>
-		<!-- create a new forum -->
-		<div class="forums_container" on="l:posts.response then show else hide" style="display:none;">
-			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
-				<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
-				<input type="hidden" fieldset="post" id="newpost_userid"></input>
-				<tr>
-					<td class="bold_value_grey">response:</td>
-					<td>
-						<textarea fieldset="post" id="newpost_body"></textarea>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2" align="left" >
-						<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request"/>
-					</td>
-				</tr>
-			</table>
+		<!-- create a new post -->
+		<div on="login[in] then show else hide" style="display:none">
+			<div class="forums_container" on="l:posts.response then show else hide" style="display:none;">
+				<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+					<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
+					<input type="hidden" fieldset="post" id="newpost_userid"></input>
+					<tr>
+						<td class="bold_value_grey">response:</td>
+						<td>
+							<textarea fieldset="post" id="newpost_body"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="left" >
+							<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request"/>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 		<app:script on="l:posts.response then execute">
 			$('newpost_userid').value=Forums.user.id;
