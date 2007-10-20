@@ -305,7 +305,8 @@ Appcelerator.Validator =
 		{
 			return false;
 		}
-		if (value.indexOf(Appcelerator.dtCh,pos2+1)!=-1 || Appcelerator.Validator.number(Appcelerator.Validator.stripCharsInBag(value, Appcelerator.Validator.dtCh))==false)
+		var numberTest = month + "/" + day + "/" + year;
+		if (value.indexOf(Appcelerator.dtCh,pos2+1)!=-1 || Appcelerator.Validator.number(Appcelerator.Validator.stripCharsInBag(numberTest, Appcelerator.Validator.dtCh))==false)
 		{
 			return false;
 		}

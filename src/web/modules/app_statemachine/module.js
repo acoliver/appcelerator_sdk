@@ -116,7 +116,7 @@ Appcelerator.Module.Statemachine =
 		code += '{ Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+id+'",state,true); }';
 		code += 'else ';
 		code += '{';
-		code += 'state = Appcelerator.Compiler.StateMachine.getActiveState(id);';
+		code += 'state = Appcelerator.Compiler.StateMachine.getActiveState("'+id+'");';
 		code += 'if (state)';
 		code += '{ Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+id+'",state,null); }';
 		code += '}';
