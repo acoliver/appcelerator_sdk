@@ -40,11 +40,11 @@
 			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 				<tr>
 					<td class="bold_value_grey">name:</td>
-					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required"/></td>
+					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required" on="l:createforum.response then clear"/></td>
 				</tr>
 				<tr>
 					<td class="bold_value_grey">description:</td>
-					<td><input type="text" fieldset="forum" id="newforum_description" validator="required" decorator="required"/></td>
+					<td><input type="text" fieldset="forum" id="newforum_description" validator="required" decorator="required" on="l:createforum.response then clear"/></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="left" >

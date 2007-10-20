@@ -56,12 +56,12 @@
 					<input type="hidden" fieldset="thread" id="newthread_userid"></input>
 					<tr>
 						<td class="bold_value_grey">title:</td>
-						<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"/></td>
+						<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"  on="l:createthread.response then clear"/></td>
 					</tr>
 					<tr>
 						<td class="bold_value_grey">post body:</td>
 						<td>
-							<textarea fieldset="thread" id="newthread_body"></textarea>
+							<textarea fieldset="thread" id="newthread_body" on="l:createthread.response then clear"></textarea>
 						</td>
 					</tr>
 					<tr>

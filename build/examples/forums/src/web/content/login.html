@@ -59,6 +59,9 @@
 								activators="account_fullName,account_username,account_email,account_password"/>
 						</td>
 					</tr>
+					<tr on="l:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
+						<td colspan="2" align="left" >successfully saved account</td>
+					</tr>
 				</table>
 			</div>
 		</div>
@@ -100,7 +103,7 @@
 							name:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="name" validator="required" decorator="required"/>
+							<input type="text" fieldset="signup" id="name" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -108,7 +111,7 @@
 							username:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="signupusername" validator="required" decorator="required"/>
+							<input type="text" fieldset="signup" id="signupusername" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -116,7 +119,7 @@
 							email:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="email" validator="required" decorator="required"/>
+							<input type="text" fieldset="signup" id="email" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -124,7 +127,7 @@
 							password:
 						</td>
 						<td>
-							<input type="password" fieldset="signup" id="signuppassword" validator="required" decorator="required"/>
+							<input type="password" fieldset="signup" id="signuppassword" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -145,8 +148,7 @@
 		$MQ("l:showaccount.response",{'user':Forums.user});
 	</app:script>
 	<app:script on="l:saveaccount.response then execute">
-		alert(this.data.user.email);
 		Forums.user = this.data.user;
-		$MQ("l:showaccount.request",{});
+		$MQ("l:showaccount.response",{'user':Forums.user});
 	</app:script>
 </body>

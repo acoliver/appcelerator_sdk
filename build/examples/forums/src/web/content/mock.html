@@ -49,7 +49,6 @@
 	<app:script on="l:savaccount.request then execute">
 		var user = {'id':this.data.account_id,'username':this.data.account_username,'fullName':this.data.account_fullName,'email':this.data.account_email,'password':this.data.account_password};
 		var saveduser = saveUser(user);
-		alert(saveduser.email);
 		$MQ("l:saveaccount.response",{"success":"true","user":saveduser});
 	</app:script>
 	<app:script on="l:signup.request then execute">
