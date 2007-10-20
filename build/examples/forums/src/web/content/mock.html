@@ -54,7 +54,7 @@
 	</app:script>
 	<app:script on="l:signup.request then execute">
 		var user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email);
-		$MQ("l:signup.response",{"success":"true":'user':user});
+		$MQ("l:signup.response",{"success":"true",'user':user});
 	</app:script>
 	<app:script on="l:user.request then execute">
 		alert('not implemented for userid "'+this.data.userid+'"');
