@@ -29,7 +29,7 @@
 							<html:div class="description">#{description}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastpost.date} by #{lastpost.user.username}
+							#{lastpost.date} by <html:a on="click then l:user.request[userid=#{lastpost.user.id},username='#{lastpost.user.username}']" class="smalllink">#{lastpost.user.username}</html:a>
 						</html:td>
 					</html:tr>
 				</html:table>

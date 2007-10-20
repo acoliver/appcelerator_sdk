@@ -56,7 +56,8 @@
 		$MQ("l:signup.response",{"success":"true",'user':user});
 	</app:script>
 	<app:script on="l:user.request then execute">
-		alert('not implemented for userid "'+this.data.userid+'"');
+		var user = getById(this.data.userid,Mock.users);
+		$MQ("l:user.response",{"success":"true",'user':user});
 	</app:script>
  	<app:script on="l:posts.request[type=bythread] then execute">
 		var thread = getById(this.data.threadid,Mock.threads);

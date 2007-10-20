@@ -38,7 +38,7 @@
 	</div>
 	<app:statemachine id="main" initial="welcome">
 		<state name="forums" if="l:forums.request"></state>
-		<state name="users" if="l:users.request"></state>
+		<state name="users" if="l:users.request or l:user.request"></state>
 		<state name="threads" if="l:threads.request or l:search.request"></state>
 		<state name="login" if="l:showlogin.request or l:showaccount.request or l:logout.request"></state>
 		<state name="welcome" if=""></state>

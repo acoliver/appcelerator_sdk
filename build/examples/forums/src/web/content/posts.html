@@ -25,7 +25,7 @@
 					<html:tr class="posts_content_row">	
 						<html:td class="posts_icon"></html:td>
 						<html:td class="posts_title">
-							<html:span class="title">#{user.username}</html:span>
+							<html:a on="click then l:user.request[userid=#{user.id},username='#{user.username}']" class="title">#{user.username}</html:a>
 							<html:div class="stats">posted on #{date}</html:div>
 						</html:td>
 						<html:td class="posts_details">
