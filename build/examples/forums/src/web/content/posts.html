@@ -37,17 +37,17 @@
 		</div>
 		<!-- create a new forum -->
 		<div class="forums_container" on="l:posts.response then show else hide" style="display:none;">
-			
 			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 				<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
 				<tr>
-					<td class="bold_value_grey">post body:</td>
-					<td><input type="text" fieldset="post" id="newpost_body" validator="required" decorator="required"/></td>
+					<td class="bold_value_grey">response:</td>
+					<td>
+						<textarea fieldset="post" id="newpost_body"></textarea>
+					</td>
 				</tr>
 				<tr>
 					<td colspan="2" align="left" >
-						<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request"
-							activators="newpost_body"/>
+						<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request"/>
 					</td>
 				</tr>
 			</table>

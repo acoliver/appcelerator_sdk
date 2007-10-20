@@ -74,11 +74,13 @@
 	</app:script>
 	<app:script on="l:createthread.request then execute">
 		var thread = createThread(this.data.newthread_forumid,Forums.user.id,Mock.threads.length+1,this.data.newthread_name);
-		var post = createPost(thread.id,Forums.user.id,Mock.posts.length+1,'Oct 22, 2007 7:07pm',this.data.newthread_body);
+		var date = new Date();
+		var post = createPost(thread.id,Forums.user.id,Mock.posts.length+1,date.toString(),this.data.newthread_body);
 		$MQ("l:createthread.response",{});
 	</app:script>
 	<app:script on="l:createpost.request then execute">
-		var post = createPost(this.data.newpost_threadid,Forums.user.id,Mock.posts.length+1,'Oct 22, 2007 7:07pm',this.data.newpost_body);
+		var date = new Date();
+		var post = createPost(this.data.newpost_threadid,Forums.user.id,Mock.posts.length+1,date.toString(),this.data.newpost_body);
 		$MQ("l:createpost.response",{});
 	</app:script>
 </body>
