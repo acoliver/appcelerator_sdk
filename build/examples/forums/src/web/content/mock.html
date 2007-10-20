@@ -16,7 +16,6 @@
 		var active = getUsersByState('active').length;
 		$MQ("l:users.response",{"rows":Mock.users,'users':Mock.users.length,'active':active,'lurking':lurking});
 	</app:script>
-	
 	<app:script on="l:threads.request[type=byuser] then execute">
 		var posts = postsByUser(this.data.userid);
 		var threads = uniqueThreads(posts);
@@ -34,30 +33,28 @@
 		var users = uniqueUsers(posts);
 		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'query':this.data.query});
 	</app:script>
-	<app:script on="l:forum.request then execute">
-		/*alert(this.data);*/
-	</app:script>
-	<app:script on="l:user.request then execute">
-		/*alert(this.data);*/
-	</app:script>
 	<app:script on="l:login.request then execute">
-		Logger.info('simulating login with '+this.data);  
-		var data={"success":"true","username":this.data.username};
-		/*alert("simulating a successfull login as mary ann");*/
-		Forums.user.username=this.data.username;
-		Forums.user.password=this.data.password;
-		$MQ("l:login.response",data);
+		var user = authenticate(this.data.username,this.data.password);
+		if (user != '')
+		{
+			var data={"success":"true","user":user};
+			$MQ("l:login.response",data);
+		}
+		else
+		{
+			var data={"success":"false"};
+			$MQ("l:login.failed.response",data);
+		}
 	</app:script>
-	<app:script on="l:editaccount.request then execute">
-		$MQ("l:editaccount.response",{"success":"true","user":Forums.user});
+	<app:script on="l:savaccount.request then execute">
+		var user = {'id':this.data.account_id,'username':this.data.account_username,'fullName':this.data.account_fullName,'email':this.data.account_email,'password':this.data.account_password};
+		var saveduser = saveUser(user);
+		alert(saveduser.email);
+		$MQ("l:saveaccount.response",{"success":"true","user":saveduser});
 	</app:script>
 	<app:script on="l:signup.request then execute">
-		Forums.user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email);
-		alert("serid"+Forums.user.id+" "+Forums.user);
-		$MQ("l:signup.response",{"success":"true"});
-	</app:script>
-	<app:script on="l:thread.request then execute">
-		alert('not implemented for thread "'+this.data.threadid+'"');
+		var user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email);
+		$MQ("l:signup.response",{"success":"true":'user':user});
 	</app:script>
 	<app:script on="l:user.request then execute">
 		alert('not implemented for userid "'+this.data.userid+'"');
@@ -73,14 +70,14 @@
 		$MQ("l:createforum.response",{});
 	</app:script>
 	<app:script on="l:createthread.request then execute">
-		var thread = createThread(this.data.newthread_forumid,Forums.user.id,Mock.threads.length+1,this.data.newthread_name);
+		var thread = createThread(this.data.newthread_forumid,this.data.newthread_userid,Mock.threads.length+1,this.data.newthread_name);
 		var date = new Date();
-		var post = createPost(thread.id,Forums.user.id,Mock.posts.length+1,date.toString(),this.data.newthread_body);
+		var post = createPost(thread.id,this.data.newthread_userid,Mock.posts.length+1,date.toString(),this.data.newthread_body);
 		$MQ("l:createthread.response",{});
 	</app:script>
 	<app:script on="l:createpost.request then execute">
 		var date = new Date();
-		var post = createPost(this.data.newpost_threadid,Forums.user.id,Mock.posts.length+1,date.toString(),this.data.newpost_body);
+		var post = createPost(this.data.newpost_threadid,this.data.newpost_userid,Mock.posts.length+1,date.toString(),this.data.newpost_body);
 		$MQ("l:createpost.response",{});
 	</app:script>
 </body>

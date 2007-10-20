@@ -58,6 +58,19 @@ function getUsersByState(state)
 	}
 	return result;
 }
+function authenticate(username,password)
+{
+	var result = new Array();
+	for (var idx=0;idx < Mock.users.length;idx++)
+	{
+		var user = Mock.users[idx];
+		if (user.username == username && user.password == password)
+		{
+			return user;
+		}
+	}
+	return '';
+}
 function createForum(id,name,desc)
 {
 	var forum = {'id':id,'name':name,'description':desc,'threads':0,'posts':0};
@@ -70,6 +83,18 @@ function createUser(id,username,fullName,lastLogin,state,password,email)
 	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0,'password':password,'email':email};
 	Mock.users.push(user);
 	return user;
+}
+function saveUser(saveuser)
+{
+	for (var idx=0;idx < Mock.users.length;idx++)
+	{
+		var user = Mock.users[idx];
+		if (''+user.id == saveuser.id)
+		{
+			Mock.users[idx]=saveuser;
+			return saveuser;
+		}
+	}
 }
 function createThread(forumid,userid,id,name)
 {
@@ -187,4 +212,3 @@ function sortPost(a,b)
 {
 	return a.id - b.id;
 }
-Forums.user=getById(1,Mock.users);

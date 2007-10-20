@@ -39,6 +39,7 @@
 		<div class="forums_container" on="l:posts.response then show else hide" style="display:none;">
 			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 				<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
+				<input type="hidden" fieldset="post" id="newpost_userid"></input>
 				<tr>
 					<td class="bold_value_grey">response:</td>
 					<td>
@@ -52,6 +53,9 @@
 				</tr>
 			</table>
 		</div>
+		<app:script on="l:posts.response then execute">
+			$('newpost_userid').value=Forums.user.id;
+		</app:script>
 		<app:script on="l:posts.request then execute">
 			Forums.lastpostrequest=this.data;
 		</app:script>
