@@ -122,6 +122,48 @@
 			</div>
 		</td>
 	</tr>
+    <tr>
+        <td class="test" valign="middle">
+            Dynamic element property
+        </td>
+        <td class="result">
+            <input type="hidden" id="hidden_input" value="Test passed"/>
+			<a on="click then l:set.field[result=$hidden_input]">Click to run</a>
+
+            <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+                on="l:set.field then value[result]">
+                Waiting on click...
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Dynamic javascript property
+        </td>
+        <td class="result">
+            <script>window.someGlobalVariable = 'Test passed';</script>
+            <a on="click then l:set.field2[result=expr(someGlobalVariable)]">Click to run</a>
+
+            <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+                on="l:set.field2 then value[result]">
+                Waiting on click...
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Dynamic javascript property by calling function
+        </td>
+        <td class="result">
+            <script>window.someGlobalFunction = function(){ return 'Test passed'; };</script>
+            <a on="click then l:set.field3[result=expr(someGlobalFunction())]">Click to run</a>
+
+            <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+                on="l:set.field3 then value[result]">
+                Waiting on click...
+            </div>
+        </td>
+    </tr>
 
 </table>
 

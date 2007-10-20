@@ -40,11 +40,17 @@
       <init-param>
         <param-name>cookieName</param-name>
         <param-value>AUID</param-value>
+      </init-param>
+      <init-param>
         <param-name>cookieDuration</param-name>
         <param-value>5y</param-value>
       </init-param>
+      <init-param>
+        <param-name>trackSubdomains</param-name>
+        <param-value>true</param-value>
+      </init-param>
     </filter>
-   
+
     <filter-mapping>
       <filter-name>Compress</filter-name>
       <url-pattern>/*</url-pattern>
@@ -98,7 +104,7 @@
 
     <servlet-mapping>
       <servlet-name>applicationServlet</servlet-name>
-      <url-pattern>/a/*</url-pattern>
+      <url-pattern>/app/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

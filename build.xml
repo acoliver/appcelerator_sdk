@@ -231,9 +231,13 @@
 			<fileset dir="${stage.dir}/web" includes="images/**"/>
 			<fileset dir="${src.doc.dir}" includes="images/**"/>
 		</copy>
-		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/doc/WEB-INF/web.xml">
+        <mkdir dir="${stage.dir}/doc/WEB-INF/logs"/>
+		<war destfile="${stage.dir}/doc.war" webxml="${build.java.dir}/server/WEB-INF/web.xml">
+            <lib dir="${build.java.dir}/lib" includes="*.jar" excludes="servlet*.jar,js-*.jar,ant-*.jar"/>
+            <lib dir="${stage.dir}/java" includes="appcelerator-${version.major}.${version.minor}.${version.rev}.jar"/>
 			<fileset dir="${stage.dir}/doc" includes="**/**" />
 			<fileset dir="${build.java.dir}/doc" includes="*.*"/>
+            <fileset dir="${build.java.dir}/server" includes="WEB-INF/**"/>
 		</war>
 	</target>
 	<target name="build_examples.nomin" depends="nomin,build_examples"/>
