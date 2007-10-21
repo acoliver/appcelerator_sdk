@@ -201,6 +201,7 @@
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
+		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
 		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
 			<fileset dir="${stage.dir}/web" includes="**/*" excludes="images/**"/>
 			<filterset>
@@ -212,6 +213,7 @@
 				<filter token="VERSION" value="${VERSION}"/> 
 				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+				<filter token="index.html" value="${index.html}"/>
 			</filterset>
 		</copy>
         <copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
@@ -225,6 +227,7 @@
                 <filter token="VERSION" value="${VERSION}"/> 
                 <filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
                 <filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+				<filter token="index.html" value="${index.html}"/>
             </filterset>
         </copy>
 		<copy todir="${stage.dir}/doc" filtering="false" overwrite="true">
