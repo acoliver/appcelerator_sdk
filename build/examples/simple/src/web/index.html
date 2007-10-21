@@ -14,10 +14,17 @@
             <img src="images/logo.png" alt="Appcelerator Logo" align="left" border="0"/>
         </a>
         <div style="margin-top:50px;margin-left:100px;float:left;line-height:60px;">
-            <div>Congratulations! You've installed the Appcelerator&trade; Platform.</div>
-            <div><strong>Now go forth and build apps.</strong></div>
+            <div>Simple example for the Appcelerator&trade; Platform.</div>
             <div style="margin-top:100px;font-size:20px;line-height:30px">
-                <div>Some resources that will be helpful:</div>
+				<div style="margin:1em;background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+					<h3>Testing the application</h3>
+					<a on="click then r:example.createcontact.request[name='billy bob']" style="text-decoration:underline;color:#0000FF;">click to create</a>
+
+					<div on="r:example.createcontact.response then show" style="display:none;">
+						created contact with id <span on="r:example.createcontact.response then value[id]"></span>
+					</div>
+				</div>
+                <div>For further details, the following resources that will be helpful:</div>
                 <div>
                     <ul>
                         <li><a style="color:#ae2917;" href="http://www.appcelerator.org">Appcelerator Developer Community</a></li>
@@ -39,6 +46,6 @@
             </div>
         </div>
     </div>
-
+	<br style="clear:both;" />
 </body>
 </html>
