@@ -8,12 +8,12 @@ Appcelerator.Compiler.Selected.makeSelectedListener = function(element,condition
 	code += 'if (selected)';
 	code += '{';
 	ifCond = (ifCond) ? '"'+ifCond+'"' : null;
-	code += 'var actionFunc = Appcelerator.Compiler.makeConditionalAction("'+element.id+'","'+action+'",'+ifCond+',{count:count,unselect:unselect}).toFunction(true);';
+	code += 'var actionFunc = Appcelerator.Compiler.makeConditionalAction("'+element.id+'",'+String.stringValue(action)+','+ifCond+',{count:count,unselect:unselect}).toFunction(true);';
 	code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+delay+',{count:count,id:"'+element.id+'",unselect:unselect});';
 	code += '}';
 	if (elseAction)
 	{
-		elseAction = '"'+elseAction+'"';
+		elseAction = String.stringValue(elseAction);
 		code += 'else';
 		code += '{';
 		code += 'var elseActionFunc = Appcelerator.Compiler.makeConditionalAction("'+element.id+'",'+elseAction+',null,{count:count,unselect:unselect}).toFunction(true);';
@@ -21,7 +21,6 @@ Appcelerator.Compiler.Selected.makeSelectedListener = function(element,condition
 		code += '};';
 	}
 	code += '});';
-	
 	return code;
 };
 

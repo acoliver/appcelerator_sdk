@@ -190,7 +190,8 @@ String.prototype.decode64 = function () {
    return output;
 };
 
-String.stringValue = function(str) {
+String.stringValue = function(str) 
+{
 	if (str)
 	{
 		return '"'+str.replace(/"/g, '\\"')+'"';
@@ -200,3 +201,4 @@ String.stringValue = function(str) {
 		return null;
 	}
 };
+

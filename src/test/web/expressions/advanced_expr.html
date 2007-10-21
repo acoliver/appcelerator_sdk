@@ -164,6 +164,39 @@
             </div>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Children based conditions
+        </td>
+        <td class="result">
+        	<div>
+        		<ul on="children.click then l:child.test1.passed">
+        			<li>Click me</li>
+                    <li>Or click me</li>
+                    <li>Or event click me</li>
+        		</ul>
+        	</div>
+			<div style="display:none" on="l:child.test1.passed then show">
+				Test passed
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Selected with embedded quotes
+        </td>
+        <td class="result">
+            <app:iterator on="l:test.embed then execute" property="rows" selectable="test.embed">
+				<html:div on="selected then l:child.test2.passed[id=&quot;#{test}&quot;]">
+				#{test}
+				</html:div>
+			</app:iterator>
+			<app:message name="l:test.embed" args="{rows:[{'test':'Click me'}]}"></app:message> 
+            <div style="display:none" on="l:child.test2.passed[id='Click me'] then show">
+                Test passed
+            </div>
+        </td>
+    </tr>
 
 </table>
 

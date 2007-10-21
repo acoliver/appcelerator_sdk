@@ -156,17 +156,15 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 				var child = element.childNodes[c];
 				if (child.nodeType == 1)
 				{
-					code+='var actionFunc= function(scope, args, data){' + Appcelerator.Compiler.makeConditionalAction(Appcelerator.Compiler.getAndEnsureId(child),action,ifCond)+'};';
-					code+='var element = $("'+child.id+'");';
+					Appcelerator.Compiler.getAndEnsureId(child);
 					code+='var cf = function(event)';
 					code+='{';
-					code+='var me = $(this.scope.id);';
+					code+='var me = $("'+child.id+'");';
 					code+='if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;';
-					code+='var __method = this.method, args = $A(arguments).concat([event || window.event]);';
-					code+='return __method.apply(this, this.scope, args);';
+                    code+='var actionFunc= function(scope, args, data){' + Appcelerator.Compiler.makeConditionalAction(Appcelerator.Compiler.getAndEnsureId(child),action,ifCond)+';};';
+					code+='var __method = actionFunc, args = $A(arguments).concat([event || window.event]);';
+					code+='return __method.apply(this,args);';
 					code+='};';
-					code+='cf.scope = {id:"'+child.id+'",data:{}};';
-					code+='cf.method = actionFunc';
 					code+='var f = cf;';
 					code+='if ('+stopEvent+')';
 					code+='{';
@@ -177,7 +175,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 					code+='return false;';
 					code+='};';
 					code+='};';
-					code+='Appcelerator.Compiler.addEventListener(element,"'+event+'",f,'+delay+');';
+					code+='Appcelerator.Compiler.addEventListener($("'+child.id+'"),"'+event+'",f,'+delay+');';
 				}
 			}
 		}
