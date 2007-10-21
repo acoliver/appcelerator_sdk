@@ -71,3 +71,11 @@ p.subtitle
 	margin-top:-0.8em;
 }
 p.subtitle img { vertical-align: bottom; }
+
+.edittable table
+{
+	margin-top:1em;
+	background-color:#f6f6f6;
+	padding:10px;
+	border:1px dashed #bbb;
+}

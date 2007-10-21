@@ -36,8 +36,8 @@
 			</app:iterator>
 		</div>
 		<!-- create a new forum -->
-		<div class="forums_container" on="login[in] then show else hide" style="display:none">
-			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+		<div class="forums_container edittable" on="login[in] then show else hide" style="display:none">
+			<table>
 				<tr>
 					<td class="bold_value_grey">name:</td>
 					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required" on="l:createforum.response then clear"/></td>

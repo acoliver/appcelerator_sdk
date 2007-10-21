@@ -49,9 +49,9 @@
 		</div>
 		<!-- create a new forum -->
 		<div on="login[in] then show else hide" style="display:none">
-			<div class="forums_container" on="l:threads.response[type=byforum] then show else hide" style="display:none;">
+			<div class="forums_container edittable" on="l:threads.response[type=byforum] then show else hide" style="display:none;">
 			
-				<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+				<table>
 					<input type="hidden" fieldset="thread" id="newthread_forumid" on="l:threads.response[type=byforum] then value[forumid]"></input>
 					<input type="hidden" fieldset="thread" id="newthread_userid"></input>
 					<tr>
