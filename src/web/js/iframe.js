@@ -25,7 +25,7 @@ Appcelerator.Util.IFrame =
 		// this is a IE speciality
   		if (window.frames && window.frames[frameid]) iframe = window.frames[frameid];
   		iframe.name = frameid;
-  		var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad};
+  		var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src};
   		if (!Appcelerator.Browser.isFirefox)
   		{
   			setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
@@ -51,6 +51,12 @@ Appcelerator.Util.IFrame =
 	{
 		var doc = this.iframe.contentDocument || this.iframe.document;
 		var body = doc.documentElement.getElementsByTagName('body')[0];
+		
+		if (Appcelerator.Browser.isSafari && Appcelerator.Browser.isWindows && body.childNodes.length == 0)
+		{
+			Appcelerator.Util.IFrame.fetch(this.src, this.onload, this.removeOnLoad);
+		}
+		
 		this.onload(body);
 		if (this.removeOnLoad)
 		{
