@@ -48,7 +48,7 @@
 				</tr>
 				<tr>
 					<td colspan="2" align="left" >
-						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then l:createforum.request"
+						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then l:createforum.request[newforum_userid=expr(Forums.user.id)]"
 							activators="newforum_name,newforum_description"/>
 					</td>
 				</tr>

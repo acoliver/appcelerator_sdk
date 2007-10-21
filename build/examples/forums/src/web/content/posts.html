@@ -10,7 +10,9 @@
 </head>
 <body>
 	<div class="forums_container" on="main[posts] then effect[appear] else hide" style="display:none;">
-		<a class="title" id="posts_forum" on="click then l:threads.indirect.request or l:posts.response then value[forum.name]"></a>
+		<input type="hidden" id="posts_forum_forumid" on="l:posts.response then value[forum.id]"/>
+		<a class="title" fieldset="posts_forum" id="posts_forum" on="click then l:threads.request[forumid=$posts_forum_forumid,type=byforum]
+		 or l:posts.response then value[forum.name]"></a>
 		<h1 style="margin-top:0;" on="l:posts.response then value[thread.name]"></h1>
 		<p class="subtitle">
 		<span on="l:posts.response then value[posts.length]"></span> post(s), <span on="l:posts.response then value[users.length]"></span> voice(s)
@@ -40,7 +42,6 @@
 			<div class="forums_container edittable" on="l:posts.response then show else hide" style="display:none;">
 				<table>
 					<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
-					<input type="hidden" fieldset="post" id="newpost_userid" on="l:login.response[success=true] then value[user.id] or l:singup.response then value[user.id]"></input>
 					<tr>
 						<td class="bold_value_grey">response:</td>
 						<td>
@@ -49,23 +50,18 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request"/>
+							<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request[newpost_userid=expr(Forums.user.id)]"/>
 						</td>
 					</tr>
 				</table>
 			</div>
 		</div>
-		<app:script on="l:posts.request then execute">
-			Forums.lastpostrequest=this.data;
-		</app:script>
-		<app:script on="l:posts.response then execute">
-			Forums.lastpostresponse=this.data;
-		</app:script>
+		<input type="hidden" on="l:posts.response then value[thread.id]" id="post_lastrequest_threadid">
 		<app:script on="l:createpost.response then execute">
-			$MQ('l:posts.request',Forums.lastpostresponse);
+			$MQ('l:posts.request',{'threadid':$('post_lastrequest_threadid').value,'type':'bythread'});
 		</app:script>
-		<app:script on="l:threads.indirect.request then execute">
-			$MQ('l:threads.request',{'forumid':Forums.lastpostresponse.forum.id,'type':'byforum','forumname':Forums.lastpostresponse.forum.name});
-		</app:script>
+		<!--
+		<app:message name="l:posts.request'" args="threadid=$post_lastrequest_threadid,type=bythread" on="l:createpost.response then execute"></app:message>
+	-->
 	</div>
 </body>
