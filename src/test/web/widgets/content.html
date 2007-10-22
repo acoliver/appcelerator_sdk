@@ -48,7 +48,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Load HTML file with onload attribute
+			Load HTML file (with onload attribute)
 		</td>
 		<td class="result" >
 			<div style="display: none">
@@ -59,7 +59,30 @@
 			</div>
 		</td>
 	</tr>	
-
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file (with &lt;style&gt; element)
+		</td>
+		<td class="result" >
+			<app:content src="content/content_styled_1.html"></app:content>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file (with &lt;link&gt; element)
+		</td>
+		<td class="result" >
+			<app:content src="content/content_styled_2.html"></app:content>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file (with &lt;style&gt; element and &lt;link&gt; element -- testing css order)
+		</td>
+		<td class="result" >
+			<app:content src="content/content_styled_3.html"></app:content>
+		</td>
+	</tr>
 
 </table>
 

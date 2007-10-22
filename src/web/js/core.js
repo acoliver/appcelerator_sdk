@@ -129,7 +129,7 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 		//Refresh css (link tags only) in IE 6/7 because the give priority to css in load order, not document order
 		if (Appcelerator.Browser.isIE)
 		{
-			var ss = document.styleSheets;				
+			var ss = document.styleSheets;
 			var arr = [];
 			
 			try
@@ -137,18 +137,25 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 				for (var i = 0; i < document.styleSheets.length; i++)
 				{
 					arr.push (document.styleSheets[i].owningElement.outerHTML);
-				}				
-			} catch (e) { throw 'Failed to gather CSS: ' + e.message; }
+				}
+			} 
+			catch (e) 
+			{ 
+				throw 'Failed to gather CSS: ' + e.message; 
+			}
 
 			try
 			{
-				arr.reverse();
-				
+				arr.reverse();				
 				for (var i = 0; i < arr.length; i++)
 				{
 					document.getElementsByTagName('head')[0].appendChild(document.createElement(arr[i]));
 				}
-			} catch (e) { throw 'Failed to refresh CSS: ' + e.message; }
+			} 
+			catch (e) 
+			{ 
+				throw 'Failed to refresh CSS: ' + e.message; 
+			}
 		}
 	}
 };
