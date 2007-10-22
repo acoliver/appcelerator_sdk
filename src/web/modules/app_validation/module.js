@@ -61,11 +61,16 @@ Appcelerator.Module.Validation =
 	create: function (element,condition,action,elseAction,delay,ifCond)
 	{
 		Element.cleanWhitespace(element);
+		var newhtml = element.innerHTML;
+		newhtml = newhtml.replace(/<MEMBERS/g,'<APP:MEMBERS').replace(/\/MEMBERS>/g,'/APP:MEMBERS>');
+		element.innerHTML = newhtml;
+		
 		var me = element.firstChild;
 		if (!me || me.length <= 0)
 		{
 			throw "required 'members' element not found for "+element.nodeName;
 		}
+		
 		var value = Appcelerator.Compiler.getHtml(me,false);
 		var tokens = value.split(/[ ,]/);
 		var id = element.id;
