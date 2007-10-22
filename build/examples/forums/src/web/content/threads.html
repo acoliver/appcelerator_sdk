@@ -10,11 +10,14 @@
 	<div class="forums_container" on="main[threads] then effect[appear] else hide" style="display:none;">
 		<div on="l:threads.response[type=byforum] then show else hide" style="display:none">
 			<a class="title" on="click then l:forums.request">Forums</a>
-			<h1 style="margin-top:0;" on="l:threads.response then value[forumname]"></h1>
+			<h1 style="margin-top:0;" on="l:threads.response then value[forum.name]"></h1>
 		</div>
 		<div on="l:threads.response[type=byuser] then show else hide" style="display:none">
+			<input type="hidden" id="threads_response_userid" on="l:threads.response[type=byuser] then value[user.id]"></input>
+			<input type="hidden" id="threads_response_username" on="l:threads.response[type=byuser] then value[user.username]"></input>
 			<a class="title" on="click then l:users.request">Users</a>
-			<h1 style="margin-top:0;" on="l:threads.response then value[username]"></h1>
+			<!--<a on="click then l:user.request[userid=$threads_response_userid,username=threads_response_username] or l:threads.response[type=byuser] then value[user.username]" class="title"></a>-->
+			<h1 style="margin-top:0;" on="l:threads.response then value[user.username]"></h1>
 		</div>
 		<div on="l:threads.response[type=search] then show else hide" style="display:none">
 			<h1 style="margin-top:0;" id="threads_query_header"></h1>

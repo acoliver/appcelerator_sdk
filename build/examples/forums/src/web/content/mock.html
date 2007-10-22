@@ -19,13 +19,15 @@
 	<app:script on="l:threads.request[type=byuser] then execute">
 		var posts = postsByUser(this.data.userid);
 		var threads = uniqueThreads(posts);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','username':this.data.username});
+		var user = getById(this.data.userid,Mock.users);
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','user':user});
 	</app:script>
 	<app:script on="l:threads.request[type=byforum] then execute">
 		var posts = postsByForum(this.data.forumid);
+		var forum = getById(this.data.forumid,Mock.forums);
 		var threads = uniqueThreads(posts);
 		var users = uniqueUsers(posts);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forumname':this.data.forumname,'forumid':this.data.forumid});
+		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forum':forum});
 	</app:script>
 	<app:script on="l:threads.request[type=search] then execute">
 		var posts=postsByQuery(this.data.query);

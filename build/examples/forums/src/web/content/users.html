@@ -42,41 +42,46 @@
 			
 			<h1 style="margin-top:0;" on="l:user.response then value[user.username]"></h1>
 			<p class="subtitle">
-			<span on="l:user.response then value[user.posts]"></span> posts (<a class="smalllink" on="click then l:userthreads.indirect.request">view threads</a>) 
+			<span on="l:user.response then value[user.posts]"></span> posts (<a class="smalllink" 
+				on="click then l:threads.request[type=byuser,userid=expr(Forums.lastuserresponse.user.id),username=expr(Forums.lastuserresponse.user.username)]">view threads</a>) 
 			</p>
-			<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
-				<input type="hidden" fieldset="account" id="edituser_id" validator="required" decorator="required" on="l:user.response then value[user.id]"/>
-				<tr>
-					<td class="bold_value_grey">
-						name:
-					</td>
-					<td>
-						<input type="text" fieldset="account" id="edituser_fullName" validator="required" decorator="required" on="l:user.response then value[user.fullName]"/>
-					</td>
-				</tr>
-				<tr>
-					<td class="bold_value_grey">
-						username:
-					</td>
-					<td>
-						<input type="text" fieldset="account" id="edituser_username" validator="required" decorator="required" on="l:user.response then value[user.username]"/>
-					</td>
-				</tr>
-				<tr>
-					<td class="bold_value_grey">
-						email:
-					</td>
-					<td>
-						<input type="text" fieldset="account" id="edituser_email" validator="required" decorator="required" on="l:user.response then value[user.email]"/>
-					</td>
-				</tr>
-			</table>
+			<div class="edittable">
+				<table>
+					<input type="hidden" fieldset="account" id="edituser_id" validator="required" decorator="required" on="l:user.response then value[user.id]"/>
+					<tr>
+						<td class="bold_value_grey">
+							name:
+						</td>
+						<td>
+							<input type="text" fieldset="account" id="edituser_fullName" validator="required" decorator="required" on="l:user.response then value[user.fullName]"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							username:
+						</td>
+						<td>
+							<input type="text" fieldset="account" id="edituser_username" validator="required" decorator="required" on="l:user.response then value[user.username]"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							email:
+						</td>
+						<td>
+							<input type="text" fieldset="account" id="edituser_email" validator="required" decorator="required" on="l:user.response then value[user.email]"/>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 	<app:script on="l:user.response then execute">
 		Forums.lastuserresponse = this.data;
 	</app:script>
+	<!--
 	<app:script on="l:userthreads.indirect.request then execute">
 		$MQ('l:threads.request',{'type':'byuser','userid':Forums.lastuserresponse.user.id,username:Forums.lastuserresponse.user.username});
 	</app:script>
+-->
 </body>

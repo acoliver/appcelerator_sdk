@@ -12,57 +12,65 @@
 			<div class="forums_container" on="l:logout.request then show or l:showaccount.request then hide" style="display:none;">
 				<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 					<tr>
+						<input type="hidden" id="myfavoriteid" name="name1" value="22" fieldset="logout">
 						<td colspan="2" align="left" >
-							<input type="button" value="logout" fieldset="lgout" style="margin-top:10px" on="click then l:logout.response"/>
+							<input type="button" value="logout" fieldset="logout" style="margin-top:10px" on="click then l:logout.response"/>
 						</td>
 					</tr>
 				</table>
 			</div>
-			<div class="forums_container edittable" on="l:showaccount.response then show or l:logout.request then hide" style="display:none;">
-				<table>
-					<input type="hidden" fieldset="account" id="account_id" validator="required" decorator="required" on="l:showaccount.response then value[user.id]"/>
-					<tr>
-						<td class="bold_value_grey">
-							name:
-						</td>
-						<td>
-							<input type="text" fieldset="account" id="account_fullName" validator="required" decorator="required" on="l:showaccount.response then value[user.fullName]"/>
-						</td>
-					</tr>
-					<tr>
-						<td class="bold_value_grey">
-							username:
-						</td>
-						<td>
-							<input type="text" fieldset="account" id="account_username" validator="required" decorator="required" on="l:showaccount.response then value[user.username]"/>
-						</td>
-					</tr>
-					<tr>
-						<td class="bold_value_grey">
-							email:
-						</td>
-						<td>
-							<input type="text" fieldset="account" id="account_email" validator="required" decorator="required" on="l:showaccount.response then value[user.email]"/>
-						</td>
-					</tr>
-					<tr>
-						<td class="bold_value_grey">
-							password:
-						</td>
-						<td>
-							<input type="text" fieldset="account" id="account_password" validator="required" decorator="required" on="l:showaccount.response then value[user.password]"/>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="left" >
-							<input type="button" value="save account" fieldset="account" style="margin-top:10px" on="click then l:savaccount.request"
-								activators="account_fullName,account_username,account_email,account_password"/>
-						</td>
-					</tr>
-					<tr on="l:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
-						<td colspan="2" align="left" >successfully saved account</td>
-					</tr>
-				</table>
+			<div class="forums_container" on="l:showaccount.response then show or l:logout.request then hide" style="display:none;">
+				<h1 style="margin-top:0;" on="l:showaccount.response then value[user.fullName]"></h1>
+				<p class="subtitle">
+				<span on="l:showaccount.response then value[user.posts]"></span> post(s) 	(<a class="smalllink" 
+						on="click then l:threads.request[type=byuser,userid=expr(Forums.user.id),username=expr(Forums.user.username)]">view threads</a>)
+				</p>
+				<div class="edittable">
+					<table>
+						<input type="hidden" fieldset="account" id="account_id" validator="required" decorator="required" on="l:showaccount.response then value[user.id]"/>
+						<tr>
+							<td class="bold_value_grey">
+								name:
+							</td>
+							<td>
+								<input type="text" fieldset="account" id="account_fullName" validator="required" decorator="required" on="l:showaccount.response then value[user.fullName]"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="bold_value_grey">
+								username:
+							</td>
+							<td>
+								<input type="text" fieldset="account" id="account_username" validator="required" decorator="required" on="l:showaccount.response then value[user.username]"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="bold_value_grey">
+								email:
+							</td>
+							<td>
+								<input type="text" fieldset="account" id="account_email" validator="required" decorator="required" on="l:showaccount.response then value[user.email]"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="bold_value_grey">
+								password:
+							</td>
+							<td>
+								<input type="text" fieldset="account" id="account_password" validator="required" decorator="required" on="l:showaccount.response then value[user.password]"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" align="left" >
+								<input type="button" value="save account" fieldset="account" style="margin-top:10px" on="click then l:savaccount.request"
+									activators="account_fullName,account_username,account_email,account_password"/>
+							</td>
+						</tr>
+						<tr on="l:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
+							<td colspan="2" align="left" >successfully saved account</td>
+						</tr>
+					</table>
+				</div>
 			</div>
 		</div>
 		<div on="login[in] then hide else show or l:showlogin.request then show" style="display:none;">
