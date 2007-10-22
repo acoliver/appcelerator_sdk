@@ -62,6 +62,17 @@
 			<div id="background"></div>
 		</td>
 	</tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Parameterized Image
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <app:iterator on="l:test.image then execute" property="rows">
+                <html:div style="background-color:#000;"><html:img src="#{name}"></html:img></html:div>
+            </app:iterator>
+            <app:message name="l:test.image" args="{rows:[{'name':'../images/appcelerator_gray_logo_small.png'}]}"></app:message>
+        </td>
+    </tr>
 </table>
 
 </body>
