@@ -15,7 +15,7 @@
 	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
 	<property name="dist.dir" value="${stage.dir}"/>
 	<path id="classpath">
-		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<fileset dir="${lib.dir}/appcelerator" includes="**/*.jar"/>
 	</path>
 	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
 

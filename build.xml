@@ -258,12 +258,23 @@
 	<target name="build_example">
 		<delete dir="${stage.dir}/examples/${example}" failonerror="false"/>
 		<mkdir dir="${stage.dir}/examples/${example}"/>
+		<mkdir dir="${stage.dir}/examples/${example}/server"/>
+		<mkdir dir="${stage.dir}/examples/${example}/lib"/>
+		<mkdir dir="${stage.dir}/examples/${example}/lib/appcelerator"/>
 		<copy todir="${stage.dir}/examples/${example}/src/web">
 			<fileset dir="${stage.dir}/web" includes="**"/>
 		</copy>
+		<copy tofile="${stage.dir}/examples/${example}/server/setupfiles" file="${stage.dir}/java/server/appcelerator.war"/>
 		<copy todir="${stage.dir}/examples" filtering="true" overwrite="true">
 			<fileset dir="build/examples" includes="${example}/**"/>
 		</copy>
+		<copy todir="${stage.dir}/examples/${example}/lib/appcelerator" filtering="false"> 
+			<fileset dir="${build.java.dir}/lib" includes="**/*"/>
+			<fileset dir="${stage.dir}/java" includes="appcelerator-${VERSION}.jar"/>
+		</copy>
+		
+		<!-- simulate creating a new project and then extracting -->
+		
 	</target>
 	
 
@@ -415,8 +426,9 @@
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
-		<delete dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+
+		<delete dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" failonerror="false"/>
 		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
 			<property name="app.name" value="myapp"/>
 			<property name="create.dir" value="${basedir}/${stage.dir}/sdkprojects/myjavaapp"/>
@@ -425,13 +437,29 @@
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
 	</target>
-	<target name="install_java_examples" depends="install_java">
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" overwrite="true">
-			<fileset dir="build/examples/simple" includes="src/**,appcelerator-services.xml"/>
+	<target name="install_java_examples" depends="sdk_java_dist">
+		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+
+		<antcall target="install_java_example">
+			<param name="example" value="forums"/>
+		</antcall>
+		<antcall target="install_java_example">
+			<param name="example" value="simple"/>
+		</antcall>
+	</target>
+	<target name="install_java_example">
+		<delete dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" failonerror="false"/>
+		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
+			<property name="app.name" value="${example}"/>
+			<property name="create.dir" value="${basedir}/${stage.dir}/exampleprojects/${example}_java"/>
+		</ant>
+		<copy todir="${basedir}/${stage.dir}/exampleprojects/${example}_java" overwrite="true">
+			<fileset dir="build/examples/${example}" includes="src/**,appcelerator-services.xml"/>
 		</copy>
-		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="dist"/>
-		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
-		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
+		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="dist"/>
+		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="undeploy"/>
+		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="deploy"/>
 	</target>
 	<target name="install_ruby" depends="sdk_ruby_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
@@ -446,12 +474,34 @@
 			<arg line="myrubyapp"/>
 		</exec>
 	</target>
-	<target name="install_ruby_examples" depends="install_ruby">
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/app">
-			<fileset dir="build/examples/simple/src/ruby" includes="**/**"/>
+	<target name="install_ruby_examples" depends="sdk_ruby_dist">
+		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<exec dir="${stage.dir}" executable="gem" failonerror="false">
+			<arg line="uninstall appcelerator"/>
+		</exec>
+		<exec dir="${stage.dir}" executable="gem" failonerror="false">
+			<arg line="install -l appcelerator-${VERSION}.gem"/>
+		</exec>
+		<!--
+		<antcall target="install_ruby_example">
+			<param name="example" value="forums"/>
+		</antcall>
+		-->
+		<antcall target="install_ruby_example">
+			<param name="example" value="simple"/>
+		</antcall>
+	</target>
+	<target name="install_ruby_example">
+		<delete dir="${basedir}/${stage.dir}/exampleprojects/${example}_ruby" failonerror="false"/>
+		<mkdir dir="${basedir}/${stage.dir}/exampleprojects"/>
+		<exec dir="${basedir}/${stage.dir}/exampleprojects" executable="appcelerator" failonerror="false">
+			<arg line="${example}_ruby"/>
+		</exec>
+		<copy todir="${basedir}/${stage.dir}/exampleprojects/${example}_ruby/app">
+			<fileset dir="build/examples/${example}/src/ruby" includes="**/**"/>
 		</copy>
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myrubyapp/public" overwrite="true">
-			<fileset dir="build/examples/simple/src/web" includes="**/**"/>
+		<copy todir="${basedir}/${stage.dir}/exampleprojects/${example}_ruby/public" overwrite="true">
+			<fileset dir="build/examples/${example}/src/web" includes="**/**"/>
 		</copy>
 	</target>
 	<target name="install_php" depends="sdk_php_dist">
@@ -461,11 +511,26 @@
 		<antcall target="undeploy_php"/>
 		<antcall target="deploy_php"/>
 	</target>
-	<target name="install_php_examples" depends="install_php">
-		<copy todir="${basedir}/${stage.dir}/sdkprojects/myphpapp/src/php" overwrite="true">
-			<fileset dir="build/examples/simple/src/php" includes="**"/>
+	<target name="install_php_examples" depends="sdk_php_dist">
+		<antcall target="install_php_example">
+			<param name="example" value="simple"/>
+		</antcall>
+	</target>
+	<target name="install_php_example">
+		<delete dir="${stage.dir}/exampleprojects/${example}_php" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/exampleprojects/${example}_php"/>
+		<copy todir="${stage.dir}/exampleprojects/${example}_php/src/php" overwrite="true">
+			<fileset dir="build/examples/${example}/src/php" includes="**"/>
 		</copy>
-		<antcall target="undeploy_php"/>
+		<copy todir="${stage.dir}/exampleprojects/${example}_php/src/web" overwrite="true">
+			<fileset dir="build/examples/${example}/src/web" includes="**"/>
+		</copy>
+		<antcall target="undeploy_php">
+			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php"/>
+		</antcall>
+		<antcall target="deploy_php">
+			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php"/>
+		</antcall>
 		<antcall target="deploy_php"/>
 	</target>
 	<target name="nightly_dist" description="* Builds the nightlighty source distribution">
