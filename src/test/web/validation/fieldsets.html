@@ -86,6 +86,36 @@
 			  activators="input3,checkbox2,select2,textarea2"/>
 		</td>
 	</tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Fieldset Payloads
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <form>
+                <input type="hidden" id="test_hidden_1" value="1" fieldset="fieldset_1"/>
+                <input type="button" value="Do not press" on="click then l:fieldset or l:fieldset.start then click" fieldset="fieldset_1"/>
+            </form>
+            <div style="display:none" on="l:fieldset[test_hidden_1=1] then show">
+                Test Passed
+            </div>
+            <app:message name="l:fieldset.start"></app:message>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Fieldset Payloads with name parameter override
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <form>
+                <input type="hidden" id="test_hidden_2" value="1" name="foo" fieldset="fieldset_2"/>
+                <input type="button" value="Do not press" on="click then l:fieldset2 or l:fieldset.start2 then click" fieldset="fieldset_2"/>
+            </form>
+            <div style="display:none" on="l:fieldset2[foo=1] then show">
+                Test Passed
+            </div>
+            <app:message name="l:fieldset.start2"></app:message>
+        </td>
+    </tr>
 
 
 </table>
