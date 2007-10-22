@@ -516,7 +516,13 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
 	convertHtmlPrefix = (convertHtmlPrefix==null) ? true : convertHtmlPrefix;
 
 	var html = element.innerHTML || Appcelerator.Util.Dom.getText(element);
-
+	
+	// convert funky url-encoded parameters escaped
+	if (html.indexOf('#%7B')!=-1)
+	{
+	   html = html.gsub('#%7B','#{').gsub('%7D','}');
+    }
+       
 	if (convertHtmlPrefix)
 	{
 		return (html!=null) ? Appcelerator.Compiler.specialMagicParseHtml(html) : '';
