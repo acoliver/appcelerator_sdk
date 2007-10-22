@@ -34,7 +34,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">
-					org.hibernate.dialect.MySQLInnoDBDialect
+					#{DB_DIALECT}
 				</prop>
 				<!-- Create/update the database tables automatically when the JVM starts up -->
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
@@ -51,10 +51,11 @@
 	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="@DB_DRIVER@" />
-		<property name="url" value="jdbc:@DB_JDBC_NAME@://@DB_HOSTNAME@/forum?useUnicode=true&amp;characterEncoding=utf-8" />
-		<property name="username" value="@DB_USERNAME@" />
-		<property name="password" value="@DB_PASSWORD@" />
+		<property name="driverClassName" value="#{DB_DRIVER}" />
+		<!--<property name="url" value="jdbc:@DB_JDBC_NAME@://@DB_HOSTNAME@/forum?useUnicode=true&amp;characterEncoding=utf-8" />-->
+		<property name="url" value="#{DB_JDBC_URL}" />
+		<property name="username" value="#{DB_USERNAME}" />
+		<property name="password" value="#{DB_PASSWORD}" />
 		<property name="maxActive" value="100" />
 		<property name="maxIdle" value="30" />
 		<property name="maxWait" value="1000" />
@@ -70,10 +71,10 @@
 	<bean id="forumthreadDAO" class="org.appcelerator.forums.dao.ForumthreadDAO">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="postDAO" class="org.appcelerator.forums.dao.postDAO">
+	<bean id="postDAO" class="org.appcelerator.forums.dao.PostDAO">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="userDAO" class="org.appcelerator.forums.dao.userDAO">
+	<bean id="userDAO" class="org.appcelerator.forums.dao.UserDAO">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 

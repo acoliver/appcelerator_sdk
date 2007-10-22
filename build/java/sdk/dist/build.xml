@@ -18,7 +18,8 @@
 		<fileset dir="${lib.dir}/appcelerator" includes="**/*.jar"/>
 	</path>
 	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
-
+	<import file="build-override.xml" optional="true"/>
+	
 	<target name="dist" depends="init,build_composite_bundle,build_merged_bundle,bundle_simplewar,cleanup" description="* Builds the service and application deployment archives"></target>
 
 	<target name="banner">
@@ -52,8 +53,11 @@
 			</xmlcatalog>
 		</xslt>
 		<copy todir="stage/setupfiles_extracted/WEB-INF/classes" file="stage/transform/spring-beans.xml"/>
-		<copy todir="stage/setupfiles_extracted/lib">
+		<copy todir="stage/setupfiles_extracted/WEB-INF/lib">
 			<fileset dir="${stage.dir}/assemble/lib" includes="*.jar"/>
+		</copy>
+		<copy todir="stage/setupfiles_extracted/WEB-INF/lib">
+			<fileset dir="lib/appcelerator" includes="*.jar"/>
 		</copy>
 			<!--<copy todir="stage/setupfiles_extracted">
 				<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
@@ -63,7 +67,7 @@
 			<fileset dir="src/web" includes="**/*"/>
 		</copy>
 		<war destfile="${stage.dir}/${app.name}.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
-			<lib dir="stage/setupfiles_extracted/lib" includes="*.jar"/>
+			<lib dir="stage/setupfiles_extracted/WEB-INF/lib" includes="*.jar"/>
 			<fileset dir="stage/setupfiles_extracted" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
 		</war>
 	</target>

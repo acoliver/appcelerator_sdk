@@ -251,9 +251,6 @@
 		<antcall target="build_example">
 			<param name="example" value="simple"/>
 		</antcall>
-		<antcall target="build_example">
-			<param name="example" value="starter"/>
-		</antcall>
 	</target>
 	<target name="build_example">
 		<delete dir="${stage.dir}/examples/${example}" failonerror="false"/>
@@ -437,6 +434,21 @@
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
 	</target>
+	<target name="install_forums" depends="init,install_java_sdk">
+		<antcall target="install_java_example">
+			<param name="example" value="forums"/>
+			<param name="plat.excludes" value="doc/**,examples/**,src/web/modules/**,test/**"/>
+		</antcall>
+	</target>
+	<target name="install_java_sdk">
+		<available file="${stage.dir}/appcelerator_sdk_java_${VERSION}" type="dir" property="sdk.java.exists"/>
+		<antcall target="do.sdk"/>
+	</target>
+	<target name="do.sdk" unless="sdk.java.exists">
+		<antcall target="sdk_java_dist"/>
+		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+	</target>
 	<target name="install_java_examples" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
@@ -455,7 +467,7 @@
 			<property name="create.dir" value="${basedir}/${stage.dir}/exampleprojects/${example}_java"/>
 		</ant>
 		<copy todir="${basedir}/${stage.dir}/exampleprojects/${example}_java" overwrite="true">
-			<fileset dir="build/examples/${example}" includes="src/**,appcelerator-services.xml"/>
+			<fileset dir="build/examples/${example}" includes="**"/>
 		</copy>
 		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="dist"/>
 		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="undeploy"/>

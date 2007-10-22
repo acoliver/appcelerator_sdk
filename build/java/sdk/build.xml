@@ -119,13 +119,14 @@
 	</target>
 
 	<target name="create.silent.plat" depends="banner">
+		<echo>using excludes ${plat.excludes}</echo>
 		<mkdir dir="${create.dir}" />
 		<mkdir dir="${create.dir}/lib/appcelerator" />
 		<mkdir dir="${create.dir}/src/java" />
 		<mkdir dir="${create.dir}/src/web" />
 		<copy todir="${create.dir}" filtering="false" overwrite="true">
-			<fileset dir="dist" includes="lib/**,server/**,examples/**"/>
-			<fileset dir="." includes="test/**,doc/**"/>
+			<fileset dir="dist" includes="lib/**,server/**,examples/**" excludes="${plat.excludes}"/>
+			<fileset dir="." includes="test/**,doc/**" excludes="${plat.excludes}"/>
 		</copy>
 	</target>
 		
