@@ -52,10 +52,10 @@
 		</div>
 		<!-- create a new forum -->
 		<div on="login[in] then show else hide" style="display:none">
+			<form on="enter then click[id=save_thread_button]">
 			<div class="forums_container edittable" on="l:threads.response[type=byforum] then show else hide" style="display:none;">
-			
 				<table>
-					<input type="hidden" fieldset="thread" id="newthread_forumid" on="l:threads.response[type=byforum] then value[forumid]"></input>
+					<input type="hidden" fieldset="thread" id="newthread_forumid" on="l:threads.response[type=byforum] then value[forum.id]"></input>
 					<tr>
 						<td class="bold_value_grey">title:</td>
 						<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"  on="l:createthread.response then clear"/></td>
@@ -69,11 +69,12 @@
 					<tr>
 						<td colspan="2" align="left" >
 							<input type="button" value="create new thread" fieldset="thread" style="margin-top:10px" on="click then l:createthread.request[newthread_userid=expr(Forums.user.id)]"
-								activators="newthread_name"/>
+								activators="newthread_name" id="save_thread_button"/>
 						</td>
 					</tr>
 				</table>
 			</div>
+			</form>
 		</div>
 		<app:script on="l:threads.request then execute">
 			Forums.lastthreadrequest=this.data;

@@ -37,6 +37,7 @@
 		</div>
 		<!-- create a new forum -->
 		<div class="forums_container edittable" on="login[in] then show else hide" style="display:none">
+			<form on="enter then click[id=save_forum_button]">
 			<table>
 				<tr>
 					<td class="bold_value_grey">name:</td>
@@ -49,7 +50,7 @@
 				<tr>
 					<td colspan="2" align="left" >
 						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then l:createforum.request[newforum_userid=expr(Forums.user.id)]"
-							activators="newforum_name,newforum_description"/>
+							activators="newforum_name,newforum_description" id="save_forum_button"/>
 					</td>
 				</tr>
 			</table>

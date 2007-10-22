@@ -40,6 +40,7 @@
 		<!-- create a new post -->
 		<div on="login[in] then show else hide" style="display:none">
 			<div class="forums_container edittable" on="l:posts.response then show else hide" style="display:none;">
+				<form on="enter then click[id=save_post_button]">
 				<table>
 					<input type="hidden" fieldset="post" id="newpost_threadid" on="l:posts.response then value[thread.id]"></input>
 					<tr>
@@ -50,10 +51,11 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request[newpost_userid=expr(Forums.user.id)]"/>
+							<input type="button" value="reply to post" fieldset="post" style="margin-top:10px" on="click then l:createpost.request[newpost_userid=expr(Forums.user.id)]" id="save_post_button"/>
 						</td>
 					</tr>
 				</table>
+				</form>
 			</div>
 		</div>
 		<input type="hidden" on="l:posts.response then value[thread.id]" id="post_lastrequest_threadid">

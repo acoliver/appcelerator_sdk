@@ -26,6 +26,7 @@
 						on="click then l:threads.request[type=byuser,userid=expr(Forums.user.id),username=expr(Forums.user.username)]">view threads</a>)
 				</p>
 				<div class="edittable">
+					<form on="enter then click[id=save_account_button]">
 					<table>
 						<input type="hidden" fieldset="account" id="account_id" validator="required" decorator="required" on="l:showaccount.response then value[user.id]"/>
 						<tr>
@@ -63,18 +64,20 @@
 						<tr>
 							<td colspan="2" align="left" >
 								<input type="button" value="save account" fieldset="account" style="margin-top:10px" on="click then l:savaccount.request"
-									activators="account_fullName,account_username,account_email,account_password"/>
+									activators="account_fullName,account_username,account_email,account_password"/ id="save_account_button">
 							</td>
 						</tr>
 						<tr on="l:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
 							<td colspan="2" align="left" >successfully saved account</td>
 						</tr>
 					</table>
+					</form>
 				</div>
 			</div>
 		</div>
 		<div on="login[in] then hide else show or l:showlogin.request then show" style="display:none;">
 			<div class="forums_container edittable">
+				<form on="enter then click[id=login_button]">
 				<table>
 					<tr>
 						<td class="bold_value_grey">
@@ -94,7 +97,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request" activators="username,password"/>
+							<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request" activators="username,password" id="login_button"/>
 						</td>
 					</tr>
 					<tr>
@@ -103,8 +106,10 @@
 						</td>
 					</tr>
 				</table>
+				</form>
 			</div>
 			<div class="forums_container edittable">
+				<form on="enter then click[id=signup_button]">
 				<table>
 					<tr>
 						<td class="bold_value_grey">
@@ -140,11 +145,12 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="signup now!" fieldset="signup" style="margin-top:10px" on="click then l:signup.request"
+							<input type="button" value="signup now!" fieldset="signup" style="margin-top:10px" on="click then l:signup.request" id="signup_button"
 								activators="name,signupusername,email,signuppassword"/>
 						</td>
 					</tr>
 				</table>
+				</form>
 			</div>
 		</div>
 	</div>
