@@ -8,25 +8,25 @@
 </head>
 <body>
 	<div on="main[users] then effect[appear] else hide" style="display:none;">
-		<div class="forums_container" on="l:users.response then show or l:user.response then hide" style="display:none;">
+		<div class="forums_container" on="r:users.response then show or r:user.response then hide" style="display:none;">
 			<h1 style="margin-top:0;">Users</h1>
 			<p class="subtitle">
-			<span on="l:users.response then value[users]"></span> users(s), 
-			<span on="l:users.response then value[active]"></span> active, <span on="l:users.response then value[lurking]"></span> lurking
+			<span on="r:users.response then value[users]"></span> users(s), 
+			<span on="r:users.response then value[active]"></span> active, <span on="r:users.response then value[lurking]"></span> lurking
 			</p>
 
 			<div class="forums_header">
 				<div class="forums_header_forums"><span>User</span></div>
 				<div class="forums_header_lastpost"><span>Details</span></div>
 			</div>
-			<div class="forums_content" on="l:users.response then show" style="display:none;">
-				<app:iterator on="l:users.response then execute" property="rows">
+			<div class="forums_content" on="r:users.response then show" style="display:none;">
+				<app:iterator on="r:users.response then execute" property="rows">
 					<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 						<html:tr class="forum_content_row">	
 							<html:td class="user_icon"></html:td>
 							<html:td class="forum_title">
-								<html:a on="click then l:user.request[userid=#{id},username='#{username}']" class="title">#{username}</html:a>
-								<html:div class="stats">#{posts} posts (<html:a class="smalllink" on="click then l:threads.request[type=byuser,userid=#{id},username='#{username}']">view threads</html:a>) </html:div>
+								<html:a on="click then r:user.request[userid=#{id},username='#{username}']" class="title pointer">#{username}</html:a>
+								<html:div class="stats">#{threads} threads, #{posts} posts (<html:a class="smalllink pointer" on="click then r:threads.request[type=byuser,userid=#{id},username='#{username}']">view threads</html:a>) </html:div>
 								<html:div class="description">#{fullName}</html:div>
 							</html:td>
 							<html:td class="forums_postdate">
@@ -37,23 +37,24 @@
 				</app:iterator>
 			</div>
 		</div>
-		<div class="forums_container" on="l:user.response then show or l:users.response then hide" style="display:none">
-			<a class="title" on="click then l:users.request">Users</a>
+		<div class="forums_container" on="r:user.response then show or r:users.response then hide" style="display:none">
+			<a class="title pointer" on="click then r:users.request">Users</a>
 			
-			<h1 style="margin-top:0;" on="l:user.response then value[user.username]"></h1>
+			<h1 style="margin-top:0;" on="r:user.response then value[user.username]"></h1>
 			<p class="subtitle">
-			<span on="l:user.response then value[user.posts]"></span> posts (<a class="smalllink" 
-				on="click then l:threads.request[type=byuser,userid=expr(Forums.lastuserresponse.user.id),username=expr(Forums.lastuserresponse.user.username)]">view threads</a>) 
+			<span on="r:user.response then value[user.threads]"></span> threads,
+			<span on="r:user.response then value[user.posts]"></span> posts (<a class="smalllink pointer" 
+				on="click then r:threads.request[type=byuser,userid=expr(Forums.lastuserresponse.user.id),username=expr(Forums.lastuserresponse.user.username)]">view threads</a>) 
 			</p>
 			<div class="edittable">
 				<table>
-					<input type="hidden" fieldset="account" id="edituser_id" validator="required" decorator="required" on="l:user.response then value[user.id]"/>
+					<input type="hidden" fieldset="account" id="edituser_id" validator="required" decorator="required" on="r:user.response then value[user.id]"/>
 					<tr>
 						<td class="bold_value_grey">
 							name:
 						</td>
 						<td>
-							<input type="text" fieldset="account" id="edituser_fullName" validator="required" decorator="required" on="l:user.response then value[user.fullName]"/>
+							<input type="text" fieldset="account" id="edituser_fullName" validator="required" decorator="required" on="r:user.response then value[user.fullName]"/>
 						</td>
 					</tr>
 					<tr>
@@ -61,7 +62,7 @@
 							username:
 						</td>
 						<td>
-							<input type="text" fieldset="account" id="edituser_username" validator="required" decorator="required" on="l:user.response then value[user.username]"/>
+							<input type="text" fieldset="account" id="edituser_username" validator="required" decorator="required" on="r:user.response then value[user.username]"/>
 						</td>
 					</tr>
 					<tr>
@@ -69,19 +70,19 @@
 							email:
 						</td>
 						<td>
-							<input type="text" fieldset="account" id="edituser_email" validator="required" decorator="required" on="l:user.response then value[user.email]"/>
+							<input type="text" fieldset="account" id="edituser_email" validator="required" decorator="required" on="r:user.response then value[user.email]"/>
 						</td>
 					</tr>
 				</table>
 			</div>
 		</div>
 	</div>
-	<app:script on="l:user.response then execute">
+	<app:script on="r:user.response then execute">
 		Forums.lastuserresponse = this.data;
 	</app:script>
 	<!--
-	<app:script on="l:userthreads.indirect.request then execute">
-		$MQ('l:threads.request',{'type':'byuser','userid':Forums.lastuserresponse.user.id,username:Forums.lastuserresponse.user.username});
+	<app:script on="r:userthreads.indirect.request then execute">
+		$MQ('r:threads.request',{'type':'byuser','userid':Forums.lastuserresponse.user.id,username:Forums.lastuserresponse.user.username});
 	</app:script>
 -->
 </body>

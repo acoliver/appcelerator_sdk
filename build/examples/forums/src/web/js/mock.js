@@ -73,14 +73,14 @@ function authenticate(username,password)
 }
 function createForum(id,name,desc)
 {
-	var forum = {'id':id,'name':name,'description':desc,'threads':0,'posts':0};
+	var forum = {'id':id,'name':name,'description':desc,'threads':0,'posts':0,'voices':0};
 	Mock.forums.push(forum);
 	return forum;
 }
 /* state is (active|lurking) */
 function createUser(id,username,fullName,lastLogin,state,password,email)
 {
-	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0,'password':password,'email':email};
+	var user = {'id':id,'username':username,'fullName':fullName,'lastLogin':lastLogin,'state':state,'posts':0,'password':password,'email':email,'threads':0};
 	Mock.users.push(user);
 	return user;
 }
@@ -91,33 +91,44 @@ function saveUser(saveuser)
 		var user = Mock.users[idx];
 		if (''+user.id == saveuser.id)
 		{
-			Mock.users[idx]=saveuser;
-			return saveuser;
+			user.username=saveuser.username;
+			user.fullName=saveuser.fullName;
+			user.password=saveuser.password;
+			user.email=saveuser.email;
+			return user;
 		}
 	}
 }
 function createThread(forumid,userid,id,name)
 {
-	Logger.info('forumid:'+forumid+' userid:'+userid+' id:'+id+' name:'+name);  
 	var forum = getById(forumid,Mock.forums);
 	forum.threads+=1;
-	var thread = {'id':id,'name':name,'forum':forum,'posts':0};
+	var thread = {'id':id,'name':name,'forum':forum,'posts':0,'voices':0};
 	Mock.threads.push(thread);
 	return thread;
 }
 function createPost(threadid,userid,id,date, body)
 {
-	Logger.info('threadid:'+threadid+' userid:'+userid+' id:'+id+' date:'+date+' body:'+body);  
 	var thread = getById(threadid,Mock.threads);
 	var user = getById(userid,Mock.users);
 	var post = {'id':id,'body':body,'user':user,'thread':thread,'date':date};
 	var forum = thread.forum;
+	Mock.posts.push(post);
+
 	user.posts+=1;
 	thread.posts+=1;
 	thread.lastpost= clonePost(post);
+	var threadposts = postsByThread(thread);
+	var threadusers = uniqueUsers(threadposts);
+	thread.voices=threadusers.length;
 	forum.posts+=1;
 	forum.lastpost = clonePost(post);
-	Mock.posts.push(post);
+	var posts = postsByUser(userid);
+	var threads = uniqueThreads(posts);
+	user.threads = threads.length;
+	var forumposts = postsByForum(forum.id);
+	var users = uniqueUsers(forumposts);
+	forum.voices = users.length;
 	return post;
 }
 function clonePost(post)

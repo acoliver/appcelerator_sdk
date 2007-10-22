@@ -161,3 +161,7 @@ ul.why li p strong { color:#c00; }
 {
 	color:#666;
 }
+.pointer
+{
+	cursor:pointer;
+}

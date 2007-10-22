@@ -8,78 +8,81 @@
 <script type="text/javascript" src="js/forums.js"></script>
 </head>
 <body>
-	<app:script on="l:forums.request then execute">
-		$MQ("l:forums.response",{"rows":Mock.forums,'threads':Mock.threads.length,'posts':Mock.posts.length,'users':Mock.users.length});
+	<app:script on="r:forums.request then execute">
+		$MQ("r:forums.response",{"rows":Mock.forums,'threads':Mock.threads.length,'posts':Mock.posts.length,'users':Mock.users.length});
 	</app:script>
-	<app:script on="l:users.request then execute">
+	<app:script on="r:users.request then execute">
 		var lurking = getUsersByState('lurking').length;
 		var active = getUsersByState('active').length;
-		$MQ("l:users.response",{"rows":Mock.users,'users':Mock.users.length,'active':active,'lurking':lurking});
+		$MQ("r:users.response",{"rows":Mock.users,'users':Mock.users.length,'active':active,'lurking':lurking});
 	</app:script>
-	<app:script on="l:threads.request[type=byuser] then execute">
+	<app:script on="r:threads.request[type=byuser] then execute">
 		var posts = postsByUser(this.data.userid);
 		var threads = uniqueThreads(posts);
 		var user = getById(this.data.userid,Mock.users);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','user':user});
+		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','user':user});
 	</app:script>
-	<app:script on="l:threads.request[type=byforum] then execute">
+	<app:script on="r:threads.request[type=byforum] then execute">
 		var posts = postsByForum(this.data.forumid);
 		var forum = getById(this.data.forumid,Mock.forums);
 		var threads = uniqueThreads(posts);
 		var users = uniqueUsers(posts);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forum':forum});
+		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forum':forum});
 	</app:script>
-	<app:script on="l:threads.request[type=search] then execute">
+	<app:script on="r:threads.request[type=search] then execute">
 		var posts=postsByQuery(this.data.query);
 		var threads = uniqueThreads(posts);
 		var users = uniqueUsers(posts);
-		$MQ("l:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'query':this.data.query});
+		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'query':this.data.query});
 	</app:script>
-	<app:script on="l:login.request then execute">
+	<app:script on="r:login.request then execute">
 		var user = authenticate(this.data.username,this.data.password);
 		if (user != '')
 		{
 			var data={"success":"true","user":user};
-			$MQ("l:login.response",data);
+			$MQ("r:login.response",data);
 		}
 		else
 		{
 			var data={"success":"false"};
-			$MQ("l:login.failed.response",data);
+			$MQ("r:login.failed.response",data);
 		}
 	</app:script>
-	<app:script on="l:savaccount.request then execute">
+	<app:script on="r:logout.request then execute">
+		$MQ("r:logout.response",{});
+	</app:script>
+	<app:script on="r:savaccount.request then execute">
 		var user = {'id':this.data.account_id,'username':this.data.account_username,'fullName':this.data.account_fullName,'email':this.data.account_email,'password':this.data.account_password};
 		var saveduser = saveUser(user);
-		$MQ("l:saveaccount.response",{"success":"true","user":saveduser});
+		$MQ("r:saveaccount.response",{"success":"true","user":saveduser});
 	</app:script>
-	<app:script on="l:signup.request then execute">
+	<app:script on="r:signup.request then execute">
 		var user=createUser(Mock.users.length+1,this.data.signupusername,this.data.name,'today','active', this.data.signuppassword,this.data.email);
-		$MQ("l:signup.response",{"success":"true",'user':user});
+		$MQ("r:signup.response",{"success":"true",'user':user});
 	</app:script>
-	<app:script on="l:user.request then execute">
+	<app:script on="r:user.request then execute">
 		var user = getById(this.data.userid,Mock.users);
-		$MQ("l:user.response",{"success":"true",'user':user});
+		$MQ("r:user.response",{"success":"true",'user':user});
 	</app:script>
- 	<app:script on="l:posts.request[type=bythread] then execute">
+ 	<app:script on="r:posts.request[type=bythread] then execute">
 		var thread = getById(this.data.threadid,Mock.threads);
 		var posts = postsByThread(thread);
 		var users = uniqueUsers(posts);
-		$MQ("l:posts.response",{"posts":posts,'users':users,'thread':thread,'type':this.data.type,'forum':thread.forum});
+		$MQ("r:posts.response",{"posts":posts,'users':users,'thread':thread,'type':this.data.type,'forum':thread.forum});
 	</app:script>
-	<app:script on="l:createforum.request then execute">
+	<app:script on="r:createforum.request then execute">
 		createForum(Mock.forums.length+1,this.data.newforum_name,this.data.newforum_description);
-		$MQ("l:createforum.response",{});
+		$MQ("r:createforum.response",{});
 	</app:script>
-	<app:script on="l:createthread.request then execute">
+	<app:script on="r:createthread.request then execute">
 		var thread = createThread(this.data.newthread_forumid,this.data.newthread_userid,Mock.threads.length+1,this.data.newthread_name);
 		var date = new Date();
 		var post = createPost(thread.id,this.data.newthread_userid,Mock.posts.length+1,date.toString(),this.data.newthread_body);
-		$MQ("l:createthread.response",{});
+		$MQ("r:createthread.response",{});
 	</app:script>
-	<app:script on="l:createpost.request then execute">
+	<app:script on="r:createpost.request then execute">
 		var date = new Date();
 		var post = createPost(this.data.newpost_threadid,this.data.newpost_userid,Mock.posts.length+1,date.toString(),this.data.newpost_body);
-		$MQ("l:createpost.response",{});
+		$MQ("r:createpost.response",{});
 	</app:script>
 </body>

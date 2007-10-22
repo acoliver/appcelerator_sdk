@@ -16,9 +16,9 @@
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<div id="header">
-	  <ul id="nav">
-	    <li><a on="click then l:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>
-	    <li><a on="click then l:users.request or main[users] then hide else effect[appear]">Users</a></li>
+	  <ul id="nav" class="pointer">
+	    <li><a on="click then r:forums.request or main[forums] then hide else effect[appear]">Forums</a></li>
+	    <li><a on="click then r:users.request or main[users] then hide else effect[appear]">Users</a></li>
 		<form on="enter then click[id=go_search]">
 	    <li on="search[on] then effect[appear] else effect[fade]">
 			<input name="query" size="15" type="text" fieldset="search" class="search_box" fieldset="search"/>
@@ -26,7 +26,7 @@
 		</li>
 		<div style="display:none">
 	    <li on="search[on] then effect[appear] else effect[fade]">
-			<input type="button" id="go_search" value="go" fieldset="search" on="click then l:threads.request[type=search]">
+			<input type="button" id="go_search" value="go" fieldset="search" on="click then r:threads.request[type=search]">
 		</li>
 		</div>
 		</form>
@@ -34,28 +34,28 @@
 	    <li><a on="click then l:showsearch.request or search[off] then effect[appear] else hide">Search</a></li>
 	    <li><a on="click then l:hidesearch.request or search[on] then effect[appear] else hide">Search</a></li>
         <li><a on="click then l:showlogin.request[type=signup] or login[out] then effect[appear] else hide">Signup/Login</a></li>
-	    <li><a on="click then l:logout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;
-			<span on="l:login.response then value[username] or l:signup.response then value[username] or login[in] then show else hide"></span>
+	    <li><a on="click then l:showlogout.request or login[in] then effect[appear] else hide" style="display:none">Logout</a>&nbsp;
+			<span on="r:login.response then value[username] or r:signup.response then value[username] or login[in] then show else hide"></span>
 		</li>
 	    <li><a on="click then l:showaccount.request or login[in] then effect[appear] else hide" style="display:none">Account</a></li>
 		</ul>
 	  <h1>AppForums</h1>
 	</div>
 	<app:statemachine id="main" initial="welcome">
-		<state name="forums" if="l:forums.request"></state>
-		<state name="users" if="l:users.request or l:user.request"></state>
-		<state name="threads" if="l:threads.request or l:search.request"></state>
-		<state name="login" if="l:showlogin.request or l:showaccount.request or l:logout.request"></state>
+		<state name="forums" if="r:forums.request"></state>
+		<state name="users" if="r:users.request or r:user.request"></state>
+		<state name="threads" if="r:threads.request or r:search.request"></state>
+		<state name="login" if="l:showlogin.request or l:showaccount.request or r:logout.request"></state>
 		<state name="welcome" if=""></state>
-		<state name="posts" if="l:posts.request"></state>
+		<state name="posts" if="r:posts.request"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
-		<state name="out" if="l:logout.response or l:login.init"></state>
-		<state name="in" if="l:login.response or l:signup.response"></state>
+		<state name="out" if="r:logout.response or l:login.init"></state>
+		<state name="in" if="r:login.response or r:signup.response"></state>
 	</app:statemachine>
 	<app:statemachine id="search" initial="off">    
 		<state name="on" if="l:showsearch.request"></state>
-		<state name="off" if="l:hidesearch.request or l:search.request"></state>
+		<state name="off" if="l:hidesearch.request or r:search.request"></state>
 	</app:statemachine>
 	
 	<div id="container">
@@ -73,7 +73,7 @@
 		<div id="right">
 			<app:content src="content/summary.html"></app:content>
 			<div on="!main[welcome] then hide">
-				<h5>weclome to AppForums</h5>
+				<h5>welcome to AppForums</h5>
 				<p>
 					  A small, light-weight forum in appcelerator.
 				</p>

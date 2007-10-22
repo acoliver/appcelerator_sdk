@@ -10,26 +10,26 @@
 	<div class="forums_container" on="main[forums] then show else hide" style="display:none;">
 		<h1 style="margin-top:0;">Forums</h1>
 		<p class="subtitle">
-		<span on="l:forums.response then value[threads]"></span> threads(s), 
-		<span on="l:forums.response then value[posts]"></span> post(s), <span on="l:forums.response then value[users]"></span> voice(s)
+		<span on="r:forums.response then value[threads]"></span> threads(s), 
+		<span on="r:forums.response then value[posts]"></span> post(s), <span on="r:forums.response then value[users]"></span> voice(s)
 		</p>
 		
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Forums</span></div>
 			<div class="forums_header_lastpost"><span>Last Post</span></div>
 		</div>
-		<div class="forums_content" on="l:forums.response then effect[appear] or l:forums.request then hide" style="display:none;">
-			<app:iterator on="l:forums.response then execute" property="rows">
+		<div class="forums_content" on="r:forums.response then effect[appear] or r:forums.request then hide" style="display:none;">
+			<app:iterator on="r:forums.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="forum_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:threads.request[forumid=#{id},type=byforum,forumname='#{name}']" class="title">#{name}</html:a>
-							<html:div class="stats">#{threads} threads, #{posts} posts</html:div>
+							<html:a on="click then r:threads.request[forumid=#{id},type=byforum]" class="title pointer">#{name}</html:a>
+							<html:div class="stats">#{threads} thread(s), #{posts} post(s), #{voices} voice(s)</html:div>
 							<html:div class="description">#{description}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastpost.date} by <html:a on="click then l:user.request[userid=#{lastpost.user.id},username='#{lastpost.user.username}']" class="smalllink">#{lastpost.user.username}</html:a>
+							#{lastpost.date} by <html:a on="click then r:user.request[userid=#{lastpost.user.id}]" class="smalllink pointer">#{lastpost.user.username}</html:a>
 						</html:td>
 					</html:tr>
 				</html:table>
@@ -41,20 +41,20 @@
 			<table>
 				<tr>
 					<td class="bold_value_grey">name:</td>
-					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required" on="l:createforum.response then clear"/></td>
+					<td><input type="text" fieldset="forum" id="newforum_name" validator="required" decorator="required" on="r:createforum.response then clear"/></td>
 				</tr>
 				<tr>
 					<td class="bold_value_grey">description:</td>
-					<td><input type="text" fieldset="forum" id="newforum_description" validator="required" decorator="required" on="l:createforum.response then clear"/></td>
+					<td><input type="text" fieldset="forum" id="newforum_description" validator="required" decorator="required" on="r:createforum.response then clear"/></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="left" >
-						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then l:createforum.request[newforum_userid=expr(Forums.user.id)]"
+						<input type="button" value="create new forum" fieldset="forum" style="margin-top:10px" on="click then r:createforum.request[newforum_userid=expr(Forums.user.id)]"
 							activators="newforum_name,newforum_description" id="save_forum_button"/>
 					</td>
 				</tr>
 			</table>
 		</div>
- 		<app:message on="l:createforum.response then execute" name="l:forums.request"></app:message>
+ 		<app:message on="r:createforum.response then execute" name="r:forums.request"></app:message>
 	</div>
 </body>

@@ -9,21 +9,21 @@
 <body>
 	<div on="main[login] then show else hide" style="display:none;">
 		<div on="login[out] then hide else show" style="display:none;">
-			<div class="forums_container" on="l:logout.request then show or l:showaccount.request then hide" style="display:none;">
+			<div class="forums_container" on="l:showlogout.request then show or l:showaccount.request then hide" style="display:none;">
 				<table style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
 					<tr>
 						<input type="hidden" id="myfavoriteid" name="name1" value="22" fieldset="logout">
 						<td colspan="2" align="left" >
-							<input type="button" value="logout" fieldset="logout" style="margin-top:10px" on="click then l:logout.response"/>
+							<input type="button" value="logout" fieldset="logout" style="margin-top:10px" on="click then r:logout.request"/>
 						</td>
 					</tr>
 				</table>
 			</div>
-			<div class="forums_container" on="l:showaccount.response then show or l:logout.request then hide" style="display:none;">
+			<div class="forums_container" on="l:showaccount.response then show or l:showlogout.request then hide" style="display:none;">
 				<h1 style="margin-top:0;" on="l:showaccount.response then value[user.fullName]"></h1>
 				<p class="subtitle">
-				<span on="l:showaccount.response then value[user.posts]"></span> post(s) 	(<a class="smalllink" 
-						on="click then l:threads.request[type=byuser,userid=expr(Forums.user.id),username=expr(Forums.user.username)]">view threads</a>)
+				<span on="l:showaccount.response then value[user.posts]"></span> post(s) 	(<a class="smalllink pointer" 
+						on="click then r:threads.request[type=byuser,userid=expr(Forums.user.id)]">view threads</a>)
 				</p>
 				<div class="edittable">
 					<form on="enter then click[id=save_account_button]">
@@ -63,11 +63,11 @@
 						</tr>
 						<tr>
 							<td colspan="2" align="left" >
-								<input type="button" value="save account" fieldset="account" style="margin-top:10px" on="click then l:savaccount.request"
+								<input type="button" value="save account" fieldset="account" style="margin-top:10px" on="click then r:savaccount.request"
 									activators="account_fullName,account_username,account_email,account_password"/ id="save_account_button">
 							</td>
 						</tr>
-						<tr on="l:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
+						<tr on="r:saveaccount.response then effect[appear] or l:showaccount.request then hide" style="display:none">
 							<td colspan="2" align="left" >successfully saved account</td>
 						</tr>
 					</table>
@@ -97,11 +97,11 @@
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then l:login.request" activators="username,password" id="login_button"/>
+							<input type="button" value="login" fieldset="login" style="margin-top:10px" on="click then r:login.request" activators="username,password" id="login_button"/>
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2" align="left" on="l:login.failed.response then show or l:login.request then hide or login[in] then hide" style="display:none;">
+						<td colspan="2" align="left" on="r:login.failed.response then show or r:login.request then hide or login[in] then hide" style="display:none;">
 							<span class="error">could not login with provided credentials</span>
 						</td>
 					</tr>
@@ -116,7 +116,7 @@
 							name:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="name" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
+							<input type="text" fieldset="signup" id="name" validator="required" decorator="required"  on="r:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -124,7 +124,7 @@
 							username:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="signupusername" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
+							<input type="text" fieldset="signup" id="signupusername" validator="required" decorator="required"  on="r:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -132,7 +132,7 @@
 							email:
 						</td>
 						<td>
-							<input type="text" fieldset="signup" id="email" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
+							<input type="text" fieldset="signup" id="email" validator="required" decorator="required"  on="r:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
@@ -140,12 +140,12 @@
 							password:
 						</td>
 						<td>
-							<input type="password" fieldset="signup" id="signuppassword" validator="required" decorator="required"  on="l:signup.response[success='true'] then clear"/>
+							<input type="password" fieldset="signup" id="signuppassword" validator="required" decorator="required"  on="r:signup.response[success='true'] then clear"/>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="signup now!" fieldset="signup" style="margin-top:10px" on="click then l:signup.request" id="signup_button"
+							<input type="button" value="signup now!" fieldset="signup" style="margin-top:10px" on="click then r:signup.request" id="signup_button"
 								activators="name,signupusername,email,signuppassword"/>
 						</td>
 					</tr>
@@ -154,14 +154,14 @@
 			</div>
 		</div>
 	</div>
-	<app:script on="l:login.response then execute or l:signup.response then execute">
+	<app:script on="r:login.response then execute or r:signup.response then execute">
 		Forums.user = this.data.user;
 		$MQ("l:showaccount.request",{});
 	</app:script>
 	<app:script on="l:showaccount.request then execute">
 		$MQ("l:showaccount.response",{'user':Forums.user});
 	</app:script>
-	<app:script on="l:saveaccount.response then execute">
+	<app:script on="r:saveaccount.response then execute">
 		Forums.user = this.data.user;
 		$MQ("l:showaccount.response",{'user':Forums.user});
 	</app:script>

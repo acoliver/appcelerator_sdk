@@ -8,43 +8,43 @@
 </head>
 <body>
 	<div class="forums_container" on="main[threads] then effect[appear] else hide" style="display:none;">
-		<div on="l:threads.response[type=byforum] then show else hide" style="display:none">
-			<a class="title" on="click then l:forums.request">Forums</a>
-			<h1 style="margin-top:0;" on="l:threads.response then value[forum.name]"></h1>
+		<div on="r:threads.response[type=byforum] then show else hide" style="display:none">
+			<a class="title pointer" on="click then r:forums.request">Forums</a>
+			<h1 style="margin-top:0;" on="r:threads.response then value[forum.name]"></h1>
 		</div>
-		<div on="l:threads.response[type=byuser] then show else hide" style="display:none">
-			<input type="hidden" id="threads_response_userid" on="l:threads.response[type=byuser] then value[user.id]"></input>
-			<input type="hidden" id="threads_response_username" on="l:threads.response[type=byuser] then value[user.username]"></input>
-			<a class="title" on="click then l:users.request">Users</a>
-			<!--<a on="click then l:user.request[userid=$threads_response_userid,username=threads_response_username] or l:threads.response[type=byuser] then value[user.username]" class="title"></a>-->
-			<h1 style="margin-top:0;" on="l:threads.response then value[user.username]"></h1>
+		<div on="r:threads.response[type=byuser] then show else hide" style="display:none">
+			<input type="hidden" id="threads_response_userid" on="r:threads.response[type=byuser] then value[user.id]"></input>
+			<input type="hidden" id="threads_response_username" on="r:threads.response[type=byuser] then value[user.username]"></input>
+			<a class="title pointer" on="click then r:users.request">Users</a>
+			<!--<a on="click then r:user.request[userid=$threads_response_userid,username=threads_response_username] or r:threads.response[type=byuser] then value[user.username]" class="title"></a>-->
+			<h1 style="margin-top:0;" on="r:threads.response then value[user.username]"></h1>
 		</div>
-		<div on="l:threads.response[type=search] then show else hide" style="display:none">
+		<div on="r:threads.response[type=search] then show else hide" style="display:none">
 			<h1 style="margin-top:0;" id="threads_query_header"></h1>
 		</div>
-		<app:script on="l:threads.response[type=search] then execute">
+		<app:script on="r:threads.response[type=search] then execute">
 			$('threads_query_header').innerHTML='results for query "'+ this.data.query+'"';
 		</app:script>
 		<p class="subtitle">
-		<span on="l:threads.response then value[threads]"></span> thread(s), 
-		<span on="l:threads.response then value[posts]"></span> post(s), <span on="l:threads.response then value[users]"></span> voice(s)
+		<span on="r:threads.response then value[threads]"></span> thread(s), 
+		<span on="r:threads.response then value[posts]"></span> post(s), <span on="r:threads.response then value[users]"></span> voice(s)
 		</p>
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Threads</span></div>
 			<div class="forums_header_lastpost"><span>Last Post</span></div>
 		</div>
-		<div class="forums_content" on="l:threads.response then effect[appear] or l:threads.request then hide" style="display:none;">
-			<app:iterator on="l:threads.response then execute" property="rows">
+		<div class="forums_content" on="r:threads.response then effect[appear] or r:threads.request then hide" style="display:none;">
+			<app:iterator on="r:threads.response then execute" property="rows">
 				<html:table border="0" width="100%" cellspacing="0" cellpadding="0">
 					<html:tr class="forum_content_row">	
 						<html:td class="thread_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then l:posts.request[threadid=#{id},type=bythread]" class="title">#{name}</html:a>
-							<html:div class="stats">#{posts} messages in thread</html:div>
+							<html:a on="click then r:posts.request[threadid=#{id},type=bythread]" class="title pointer">#{name}</html:a>
+							<html:div class="stats">#{voices} voice(s), #{posts} post(s) in thread</html:div>
 							<html:div class="description">#{lastpost.body}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastpost.date} by <html:a on="click then l:user.request[userid=#{lastpost.user.id},username='#{lastpost.user.username}']" class="smalllink">#{lastpost.user.username}</html:a>
+							#{lastpost.date} by <html:a on="click then r:user.request[userid=#{lastpost.user.id},username='#{lastpost.user.username}']" class="smalllink pointer">#{lastpost.user.username}</html:a>
 						</html:td>
 					</html:tr>
 				</html:table>
@@ -53,22 +53,22 @@
 		<!-- create a new forum -->
 		<div on="login[in] then show else hide" style="display:none">
 			<form on="enter then click[id=save_thread_button]">
-			<div class="forums_container edittable" on="l:threads.response[type=byforum] then show else hide" style="display:none;">
+			<div class="forums_container edittable" on="r:threads.response[type=byforum] then show else hide" style="display:none;">
 				<table>
-					<input type="hidden" fieldset="thread" id="newthread_forumid" on="l:threads.response[type=byforum] then value[forum.id]"></input>
+					<input type="hidden" fieldset="thread" id="newthread_forumid" on="r:threads.response[type=byforum] then value[forum.id]"></input>
 					<tr>
 						<td class="bold_value_grey">title:</td>
-						<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"  on="l:createthread.response then clear"/></td>
+						<td><input type="text" fieldset="thread" id="newthread_name" validator="required" decorator="required"  on="r:createthread.response then clear"/></td>
 					</tr>
 					<tr>
 						<td class="bold_value_grey">post body:</td>
 						<td>
-							<textarea fieldset="thread" id="newthread_body" on="l:createthread.response then clear"></textarea>
+							<textarea fieldset="thread" id="newthread_body" on="r:createthread.response then clear"></textarea>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2" align="left" >
-							<input type="button" value="create new thread" fieldset="thread" style="margin-top:10px" on="click then l:createthread.request[newthread_userid=expr(Forums.user.id)]"
+							<input type="button" value="create new thread" fieldset="thread" style="margin-top:10px" on="click then r:createthread.request[newthread_userid=expr(Forums.user.id)]"
 								activators="newthread_name" id="save_thread_button"/>
 						</td>
 					</tr>
@@ -76,11 +76,11 @@
 			</div>
 			</form>
 		</div>
-		<app:script on="l:threads.request then execute">
+		<app:script on="r:threads.request then execute">
 			Forums.lastthreadrequest=this.data;
 		</app:script>
- 		<app:script on="l:createthread.response then execute">
-			$MQ('l:threads.request',Forums.lastthreadrequest);
+ 		<app:script on="r:createthread.response then execute">
+			$MQ('r:threads.request',Forums.lastthreadrequest);
 		</app:script>
 	</div>
 </body>
