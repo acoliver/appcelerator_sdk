@@ -66,12 +66,12 @@
 			<lib dir="stage/setupfiles_extracted/lib" includes="*.jar"/>
 			<fileset dir="stage/setupfiles_extracted" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
 		</war>
-		<delete dir="stage/setupfiles_extracted"/>
 	</target>
 	<target name="cleanup" unless="dont.cleanup">
 		<delete>
 			<fileset dir="stage" includes="*_merged.war,*.jar,*.aar"/>
 		</delete>
+		<delete dir="stage/setupfiles_extracted"/>
 	</target>
 
 	<target name="build_merged_bundle" depends="build_composite_bundle">

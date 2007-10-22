@@ -138,10 +138,10 @@
 			</div>
 			<div style="height:30px;">
 				<div style="display:none;color:#222;" class="noteBox" id="messagebox"
-					on="r:app.test.message then effect[appear] or 
-					r:app.test.message then effect[fade] after 5s" scope="*">
+					on="r:app.test.message.response then effect[appear] or 
+					r:app.test.message.response then effect[fade] after 5s" scope="*">
 					  <img src="images/confirm.png" alt="*"/><span>&nbsp;&nbsp;</span><span
-					 	on="remote:app.test.message then value[message]"></span>
+					 	on="remote:app.test.message.response then value[message]"></span>
 				</div>
 			</div>	
 			<div id="trace">
