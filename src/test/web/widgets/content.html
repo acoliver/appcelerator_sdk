@@ -46,6 +46,19 @@
 			src="content/content_file2.html"></app:content>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file with onload attribute
+		</td>
+		<td class="result" >
+			<div style="display: none">
+				<app:content src="content/content_file.html" onload="l:content.loaded"></app:content>
+			</div>
+			<div style="display: none" on="l:content.loaded then show">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>	
 
 
 </table>

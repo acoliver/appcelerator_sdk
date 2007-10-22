@@ -41,14 +41,16 @@ Appcelerator.Module.Content =
 		var src = element.getAttribute('src');
 		var lazy = (element.getAttribute('lazy') || 'false' ) == 'true';
 		var args = element.getAttribute('args');
+		var onload = element.getAttribute('onload');
 		
 		args = (args) ? '"'+args+'"' : 'null';
+		onload = (onload) ? '"'+onload+'"' : 'null';
 		
 		jscode+='$("'+element.id+'").scope = "'+element.scope+'";';
 		jscode+=Appcelerator.Compiler.getJSCode(Appcelerator.Compiler.parseOnAttribute(element));
 		if (!lazy)
 		{
-			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+');';
+			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+');';
 		}
 		var parameters = {};
 		parameters['src'] = src;
@@ -64,7 +66,7 @@ Appcelerator.Module.Content =
 			'functions': f
 		};
 	},
-	fetch: function (target,src,args)
+	fetch: function (target,src,args,onload)
 	{
 		Appcelerator.Util.IFrame.fetch(src,function(doc)
 		{
@@ -92,6 +94,11 @@ Appcelerator.Module.Content =
 			Appcelerator.Compiler.compileElement(target.firstChild,state,false);
 			state.scanned=true;
 			Appcelerator.Compiler.checkLoadState(state);
+			
+			if (onload)
+			{
+				$MQ(onload);
+			}
 		});
 	}
 };
