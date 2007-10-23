@@ -5,7 +5,6 @@
 	<script type="text/javascript" src="../js/appcelerator.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 <style>
-<!--
 input[type=text]
 {
 	width:80%;
@@ -180,10 +179,10 @@ th
 				  </app:iterator>
 				</div>
 				<span on="l:recipient.list.row.selected then value[value]"></span>
-			<app:script on="l:load.iterator6 then execute">
-				$MQ('r:list.search.response',{rows:[{'count':3,'list_id':1,'list_name':"Jeff's cool list"},
-					{'count':33,'list_id':2,'list_name':"its good cool list"}]});
-			</app:script>
+				<app:script on="l:load.iterator6 then execute">
+					$MQ('r:list.search.response',{rows:[{'count':3,'list_id':1,'list_name':"Jeff's cool list"},
+						{'count':33,'list_id':2,'list_name':"its good cool list"}]});
+				</app:script>
 		</td>
 	</tr>
 

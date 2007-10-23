@@ -80,6 +80,14 @@ Appcelerator.Module.Iterator =
 					else
 						html+='<tr class="'+parameterMap['rowEvenClassName']+'">';
 				}
+				/* escape out the "'" so that works in IE */
+				for (idx in o)
+				{
+					if (typeof o[idx] == 'string')
+					{
+						o[idx] = o[idx].replace(/'/,"`");
+					}
+				}
 				html += compiled(o);
 				if (table)
 				{
