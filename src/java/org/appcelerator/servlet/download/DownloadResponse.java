@@ -52,6 +52,12 @@ public class DownloadResponse
     private String filename = UUID.randomUUID().toString();
     private Map<String,String> headers = new HashMap<String,String>();
     
+    public DownloadResponse(String contentType, String filename)
+    {
+        this.contentType = contentType;
+        this.filename = filename;
+    }
+    
     public String getContentType()
     {
         return contentType;
@@ -93,21 +99,26 @@ public class DownloadResponse
         this.type = type;
     }
  
-    void build (HttpServletResponse response) throws ServletException, IOException
+    public void build (HttpServletResponse response, boolean stripFilename) throws ServletException, IOException
     {
         response.setDateHeader("Expires", 0);
         response.setContentType(this.contentType);
-        int idx = this.filename.lastIndexOf(".");
-        if (idx > 0)
+        
+        if (stripFilename)
         {
-            String name = this.filename.substring(0,idx);
-            String ext = this.filename.substring(idx);
-            this.filename = name.replaceAll("\\W*","") + ext;
+            int idx = this.filename.lastIndexOf(".");
+            if (idx > 0)
+            {
+                String name = this.filename.substring(0,idx);
+                String ext = this.filename.substring(idx);
+                this.filename = name.replaceAll("\\W*","") + ext;
+            }
+            else
+            {
+                this.filename = this.filename.replaceAll("\\W*", "");
+            }
         }
-        else
-        {
-            this.filename = this.filename.replaceAll("\\W*", "");
-        }
+        
         if (this.type == Type.ATTACHMENT)
         {
             response.setHeader("Content-Disposition", "attachment; filename="+this.filename);

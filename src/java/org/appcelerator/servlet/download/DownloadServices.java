@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
+import org.appcelerator.messaging.MessageDataType;
 import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.util.GUID;
 
@@ -69,6 +70,7 @@ public class DownloadServices
         data.put("ticket", ticket);
         data.put("name", service);
         msg.setData(data);
+        msg.setDataType(MessageDataType.JSON);
         msg.setType("appcelerator.download");
         // queue the new message
         messageReference.getBroker().dispatch(msg,null);

@@ -111,7 +111,7 @@ public class Message implements Serializable
      */
     public Message(Message m)
     {
-        this(m.getUser(), m.getSessionid(), m.getInstanceid(),m.getRequestid(), m.getType(), m.getDirection(), MessageDataType.XML, m.getData(), m.getScope(), m.getAddress(), m.getVersion(), m.getSentTimestamp(), m.getTimezoneOffset());
+        this(m.getUser(), m.getSessionid(), m.getInstanceid(),m.getRequestid(), m.getType(), m.getDirection(), MessageDataType.JSON, m.getData(), m.getScope(), m.getAddress(), m.getVersion(), m.getSentTimestamp(), m.getTimezoneOffset());
     }
 
     /**
