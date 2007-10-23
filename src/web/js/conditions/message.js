@@ -73,13 +73,13 @@ Appcelerator.Compiler.MessageAction.makeMBListener = function(element,type,actio
 	var paramsStr = (actionParams) ? "'"+ Object.toJSON(actionParams)+"'" : 'null';
 	var elsefunc = (elseaction) ? 'function(){'+elseaction+'}' : 'null';
 	
-	var code = '$MQL("'+type+'","'+element.scope+'",function(type,data,datatype,direction,scope){';
+	var code = '$MQL("'+type+'",function(type,data,datatype,direction,scope){';
 	code+='Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,'+paramsStr+',function(){';
 	code+=action;
 	code+='},'+delay||'null';
 	code+=','+elsefunc;
 	code+=');';
-	code+="});";
+	code+='},"'+element.scope+'");';
 	
 	return code;
 };

@@ -919,7 +919,7 @@ function $MQ (type,data,scope,version)
 //
 // convenience macro for adding a message queue listener
 //
-function $MQL (type,myscope,f)
+function $MQL (type,f,myscope)
 {
 	var listener = 
 	{
