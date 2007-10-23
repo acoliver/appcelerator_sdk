@@ -19,29 +19,22 @@
  */
 package org.appcelerator.servlet.download;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
-import org.appcelerator.util.Util;
+import org.appcelerator.util.GUID;
 
 public class DownloadServices
 {
-    private static final Logger LOG = Logger.getLogger(DownloadServices.class);
     private static final Map<String,DownloadService> services = Collections.synchronizedMap(new HashMap<String,DownloadService>());
     
     private final static class DownloadService
@@ -70,7 +63,7 @@ public class DownloadServices
         if (ticket == null)
         {
             // we need a ticket no matter what
-            ticket = UUID.randomUUID().toString();
+            ticket = GUID.asGUID();
         }
         IMessageDataObject data = MessageUtils.createMessageDataObject();
         data.put("ticket", ticket);
@@ -88,65 +81,28 @@ public class DownloadServices
     
     public static void dispatch (HttpServletRequest request, HttpServletResponse response) throws Exception
     {
-        File tempFile = File.createTempFile("smls", ".tmp");
-        FileOutputStream out = null;
-        try
+        String ticket = request.getParameter("ticket");
+        if (ticket==null)
         {
-            out = new FileOutputStream(tempFile);
-            PrintWriter tempWriter = new PrintWriter(out);
-            String ticket = request.getParameter("ticket");
-            if (ticket==null)
-            {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,"ticket required to use this service");
-                return;
-            }
-            String name = request.getParameter("name");
-            if (name==null)
-            {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,"name required to use this service");
-                return;
-            }
-            
-            HttpSession session = request.getSession();
-            
-            DownloadService service = services.get(name);
-            if (service==null)
-            {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND,"no service with that name found");
-                return;
-            }
-            
-            // delegate to the actual service method
-            DownloadResponse downloadResponse = (DownloadResponse)service.method.invoke(service.service, new Object[]{ticket,session,tempWriter});
-            if (downloadResponse==null)
-            {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"service didn't return any response");
-                return;
-            }
-            
-            tempWriter.flush();
-            tempWriter.close();
-            out.flush();
-            out.close();
-            
-            // build the response headers
-            downloadResponse.build(response,tempFile.length());
-            
-            // stream it out
-            FileInputStream in = new FileInputStream(tempFile);
-            int count = Util.copy(in, response.getOutputStream());
-            if (LOG.isDebugEnabled())
-            {
-                LOG.debug("stream "+count+" bytes to client for ticket="+ticket+" and service="+name);
-            }
-            in.close();
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,"ticket required to use this service");
+            return;
         }
-        finally
+        String name = request.getParameter("name");
+        if (name==null)
         {
-            if (tempFile.exists())
-            {
-                tempFile.delete();
-            }
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,"name required to use this service");
+            return;
         }
+        
+        HttpSession session = request.getSession();
+        
+        DownloadService service = services.get(name);
+        if (service==null)
+        {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND,"no service with that name found");
+            return;
+        }
+        // delegate to the actual service method
+        service.method.invoke(service.service, new Object[]{ticket,session,response});
     }
 }

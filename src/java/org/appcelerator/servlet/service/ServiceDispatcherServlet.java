@@ -521,10 +521,12 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
                         final Message message = interceptMessage(preMessage);
                         
                         //TODO: REFACTOR THIS OUT
-                        if (message.getType().equals(MessageType.APP_STATUS_REPORT))
+                        if (message.getType().equals(MessageType.APPCELERATOR_STATUS_REPORT))
                         {
                             IMessageDataObject data = (IMessageDataObject)message.getData();
                             data.put("remoteaddr", request.getRemoteAddr());
+                            data.put("remotehost", request.getRemoteHost());
+                            data.put("remoteuser", request.getRemoteUser());
                         }
                                                 
                         // invoke and wait

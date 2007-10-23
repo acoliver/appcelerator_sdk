@@ -22,7 +22,7 @@ package org.appcelerator.messaging;
 /**
  * MessageType is a representation of some basic message types.
  *
- * @author <a href="mailto:jkashimba@hakano.com">Jared Kashimba</a>
+ * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
 public class MessageType
 {
@@ -32,33 +32,9 @@ public class MessageType
     enum MessageTypeEnum
     {
         /**
-         * request sent to server when a user attempts to login
-         */
-        APP_USER_LOGIN_REQUEST,
-        /**
-         * response sent from server with results of a user login attempt
-         */
-        APP_USER_LOGIN,
-        /**
-         * request sent to server to update user login seed/challenge
-         */
-        APP_LOGIN_SEED_REQUEST,
-        /**
-         * response sent from server with results of user login seed/challenge
-         */
-        APP_LOGIN_SEED,
-        /**
-         * request sent to server when a user attempts to logout
-         */
-        APP_USER_LOGOUT_REQUEST,
-        /**
-         * response sent from server with results of a user logout attempt
-         */
-        APP_USER_LOGOUT,
-        /**
          * request sent to server with client's info
          */
-        APP_STATUS_REPORT
+        APPCELERATOR_STATUS_REPORT
     }
 
     /**
@@ -72,34 +48,9 @@ public class MessageType
         String name = e.name().toLowerCase();
         return name.replace('_', '.');
     }
-
-    /**
-     * request sent to server when a user attempts to login
-     */
-    public static final String APP_USER_LOGIN_REQUEST = convert(MessageTypeEnum.APP_USER_LOGIN_REQUEST);
-    /**
-     * response sent from server with results of a user login attempt
-     */
-    public static final String APP_USER_LOGIN = convert(MessageTypeEnum.APP_USER_LOGIN);
-    /**
-     * request sent to server to update user login seed/challenge
-     */
-    public static final String APP_LOGIN_SEED_REQUEST = convert(MessageTypeEnum.APP_LOGIN_SEED_REQUEST);
-    /**
-     * response sent from server with results of user login seed/challenge
-     */
-    public static final String APP_LOGIN_SEED = convert(MessageTypeEnum.APP_LOGIN_SEED);
-    /**
-     * request sent to server when a user attempts to logout
-     */
-    public static final String APP_USER_LOGOUT_REQUEST = convert(MessageTypeEnum.APP_USER_LOGOUT_REQUEST);
-    /**
-     * response sent from server with results of a user logout attempt
-     */
-    public static final String APP_USER_LOGOUT = convert(MessageTypeEnum.APP_USER_LOGOUT);
     /**
      * request sent to server with client's info
      */
-    public static final String APP_STATUS_REPORT = convert(MessageTypeEnum.APP_STATUS_REPORT);    
+    public static final String APPCELERATOR_STATUS_REPORT = convert(MessageTypeEnum.APPCELERATOR_STATUS_REPORT);    
     
 }

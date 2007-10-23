@@ -93,11 +93,10 @@ public class DownloadResponse
         this.type = type;
     }
  
-    void build (HttpServletResponse response, long bytesWritten) throws ServletException, IOException
+    void build (HttpServletResponse response) throws ServletException, IOException
     {
         response.setDateHeader("Expires", 0);
         response.setContentType(this.contentType);
-        response.setContentLength((int)bytesWritten);
         int idx = this.filename.lastIndexOf(".");
         if (idx > 0)
         {
