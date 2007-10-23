@@ -26,21 +26,6 @@ Appcelerator.Compiler.compiledCode = '';
 Appcelerator.Compiler.compiledDocument = null;
 Appcelerator.Compiler.compiledJS = null;
 
-
-Appcelerator.Compiler.bootstrapped = false;
-
-function bootAppcelerator()
-{
-	if (!Appcelerator.Compiler.bootstrapped && Appcelerator.Compiler.compileOnLoad)
-	{
-		Appcelerator._originalDisplay = document.body.style.visibility || '';
-		document.body.style.visibility='hidden';
-		Appcelerator.Compiler.bootstrapped = true;
-	}
-}
-
-Event.observe(window,'load',bootAppcelerator,false);
-
 //
 // delay before showing loading message in number of milliseconds
 //
@@ -1326,7 +1311,6 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 					}
 					else
 					{
-						//data[name] = null;
 						data[name] = '';
 					}
 				}

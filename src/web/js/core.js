@@ -224,11 +224,6 @@ Appcelerator.Core.onunload = function(f)
 
 Appcelerator.Core.onloadInvoker = function()
 {
-	if (!Appcelerator.bootstrapped)
-	{
-		bootAppcelerator();
-	}	
-	
 	var ts = new Date().getTime();
 	
 	for (var c=0;c<Appcelerator.Core.onloaders.length;c++)

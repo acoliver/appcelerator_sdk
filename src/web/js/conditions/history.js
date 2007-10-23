@@ -18,12 +18,12 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		}
 		
 		// support a null (no history) history
-		token = token.length == 0 || token=='_none_' ? 'null' : "'" + token + "'";
+		token = token.length == 0 || token=='_none_' || token==='null' ? 'null' : "'" + token + "'";
 		
 		
-		var code = 'Appcelerator.History.onChange(function(oldLocation,newLocation)';
+		var code = 'Appcelerator.History.onChange(function(newLocation,data,scope)';
 		code+='{';
-		code+='  if ('+token+operator+'newLocation){';
+		code+='  if (newLocation'+operator+token+'){';
 		code+=actionFunc;
 		if (elseActionFunc)
 		{
@@ -32,7 +32,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		}
 		code+='  }';
 		code+='});';
-		
+
 		return code;
 	}
 	return null;

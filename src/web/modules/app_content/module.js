@@ -99,7 +99,7 @@ Appcelerator.Module.Content =
 			{
 				$MQ(onload);
 			}
-		});
+		},true,true);
 	}
 };
 

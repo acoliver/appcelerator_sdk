@@ -4,8 +4,9 @@
  */
 Appcelerator.Util.IFrame = 
 {
-	fetch: function(src,onload,removeOnLoad)
+	fetch: function(src,onload,removeOnLoad,copyContent)
 	{
+		copyContent = (copyContent==null) ? false : copyContent;
 		var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
 		var frame = document.createElement('iframe');
 	   	frame.setAttribute('id', frameid);
@@ -25,7 +26,7 @@ Appcelerator.Util.IFrame =
 		// this is a IE speciality
   		if (window.frames && window.frames[frameid]) iframe = window.frames[frameid];
   		iframe.name = frameid;
-  		var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src};
+  		var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src,copyContent:copyContent};
   		if (!Appcelerator.Browser.isFirefox)
   		{
   			setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
@@ -58,16 +59,23 @@ Appcelerator.Util.IFrame =
 			return;
 		}
 		
-		var div = document.createElement('div');
-		var head = doc.documentElement.getElementsByTagName('head')[0];
-		
-		Appcelerator.Util.IFrame.loadStyles(doc.documentElement);
-		
-		var bodydiv = document.createElement('div');
-		bodydiv.innerHTML = body.innerHTML;
-		div.appendChild(bodydiv);
-		
-		this.onload(div);
+		if (this.copyContent)
+		{
+	        var div = document.createElement('div');
+	        var head = doc.documentElement.getElementsByTagName('head')[0];
+	        
+	        Appcelerator.Util.IFrame.loadStyles(doc.documentElement);
+	        
+	        var bodydiv = document.createElement('div');
+	        bodydiv.innerHTML = body.innerHTML;
+	        div.appendChild(bodydiv);
+	        
+	        this.onload(div);
+		}
+		else
+		{
+            this.onload(body);
+		}
 		if (this.removeOnLoad)
 		{
 			var f = this.frameid;

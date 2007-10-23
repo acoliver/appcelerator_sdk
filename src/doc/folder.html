@@ -10,6 +10,7 @@
 <link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
 <link rel="stylesheet" type="text/css" href="css/doc_content.css" />
 
+<script type="text/javascript" src="js/doc.js"></script>
 <script type="text/javascript" src="js/sh/shCore.js"></script>
 <script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
 <script type="text/javascript" src="js/sh/shBrushXml.js"></script>
@@ -97,10 +98,6 @@
 					  <td class="def">The display name of a folder</td>
 					</tr>
 					<tr>
-					  <td class="term">onopen</td>
-					  <td class="def">The message to be publish when the item is selected</td>
-					</tr>
-					<tr>
 					  <td class="term">&lt;item&gt; TEXT &lt;/item&gt;</td>
 					  <td class="def">The innerHTML for the &lt;item&gt; element is the display name for the item</td>
 					</tr>
@@ -109,6 +106,14 @@
 		<p>
 			 Optional Options:
 				<table cellspacing="5px">
+                    <tr>
+                      <td class="term">onopen</td>
+                      <td class="def">The message to be publish when the item is selected</td>
+                    </tr>
+                    <tr>
+                      <td class="term">open</td>
+                      <td class="def">A condition which will trigger the item to be opened</td>
+                    </tr>
 					<tr>
 					  <td class="term">opened_icon</td>
 					  <td class="def">Location of the image to use for when item or folder is open.
@@ -125,7 +130,6 @@
 	
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
-
 		dp.SyntaxHighlighter.HighlightAll('code');
 	</script>
 
