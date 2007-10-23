@@ -164,6 +164,30 @@ th
 			</app:script>
 		</td>
 	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator6">Run Test</a>
+			Single quote selectable (try Jeff's cool list)
+		</td>
+		<td class="result">
+				<!-- popup select -->
+				<div style="display:none;z-index:2;position:absolute;width:450px;height:100px;border:1px solid #999;color:#222;overflow:auto;cursor:pointer;background-color:#eee;" 
+					 on="r:list.search.response[count!=0] then show or l:recipient.list.row.selected then hide"> 
+				   <app:iterator on="r:list.search.response then execute" property="rows" selectable="lists" id="message_preview_selectlist">
+						<html:div class="dropdown" on="selected then l:recipient.list.row.selected[count=count,listid=#{list_id},value=&quot;#{list_name}&quot;]">
+							#{list_name} 
+				       </html:div>
+				  </app:iterator>
+				</div>
+				<span on="l:recipient.list.row.selected then value[value]"></span>
+			<app:script on="l:load.iterator6 then execute">
+				$MQ('r:list.search.response',{rows:[{'count':3,'list_id':1,'list_name':"Jeff's cool list"},
+					{'count':33,'list_id':2,'list_name':"its good cool list"}]});
+			</app:script>
+		</td>
+	</tr>
+
+
 
 
 </table>
