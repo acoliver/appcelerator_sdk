@@ -38,6 +38,7 @@
 			<span on="r:login.response then value[username] or r:signup.response then value[username] or login[in] then show else hide"></span>
 		</li>
 	    <li><a on="click then l:showaccount.request or login[in] then effect[appear] else hide" style="display:none">Account</a></li>
+	    <li><a on="click then r:mock.load.request">load</a></li>
 		</ul>
 	  <h1>AppForums</h1>
 	</div>
@@ -46,7 +47,7 @@
 		<state name="users" if="r:users.request or r:user.request"></state>
 		<state name="threads" if="r:threads.request or r:search.request"></state>
 		<state name="login" if="l:showlogin.request or l:showaccount.request or r:logout.request"></state>
-		<state name="welcome" if=""></state>
+		<state name="welcome" if="l:showwelcome.request"></state>
 		<state name="posts" if="r:posts.request"></state>
 	</app:statemachine>
 	<app:statemachine id="login" initial="out">    
@@ -61,6 +62,7 @@
 	<div id="container">
 		<div id="content">
 			<app:content src="content/mock.html"></app:content>
+			<app:content src="content/mock_load.html"></app:content>
 			<app:content src="content/forums.html" lazy="false"></app:content>
 			<app:content src="content/users.html" lazy="false"></app:content>
 			<app:content src="content/threads.html" lazy="false"></app:content>

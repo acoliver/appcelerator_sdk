@@ -26,11 +26,15 @@ package org.appcelerator.json;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.appcelerator.annotation.MessageAttr;
+import org.appcelerator.model.IModelObject;
 
 /**
  * A JSONObject is an unordered collection of name/value pairs. Its
@@ -271,24 +275,58 @@ public class JSONObject
      * @param names  An array of strings, the names of the fields to be used
      *               from the object.
      */
-    public JSONObject(Object object, String names[])
+    public static JSONObject createBean(Object object, String names[])
     {
-        this();
+    	JSONObject obj = new JSONObject();
         Class c = object.getClass();
         for (int i = 0; i < names.length; i += 1)
         {
             try
             {
                 String name = names[i];
-                Field field = c.getField(name);
-                Object value = field.get(object);
-                this.put(name, value);
+                String methodname = "get"+name.substring(0,1).toUpperCase()+name.substring(1);
+                Method method = c.getDeclaredMethod(methodname);
+                Object value = method.invoke(object);
+                obj.put(name, value);
             }
             catch (Exception e)
             {
-                /* forget about it */
+                e.printStackTrace();
             }
         }
+        return obj;
+    }
+    private static String getMethodName(String fieldname)
+    {
+        String methodname = "get"+fieldname.substring(0,1).toUpperCase()+fieldname.substring(1);
+        return methodname;
+    }
+    public static JSONObject createBean(IModelObject object)
+    {
+    	JSONObject obj = new JSONObject();
+        Class c = object.getClass();
+        Field[] fields = c.getDeclaredFields();
+        for (int i = 0; i < fields.length; i += 1)
+        {
+            try
+            {
+            	Field field = fields[i];
+            	MessageAttr att = field.getAnnotation(MessageAttr.class);
+            	if (att != null)
+            	{
+                	String methodname = getMethodName(field.getName());
+                	Method method = c.getDeclaredMethod(methodname);
+                    Object value = method.invoke(object);
+                    String name = method.getName().substring(3,4).toLowerCase()+method.getName().substring(4);
+                    obj.put(name, value);
+            	}
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return obj;
     }
 
     /**
@@ -1011,10 +1049,15 @@ public class JSONObject
      */
     public JSONObject put(String key, Map<String, Object> value) throws JSONException
     {
-        put(key, new JSONObject(value));
+        put(key, (Object)new JSONObject(value));
         return this;
     }
 
+    public JSONObject put(String key, JSONObject value) throws JSONException
+    {
+        put(key, (Object)value);
+        return this;
+    }
     /**
      * Put a key/value pair in the JSONObject. If the value is null,
      * then the key will be removed from the JSONObject if it is present.

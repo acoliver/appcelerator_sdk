@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -20,9 +21,9 @@ private static final long serialVersionUID = 1L;
     @MessageAttr
     private String name;
     @MessageAttr
-    private Long posts;
+    private Long posts= new Long(0);
     @MessageAttr
-    private Long voices;
+    private Long voices = new Long(0);
     
     @MessageAttr
     private Forum forum;
@@ -48,6 +49,9 @@ private static final long serialVersionUID = 1L;
 	public void setPosts(Long posts) {
 		this.posts = posts;
 	}
+	public void setPosts(long posts) {
+		this.posts = posts;
+	}
 
     @Column(nullable = false)
 	public Long getVoices() {
@@ -58,11 +62,13 @@ private static final long serialVersionUID = 1L;
 		this.voices = voices;
 	}
 
-	public void setName(String fullName) {
-		this.name = fullName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@ManyToOne
+	@JoinColumn(name="forum_id", insertable=false, updatable=false)
+//	@JoinColumn(name="forum_id")
 	public Forum getForum() {
 		return forum;
 	}

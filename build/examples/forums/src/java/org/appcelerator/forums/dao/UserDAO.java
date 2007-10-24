@@ -1,13 +1,13 @@
 package org.appcelerator.forums.dao;
 
 import org.appcelerator.dao.hibernate.AbstractHibernateDAO;
-import org.appcelerator.forums.model.Forum;
+import org.appcelerator.forums.model.User;
 
-public class UserDAO extends AbstractHibernateDAO<Forum,Long>
+public class UserDAO extends AbstractHibernateDAO<User,Long>
 {
     public UserDAO()
     {
-        super(Forum.class);
+        super(User.class);
     }
 //    @SuppressWarnings("unchecked")
 //    public Collection<Forum> findByName(String  name)
@@ -15,10 +15,10 @@ public class UserDAO extends AbstractHibernateDAO<Forum,Long>
 //        return getHibernateTemplate().find("FROM Employee  WHERE name LIKE ?","%"+ name + "%");
 //    }
 //
-//    @SuppressWarnings("unchecked")
-//    public Employee findByCredentials(String  email, String password)
-//    {
-//        return findSingleRow("FROM Employee  WHERE email = ? and password = ?", email, password);
-//    }
+    @SuppressWarnings("unchecked")
+    public User findByCredentials(String  username, String password)
+    {
+        return findSingleRow("FROM User  WHERE username = ? and password = ?", username, password);
+    }
 
 }

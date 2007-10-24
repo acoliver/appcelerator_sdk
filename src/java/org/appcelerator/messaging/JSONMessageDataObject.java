@@ -26,6 +26,7 @@ import org.appcelerator.json.JSONArray;
 import org.appcelerator.json.JSONException;
 import org.appcelerator.json.JSONObject;
 import org.appcelerator.json.JSONString;
+import org.appcelerator.model.IModelObject;
 import org.appcelerator.util.DateUtil;
 
 /**
@@ -337,6 +338,14 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
             if (value instanceof Collection)
             {
                 jsonObject.put(key, (Collection) value);
+            }
+            else if (value instanceof JSONObject)
+            {
+                jsonObject.put(key, (JSONObject) value);
+            }
+            else if (value instanceof IModelObject)
+            {
+                jsonObject.put(key, JSONObject.createBean((IModelObject)value));
             }
             else
             {

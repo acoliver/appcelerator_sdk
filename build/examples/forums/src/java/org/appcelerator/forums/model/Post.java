@@ -14,7 +14,7 @@ import org.appcelerator.annotation.MessageAttr;
 import org.appcelerator.model.AbstractModelObject;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "POST")
 public class Post extends AbstractModelObject implements Serializable {
 private static final long serialVersionUID = 1L;
     

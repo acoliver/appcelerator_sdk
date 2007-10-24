@@ -10,32 +10,33 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.appcelerator.annotation.MessageAttr;
+import org.appcelerator.json.JSONObject;
 import org.appcelerator.model.AbstractModelObject;
 
 @Entity
 @Table(name = "USER")
 public class User extends AbstractModelObject implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String USERSTATE_ACTIVE="active";
-	private static final String USERSTATE_LURKING="lurking";
+	public static final String USERSTATE_ACTIVE="active";
+	public static final String USERSTATE_LURKING="lurking";
     
     @MessageAttr
-    private String fullName;
+    String fullName;
     @MessageAttr
-    private String email;
+    String email;
     @MessageAttr
-    private String username;
+    String username;
     @MessageAttr
-    private String password;
+    String password;
     @MessageAttr
-    private Long posts;
+    Long posts= new Long(0);
     @MessageAttr
-    private long threads;
+    Long threads= new Long(0);
     @MessageAttr
-    private Date lastLogin;
+    Date lastLogin;
     
     @MessageAttr
-    private String state = USERSTATE_ACTIVE;
+    String state = USERSTATE_ACTIVE;
     
     @Column
     public String getState() {
@@ -46,7 +47,7 @@ public class User extends AbstractModelObject implements Serializable {
 		this.state = state;
 	}
 
-	@Column
+	@Column(nullable = true)
     public Date getLastLogin() {
 		return lastLogin;
 	}
@@ -104,7 +105,7 @@ public class User extends AbstractModelObject implements Serializable {
 		return threads;
 	}
 
-	public void setThreads(long threads) {
+	public void setThreads(Long threads) {
 		this.threads = threads;
 	}
 
@@ -115,5 +116,8 @@ public class User extends AbstractModelObject implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	public JSONObject toJSONObject() {
+		JSONObject obj = JSONObject.createBean(this);
+		return obj;
+	}
 }

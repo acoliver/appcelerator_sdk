@@ -4,34 +4,7 @@ Mock.forums = new Array();
 Mock.threads = new Array();
 Mock.posts = new Array();
 
-createUser(1,'billybob','Billy Bob Jackson','Last Login at noon','active','pwd','email');
-createUser(2,'leeroy','Leeroy Brown','Last Login April','active','pwd','email');
-createUser(3,'maryann','Mary Ann Shaw','Last Login yesteray','active','pwd','email');
-createUser(4,'john','John Smith','Last Login January 2005','lurking','pwd','email');
 
-createForum(1,'AppForums','Bug Reports, features, etc.');
-createForum(2,'Appcelerator','Open source web2.0 RIA.');
-createForum(3,'Apache','THE open source web server.');
-createForum(4,'Sexy Sites','Hot rated web2.0 RIA sites.');
-
-/*forumid,userid,id,name*/
-createThread(1,1,1,'Starting off the forums');
-createThread(2,2,2,'Appcelerator .NET deployment');
-createThread(2,3,3,'Appcelerator Iterator question');
-createThread(4,2,4,'check this site out');
-createThread(3,1,5,'Apache versions....');
-createThread(3,1,6,'Tomcat support...');
-
-/* threadid,userid,id,date,body */
-createPost(1,1,1,'Oct 22, 2007 2:13pm','boy this is really good stuff');
-createPost(2,1,2,'Oct 22, 2007 2:13pm','i like it too');
-createPost(3,2,3,'Sep 20, 2007 1:14pm','What are the differences betweeen 1.3 and 2.0?');
-createPost(4,2,4,'Oct 22, 2007 2:13pm','When will the .Net server implementation be ready?');
-createPost(5,1,5,'Oct 22, 2007 2:13pm','How soon will it be here?');
-createPost(5,3,6,'Oct 22, 2007 2:13pm','Soon....');
-createPost(6,3,7,'Oct 22, 2007 2:13pm','Is tomcat supported?');
-createPost(6,2,8,'Oct 22, 2007 2:13pm','I think so any tips?');
-createPost(6,1,9,'Oct 22, 2007 2:13pm','Make sure that you bump up the -Xmx256m and use apache ajp for proxy....');
 
 function getById(id,collection)
 {
@@ -222,4 +195,27 @@ function uniqueUsers(posts)
 function sortPost(a,b)
 {
 	return a.id - b.id;
+}
+function loaddata()
+{
+	$MQ('r:signup.request',{'signupid':1,'signupusername':'leeroy','name':'Billy Bob Jackson','signuppassword':'pwd','email':'email','singupstate':'active'});
+	$MQ('r:signup.request',{'signupid':2,'signupusername':'billybob','name':'Leeroy Brown','signuppassword':'pwd','email':'email','singupstate':'active'});
+	$MQ('r:signup.request',{'signupid':3,'signupusername':'maryann','name':'Mary Ann Shaw','signuppassword':'pwd','email':'email','singupstate':'active'});
+	$MQ('r:signup.request',{'signupid':4,'signupusername':'john','name':'John Smith','signuppassword':'pwd','email':'email','singupstate':'lurking'});
+
+	$MQ('r:createforum.request',{'newforum_forumid':1,'newforum_name':'AppForums','newforum_description':'Bug Reports, features, etc.'});
+	$MQ('r:createforum.request',{'newforum_forumid':2,'newforum_name':'Appcelerator','newforum_description':'Open source web2.0 RIA.'});
+	$MQ('r:createforum.request',{'newforum_forumid':3,'newforum_name':'Apache','newforum_description':'THE open source web server.'});
+	$MQ('r:createforum.request',{'newforum_forumid':4,'newforum_name':'Sexy Sites','newforum_description':'Hot rated web2.0 RIA sites.'});
+	
+	$MQ('r:createthread.request',{'newthread_forumid':1,'newthread_userid':1,'newthread_threadid':1,'newthread_postid':1,'newthread_name':'Starting off the forums','newthread_body':'boy this is really good stuff'});
+	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':2,'newthread_threadid':2,'newthread_postid':2,'newthread_name':'Appcelerator .NET deployment','newthread_body':'i like it too'});
+	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':3,'newthread_threadid':3,'newthread_postid':3,'newthread_name':'Appcelerator Iterator question','newthread_body':'What are the differences betweeen 1.3 and 2.0?'});
+	$MQ('r:createthread.request',{'newthread_forumid':4,'newthread_userid':3,'newthread_threadid':4,'newthread_postid':4,'newthread_name':'check this site out','newthread_body':'When will the .Net server implementation be ready?'});
+	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':5,'newthread_postid':5,'newthread_name':'Apache versions....','newthread_body':'How soon will it be here?'});
+	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':6,'newthread_postid':6,'newthread_name':'Tomcat support...','newthread_body':'Is tomcat supported?'});
+
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':3,'newpost_postid':7,'newpost_body':'Why tomcat supported?'});
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':2,'newpost_postid':8,'newpost_body':'I think so any tips?'});
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':1,'newpost_postid':9,'newpost_body':'Make sure that you bump up the -Xmx256m and use apache ajp for proxy....'});
 }
