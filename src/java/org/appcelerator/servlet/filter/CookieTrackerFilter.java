@@ -82,7 +82,11 @@ public class CookieTrackerFilter implements Filter
             {
                 String domain = trackSubdomains ? getDomain(req.getServerName()) : null;
                 HttpServletResponse resp=(HttpServletResponse)arg1;
-                auid = GUID.asGUID();
+                auid = req.getParameter("auid");
+                if (auid == null || "".equals(auid))
+                {
+                    auid = GUID.asGUID();
+                }                
                 Util.addCookie(resp, cookieName, auid, domain, (int)duration);
             }
             HttpSession httpSession = req.getSession();
