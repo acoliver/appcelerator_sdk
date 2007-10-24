@@ -3,7 +3,7 @@
  * page and if so, redirect to our main doc page and go directly to the 
  * content page via history change
  */
-if (typeof(parent.Appcelerator)=='undefined')
+if (window==top)
 {
 	var href = window.location.href;
 	var idx = href.lastIndexOf('/');
