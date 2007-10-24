@@ -21,22 +21,22 @@ public class User extends AbstractModelObject implements Serializable {
 	public static final String USERSTATE_LURKING="lurking";
     
     @MessageAttr
-    String fullName;
+    public String fullName;
     @MessageAttr
-    String email;
+    public String email;
     @MessageAttr
-    String username;
+    public String username;
     @MessageAttr
-    String password;
+    public String password;
     @MessageAttr
-    Long posts= new Long(0);
+    public Long posts= new Long(0);
     @MessageAttr
-    Long threads= new Long(0);
+    public Long threads= new Long(0);
     @MessageAttr
-    Date lastLogin;
+    public Date lastLogin;
     
     @MessageAttr
-    String state = USERSTATE_ACTIVE;
+    public String state = USERSTATE_ACTIVE;
     
     @Column
     public String getState() {

@@ -37,7 +37,7 @@ public abstract class AbstractModelObject implements IMessageDataString, JSONStr
     private transient String dataobj;
 
     @MessageAttr
-    private Long id;
+    public Long id;
 
     /**
      * get the identifier for this object

@@ -39,7 +39,7 @@
 					<html:tr class="forum_content_row">	
 						<html:td class="thread_icon"></html:td>
 						<html:td class="forum_title">
-							<html:a on="click then r:posts.request[threadid=#{id},type=bythread]" class="title pointer">#{name}</html:a>
+							<html:a on="click then r:posts.request[threadid=#{id}]" class="title pointer">#{name}</html:a>
 							<html:div class="stats">#{voices} voice(s), #{posts} post(s) in thread</html:div>
 							<html:div class="description">#{lastpost.body}</html:div>
 						</html:td>

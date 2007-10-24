@@ -1,6 +1,9 @@
 package org.appcelerator.forums.dao;
 
+import java.util.List;
+
 import org.appcelerator.dao.hibernate.AbstractHibernateDAO;
+import org.appcelerator.forums.model.Forum;
 import org.appcelerator.forums.model.Forumthread;
 
 public class ForumthreadDAO extends AbstractHibernateDAO<Forumthread,Long>
@@ -20,5 +23,9 @@ public class ForumthreadDAO extends AbstractHibernateDAO<Forumthread,Long>
 //    {
 //        return findSingleRow("FROM Employee  WHERE email = ? and password = ?", email, password);
 //    }
-
+//  @SuppressWarnings("unchecked")
+    public List<Forumthread> find(Forum forum)
+    {
+    	return this.find("FROM Forumthread  WHERE forum = ?", forum);
+	}
 }

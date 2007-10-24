@@ -20,30 +20,30 @@ public class Forum extends AbstractModelObject implements Serializable {
 private static final long serialVersionUID = 1L;
     
     @MessageAttr
-    private String name;
+    public String name;
     @MessageAttr
-    private Long posts = new Long(0);
+    public Long posts = new Long(0);
     @MessageAttr
-    private Long voices = new Long(0);
+    public Long voices = new Long(0);
     @MessageAttr
-    private String description;
+    public String description;
     
     @Column
     public String getDescription() {
 		return description;
 	}
     
-    private Set<Forumthread> threads;
-//  @OneToMany(mappedBy="forum")
-    @OneToMany
-    @JoinColumn(name="forum_id")
-    public Set<Forumthread> getThreads() {
-    	return threads;
-    }
-    public void setThreads(Set<Forumthread> threads)
-    {
-    	this.threads = threads;
-    }
+//    private Set<Forumthread> threads;
+////  @OneToMany(mappedBy="forum")
+//    @OneToMany
+//    @JoinColumn(name="forum_id")
+//    public Set<Forumthread> getThreads() {
+//    	return threads;
+//    }
+//    public void setThreads(Set<Forumthread> threads)
+//    {
+//    	this.threads = threads;
+//    }
 
     public void setDescription(String description) {
 		this.description = description;

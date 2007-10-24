@@ -19,13 +19,13 @@ public class Post extends AbstractModelObject implements Serializable {
 private static final long serialVersionUID = 1L;
     
     @MessageAttr
-    private Forumthread thread;
+    public Forumthread thread;
     @MessageAttr
-    private User user;
+    public User user;
     @MessageAttr
-    private String body;
+    public String body;
     @MessageAttr
-    private Date date;
+    public  Date date;
     
     @ManyToOne
     public Forumthread getThread() {

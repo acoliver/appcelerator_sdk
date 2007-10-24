@@ -2,7 +2,6 @@ package org.appcelerator.forums.services;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.appcelerator.annotation.InjectBean;
@@ -55,7 +54,8 @@ public class ForumManager
 		{
 			Long forumid = request.getData().getLong("forumid");
 			Forum forum = forumDAO.findById(forumid);
-			Set<Forumthread> threads = forum.getThreads();
+			List<Forumthread> threads = forumthreadDAO.find(forum);
+			response.getData().put("forum", forum);
 			response.getData().put("rows", threads);
 			response.getData().put("type", type);
 			response.getData().put("threads", threads.size());
@@ -116,8 +116,10 @@ public class ForumManager
 		thread.setName(name);
 		thread = forumthreadDAO.save(thread);
 
-		createPost(request, postid, forum, userid, thread,body);
+		Post post = createPost(postid, forum, userid, thread,body);
 		response.getData().put("success", true);
+		response.getData().put("post", post);
+		response.getData().put("thread", thread);
 	}
 	@Service(request = "createpost.request", response = "createpost.response", authenticationRequired = false)
     protected void createpost (Message request, Message response)
@@ -131,11 +133,11 @@ public class ForumManager
 		Forumthread thread = forumthreadDAO.findById(threadid);
 		Forum forum = thread.getForum();
 
-		createPost(request, postid, forum, userid, thread,body);
+		Post post = createPost(postid, forum, userid, thread,body);
 		response.getData().put("success", true);
+		response.getData().put("post", post);
 	}
-	private void createPost(Message request, Long postid, Forum forum,
-			long userid, Forumthread thread, String body) throws MessageDataObjectException {
+	private Post createPost(Long postid, Forum forum, long userid, Forumthread thread, String body) throws MessageDataObjectException {
 		User user = userDAO.findById(new Long(userid));
 
 		Post post = new Post();
@@ -157,6 +159,7 @@ public class ForumManager
 		
 		user.setPosts(user.getPosts().longValue()+1);
 		//TODO: compute user.threads
+		return post;
 	}
 	@Service(request = "savaccount.request", response = "savaccount.response", authenticationRequired = false)
     protected void signup (Message request, Message response)
@@ -231,4 +234,22 @@ public class ForumManager
 		response.getData().put("user", user);
 		response.getData().put("success", true);
 	}
+	@Service(request = "posts.request", response = "posts.response", authenticationRequired = false)
+    protected void posts (Message request, Message response)
+	throws Exception
+	{
+		Long threadid = request.getData().getLong("threadid");
+		Forumthread thread = forumthreadDAO.findById(threadid);
+		Forum forum = thread.getForum();
+		List<Post> posts = postDAO.find(thread);
+		response.getData().put("thread", thread);
+		response.getData().put("forum", forum);
+		response.getData().put("posts", posts);
+
+		//TODO: implement unique users
+//		users = getUniqueUsers();
+//		response.getData().put("users", users);
+		
+		response.getData().put("success", true);
+	}	
 }

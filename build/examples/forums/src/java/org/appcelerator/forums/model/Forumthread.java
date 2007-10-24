@@ -2,6 +2,7 @@ package org.appcelerator.forums.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,14 +20,14 @@ public class Forumthread extends AbstractModelObject implements Serializable {
 private static final long serialVersionUID = 1L;
     
     @MessageAttr
-    private String name;
+    public String name;
     @MessageAttr
-    private Long posts= new Long(0);
+    public Long posts= new Long(0);
     @MessageAttr
-    private Long voices = new Long(0);
+    public Long voices = new Long(0);
     
     @MessageAttr
-    private Forum forum;
+    public Forum forum;
     
     @Id
     @GeneratedValue
@@ -65,9 +66,8 @@ private static final long serialVersionUID = 1L;
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	@ManyToOne
-	@JoinColumn(name="forum_id", insertable=false, updatable=false)
+	@ManyToOne( cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
+	@JoinColumn(name="forum_id", insertable=true, updatable=true)
 //	@JoinColumn(name="forum_id")
 	public Forum getForum() {
 		return forum;

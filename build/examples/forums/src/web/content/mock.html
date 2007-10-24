@@ -14,26 +14,10 @@
 		var user = getById(this.data.userid,Mock.users);
 		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':'1','user':user});
 	</app:script>
-	<app:script on="r:threads.request[type=byforum] then execute">
-		var posts = postsByForum(this.data.forumid);
-		var forum = getById(this.data.forumid,Mock.forums);
-		var threads = uniqueThreads(posts);
-		var users = uniqueUsers(posts);
-		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'forum':forum});
-	</app:script>
 	<app:script on="r:threads.request[type=search] then execute">
 		var posts=postsByQuery(this.data.query);
 		var threads = uniqueThreads(posts);
 		var users = uniqueUsers(posts);
 		$MQ("r:threads.response",{"rows":threads,'type':this.data.type,'threads':threads.length,'posts':posts.length,'users':users.length,'query':this.data.query});
-	</app:script>
- 	<app:script on="r:posts.request[type=bythread] then execute">
-		var thread = getById(this.data.threadid,Mock.threads);
-		var posts = postsByThread(thread);
-		var users = uniqueUsers(posts);
-		$MQ("r:posts.response",{"posts":posts,'users':users,'thread':thread,'type':this.data.type,'forum':thread.forum});
-	</app:script>
-	<app:script on="r:forums.request then execute">
-		$MQ("r:forums.response",{"rows":Mock.forums,'threads':Mock.threads.length,'posts':Mock.posts.length,'users':Mock.users.length});
 	</app:script>
 </body>

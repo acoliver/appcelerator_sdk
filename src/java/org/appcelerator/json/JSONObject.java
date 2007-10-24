@@ -305,7 +305,8 @@ public class JSONObject
     {
     	JSONObject obj = new JSONObject();
         Class c = object.getClass();
-        Field[] fields = c.getDeclaredFields();
+//        Field[] fields = c.getDeclaredFields();
+        Field[] fields = c.getFields();
         for (int i = 0; i < fields.length; i += 1)
         {
             try

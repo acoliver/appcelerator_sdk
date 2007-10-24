@@ -1,6 +1,9 @@
 package org.appcelerator.forums.dao;
 
+import java.util.List;
+
 import org.appcelerator.dao.hibernate.AbstractHibernateDAO;
+import org.appcelerator.forums.model.Forumthread;
 import org.appcelerator.forums.model.Post;
 
 public class PostDAO extends AbstractHibernateDAO<Post,Long>
@@ -21,4 +24,7 @@ public class PostDAO extends AbstractHibernateDAO<Post,Long>
 //        return findSingleRow("FROM Employee  WHERE email = ? and password = ?", email, password);
 //    }
 
+	public List<Post> find(Forumthread thread) {
+		return this.find("FROM Post  WHERE thread = ?", thread);
+	}
 }
