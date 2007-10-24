@@ -560,6 +560,18 @@
 			</fileset>
 		</zip>
 	</target>
+    <target name="build_src_dist" description="* Builds the source distribution">
+        <echo>Building the Appcelerator Platform SDK source code distribution</echo>
+        <mkdir dir="stage"/>
+        <zip destfile="${stage.dir}/appcelerator_sdk_source_${VERSION}.zip" comment="Appcelerator Platform SDK sourcecode for ${VERSION}">
+            <fileset dir=".">
+                <include name="**/*"/>
+                <exclude name="stage/**"/>
+                <exclude name="output/**"/>
+                <exclude name=".server.id"/>
+            </fileset>
+        </zip>
+    </target>
 	<target name="gendoc_widget">
 		<input message="what is the title (ex: Tree View)?" addproperty="title"/>
 		<input message="what is the name (ex: treeview)?" addproperty="name"/>
