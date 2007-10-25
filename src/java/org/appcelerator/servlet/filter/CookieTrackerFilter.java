@@ -20,8 +20,6 @@
 package org.appcelerator.servlet.filter;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -48,27 +46,9 @@ public class CookieTrackerFilter implements Filter
     private String cookieName = "AUID";
     private long duration = TimeUtil.ONE_YEAR * 5;
     private boolean trackSubdomains = true;
-    private static final Pattern IPADDRESS = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-    private static final Pattern DOMAIN = Pattern.compile("(.*?)(\\.[\\w]+\\.[\\w]+)$");
 
     public void destroy()
     {
-    }
-    
-    public String getDomain (String servername)
-    {
-        if (servername!=null)
-        {
-            if (!IPADDRESS.matcher(servername).matches())
-            {
-                Matcher matcher = DOMAIN.matcher(servername);
-                if (matcher.find())
-                {
-                    return matcher.group(2);
-                }
-            }
-        }
-        return null;
     }
     
     public void doFilter(ServletRequest arg0, ServletResponse arg1,
@@ -80,7 +60,7 @@ public class CookieTrackerFilter implements Filter
             String auid = Util.getCookieValue(req,cookieName);
             if (auid==null)
             {
-                String domain = trackSubdomains ? getDomain(req.getServerName()) : null;
+                String domain = trackSubdomains ? Util.getDomain(req.getServerName()) : null;
                 HttpServletResponse resp=(HttpServletResponse)arg1;
                 auid = req.getParameter("auid");
                 if (auid == null || "".equals(auid))

@@ -63,8 +63,8 @@ Appcelerator.Core.require = function (moduleName,onload)
 				{
 					listeners[c]();
 				}
-				delete Appcelerator.Core.fetching[path];
 			}
+            delete Appcelerator.Core.fetching[path];
 		};
 		script.onload = loadFunc;
 		script.onreadystatechange = loadFunc;

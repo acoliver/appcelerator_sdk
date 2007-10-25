@@ -51,7 +51,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -67,7 +66,6 @@ import org.w3c.dom.NodeList;
  */
 public class Util
 {
-    private static final Logger LOG = Logger.getLogger(Util.class);
     private static String hex_chr = "0123456789abcdef";
     private static final DocumentBuilderFactory xmlFactory = DocumentBuilderFactory.newInstance();
 
@@ -1200,4 +1198,32 @@ public class Util
             }
         }
     }
+    
+    private static final Pattern IPADDRESS = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+    private static final Pattern DOMAIN = Pattern.compile("(.*?)(\\.[\\w]+\\.[\\w]+)$");
+
+    /**
+     * given a FQDN return the root part of the domain for example:
+     * 
+     * www.google.com would return .google.com
+     * 
+     * @param servername
+     * @return
+     */
+    public static String getDomain (String servername)
+    {
+        if (servername!=null)
+        {
+            if (!IPADDRESS.matcher(servername).matches())
+            {
+                Matcher matcher = DOMAIN.matcher(servername);
+                if (matcher.find())
+                {
+                    return matcher.group(2);
+                }
+            }
+        }
+        return null;
+    }
+
 }
