@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.appcelerator.annotation.MessageAttr;
@@ -26,7 +27,7 @@ private static final long serialVersionUID = 1L;
     @MessageAttr
     public Long voices = new Long(0);
     
-    @MessageAttr
+    @MessageAttr (suppress="lastPost")
     public Forum forum;
     
     @Id
@@ -75,6 +76,18 @@ private static final long serialVersionUID = 1L;
 
 	public void setForum(Forum forum) {
 		this.forum = forum;
+	}
+    @MessageAttr (suppress="thread,user.lastPost")
+    public Post lastPost;
+    
+	@OneToOne
+	public Post getLastPost() 
+	{
+		return lastPost;
+	}
+	public void setLastPost(Post lastPost)
+	{
+		this.lastPost = lastPost;
 	}
 
 

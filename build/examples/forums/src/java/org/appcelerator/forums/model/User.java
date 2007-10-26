@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.appcelerator.annotation.MessageAttr;
@@ -120,4 +121,18 @@ public class User extends AbstractModelObject implements Serializable {
 		JSONObject obj = JSONObject.createBean(this);
 		return obj;
 	}
+
+	@MessageAttr (suppress="user,thread.lastPost")
+    public Post lastPost;
+    
+	@OneToOne
+	public Post getLastPost() 
+	{
+		return lastPost;
+	}
+	public void setLastPost(Post lastPost)
+	{
+		this.lastPost = lastPost;
+	}
+
 }

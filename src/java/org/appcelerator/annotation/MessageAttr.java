@@ -39,4 +39,7 @@ public @interface MessageAttr
      * @return name to be used when serialization occurs.
      */
     String name() default "";
+    
+    boolean recurseSerialization() default true;
+    String suppress() default "";
 }

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.appcelerator.annotation.MessageAttr;
 import org.appcelerator.model.IModelObject;
@@ -95,6 +96,7 @@ import org.appcelerator.model.IModelObject;
  */
 public class JSONObject
 {
+	public final static int JSON_MAX_TRANFORM_LEVELS=12;
 
     /**
      * JSONObject.NULL is equivalent to the value that JavaScript calls null,
@@ -263,38 +265,29 @@ public class JSONObject
                          new HashMap<String, Object>(map);
     }
 
-    /**
-     * Construct a JSONObject from an Object, using reflection to find the
-     * public members. The resulting JSONObject's keys will be the strings
-     * from the names array, and the values will be the field values associated
-     * with those keys in the object. If a key is not found or not visible,
-     * then it will not be copied into the new JSONObject.
-     *
-     * @param object An object that has fields that should be used to make a
-     *               JSONObject.
-     * @param names  An array of strings, the names of the fields to be used
-     *               from the object.
-     */
-    public static JSONObject createBean(Object object, String names[])
-    {
-    	JSONObject obj = new JSONObject();
-        Class c = object.getClass();
-        for (int i = 0; i < names.length; i += 1)
-        {
-            try
-            {
-                String name = names[i];
-                String methodname = "get"+name.substring(0,1).toUpperCase()+name.substring(1);
-                Method method = c.getDeclaredMethod(methodname);
-                Object value = method.invoke(object);
-                obj.put(name, value);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
-        return obj;
+    public static String[] suppress(MessageAttr parentAtt, String[] parentSuppres, String context) {
+    	String[] addedSuppres = null;
+    	if (parentAtt==null || parentAtt.suppress()==null || parentAtt.suppress().equals(""))
+    	{
+    		addedSuppres = new String[0];
+    	}
+    	else
+    	{
+    		addedSuppres = parentAtt.suppress().split(",");
+    	}
+    	String[] merge = new String[parentSuppres.length+addedSuppres.length];
+		for (int i=0;i<addedSuppres.length;i++)
+		{
+			if (context==null || context.equals(""))
+				merge[i] = addedSuppres[i];
+			else
+				merge[i] = context+"."+addedSuppres[i];
+		}
+		for (int i=0;i<parentSuppres.length;i++)
+		{
+			merge[i+addedSuppres.length] = parentSuppres[i];
+		}
+		return merge;
     }
     private static String getMethodName(String fieldname)
     {
@@ -303,9 +296,36 @@ public class JSONObject
     }
     public static JSONObject createBean(IModelObject object)
     {
+    	return createBean(object,(MessageAttr)null,"",new String[0],1,JSON_MAX_TRANFORM_LEVELS);
+    }
+    private static boolean omitField(String[] suppress, String fieldcontext)
+    {
+    	for (int i=0;i<suppress.length;i++)
+    	{
+    		String suppressField = suppress[i];
+    		if (fieldcontext.equals(suppressField))
+    			return true;
+    	}
+    	return false;
+    }
+    private static String resolveContext(String existingContext, Field field)
+    {
+    	if (existingContext==null || existingContext.equals(""))
+    	{
+    		return field.getName();
+    	}
+    	else
+    	{
+    		return existingContext + "."+ field.getName();
+    	}
+    }
+    public static JSONObject createBean(IModelObject object, MessageAttr parentAtt, String context, String[] parentSuppres,int level, int maxlevels)
+    {
+    	if (level > maxlevels)
+    		throw new RuntimeException("error trasforming object to JSON: level at "+level+ " for context "+ context);
+    	
     	JSONObject obj = new JSONObject();
         Class c = object.getClass();
-//        Field[] fields = c.getDeclaredFields();
         Field[] fields = c.getFields();
         for (int i = 0; i < fields.length; i += 1)
         {
@@ -315,21 +335,39 @@ public class JSONObject
             	MessageAttr att = field.getAnnotation(MessageAttr.class);
             	if (att != null)
             	{
-                	String methodname = getMethodName(field.getName());
-                	Method method = c.getDeclaredMethod(methodname);
-                    Object value = method.invoke(object);
-                    String name = method.getName().substring(3,4).toLowerCase()+method.getName().substring(4);
-                    obj.put(name, value);
+            		Class fieldClass = field.getType();
+            		if (IModelObject.class.isAssignableFrom(fieldClass)) 
+            		{
+                		String fieldcontext = resolveContext(context,field);
+                        String[] suppress = suppress(att, parentSuppres,fieldcontext);
+            			if (!omitField(suppress,fieldcontext))
+            			{
+                        	String methodname = getMethodName(field.getName());
+                        	Method method = c.getDeclaredMethod(methodname);
+                            Object value = method.invoke(object);
+                            String name = method.getName().substring(3,4).toLowerCase()+method.getName().substring(4);
+                            JSONObject transformed = createBean((IModelObject)value,att,fieldcontext,suppress,++level,maxlevels);
+                            obj.put(name, transformed);
+            			}
+            			else
+            			{
+                			//skip
+            			}
+            		}
+            		else
+            		{
+                    	String methodname = getMethodName(field.getName());
+                    	Method method = c.getDeclaredMethod(methodname);
+                        Object value = method.invoke(object);
+                        String name = method.getName().substring(3,4).toLowerCase()+method.getName().substring(4);
+                        obj.put(name, value);
+            		}
             	}
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+            catch (Exception squash) { }
         }
         return obj;
     }
-
     /**
      * Construct a JSONObject from a string.
      * This is the most commonly used JSONObject constructor.

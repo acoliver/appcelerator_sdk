@@ -18,16 +18,17 @@ import org.appcelerator.model.AbstractModelObject;
 public class Post extends AbstractModelObject implements Serializable {
 private static final long serialVersionUID = 1L;
     
-    @MessageAttr
+    @MessageAttr(suppress="lastPost,forum.lastPost")
     public Forumthread thread;
-    @MessageAttr
+    
+    @MessageAttr (suppress="lastPost")
     public User user;
     @MessageAttr
     public String body;
     @MessageAttr
     public  Date date;
     
-    @ManyToOne
+    @ManyToOne 
     public Forumthread getThread() {
 		return thread;
 	}
