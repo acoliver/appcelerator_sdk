@@ -8,7 +8,7 @@ import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
 
 public class ForumTest extends TestCase {
-	public void dtestSimple() {
+	public void testSimple() {
 		User user = createUser();
 		Message message = new Message();
 		JSONMessageDataObject data = new JSONMessageDataObject();
