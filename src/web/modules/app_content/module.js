@@ -31,7 +31,18 @@ Appcelerator.Module.Content =
 	},
 	execute: function(id,parameterMap,data,scope)
 	{
-		Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args']);
+		if (!parameterMap['reload'])
+		{
+			if (!$(id).fetched)
+			{
+				Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args']);
+				$(id).fetched = true;
+			}
+		}
+		else
+		{
+			Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args']);
+		}
 	},
 	buildWidget: function(element,state)
 	{
@@ -42,6 +53,7 @@ Appcelerator.Module.Content =
 		var lazy = (element.getAttribute('lazy') || 'false' ) == 'true';
 		var args = element.getAttribute('args');
 		var onload = element.getAttribute('onload');
+		var reload = (element.getAttribute('reload') || 'false') == 'true';
 		
 		args = (args) ? '"'+args+'"' : 'null';
 		onload = (onload) ? '"'+onload+'"' : 'null';
@@ -51,10 +63,12 @@ Appcelerator.Module.Content =
 		if (!lazy)
 		{
 			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+');';
+			jscode+='$("'+element.id+'").fetched = true';
 		}
 		var parameters = {};
 		parameters['src'] = src;
 		parameters['args'] = args;
+		parameters['reload'] = reload;
 	
 		var f = on ? ['execute'] : null;
 	

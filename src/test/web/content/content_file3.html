@@ -1,0 +1,15 @@
+<html>
+<body>
+		<div id="content_file3_text">
+			<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+		</div>
+		<app:script>
+			content_file3 = content_file3 + 1;
+			
+			if (content_file3 > 1)
+			{
+				$("content_file3_text").innerHTML = 'This test failed.';
+			}
+		</app:script>
+</body>
+</html>

@@ -83,6 +83,19 @@
 			<app:content src="content/content_styled_3.html"></app:content>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file with reload = false
+		</td>
+		<td class="result" >
+			<app:script>
+				content_file3 = 0;
+			</app:script>
+			<app:content src="content/content_file3.html" on="l:content_file3 then execute"></app:content>
+			<app:message name="l:content_file3" interval="2000">
+			</app:message>
+		</td>
+	</tr>	
 
 </table>
 
