@@ -1,7 +1,7 @@
 
 class TestService < Appcelerator::Service
   
-  handles_message 'app.test.message.request', :testMessage, 'app.test.message.response'
+  Service 'app.test.message.request', :testMessage, 'app.test.message.response'
   
   def testMessage(request,message)
       p "received message: #{message.inspect}"

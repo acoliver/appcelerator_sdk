@@ -1,7 +1,7 @@
 
 class <%= messageclass %> < Appcelerator::Service
 
-  handles_message '<%= messagetype %>', :<%= messagefunc %><%= responsetype %>
+  Service '<%= messagetype %>', :<%= messagefunc %><%= responsetype %>
 
   def <%= messagefunc %>(request,message)
 

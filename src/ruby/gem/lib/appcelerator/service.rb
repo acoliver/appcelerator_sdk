@@ -3,7 +3,7 @@ module Appcelerator
 	class Service
 	  include Singleton
 	  
-	  def Service.handles_message(messagetype,handler,responsetype)
+	  def Service.Service(messagetype,handler,responsetype)
 		  name = messagetype.gsub(/[:]|[\.\s-]/,'_')
 		  self.class_eval <<-end_eval
 			alias_method :_initialize_#{name}, :initialize
