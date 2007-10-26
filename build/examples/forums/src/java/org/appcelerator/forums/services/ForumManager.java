@@ -110,6 +110,7 @@ public class ForumManager
 		String name = request.getData().getString("newthread_name");
 		String body = request.getData().getString("newthread_body");
 
+		forum.setThreads(forum.getThreads()+1);
 		Forumthread thread = new Forumthread();
 		thread.setId(threadid);
 		thread.setForum(forum);
@@ -149,15 +150,19 @@ public class ForumManager
 		post = postDAO.save(post);
 
 		//update counters
-		//TODO: compute thread.users
+		//TODO: compute thread.uers
+		thread.setLastPost(post);
 		thread.setPosts(thread.getPosts().longValue()+1);
 		forumthreadDAO.save(thread);
 		
 		//TODO: compute forum.users
 		forum.setPosts(forum.getPosts()+1);
+		forum.setLastPost(post);
 		forumDAO.save(forum);
 		
+		user.setLastPost(post);
 		user.setPosts(user.getPosts().longValue()+1);
+		userDAO.save(user);
 		//TODO: compute user.threads
 		return post;
 	}

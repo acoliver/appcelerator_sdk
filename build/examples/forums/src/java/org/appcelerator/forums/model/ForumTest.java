@@ -16,7 +16,7 @@ public class ForumTest extends TestCase {
 		message.getData().put("user", user);
 		message.getData().put("count", 1);
 		String messagestr = data.toDataString();
-		assertNotNull(messagestr);
+		assertEquals(messagestr,"\"user\":{\"password\":\"pwd\",\"threads\":0,\"fullName\":\"ante wew\",\"username\":\"azuercher\",\"state\":\"mystate\",\"email\":\"email\",\"posts\":0,\"id\":0},\"count\":1}");
 	}
 	private User createUser() {
 		User user = new User();

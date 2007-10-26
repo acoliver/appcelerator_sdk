@@ -25,8 +25,18 @@ private static final long serialVersionUID = 1L;
     public Long voices = new Long(0);
     @MessageAttr
     public String description;
+    @MessageAttr
+    public Long threads = new Long(0);
     
+
     @Column
+    public Long getThreads() {
+		return threads;
+	}
+	public void setThreads(Long threads) {
+		this.threads = threads;
+	}
+	@Column
     public String getDescription() {
 		return description;
 	}
@@ -44,17 +54,6 @@ private static final long serialVersionUID = 1L;
 		this.lastPost = lastPost;
 	}
 
-//    private Set<Forumthread> threads;
-////  @OneToMany(mappedBy="forum")
-//    @OneToMany
-//    @JoinColumn(name="forum_id")
-//    public Set<Forumthread> getThreads() {
-//    	return threads;
-//    }
-//    public void setThreads(Set<Forumthread> threads)
-//    {
-//    	this.threads = threads;
-//    }
 
     public void setDescription(String description) {
 		this.description = description;

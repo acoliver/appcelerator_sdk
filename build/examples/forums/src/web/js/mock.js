@@ -198,24 +198,25 @@ function sortPost(a,b)
 }
 function loaddata()
 {
-	$MQ('r:signup.request',{'signupid':1,'signupusername':'leeroy','name':'Billy Bob Jackson','signuppassword':'pwd','email':'email','singupstate':'active'});
-	$MQ('r:signup.request',{'signupid':2,'signupusername':'billybob','name':'Leeroy Brown','signuppassword':'pwd','email':'email','singupstate':'active'});
-	$MQ('r:signup.request',{'signupid':3,'signupusername':'maryann','name':'Mary Ann Shaw','signuppassword':'pwd','email':'email','singupstate':'active'});
-	$MQ('r:signup.request',{'signupid':4,'signupusername':'john','name':'John Smith','signuppassword':'pwd','email':'email','singupstate':'lurking'});
+	var scope = 'load';
+	$MQ('r:signup.request',{'signupid':1,'signupusername':'leeroy','name':'Billy Bob Jackson','signuppassword':'pwd','email':'email','singupstate':'active'},scope);
+	$MQ('r:signup.request',{'signupid':2,'signupusername':'billybob','name':'Leeroy Brown','signuppassword':'pwd','email':'email','singupstate':'active'},scope);
+	$MQ('r:signup.request',{'signupid':3,'signupusername':'maryann','name':'Mary Ann Shaw','signuppassword':'pwd','email':'email','singupstate':'active'},scope);
+	$MQ('r:signup.request',{'signupid':4,'signupusername':'john','name':'John Smith','signuppassword':'pwd','email':'email','singupstate':'lurking'},scope);
 
-	$MQ('r:createforum.request',{'newforum_forumid':1,'newforum_name':'AppForums','newforum_description':'Bug Reports, features, etc.'});
-	$MQ('r:createforum.request',{'newforum_forumid':2,'newforum_name':'Appcelerator','newforum_description':'Open source web2.0 RIA.'});
-	$MQ('r:createforum.request',{'newforum_forumid':3,'newforum_name':'Apache','newforum_description':'THE open source web server.'});
-	$MQ('r:createforum.request',{'newforum_forumid':4,'newforum_name':'Sexy Sites','newforum_description':'Hot rated web2.0 RIA sites.'});
+	$MQ('r:createforum.request',{'newforum_forumid':1,'newforum_name':'AppForums','newforum_description':'Bug Reports, features, etc.'},scope);
+	$MQ('r:createforum.request',{'newforum_forumid':2,'newforum_name':'Appcelerator','newforum_description':'Open source web2.0 RIA.'},scope);
+	$MQ('r:createforum.request',{'newforum_forumid':3,'newforum_name':'Apache','newforum_description':'THE open source web server.'},scope);
+	$MQ('r:createforum.request',{'newforum_forumid':4,'newforum_name':'Sexy Sites','newforum_description':'Hot rated web2.0 RIA sites.'},scope);
 	
-	$MQ('r:createthread.request',{'newthread_forumid':1,'newthread_userid':1,'newthread_threadid':1,'newthread_postid':1,'newthread_name':'Starting off the forums','newthread_body':'boy this is really good stuff'});
-	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':2,'newthread_threadid':2,'newthread_postid':2,'newthread_name':'Appcelerator .NET deployment','newthread_body':'i like it too'});
-	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':3,'newthread_threadid':3,'newthread_postid':3,'newthread_name':'Appcelerator Iterator question','newthread_body':'What are the differences betweeen 1.3 and 2.0?'});
-	$MQ('r:createthread.request',{'newthread_forumid':4,'newthread_userid':3,'newthread_threadid':4,'newthread_postid':4,'newthread_name':'check this site out','newthread_body':'When will the .Net server implementation be ready?'});
-	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':5,'newthread_postid':5,'newthread_name':'Apache versions....','newthread_body':'How soon will it be here?'});
-	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':6,'newthread_postid':6,'newthread_name':'Tomcat support...','newthread_body':'Is tomcat supported?'});
+	$MQ('r:createthread.request',{'newthread_forumid':1,'newthread_userid':1,'newthread_threadid':1,'newthread_postid':1,'newthread_name':'Starting off the forums','newthread_body':'boy this is really good stuff'},scope);
+	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':2,'newthread_threadid':2,'newthread_postid':2,'newthread_name':'Appcelerator .NET deployment','newthread_body':'i like it too'},scope);
+	$MQ('r:createthread.request',{'newthread_forumid':2,'newthread_userid':3,'newthread_threadid':3,'newthread_postid':3,'newthread_name':'Appcelerator Iterator question','newthread_body':'What are the differences betweeen 1.3 and 2.0?'},scope);
+	$MQ('r:createthread.request',{'newthread_forumid':4,'newthread_userid':3,'newthread_threadid':4,'newthread_postid':4,'newthread_name':'check this site out','newthread_body':'When will the .Net server implementation be ready?'},scope);
+	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':5,'newthread_postid':5,'newthread_name':'Apache versions....','newthread_body':'How soon will it be here?'},scope);
+	$MQ('r:createthread.request',{'newthread_forumid':3,'newthread_userid':1,'newthread_threadid':6,'newthread_postid':6,'newthread_name':'Tomcat support...','newthread_body':'Is tomcat supported?'},scope);
 
-	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':3,'newpost_postid':7,'newpost_body':'Why tomcat supported?'});
-	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':2,'newpost_postid':8,'newpost_body':'I think so any tips?'});
-	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':1,'newpost_postid':9,'newpost_body':'Make sure that you bump up the -Xmx256m and use apache ajp for proxy....'});
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':3,'newpost_postid':7,'newpost_body':'Why tomcat supported?'},scope);
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':2,'newpost_postid':8,'newpost_body':'I think so any tips?'},scope);
+	$MQ('r:createpost.request',{'newpost_threadid':6,'newpost_userid':1,'newpost_postid':9,'newpost_body':'Make sure that you bump up the -Xmx256m and use apache ajp for proxy....'},scope);
 }

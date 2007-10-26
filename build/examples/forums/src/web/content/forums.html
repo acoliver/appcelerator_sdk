@@ -16,7 +16,7 @@
 		
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Forums</span></div>
-			<div class="forums_header_lastpost"><span>Last Post</span></div>
+			<div class="forums_header_lastPost"><span>Last Post</span></div>
 		</div>
 		<div class="forums_content" on="r:forums.response then effect[appear] or r:forums.request then hide" style="display:none;">
 			<app:iterator on="r:forums.response then execute" property="rows">
@@ -29,7 +29,7 @@
 							<html:div class="description">#{description}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastpost.date} by <html:a on="click then r:user.request[userid=#{lastpost.user.id}]" class="smalllink pointer">#{lastpost.user.username}</html:a>
+							#{lastPost.date} by <html:a on="click then r:user.request[userid=#{lastPost.user.id}]" class="smalllink pointer">#{lastPost.user.username}</html:a>
 						</html:td>
 					</html:tr>
 				</html:table>

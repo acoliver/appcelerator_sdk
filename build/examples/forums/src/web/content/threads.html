@@ -31,7 +31,7 @@
 		</p>
 		<div class="forums_header">
 			<div class="forums_header_forums"><span>Threads</span></div>
-			<div class="forums_header_lastpost"><span>Last Post</span></div>
+			<div class="forums_header_lastPost"><span>Last Post</span></div>
 		</div>
 		<div class="forums_content" on="r:threads.response then effect[appear] or r:threads.request then hide" style="display:none;">
 			<app:iterator on="r:threads.response then execute" property="rows">
@@ -41,10 +41,10 @@
 						<html:td class="forum_title">
 							<html:a on="click then r:posts.request[threadid=#{id}]" class="title pointer">#{name}</html:a>
 							<html:div class="stats">#{voices} voice(s), #{posts} post(s) in thread</html:div>
-							<html:div class="description">#{lastpost.body}</html:div>
+							<html:div class="description">#{lastPost.body}</html:div>
 						</html:td>
 						<html:td class="forums_postdate">
-							#{lastpost.date} by <html:a on="click then r:user.request[userid=#{lastpost.user.id},username='#{lastpost.user.username}']" class="smalllink pointer">#{lastpost.user.username}</html:a>
+							#{lastPost.date} by <html:a on="click then r:user.request[userid=#{lastPost.user.id},username='#{lastPost.user.username}']" class="smalllink pointer">#{lastPost.user.username}</html:a>
 						</html:td>
 					</html:tr>
 				</html:table>
