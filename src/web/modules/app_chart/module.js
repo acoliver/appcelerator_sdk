@@ -1,8 +1,8 @@
 
 Appcelerator.Module.Chart =
 {
-	flashRequired: true,
-	flashVersion: 8.0,
+//	flashRequired: true,
+//	flashVersion: 8.0,
 	
 	getName: function()
 	{
@@ -90,15 +90,15 @@ Appcelerator.Module.Chart =
 		var brightness_step = parameterMap['brightness_step'];
 		var propertyName = parameterMap['propertyName'];
 		var titlePropertyName = parameterMap['titlePropertyName'];
-	    var textSize = parameterMap['textSize'];
-	    var fillAlpha = parameterMap['fillAlpha'];
-	    var indicator = parameterMap['indicator'];
+	  var textSize = parameterMap['textSize'];
+	  var fillAlpha = parameterMap['fillAlpha'];
+	  var indicator = parameterMap['indicator'];
 		var marginTop = parameterMap['marginTop'];
 		var marginLeft = parameterMap['marginLeft'];
 		var marginRight = parameterMap['marginRight'];
 		var marginBottom = parameterMap['marginBottom'];
-	    var legendHighlight = parameterMap['legendHighlight'];
-	    var oneBalloon = parameterMap['oneBalloon'];
+	  var legendHighlight = parameterMap['legendHighlight'];
+	  var oneBalloon = parameterMap['oneBalloon'];
 		var backgroundColor = parameterMap['backgroundColor'];
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
@@ -202,15 +202,15 @@ Appcelerator.Module.Chart =
 			var column_titles_template = '';
 			if (type.toLowerCase() == "bar")
 			{
-				column_titles_template = '<graph gid="#{COL_NUM}"><type>column</type><title>#{COL_TITLE}</title><color>#{COL_COLOR}</color><alpha></alpha><data_labels><![CDATA[]]></data_labels><fill_alpha>' + fillAlpha + '</fill_alpha></graph>';
+				column_titles_template = '<graph gid="{COL_NUM}"><type>column</type><title>{COL_TITLE}</title><color>{COL_COLOR}</color><alpha></alpha><data_labels><![CDATA[]]></data_labels><fill_alpha>' + fillAlpha + '</fill_alpha></graph>';
 			} else if (type.toLowerCase() == "line")
 			{
-				column_titles_template = '<graph><axis>left</axis><title>#{COL_TITLE}</title><color>#{COL_COLOR}</color><color_hover>#FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[#{COL_TITLE} {value}]]></balloon_text></graph>';				
+				column_titles_template = '<graph><axis>left</axis><title>{COL_TITLE}</title><color>{COL_COLOR}</color><color_hover>FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[{COL_TITLE} {value}]]></balloon_text></graph>';				
 			}
 			var chartTitlesTemp = '';
 			for (var i = 0, len = titleArray.length; i < len; i++)
 			{
-				chartTitlesTemp += column_titles_template.replace(/#{COL_NUM}/g, i.toString()).replace(/#{COL_TITLE}/g, titleArray[i]['title']).replace(/#{COL_COLOR}/g, color_list[i]||'');
+				chartTitlesTemp += column_titles_template.gsub('{COL_NUM}', i.toString()).gsub('{COL_TITLE}', titleArray[i]['title']).gsub('{COL_COLOR}', color_list[i]||'');
 			}
 	
 			if (titleArray.length == 0)
