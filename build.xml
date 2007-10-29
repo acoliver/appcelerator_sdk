@@ -474,7 +474,7 @@
 		<ant dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" target="deploy"/>
 	</target>
 	<target name="install_ruby" depends="sdk_ruby_dist">
-		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
+		<delete dir="${stage.dir}/appcelerator_sdk_ruby_${VERSION}" failonerror="false"/>
 		<exec dir="${stage.dir}" executable="gem" failonerror="false">
 			<arg line="uninstall appcelerator"/>
 		</exec>
@@ -702,16 +702,61 @@ cat ${src.doc.dir}/treechild/${name}.html</echo>
 	<target name="publish_web_unit_scp" depends="build_web_unit,undeploy_web_unit_ssh,deploy_web_unit_scp"/>
 	<target name="publish_doc_scp" depends="build_doc,undeploy_doc_ssh,deploy_doc_scp"/>
 	<target name="publish_all_scp" depends="publish_doc_scp,publish_web_unit_scp"/>
+	
+	<target name="publish_dist" depends="sdk_all_dist,build_src_dist" description="* Deploy distributions to distribution server">
+        <fail message="must define scp.dist.dir" unless="scp.dist.dir"/>
+        <fail message="must define scp.dist.host" unless="scp.dist.host"/>
+        <fail message="must define scp.dist.user" unless="scp.dist.user"/>
+        <fail message="must define scp.dist.pwd" unless="scp.dist.pwd"/>
+		
+        <scp todir="${scp.dist.user}@${scp.dist.host}:/tmp" trust="true" password="${scp.dist.pwd}" verbose="true">
+            <fileset dir="${stage.dir}" includes="appcelerator_sdk_source_${VERSION}.zip"/>
+        </scp>
+        <scp todir="${scp.dist.user}@${scp.dist.host}:/tmp" trust="true" password="${scp.dist.pwd}" verbose="true">
+            <fileset dir="${stage.dir}" includes="appcelerator_sdk_java_${VERSION}.zip"/>
+        </scp>
+        <scp todir="${scp.dist.user}@${scp.dist.host}:/tmp" trust="true" password="${scp.dist.pwd}" verbose="true">
+            <fileset dir="${stage.dir}" includes="appcelerator_sdk_php_${VERSION}.zip"/>
+        </scp>
+        <scp todir="${scp.dist.user}@${scp.dist.host}:/tmp" trust="true" password="${scp.dist.pwd}" verbose="true">
+            <fileset dir="${stage.dir}" includes="appcelerator-${VERSION}.gem"/>
+        </scp>
+		
+        <!--
+        <scp todir="${scp.dist.user}@${scp.dist.host}:/tmp" trust="true" password="${scp.dist.pwd}" verbose="true">
+            <fileset dir="${stage.dir}" includes="appcelerator_sdk_dotnet_${VERSION}.zip"/>
+        </scp> 
+        -->
+
+		<sshexec host="${scp.dist.host}" username="${scp.dist.user}" password="${scp.dist.pwd}" trust="true"
+            command="echo ${scp.dist.pwd} | sudo -S mkdir -p ${scp.dist.dir}/sdk_java/${VERSION} &amp;&amp; echo ${scp.dist.pwd} | sudo -S mv /tmp/appcelerator_sdk_java_${VERSION}.zip ${scp.dist.dir}/sdk_java/${VERSION}"/>
+		
+        <sshexec host="${scp.dist.host}" username="${scp.dist.user}" password="${scp.dist.pwd}" trust="true"
+            command="echo ${scp.dist.pwd} | sudo -S mkdir -p ${scp.dist.dir}/sdk_php/${VERSION} &amp;&amp; echo ${scp.dist.pwd} | sudo -S mv /tmp/appcelerator_sdk_php_${VERSION}.zip ${scp.dist.dir}/sdk_php/${VERSION}"/>
+
+        <sshexec host="${scp.dist.host}" username="${scp.dist.user}" password="${scp.dist.pwd}" trust="true"
+            command="echo ${scp.dist.pwd} | sudo -S mkdir -p ${scp.dist.dir}/sdk_ruby/${VERSION} &amp;&amp; echo ${scp.dist.pwd} | sudo -S mv /tmp/appcelerator-${VERSION}.gem ${scp.dist.dir}/sdk_ruby/${VERSION}"/>
+
+        <sshexec host="${scp.dist.host}" username="${scp.dist.user}" password="${scp.dist.pwd}" trust="true"
+            command="echo ${scp.dist.pwd} | sudo -S mkdir -p ${scp.dist.dir}/sdk_src/${VERSION} &amp;&amp; echo ${scp.dist.pwd} | sudo -S mv /tmp/appcelerator_sdk_source_${VERSION}.zip ${scp.dist.dir}/sdk_src/${VERSION}" />
+		
+        <!--
+        <sshexec host="${scp.dist.host}" username="${scp.dist.user}" password="${scp.dist.pwd}" trust="true"
+            command="echo ${scp.dist.pwd} | sudo -S mkdir -p ${scp.dist.dir}/sdk_dotnet/${VERSION} &amp;&amp; echo ${scp.dist.pwd} | sudo -S mv /tmp/appcelerator_sdk_dotnet_${VERSION}.zip ${scp.dist.dir}/sdk_dotnet/${VERSION}"/>
+        --> 
+        
+	</target>
+	
 	<target name="deploy_doc_scp">
 		<antcall target="-deploy_scp">
 			<param name="dir" value="stage"/>
-			<param name="includes" value="doc.war"/>
+			<param name="file" value="doc.war"/>
 		</antcall>
 	</target>
 	<target name="deploy_web_unit_scp">
 		<antcall target="-deploy_scp">
 			<param name="dir" value="stage"/>
-			<param name="includes" value="unittest.war"/>
+			<param name="file" value="unittest.war"/>
 		</antcall>
 	</target>
 	<target name="undeploy_doc_ssh">
@@ -726,7 +771,6 @@ cat ${src.doc.dir}/treechild/${name}.html</echo>
 			<param name="dir" value="unittest"/>
 		</antcall>
 	</target>
-
 	<target name="-undeploy_ssh" depends="get_jsch">
 		<fail message="must define scp.dir" unless="scp.dir"/>
 		<fail message="must define scp.host" unless="scp.host"/>
@@ -750,8 +794,10 @@ cat ${src.doc.dir}/treechild/${name}.html</echo>
 		<fail message="must define scp.host" unless="scp.host"/>
 		<fail message="must define scp.user" unless="scp.user"/>
 		<fail message="must define scp.pwd" unless="scp.pwd"/>
-		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
-		    <fileset dir="${dir}" includes="${includes}"/>
-		</scp>
+        <scp todir="${scp.user}@${scp.host}:/tmp" trust="true" password="${scp.pwd}" verbose="true">
+            <fileset dir="${dir}" includes="${file}"/>
+        </scp>
+        <sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
+            command="echo ${scp.pwd} | sudo -S mv /tmp/${file} ${scp.dir}"/>
 	</target>
 </project>
