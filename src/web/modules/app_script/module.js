@@ -38,23 +38,8 @@ Appcelerator.Module.Script =
 	},
 	buildWidget: function(element)
 	{
-		var child = element.firstChild;
-		var childCode = null;
-		
-		if (child)
-		{
-			if (child.nodeType == Appcelerator.Util.Dom.COMMENT_NODE)
-			{
-				childCode = child.nodeValue.replace(/\/\/.*/g,'');
-			}
-			if (child.nodeType == Appcelerator.Util.Dom.TEXT_NODE)
-			{
-				childCode = element.innerHTML.replace('<!--','').replace('-->','');
-				childCode = childCode.replace(/\/\/.*/g,'');
-			}
-		}
-		
-		var code = childCode || Appcelerator.Compiler.getHtml(element);
+		var code = Appcelerator.Compiler.getHtml(element);
+		code.replace(/\/\*.*\*\//g,'');
 		var on = element.getAttribute('on');
 		 
 		if (code && code.trim().length > 0)
