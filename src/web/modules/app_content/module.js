@@ -56,6 +56,13 @@ Appcelerator.Module.Content =
 		var onfetch = element.getAttribute('onfetch');		
 		var reload = (element.getAttribute('reload') || 'false') == 'true';
 		
+		var parameters = {};
+		parameters['onload'] = onload;		
+		parameters['onfetch'] = onfetch;		
+		parameters['src'] = src;
+		parameters['args'] = args;
+		parameters['reload'] = reload;
+
 		args = (args) ? '"'+args+'"' : 'null';
 		onload = (onload) ? '"'+onload+'"' : 'null';
 		onfetch = (onfetch) ? '"'+onfetch+'"' : 'null';		
@@ -67,12 +74,6 @@ Appcelerator.Module.Content =
 			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+','+onfetch+');';
 			jscode+='$("'+element.id+'").fetched = true';
 		}
-		var parameters = {};
-		parameters['src'] = src;
-		parameters['args'] = args;
-		parameters['reload'] = reload;
-		parameters['onload'] = onload;		
-		parameters['onfetch'] = onfetch;		
 	
 		var f = on ? ['execute'] : null;
 	
