@@ -35,13 +35,13 @@ Appcelerator.Module.Content =
 		{
 			if (!$(id).fetched)
 			{
-				Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args']);
+				Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
 				$(id).fetched = true;
 			}
 		}
 		else
 		{
-			Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args']);
+			Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
 		}
 	},
 	buildWidget: function(element,state)
@@ -71,6 +71,8 @@ Appcelerator.Module.Content =
 		parameters['src'] = src;
 		parameters['args'] = args;
 		parameters['reload'] = reload;
+		parameters['onload'] = onload;		
+		parameters['onfetch'] = onfetch;		
 	
 		var f = on ? ['execute'] : null;
 	
