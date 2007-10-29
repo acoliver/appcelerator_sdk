@@ -23,7 +23,7 @@
 <!--
 
 
-.tabpanel a:hover
+#styled .tabpanel a:hover
 {
 	background-color:#3B5998;
 	color:#fff;
@@ -31,16 +31,16 @@
 	opacity:0.99;
 }
 
-.tab_inactive
+#styled .tab_inactive
 {
-	border-bottom:1px solid #999; 
+	border-bottom:none; 
 	background-color:#fff;
 	color:#111;
 	font-weight:bold;
 	opacity:0.4;
 }
 
-.tab_active
+#styled .tab_active
 {
 	border-bottom:2px solid #3B5998; 
 	background-color:#3B5998;
@@ -82,11 +82,13 @@
 			specified in the Content Widgets definition.  You can also pass arguments to a content file to do things like
 			set page titles (like in the example below) or anything else you can think up.
 		</p>
-		<app:tabpanel id="contentmenu" initial="movies">
-			<tab name="movies">Favorite Movies</tab>
-			<tab name="music">Favorite Music</tab>
-			<tab name="banjo">Banjo Sonatas in D</tab>
-		</app:tabpanel>
+		<div id="styled">
+			<app:tabpanel id="contentmenu" initial="movies">
+				<tab name="movies">Favorite Movies</tab>
+				<tab name="music">Favorite Music</tab>
+				<tab name="banjo">Banjo Sonatas in D</tab>
+			</app:tabpanel>
+		</div>
 		<div id="my_tab_divider"></div>
 		<app:content
 			lazy="false"
