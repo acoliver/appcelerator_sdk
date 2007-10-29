@@ -61,6 +61,19 @@
 	</tr>	
 	<tr>
 		<td class="test" valign="middle">
+			Load HTML file (with onfetch attribute)
+		</td>
+		<td class="result" >
+			<div style="display: none">
+				<app:content src="content/content_file.html" onfetch="l:content.fetch"></app:content>
+			</div>
+			<div style="display: none" on="l:content.fetch then show">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
 			Load HTML file (with &lt;style&gt; element)
 		</td>
 		<td class="result" >

@@ -53,16 +53,18 @@ Appcelerator.Module.Content =
 		var lazy = (element.getAttribute('lazy') || 'false' ) == 'true';
 		var args = element.getAttribute('args');
 		var onload = element.getAttribute('onload');
+		var onfetch = element.getAttribute('onfetch');		
 		var reload = (element.getAttribute('reload') || 'false') == 'true';
 		
 		args = (args) ? '"'+args+'"' : 'null';
 		onload = (onload) ? '"'+onload+'"' : 'null';
+		onfetch = (onfetch) ? '"'+onfetch+'"' : 'null';		
 		
 		jscode+='$("'+element.id+'").scope = "'+element.scope+'";';
 		jscode+=Appcelerator.Compiler.getJSCode(Appcelerator.Compiler.parseOnAttribute(element));
 		if (!lazy)
 		{
-			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+');';
+			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+','+onfetch+');';
 			jscode+='$("'+element.id+'").fetched = true';
 		}
 		var parameters = {};
@@ -80,10 +82,15 @@ Appcelerator.Module.Content =
 			'functions': f
 		};
 	},
-	fetch: function (target,src,args,onload)
+	fetch: function (target,src,args,onload,onfetch)
 	{
 		Appcelerator.Util.IFrame.fetch(src,function(doc)
 		{
+			if (onfetch)
+			{
+				$MQ(onfetch);
+			}
+			
 			target = $(target);
 			var scope = target.getAttribute('scope') || target.scope;
 			doc.setAttribute('scope',scope);
