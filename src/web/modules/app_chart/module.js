@@ -1,8 +1,8 @@
 
 Appcelerator.Module.Chart =
 {
-//	flashRequired: true,
-//	flashVersion: 8.0,
+	flashRequired: true,
+	flashVersion: 8.0,
 	
 	getName: function()
 	{
