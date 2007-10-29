@@ -63,6 +63,10 @@
 			<tt>on="[condition] then [action]"</tt>.  The examples below demonstrate our
 			standard <b>conditions</b>.
 		</p>
+        <p>
+            To prevent a condition from bubbling up to a parent object expecting the same condition 
+            append an '!' after the condition name ('click' would become 'click!').
+        </p>
 			<p>
 				Here are Condition examples
 			</p>
@@ -271,7 +275,19 @@
 					</div>
 				</td>
 			</tr>	
-	
+            <tr>
+                <td class="test" valign="middle">
+                    Click Bubble Condition (click!)
+                </td>
+                <td class="result"> 
+                    <div style="border: 1px dashed; padding: 10px" on="click then set[color=green]">
+                        Click here and everything turns green.  Click there and I stay this color.             
+                        <div style="border: 1px dashed; padding: 10px" on="click! then set[color=red]">
+                            click me and I turn red.
+                        </div>
+                    </div>
+                </td>
+            </tr>
 		</table>
 		<app:statemachine id="test" initial="valid">
 			<state name="invalid" if="l:test33"></state>
@@ -480,7 +496,7 @@
 							</div>
 						</td>
 					</tr>	
-					<tr>
+                    <tr>
 						<td class="test" valign="middle">
 							Sortable Attribute
 						</td>
@@ -492,7 +508,19 @@
 							</div>
 						</td>
 					</tr>	
-
+                    <tr>
+                        <td class="test" valign="middle">
+                            Click Bubble Condition (click!)
+                        </td>
+                        <td class="result"> 
+                            <div style="border: 1px dashed; padding: 10px" on="click then set[color=green]">
+                                Click here and everything turns green.  Click there and I stay this color.             
+                                <div style="border: 1px dashed; padding: 10px" on="click! then set[color=red]">
+                                    click me and I turn red.
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 				</table>
 				<app:statemachine id="test" initial="valid">
 					<state name="invalid" if="l:test33"></state>
