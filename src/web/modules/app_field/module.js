@@ -63,6 +63,7 @@ Appcelerator.Module.Field =
 		var fieldDefaultLangId = element.getAttribute('fieldDefaultLangId');
 		var defaultFieldValue = '';
 		var footerOn = null, headerOn = null;
+		var inline = element.getAttribute('inline');
 		var parameters = String.unescapeXML(element.getAttribute('parameters'));
 		
 		if (fieldDefaultLangId)
@@ -118,8 +119,11 @@ Appcelerator.Module.Field =
 		var headerOnText = headerOn ? ' on="' + headerOn+'" ' : '';
 		var footerOnText = footerOn ? ' on="' + footerOn+'" ' : '';
 		
-		html += '<div id="' + id + '_header" '+headerOnText+' class="'+headerClass+'">' + title  + ' <span class="'+errorClass+'" id="'+errorId+'" style="visibility:hidden">'+error+'</span></div>';
-
+		if (!inline)
+		{
+		  html += '<div id="' + id + '_header" '+headerOnText+' class="'+headerClass+'">' + title  + ' <span class="'+errorClass+'" id="'+errorId+'" style="visibility:hidden">'+error+'</span></div>';
+        }
+              
 		var name = element.getAttribute('name');
 		var namestr = name ? 'name="'+name+'"' : '';
 
@@ -128,17 +132,22 @@ Appcelerator.Module.Field =
 			case 'text':
 			case 'password':
 			{
-				html += '<div>';
+				if (!inline) html += '<div>';
 				var add = (type=='password') ? element.getAttribute('hash') : null;
 				var addstr = add ? 'hash="'+add+'"' : '';
 				html += '<input '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" type="'+type+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') + '/>';
 				break;
 			}
-
+            case 'textarea':
+            {
+                if (!inline) html += '<div>';
+                html += '<textarea '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '')+'>'+defaultFieldValue+'</textarea>';
+                break;
+            }
 			case 'select':
 			case 'dropdown':
 			{
-				html += '<div>';
+				if (!inline) html += '<div>';
 				html += '<select '+validatorText+' '+namestr+' decorator="custom" decoratorId="'+errorId+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') ;
 				
 				var langid = element.getAttribute('langid');
@@ -152,18 +161,24 @@ Appcelerator.Module.Field =
 			}
 			case 'autocomplete':
 			{
-				html += '<div>';
+				if (!inline) html += '<div>';
 				html += '<input type="text" '+validatorText+''+namestr+' decorator="custom" decoratorId="'+errorId+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') + '/>';
 				break;
 			}
 			default:
 			{
-				throw "unsupported field type: '" + type +"'";
+				throw "unsupported field type: '" + type + "'";
 			}
 		}
-		html += '</div>';
-		html += '<div id="' + id + '_footer" '+footerOnText+' class="'+footerClass+'">' + description + '</div>';
-		
+		if (!inline) 
+		{
+		  html += '</div>';
+		  html += '<div id="' + id + '_footer" '+footerOnText+' class="'+footerClass+'">' + description + '</div>';
+		}
+        else
+        {
+          html += ' <span class="'+errorClass+'" id="'+errorId+'" style="visibility:hidden">'+error+'</span>';
+        }		
 		element.id = element.id+'_field';
 		
 		var field = $(id);
