@@ -3,13 +3,22 @@
 <head>
 	<title>Appcelerator&trade; Service Tester</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link rel="shortcut icon" href="images/favicon.ico"/>
 	<script src="js/appcelerator.js" type="text/javascript"></script>
-	<link rel="stylesheet" type="text/css" href="css/appcelerator.css" />
 	<style>
+	    * 
+	    { 
+	        margin:0; padding: * 
+	    }
 		body
 		{
 			background-color: #717171;
 			color: #fff;
+            font-family: tahoma,arial,helvetica;
+		}
+		img 
+		{ 
+		    border: 0; 
 		}
 		#header
 		{
@@ -35,7 +44,6 @@
 			top:15px;
 			font-size:24px;
 			color:#770000;
-			font-family: tahoma,arial,helvetica;
 		}
 		#form
 		{
@@ -103,10 +111,19 @@
 			padding:0;
 			margin-bottom:5px;
 		}
+		.noteBox 
+		{ 
+		   margin:0px auto; 
+		   padding: 5px; 
+		   border-style: solid; 
+		   border-width: 1px; 
+		   border-color: #F0C000; 
+		   background-color: #FFFFCE; 
+		}
 	</style>
 </head>
 
-<body>
+<body style="visibility:hidden" on="l:app.compiled then visible">
 
    <div id="header">
    	  <div id="logo"><a href="http://www.appcelerator.org" title="Appcelerator"><img src="images/appcelerator_gray_logo_small.png"/></a></div>

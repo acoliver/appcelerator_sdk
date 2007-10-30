@@ -89,19 +89,19 @@
 		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
 	</target>
 
-	<target name="deploy" depends="banner" description="* Deploy the Appcelerator Server war">
+	<target name="deploy" depends="banner,dist" description="* Deploy the Appcelerator Server war">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
 		<copy tofile="${deploy.dir}/${app.name}.war" file="stage/${app.name}.war"/>
 	</target>
-	<target name="deploy_server" depends="banner">
+	<target name="deploy_server" depends="banner,dist">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
 		<copy tofile="${deploy.dir}/appcelerator.war" file="server/setupfiles"/>
 	</target>
-	<target name="deploy_server_merged" depends="banner">
+	<target name="deploy_server_merged" depends="banner,dist">
 		<antcall target="prompt.deploy.dir"/>
 		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
 		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>

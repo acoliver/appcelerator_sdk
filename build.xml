@@ -285,7 +285,7 @@
 		<mkdir dir="${stage.dir}/sdk/java/doc"/>
 		<mkdir dir="${stage.dir}/sdk/java/test"/>
 		<copy todir="${stage.dir}/sdk/java" filtering="true"> 
-			<fileset dir="${build.java.dir}/sdk" includes="*.*,dist/*.*,dist/src/java/**"/>
+			<fileset dir="${build.java.dir}/sdk" includes="README,*.*,dist/*.*,dist/src/java/**"/>
 			<fileset dir="." includes="LICENSE"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist/lib/appcelerator" filtering="false"> 
@@ -320,7 +320,7 @@
 		<mkdir dir="${stage.dir}/sdk/php/doc"/>
 		<mkdir dir="${stage.dir}/sdk/php/test"/>
 		<copy todir="${stage.dir}/sdk/php" filtering="true"> 
-			<fileset dir="${build.php.dir}/sdk" includes="*.*"/>
+			<fileset dir="${build.php.dir}/sdk" includes="README,*.*"/>
 			<fileset dir="." includes="LICENSE"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/src/web" filtering="false"> 
