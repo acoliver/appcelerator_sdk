@@ -86,6 +86,12 @@ Appcelerator.Module.GoogleAnalytics =
 	},
 	buildWidget: function(element)
 	{
+		if (Appcelerator.Browser.isIPhone)
+		{
+	        return {
+	            'position' : Appcelerator.Compiler.POSITION_REMOVE
+	        };      
+		}
 		var account = null;
 		var domain = null;
 		var outboundLinks = [];
