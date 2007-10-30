@@ -86,45 +86,19 @@ Appcelerator.Module.GoogleAnalytics =
 	},
 	buildWidget: function(element)
 	{
-		if (Appcelerator.Browser.isIPhone)
-		{
-	        return {
-	            'position' : Appcelerator.Compiler.POSITION_REMOVE
-	        };      
-		}
-		var account = null;
-		var domain = null;
+		var account = element.getAttribute('account');
+		var domain = element.getAttribute('domain');
+		var trackoutboundlinks = element.getAttribute('trackoutboundlinks');
 		var outboundLinks = [];
 		
-		for (var c=0;c<element.childNodes.length;c++)
+		if (trackoutboundlinks)
 		{
-			var node = element.childNodes[c];
-			if (node.nodeType == 1)
+			trackoutboundlinks.split(',').each(function(f)
 			{
-				var value = Appcelerator.Util.Dom.getText(node).trim();
-				switch (node.nodeName.toLowerCase())
-				{
-					case 'account':
-					{
-						account = value;
-						break;
-					}
-					case 'domain':
-					{
-						domain = value;
-						break;
-					}
-					case 'trackoutboundlinks':
-					{
-						value.split(',').each(function(f)
-						{
-							outboundLinks.push(f.trim());
-						});
-						break;
-					}
-				}
-			}
+				outboundLinks.push(f.trim());
+			});
 		}
+		
 		var jscode = '';
 				
 		jscode += 'window.googleStuff={}; window.googleStuff._uacct="'+account+'";window.googleStuff._uanchor=1;window.googleStuff._ulink=1;';
