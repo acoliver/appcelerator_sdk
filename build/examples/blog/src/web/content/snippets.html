@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+<div id="content">
+   <h2>Snippets</h2>
+   <p>Snippets are little pieces of code that you can use to create layouts</p>
+   <div class="file_browser">
+        <div class="add_new">
+            <button on="click then l:add.snippet">Add new</button>
+        </div>
+        <div class="browser_header">
+            <span class="name">Name</span><span class="create">Action</span>
+        </div>
+       <app:iterator on="r:snippets.response then execute" property="snippets">
+            <html:div class="clickable" on="click then r:edit.snippet.request[title=#{title}, id=#{id}], \
+                    or r:remove.snippet.response[id=#{id}] then effect[Fade]">
+                <html:span class="name" >#{title}</html:span>
+                <html:span class="remove" on="click then r:remove.snippet.request[id=#{id}]">Remove</html:span>
+            </html:div>
+        </app:iterator>
+        <div class="clickable" style="display: none" on="l:add.snippet then show 
+                or click then r:edit.snippet.request[title=#{title}, id=#{id}]
+                or r:remove.snippet.response[id=#{id}] then effect[Fade]">
+            <span class="name" >Untitled</span>
+            <span class="remove" on="click then r:remove.snippet.request[id=untitled]">Remove</span>
+        </div>
+    </div>
+</div>
+<app:content src="content/edit_snippet_dialog.html"></app:content>
+</body>
+</html>

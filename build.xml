@@ -246,6 +246,9 @@
 	<target name="build_examples.nomin" depends="nomin,build_examples"/>
 	<target name="build_examples" depends="build_java" description="* Builds the examples">
 		<antcall target="build_example">
+			<param name="example" value="blog"/>
+		</antcall>
+		<antcall target="build_example">
 			<param name="example" value="forums"/>
 		</antcall>
 		<antcall target="build_example">

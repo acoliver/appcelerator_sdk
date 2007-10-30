@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+    <div style="display: none">
+        <!-- Pages mocks -->
+        <app:script on="r:pages.request then execute">
+            var pages = [{'id':'one', 'title':'Welcome to appforums', 'status': 'Published'}, 
+                    {'id':'two', 'title':'Build apps faster', 'status':'Published'}, 
+                    {'id':'three', 'title':'More app, less code', 'status':'Published'}];
+            $MQ("r:pages.response", {'pages': pages});
+        </app:script>
+        <app:script on="r:add.child.request then execute">
+            $MQ('r:add.child.response', {});
+        </app:script>
+        <app:script on="r:remove.page.request then execute">
+            $MQ('r:remove.page.response', {'id': this.data.id});
+        </app:script>
+        <app:script on="r:edit.page.request then execute">
+            $MQ('r:edit.page.response', {'title': this.data.title, 
+                'status': this.data.status, 'text': "I'm just playing around with this blog system"});
+        </app:script>
+        
+        <!-- Snippets mocks -->
+        <app:script on="r:snippets.request then execute">
+            var snippets = [{'id':'header', 'title':'header'}, 
+                    {'id':'footer', 'title':'Footer'}, 
+                    {'id':'sidebar', 'title':'Sidebar'}];
+            $MQ("r:snippets.response", {'snippets': snippets});
+        </app:script>
+        <app:script on="r:remove.snippet.request then execute">
+            $MQ('r:remove.snippet.response', {'id': this.data.id});
+        </app:script>
+        <app:script on="r:edit.snippet.request[id=header] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': 'Random header text'});
+        </app:script>
+        <app:script on="r:edit.snippet.request[id=footer] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': 'Footer text this is working really well'});
+        </app:script>
+        <app:script on="r:edit.snippet.request[id=sidebar] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': 'I have a snippet response'});
+        </app:script>
+        
+        <!-- Layout Mocks -->
+        <app:script on="r:layouts.request then execute">
+            var layouts = [{'id':'main', 'title':'Main Layout'}];
+            $MQ("r:layouts.response", {'layouts': layouts});
+        </app:script>
+        <app:script on="r:remove.layout.request then execute">
+            $MQ('r:remove.layout.response', {'id': this.data.id});
+        </app:script>
+        <app:script on="r:edit.layout.request[id=main] then execute">
+            $MQ('r:edit.layout.response', {'id': this.data.id, 'layout_title': 'Main Layout', 
+                'text': 'Random header text'});
+        </app:script>
+        <app:script on="r:edit.layout.request[id=footer] then execute">
+            $MQ('r:edit.layout.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': 'Footer text this is working really well'});
+        </app:script>
+        <app:script on="r:edit.layout.request[id=sidebar] then execute">
+            $MQ('r:edit.layout.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': 'I have a layout response'});
+        </app:script>
+        <app:script on="r:load.snippets.request then execute">
+            var snippets = [{'id':'header', 'title':'header'}, 
+                    {'id':'footer', 'title':'Footer'}, 
+                    {'id':'sidebar', 'title':'Sidebar'}];
+            $MQ('r:load.snippets.response', {'snippets': snippets});
+        </app:script>
+    </div>
+</body>

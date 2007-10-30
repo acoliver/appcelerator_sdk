@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <script type="text/javascript" src="js/appcelerator.js"></script>
+	<title>Edit Dialog</title>
+</head>
+<body>
+
+<app:modaldialog on="r:edit.page.response then execute and l:set.status[value=status]">  
+    <html:div width="80%" class="modal_dialog">
+        <html:div class="dialog_header">
+            Edit #{title} <span style='display: none' on="l:page.save then show and effect[Fade]">(Saved)</span>
+        </html:div>
+        <html:div class="dialog_body">
+            <html:table width="100%" height="30px">
+            <html:tr>
+                <html:th>
+                    Title:
+                </html:th>
+                <html:td class="clickable">
+                    <app:editinplace type='text' id="page_title" saveOn="click then l:save" 
+                        cancelOn="click then l:cancel" validator="required" position="right"
+                        defaultClassName="name" defaultValue="#{title}">
+                    </app:editinplace> 
+                </html:td>
+                <html:th>
+                    Status:
+                </html:th>
+                <html:td>
+                    <app:field validator="required" type="dropdown" langid="status_codes" 
+                        on="l:set.status then value[value]" >
+                    </app:field>
+                </html:td>
+            </html:tr>    
+            </html:table>
+            <html:h3 class="text_area">Page</html:h3>
+            <html:div class="text_area">
+                <textarea>#{text}</textarea>            
+            </html:div>
+            <html:button on="click then l:appcelerator.modaldialog.hide">Close</html:button> <html:button on="click then l:page.save">Save</html:button> <html:button>Save and Close</html:button>
+        </html:div>
+    </html:div>
+</app:modaldialog>
+
+</body>
+</html>

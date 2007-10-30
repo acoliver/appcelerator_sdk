@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body>
+<div id="content">
+    <h2>Pages</h2>
+    <p>Pages are the content of your blog.</p>
+    <div class="file_browser">
+        <div class="browser_header">
+            <span class="name">Name</span><span class="status">Status</span><span class="create">Action</span>
+        </div>
+        <div>
+            <span class="name">About</span><span class="status"></span>
+        </div>
+        <div>
+            <span class="name">
+                Pages
+            </span>
+            <span class="status"></span><span class="create" on="click then l:add.child">Add Child</span>
+        </div>
+        <app:iterator on="r:pages.response then execute" property="pages">
+            <html:div class="child clickable" on="click then r:edit.page.request[title=#{title}, status=#{status}] \
+                    or r:remove.page.response[id=#{id}] then effect[Fade]">
+                <html:span class="name" >#{title}</html:span>
+                <html:span class="status">#{status}</html:span>
+                <html:span class="remove" on="click! then r:remove.page.request[id=#{id}]">Remove</html:span>
+            </html:div>
+        </app:iterator>
+        <div class="child" style="display: none" on="l:add.child then show">
+            <span class="name">
+                Untitled
+            </span>
+            <span class="status">Draft</span><span class="create">Remove</span>
+        </div>
+    </div>
+</div>
+<app:content src="content/edit_page_dialog.html"></app:content>
+</body>
+</html>
