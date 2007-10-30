@@ -32,42 +32,11 @@ Appcelerator.Core.require = function (moduleName,onload)
 			array.push(onload);
 			return;
 		}
-		Appcelerator.Core.fetching[path]=[];
+		Appcelerator.Core.fetching[path]=[onload];
 		
 		var script = document.createElement('script');
 		script.setAttribute('type','text/javascript');
 		script.setAttribute('src',path);
-		var loaded = false;
-		var loadFunc = function()
-		{
-			if (Appcelerator.Browser.isIE)
-			{
-				switch(this.readyState)
-				{
-					case 'loaded':   // state when loaded first time
-					case 'complete': // state when loaded from cache
-						break;
-					default:
-						return;
-				}
-			}
-			
-			if (loaded) return;
-			loaded = true;
-			if (typeof onload == 'function') onload();
-			var listeners = Appcelerator.Core.fetching[path];
-			if (listeners)
-			{
-				// notify any pending listeners
-				for (var c=0;c<listeners.length;c++)
-				{
-					listeners[c]();
-				}
-			}
-            delete Appcelerator.Core.fetching[path];
-		};
-		script.onload = loadFunc;
-		script.onreadystatechange = loadFunc;
 		script.onerror = function(e)
 		{
 			Logger.error('Error loading module '+moduleName+' from '+path+'\n Exception: '+Object.getExceptionDetail(e));
@@ -129,27 +98,58 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 		//Refresh css (link tags only) in IE 6/7 because the give priority to css in load order, not document order
 		if (Appcelerator.Browser.isIE)
 		{
+			var link = document.styleSheets[document.styleSheets.length-1].owningElement;
+			if (link)
+			{
+				link.moduleCSS = 1;
+			}
+			
 			var ss = document.styleSheets;
 			var arr = [];
+			var modarr = [];
 			
 			try
 			{
 				for (var i = 0; i < document.styleSheets.length; i++)
 				{
-					arr.push (document.styleSheets[i].owningElement.outerHTML);
+					if (document.styleSheets[i].owningElement.moduleCSS)
+					{
+						modarr.push ([document.styleSheets[i].owningElement,document.styleSheets[i].owningElement.outerHTML]);
+					}
+					else
+					{
+						arr.push ([document.styleSheets[i].owningElement,document.styleSheets[i].owningElement.outerHTML]);
+					}
 				}
 			} 
 			catch (e) 
 			{ 
 				throw 'Failed to gather CSS: ' + e.message; 
 			}
-
+					
 			try
 			{
-				arr.reverse();				
+				for (var i = arr.length-1; i >= 0; i--)
+				{
+					Element.remove(arr[i][0]);
+				}
+				
+				for (var i = modarr.length-1; i >= 0; i--)
+				{
+					Element.remove(modarr[i][0]);
+				}
+				
+				for (var i = 0; i < modarr.length; i++)
+				{
+					var elem = document.createElement(modarr[i][1]);
+					elem.moduleCSS = 1;
+					Appcelerator.Core.HeadElement.appendChild(elem);
+				}
+							
 				for (var i = 0; i < arr.length; i++)
 				{
-					document.getElementsByTagName('head')[0].appendChild(document.createElement(arr[i]));
+					var elem = document.createElement(arr[i][1]);
+					Appcelerator.Core.HeadElement.appendChild(elem);
 				}
 			} 
 			catch (e) 
@@ -198,6 +198,18 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 	{
 		window.observe(window,'unload',module.onUnload);
 	}
+
+	var path = Appcelerator.ModulePath + moduleName + '/module.js';	
+	var listeners = Appcelerator.Core.fetching[path];
+	if (listeners)
+	{
+		// notify any pending listeners
+		for (var c=0;c<listeners.length;c++)
+		{
+			listeners[c]();
+		}
+	}
+    delete Appcelerator.Core.fetching[path];
 };
 
 //
