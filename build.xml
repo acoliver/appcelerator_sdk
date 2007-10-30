@@ -339,13 +339,17 @@
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/examples" filtering="false"> 
-			<fileset dir="${stage.dir}/examples" includes="**/*"/>
+			<fileset dir="${stage.dir}/examples">
+				<include name="**/*"/>
+				<exclude name="**/setupfiles" />
+				<exclude name="**/*.jar" />
+			</fileset>	
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/test" filtering="false"> 
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/php" filtering="false"> 
-			<fileset dir="build" includes="examples/**"/>
+			<fileset dir="build" includes="examples/**" excludes="examples/**/lib" />
 		</copy>
 	</target>
 	
