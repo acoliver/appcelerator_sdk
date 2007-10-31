@@ -784,7 +784,7 @@ cat ${src.doc.dir}/treechild/${name}.html</echo>
 		<fail message="must define scp.user" unless="scp.user"/>
 		<fail message="must define scp.pwd" unless="scp.pwd"/>
 		<sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
-			command="rm -rf ${scp.dir}/${dir}/*;rm -rf ${scp.dir}/${file}"/>
+			command="echo ${scp.pwd} | sudo -S rm -rf ${scp.dir}/${dir}/*;rm -rf ${scp.dir}/${file}"/>
 	</target>
 	<target name="get_jsch">
 		<available file="${ant.home}/lib/jsch-0.1.35.jar" type="file" property="jsch.exists" />
