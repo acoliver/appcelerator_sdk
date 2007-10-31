@@ -1528,6 +1528,8 @@ Ajax.PeriodicalUpdater.prototype = Object.extend(new Ajax.Base(), {
     this.updater = new Ajax.Updater(this.container, this.url, this.options);
   }
 });
+
+appCompilerIdCache = {};
 function $(element) {
   if (arguments.length > 1) {
     for (var i = 0, elements = [], length = arguments.length; i < length; i++)

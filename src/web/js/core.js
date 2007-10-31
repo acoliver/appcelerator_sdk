@@ -67,7 +67,7 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 		link.setAttribute('type','text/css');
 		link.setAttribute('rel','stylesheet');
 		link.setAttribute('href',path);
-		link.setAttribute('id','css_'+moduleName);
+		Appcelerator.Compiler.setElementId(link, 'css_'+moduleName);
 		
 		var refPoint = null;
 		for (var c=0;c<Appcelerator.Core.HeadElement.childNodes.length;c++)

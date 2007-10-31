@@ -9,7 +9,7 @@ Appcelerator.Util.IFrame =
 		copyContent = (copyContent==null) ? false : copyContent;
 		var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
 		var frame = document.createElement('iframe');
-	   	frame.setAttribute('id', frameid);
+		Appcelerator.Compiler.setElementId(frame, frameid);
 	   	//This prevents Firefox 1.5 from getting stuck while trying to get the contents of the new iframe
 	   	if(!Appcelerator.Browser.isFirefox)
 	   	{

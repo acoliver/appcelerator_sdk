@@ -51,8 +51,48 @@ Appcelerator.Compiler.getAndEnsureId = function(element)
 	{
 		element.id = Appcelerator.Compiler.generateId();
 	}
+	
+	appCompilerIdCache[element.id] = element;
+	
 	return element.id;
 };
+
+Appcelerator.Compiler.setElementId = function(element, id)
+{
+	delete appCompilerIdCache[id];	
+	element.id = id;
+	appCompilerIdCache[element.id] = element;	
+}
+
+Appcelerator.Compiler.removeElementId = function(element)
+{
+	delete appCompilerIdCache[element.id];	
+}
+
+function $(element) 
+{
+	if (arguments.length > 1) 
+	{
+    	for (var i = 0, elements = [], length = arguments.length; i < length; i++)
+		{
+			elements.push($(arguments[i]));
+		}
+    	return elements;
+ 	}
+
+	if (Object.isString(element))
+	{
+		var id = element;
+	 	element = appCompilerIdCache[id];
+		
+		if (!element)
+		{
+			element = document.getElementById(id);
+		}
+	}
+	
+	return Element.extend(element);
+}
 
 Appcelerator.Compiler.generateId = function()
 {
@@ -235,7 +275,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 {
 	if (!document.body.id || Appcelerator.Compiler.automatedIDRegex.test(document.body.id))
 	{
-		document.body.id = 'app_body';
+		Appcelerator.Compiler.setElementId(document.body, 'app_body');
 	}
 	
 	var state = Appcelerator.Compiler.createCompilerState();
@@ -763,7 +803,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			}
 		}
 		
-		var id = element.id || Appcelerator.Compiler.generateId();
+		var id = Appcelerator.Compiler.getAndEnsureId(element);
 		var instructions = module.buildWidget(element,state);
 		id = element.id; // allow the widget to change the id
 		var added = false;
@@ -781,7 +821,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				if (html!=null)
 				{
 					// rename the real ID
-					element.id = id+'_widget';
+					Appcelerator.Compiler.setElementId(element, id+'_widget');
 					//TODO: look to see how we can deal with this without adding DIV so we 
 					//can support things like TR inside an iterator
 					html = '<div id="'+id+'_temp" style="margin:0;padding:0;">'+html+'</div>';
@@ -843,6 +883,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			//
 			if (removeElement)
 			{
+				Appcelerator.Compiler.removeElementId(element);
 				Element.remove(element);
 			}
 			
@@ -856,7 +897,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				}
 				if (te)
 				{
-					te.id = id;
+					Appcelerator.Compiler.setElementId(te, id);
 					Appcelerator.Compiler.delegateToContainerProcessors(te);
 				}
 				else
