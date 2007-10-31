@@ -93,6 +93,17 @@
 		false and the action will not be executed.
     </div>
 
+    <h3>Delayed Execution of Actions</h3>
+    <div>
+        You can execute and action after an arbitrary period of time using the syntax:
+        <span class="code">after &lt;t&gt;s</span>, where &lt;t&gt; is an integer number of seconds.
+        For example:
+        <textarea name="code" class="xml:nocontrols">
+            <input type="button" on="click then r:send.message after 2s" />
+        </textarea>
+        
+        In the above example, <span class="code">r:send.message</span> will be sent 2 seconds after the button is clicked.
+    </div>
     <script>
         dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
         dp.SyntaxHighlighter.HighlightAll('code');
