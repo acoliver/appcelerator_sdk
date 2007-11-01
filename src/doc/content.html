@@ -82,6 +82,20 @@
 			specified in the Content Widgets definition.  You can also pass arguments to a content file to do things like
 			set page titles (like in the example below) or anything else you can think up.
 		</p>
+		<p>
+		    The content of the Content Widget should be a well-formed XHTML page.  This is not a requirement, just a good thing
+		    to do.  Having your content in a valid XHTML page means that they can be used independently, if required, and 
+		    indexed by search engines, such as <a href="http://www.google.com" rel="external">Google</a>.  The Content Widget
+		    applies any styles defined in the header and removes conflicting markup, such as &lt;html&gt; tags.  
+	    </p>
+	    <p>
+            The way Content Widgets work can expose a few quirks.  The Content Widget does nothing with duplicate id's.
+            Also, the content of a Content Widget is loaded initially in a hidden iframe then loaded into the DOM of the
+            parent page.  Although the Content Widget will eventually throw away any script tags defined in the header, 
+            they will be evaluated when the content is parsed in the iframe.  This means that including references to 
+            large javascript files (such as Appcelerator) will cause performance degradation. Any javascript that
+            the include file will need should either be included in the parent file or included in an &lt;app:script&gt; block.  
+		</p>
 		<div id="styled">
 			<app:tabpanel id="contentmenu" initial="movies">
 				<tab name="movies">Favorite Movies</tab>
