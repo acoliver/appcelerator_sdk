@@ -210,6 +210,7 @@ textarea
 {
     position: relative;
     float: right;
+    height: 368px;
 }
 
 .left_column 
@@ -250,8 +251,14 @@ textarea
     height: 404px;
 }
 
+h4.snippet_list_header
+{
+    margin-top: 0px;
+}
 .snippet_list
 {
     border: 1px inset #222222;
     background-color: white;
+    height: 100%;
+    overflow-x: visible;
 }

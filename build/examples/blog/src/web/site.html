@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+<noscript><meta http-equiv="refresh" content="0;URL=upgrade_script.html"></noscript>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>AppBlog by Appcelerator&trade;</title>
+
+<script type="text/javascript" src="js/appcelerator.js"></script>
+<script type="text/javascript" src="js/mock.js"></script>
+<script type="text/javascript" src="locale/en.js"></script>
+<script type="text/javascript">
+    //var mock = new Mock();
+</script>
+<script type="text/javascript">
+    /* Appcelerator does not currently support any automatic way
+       of attaching events to reponses for a message that are
+       placed inside of content locations.  Therefore, we
+       have to write some custom javascript.  
+       
+       Since appcelerator is a pure-web development platform, we
+       can easily do things like this.
+       
+       This feature will likely be supported within the platform 
+       in a later release. 
+     */
+    function loadContentFromMessage(element_id, data)
+    {
+        $(element_id).innerHTML = data.value;
+        Appcelerator.Compiler.dynamicCompile($(element_id));
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/site.css" />
+</head>
+
+<body style="display: none" on="l:app.compiled then show">
+    <!-- <app:script>
+        var mock = new Mock();
+    </app:script> -->
+    <app:content src="content/mock.html"></app:content>
+    
+    <app:message on="l:app.compiled then execute after 2s" name="r:load.header.request"></app:message>
+    <app:message on="l:app.compiled then execute after 2s" name="r:load.content.request"></app:message>
+    <app:message on="l:app.compiled then execute after 2s" name="r:load.footer.request"></app:message>
+    <app:message on="l:app.compiled then execute after 2s" name="r:load.sidebar.request"></app:message>
+    
+    <div id="container">
+        <div id="header"></div>
+        <div id="body">
+            <div id="content"></div>
+            <div id="sidebar"></div>
+        </div>
+        <div id="footer"></div>
+    </div>
+    
+    <app:script on="r:load.header.response then execute">
+        loadContentFromMessage('header', this.data);
+    </app:script>
+    <app:script on="r:load.content.response then execute">
+        loadContentFromMessage('content', this.data);
+    </app:script>    
+    <app:script on="r:load.footer.response then execute">
+        loadContentFromMessage('footer', this.data);
+    </app:script>
+    <app:script on="r:load.sidebar.response then execute">
+        loadContentFromMessage('sidebar', this.data);
+    </app:script>
+</body>
+</html>

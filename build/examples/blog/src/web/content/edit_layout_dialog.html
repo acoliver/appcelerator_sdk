@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <script type="text/javascript" src="js/appcelerator.js"></script>
     <title>Edit Dialog</title>  
 </head>
 <body>
@@ -30,17 +29,17 @@
                 <html:div class="text_area">
                     <html:div class="left_column">
                         <html:div class="layout_body">
-                            <html:div class="layout_header" on="drop then script[alert('drop')]" droppable='true'><html:h5>header</html:h5></p></html:div>                        
+                            <html:div class="layout_header" id="header_drop_area" on="drop then script[Logger.debug(this.element)]" droppable='true'><html:h5>header</html:h5></p></html:div>                        
                             <html:div class="layout_content" droppable='true'><html:h5>content</html:h5></html:div>                        
                             <html:div class="layout_footer" droppable='true'><html:h5>footer</html:h5></html:div>                        
                             <html:div class="layout_sidebar" droppable='true'><html:h5>sidebar</html:h5></html:div>                        
                         </html:div>
                     </html:div>            
                     <html:div class="right_column">
-                        <html:h4>Layout Elements</html:h4>
+                        <html:h4 class="snippet_list_header">Layout Elements</html:h4>
                         <html:div class="snippet_list">
                             <app:iterator on="r:load.snippets.response then execute" property="snippets">
-                                 <html:div class="name clickable" draggable='true'>#{title}</html:div>
+                                 <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
                             </app:iterator>
                         </html:div>
                     </html:div>

@@ -8,7 +8,9 @@
 <title>AppBlog by Appcelerator&trade;</title>
 
 <script type="text/javascript" src="js/appcelerator.js"></script>
+<script type="text/javascript" src="js/mock.js"></script>
 <script type="text/javascript" src="locale/en.js"></script>
+
 <link rel="stylesheet" type="text/css" href="css/blog.css" />
 </head>
 
@@ -24,6 +26,9 @@
     </app:tabpanel>
 </div>
 
+<!--
+<app:editor>Get this text to show up</app:editor>
+-->
 <div id="container">
     <app:content src="content/mock.html"></app:content>
     <div style="display: none" on="adminmenu[pages] then r:pages.request and show else hide">
