@@ -124,6 +124,24 @@
 		In this example, the DIV will fade 2 seconds after the <tt>l:user.logged.in</tt> is received
 		with <b>success=true</b> in its data payload.
 	</p>
+
+	<h3>Using <tt>regex</tt> for message type in conditions</h3>
+
+	<p>
+		Appcelerator allows you to explicitly define the type of message that is used as part of the condition, or 
+		the usage of regular expressions
+	</p>
+	<p>
+	<textarea name="code" class="xml:nocontrols">
+		<app:script on="l:~app.content.loaded.*">
+			alert(this.data);
+		</app:script>
+	</textarea>
+	</p>
+
+	<p>
+		In this example, any local messages begining with <tt>app.content.loaded</tt> will display the payload as an alert.
+	</p>
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
 
