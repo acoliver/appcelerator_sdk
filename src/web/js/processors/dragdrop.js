@@ -51,7 +51,7 @@ Appcelerator.Compiler.registerAttributeProcessor('div','droppable',
 			code += 'for (var c=0;c<listeners.length;c++)';
 			code += '{';
 			code += 'var cb = listeners[c];';
-			code += 'cb.onDrop($("'+element.id+'"));';
+			code += 'cb.onDrop($("'+element.id+'"), e);';
 			code += '}';
 			code += '}';
 			code += '};';

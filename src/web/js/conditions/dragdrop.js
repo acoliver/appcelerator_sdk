@@ -55,9 +55,9 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			code += 'var actionFunc = function(scope, data) {' + Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond) + '};';
 			code += 'element.dropListeners.push(';
 			code += '{';
-			code += 'onDrop:function(e)';
+			code += 'onDrop:function(e, dropped)';
 			code += '{';
-			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'"});';
+			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'", element: dropped});';
 			code += '}';
 			code += '});';
 			return code;
