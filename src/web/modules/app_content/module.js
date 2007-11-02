@@ -91,7 +91,7 @@ Appcelerator.Module.Content =
 		{
 			if (onfetch)
 			{
-				$MQ(onfetch);
+				$MQ(onfetch,{'src':src,'args':args});
 			}
 			
 			target = $(target);
@@ -121,7 +121,7 @@ Appcelerator.Module.Content =
 			
 			if (onload)
 			{
-				$MQ(onload);
+				$MQ(onload,{'src':src,'args':args});
 			}
 		},true,true);
 	}
