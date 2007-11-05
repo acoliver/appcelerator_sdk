@@ -58,9 +58,6 @@
 		<state name="on" if="l:showsearch.request"></state>
 		<state name="off" if="l:hidesearch.request or r:search.request"></state>
 	</app:statemachine>
-	<app:script on="l:content.loaded then execute">
-		alert('you loaded '+this.data);
-	</app:script>
 	<div id="container">
 		<div id="content">
 			<app:content src="content/mock.html" onload="l:content.loaded" onfetch="l:content.fetched" args="{'param1':'wassup'}"></app:content>
