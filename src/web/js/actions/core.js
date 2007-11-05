@@ -423,6 +423,37 @@ var ResetAction =
 Appcelerator.Compiler.registerCustomAction('clear',ResetAction);
 Appcelerator.Compiler.registerCustomAction('reset',ResetAction);
 
+var ResetFormAction =
+{
+	build: function(id,action,params)
+	{
+		var target = Appcelerator.Compiler.findParameter(params,'id') || id;
+		var element = $(target);
+		var code = null;
+		var form = null;
+		
+		switch (Appcelerator.Compiler.getTagname(element))
+		{
+			case 'form':
+			{
+				form='$("'+target+'")';
+				break;
+			}
+			case 'input':
+			case 'select':
+			case 'textarea':
+			default:
+			{
+				form='$("'+target+'").form';
+				break;
+			}
+		}
+		code = form+'.reset()';
+		return code;
+	}
+};
+Appcelerator.Compiler.registerCustomAction('clearform',ResetFormAction);
+
 Appcelerator.Compiler.registerCustomAction('popup',
 {
 	re: /([+|-]{0,1})([0-9])+/,

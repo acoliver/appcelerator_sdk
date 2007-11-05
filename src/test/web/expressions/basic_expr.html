@@ -701,6 +701,30 @@
 			</div>
 		</td>
 	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:clearform.form">Run Test</a>
+			clearform Action (form).
+		</td>
+		<td class="result">	
+			<form on="l:clearform.form then clearform" autocomplete="off">
+			<input type="text" value=""/>
+			<input type="text" value=""/>
+			</form>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:clearform.form">Run Test</a>
+			clearform Action (input).
+		</td>
+		<td class="result">	
+			<form autocomplete="off">
+			<input type="text" value="" on="l:clearform.form then clearform"/>
+			<input type="text" value=""/>
+			</form>
+		</td>
+	</tr>	
 </table>
 
 <app:script on="l:test26 then execute">
