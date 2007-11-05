@@ -58,16 +58,18 @@
 		<state name="on" if="l:showsearch.request"></state>
 		<state name="off" if="l:hidesearch.request or r:search.request"></state>
 	</app:statemachine>
-	
+	<app:script on="l:content.loaded then execute">
+		alert('you loaded '+this.data);
+	</app:script>
 	<div id="container">
 		<div id="content">
-			<app:content src="content/mock.html"></app:content>
-			<app:content src="content/mock_load.html"></app:content>
-			<app:content src="content/forums.html" lazy="false"></app:content>
-			<app:content src="content/users.html" lazy="false"></app:content>
-			<app:content src="content/threads.html" lazy="false"></app:content>
-			<app:content src="content/login.html" lazy="false"></app:content>
-			<app:content src="content/posts.html" lazy="false"></app:content>
+			<app:content src="content/mock.html" onload="l:content.loaded" onfetch="l:content.fetched" args="{'param1':'wassup'}"></app:content>
+			<app:content src="content/mock_load.html" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
+			<app:content src="content/forums.html" lazy="false" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
+			<app:content src="content/users.html" lazy="false" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
+			<app:content src="content/threads.html" lazy="false" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
+			<app:content src="content/login.html" lazy="false" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
+			<app:content src="content/posts.html" lazy="false" onload="l:content.loaded" onfetch="l:content.fetched"></app:content>
 			<table width="100%"><tr><td  height="470px" valign="middle" align="center" on="main[welcome] then show else hide">
 			<img src="images/logo.png"/>
 			</td></tr></table>

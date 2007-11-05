@@ -363,6 +363,18 @@
 					</select>
 				</td>
 			</tr>	
+			<tr>
+				<td class="test" valign="middle">
+					<a on="click then l:clearformtest">Clearform Action</a>
+					Reset a Form from an element (fill in values and click link)
+				</td>
+				<td class="result">	
+					<form>
+					<input type="text" on="l:clearformtest then clearform" value=""/>
+					<input type="file"/>
+					</form>
+				</td>
+			</tr>	
 			<!--
 			<tr>
 				<td class="test" valign="middle">
@@ -834,6 +846,18 @@
 								<option value="3">three</option>
 
 							</select>
+						</td>
+					</tr>	
+					<tr>
+						<td class="test" valign="middle">
+							<a on="click then l:clearformtest">Clearform Action</a>
+							Reset a Form from an element (fill in values and click link)
+						</td>
+						<td class="result">	
+							<form>
+							<input type="text" on="l:clearformtest then clearform" value=""/>
+							<input type="file"/>
+							</form>
 						</td>
 					</tr>	
 					<tr>
