@@ -152,6 +152,32 @@
     </tr>
     <tr>
         <td class="test" valign="middle">
+            Dynamic javascript property, with leading and trailing whitespaces
+        </td>
+        <td class="result">
+            <a on="click then l:set.test.whitespace1[ result=expr(someGlobalVariable) ]">Click to run</a>
+
+            <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+                on="l:set.test.whitespace1 then value[result]">
+                Waiting on click...
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Dynamic javascript property, with whitespace all over the place
+        </td>
+        <td class="result">
+            <a on="click then l:set.test.whitespace2[ result = expr( 1 + 1 ) ]">Click to run</a>
+
+            <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
+                on="l:set.test.whitespace2 then value[result]">
+                Replaced by 2 when test passes.......
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
             Dynamic javascript property by calling function
         </td>
         <td class="result">

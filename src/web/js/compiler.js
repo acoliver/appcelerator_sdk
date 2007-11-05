@@ -1796,16 +1796,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			case '\t':
 			case '\r':
 			{
-				switch (state)
-				{
-					case STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER:
-					case STATE_LOOKING_FOR_VARIABLE_BEGIN:
-					case STATE_LOOKING_FOR_VALUE_BEGIN:
-					{
-						append = false;
-						break;
-					}
-				}
+				append = false;
 				break;
 			}
 			case '{':
@@ -1864,6 +1855,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 		if (c + 1 == len && key)
 		{
 			//at the end
+			currentstr = currentstr.strip();
 			if (asjson)
 			{
 				data[key]=Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart);
