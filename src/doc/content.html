@@ -249,6 +249,16 @@
 					  <td class="term">args</td>
 					  <td class="def">JSON representation of parameters.  For example: <tt>args="{'id':'123'}"</tt></td>
 					</tr>
+					<tr>
+					  <td class="term">onload</td>
+					  <td class="def">The name of the message to be published when the content is loaded (content lifecycle is fetch, compile, load, then execute).  This will carry a payload of <tt>src</tt> and <tt>args</tt>
+						so that you can uniquely identify the callback.</td>
+					</tr>
+					<tr>
+					  <td class="term">onfetch</td>
+					  <td class="def">The name of the message to be published when the content is fetched (content lifecycle is fetch, compile, load, then execute).  This will carry a payload of <tt>src</tt> and <tt>args</tt>
+						so that you can uniquely identify the callback.</td>
+					</tr>
 				</table>
 		</p>
 	</div>	
