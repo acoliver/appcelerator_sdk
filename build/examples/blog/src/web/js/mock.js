@@ -26,8 +26,8 @@ Mock.prototype =
 		var html = [];
 		html.push("<h3>Archives</h3>");
 		html.push("<ul>");
-		html.push("<li><a on='click then script[alert(this)]'>Last Month</a></li>");
-		html.push("<li><a on='click then script[alert(this)]'>All</a></li>");
+		html.push("<li><a on='click then l:reload.from.archive and r:load.content.request[type=\"archive\"]'>Last Month</a></li>");
+		html.push("<li><a on='click then l:reload.from.archive and r:load.content.request'>All</a></li>");
 		html.push("</ul>")
 		return html.join(' ');		
 	},
@@ -62,6 +62,14 @@ Mock.prototype =
 		return html.join(" ");
 	},
 
+	generateContentLastMonth: function()
+	{
+		var html = [];
+		html.push(this.postTwo());
+		html.push(this.postThree());
+		return html.join(" ");
+	},
+	
 	postOne: function()
 	{
 		var html = [];
@@ -105,4 +113,15 @@ Mock.prototype =
 		html.push("</div>");
 		return html.join(' ');
 	}
+};
+
+window.printMe = function(element) 
+{
+    var str;
+	var keys = Object.keys(element);
+    for(var p in keys) 
+    {
+        str += "{ " + p + ", " + element[p] + "}, ";
+    }
+    Logger.debug(str);
 }

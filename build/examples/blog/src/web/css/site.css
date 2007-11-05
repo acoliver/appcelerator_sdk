@@ -46,6 +46,7 @@ body
 	float:left;
 	margin-left:30px;
 	width:550px;
+	border-right: #cccccc 1px dotted;
 }
 
 #footer
@@ -62,7 +63,19 @@ body
 	float: right;
 	position: relative;
 	width: 205px;
-	border-left: #cccccc 1px dotted;
 	margin-right: 20px;
 	padding-left: 10px;
+}
+
+#sidebar hr 
+{
+    color: rgb(71, 71, 71);
+    background-color: rgb(71, 71, 71);
+	border: 1px;
+}
+
+#sidebar li a 
+{
+    color: rgb(49,105,182);
+    text-decoration: none;
 }

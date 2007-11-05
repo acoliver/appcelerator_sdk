@@ -46,10 +46,10 @@
     <app:message on="l:app.compiled then execute after 2s" name="r:load.footer.request"></app:message>
     <app:message on="l:app.compiled then execute after 2s" name="r:load.sidebar.request"></app:message>
     
-    <div id="container">
+    <div id="container" style="display: none" on="r:load.content.response then show">
         <div id="header"></div>
         <div id="body">
-            <div id="content"></div>
+            <div id="content" on="l:reload.from.archive then hide or r:load.content.response then effect[Appear]"></div>
             <div id="sidebar"></div>
         </div>
         <div id="footer"></div>

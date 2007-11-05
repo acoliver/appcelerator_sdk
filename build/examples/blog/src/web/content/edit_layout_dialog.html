@@ -5,6 +5,11 @@
     <title>Edit Dialog</title>  
 </head>
 <body>
+    <app:script on="l:drop.item then execute">
+        /*printMe(this);*/
+        printMe(this.data.element);
+        alert(this.data.element);
+    </app:script>
     <app:modaldialog on="r:edit.layout.response then execute and script[$MQ('r:load.snippets.request')]"> 
         <app:message name="r:load.snippets.request"></app:message> 
         <html:div width="80%" class="modal_dialog">
@@ -29,10 +34,10 @@
                 <html:div class="text_area">
                     <html:div class="left_column">
                         <html:div class="layout_body">
-                            <html:div class="layout_header" id="header_drop_area" on="drop then script[Logger.debug(this.element)]" droppable='true'><html:h5>header</html:h5></p></html:div>                        
-                            <html:div class="layout_content" droppable='true'><html:h5>content</html:h5></html:div>                        
-                            <html:div class="layout_footer" droppable='true'><html:h5>footer</html:h5></html:div>                        
-                            <html:div class="layout_sidebar" droppable='true'><html:h5>sidebar</html:h5></html:div>                        
+                            <html:div class="layout_header" id="header_drop_area" droppable='true' on="drop then l:drop.item[element=element]"><html:h5>header</html:h5></html:div>                        
+                            <html:div class="layout_content" id="content_drop_area" droppable='true'><html:h5>content</html:h5></html:div>                        
+                            <html:div class="layout_footer" id="footer_drop_area" droppable='true'><html:h5>footer</html:h5></html:div>                        
+                            <html:div class="layout_sidebar" id="sidebar_drop_area" droppable='true'><html:h5>sidebar</html:h5></html:div>                        
                         </html:div>
                     </html:div>            
                     <html:div class="right_column">

@@ -35,25 +35,30 @@
         
         <!-- Snippets mocks -->
         <app:script on="r:snippets.request then execute">
-            var snippets = [{'id':'header', 'title':'header'}, 
+            var snippets = [{'id':'logo', 'title':'Logo'}, 
                     {'id':'footer', 'title':'Footer'}, 
-                    {'id':'sidebar', 'title':'Sidebar'}];
+                    {'id':'archive', 'title':'Archive Links'},
+                    {'id':'links', 'title':'Competitors'}];
             $MQ("r:snippets.response", {'snippets': snippets});
         </app:script>
         <app:script on="r:remove.snippet.request then execute">
             $MQ('r:remove.snippet.response', {'id': this.data.id});
         </app:script>
-        <app:script on="r:edit.snippet.request[id=header] then execute">
+        <app:script on="r:edit.snippet.request[id=logo] then execute">
             $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
-                'text': Mock.generateHeader()});
+                'text': mock.generateHeader()});
         </app:script>
         <app:script on="r:edit.snippet.request[id=footer] then execute">
             $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
-                'text': Mock.generateFooter()});
+                'text': mock.generateFooter()});
         </app:script>
-        <app:script on="r:edit.snippet.request[id=sidebar] then execute">
+        <app:script on="r:edit.snippet.request[id=archive] then execute">
             $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
-                'text': Mock.generateSidebar()});
+                'text': mock.archiveSection()});
+        </app:script>
+        <app:script on="r:edit.snippet.request[id=links] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': mock.linksSection()});
         </app:script>
         
         <!-- Layout Mocks -->
@@ -69,9 +74,11 @@
                 'text': 'Random header text'});
         </app:script>
         <app:script on="r:load.snippets.request then execute">
-            var snippets = [{'snippet_id':'header', 'title':'header'}, 
-                    {'snippet_id':'footer', 'title':'Footer'}, 
-                    {'snippet_id':'sidebar', 'title':'Sidebar'}];
+        var snippets = [{'snippet_id':'logo', 'title':'Logo'}, 
+                {'snippet_id':'footer', 'title':'Footer'}, 
+                {'snippet_id':'archive', 'title':'Archive Links'},
+                {'snippet_id':'links', 'title':'Competitors'},
+                {'snippet_id':'content', 'title':'Content'}];
             $MQ('r:load.snippets.response', {'snippets': snippets});
         </app:script>
         
@@ -86,7 +93,14 @@
             $MQ('r:load.sidebar.response', {'value': mock.generateSidebar() });
         </app:script>
         <app:script on="r:load.content.request then execute">
-            $MQ('r:load.content.response', {'value': mock.generateContent() });
+            if(this.data.type == 'archive') 
+            {
+                $MQ('r:load.content.response', {'value': mock.generateContentLastMonth() });                
+            }
+            else
+            {
+                $MQ('r:load.content.response', {'value': mock.generateContent() });
+            }
         </app:script>
     </div>
 </body>
