@@ -186,6 +186,11 @@ var addsetBuilder =
 		}
 		else
 		{
+			if (key.startsWith("style"))
+			{
+				return "$('"+id+"')."+key+ "=" + Appcelerator.Compiler.generateSetter(value);
+			}
+			
 			var code = 'var e = $("'+id+'"); if (!e) throw "syntax error: element with ID: '+id+' doesn\'t exist";'
             code+="if (e.nodeName=='IFRAME' && '"+key+"'=='src'){";
             code+="var onload=e.getAttribute('onloaded');";
