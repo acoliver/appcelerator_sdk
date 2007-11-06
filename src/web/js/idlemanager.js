@@ -27,14 +27,14 @@ Appcelerator.Util.IdleManager =
 
         // track keyboard and mouse move events to determine
         // when the user is idle
-        Event.observe(window, 'keypress', this.event, false);
-        Event.observe(window, 'mousemove', this.event, false);
+        Event.observe(window.document, 'keypress', this.event, false);
+        Event.observe(window.document, 'mousemove', this.event, false);
 
         var self = this;
         Event.observe(window, 'unload', function()
         {
-            Event.stopObserving(window, 'keypress', self.event, false);
-            Event.stopObserving(window, 'mousemove', self.event, false);
+            Event.stopObserving(window.document, 'keypress', self.event, false);
+            Event.stopObserving(window.document, 'mousemove', self.event, false);
             self.event = null;
         }, false);
 
