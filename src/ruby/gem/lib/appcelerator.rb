@@ -47,22 +47,14 @@ unless defined?(APP_VERSION)
        log_to STDOUT
     end	
     
-  	#
-  	# load any services
-  	#
-  	Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
-  		require file[0..-4]
-  		name = Inflector.camelize(File.basename(file).chomp('_service.rb')) 
-  		klass = eval(name + 'Service')
-  		mh = klass.instance
-  	end
-  	
+    Appcelerator::Service.load_services
+    
     #
     # register a message broker listener for admin appcelerator models
     #
     sam_proc = Proc.new do |req,type,obj|
-   	    resp = {'success'=>true, 'models'=> APP_SERVICES}
-    	Appcelerator::Dispatcher.instance.outgoing(req,'app.admin.models.response',resp)
+      resp = {'success'=>true, 'models'=> APP_SERVICES}
+  	  Appcelerator::Dispatcher.instance.outgoing(req,'app.admin.models.response',resp)
     end
     Appcelerator::MessageBroker.register_listener('app.admin.models.request',sam_proc)
 

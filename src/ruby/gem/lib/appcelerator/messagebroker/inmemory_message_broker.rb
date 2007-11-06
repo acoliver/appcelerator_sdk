@@ -3,6 +3,7 @@
 # messages to internally registered listeners
 #
 #
+require 'set'
 module Appcelerator
 	class InmemoryMessageBroker
 		include Singleton
@@ -11,20 +12,22 @@ module Appcelerator
 			@listeners={}
 		end	  	
 	
-	  	def register_listener(type,listener)
-			array = @listeners[type]
-			if array==nil
-			  array=[]
-			  @listeners[type]=array
-			end
-			array << listener
-	  	end
+	  	def register_listener(msgtype,listener)      
+        begin
+          @listeners[msgtype] << listener
+        rescue
+          @listeners[msgtype] = Set.new << listener
+        end
+      end
 	  	
-	  	def unregister_listener(type,listener)
-	  		array = @listeners[type]
+	  	def unregister_listener(msgtype,listener)
+	  		array = @listeners[msgtype]
 	  		array.delete_if { |a| a == listener } if array
 	  	end
 	  	
+      def clear_listeners
+        @listeners.clear
+      end
 	  
 	  	def send (req,type,obj)
 			array = @listeners[type]
@@ -41,5 +44,15 @@ module Appcelerator
 			end
 			false
 	  	end
-	end
+    
+    def diagnostics
+      all = []
+      @listeners.each do |k,v|
+        v.each do |proc|
+          all << proc.to_s
+        end
+      end
+      all.join "\n"
+    end
+  end
 end

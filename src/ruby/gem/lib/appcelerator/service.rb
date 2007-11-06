@@ -1,35 +1,29 @@
 
+
 module Appcelerator
 	class Service
 	  include Singleton
-	  
-	  def Service.Service(messagetype,handler,responsetype)
-		  name = messagetype.gsub(/[:]|[\.\s-]/,'_')
-		  self.class_eval <<-end_eval
-			alias_method :_initialize_#{name}, :initialize
-			def initialize
-			  _initialize_#{name}
-			  register("#{messagetype}","#{handler}","#{responsetype}")                          
-			end
-		  end_eval
-	  end
-	
-	  def Service.service_scaffold(model)
-      	  servicename = model_name(model)
-		  self.class_eval <<-end_eval
-			alias_method :_initialize_#{name}, :initialize
-			def initialize
-			  _initialize_#{name}
-			  @model_class = eval("#{model.to_s.camelize}")
-			  %w( create retrieve update delete list assembly search).each do |operation|
-				    messagetype = "app.#{servicename}." + operation
-            		request = messagetype + ".request"
-            		response = messagetype + ".response"
-				    register(request,operation,response)
-  					APP_SERVICES << {'name'=>name, 'model'=>servicename}
-			  end
-			end
-			
+    	      
+    def Service.Service(messagetype,handler,responsetype)
+      self.instance.preregister(messagetype,handler,responsetype)
+    end
+    
+    def Service.service_scaffold(model)
+      servicename = model_name(model)
+      self.instance.model_class = eval(model.to_s.camelize)
+      %w(create retrieve update delete list assembly search).each do |operation|
+          messagetype = "app."+ servicename +"."+ operation
+          request = messagetype + ".request"
+          response = messagetype + ".response"
+          self.instance.preregister(request,operation,response)
+          APP_SERVICES << {'name'=>name, 'model'=>servicename}
+      end
+    end
+    
+    #
+    # The following methods are usable by services that call the "service_scaffold" method
+    #  to provide CRUD (and more) operations on a single model object.
+    #
 			def assembly(request,message)
 			  if self.respond_to?(:before_assembly)
 				  request,message = send(:before_assembly,request,message)
@@ -147,16 +141,71 @@ module Appcelerator
 			  end
 			  response
 			end
-			
-		  end_eval
-	  end
 	  
-	  private 
 
-	  def register(type,methodname,responsetype = nil)
+    def self.load_services
+      APP_SERVICES.clear
+      # TODO: remove this and solve the multiple singleton issue
+      Appcelerator::MessageBroker.clear_listeners
+      Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
+        
+        name = Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
+        
+        if Dependencies.load?
+          if defined?(name)
+            klass = eval(name)
+            # clear the service class's existing listeners, if possible
+            klass.instance.clear_listeners
+          end
+          load file
+        else
+          require file[0..-4]
+        end
+        
+        begin
+          klass = eval(name)
+          klass.instance.register_listeners
+        rescue
+          puts 'Unable to find class "'+ name +'" in file "'+ file +'"'
+          puts $!
+        end
+      end
+      puts 'done loading services'
+      puts Appcelerator::MessageBroker.diagnostics
+    end
+
+    def initialize
+      @listeners = []
+      @preregistrations = []
+    end
+
+    def preregister(*args)
+      @preregistrations << args
+    end
+    
+    def register_listeners
+      # call after class-load when all methods are defined
+      @listeners = @preregistrations.map do |reg|
+        register(*reg)
+      end
+      @preregistrations.clear
+      @listeners.length
+    end
+    
+    def clear_listeners
+      num_cleared = @listeners.length
+      @listeners.each do |listener|
+        MessageBroker.unregister_listener(listener.msgtype, listener)
+      end
+      @listeners.clear
+      num_cleared
+    end
+    
+	  def register(msgtype,methodname,responsetype = nil)
+      service = self.class # add to the ServiceProc binding
 		  handler = self.method(methodname)
 		  args = handler.arity
-		  p = Proc.new do |req,type,obj|
+		  proc = ServiceProc.new do |req,msgtype,obj|
 		   
 		   #
 		   # try and be smart about sending in the request to the
@@ -174,8 +223,9 @@ module Appcelerator
 		   if responsetype
 			  Dispatcher.instance.outgoing(req,responsetype,resp||{})
 		   end
-		end
-		  MessageBroker.register_listener(type,p)
+      end
+		  MessageBroker.register_listener(msgtype,proc)
+      proc
 	  end
 	
 	  def send_message(req,type,message)
@@ -191,7 +241,52 @@ module Appcelerator
       end
 	    
 	    false
-    end
-	
+	  end
 	end
+  
+  #
+  # Class to allow inspection and equality checking (for adding to sets)
+  # TODO: remove the to_s in eql? and hash when the singleton issue is resolved 
+  #
+  class ServiceProc < Proc
+    def self.vars
+        [:msgtype, :service, :methodname, :responsetype]
+    end
+    
+    def method_missing name
+        eval(name.to_s, self.binding)
+    end
+    
+    def to_s
+        "#{msgtype} -> #{service}.#{methodname} -> #{responsetype}"
+    end
+    
+    def eql?(other)
+      self.class.vars.all? do |var|
+        self.send(var).to_s == other.send(var).to_s
+      end
+    end
+    alias :== :eql?
+    
+    def hash
+      val = 1
+      self.class.vars.each do |var|
+        val << 4
+        val += self.send(var).to_s.hash
+      end
+      val
+    end
+  end
+
+  # helper method
+  class Array
+    def all? &pred
+      each do |e|
+        if not pred.call(e)
+          return false
+        end
+      end
+      return true
+    end
+  end
 end
