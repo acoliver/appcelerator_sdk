@@ -95,14 +95,16 @@
 
     <h3>Delayed Execution of Actions</h3>
     <div>
-        You can execute and action after an arbitrary period of time using the syntax:
-        <span class="code">after &lt;t&gt;s</span>, where &lt;t&gt; is an integer number of seconds.
+        You can execute an action after an arbitrary period of time using the syntax:
+        <span class="code">after &lt;t&gt;</span>, where &lt;t&gt; is an integer number of milliseconds.
         For example:
         <textarea name="code" class="xml:nocontrols">
-            <input type="button" on="click then r:send.message after 2s" />
+            <input type="button" on="click then r:send.message after 2000" />
         </textarea>
         
         In the above example, <span class="code">r:send.message</span> will be sent 2 seconds after the button is clicked.
+        Appcelerator also supports the units 's' and 'ms' placed directly after the numeral.  For example, 
+        <span class="code">2000ms</span> and <span class="code">2s</span> both work and wait 2 seconds before executing.
     </div>
     <script>
         dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
