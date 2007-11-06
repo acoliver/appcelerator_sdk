@@ -38,6 +38,30 @@
 			-->
 		</td>
 	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+		 	Event.observe: this will test that prototype is working corectly to capture mousemove or keypress events (you will be alerted when they occur)
+		</td>
+		<td class="result">
+			<input type="button" on="click then l:mousemove.start" value="start mousemove"></input>
+			<input type="button" on="click then l:mousemove.stop" value="stop mousemove"></input>
+			<input type="button" on="click then l:keypress.start" value="start keypress"></input>
+			<input type="button" on="click then l:keypress.stop" value="stop keypress"></input>
+			<app:script on="l:mousemove.start then execute">
+				Event.observe(window, 'mousemove', IdleManagerTest.mousemove, false);
+			</app:script>
+			<app:script on="l:mousemove.stop then execute">
+				Event.stopObserving(window, 'mousemove', IdleManagerTest.mousemove);
+			</app:script>
+
+			<app:script on="l:keypress.start then execute">
+				Event.observe(window, 'keypress', IdleManagerTest.keypress, false);
+			</app:script>
+			<app:script on="l:keypress.stop then execute">
+				Event.stopObserving(window, 'keypress', IdleManagerTest.keypress);
+			</app:script>
+		</td>
+	</tr>	
 	<script>
 		var IdleManagerTest = Class.create();
 		IdleManagerTest.work = function()
@@ -45,6 +69,14 @@
 			Appcelerator.Util.IdleManager.idleListeners=new Array();
 			Appcelerator.Util.IdleManager.stopTimer();
 			alert('you timed out');
+		};
+		IdleManagerTest.keypress = function()
+		{
+			alert('pressed');
+		};
+		IdleManagerTest.mousemove = function()
+		{
+			alert('mousemove');
 		};
 	</script>
 </table>
