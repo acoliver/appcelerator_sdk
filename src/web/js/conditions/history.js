@@ -24,11 +24,11 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		{
 			if (newLocation+operator+token)
 			{
-				actionFunc();
+				Appcelerator.Compiler.executeAfter(actionFunc,delay,{data:data});
 			}
 			else
 			{
-				elseActionFunc();
+				Appcelerator.Compiler.executeAfter(elseActionFunc,delay,{data:data});
 			}
 		});
 		return true;

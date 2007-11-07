@@ -111,7 +111,7 @@
 		
 		<app:script on="history:!null then execute">
 		  var src = $('editor').src;
-		  if (src.indexOf(this.data.state)==-1)
+		  if (this.data.state &amp;&amp; src.indexOf(this.data.state)==-1)
 		  {
 		      $MQ('l:item',{src:this.data.state+'.html',manual:true});
 		  }

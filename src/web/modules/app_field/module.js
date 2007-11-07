@@ -531,7 +531,7 @@ Appcelerator.Module.Field =
 		params['text'] = element.getAttribute('text');
 		params['scope'] = element.scope;
 		params['parameters'] = parameters;
-				
+
 		return {
 			'presentation' : '<div class="field" id="'+ element.id + '_container">'+html+ '</div>',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,

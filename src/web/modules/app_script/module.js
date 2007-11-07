@@ -43,7 +43,7 @@ Appcelerator.Module.Script =
 	buildWidget: function(element)
 	{
 		var code = Appcelerator.Compiler.getHtml(element);
-		code.replace(/\/\*.*\*\//g,'');
+		code = code.replace(/\/\*.*\*\//g,'');
 		var on = element.getAttribute('on');
 
 		if (code && code.trim().length > 0)

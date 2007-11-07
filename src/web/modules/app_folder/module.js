@@ -69,6 +69,7 @@ Appcelerator.Module.Folder =
 					{
 						openaction = Appcelerator.Compiler.makeAction(childid,openaction);
 					}
+
 					if (closeaction)
 					{
 						closeaction = Appcelerator.Compiler.makeAction(childid,closeaction);
@@ -188,12 +189,6 @@ Appcelerator.Module.Folder =
 						parentnode._onclosed();
 					}
 				};
-				
-				//                 code+="$('"+parentid+"_closed').onclick=function(){$('"+parentid+"').opened=true; Element.hide('"+parentid+"_closed'); Element.show('"+parentid+"_opened');Element.toggle('"+parentid+"_children');};";
-				//                 code+="$('"+parentid+"_opened').onclick=function(){$('"+parentid+"').opened=false; Element.hide('"+parentid+"_opened'); Element.show('"+parentid+"_closed');Element.toggle('"+parentid+"_children'); "+childcloser+"};";
-				// code+="$('"+parentid+"')._onopened=function(){$('"+parentid+"').opened=true; Element.hide('"+parentid+"_closed'); Element.show('"+parentid+"_opened');Element.show('"+parentid+"_children'); };";
-				//                 code+="$('"+parentid+"')._onclosed=function(){$('"+parentid+"').opened=false; Element.show('"+parentid+"_closed'); Element.hide('"+parentid+"_opened');Element.hide('"+parentid+"_children'); "+childcloser+" };";
-				//                 code+="$('"+parentid+"').onclick=function(e){e=Event.getEvent(e);e.stop();if (!$('"+parentid+"').opened){ $('"+parentid+"')._onopened(); } else { $('"+parentid+"')._onclosed(); } };";
 			}
 			})();
 		}
@@ -205,9 +200,6 @@ Appcelerator.Module.Folder =
 		var x = 0;
 		var id = element.id;
 		var itemnodes = [];
-		var openchildren = [];
-		var closechildren = [];
-		var parents = [];
 		
 		Appcelerator.Compiler.parseOnAttribute(element);
 		
@@ -258,39 +250,12 @@ Appcelerator.Module.Folder =
 					{
 						closeaction = Appcelerator.Compiler.makeAction(childid,closeaction) + ";";
 					}
-					// var open = child.getAttribute('open');
-					// if (open)
-					// {
-					// 	openchildren.push({child:childid, parent:parentid});
-					// 	// var scriptcode = "$('"+childid+"')._onopened(); $('"+parentid+"')._onopened();";
-					// 	// var script = Appcelerator.Compiler.handleCondition(child,open,'function['+scriptcode+']',null,0,null);
-					// 	// code+=script;
-					// }
 					itemnodes.push(childid);
-					closechildren.push({child:childid, parent:parentid, openaction: openaction, closeaction: closeaction});
-					// var closercode ="$A($('"+parentid+"_children').childNodes).findAll(function(n){return n.nodeType==1;}).each(function(n){if (n.id!='"+childid+"') $(n.id)._onclosed();});";
-					// code+="$('"+childid+"')._onopened = function(){ if (!$('"+childid+"').opened){ itemCloser('"+childid+"'); Element.removeClassName('"+childid+"_item','closed'); Element.addClassName('"+childid+"_item','open'); $('"+childid+"').opened=true; "+(openaction||'')+" Element.hide('"+childid+"_closed'); Element.show('"+childid+"_opened'); "+closercode+"}};";
-					// code+="$('"+childid+"')._onclosed = function(){ if ($('"+childid+"').opened){ $('"+childid+"').opened=false; Element.removeClassName('"+childid+"_item','open'); Element.addClassName('"+childid+"_item','closed'); "+(closeaction||'')+" Element.hide('"+childid+"_opened'); Element.show('"+childid+"_closed');}};";
-					// code+="$('"+childid+"_closed').onclick=function(){$('"+childid+"')._onopened();};";
-					// code+="$('"+childid+"_opened').onclick=function(){$('"+childid+"')._onclosed();};";
-					// code+="$('"+childid+"').onclick=function(e){e=Event.getEvent(e);e.stop();if ($('"+childid+"').opened) $('"+childid+"')._onclosed(); else $('"+childid+"')._onopened();};";
-					// childcloser+="$('"+childid+"')._onclosed();";
 				});
-				parents.push({parent:parentid});
-				//                 code+="$('"+parentid+"_closed').onclick=function(){$('"+parentid+"').opened=true; Element.hide('"+parentid+"_closed'); Element.show('"+parentid+"_opened');Element.toggle('"+parentid+"_children');};";
-				//                 code+="$('"+parentid+"_opened').onclick=function(){$('"+parentid+"').opened=false; Element.hide('"+parentid+"_opened'); Element.show('"+parentid+"_closed');Element.toggle('"+parentid+"_children'); "+childcloser+"};";
-				// code+="$('"+parentid+"')._onopened=function(){$('"+parentid+"').opened=true; Element.hide('"+parentid+"_closed'); Element.show('"+parentid+"_opened');Element.show('"+parentid+"_children'); };";
-				//                 code+="$('"+parentid+"')._onclosed=function(){$('"+parentid+"').opened=false; Element.show('"+parentid+"_closed'); Element.hide('"+parentid+"_opened');Element.hide('"+parentid+"_children'); "+childcloser+" };";
-				//                 code+="$('"+parentid+"').onclick=function(e){e=Event.getEvent(e);e.stop();if (!$('"+parentid+"').opened){ $('"+parentid+"')._onopened(); } else { $('"+parentid+"')._onclosed(); } };";
 				html+='</div></div>';
 				x++;
 			}
 		}
-
-		// var childnodes = [ ]
-		// code+="var childnodes = [" + itemnodes.collect(function(n){return "'"+n+"'"}).join(",") + "];";
-		// code+="function itemCloser(exclude){ childnodes.each(function(child){if (exclude!=child && $(child).opened) $(child)._onclosed();}); };";
-		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
