@@ -74,7 +74,7 @@ Appcelerator.Module.Modaldialog =
 		{
 			var arrayPageScroll = Element.getPageScroll();
 			var dataTop = Math.min(80,arrayPageScroll + (arrayPageSize[3] / 5));
-			Logger.debug('modaldialog: dataTop='+dataTop+',arrayPageScroll='+arrayPageScroll+',arrayPageSize[3]='+arrayPageSize[3]);
+			$D('modaldialog: dataTop='+dataTop+',arrayPageScroll='+arrayPageScroll+',arrayPageSize[3]='+arrayPageSize[3]);
 		}
 		else
 		{

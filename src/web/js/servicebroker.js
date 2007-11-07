@@ -28,13 +28,13 @@ Appcelerator.Util.ServiceBroker =
 
     addInterceptor: function (interceptor)
     {
-     	if (Logger.debugEnabled) $D(this.toString() + ' Adding interceptor: ' + interceptor);
+     	$D(this.toString() + ' Adding interceptor: ' + interceptor);
         this.interceptors.push(interceptor);
     },
 
     removeInterceptor: function (interceptor)
     {
-        if (Logger.debugEnabled) $D(this.toString() + 'Removing interceptor: ' + interceptor);
+        $D(this.toString() + 'Removing interceptor: ' + interceptor);
         this.interceptors.remove(interceptor);
     },
 
@@ -227,7 +227,7 @@ Appcelerator.Util.ServiceBroker =
     {
     	if (!Appcelerator.Util.ServiceBroker.init)
     	{
-    		if (Logger.debugEnabled) Logger.debug(msg.type+' will be queued, not yet initialized');
+    		$D(msg.type+' will be queued, not yet initialized');
     		this.initQueue.push([msg,callback]);
     		return;
     	}
@@ -267,7 +267,7 @@ Appcelerator.Util.ServiceBroker =
             if (!send)
             {
                 // allow the interceptor the ability to squash it
-                if (Logger.debugEnabled) $D(this + ' interceptor squashed event: ' + msg['type']);
+                $D(this + ' interceptor squashed event: ' + msg['type']);
                 return;
             }
         }
@@ -298,7 +298,7 @@ Appcelerator.Util.ServiceBroker =
             return json;
         };
 
-        if (Logger.debugEnabled) $D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
+        $D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
 
         switch (dest)
         {
@@ -423,7 +423,7 @@ Appcelerator.Util.ServiceBroker =
                 {
                     return Object.toJSON(this);
                 };
-                if (Logger.debugEnabled) $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
             }
             catch (e)
             {
@@ -520,7 +520,7 @@ Appcelerator.Util.ServiceBroker =
         	}
         }
         
-        if (Logger.debugEnabled) $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
+        $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
         try
         {
             listener['onMessage'].apply(listener, [type,msg,datatype,from,scope]);
@@ -651,12 +651,12 @@ Appcelerator.Util.ServiceBroker =
                         {
                             // this is OK, just means no messages from the other side
                             skip = true;
-                            if (Logger.debugEnabled) Logger.debug(self.toString() + ' Receiving no messages on response');
+                            $D(self.toString() + ' Receiving no messages on response');
                         }
                         if (!skip)
                         {
                             // now process them
-                            if (Logger.debugEnabled) Logger.debug('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Receiving: ' + result.responseText);
+                            $D('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Receiving: ' + result.responseText);
                             self.processIncoming(result.responseXML);
                         }
                     }
@@ -801,7 +801,7 @@ Appcelerator.Util.ServiceBroker =
     	if (!this.init)
     	{
     	  	// make sure we've initialized
-    	  	Logger.debug(this.toString()+' - startTimer called but not running yet');
+    	  	$D(this.toString()+' - startTimer called but not running yet');
     		return;
     	}
     	

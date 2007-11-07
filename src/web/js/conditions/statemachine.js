@@ -78,7 +78,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 	{
 		compiledCondition = condition.toFunction();
 		Appcelerator.Compiler.StateMachine.CompiledStateConditionCache[condition] = compiledCondition;
-		if (Logger.debugEnabled) Logger.debug('compiled state => '+condition);
+		$D('compiled state => '+condition);
 	}
 
 	var code = '';
@@ -88,12 +88,12 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		var statemachine = statemachines[c][0];
 		var state = statemachines[c][1];
 
-		if (Logger.debugEnabled) $D('adding state change listener for '+statemachine+'['+state+']');
+		$D('adding state change listener for '+statemachine+'['+state+']');
 	
 		Appcelerator.Compiler.StateMachine.registerStateListener(statemachine,function(statemachine,statechange,valid)
 		{
 			var result = compiledCondition();
-			if (Logger.debugEnabled) $D('statemachine: '+statemachine+'['+statechange+'] logic returned => '+result);
+			$D('statemachine: '+statemachine+'['+statechange+'] logic returned => '+result);
 
 			if (result)
 			{
@@ -145,7 +145,7 @@ Appcelerator.Compiler.StateMachine.disableStateMachine = function(statemachine)
 	{
 		m.active=false;
 		m.init=true;
-		if (Logger.debugEnabled) Logger.debug('disable state machine='+statemachine+'['+state+']');
+		$D('disable state machine='+statemachine+'['+state+']');
 		if (state)
 		{
 			Appcelerator.Compiler.StateMachine.fireStateMachineChange(statemachine,state,false);
@@ -165,7 +165,7 @@ Appcelerator.Compiler.StateMachine.enableStateMachine = function(statemachine)
 		m.active=true;
 		m.init=true;
 		var state = m.activeState;
-		if (Logger.debugEnabled) Logger.debug('enable state machine='+statemachine+'['+state+']');
+		$D('enable state machine='+statemachine+'['+state+']');
 		if (state)
 		{
 			m.activeState = null;
@@ -262,7 +262,7 @@ Appcelerator.Compiler.StateMachine.getActiveState = function(statemachine,force)
 //
 Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachine,state,on_off,force,init)
 {
-	if (Logger.debugEnabled) Logger.debug('fireStateMachineChange => '+statemachine+'['+state+'] = '+on_off+', force='+(force==true)+',init='+init);
+	$D('fireStateMachineChange => '+statemachine+'['+state+'] = '+on_off+', force='+(force==true)+',init='+init);
 	var m = Appcelerator.Compiler.StateMachine.APP_STATES[statemachine];
 	if (m)
 	{
@@ -281,7 +281,7 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 						m.states[s] = on_off;
 						m.activeState = on_off ? s.substring(6) : null;
 						different = true;
-						if (Logger.debugEnabled) Logger.debug('setting '+statemachine+'['+state+']=>'+on_off+', current='+old+',m.activeState='+m.activeState);
+						$D('setting '+statemachine+'['+state+']=>'+on_off+', current='+old+',m.activeState='+m.activeState);
 					}
 				}
 				else if (on_off!=null && on_off==true)
@@ -289,12 +289,12 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 					// you can only have one state active
 					m.states[s]=false;
 					different=true;
-					if (Logger.debugEnabled) Logger.debug('setting '+statemachine+'['+s.substring(6)+']=>false');
+					$D('setting '+statemachine+'['+s.substring(6)+']=>false');
 				}
 			}
 		}
 		
-		if (Logger.debugEnabled) Logger.debug('setting activeState = '+m.activeState+' for '+statemachine);
+		$D('setting activeState = '+m.activeState+' for '+statemachine);
 		
 		m.init = true;
 		
@@ -343,7 +343,7 @@ Appcelerator.Compiler.StateMachine.fireOnStateListeners = function()
 		for(var c=0,len=Appcelerator.Compiler.StateMachine.initialStateLoaders.length;c<len;c++)
 		{
 			var entry = Appcelerator.Compiler.StateMachine.initialStateLoaders[c];
-			if (Logger.debugEnabled) Logger.debug('firing initial state change = '+entry[0]+'['+entry[1]+']');
+			$D('firing initial state change = '+entry[0]+'['+entry[1]+']');
 			Appcelerator.Compiler.StateMachine.fireStateMachineChange(entry[0],entry[1],true,false,true);
 			statesFired.push(entry[0]);
 		}

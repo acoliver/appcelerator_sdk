@@ -764,7 +764,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 		
 		var suffix = revalidate ? '; Appcelerator.Compiler.executeFunction(' + elementHtml +',"revalidate");' : '';
 		
-		if (Logger.debugEnabled) Logger.debug('built expression=> '+ elementHtml + '.' + variable + '=' + valueHtml + expression + suffix);
+		$D('built expression=> '+ elementHtml + '.' + variable + '=' + valueHtml + expression + suffix);
 
 		var html = '';
 		if (append)

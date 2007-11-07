@@ -575,7 +575,7 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 	var logWrapper = function()
 	{
 		var args = $A(arguments);
-		if (Logger.debugEnabled) Logger.debug('on '+element.id+'.'+event+' => invoking action '+action);
+		$D('on '+element.id+'.'+event+' => invoking action '+action);
 		return action.apply({data:{}},args);
 	};
 	
@@ -1072,7 +1072,7 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 			}
 		}
 		
-		if (Logger.debugEnabled) Logger.debug('compiling condition=['+condition+'], action=['+action+'], elseAction=['+elseAction+'], delay=['+delay+'], ifCond=['+ifCond+']');
+		$D('compiling condition=['+condition+'], action=['+action+'], elseAction=['+elseAction+'], delay=['+delay+'], ifCond=['+ifCond+']');
 		
 		var handled = Appcelerator.Compiler.handleCondition(element,condition,action,elseAction,delay,ifCond);
 		
@@ -1958,7 +1958,7 @@ Appcelerator.Compiler.addFieldSet = function(element,excludeSelf)
 		}
 		if (false == excludeSelf)
 		{
-			if (Logger.debugEnabled) $D('adding = '+element.id+' to field = '+fieldsetName+', values='+Object.toJSON(fieldset));
+			$D('adding = '+element.id+' to field = '+fieldsetName+', values='+Object.toJSON(fieldset));
 			fieldset.push(element.id);
 		}
 		return fieldset;
