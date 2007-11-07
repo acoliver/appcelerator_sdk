@@ -1260,7 +1260,8 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 					params[p] = additionalParams[p];
 				}
 			}
-			html+='Appcelerator.Compiler.fireServiceBrokerMessage("'+id+'","'+action+'",'+Object.toJSON(params)+')';
+			html+='var boundFireServiceBrokerMessage = Appcelerator.Compiler.fireServiceBrokerMessage.bind(this);';
+			html+='boundFireServiceBrokerMessage("'+id+'","'+action+'",'+Object.toJSON(params)+')';
 		}
 		else
 		{
@@ -1320,7 +1321,8 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 	for (var p in data)
 	{
 		var v = data[p];
-		data[p] = Appcelerator.Compiler.getEvaluatedValue(v,data);
+		var boundGetEvaluatedValue = Appcelerator.Compiler.getEvaluatedValue.bind(this);
+		data[p] = boundGetEvaluatedValue(v,data);
 	}
 	
 	var local = type.startsWith('local:') || type.startsWith('l:');
@@ -1500,6 +1502,13 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data)
 				var func = expr.toFunction();
 				return func.call(data);
 			}
+			
+			try 
+			{
+				return eval(v, this);
+			} 
+			catch(e){}
+			
 			if (data)
 			{
 				return Object.getNestedProperty(data,v,v);
@@ -1879,8 +1888,8 @@ Appcelerator.Compiler.publishEvent = function (element,event)
 // delayed execution (if specified)
 //
 Appcelerator.Compiler.executeAfter = function(action,delay,scope)
-{
-	var f = (scope!=null) ? function(){ action.call(scope); } : action;
+{	
+	var f = (scope!=null) ? function() { action.call(scope); } : action;
 	
 	if (delay > 0)
 	{

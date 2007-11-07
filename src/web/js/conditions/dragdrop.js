@@ -57,7 +57,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			code += '{';
 			code += 'onDrop:function(e, dropped)';
 			code += '{';
-			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'", element: dropped});';
+			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'", dropped: dropped});';
 			code += '}';
 			code += '});';
 			return code;
