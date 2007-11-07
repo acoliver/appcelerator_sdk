@@ -23,7 +23,7 @@
             <span class="status"></span><span class="create" on="click then l:add.child">Add Child</span>
         </div>
         <app:iterator on="r:pages.response then execute" property="pages">
-            <html:div class="child clickable" on="click then r:edit.page.request[title=#{title}, status=#{status}] \
+            <html:div class="child clickable" on="click then r:edit.page.request[id=#{id}] \
                     or r:remove.page.response[id=#{id}] then effect[Fade]">
                 <html:span class="name" >#{title}</html:span>
                 <html:span class="status">#{status}</html:span>

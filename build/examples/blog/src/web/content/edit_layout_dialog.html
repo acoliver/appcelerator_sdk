@@ -6,12 +6,14 @@
 </head>
 <body>
     <app:script on="l:drop.item then execute">
-        /*printMe(this);*/
-        printMe(this.data.element);
-        alert(this.data.element);
+        var dropped_element = this.data.dropped;
+        $(this.data.id).appendChild(dropped_element);
+        dropped_element.style.float = "none";
+        dropped_element.style.position = "relative";
+        dropped_element.style.left = "";
+        dropped_element.style.top = "";
     </app:script>
-    <app:modaldialog on="r:edit.layout.response then execute and script[$MQ('r:load.snippets.request')]"> 
-        <app:message name="r:load.snippets.request"></app:message> 
+    <app:modaldialog on="r:edit.layout.response then execute and script[$MQ('r:load.layout.dialog.request')]">         
         <html:div width="80%" class="modal_dialog">
             <html:div class="dialog_header">
                 Edit #{layout_title} <span style='display: none' on="l:layout.save then show and effect[Fade]">(Saved)</span>
@@ -34,16 +36,36 @@
                 <html:div class="text_area">
                     <html:div class="left_column">
                         <html:div class="layout_body">
-                            <html:div class="layout_header" id="header_drop_area" droppable='true' on="drop then l:drop.item[element=element]"><html:h5>header</html:h5></html:div>                        
-                            <html:div class="layout_content" id="content_drop_area" droppable='true'><html:h5>content</html:h5></html:div>                        
-                            <html:div class="layout_footer" id="footer_drop_area" droppable='true'><html:h5>footer</html:h5></html:div>                        
-                            <html:div class="layout_sidebar" id="sidebar_drop_area" droppable='true'><html:h5>sidebar</html:h5></html:div>                        
+                            <html:div class="layout_header" id="header_drop_area" droppable='true' on="drop then l:drop.item[dropped=dropped]">
+                                <html:h5>header</html:h5>
+                                <app:iterator on="r:load.layout.dialog.response then execute" property="header_snippets">
+                                    <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
+                                </app:iterator>
+                            </html:div>                        
+                            <html:div class="layout_content" id="content_drop_area" droppable='true' on="drop then l:drop.item[dropped=dropped]">
+                                <html:h5>content</html:h5>
+                                <app:iterator on="r:load.layout.dialog.response then execute" property="content_snippets">
+                                    <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
+                                </app:iterator>
+                            </html:div>                        
+                            <html:div class="layout_footer" id="footer_drop_area" droppable='true' on="drop then l:drop.item[dropped=dropped]">
+                                <html:h5>footer</html:h5>
+                                <app:iterator on="r:load.layout.dialog.response then execute" property="footer_snippets">
+                                    <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
+                                </app:iterator>
+                            </html:div>                        
+                            <html:div class="layout_sidebar" id="sidebar_drop_area" droppable='true' on="drop then l:drop.item[dropped=dropped]">
+                                <html:h5>sidebar</html:h5>
+                                <app:iterator on="r:load.layout.dialog.response then execute" property="sidebar_snippets">
+                                    <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
+                                </app:iterator>
+                            </html:div>                        
                         </html:div>
                     </html:div>            
                     <html:div class="right_column">
                         <html:h4 class="snippet_list_header">Layout Elements</html:h4>
-                        <html:div class="snippet_list">
-                            <app:iterator on="r:load.snippets.response then execute" property="snippets">
+                        <html:div class="snippet_list" id="snippet_list_drop_area" droppable='true' on="drop then l:drop.item[dropped=dropped]">
+                            <app:iterator on="r:load.layout.dialog.response then execute" property="snippets">
                                  <html:div class="name clickable" snippet_id="#{snippet_id}" draggable='true'>#{title}</html:div>
                             </app:iterator>
                         </html:div>

@@ -18,7 +18,7 @@ Mock.prototype =
 		var html = [];
 		html.push("Copyright 2007 <a href='http://www.appcelerator.com'>Appcelerator, Inc</a><br />");
 		html.push("Powered by <a href='http://www.appcelerator.org'>Appcelerator</a>");
-		return html.join(' ');
+		return html.join('\n');
 	},
 	
 	archiveSection: function()
@@ -29,7 +29,7 @@ Mock.prototype =
 		html.push("<li><a on='click then l:reload.from.archive and r:load.content.request[type=\"archive\"]'>Last Month</a></li>");
 		html.push("<li><a on='click then l:reload.from.archive and r:load.content.request'>All</a></li>");
 		html.push("</ul>")
-		return html.join(' ');		
+		return html.join('\n');		
 	},
 	
 	linksSection: function()
@@ -42,7 +42,26 @@ Mock.prototype =
 		html.push("<li><a href='http://www.openlaszlo.org'>Openlaszlo</a></li>");
 		html.push("<li><a href='http://upload.wikimedia.org/wikipedia/en/a/a8/Windows_XP_BSOD.png'>Silverlite</a></li>");
 		html.push("</ul>");
-		return html.join(' ');
+		return html.join('\n ');
+	},
+	
+	pictureSection: function()
+	{
+		return '<img src="images/appcelerant.png" />\n';
+	}, 
+	
+	blogRollSection: function()
+	{
+		var html = [];
+		html.push('<h3>"Blog Roll"</h3>');
+		html.push('<ul>');
+		html.push("<li><a href='http://www.jeffhaynie.us/'>Jeff Haynie</a></li>");
+		html.push("<li><a href='http://www.coolestan.com'>Hamed Hashemi</a></li>");
+		html.push("<li><a href='http://www.appcelerant.com'>Appcelerant</a></li>");
+		html.push("<li><a href='http://www.amromousa.com'>Amro Mousa</a></li>");
+		html.push("<li><a href='http://www.vijedi.net'>Tejus Parikh</a></li>");
+		html.push("</ul>");
+		return html.join('\n ');
 	},
 	
 	generateSidebar: function()
@@ -50,7 +69,7 @@ Mock.prototype =
 		var html = [];
 		html.push(this.archiveSection());
 		html.push(this.linksSection());
-		return html.join("<hr /> ");
+		return html.join("<hr />\n ");
 	},
 	
 	generateContent: function()
@@ -59,7 +78,7 @@ Mock.prototype =
 		html.push(this.postOne());
 		html.push(this.postTwo());
 		html.push(this.postThree());
-		return html.join(" ");
+		return html.join("\n ");
 	},
 
 	generateContentLastMonth: function()
@@ -67,7 +86,7 @@ Mock.prototype =
 		var html = [];
 		html.push(this.postTwo());
 		html.push(this.postThree());
-		return html.join(" ");
+		return html.join("\n ");
 	},
 	
 	postOne: function()
@@ -81,7 +100,7 @@ Mock.prototype =
 		html.push("to illustrate how to write something useful with the Appcelerator framework.")
 		html.push("</p>")
 		html.push("</div>");
-		return html.join(' ');
+		return html.join('\n ');
 	},
 	
 	postTwo: function()
@@ -95,7 +114,7 @@ Mock.prototype =
 		html.push("Jasper Reports, and MySQL are distributed under")
 		html.push("</p>")
 		html.push("</div>");
-		return html.join(' ');
+		return html.join('\n ');
 	},
 	
 	postThree: function()
@@ -111,7 +130,7 @@ Mock.prototype =
 		html.push("then this is the right place.");
 		html.push("</p>")
 		html.push("</div>");
-		return html.join(' ');
+		return html.join('\n ');
 	}
 };
 

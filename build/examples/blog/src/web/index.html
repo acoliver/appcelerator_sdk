@@ -15,6 +15,7 @@
 </head>
 
 <body style="display: none" on="l:app.compiled then show">
+<app:message on="l:app.compiled then execute after 1s" name="r:pages.request"></app:message>
 <div id="header">
     <div id="logo">
         <h2><span class="app">app</span>blog</h2>
@@ -40,7 +41,7 @@
     <div style="display: none" on="adminmenu[layouts] then r:layouts.request and show else hide">
         <app:content src="content/layouts.html" lazy="false"></app:content>
     </div>
-</div>    
+</div> 
 
 </body>
 </html>

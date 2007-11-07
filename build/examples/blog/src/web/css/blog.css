@@ -225,7 +225,12 @@ textarea
     background-color: white;
     width: 453px;
     height: 406px;
-    color: #dddddd;
+}
+
+.layout_body h5
+{
+	position: absolute;
+	color: #dddddd;
 }
 
 .layout_header, .layout_footer, .layout_sidebar, .layout_content

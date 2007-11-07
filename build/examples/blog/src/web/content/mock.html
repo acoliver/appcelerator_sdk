@@ -14,7 +14,8 @@
         
         <app:script>
               window.mock = new Mock();
-          </app:script>
+        </app:script>
+        
         <!-- Pages mocks -->
         <app:script on="r:pages.request then execute">
             var pages = [{'id':'one', 'title':'Welcome to appforums', 'status': 'Published'}, 
@@ -28,17 +29,27 @@
         <app:script on="r:remove.page.request then execute">
             $MQ('r:remove.page.response', {'id': this.data.id});
         </app:script>
-        <app:script on="r:edit.page.request then execute">
-            $MQ('r:edit.page.response', {'title': this.data.title, 
-                'status': this.data.status, 'text': "I'm just playing around with this blog system"});
+        <app:script on="r:edit.page.request[id=one] then execute">
+            $MQ('r:edit.page.response', {'title': 'Welcome to appforums', 
+                'status': 'published', 'text': mock.postOne()});
         </app:script>
-        
+        <app:script on="r:edit.page.request[id=two] then execute">
+            $MQ('r:edit.page.response', {'title': 'Build apps faster', 
+                'status': 'published', 'text': mock.postTwo()});
+        </app:script>
+        <app:script on="r:edit.page.request[id=three] then execute">
+            $MQ('r:edit.page.response', {'title': 'More app, less code', 
+                'status': 'published', 'text': mock.postThree()});
+        </app:script>
         <!-- Snippets mocks -->
         <app:script on="r:snippets.request then execute">
             var snippets = [{'id':'logo', 'title':'Logo'}, 
                     {'id':'footer', 'title':'Footer'}, 
                     {'id':'archive', 'title':'Archive Links'},
-                    {'id':'links', 'title':'Competitors'}];
+                    {'id':'links', 'title':'Competitors'},
+                    {'id':'picture', 'title':'Picture'},
+                    {'id':'blog_roll', 'title':'Blog Roll'}
+                    ];
             $MQ("r:snippets.response", {'snippets': snippets});
         </app:script>
         <app:script on="r:remove.snippet.request then execute">
@@ -60,6 +71,14 @@
             $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
                 'text': mock.linksSection()});
         </app:script>
+        <app:script on="r:edit.snippet.request[id=picture] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': mock.pictureSection()});
+        </app:script>
+        <app:script on="r:edit.snippet.request[id=blog_roll] then execute">
+            $MQ('r:edit.snippet.response', {'id': this.data.id, 'title': this.data.title, 
+                'text': mock.blogRollSection()});
+        </app:script>
         
         <!-- Layout Mocks -->
         <app:script on="r:layouts.request then execute">
@@ -73,13 +92,21 @@
             $MQ('r:edit.layout.response', {'id': this.data.id, 'layout_title': 'Main Layout', 
                 'text': 'Random header text'});
         </app:script>
-        <app:script on="r:load.snippets.request then execute">
-        var snippets = [{'snippet_id':'logo', 'title':'Logo'}, 
+        <app:script on="r:load.layout.dialog.request then execute">
+            var snippets = [{'snippet_id':'logo', 'title':'Logo'}, 
                 {'snippet_id':'footer', 'title':'Footer'}, 
                 {'snippet_id':'archive', 'title':'Archive Links'},
                 {'snippet_id':'links', 'title':'Competitors'},
                 {'snippet_id':'content', 'title':'Content'}];
-            $MQ('r:load.snippets.response', {'snippets': snippets});
+            
+            var header_snippets = [{'snippet_id':'logo', 'title':'Logo'}];    
+            var sidebar_snippets = [{'snippet_id':'archive', 'title':'Archive Links'},
+                    {'snippet_id':'links', 'title':'Competitors'}];
+            var footer_snippets = [{'snippet_id':'footer', 'title':'Footer'}];
+            var content_snippets = [{'snippet_id':'content', 'title':'Content'}];                        
+            $MQ('r:load.layout.dialog.response', {'snippets': snippets, 'header_snippets': header_snippets,
+                    'sidebar_snippets': sidebar_snippets, 'footer_snippets': footer_snippets,
+                    'content_snippets': content_snippets});
         </app:script>
         
         <!-- Site mocks -->
