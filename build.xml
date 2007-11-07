@@ -168,9 +168,9 @@
 	<target name="server_dist.nomin" depends="nomin,server_dist"/>
 	<target name="server_dist" depends="build_server" description="* Builds the Java SDK distribution">
 		<zip destfile="${stage.dir}/appcelerator_server_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
-			<zipfileset dir="stage/java/server" includes="appcelerator.war" prefix="dist/server"/>
-			<zipfileset dir="${build.java.dir}/server" includes="build.xml,README" prefix=""/>
-			<fileset dir="stage" includes="doc/**"/>
+			<zipfileset dir="stage/java/server" includes="appcelerator.war" prefix="appcelerator_server_${VERSION}/dist/server"/>
+			<zipfileset dir="${build.java.dir}/server" includes="build.xml,README" prefix="appcelerator_server_${VERSION}"/>
+			<zipfileset dir="stage" includes="doc/**" prefix="appcelerator_server_${VERSION}"/>
 		</zip>
 	</target>
 	<target name="build_web_unit" depends="build_java" description="* Builds the web unit test suite">
@@ -356,31 +356,31 @@
 	<target name="sdk_java_dist" depends="build_sdk" description="* Builds the Java SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
-			<fileset dir="stage/sdk/java">
+			<zipfileset dir="stage/sdk/java" prefix="appcelerator_sdk_java_${VERSION}">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
 				<exclude name=".server.id"/>
-			</fileset>
+			</zipfileset>
 		</zip>
 	</target>
 	
 	<target name="sdk_php_dist" depends="build_sdk" description="* Builds the PHP SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
-			<fileset dir="stage/sdk/php">
+			<zipfileset dir="stage/sdk/php" prefix="appcelerator_sdk_php_${VERSION}">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
 				<exclude name=".server.id"/>
-			</fileset>
+			</zipfileset>
 		</zip>
 	</target>
 	
 	<target name="examples_dist" depends="build_examples" description="* Builds the examples distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_examples_${VERSION}.zip" comment="Appcelerator Examples">
-			<fileset dir="stage/examples" includes="**/*"/>
+			<zipfileset dir="stage/examples" includes="**/*" prefix="appcelerator_examples_${VERSION}"/>
 		</zip>
 	</target>
 
@@ -416,13 +416,13 @@
 	</target>
 	<target name="sdk_dotnet_dist" depends="build_sdk" description="* Builds the .NET SDK distribution">
 		<mkdir dir="stage"/>
-		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET">
-			<fileset dir="stage/sdk/dotnet">
+		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET" prefix="appcelerator_sdk_dotnet_${VERSION}">
+			<zipfileset dir="stage/sdk/dotnet">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
 				<exclude name=".server.id"/>
-			</fileset>
+			</zipfileset>
 		</zip>
 	</target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
@@ -430,7 +430,7 @@
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
-		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
 
 		<delete dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" failonerror="false"/>
 		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
@@ -454,11 +454,11 @@
 	<target name="do.sdk" unless="sdk.java.exists">
 		<antcall target="sdk_java_dist"/>
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
-		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
 	</target>
 	<target name="install_java_examples" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
-		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}/appcelerator_sdk_java_${VERSION}"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
 
 		<antcall target="install_java_example">
 			<param name="example" value="forums"/>
@@ -526,7 +526,7 @@
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
-		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp"/>
+		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp/appcelerator_sdk_php_${VERSION}"/>
 		<antcall target="undeploy_php"/>
 		<antcall target="deploy_php"/>
 	</target>
@@ -538,17 +538,17 @@
 	<target name="install_php_example">
 		<delete dir="${stage.dir}/exampleprojects/${example}_php" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/exampleprojects/${example}_php"/>
-		<copy todir="${stage.dir}/exampleprojects/${example}_php/src/php" overwrite="true">
+		<copy todir="${stage.dir}/exampleprojects/${example}_php/appcelerator_sdk_php_${VERSION}/src/php" overwrite="true">
 			<fileset dir="build/examples/${example}/src/php" includes="**"/>
 		</copy>
-		<copy todir="${stage.dir}/exampleprojects/${example}_php/src/web" overwrite="true">
+		<copy todir="${stage.dir}/exampleprojects/${example}_php/appcelerator_sdk_php_${VERSION}/src/web" overwrite="true">
 			<fileset dir="build/examples/${example}/src/web" includes="**"/>
 		</copy>
 		<antcall target="undeploy_php">
-			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php"/>
+			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php/appcelerator_sdk_php_${VERSION}"/>
 		</antcall>
 		<antcall target="deploy_php">
-			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php"/>
+			<param name="php.project.dir" value="${stage.dir}/exampleprojects/${example}_php/appcelerator_sdk_php_${VERSION}"/>
 		</antcall>
 		<antcall target="deploy_php"/>
 	</target>
@@ -559,24 +559,24 @@
 		<echo>Building the Appcelerator Platform SDK source code nightly distribution</echo>
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_source_${TODAY}.zip" comment="Appcelerator Platform SDK sourcecode for ${TODAY}">
-			<fileset dir=".">
+			<zipfileset dir="." prefix="appcelerator_sdk_source_${TODAY}">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
 				<exclude name=".server.id"/>
-			</fileset>
+			</zipfileset>
 		</zip>
 	</target>
     <target name="build_src_dist" description="* Builds the source distribution">
         <echo>Building the Appcelerator Platform SDK source code distribution</echo>
         <mkdir dir="stage"/>
         <zip destfile="${stage.dir}/appcelerator_sdk_source_${VERSION}.zip" comment="Appcelerator Platform SDK sourcecode for ${VERSION}">
-            <fileset dir=".">
+            <zipfileset dir="." prefix="appcelerator_sdk_source_${VERSION}">
                 <include name="**/*"/>
                 <exclude name="stage/**"/>
                 <exclude name="output/**"/>
                 <exclude name=".server.id"/>
-            </fileset>
+            </zipfileset>
         </zip>
     </target>
 	<target name="gendoc_widget">

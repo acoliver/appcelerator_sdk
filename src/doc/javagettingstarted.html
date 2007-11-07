@@ -35,22 +35,22 @@
 		<p>
 		It is assumed that you already have the following installed:
 		<ul>
-			<li><a href="http://tomcat.apache.org/">apache tomcat</a> 6.0 or higher (or another j2ee web container)
-			<li><a href="http://ant.apache.org">apache ant</a> 1.6.5 or higher
-			<li><a href="http://java.sun.com/">JDK</a> 1.5
+			<li><a href="http://tomcat.apache.org/" target="_blank">apache tomcat</a> 6.0 or higher (or another j2ee web container)
+			<li><a href="http://ant.apache.org" target="_blank">apache ant</a> 1.6.5 or higher
+			<li><a href="http://java.sun.com/" target="_blank">JDK</a> 1.5
 		</ul>
 		</p>
 	
 		<h3>Get the Distribution</h3>
 		<p>
-		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
 		<ul>
 			<!--<li>appcelerator_server_@VERSION@.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
 			<li>appcelerator_sdk_java_@VERSION@.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
 		</ul>
 		<h3>Create a Project</h3>
 		unzip the distribution and create your project (ex: myapp)
-		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip -d appcelerator_sdk_java_@VERSION@
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
 cd appcelerator_sdk_java_@VERSION@
 ant create
 [input] What would you like to name the project?
@@ -78,7 +78,7 @@ ant dist</pre>
 		<pre class="command">ant deploy</pre>
 	
 		<h3>Testing</h3>
-		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html">http://localhost:8080/myapp/servicetester.html</a> and use the following:
+		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html" target="_blank">http://localhost:8080/myapp/servicetester.html</a> and use the following:
 		<ul>
 			<li><b>message type</b>: remote:app.test.message.request
 		</ul>
@@ -91,8 +91,8 @@ ant dist</pre>
 
 		<h3>Updating the project</h3>
 		You can alternatively update your project to a new version of the sdk very simply.  Just extract the new sdk and run the update task
-		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip -d appcelerator_sdk_java_@VERSION@_new
-cd appcelerator_sdk_java_@VERSION@_bew
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
+cd appcelerator_sdk_java_@VERSION@
 ant update</pre>
 		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: /Users/azuercher/workspace/myapp)
 		<pre class="command">
