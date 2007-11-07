@@ -10,7 +10,7 @@ Appcelerator.Compiler.registerAttributeProcessor(['textarea','input','select'],'
 			// see if we're part of a field set and if so, add
 			// our reference
 			//
-			return 'Appcelerator.Compiler.addFieldSet($("'+element.id+'"),false);';
-		}
+			Appcelerator.Compiler.addFieldSet(element,false);
+		}		
 	}
 });

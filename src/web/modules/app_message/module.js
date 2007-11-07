@@ -41,27 +41,25 @@ Appcelerator.Module.Message =
 		var on = element.getAttribute('on');
 		
 		args = args ? String.unescapeXML(args) : null;
-
+		
 		var interval = element.getAttribute('interval');
 		
 		var parameters = {args:args, name:name, scope:element.scope, interval:interval,version:version};
 		
 		if (on)
 		{
-			var oncode = Appcelerator.Compiler.parseOnAttribute(element);
+			Appcelerator.Compiler.parseOnAttribute(element);
 			return {
 				'position' : Appcelerator.Compiler.POSITION_REMOVE,
-				'initialization':  oncode,
 				'functions': ['execute'],
 				'parameters': parameters
 			};
 		}
 		else
 		{
-			var code = 'Appcelerator.Module.Message.sendMessage('+Object.toJSON(parameters)+');';			
+			Appcelerator.Module.Message.sendMessage(parameters);
 			return {
-				'position' : Appcelerator.Compiler.POSITION_REMOVE,
-				'initialization' : code
+				'position' : Appcelerator.Compiler.POSITION_REMOVE
 			};
 		}
 	},

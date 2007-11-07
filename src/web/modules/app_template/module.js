@@ -35,7 +35,6 @@ Appcelerator.Module.Template =
 	},
 	buildWidget: function(element,state)
 	{
-		var jscode = '';
 		var src = element.getAttribute('src');
 		var args = element.getAttribute('args');
 		var payload = {};
@@ -59,7 +58,6 @@ Appcelerator.Module.Template =
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '', 
-			'initialization':  jscode
 		};
 	},
 	fetch: function (target,scope,src,args,payload,state)

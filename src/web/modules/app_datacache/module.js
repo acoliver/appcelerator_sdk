@@ -86,8 +86,7 @@ Appcelerator.Module.Datacache =
 		Appcelerator.Util.ServiceBroker.addInterceptor(interceptor);
 		
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REMOVE,
-			'initialization':  Appcelerator.Util.ServiceBroker.addInterceptor(interceptor)
+			'position' : Appcelerator.Compiler.POSITION_REMOVE
 		};
 	},
 	

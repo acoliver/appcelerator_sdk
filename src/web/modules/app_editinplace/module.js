@@ -37,6 +37,126 @@ Appcelerator.Module.EditinPlace =
 	{
 
 	},
+	compileWidget: function(params)
+	{
+		var id = params['id'];
+		var element = $(id);
+		
+		var editinplace_input = $(id+'_editinplace_input');
+		var editinplace_text = $(id+'_editinplace_text');
+		var editinplace_buttons = $(id+'_editinplace_buttons');
+		var editinplace_savebutton = $(id+'_editinplace_savebutton');
+		var editinplace_cancelbutton = $(id+'_editinplace_cancelbutton');
+		var error_div = $(id + '_error');
+		
+		element.value = editinplace_text.innerHTML;
+		element.field = editinplace_input;
+		
+		var enterListener = function(e)
+		{
+			e = Event.getEvent(e);
+			var stop = false;
+			if (Event.isEnterKey(e))
+			{
+				editinplace_savebutton.click();
+			}
+			else if (Event.isEscapeKey(e))
+			{
+				editinplace_cancelbutton.click();
+			}
+			if (stop) Event.stop(e);
+			return !stop;
+		};
+
+		var textClickListener = function(e)
+		{
+			editinplace_text.style.display = 'none';
+			editinplace_input.style.display = '';
+			editinplace_buttons.style.display = '';
+			editinplace_input.focus();
+			editinplace_input.select();
+			Appcelerator.Compiler.executeFunction(editinplace_input,'revalidate');
+		};
+
+		var saveClickListener = function(e)
+		{
+			editinplace_text.style.display = '';
+			editinplace_input.style.display = 'none';
+			editinplace_text.innerHTML = editinplace_input.value;
+			element.value = editinplace_input.value;
+		}
+		
+		var cancelClickListener = function(e)
+		{
+			editinplace_text.style.display = '';
+			editinplace_input.style.display = 'none';
+			editinplace_buttons.style.display = 'none';
+			editinplace_input.value = editinplace_text.innerHTML;
+			if (error_div.style.visibility != 'hidden')
+			{
+				error_div.style.visibility = 'hidden';
+			}
+			if (error_div.style.display != 'none')
+			{
+				error_div.style.display = 'none';
+			}
+		};
+		
+		Event.observe(editinplace_input, 'keypress', enterListener,false);
+		Event.observe(editinplace_text, 'click', textClickListener, false);
+		Event.observe(editinplace_savebutton, 'click', saveClickListener, false);
+		Event.observe(editinplace_cancelbutton, 'click', cancelClickListener, false);
+
+		Appcelerator.Compiler.addTrash(element,function()
+		{
+			Event.stopObserving(editinplace_input, 'keypress', enterListener);
+			Event.stopObserving(editinplace_text, 'click', textClickListener);
+			Event.stopObserving(editinplace_savebutton, 'click', saveClickListener);
+			Event.stopObserving(editinplace_cancelbutton, 'click', cancelClickListener);
+		});
+
+		var message = params['message'];
+		if (message)
+		{
+			message = Appcelerator.Compiler.convertMessageType(message);
+			var property = params['property'];
+			var listener = 
+			{
+				accept: function()
+				{
+					return [message];
+				},
+				acceptScope: function(scope)
+				{
+					return element.scope=='*' || element.scope==scope;
+				},
+				onMessage: function (t, data, datatype, direction)
+				{
+					try
+					{
+						$D('received message = '+direction+':'+t+',data='+Object.toJSON(data));
+						var value = property ? Object.getNestedProperty(data,property) : data;
+						switch (params['type'])
+						{
+							case 'text':
+							{
+								editinplace_text.innerHTML = value;
+								editinplace_input.value = value;
+								break;
+							}
+						}
+						if (editinplace_input.revalidate) editinplace_input.revalidate();
+					}
+					catch(e)
+					{
+						Appcelerator.Compiler.handleElementException(element,e);
+					}
+				}
+			};
+
+			Appcelerator.Util.ServiceBroker.addListener(listener);
+		}		
+	},
 	buildWidget: function(element)
 	{
 		var type = element.getAttribute('type') || 'text';		
@@ -54,7 +174,7 @@ Appcelerator.Module.EditinPlace =
 		var error = '<img src="' + errorIcon + '"/>' +  errorMsg;
 		var errorClass = 'error_color small_text';
 		var id = element.id;
-		var html = '<div id="'+element.id+'">';
+		var html = '';
 
 		for (var c=0,len=element.childNodes.length;c<len;c++)
 		{
@@ -134,151 +254,12 @@ Appcelerator.Module.EditinPlace =
 		{
 			html += '<div class="'+errorClass+'" id="'+errorId+'" style="display:none">'+error+'</div>';
 		}
-		html += '</div>';
-
-		var code = '';
-
-		code += '{';
-		
-		code += 'var editinplace_input = $("'+id + '_editinplace_input");';
-		code += 'var editinplace_text = $("'+id + '_editinplace_text");';
-		code += 'var editinplace_buttons = $("'+id + '_editinplace_buttons");';
-		code += 'var editinplace_savebutton = $("'+id + '_editinplace_savebutton");';
-		code += 'var editinplace_cancelbutton = $("'+id + '_editinplace_cancelbutton");';
-		code += 'var error_div = $("'+errorId+'");';
-
-		code += '$("'+element.id+'").value = editinplace_text.innerHTML;';
-		
-		// attach convenience
-		code += '$("'+element.id+'").field = editinplace_input;';
-		
-		code += 'var enterListener = function(e)';
-		code += '{';
-		code +=	'e = Event.getEvent(e);';
-		code += 'var stop = false;';
-		code += 'if (Event.isEnterKey(e))';
-		code += '{';
-		code += 'editinplace_savebutton.click();';
-		code += '}';
-		code += 'else if (Event.isEscapeKey(e))';
-		code += '{';
-		code += 'editinplace_cancelbutton.click();';
-		code += '}';
-		code += 'if (stop) Event.stop(e);';
-		code += 'return !stop;';
-		code += '};';
-
-		code += 'var textClickListener = function(e)';
-		code += '{';
-		code += 'editinplace_text.style.display = "none";';
-		code += 'editinplace_input.style.display = "";';
-		code += 'editinplace_buttons.style.display = "";';
-		code += 'editinplace_input.focus();';
-		code += 'editinplace_input.select();';
-		code += 'Appcelerator.Compiler.executeFunction(editinplace_input,"revalidate");';
-		code += '};';
-		
-		code += 'var saveClickListener = function(e)';
-		code += '{';
-		code += 'editinplace_text.style.display = "";';
-		code += 'editinplace_input.style.display = "none";';
-		code += 'editinplace_buttons.style.display = "none";';
-		code += 'editinplace_text.innerHTML = editinplace_input.value;';
-		code += '$("'+element.id+'").value = editinplace_input.value;';
-		code += '};';
-		
-		code += 'var cancelClickListener = function(e)';
-		code += '{';
-		code += 'editinplace_text.style.display = "";';
-		code += 'editinplace_input.style.display = "none";';
-		code += 'editinplace_buttons.style.display = "none";';
-		code += 'editinplace_input.value = editinplace_text.innerHTML;';
-		code += 'if (error_div.style.visibility!="hidden")';
-		code += '{';
-		code += 'error_div.style.visibility = "hidden";';
-		code += '}';
-		code += 'if (error_div.style.display!="none")';
-		code += '{';
-		code += 'error_div.style.display = "none";';
-		code += '}';
-		code += '};';
-		
-		code += 'Appcelerator.Compiler.attachFunction($("'+id+'"),"editmode",function(mode)';
-		code += '{';
-		code += 'switch(mode||"edit")';
-		code += '{';
-		code += 'case "edit":';
-		code += '{';
-		code += 'textClickListener();';
-		code += 'break;';
-		code += '}';
-		code += 'case "save":';
-		code += '{';
-		code += 'saveClickListener();';
-		code += 'break;';
-		code += '}';
-		code += 'case "cancel":';
-		code += '{';
-		code += 'cancelClickListener();';
-		code += 'break;';
-		code += '}';
-		code += '}';
-		code += '});';
-
-		code += 'Event.observe(editinplace_input,"keypress",enterListener,false);';
-		code += 'Event.observe(editinplace_text, "click", textClickListener, false);';
-		code += 'Event.observe(editinplace_savebutton, "click", saveClickListener, false);';
-		code += 'Event.observe(editinplace_cancelbutton, "click", cancelClickListener, false);';
-		
-		var message = element.getAttribute('message');
-		if (message)
-		{
-			message = Appcelerator.Compiler.convertMessageType(message);
-			code += 'var message="'+message+'";';
-			code +=	'var property = '+String.stringValue(element.getAttribute("property"))+';';
-			code += 'var listener = ';
-			code +=	'{';
-			code += 'accept: function()';
-			code += '{';
-			code += 'return [message];';
-			code += '},';
-			code += 'acceptScope: function(scope)';
-			code += '{';
-			code += 'return $("'+element.id+'").scope =="*" || scope == $("'+element.id+'").scope;';
-			code += '},';
-			code += 'onMessage: function (t, data, datatype, direction)';
-			code += '{';
-			code += 'try';
-			code += '{';
-			code += '$D("received message = "+direction+":"+t+",data="+Object.toJSON(data));';
-			code += 'var value = property ? Object.getNestedProperty(data,property) : data;';
-			code += 'switch ("'+type+'")';
-			code += '{';
-			code += 'case "text":';
-			code += '{';
-			code += 'editinplace_text.innerHTML = value;';
-			code += 'editinplace_input.value = value;';
-			code += 'break;';
-			code += '}';
-			code += '}';
-			code += 'if (editinplace_input.revalidate) editinplace_input.revalidate();';
-			code += '}';
-			code += 'catch(e)';
-			code += '{';
-			code += 'Appcelerator.Compiler.handleElementException($("'+element.id+'"),e);';
-			code += '}';
-			code += '}';
-			code += '};';
-			
-			code += 'Appcelerator.Util.ServiceBroker.addListener(listener);';
-		}
-		
-		code += '}';
 		
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : code,
+			'initialization' : Appcelerator.Module.EditinPlace.compileWidget,
+			'initializationParams' : {id: element.id, message: element.getAttribute('message'), property: element.getAttribute('property'), type: type},
 			'wire' : true
 		};
 	}

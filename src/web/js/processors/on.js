@@ -4,8 +4,7 @@ Appcelerator.Compiler.registerAttributeProcessor('*','on',
 	{
 		if (value)
 		{
-			return Appcelerator.Compiler.compileExpression(element,value,false);
+			Appcelerator.Compiler.parseOnAttribute(element);
 		}
-		return null;
 	}
 });

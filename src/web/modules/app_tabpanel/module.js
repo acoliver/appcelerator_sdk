@@ -33,6 +33,93 @@ Appcelerator.Module.Tabpanel =
 	{
 
 	},
+	compileWidget: function(params)
+	{
+		var id = params['id'];
+		var element = $(id);
+		var initial = params['initial'];
+		var initialNode = params['initialNode'];
+		var selectedTab = null;
+		var tabs = params['tabs'];
+		var activeClassName = params['activeClassName'];
+		var inactiveClassName = params['inactiveClassName'];
+		
+		if (initial)
+		{
+			//
+			// go ahead and set the initial state
+			// and invoke appropriate listeners 
+			//
+			if (Appcelerator.Compiler.StateMachine.initialStateLoaders)
+			{
+				Appcelerator.Compiler.StateMachine.initialStateLoaders.push([id,initial]);
+			}
+			
+			// set the activate classname
+			selectedTab = $(initialNode);
+			Element.removeClassName(selectedTab, inactiveClassName);
+			Element.addClassName(selectedTab, activeClassName);
+		}
+		
+		Appcelerator.Compiler.attachFunction(element, 'executeEnable', function()
+		{
+			Appcelerator.Compiler.StateMachine.enableStateMachine(id);
+		});
+
+		Appcelerator.Compiler.attachFunction(element, 'executeDisable', function()
+		{
+			Appcelerator.Compiler.StateMachine.disableStateMachine(id);
+		});
+
+		//
+		// wire up our listeners
+		//
+		for (var c=0,len=tabs.length;c<len;c++)
+		{
+			var tab = $(tabs[c][1]);
+			tab.state = tabs[c][0];
+			tab.onclick = function(e)
+			{
+				Appcelerator.Compiler.StateMachine.fireStateMachineChange(id, this.state, true);
+				if (selectedTab)
+				{
+					Element.removeClassName(selectedTab, activeClassName);
+					Element.addClassName(selectedTab, inactiveClassName);
+				}
+				
+				Element.removeClassName(this, inactiveClassName);
+				Element.addClassName(this, activeClassName);
+				
+				selectedTab = this;
+			};
+			
+			tab.onmouseover = function()
+			{
+				if (selectedTab != this)
+				{
+					this.className += ' ' + activeClassName;
+				}
+			};
+			
+			tab.onmouseout = function()
+			{
+				if (selectedTab != this)
+				{
+					this.className = this.className.gsub(' ' + activeClassName,'');
+				}
+			};
+
+			Appcelerator.Compiler.delegateToAttributeListeners(tabs[c][2]);
+			
+			// copy styles from tab into new tab
+			var cl = tabs[c][2].getAttribute("class");
+			if (cl)
+			{
+				Element.addClassName(tab, cl);
+			}
+			tab.style.display = '';
+		}		
+	},
 	buildWidget: function(element)
 	{
 		var tabs = [];
@@ -99,7 +186,7 @@ Appcelerator.Module.Tabpanel =
 					initialNode = tabId;
 					initial = name;
 				}
-				code += 'Appcelerator.Compiler.StateMachine.addState("'+id+'","'+name+'",null);';
+				Appcelerator.Compiler.StateMachine.addState(id,name,null);
 				tabs.push([name,tabId,node]);
 			}
 		}
@@ -112,81 +199,21 @@ Appcelerator.Module.Tabpanel =
 			{
 				throw "invalid initial state - couldn't find state: "+initial+" for "+id;
 			}
-			//
-			// go ahead and set the initial state
-			// and invoke appropriate listeners 
-			//
-			code += 'if (Appcelerator.Compiler.StateMachine.initialStateLoaders)';
-			code += '{';
-			code += 'Appcelerator.Compiler.StateMachine.initialStateLoaders.push(["'+id+'","'+initial+'"]);';
-			code += '}';
-			
-			// set the activate classname
-			code += 'var selectedTab'+id+'=$("'+initialNode+'");';
-			code += 'Element.removeClassName(selectedTab'+id+',"'+inactiveClassName+'");';
-			code += 'Element.addClassName(selectedTab'+id+',"'+activeClassName+'");';
 		}
-		
-		code += 'Appcelerator.Compiler.attachFunction($("'+id+'"),"executeEnable",function()';
-		code += '{';
-		code +=	'Appcelerator.Compiler.StateMachine.enableStateMachine("'+id+'");'
-		code += '});';
 
-		code += 'Appcelerator.Compiler.attachFunction($("'+id+'"),"executeDisable",function()';
-		code += '{';
-		code +=	'Appcelerator.Compiler.StateMachine.disableStateMachine("'+id+'");'
-		code += '});';
-
-		//
-		// wire up our listeners
-		//
-		for (var c=0,len=tabs.length;c<len;c++)
-		{
-			code += '{';
-
-			code += 'var tab=$("'+tabs[c][1]+'");';
-			code += 'tab.state = "'+tabs[c][0]+'";';
-			code += 'tab.onclick = function(e)';
-			code += '{';
-			code += 'Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+id+'",this.state,true);';
-			code += 'if (selectedTab'+id+')';
-			code += '{';
-			code += 'Element.removeClassName(selectedTab'+id+',"'+activeClassName+'");';
-			code += 'Element.addClassName(selectedTab'+id+',"'+inactiveClassName+'");';
-			code += '}';
-			code += 'Element.removeClassName(this,"'+inactiveClassName+'");';
-			code += 'Element.addClassName(this,"'+activeClassName+'");';
-			code += 'selectedTab'+id+'= this;';			
-			code += '};';
-			
-			code += 'tab.onmouseover = function()';
-			code += '{ if (selectedTab'+id+' != this) { this.className+=" tab_active"; }';
-			code += '};';
-
-			code += 'tab.onmouseout = function(e)';
-			code += '{;';
-			code += 'if (selectedTab'+id+' != this)';
-			code += '{ this.className=this.className.replace(new RegExp(" tab_active\\\\b"), "");}';
-			code += '};';
-			
-			// delegate to any attribute listeners
-			code += Appcelerator.Compiler.delegateToAttributeListeners(tabs[c][2])+";";			
-			
-			// copy styles from tab into new tab
-			var cl = tabs[c][2].getAttribute("class");
-			if (cl)
-			{
-				code += 'Element.addClassName(tab,"'+cl+'");';
-			}
-			code += 'tab.style.display="";';
-			
-			code += '}';
-		}
+		var params = {};
+		params['id'] = id;
+		params['initial'] = initial;
+		params['initialNode'] = initialNode;
+		params['tabs'] = tabs;
+		params['activeClassName'] = activeClassName;
+		params['inactiveClassName'] = inactiveClassName;
 
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : code,
+			'initialization' : Appcelerator.Module.Tabpanel.compileWidget,
+			'initializationParams' : params,
 			'wire':true
 		};
 	}

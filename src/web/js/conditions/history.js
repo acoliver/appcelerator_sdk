@@ -20,22 +20,20 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		// support a null (no history) history
 		token = token.length == 0 || token=='_none_' || token==='null' ? 'null' : "'" + token + "'";
 		
-		
-		var code = 'Appcelerator.History.onChange(function(newLocation,data,scope)';
-		code+='{';
-		code+='  if (newLocation'+operator+token+'){';
-		code+=actionFunc;
-		if (elseActionFunc)
+		Appcelerator.History.onChange(function(newLocation,data,scope)
 		{
-			code+='  }else{';
-			code+=elseActionFunc;
-		}
-		code+='  }';
-		code+='});';
-
-		return code;
+			if (newLocation+operator+token)
+			{
+				actionFunc();
+			}
+			else
+			{
+				elseActionFunc();
+			}
+		});
+		return true;
 	}
-	return null;
+	return false;
 });
 
 

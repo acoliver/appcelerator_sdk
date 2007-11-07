@@ -33,7 +33,7 @@ Appcelerator.Module.Content =
 	{
 		if (!parameterMap['reload'])
 		{
-			if (!$(id).fetched)
+			if (!$(id).fetched && !parameterMap['fetched'])
 			{
 				Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
 				$(id).fetched = true;
@@ -46,15 +46,13 @@ Appcelerator.Module.Content =
 	},
 	buildWidget: function(element,state)
 	{
-		var jscode = '';
-		
 		var on = element.getAttribute('on');
 		var src = element.getAttribute('src');
-		var lazy = (element.getAttribute('lazy') || 'false' ) == 'true';
 		var args = element.getAttribute('args');
+		var lazy = (element.getAttribute('lazy') == 'true');
+		var reload = (element.getAttribute('reload') == 'true');
 		var onload = element.getAttribute('onload');
-		var onfetch = element.getAttribute('onfetch');		
-		var reload = (element.getAttribute('reload') || 'false') == 'true';
+		var onfetch = element.getAttribute('onfetch');
 		
 		var parameters = {};
 		parameters['onload'] = onload;		
@@ -63,26 +61,22 @@ Appcelerator.Module.Content =
 		parameters['args'] = args;
 		parameters['reload'] = reload;
 
-		args = (args) ? '"'+args+'"' : 'null';
-		onload = (onload) ? '"'+onload+'"' : 'null';
-		onfetch = (onfetch) ? '"'+onfetch+'"' : 'null';		
+		if (on)
+		{
+			Appcelerator.Compiler.parseOnAttribute(element);
+		}
 		
-		jscode+='$("'+element.id+'").scope = "'+element.scope+'";';
-		jscode+=Appcelerator.Compiler.getJSCode(Appcelerator.Compiler.parseOnAttribute(element));
 		if (!lazy)
 		{
-			jscode+='Appcelerator.Module.Content.fetch("'+element.id+'","'+src+'",'+args+','+onload+','+onfetch+');';
-			jscode+='$("'+element.id+'").fetched = true';
+			Appcelerator.Module.Content.fetch(element.id,src,args,onload,onfetch);
+			parameters['fetched'] = true;
 		}
-	
-		var f = on ? ['execute'] : null;
-	
+		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
-			'initialization':  jscode,
 			'parameters': parameters,
-			'functions': f
+			'functions': on ? ['execute'] : null
 		};
 	},
 	fetch: function (target,src,args,onload,onfetch)

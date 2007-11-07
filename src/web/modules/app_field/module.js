@@ -39,6 +39,333 @@ Appcelerator.Module.Field =
 	{
 		return 'app:field';
 	},
+	compileWidget: function(params)
+	{
+		var id = params['id'];
+		var type = params['type'];
+		var fieldClass = params['fieldClass'];
+		var fieldDefaultValueClass = params['fieldDefaultValueClass'];
+		var fieldFocusClass = params['fieldFocusClass'];
+		var focusClass = params['focusClass'];
+		var blurClass = params['blurClass'];
+		var fieldBlurClass = params['fieldBlurClass'];
+		var defaultFieldValue = params['defaultFieldValue'];
+		var validator = params['validator'];
+		var errorId = params['errorId'];
+		var delay = params['delay'];
+		var autocomplete = params['autocomplete'];
+		var indicatorID = params['indicator'];
+		var message = params['message'];
+		var property = params['property'];
+		var value = params['value'];
+		var text = params['text'];
+		var elementScope = params['scope'];
+		var parameters = params['parameters'];
+		
+		var field = $(id);
+		var container = $(id+'_field_container');
+		
+		if (fieldDefaultValueClass)
+		{
+			Element.addClassName(id, fieldDefaultValueClass);
+		}
+		if (fieldClass)
+		{
+			Element.addClassName(id, fieldClass);
+		}
+		
+		var fieldGetter = function()
+		{
+			switch (type)
+			{
+				case 'text':
+				case 'password':
+				case 'autocomplete':
+				{
+					return field.value;
+				}
+				case 'select':
+				case 'dropdown':
+				{
+					if (field.options.length == 0 || field.options.selectedIndex < 0)
+					{
+						return '';
+					}
+					return field.options[field.options.selectedIndex].text;
+				}
+			}
+		};
+		
+		var fieldDefaultSetter = function(value)
+		{
+			switch (type)
+			{
+				case 'text':
+				case 'password':
+				case 'autocomplete':
+				{
+					field.value = value;
+					break;
+				}
+			}
+		};
+		
+		var focusListener = function()
+		{
+			if (fieldDefaultValueClass)
+			{
+				Element.removeClassName(field, fieldDefaultValueClass);
+			}
+			
+			Element.addClassName(field, fieldFocusClass);
+			Element.addClassName(container, focusClass);
+			Element.removeClassName(field, fieldBlurClass);
+			Element.removeClassName(field, blurClass);
+			
+			if (defaultFieldValue)
+			{
+				if (defaultFieldValue == fieldGetter())
+				{
+					fieldDefaultSetter('');
+					if (field.revalidate)
+					{
+						field.revalidate();
+					}
+				}
+			}
+			return true;
+		};
+
+		var forceDecoration = function()
+		{
+			if (validator)
+			{
+				Appcelerator.Decorator['field_decorator'](field,'',errorId);
+			}
+		};
+		
+		var blurListener = function()
+		{
+			Element.addClassName(field, fieldBlurClass);
+			Element.addClassName(container, blurClass);
+			Element.removeClassName(field, fieldFocusClass);
+			Element.removeClassName(container, focusClass);
+			
+			var value = fieldGetter();
+			
+			if (defaultFieldValue)
+			{
+				if (value == '')
+				{
+					Element.addClassName(field, fieldDefaultValueClass);
+					fieldDefaultSetter(defaultFieldValue);
+					// do it on a timeout to allow the main blur listener in
+					// appcelerator to do its work and then come back in and force it
+					setTimeout(forceDecoration, 100);
+				}
+			}
+			else
+			{
+				Element.removeClassName(field, fieldDefaultValueClass);
+			}
+			
+			field.value = value;
+			return true;
+		};
+		
+		Appcelerator.Compiler.attachFunction(field,'focus',function ()
+		{
+			field.focus();
+		});
+
+		Appcelerator.Compiler.attachFunction(field,'select',function ()
+		{
+			field.select();
+		});
+
+		Appcelerator.Compiler.attachFunction(field,'reset',function ()
+		{
+			switch (type)
+			{
+				case 'text':
+				case 'password':
+				case 'autocomplete':
+				{
+					field.value = '';
+					break;
+				}
+				case 'select':
+				case 'dropdown':
+				{
+					field.options.length = 0;
+					break;
+				}
+			}
+		});
+		
+		if (type == 'autocomplete')
+		{
+			var timer = null;
+			var delay = Appcelerator.Util.DateTime.timeFormat(delay || '400ms');
+			if (!autocomplete)
+			{
+				throw "autocomplete field types must have a 'autocomplete' attribute for the message to send";
+			}
+			var indicator = null;
+			if (indicatorID)
+			{
+				if (indicatorID=='footer')
+				{
+					indicator = $(id+'_footer');
+					indicator.style.visibility='hidden';
+				}
+				else
+				{
+					indicator = $(indicatorID);
+				}
+				if (!indicator)
+				{
+					throw "autocomplete field couldn't find indicator with ID: "+indicatorID;
+				}
+			}
+			
+			var timer = null;
+			var indicator = $(indicatorID);
+			var stopAutoComplete = function()
+			{
+				if (timer)
+				{
+					clearTimeout(timer);
+					timer = null;
+				}
+				
+				return true;
+			};
+			
+			var currentvaue = field.value;
+			var autoComplete = function()
+			{
+				stopAutoComplete();
+				currentvalue = field.value;
+				if (indicator)
+				{
+					Element.setStyle(indicator,{visibility:'visible'});
+				}
+				var data = {};
+				
+				if (parameters)
+				{
+					data = Object.evalWithinScope(parameters, window);
+				}
+				
+				data['id'] = id;
+				data['value'] = field.value;
+				$MQ(Appcelerator.Compiler.convertMessageType(autocomplete), data, elementScope);
+				return true;
+			};
+			
+			var keyListener = function(e)
+			{
+				stopAutoComplete();
+				if (indicator)
+				{
+					Element.setstyle(indicator, {visibility:'hidden'});
+				}
+				
+				timer = setTimeout(autoComplete, delay);
+				return true;
+			};
+			
+			Event.observe(field, 'keyup', keyListener, false);
+			Event.observe(field, 'blur', stopAutoComplete, false);
+		}
+		
+		Event.observe(field, 'focus', focusListener, false);
+		Event.observe(field, 'blur', blurListener, false);
+		
+		if (message)
+		{
+			message = Appcelerator.Compiler.convertMessageType(message);
+			if (!property)
+				throw "field with message must also define PROPERTY attribute";
+			
+			// select case
+			var textProperty = null;
+			var valueProperty = null;
+			if (type == "select" || type == "dropdown")
+			{
+				valueProperty = value;
+				if (!valueProperty)
+					throw "select field with message must also define a VALUE attribute";
+				textProperty = text;
+				if (!textProperty)
+					textProperty = valueProperty;
+			}
+			
+			var listener = 
+			{
+				accept: function()
+				{
+					return [message];
+				},
+				acceptScope: function(scope)
+				{
+					return elementScope == '*' || scope == elementScope;
+				},
+				onMessage: function(t, data, datatype, direction)
+				{
+					try
+					{
+						$D('received message = '+direction+':'+t+',data='+Object.toJSON(data));
+						var value = property ? Object.getNestedProperty(data, property) : data;
+						
+						switch (type)
+						{
+							case 'text':
+							case 'password':
+							case 'autocomplete':
+							{
+								field.value = value;
+								break;
+							}
+							case 'select':
+							case 'dropdown':
+							{
+								if (typeof value == 'array' || (typeof value == 'object' && value.length))
+								{
+									field.options.length = 0;
+									for (var c=0, len=value.length; c<len; c++)
+									{
+										var curRow = value[c];
+										var newText = Object.getNestedProperty(curRow, textProperty);
+										var newValue = Object.getNestedProperty(curRow, valueProperty);
+										field.options[field.options.length] = new Option(newText, newValue);
+									}
+								}
+								else
+								{
+									field.options.length = 0;
+									field.options[0] = new Option(value, value);
+								}
+							}
+						}
+						
+						if (field.revalidate)
+						{
+							field.revalidate();
+						}
+					}
+					catch (e)
+					{
+						Appcelerator.Compiler.handleElementException(field, e);
+					}
+				}
+			};
+			Appcelerator.Util.ServiceBroker.addListener(listener);			
+		}
+		
+		forceDecoration();
+	},
 	buildWidget: function(element)
 	{
 		var type = element.getAttribute('type') || 'text';
@@ -183,315 +510,33 @@ Appcelerator.Module.Field =
 		
 		var field = $(id);
 		
-		if (fieldDefaultValueClass)
-		{
-			code+="Element.addClassName('"+id+"','"+fieldDefaultValueClass+"');";
-		}
-		if (fieldClass)
-		{
-			code+="Element.addClassName('"+id+"','"+fieldClass+"');";
-		}
-		/*
-		if (on)
-		{
-			field.setAttribute('on',on);
-		}*/
-		
-		//
-		// map these so we can expose the true field to other widgets
-		//
-		element.field = field;
-		// container.field = field;
-		
-		var code = '';
-		code += 'var field = $("'+id+'");var container = $("'+element.id+'_container");';
-		
-		code += 'var fieldGetter = function()';		
-		code += '{';
-		switch(type)
-		{
-			case 'text':
-			case 'password':
-			case 'autocomplete':
-				code += 'return field.value;';
-			case 'select':
-			case 'dropdown':
-				code += 'if (field.options.length == 0 || field.options.selectedIndex < 0) return "";';
-				code += 'return field.options[field.options.selectedIndex].text;';
-		}
-		code += '};';
-		
-		code += 'var fieldDefaultSetter = function(value)';
-		code += '{';
-		switch(type)
-		{
-			case 'text':
-			case 'password':
-			case 'autocomplete':
-			{
-				code += 'field.value = value;';
-				break;
-			}
-			case 'select':
-			case 'dropdown':
-			{
-				break;
-			}
-		}
-		code += '};';
-		
-		code += 'var focusListener = function()';
-		code += '{ ';
-		if (fieldDefaultValueClass)
-		{
-			code += 'Element.removeClassName(field,"'+fieldDefaultValueClass+'");';
-		}
-		code += 'Element.addClassName(field,"'+fieldFocusClass+'");Element.addClassName(container,"'+focusClass+'");';
-		code += 'Element.removeClassName(field,"'+fieldBlurClass+'");Element.removeClassName(container,"'+blurClass+'");';
-		if (defaultFieldValue)
-		{
-			code += 'if ("'+defaultFieldValue+'" == fieldGetter())';
-			code += '{';
-			code += 'fieldDefaultSetter("");';
-			code += 'if (field.revalidate) field.revalidate();';
-			code += '}';
-		}
-		code += 'return true;';
-		code += '};';
-		
-		code += 'var forceDecoration = function()';
-		code += '{';
-		if (validator)
-		{
-			code += 'Appcelerator.Decorator["field_decorator"](field,"","'+errorId+'");';
-		}
-		code += '};';
-		
-		code += 'var blurListener = function()';
-		code += '{';
-		code += 'Element.addClassName(field,"'+fieldBlurClass+'");Element.addClassName(container,"'+blurClass+'");';
-		code += 'Element.removeClassName(field,"'+fieldFocusClass+'");Element.removeClassName(container,"'+focusClass+'");';
-		code += 'var value = fieldGetter();';
-		if (defaultFieldValue)
-		{
-			code += 'if (value=="")';
-			code += '{';
-			code += 'Element.addClassName(field,"'+fieldDefaultValueClass+'");';
-			code += 'fieldDefaultSetter("'+defaultFieldValue+'");';
-					// do it on a timeout to allow the main blur listener in
-					// appcelerator to do its work and then come back in and force it
-			code += 'setTimeout(forceDecoration,100);';
-			code += '}';
-		}
-		else
-		{
-			code += 'Element.removeClassName(field,"'+fieldDefaultValueClass+'");';
-		}
-		code += 'field.value = value;';
-		code += 'return true;';
-		code += '};';
-		
-		code += 'Appcelerator.Compiler.attachFunction($("'+element.id+'"),"focus",function ()';
-		code += '{';
-		code += 'field.focus();';
-		code += '});';
-		
-		code += 'Appcelerator.Compiler.attachFunction($("'+element.id+'"),"select",function ()';
-		code += '{';
-		code += 'field.select();';
-		code += '});';
-		
-		code += 'Appcelerator.Compiler.attachFunction($("'+element.id+'"),"reset",function ()';
-		code += '{';
-		switch(type)
-		{
-			case 'text':
-			case 'password':
-			case 'autocomplete':
-			{
-				code += 'field.value = "";';
-				break;
-			}
-			case 'select':
-			case 'dropdown':
-			{
-	 			code += 'field.options.length = 0;';
-				break;
-			}
-		}
-		code += '});';
-		
-		if (type == 'autocomplete')
-		{
-			var timer = null;
-			var delay = Appcelerator.Util.DateTime.timeFormat(element.getAttribute('delay') || '400ms');
-			var autocomplete = element.getAttribute('autocomplete');
-			if (!autocomplete)
-			{
-				if (!autocomplete)
-				{
-					throw "autocomplete field types must have a 'autocomplete' attribute for the message to send";
-				}
-			}
-			var indicatorID = element.getAttribute('indicator');
-			var indicator = null;
-			if (indicatorID)
-			{
-				if (indicatorID=='footer')
-				{
-					indicator = $(id+'_footer');
-					indicator.style.visibility='hidden';
-				}
-				else
-				{
-					indicator = $(indicatorID);
-				}
-				if (!indicator)
-				{
-					throw "autocomplete field couldn't find indicator with ID: "+indicatorID;
-				}
-			}
-			
-			code += 'var timer = null;';
-			code += 'var indicator = $("'+indicatorID+'");';
-			code += 'var stopAutoComplete = function()';
-			code += '{';
-			code += 'if (timer)';
-			code += '{';
-			code += 'clearTimeout(timer);';
-			code += 'timer=null;';
-			code += '}';
-			code += 'return true;';
-			code += '};';
-			
-			code += 'var currentvalue = field.value;';
-			code += 'var autoComplete = function()';
-			code += '{';
-			code += 'stopAutoComplete();';
-			code += 'currentvalue = field.value;';
-			code += 'if (indicator)';
-			code += '{';
-			code += 'Element.setStyle(indicator,{visibility:"visible"});';
-			code += '}';
-			code += 'var data={};';
-			if (parameters)
-			{
-				code += 'data = Object.evalWithinScope("'+parameters+'", window);';
-			}
-			code += 'data["id"]="'+id+'";';
-			code += 'data["value"]=field.value;';
-			code += '$MQ(Appcelerator.Compiler.convertMessageType("'+autocomplete+'"),data,field.scope);'
-			code += 'return true;';
-			code += '};';
-			
-			code += 'var keyListener = function(e)';
-			code += '{';
-			code += 'stopAutoComplete();';
-			code += 'if (indicator)';
-			code += '{';
-			code += 'Element.setStyle(indicator,{visibility:"hidden"});';
-			code += '}';
-			code += 'timer = setTimeout(autoComplete,"'+delay+'");';
-			code += 'return true;';
-			code += '};';
-			
-			code += 'Event.observe(field,"keyup",keyListener,false);';
-			code += 'Event.observe(field,"blur",stopAutoComplete,false);';
-		}
-		
-		code += 'Event.observe(field,"focus",focusListener,false);';
-		code += 'Event.observe(field,"blur",blurListener,false);';
-		
-		var message = element.getAttribute('message');
-		if (message)
-		{
-			message = Appcelerator.Compiler.convertMessageType(message);
-			var property = element.getAttribute('property');
-			if (!property)
-				throw "field with message must also define PROPERTY attribut";
-			
-			// select case
-			var textProperty = null;
-			var valueProperty = null;
-			if (type == "select" || type == "dropdown")
-			{
-				valueProperty = element.getAttribute('value');
-				if (!valueProperty)
-					throw "select field with message must also define a VALUE attribute";
-				textProperty = element.getAttribute('text');
-				if (!textProperty)
-					textProperty = valueProperty;
-			}
-			
-			code += 'var message = "'+message+'";';
-			code += 'var property = "'+property+'";';
-			code += 'var textProperty = "'+textProperty+'";';
-			code += 'var valueProperty = "'+valueProperty+'";';			
-			code += 'var listener = ';
-			code += '{';
-			code += 'accept: function()';
-			code += '{;';
-			code += 'return [message];';
-			code += '},';
-			code += 'acceptScope: function(scope)';
-			code += '{';
-			code += 'return "'+element.scope+'" == "*" || scope == "'+element.scope+'";';
-			code += '},';
-			code += 'onMessage: function (t, data, datatype, direction)';
-			code += '{';
-			code += 'try';
-			code += '{';
-			code += '$D("received message = "+direction+":"+t+",data="+Object.toJSON(data));';
-			code += 'var value = property ? Object.getNestedProperty(data,property) : data;';
-			switch (type)
-			{
-				case 'text':
-				case 'password':
-				case 'autocomplete':
-				{
-					code += 'field.value = value;';
-					break;
-				}
-
-				case 'select':
-				case 'dropdown':
-				{
-					code += 'if (typeof value == "array" || (typeof value == "object" && value.length))';
-					code += '{';
-					code += 'field.options.length = 0;';
-					code += 'for (var c=0,len=value.length;c<len;c++)';
-					code += '{';
-					code += 'var curRow = value[c];';
-					code += ' var newText = Object.getNestedProperty(curRow,"'+textProperty+'");';
-					code += ' var newValue = Object.getNestedProperty(curRow,"'+valueProperty+'");';
-					code+= '  field.options[field.options.length] = new Option(newText,newValue);';
-					code += '}';
-					code += '}';
-					code += 'else';
-					code += '{';
-					code += 'field.options.length = 0;';
-					code += 'field.options[0]=new Option(value,value);';
-					code += '}';
-					break;
-				}
-			}
-			code += 'if (field.revalidate) field.revalidate();';
-			code += '}';
-			code += 'catch(e)';
-			code += '{';
-			code += 'Appcelerator.Compiler.handleElementException($("'+element.id+'",e));';
- 			code += '}';
-			code += '}';
-			code += '};';
-			code += 'Appcelerator.Util.ServiceBroker.addListener(listener);';
-		}
-		
-		code += 'forceDecoration();';
-		
+		var params = {};
+		params['id'] = id;
+		params['type'] = type;
+		params['fieldClass'] = fieldClass;
+		params['fieldDefaultValueClass'] = fieldDefaultValueClass;
+		params['fieldFocusClass'] = fieldFocusClass;
+		params['focusClass'] = focusClass;
+		params['blurClass'] = blurClass;
+		params['fieldBlurClass'] = fieldBlurClass;
+		params['defaultFieldValue'] = defaultFieldValue;
+		params['validator'] = validator;
+		params['errorId'] = errorId;
+		params['delay'] = element.getAttribute('delay');
+		params['autocomplete'] = element.getAttribute('autocomplete');
+		params['indicatorID'] = element.getAttribute('indicator');
+		params['message'] = element.getAttribute('message');
+		params['property'] = element.getAttribute('property');
+		params['value'] = element.getAttribute('value');
+		params['text'] = element.getAttribute('text');
+		params['scope'] = element.scope;
+		params['parameters'] = parameters;
+				
 		return {
 			'presentation' : '<div class="field" id="'+ element.id + '_container">'+html+ '</div>',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : code,
+			'initialization' : Appcelerator.Module.Field.compileWidget,
+			'initializationParams' : params,
 			'wire' : true
 			
 		};

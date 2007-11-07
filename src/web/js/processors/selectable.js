@@ -176,14 +176,12 @@ Appcelerator.Compiler.wireSelectable = function(element,value)
 			}.bind(scope);
 			Appcelerator.Compiler.attachFunction(child,'unselect',unselect);
 			Event.observe(child,'click',f,false);
-			/*
 			Appcelerator.Compiler.addTrash(child,function()
 			{
 				selectListener.apply(this,[null,true]);
 				members.members.remove(this.element.id);
 				Event.stopObserving(this.element,'click',f);
 			}.bind(scope));
-			*/
 		}
 	}
 };
@@ -194,7 +192,7 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','ul','ol','tr'],'selecta
 	{
 		if (value)
 		{
-			return 'Appcelerator.Compiler.wireSelectable("'+element.id+'","'+value+'");';
+			Appcelerator.Compiler.wireSelectable(element,value);
 		}
 	}
 });

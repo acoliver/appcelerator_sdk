@@ -22,7 +22,12 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','ul','ol'],'sortable',
 					options.tag = Appcelerator.Compiler.getTagname(child);
 				}
 			}
-			return 'Sortable.create("'+element.id+'",'+Object.toJSON(options)+');';
+			Sortable.create(element.id,options);
+
+			Appcelerator.Compiler.addTrash(element,function()
+			{
+				Sortable.destroy(element);
+			});
 		}
 	}
 });

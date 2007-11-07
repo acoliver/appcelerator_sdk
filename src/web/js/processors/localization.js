@@ -47,7 +47,6 @@ Appcelerator.Localization.AttributeProcessor =
 				}
 			}
 		}
-		return null;
 	}
 };
 //

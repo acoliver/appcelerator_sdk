@@ -125,10 +125,11 @@ Appcelerator.Module.Iterator =
 		}
 		parameters['selectable'] = element.getAttribute('selectable');
 		
+		Appcelerator.Compiler.parseOnAttribute(element);
+		
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization':  Appcelerator.Compiler.parseOnAttribute(element),
 			'cleanup' : null,
 			'parameters': parameters,
 			'functions' : ['execute']

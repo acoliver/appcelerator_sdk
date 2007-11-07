@@ -26,20 +26,21 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			{
 				throw "dragover condition only applies to elements that have droppable attribute";
 			}
-			code += 'var element = $("'+element.id+'");';
-			code += 'if (!element.hoverListeners)';
-			code += '{';
-			code += 'element.hoverListeners = [];';
-			code += '}';
-			code += 'var actionFunc = function(scope, data) {' + Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond) + '};';
-			code += 'element.hoverListeners.push(';
-			code += '{';
-			code += 'onHover:function(e)';
-			code += '{';
-			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'"});';
-			code += '}';
-			code += '});';
-			return code;
+			
+			if (!element.hoverListeners)
+			{
+				element.hoverListeners = [];
+			}
+			
+			var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond);
+			element.hoverListeners.push(
+			{
+				onHover: function(e)
+				{
+					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dragged:e});
+				}
+			});
+			return true;
 		}
 		case 'drop':
 		{
@@ -47,38 +48,44 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			{
 				throw "drop condition only applies to elements that have droppable attribute";
 			}
-			code += 'var element = $("'+element.id+'");';
-			code += 'if (!element.dropListeners)';
-			code += '{';
-			code += 'element.dropListeners = [];';
-			code += '}';
-			code += 'var actionFunc = function(scope, data) {' + Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond) + '};';
-			code += 'element.dropListeners.push(';
-			code += '{';
-			code += 'onDrop:function(e, dropped)';
-			code += '{';
-			code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+element.id+'", dropped: dropped});';
-			code += '}';
-			code += '});';
-			return code;
+			
+			if (!element.dropListeners)
+			{
+				element.dropListeners = [];
+			}
+			
+			var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond);
+			element.dropListeners.push(
+			{
+				onDrop: function(e)
+				{
+					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dropped:e});
+				}
+			});
+			return true;
 		}
 	}
 	
 	if (eventName)
 	{
 		var id = element.id;
-		code += 'var actionFunc = function(scope, data) { ' + Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond) + '};';
-		code += 'var observer = {};';
-		code += 'observer["'+eventName+'"] = function(type, draggable)';
-		code += '{';
-		code += 'if (draggable.element.id == "'+id+'")';
-		code += '{';
-		code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+String.stringValue(delay)+',{id:"'+id+'"});';
-		code += '}';		
-		code += '};';
-		code += 'Draggables.addObserver(observer);';
-		return code;
+		var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond);
+		var observer = {};
+		observer[eventName] = function(type, draggable)
+		{
+			if (draggable.element.id == id)
+			{
+				Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:id});
+			}
+		;}
+		Draggables.addObserver(observer);
+		
+		Appcelerator.Compiler.addTrash(element, function()
+		{
+			Draggables.removeObserver(element);
+		});
+		return true;
 	}
 	
-	return null;
+	return false;
 });

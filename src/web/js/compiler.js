@@ -139,21 +139,14 @@ Appcelerator.Compiler.registerAttributeProcessor = function(name,attribute,liste
 
 Appcelerator.Compiler.forwardToAttributeListener = function(element,array)
 {
-	var code = null;
 	for (var c=0;c<array.length;c++)
 	{
 		var entry = array[c];
 		var attribute = entry[0];
 		var listener = entry[1];
 		var value = element.getAttribute(attribute);
-		var result = Appcelerator.Compiler.getJSCode(listener.handle(element,attribute,value),'forwardToAttributeListener');
-		if (result)
-		{
-			if (!code) code = '';
-			code+=result.toFunctionString(Appcelerator.Compiler.functionId++);
-		}
+		listener.handle(element,attribute,value);
 	}
-	return code;
 };
 
 //
@@ -162,25 +155,21 @@ Appcelerator.Compiler.forwardToAttributeListener = function(element,array)
 //
 Appcelerator.Compiler.delegateToAttributeListeners = function(element)
 {
-	var code = '';
 	var tagname = Appcelerator.Compiler.getTagname(element);
 	var p = Appcelerator.Compiler.attributeProcessors[tagname];
 	if (p && p.length > 0)
 	{
-		var c = Appcelerator.Compiler.forwardToAttributeListener(element,p);
-		if (c) code+=c;
+		Appcelerator.Compiler.forwardToAttributeListener(element,p);
 	}
 	p = Appcelerator.Compiler.attributeProcessors['*'];
 	if (p && p.length > 0)
 	{
-		var c = Appcelerator.Compiler.forwardToAttributeListener(element,p);
-		if (c) code+=c;
+		Appcelerator.Compiler.forwardToAttributeListener(element,p);
 	}
 	if (Appcelerator.Compiler.isCompiledMode)
 	{
 		element.removeAttribute('on');
 	}
-	return code;
 };
 
 Appcelerator.Compiler.containerProcessors=[];
@@ -226,22 +215,9 @@ Appcelerator.Compiler.checkLoadState = function (state)
 {
 	if (state.pending==0 && state.scanned)
 	{
-		var code = state.code.trim();
-		
 		if (typeof(state.onfinish)=='function')
 		{
 			state.onfinish(code);
-		}
-		else if (code.length > 0)
-		{
-			if (Appcelerator.Compiler.isCompiledMode)
-			{
-				Appcelerator.Compiler.compiledCode += code;
-			}
-			else if (Appcelerator.Compiler.isInterpretiveMode)
-			{
-				eval(code);
-			}
 		}
 				
 		if (typeof(state.onafterfinish)=='function')
@@ -261,6 +237,7 @@ Appcelerator.Compiler.dynamicCompile = function(element)
 	state.scanned = true;
 	Appcelerator.Compiler.checkLoadState(state);
 };
+
 Appcelerator.Compiler.createCompilerState = function ()
 {
 	return {pending:0,code:'',scanned:false};
@@ -323,27 +300,26 @@ Appcelerator.Compiler.onPrecompile = function (element)
 		for (var c=0,len=Appcelerator.Compiler.compileInterceptors.length;c<len;c++)
 		{
 			var interceptor = Appcelerator.Compiler.compileInterceptors[c];
-			return interceptor.onPrecompile(element);
+			if (interceptor.onPrecompile(element)==false)
+			{
+				return false;
+			}
 		}
 	}
-	return null;
+	return true;
 };
 
 Appcelerator.Compiler.compileElement = function(element,state)
 {
 	Appcelerator.Compiler.getAndEnsureId(element);
 	Appcelerator.Compiler.determineScope(element);
-
+	
 	if (typeof(state)=='undefined')
 	{
 		throw "compileElement called without state for "+element.id;
 	}
 	
-	var code = Appcelerator.Compiler.onPrecompile(element);
-	if (code)
-	{
-		state.code+=Appcelerator.Compiler.getJSCode(code,'compileElement');
-	}
+	Appcelerator.Compiler.onPrecompile(element);
 
 	//TODO: check to see if we're already compiled and destroy
 	//TODO: add compile on for security
@@ -385,29 +361,27 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	}	
 	else
 	{
-		var c = Appcelerator.Compiler.delegateToAttributeListeners(element);
+		Appcelerator.Compiler.delegateToAttributeListeners(element);
 		
 		var elementChildren = [];
 		for (var i = 0, length = element.childNodes.length; i < length; i++)
 		{
 	    	elementChildren.push(element.childNodes[i]);
-		}		
+		}
 		for (var i=0,len=elementChildren.length;i<len;i++)
 		{
 			if (elementChildren[i] && elementChildren[i].nodeType == 1)
 			{
-				c += Appcelerator.Compiler.getJSCode(Appcelerator.Compiler.compileElement(elementChildren[i],state),'compileElement');
+				Appcelerator.Compiler.compileElement(elementChildren[i],state);
 			}
 		}
-
-		state.code += Appcelerator.Compiler.getJSCode(c,'compileElement2');
 	}
 };
 
 Appcelerator.Compiler.destroy = function(element, recursive)
 {
 	recursive = recursive==null ? true : recursive;
-
+	
 	if (element.trashcan && element.trashcan.length > 0)
 	{
 		for (var c=0,len=element.trashcan.length;c<len;c++)
@@ -421,17 +395,17 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 				// gulp
 			}
 		}
-		element.trashcan = null;
 		try
 		{
 			delete element.trashcan;
+			element.trashcan = null;
 		}
 		catch(e)
 		{
 			// yummy!
 		}
 	}
-
+	
 	if (recursive)
 	{
 		if (element.childNodes && element.childNodes.length > 0)
@@ -766,7 +740,6 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	{
 		throw "element with ID: "+id+" doesn't have a function named: "+name;
 	}
-	return null;
 };
 
 //
@@ -934,14 +907,15 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				}
 			}
 			
+			//
+			// run initialization
+			//
 			var initialization = instructions.initialization;
-			//
-			// load initialization
-			//
-			if (initialization && initialization.length!=0)
+			if (initialization)
 			{
-				state.code += Appcelerator.Compiler.getJSCode(initialization,'initialization').toFunctionString(Appcelerator.Compiler.functionId++);
+				initialization(instructions.initializationParams);
 			}
+			
 			//
 			// add cleanup code
 			//
@@ -1011,11 +985,10 @@ Appcelerator.Compiler.parseOnAttribute = function(element)
 	var on = element.getAttribute('on');
 	if (on)
 	{
-		var expr = Appcelerator.Compiler.compileExpression(element,on,false);
-		return Appcelerator.Compiler.getJSCode(expr,'parseOnAttribute');
-		
+		Appcelerator.Compiler.compileExpression(element,on,false);
+		return true;
 	}
-	return '';
+	return false;
 };
 
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
@@ -1101,17 +1074,13 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 		
 		if (Logger.debugEnabled) Logger.debug('compiling condition=['+condition+'], action=['+action+'], elseAction=['+elseAction+'], delay=['+delay+'], ifCond=['+ifCond+']');
 		
-		var script = Appcelerator.Compiler.handleCondition(element,condition,action,elseAction,delay,ifCond);
+		var handled = Appcelerator.Compiler.handleCondition(element,condition,action,elseAction,delay,ifCond);
 		
-		if (!script)
+		if (!handled)
 		{
 			throw "syntax error: unknown condition type: "+condition+" for "+value;
 		}
-		
-		scripts.push(Appcelerator.Compiler.getJSCode(script,'handleCondition'));
 	}
-	
-	return scripts.length == 0 ? '' : scripts.join(';');
 };
 
 Appcelerator.Compiler.customConditions = [];
@@ -1129,10 +1098,10 @@ Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAc
 		var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
  		if (processed)
  		{
- 			return processed.toFunctionString(Appcelerator.Compiler.functionId++);
+ 			return true;
  		}
  	}
- 	return null;
+ 	return false;
 };
 
 Appcelerator.Compiler.parameterRE = /(.*?)\[(.*)?\]/i;
@@ -1224,7 +1193,7 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 		actionFunc = Appcelerator.Compiler.makeAction(id,action,additionalParams);
 	}
 	
-	return actionFunc;	
+	return actionFunc.toFunction(true);	
 };
 
 //

@@ -42,7 +42,7 @@ Appcelerator.Module.Statemachine =
 		
 		element.value = initial || '';
 		
-		var code = 'var conditions = [];';
+		var conditions = [];
 		
 		for (var c=0,len=element.childNodes.length;c<len;c++)	
 		{
@@ -55,19 +55,14 @@ Appcelerator.Module.Statemachine =
 				if (initial && initial == name)
 				{
 					initialFound = true;
-					// set to null to indicate it hasn't been executed
-					code += 'Appcelerator.Compiler.StateMachine.addState("'+id+'","'+name+'",null);';
 				}
-				else
-				{
-					code += 'Appcelerator.Compiler.StateMachine.addState("'+id+'","'+name+'",null);';					
-				}
+				Appcelerator.Compiler.StateMachine.addState(id,name,null);
 				
-				code += 'conditions.push(Appcelerator.Compiler.StateMachine.compileStateCondition("'+name+'","'+cond+'"));';
+				conditions.push(Appcelerator.Compiler.StateMachine.compileStateCondition(name,cond));
 			}
 		}
 		
-		code += 'var compiled = Appcelerator.Compiler.StateMachine.buildConditions(conditions);'
+		var compiled = Appcelerator.Compiler.StateMachine.buildConditions(conditions);
 		
 		if (initial)
 		{
@@ -80,70 +75,86 @@ Appcelerator.Module.Statemachine =
 			// and invoke appropriate listeners 
 			//
 			element.value = initial;
-			code += 'Appcelerator.Compiler.StateMachine.resetOnStateListeners();';
-			code += 'if (Appcelerator.Compiler.StateMachine.initialStateLoaders)';
-			code += '{';
-			code += 'Appcelerator.Compiler.StateMachine.initialStateLoaders.push(["'+id+'","'+initial+'"]);';
-			code += '};';
+			Appcelerator.Compiler.StateMachine.resetOnStateListeners();
+			if (Appcelerator.Compiler.StateMachine.initialStateLoaders)
+			{
+				Appcelerator.Compiler.StateMachine.initialStateLoaders.push([id,initial]);
+			}
 		}
 
 		// compile when first accessed
-		code += 'var codeFunction = null;';
+		var codeFunction = null;
+		
+		var listener =
+		{
+			accept: function()
+			{
+				return compiled.types;
+			},
+			acceptScope: function(scope)
+			{
+				return element.scope=='*' || scope==element.scope;
+			},
+			onMessage: function(type, data, datatype, direction)
+			{
+				try
+				{
+					if (!codeFunction)
+					{
+						codeFunction = compiled.code.toFunction();
+						compiled = null;
+					}
+					
+					var key = direction + ':' + type;
+					var obj = {messagetype:key, type:type, datatype:datatype, direction:direction, data:data};
+					var state = codeFunction.call(obj);
+					
+					if (state)
+					{
+						Appcelerator.Compiler.StateMachine.fireStateMachineChange(id,state,true);
+					}
+					else
+					{
+						state = Appcelerator.Compiler.StateMachine.getActiveState(id);
+						
+						if (state)
+						{
+							Appcelerator.Compiler.StateMachine.fireStateMachineChange(id,state,null);
+						}
+					}
+				}
+				catch (e)
+				{
+					Logger.error('Error processing message: '+direction+':'+type+' - '+Object.getExceptionDetail(e));
+				}
+			}
+		};
 
-		code += 'var listener = ';
-		code += '{';
-		code += 'accept: function()';
-		code += '{';
-		code += 'return compiled.types;';
-		code += '},';
-		code += 'acceptScope: function(scope)';
-		code += '{';
-		code += 'return "'+element.scope+'"=="*" || scope == "'+element.scope+'";';
-		code += '},';
-		code += 'onMessage: function (type, data, datatype, direction)';
-		code += '{';
-		code += 'try';
-		code += '{';
-		code += 'if (!codeFunction)';
-		code += '{';
-		code += 'codeFunction = compiled.code.toFunction();';
-		code += 'compiled = null;';
-		code += '}';
-		code += 'var key = direction+":"+type;';
-		code += 'var obj = {messagetype:key,type:type,datatype:datatype,direction:direction,data:data};';
-		code += 'var state = codeFunction.call(obj);';
-		code += 'if (state)';
-		code += '{ Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+id+'",state,true); }';
-		code += 'else ';
-		code += '{';
-		code += 'state = Appcelerator.Compiler.StateMachine.getActiveState("'+id+'");';
-		code += 'if (state)';
-		code += '{ Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+id+'",state,null); }';
-		code += '}';
-		code += '}';
-		code += 'catch (e)';
-		code += '{ Logger.error("Error processing message: "+direction+":"+type+" - "+Object.getExceptionDetail(e)); }';
-		code += '}';
-		code += '};';
-		code += 'Appcelerator.Util.ServiceBroker.addListener(listener);';
+		Appcelerator.Util.ServiceBroker.addListener(listener);
+
+		var stateListener = function(statemachine,state,on_off)
+		{
+			if (on_off)
+			{
+				element.value = state;
+			}
+		};
+		Appcelerator.Compiler.StateMachine.registerStateListener(id,stateListener);
+		Appcelerator.Compiler.StateMachine.fireOnStateListeners();
 		
-		//
-		// register a listener for our own statemachine changes so we can
-		// set our widget value
-		//
-		code += 'var stateListener = function(statemachine,state,on_off)';
-		code += '{';
-		code += 'if (on_off)';
-		code += '{';
-		code += '$("'+id+'").value = state;';
-		code += '}';
-		code += '};';
-		code += 'Appcelerator.Compiler.StateMachine.registerStateListener("'+id+'",stateListener);';
+		Appcelerator.Compiler.addTrash(element, function()
+		{
+			if (stateListener)
+			{
+				Appcelerator.Compiler.StateMachine.unregisterStateListener(stateListener);
+				stateListener = null;
+			}
+			Appcelerator.Util.ServiceBroker.removeListener(listener);
+		});
 		
-		code += 'Appcelerator.Compiler.StateMachine.fireOnStateListeners()';
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : code
+			'presentation' : ''
 		};
 	}
 };

@@ -99,40 +99,44 @@ Appcelerator.Module.GoogleAnalytics =
 			});
 		}
 		
-		var jscode = '';
-				
-		jscode += 'window.googleStuff={}; window.googleStuff._uacct="'+account+'";window.googleStuff._uanchor=1;window.googleStuff._ulink=1;';
+		window.googleStuff = {};
+		window.googleStuff._uacct = account;
+		window.googleStuff._uanchor = 1;
+		window.googleStuff._ulink = 1;
+		
 		if (domain)
 		{
-			jscode+='window.googleStuff._udn="'+domain+'";window.googleStuff._uhash="off";'
+			window.googleStuff._udn = domain;
+			window.googleStuff._uhash = 'off';
 		}
 		
 		// we walk these domains for links and make sure that
 		// we propogate google tracking cookies to them using __utmLinker
 		if (outboundLinks.length > 0)
 		{
-			jscode+="window.googleTrackLinks = [";
+			window.googleTrackLinks = [];
+			
 			for (var c=0;c<outboundLinks.length;c++)
 			{
-			  	jscode+="'"+outboundLinks[c]+"'";
-			  	if (c+1 < outboundLinks.length) jscode+=",";
+				window.googleTrackLinks.push(outboundLinks[c]);
 			}
-			jscode+="];";
 		}
 		
-		jscode+="window.googleTracker=function(){urchinTracker()};";
+		window.googleTracker = function()
+		{
+			urchinTracker();
+		};
 		
-		jscode+="var script = document.createElement('script');";
-		jscode+="script.setAttribute('type','text/javascript');";
-		jscode+="script.setAttribute('src','http://www.google-analytics.com/urchin.js');";
-		jscode+="script.setAttribute('onload','Appcelerator.Module.GoogleAnalytics.install();');";
-		jscode+="script.setAttribute('onreadystatechange','Appcelerator.Module.GoogleAnalytics.install();');";
-		jscode+="document.getElementsByTagName('head')[0].appendChild(script);";
+		var script = document.createElement('script');
+		script.setAttribute('type','text/javascript');
+		script.setAttribute('src','http://www.google-analytics.com/urchin.js');
+		script.setAttribute('onload','Appcelerator.Module.GoogleAnalytics.install();'); // TODO: does this work on Safari?
+		script.setAttribute('onreadystatechange','Appcelerator.Module.GoogleAnalytics.install();');
+		document.getElementsByTagName('head')[0].appendChild(script);
 		
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REMOVE,
-			'initialization' : jscode
-		};		
+			'position' : Appcelerator.Compiler.POSITION_REMOVE
+		};
 	}
 };
 

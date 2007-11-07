@@ -64,11 +64,11 @@ Appcelerator.Module.Chart =
 		
 		var html = '<div id="' + element.id + '"></div>';
 		
+		Appcelerator.Compiler.parseOnAttribute(element);
+		
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization':  Appcelerator.Compiler.parseOnAttribute(element),
-			'cleanup' : null,
 			'parameters': parameters,
 			'functions' : ['execute']
 		};		

@@ -36,41 +36,46 @@ Appcelerator.Module.Script =
 		if (script == true) return;
 		script.call({data:data||{},scope:scope,version:version});
 	},
+	executeCode: function(params)
+	{
+		eval(params['code']);
+	},
 	buildWidget: function(element)
 	{
 		var code = Appcelerator.Compiler.getHtml(element);
 		code.replace(/\/\*.*\*\//g,'');
 		var on = element.getAttribute('on');
-		 
+
 		if (code && code.trim().length > 0)
 		{
 			if (on)
 			{
-				var oncode = Appcelerator.Compiler.parseOnAttribute(element);
-
+				Appcelerator.Compiler.parseOnAttribute(element);
+				
 				var parameters = {};
 				parameters['code'] = String.unescapeXML(code);
 				
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
 					'parameters': parameters,
-					'functions' : ['execute'],
-					'initialization':  oncode
+					'functions' : ['execute']
 				};
 			}
 			else
 			{
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
-					'initialization' : String.unescapeXML(code)
+					'initialization' : Appcelerator.Module.Script.executeCode,
+					'initializationParams' : {code: String.unescapeXML(code)}
 				};
 			}
 		}
 		
+		Appcelerator.Compiler.parseOnAttribute(element);
+		
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REMOVE,
-			'initialization' : Appcelerator.Compiler.parseOnAttribute(element)
-		};		
+			'position' : Appcelerator.Compiler.POSITION_REMOVE
+		};
 	}
 };
 

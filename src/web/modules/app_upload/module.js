@@ -33,6 +33,29 @@ Appcelerator.Module.Upload =
 	{
 		Appcelerator.Module.Template.fetch(id,parameterMap['src'],parameterMap['args']);
 	},
+	compileWidget: function(params)
+	{
+		var id = params['id'];
+		
+		// make sure form elements have a name attribute as they won't be included
+		// in the submit if they don't (web1.0 stuff)
+		var e = Form.Methods.getElements(id+'_form');
+		if (e && e.length > 0)
+		{
+			for (var c=0, len=e.length; c<len; c++)
+			{
+				var t = e[c];
+				var name = t.getAttribute('name');
+				if (!name)
+				{
+					t.setAttribute('name', t.id);
+				}
+			}
+		}
+		
+		var upload = Appcelerator.ServerConfig['upload'];
+		$(id+'_form').action = upload.value;
+	},
 	buildWidget: function(element,state)
 	{
 		var data = Appcelerator.Compiler.getHtml(element,true);
@@ -61,26 +84,11 @@ Appcelerator.Module.Upload =
 		// put iframe as child of body so position absolute won't be relative in case parent is relative
 		new Insertion.Bottom(document.body,'<iframe name="'+targetid+'" id="'+targetid+'" width="1" height="1" src="about:blank" style="position:absolute;top:-400px;left:-400px;width:1px;height:1px;"></iframe>');
 		
-		// make sure form elements have a name attribute as they won't be included
-		// in the submit if they don't (web1.0 stuff)
-		var jscode='var e = Form.Methods.getElements("'+element.id+'_form");'
-		jscode+='if (e && e.length > 0)';
-		jscode+='{';
-		jscode+=' for (var c=0,len=e.length;c<len;c++)';
-		jscode+=' {';
-		jscode+='   var t = e[c];';
-		jscode+='   var name = t.getAttribute("name");';
-		jscode+='   if (!name) t.setAttribute("name",t.id);';
-		jscode+=' }';
-		jscode+='}';
-		
-		jscode+='var upload = Appcelerator.ServerConfig["upload"];';
-		jscode+='$("'+element.id+'_form").action = upload.value;';
-		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'presentation' : html, 
-			'initialization':  jscode,
+			'presentation' : html,
+			'initialization' : Appcelerator.Module.Upload.compileWidget,
+			'initializationParams' : {id: element.id},
 			'wire':true
 		};
 	}

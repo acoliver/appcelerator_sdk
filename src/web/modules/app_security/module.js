@@ -63,7 +63,7 @@ Appcelerator.Module.Security =
 		{
 			if (on)
 			{
-				var oncode = Appcelerator.Compiler.parseOnAttribute(element);
+				Appcelerator.Compiler.parseOnAttribute(element);
 
 				var parameters = {};
 				parameters['code'] = String.unescapeXML(code);
@@ -71,8 +71,7 @@ Appcelerator.Module.Security =
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
 					'parameters': parameters,
-					'functions' : ['execute'],
-					'initialization':  oncode
+					'functions' : ['execute']
 				};
 			}
 			else
@@ -86,7 +85,7 @@ Appcelerator.Module.Security =
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation':'Error: security widget requires code inside tag for implementation'
-		};		
+		};
 	}
 };
 

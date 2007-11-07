@@ -4,8 +4,6 @@
 
 Appcelerator.Compiler.Image = {};
 
-
-
 if (Appcelerator.Browser.isIE6)
 {
 	Appcelerator.Compiler.registerAttributeProcessor('img','src',
@@ -26,13 +24,12 @@ Appcelerator.Compiler.registerAttributeProcessor('img','srcexpr',
 	{
 		if (value)
 		{
-			var code='var functionString_'+img.id+' = (function(){return '+String.unescapeXML(value)+'})();';
-			code+="if (Appcelerator.Browser.isIE6){";
-			code+='Appcelerator.Browser.fixImage("'+img.id+'",functionString_'+img.id+');';
-			code+="}else{";
-			code+='$("'+img.id+'").src = functionString_'+img.id+';';
-			code+="}";
-			return code;
+			img.src = eval(String.unescapeXML(value));
+			
+			if (Appcelerator.Browser.isIE6)
+			{
+				Appcelerator.Browser.fixImage(img,img.src);
+			}
 		}
 	}
 });

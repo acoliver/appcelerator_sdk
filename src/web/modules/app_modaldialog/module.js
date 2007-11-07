@@ -120,13 +120,14 @@ Appcelerator.Module.Modaldialog =
 		var parameters = {};
 		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getWidgetHTML(element),true,'init_'+element.id);
 		parameters['property'] = element.getAttribute('property');
-		parameters['top'] = element.getAttribute('top');		
+		parameters['top'] = element.getAttribute('top');
+		
+		Appcelerator.Compiler.parseOnAttribute(element);	
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE,
 			'functions' : ['execute'],
-			'parameters': parameters,
-			'initialization':  Appcelerator.Compiler.parseOnAttribute(element)
+			'parameters': parameters
 		};
 	}
 };

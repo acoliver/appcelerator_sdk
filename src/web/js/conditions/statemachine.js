@@ -88,35 +88,26 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		var statemachine = statemachines[c][0];
 		var state = statemachines[c][1];
 
-		code += 'Appcelerator.Compiler.StateMachine.registerStateListener(\''+statemachine+'\',function(statemachine,statechange,valid)';
-		code += '{';
-		code += 'var actionFunc= function(scope, data) {'+actionFunc+'};';
-		
-		if (elseActionFunc)
+		if (Logger.debugEnabled) $D('adding state change listener for '+statemachine+'['+state+']');
+	
+		Appcelerator.Compiler.StateMachine.registerStateListener(statemachine,function(statemachine,statechange,valid)
 		{
-			code += 'var elseActionFunc=function (scope, data) {'+elseActionFunc+'};';
-		}
-		code += 'var compiledConditionFunc = '+compiledCondition+';';
-		code += 'var result = compiledConditionFunc();';
-		code += 'if (Logger.debugEnabled) $D(\'statemachine: \'+statemachine+\'[\'+statechange+\'] logic returned => \'+result);';
-		code += 'if (result)'
-		code += '{';
-		code += 'Appcelerator.Compiler.executeAfter(actionFunc,'+delay+',"*");';
-		code += '}';
-		
-		if (elseActionFunc)
-		{
-			code += 'else if (elseActionFunc)';
-			code += '{';
-			code += 'Appcelerator.Compiler.executeAfter(elseActionFunc,'+delay+',"*");';
-			code += '}';
-		}
-		
-		code += '});';
-		code += 'Appcelerator.Compiler.StateMachine.addOnLoadStateCheck("'+statemachine+'");';
+			var result = compiledCondition();
+			if (Logger.debugEnabled) $D('statemachine: '+statemachine+'['+statechange+'] logic returned => '+result);
+
+			if (result)
+			{
+				Appcelerator.Compiler.executeAfter(actionFunc,delay);
+			}
+			else if (elseActionFunc)
+			{
+				Appcelerator.Compiler.executeAfter(elseActionFunc,delay);
+			}
+		});
+		Appcelerator.Compiler.StateMachine.addOnLoadStateCheck(statemachine);
 	}
 
-	return code;
+	return true;
 });
 
 //

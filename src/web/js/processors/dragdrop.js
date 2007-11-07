@@ -9,7 +9,11 @@ Appcelerator.Compiler.registerAttributeProcessor('div','draggable',
 		if (value && value!='false')
 		{
 			var options = value == 'true' ? {} : value.evalJSON();
-			return 'new Draggable("'+element.id+'",'+Object.toJSON(options)+');';
+			var d = new Draggable(element.id,options);
+			Appcelerator.Compiler.addTrash(element,function()
+			{
+				d.destroy();
+			});
 		}
 	}
 });
@@ -21,44 +25,41 @@ Appcelerator.Compiler.registerAttributeProcessor('div','droppable',
 {
 	handle: function(element,attribute,value)
 	{
-		if (value)
+		if (value && value!='false')
 		{
-			// activate the element
-			var code = 'var value = '+String.stringValue(value)+';';
+			var options = value == "true" ? {} : value.evalJSON();
+			options.onHover = function(e)
+			{
+				var listeners = element.hoverListeners;
+				if (listeners && listeners.length > 0)
+				{
+					for (var c=0;c<listeners.length;c++)
+					{
+						var cb = listeners[c];
+						cb.onHover(e);
+					}
+				}
+			};
 			
-			code += 'if (value && value!="false")';
-			code += '{';
-			code += 'var options = value == "true" ? {} : value.evalJSON();';
-				
-			code += 'options.onHover = function(e)';
-			code += '{';
-			code += 'var listeners = $("'+element.id+'").hoverListeners;';
-			code += 'if (listeners && listeners.length > 0)';
-			code += '{';
-			code += 'for (var c=0;c<listeners.length;c++)';
-			code += '{';
-			code += 'var cb = listeners[c];';
-			code += 'cb.onHover($("'+element.id+'"));';
-			code += '}';
-			code += '}';
-			code += '};';
+			options.onDrop = function(e)
+			{
+				var listeners = element.dropListeners;
+				if (listeners && listeners.length > 0)
+				{
+					for (var c=0;c<listeners.length;c++)
+					{
+						var cb = listeners[c];
+						cb.onDrop(e);
+					}
+				}
+			};
 			
-			code += 'options.onDrop = function(e)';
-			code += '{';
-			code += 'var listeners = $("'+element.id+'").dropListeners;';
-			code += 'if (listeners && listeners.length > 0)';
-			code += '{';
-			code += 'for (var c=0;c<listeners.length;c++)';
-			code += '{';
-			code += 'var cb = listeners[c];';
-			code += 'cb.onDrop($("'+element.id+'"), e);';
-			code += '}';
-			code += '}';
-			code += '};';
+			Droppables.add(element.id,options);
 			
-			code += 'Droppables.add("'+element.id+'",options);';
-			code += '}';
-			return code;
+			Appcelerator.Compiler.addTrash(element, function()
+			{
+				Droppables.remove(element);
+			});
 		}
 	}
 });

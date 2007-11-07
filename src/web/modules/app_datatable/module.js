@@ -352,12 +352,11 @@ Appcelerator.Module.Datatable =
 		}
 		parameters['header_array'] = header_array;
 		parameters['add_spacers_to_header'] = true;
+		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		return {
-			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization':  Appcelerator.Compiler.parseOnAttribute(element),
-			'cleanup' : null,
+			'presentation' : '',
 			'parameters': parameters,
 			'functions' : ['execute']
 		};

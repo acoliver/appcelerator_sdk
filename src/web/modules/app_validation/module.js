@@ -6,17 +6,16 @@ Appcelerator.Compiler.registerCustomCondition(function (element,condition,action
 		case 'valid':
 		case 'invalid':
 		{
-			var code = '';
 			if (Appcelerator.Compiler.getTagname(element,true)!='app:validation')
 			{
 				throw condition+' condition can only be used on app:validation widget, found on: '+element.nodeName;
 			}
-			code += 'var obj = Appcelerator.Module.Validation.create($("'+element.id+'"),'+String.stringValue(condition)+','+String.stringValue(action)+','+String.stringValue(elseAction)+','+String.stringValue(delay)+','+String.stringValue(ifCond)+');';
-			return code;
+			Appcelerator.Module.Validation.create(element,condition,action,elseAction,delay,ifCond);
+			return true;
 		}
 		default:
 		{
-			return null;
+			return false;
 		}
 	}
 });
@@ -53,9 +52,10 @@ Appcelerator.Module.Validation =
 	},
 	buildWidget: function(element,state)
 	{
+		Appcelerator.Compiler.parseOnAttribute(element);
+		
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : Appcelerator.Compiler.parseOnAttribute(element)
+			'position' : Appcelerator.Compiler.POSITION_REPLACE
 		};
 	},
 	create: function (element,condition,action,elseAction,delay,ifCond)
@@ -127,11 +127,11 @@ Appcelerator.Module.Validation =
 				this.invalid = invalid;
 				if (invalid && invalidAction)
 				{
-					Appcelerator.Compiler.executeAfter(invalidAction.toFunction(),delay);
+					Appcelerator.Compiler.executeAfter(invalidAction,delay);
 				}
 				else if (!invalid)
 				{
-					Appcelerator.Compiler.executeAfter(validAction.toFunction(),delay);
+					Appcelerator.Compiler.executeAfter(validAction,delay);
 				}
 			}
 		};

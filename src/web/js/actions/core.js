@@ -316,7 +316,7 @@ Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabl
 		suffix='}catch(xxx_){}';
 	}
 
-	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",data,scope])' + suffix;
+	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope])' + suffix;
 };
 
 Appcelerator.Compiler.registerCustomAction('execute',
@@ -349,7 +349,7 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 			def = '';
 		}
 
-		var code = 'var selectedValue = Object.getNestedProperty(data, "'+ key + '","'+def+'");';
+		var code = 'var selectedValue = Object.getNestedProperty(this.data, "'+ key + '","'+def+'");';
 		code += ' var targetSelect = $("'+id+'");';
 		
 		code += ' for (var j=0;j<targetSelect.options.length;j++)';
