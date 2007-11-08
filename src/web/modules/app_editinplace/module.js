@@ -17,6 +17,10 @@ Appcelerator.Module.EditinPlace =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -157,20 +161,36 @@ Appcelerator.Module.EditinPlace =
 			Appcelerator.Util.ServiceBroker.addListener(listener);
 		}		
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var type = element.getAttribute('type') || 'text';		
-		var defaultClassName = element.getAttribute('defaultClassName') || '';		
-		var editClassName = element.getAttribute('editClassName') || '';
-		var buttonClassName = element.getAttribute('buttonClassName') || '';
-		var saveOn = element.getAttribute('saveOn');
-		var cancelOn = element.getAttribute('cancelOn');
-		var validator = element.getAttribute('validator') || 'required';
-		var position = element.getAttribute('position') || 'right';
-		var errorPosition = element.getAttribute('errorPosition') || 'top';
-		var defaultValue = element.getAttribute('defaultValue') || '';
+		return [{name: 'type', optional: true, defaultValue: 'text'},
+				{name: 'defaultClassName', optional: true, defaultValue: ''},
+				{name: 'editClassName', optional: true, defaultValue: ''},
+				{name: 'buttonClassName', optional: true, defaultValue: ''},
+				{name: 'saveOn', optional: true},
+				{name: 'cancelOn', optional: true},
+				{name: 'validator', optional: true, defaultValue: 'required'},
+				{name: 'position', optional: true, defaultValue: 'right'},
+				{name: 'errorPosition', optional: true, defaultValue: 'top'},
+				{name: 'defaultValue', optional: true, defaultValue: ''},
+				{name: 'errorMessage', optional: true, defaultValue: 'Required'},
+				{name: 'message', optional: true},
+				{name: 'property', optional: true}];
+	},	
+	buildWidget: function(element, parameters)
+	{
+		var type = parameters['type'];	
+		var defaultClassName = parameters['defaultClassName'];
+		var editClassName = parameters['editClassName'];
+		var buttonClassName = parameters['buttonClassName'];
+		var saveOn = parameters['saveOn'];
+		var cancelOn = parameters['cancelOn'];
+		var validator = parameters['validator'];
+		var position = parameters['position'];
+		var errorPosition = parameters['errorPosition'];
+		var defaultValue = parameters['defaultValue'];
 		var errorIcon = Appcelerator.Module.EditinPlace.modulePath + 'images/bullet_error.png';	
-		var errorMsg = element.getAttribute('errorMessage') || ' Required';
+		var errorMsg = parameters['errorMessage'];
 		var error = '<img src="' + errorIcon + '"/>' +  errorMsg;
 		var errorClass = 'error_color small_text';
 		var id = element.id;
@@ -255,11 +275,12 @@ Appcelerator.Module.EditinPlace =
 			html += '<div class="'+errorClass+'" id="'+errorId+'" style="display:none">'+error+'</div>';
 		}
 		
+		parameters['id'] = element.id;
+		
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : Appcelerator.Module.EditinPlace.compileWidget,
-			'initializationParams' : {id: element.id, message: element.getAttribute('message'), property: element.getAttribute('property'), type: type},
+			'compile' : true,
 			'wire' : true
 		};
 	}

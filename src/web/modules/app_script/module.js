@@ -13,6 +13,10 @@ Appcelerator.Module.Script =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -29,6 +33,10 @@ Appcelerator.Module.Script =
 	{
 		return 'app:script';
 	},
+	getAttributes: function()
+	{
+		return [{name: 'on', optional: true, description: "May be used to execute the script's content."}];
+	},
 	execute: function(id,parameterMap,data,scope,version)
 	{
 		var code = parameterMap['code'];
@@ -36,28 +44,23 @@ Appcelerator.Module.Script =
 		if (script == true) return;
 		script.call({data:data||{},scope:scope,version:version});
 	},
-	executeCode: function(params)
+	compileWidget: function(params)
 	{
 		eval(params['code']);
 	},
-	buildWidget: function(element)
+	buildWidget: function(element,parameters)
 	{
 		var code = Appcelerator.Compiler.getHtml(element);
 		code = code.replace(/\/\*.*\*\//g,'');
-		var on = element.getAttribute('on');
 
 		if (code && code.trim().length > 0)
 		{
-			if (on)
+			parameters['code'] = String.unescapeXML(code);
+
+			if (parameters['on'])
 			{
-				Appcelerator.Compiler.parseOnAttribute(element);
-				
-				var parameters = {};
-				parameters['code'] = String.unescapeXML(code);
-				
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
-					'parameters': parameters,
 					'functions' : ['execute']
 				};
 			}
@@ -65,13 +68,10 @@ Appcelerator.Module.Script =
 			{
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
-					'initialization' : Appcelerator.Module.Script.executeCode,
-					'initializationParams' : {code: String.unescapeXML(code)}
+					'compile' : true
 				};
 			}
 		}
-		
-		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE

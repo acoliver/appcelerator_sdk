@@ -17,6 +17,10 @@ Appcelerator.Module.Datacache =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -33,12 +37,19 @@ Appcelerator.Module.Datacache =
 	{
 		return 'app:datacache';
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-	    var request = element.getAttribute('request');
-		var response = element.getAttribute('response');
-		var keepAlive = element.getAttribute('keepAlive') || 1800000;
-		var autoRefresh = element.getAttribute('autoRefresh') || false;
+		return [{name: 'request', optional: false, description: "The message request to cache."},
+				{name: 'response', optional: false, description: "The message response to cache."},		
+				{name: 'keepAlive', optional: true, defaultValue: 1800000, description: "Keep alive"},		
+				{name: 'autoRefresh', optional: true, defaultValue: false, description: "Auto refresh"}];
+	},	
+	buildWidget: function(element, parameters)
+	{
+	    var request = parameters['request'];
+		var response = parameters['response'];
+		var keepAlive = parameters['keepAlive'];
+		var autoRefresh = parameters['autoRefresh'];
 		
 	    if (!request)
 	    {

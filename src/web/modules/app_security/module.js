@@ -14,6 +14,10 @@ Appcelerator.Module.Security =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -36,6 +40,10 @@ Appcelerator.Module.Security =
 		Appcelerator.Module.Security.eventReceived = {data:data,scope:scope,version:version};
 		Appcelerator.Module.Security.executeSecurity();
 	},
+	getAttributes: function()
+	{
+		return [{name: 'on', optional: true, description: "May be used to execute the widget"}];
+	},
 	executeSecurity:function()
 	{
 		$$('*[security]').each(function(element)
@@ -54,18 +62,14 @@ Appcelerator.Module.Security =
 			Element.remove(item);
 		});
 	},
-	buildWidget: function(element)
+	buildWidget: function(element, parameters)
 	{
 		var code = Appcelerator.Compiler.getHtml(element);
-		var on = element.getAttribute('on');
-		 
+		
 		if (code && code.trim().length > 0)
 		{
-			if (on)
+			if (parameters['on'])
 			{
-				Appcelerator.Compiler.parseOnAttribute(element);
-
-				var parameters = {};
 				parameters['code'] = String.unescapeXML(code);
 				
 				return {

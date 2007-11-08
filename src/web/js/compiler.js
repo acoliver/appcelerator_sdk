@@ -64,9 +64,9 @@ Appcelerator.Compiler.setElementId = function(element, id)
 	appCompilerIdCache[element.id] = element;	
 }
 
-Appcelerator.Compiler.removeElementId = function(element)
+Appcelerator.Compiler.removeElementId = function(id)
 {
-	delete appCompilerIdCache[element.id];	
+	delete appCompilerIdCache[id];	
 }
 
 function $(element) 
@@ -777,8 +777,41 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		}
 		
 		var id = Appcelerator.Compiler.getAndEnsureId(element);
-		var instructions = module.buildWidget(element,state);
-		id = element.id; // allow the widget to change the id
+		
+		var moduleAttributes = module.getAttributes();
+		var widgetParameters = {};
+		for (var i = 0; i < moduleAttributes.length; i++)
+		{
+			(function(){
+				var modAttr = moduleAttributes[i];
+				var value = element.getAttribute(modAttr.name) || modAttr.defaultValue;
+				if (!value && !modAttr.optional)
+				{
+					// error out
+				}
+				widgetParameters[modAttr.name] = value;
+			})();
+		}
+
+		//
+		// parse on attribute
+		//
+		Appcelerator.Compiler.parseOnAttribute(element);
+		
+		//
+		// hande off widget for building
+		//		
+		var instructions = module.buildWidget(element,widgetParameters,state);
+		
+		//
+		// allow the widget to change its id
+		//
+		if (element.id != id)
+		{
+			Appcelerator.Compiler.removeElementId(id);
+			id = element.id;
+		}
+		
 		var added = false;
 		if (instructions)
 		{
@@ -850,13 +883,13 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					}
 				}
 			}
-			
+
 			//
 			// remove element
 			//
 			if (removeElement)
 			{
-				Appcelerator.Compiler.removeElementId(element);
+				Appcelerator.Compiler.removeElementId(element.id);
 				Element.remove(element);
 			}
 			
@@ -878,9 +911,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					Logger.error("couldn't find temp ID:"+id);
 				}
 			}
-
-			var parameters = instructions.parameters;
-
+			
 			// 
 			// attach any special widget functions
 			// 				
@@ -896,7 +927,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					{
 						try
 						{
-							method(id,parameters,data,scope);
+							method(id,widgetParameters,data,scope);
 						}
 						catch (e)
 						{
@@ -910,25 +941,9 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			//
 			// run initialization
 			//
-			var initialization = instructions.initialization;
-			if (initialization)
+			if (instructions.compile)
 			{
-				initialization(instructions.initializationParams);
-			}
-			
-			//
-			// add cleanup code
-			//
-			var cleanup = instructions.cleanup;
-			if (cleanup && !Appcelerator.Compiler.isCompiledMode)
-			{
-				//FIXME - think about how this is dealt with once we destory it from compile again
-				//FIXME - add to compiled version as well
-				var cleanupRoutine = function()
-				{
-					eval(cleanup);
-				};
-				Event.observe(window,'unload',cleanupRoutine);
+				module.compileWidget(widgetParameters);
 			}
 			
 			if (added && instructions.wire)

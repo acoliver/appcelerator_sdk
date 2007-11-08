@@ -13,6 +13,10 @@ Appcelerator.Module.Iterator =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -107,30 +111,30 @@ Appcelerator.Module.Iterator =
 		element.innerHTML = html;
 		Appcelerator.Compiler.dynamicCompile(element);
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var parameters = {};
-		
-		parameters['rowEvenClassName'] = element.getAttribute('rowEvenClassName');
-		parameters['rowOddClassName'] = element.getAttribute('rowOddClassName');
+		return [{name: 'on', optional: false, description: "Used to execute the iterator"},
+				{name: 'rowEvenClassName', optional: true},
+				{name: 'rowOddClassName', optional: true},
+				{name: 'property', optional: false},
+				{name: 'table', optional: true, defaultValue: 'false'},
+				{name: 'width', optional: true, defaultValue: '100%'},
+				{name: 'headers', optional: true, defaultValue: ','},
+				{name: 'cellspacing', optional: true, defaultValue: '0'},
+				{name: 'selectable', optional: true}];
+	},	
+	buildWidget: function(element, parameters)
+	{
 		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);
-		parameters['property'] = element.getAttribute('property');
-		parameters['table'] = element.getAttribute('table') == 'true';
+		parameters['table'] = parameters['table'] == 'true';
 		if (parameters['table'])
 		{
-			parameters['width'] = element.getAttribute('width') || '100%';
-			parameters['headers'] = (element.getAttribute('headers') || '').split(',');
-			parameters['cellspacing'] = element.getAttribute('cellspacing') || '0';
-			
+			parameters['headers'] = parameters['headers'].split(',');
 		}
-		parameters['selectable'] = element.getAttribute('selectable');
-		
-		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'cleanup' : null,
 			'parameters': parameters,
 			'functions' : ['execute']
 		};

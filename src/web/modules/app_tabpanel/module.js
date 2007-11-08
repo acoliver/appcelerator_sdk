@@ -13,6 +13,10 @@ Appcelerator.Module.Tabpanel =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -29,9 +33,13 @@ Appcelerator.Module.Tabpanel =
 	{
 		return 'app:tabpanel';
 	},
-	execute: function(id,parameterMap,data,scope)
+	getAttributes: function()
 	{
-
+		return [{name: 'on', optional: true, description: "May be used to add an expression to the entire tab panel."},
+				{name: 'intial', optional: true, description: "Indicates which tab panel will initially be active."},
+				{name: 'activeClassName', defaultValue: 'tab_active', optional: true, description: "The CSS class name to use for an active tab. Defaults to 'tab_active.'"},
+				{name: 'inactiveClassName', defaultValue: 'tab_inactive', optional: true, description: "The CSS class name to use for an inactive tab. Defaults to 'tab_inactive.'"},
+				{name: 'class', defaultValue: 'tabpanel', optional: true, description: "The class name to use for the entire tab panel. Defaults to 'tabpanel.'"}];
 	},
 	compileWidget: function(params)
 	{
@@ -120,24 +128,19 @@ Appcelerator.Module.Tabpanel =
 			tab.style.display = '';
 		}		
 	},
-	buildWidget: function(element)
+	buildWidget: function(element, parameters)
 	{
 		var tabs = [];
-		var on = element.getAttribute('on');
-		var initial = element.getAttribute('initial');
-		var activeClassName = element.getAttribute('activeClassName') || 'tab_active';
-		var inactiveClassName = element.getAttribute('inactiveClassName') || 'tab_inactive';
-		var className = element.getAttribute('class') || 'tabpanel';
+		var on = parameters['on'];
+		var initial = parameters['initial'];
+		var activeClassName = parameters['activeClassName'];
+		var inactiveClassName = parameters['inactiveClassName'];
+		var className = parameters['class'];
 		var id = element.id;
 		var initialFound = false;
 		var initialNode = null;
 		var selectedTab = null;
 		var code = '';
-		
-		if (className)
-		{
-			element.removeAttribute('class');
-		}
 
 		var html = '<div id="parent_'+id+'">';
 		html += '<div id="' + id + '" ' + (className ? 'class="' + className + '"' : '')+' ' + (on ? 'on="' + on + '"' : '') + '><table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr>\n';
@@ -201,19 +204,14 @@ Appcelerator.Module.Tabpanel =
 			}
 		}
 
-		var params = {};
-		params['id'] = id;
-		params['initial'] = initial;
-		params['initialNode'] = initialNode;
-		params['tabs'] = tabs;
-		params['activeClassName'] = activeClassName;
-		params['inactiveClassName'] = inactiveClassName;
+		parameters['id'] = id;
+		parameters['initialNode'] = initialNode;
+		parameters['tabs'] = tabs;
 
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : Appcelerator.Module.Tabpanel.compileWidget,
-			'initializationParams' : params,
+			'compile' : true,
 			'wire':true
 		};
 	}

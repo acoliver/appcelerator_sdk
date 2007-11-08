@@ -15,6 +15,10 @@ Appcelerator.Module.GoogleAnalytics =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -84,11 +88,17 @@ Appcelerator.Module.GoogleAnalytics =
 			window.googleTracker();
 		}
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var account = element.getAttribute('account');
-		var domain = element.getAttribute('domain');
-		var trackoutboundlinks = element.getAttribute('trackoutboundlinks');
+		return [{name: 'account', optional: true},
+				{name: 'domain', optional: true},
+				{name: 'trackoutboundlinks', optional: true}];
+	},	
+	buildWidget: function(element,parameters)
+	{
+		var account = parameters['account'];
+		var domain = parameters['domain'];
+		var trackoutboundlinks = parameters['trackoutboundlinks'];
 		var outboundLinks = [];
 		
 		if (trackoutboundlinks)

@@ -19,6 +19,10 @@ Appcelerator.Module.Folder =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -192,16 +196,17 @@ Appcelerator.Module.Folder =
 			}
 			})();
 		}
-		
 	},
-	buildWidget: function(element)
+	getAttributes: function()
+	{
+		return [];
+	},	
+	buildWidget: function(element, parameters)
 	{
 		var html = '';
 		var x = 0;
 		var id = element.id;
 		var itemnodes = [];
-		
-		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		if (Appcelerator.Browser.isIE)
 		{
@@ -256,11 +261,14 @@ Appcelerator.Module.Folder =
 				x++;
 			}
 		}
+		
+		parameters['nodes'] = element.childNodes;
+		parameters['itemnodes'] = itemnodes;
+		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
-			'initialization' : Appcelerator.Module.Folder.compileWidget,
-			'initializationParams' : {nodes: element.childNodes, itemnodes: itemnodes}
+			'compile' : true
 		};
 	}
 };

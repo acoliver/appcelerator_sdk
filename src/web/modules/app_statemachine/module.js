@@ -13,6 +13,10 @@ Appcelerator.Module.Statemachine =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -29,9 +33,13 @@ Appcelerator.Module.Statemachine =
 	{
 		return 'app:statemachine';
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var initial = element.getAttribute('initial');
+		return [{name: 'initial', optional: true, description: "Initial state of the state machine."}];
+	},	
+	buildWidget: function(element, parameters)
+	{
+		var initial = parameters['initial'];
 		var initialFound = false;
 		var id = element.id;
 		

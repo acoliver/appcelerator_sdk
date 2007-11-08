@@ -23,6 +23,10 @@ Appcelerator.Module.Field =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -51,7 +55,7 @@ Appcelerator.Module.Field =
 		var fieldBlurClass = params['fieldBlurClass'];
 		var defaultFieldValue = params['defaultFieldValue'];
 		var validator = params['validator'];
-		var errorId = params['errorId'];
+		var errorId = id + '_error';
 		var delay = params['delay'];
 		var autocomplete = params['autocomplete'];
 		var indicatorID = params['indicator'];
@@ -269,7 +273,7 @@ Appcelerator.Module.Field =
 				stopAutoComplete();
 				if (indicator)
 				{
-					Element.setstyle(indicator, {visibility:'hidden'});
+					Element.setStyle(indicator, {visibility:'hidden'});
 				}
 				
 				timer = setTimeout(autoComplete, delay);
@@ -366,12 +370,37 @@ Appcelerator.Module.Field =
 		
 		forceDecoration();
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var type = element.getAttribute('type') || 'text';
-		var validator = element.getAttribute('validator');
-		var fieldset = element.getAttribute('fieldset');
-		var on = element.getAttribute('on');
+		return [{name: 'type', optional: true, defaultValue: 'text'},
+				{name: 'validator', optional: true},
+				{name: 'fieldset', optional: true},
+				{name: 'fieldClassName', optional: true, defaultValue: 'field'},
+				{name: 'activeClassName', optional: true, defaultValue: 'selected'},
+				{name: 'inactiveClassName', optional: true, defaultValue: ''},
+				{name: 'fieldActiveClassName', optional: true, defaultValue: ''},
+				{name: 'fieldInactiveClassName', optional: true, defaultValue: ''},
+				{name: 'fieldDefaultClassName', optional: true, defaultValue: ''},
+				{name: 'fieldDefaultLangId', optional: true},
+				{name: 'parameters', optional: true},
+				{name: 'inline', optional: true},
+				{name: 'fieldDefaultClassName', optional: true, defaultValue: ''},
+				{name: 'name', optional: true},
+				{name: 'hash', optional: true},
+				{name: 'langid', optional: true},
+				{name: 'delay', optional: true},
+				{name: 'autocomplete', optional: true},
+				{name: 'indicator', optional: true},
+				{name: 'message', optional: true},
+				{name: 'property', optional: true},
+				{name: 'value', optional: true},
+				{name: 'text', optional: true}];
+	},	
+	buildWidget: function(element, parameters)
+	{
+		var type = parameters['type'];
+		var validator = parameters['validator'];
+		var fieldset = parameters['fieldset'];
 		var id = element.id;
 		var title = '';
 		var description = '';
@@ -381,17 +410,19 @@ Appcelerator.Module.Field =
 		var headerClass = 'medium_text info_color';
 		var errorClass = 'error_color small_text';
 		var footerClass = 'small_text info_color';
-		var fieldClass = element.getAttribute('fieldClassName') || 'field'
-		var focusClass = element.getAttribute('activeClassName') || 'selected';
-		var blurClass = element.getAttribute('inactiveClassName') || '';
-		var fieldFocusClass = element.getAttribute('fieldActiveClassName') || '';
-		var fieldBlurClass = element.getAttribute('fieldInactiveClassName') || '';
-		var fieldDefaultValueClass = element.getAttribute('fieldDefaultClassName') || '';
-		var fieldDefaultLangId = element.getAttribute('fieldDefaultLangId');
+		var fieldClass = parameters['fieldClassName'];
+		var focusClass = parameters['activeClassName'];
+		var blurClass = parameters['inactiveClassName'];
+		var fieldFocusClass = parameters['fieldActiveClassName'];
+		var fieldBlurClass = parameters['fieldInactiveClassName'];
+		var fieldDefaultValueClass = parameters['fieldDefaultClassName'];
+		var fieldDefaultLangId = parameters['fieldDefaultLangId'];
 		var defaultFieldValue = '';
 		var footerOn = null, headerOn = null;
-		var inline = element.getAttribute('inline');
-		var parameters = String.unescapeXML(element.getAttribute('parameters'));
+		var inline = parameters['inline'];
+		parameters['parameters'] = String.unescapeXML(parameters['parameters']);
+		parameters['scope'] = element.scope;
+		parameters['id'] = id;
 		
 		if (fieldDefaultLangId)
 		{
@@ -451,7 +482,7 @@ Appcelerator.Module.Field =
 		  html += '<div id="' + id + '_header" '+headerOnText+' class="'+headerClass+'">' + title  + ' <span class="'+errorClass+'" id="'+errorId+'" style="visibility:hidden">'+error+'</span></div>';
         }
               
-		var name = element.getAttribute('name');
+		var name = parameters['name'];
 		var namestr = name ? 'name="'+name+'"' : '';
 
 		switch (type)
@@ -460,7 +491,7 @@ Appcelerator.Module.Field =
 			case 'password':
 			{
 				if (!inline) html += '<div>';
-				var add = (type=='password') ? element.getAttribute('hash') : null;
+				var add = (type=='password') ? parameters['hash'] : null;
 				var addstr = add ? 'hash="'+add+'"' : '';
 				html += '<input '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" type="'+type+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') + '/>';
 				break;
@@ -477,7 +508,7 @@ Appcelerator.Module.Field =
 				if (!inline) html += '<div>';
 				html += '<select '+validatorText+' '+namestr+' decorator="custom" decoratorId="'+errorId+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') ;
 				
-				var langid = element.getAttribute('langid');
+				var langid = parameters['langid'];
 				if (langid)
 				{
 					html+=' langid="' + langid + '" ';
@@ -508,37 +539,11 @@ Appcelerator.Module.Field =
         }		
 		element.id = element.id+'_field';
 		
-		var field = $(id);
-		
-		var params = {};
-		params['id'] = id;
-		params['type'] = type;
-		params['fieldClass'] = fieldClass;
-		params['fieldDefaultValueClass'] = fieldDefaultValueClass;
-		params['fieldFocusClass'] = fieldFocusClass;
-		params['focusClass'] = focusClass;
-		params['blurClass'] = blurClass;
-		params['fieldBlurClass'] = fieldBlurClass;
-		params['defaultFieldValue'] = defaultFieldValue;
-		params['validator'] = validator;
-		params['errorId'] = errorId;
-		params['delay'] = element.getAttribute('delay');
-		params['autocomplete'] = element.getAttribute('autocomplete');
-		params['indicatorID'] = element.getAttribute('indicator');
-		params['message'] = element.getAttribute('message');
-		params['property'] = element.getAttribute('property');
-		params['value'] = element.getAttribute('value');
-		params['text'] = element.getAttribute('text');
-		params['scope'] = element.scope;
-		params['parameters'] = parameters;
-
 		return {
 			'presentation' : '<div class="field" id="'+ element.id + '_container">'+html+ '</div>',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization' : Appcelerator.Module.Field.compileWidget,
-			'initializationParams' : params,
-			'wire' : true
-			
+			'compile' : true,
+			'wire' : true			
 		};
 	}
 };

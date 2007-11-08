@@ -19,6 +19,10 @@ Appcelerator.Module.Datatable =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Amro Mousa';
@@ -295,27 +299,19 @@ Appcelerator.Module.Datatable =
 		
 		Appcelerator.Module.Datatable.createDataTable(id);
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
- 		var parameters = {};
-		parameters['wire'] = element.getAttribute('wire')||'';
-		
-		//Valid values are 'client', 'server', and 'off'
-		parameters['sort'] = element.getAttribute('sort')||'client';
-		
-		//Message to be sent when the sort mode is 'server' and a column header is clicked
-		parameters['sortRequest'] = element.getAttribute('sortRequest')||'';
-		
-		//Really applies styles to the CELLS on the even and odd rows
-		parameters['rowEvenClass'] = element.getAttribute('rowEvenClass')||'';
-		parameters['rowOddClass'] = element.getAttribute('rowOddClass')||'';
-		
-		//Width % of entire table
-		parameters['width'] = element.getAttribute('width')||'100%';
-		
-		//Data property
-		parameters['property'] = element.getAttribute('property')||'';
-		
+		return [{name: 'on', optional: true, description: "Used to populate the data table."},
+				{name: 'wire', optional: true, defaultValue: ''},
+				{name: 'sort', optional: true, defaultValue: 'client', description: "Valid values are 'client', 'server', and 'off.'"},
+				{name: 'sortRequest', optional: true, defaultValue: '', description: "Message to be sent when the sort mode is 'server' and a column header is clicked."},
+				{name: 'rowEvenClass', optional: true, defaultValue: ''},
+				{name: 'rowOddClass', optional: true, defaultValue: ''},
+				{name: 'width', optional: true, defaultValue: '100%', description: "Width % of entire table."},
+				{name: 'property', optional: true, defaultValue: ''}];
+	},	
+	buildWidget: function(element, parameters)
+	{
 		//Header array		
 		var temp_element = document.createElement('div');
 		temp_element.innerHTML = element.innerHTML.replace(/<HEADER/gi, '<div').replace(/<\/HEADER/gi,'</div');
@@ -352,7 +348,6 @@ Appcelerator.Module.Datatable =
 		}
 		parameters['header_array'] = header_array;
 		parameters['add_spacers_to_header'] = true;
-		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,

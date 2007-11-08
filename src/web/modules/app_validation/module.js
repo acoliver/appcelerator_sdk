@@ -34,6 +34,10 @@ Appcelerator.Module.Validation =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -50,10 +54,12 @@ Appcelerator.Module.Validation =
 	{
 		return 'app:validation';
 	},
-	buildWidget: function(element,state)
+	getAttributes: function()
 	{
-		Appcelerator.Compiler.parseOnAttribute(element);
-		
+		return [];
+	},	
+	buildWidget: function(element,parameters,state)
+	{
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE
 		};

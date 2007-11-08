@@ -13,6 +13,10 @@ Appcelerator.Module.Template =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -33,10 +37,15 @@ Appcelerator.Module.Template =
 	{
 		Appcelerator.Module.Template.fetch(id,parameterMap['src'],parameterMap['args']);
 	},
-	buildWidget: function(element,state)
+	getAttributes: function()
 	{
-		var src = element.getAttribute('src');
-		var args = element.getAttribute('args');
+		return [{name: 'src', optional: false, description: "The source for the template file to load."},
+				{name: 'args', optional: true, description: "Used to replace text in the template file."}];
+	},	
+	buildWidget: function(element,parameters,state)
+	{
+		var src = parameters['src'];
+		var args = parameters['args'];
 		var payload = {};
 
 		element.innerHTML = Appcelerator.Compiler.getHtml(element);		
@@ -57,7 +66,7 @@ Appcelerator.Module.Template =
 
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'presentation' : '', 
+			'presentation' : ''
 		};
 	},
 	fetch: function (target,scope,src,args,payload,state)

@@ -13,6 +13,10 @@ Appcelerator.Module.Message =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -33,22 +37,29 @@ Appcelerator.Module.Message =
 	{
 		Appcelerator.Module.Message.sendMessage(parameterMap);
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var name = element.getAttribute('name');
-		var args = element.getAttribute('args');
-		var version = element.getAttribute('version');
-		var on = element.getAttribute('on');
+		return [{name: 'on', optional: true, description: "May be used to express when the message should be fired (executed)."},
+				{name: 'name', optional: false, description: "The name of the message to be fired."},
+				{name: 'args', optional: true, description: "The arguement payload of the message."},
+				{name: 'version', optional: true, description: "The version attached to the message."},
+				{name: 'interval', optional: true, description: "Indicates that an interval (in milliseconds) that the message will continously be fired."}]
+	},
+	buildWidget: function(element, attributes)
+	{
+		var name = attributes['name'];
+		var args = attributes['args'];
+		var version = attributes['version'];
+		var on = attributes['on'];
 		
 		args = args ? String.unescapeXML(args) : null;
 		
-		var interval = element.getAttribute('interval');
+		var interval = attributes['interval'];
 		
 		var parameters = {args:args, name:name, scope:element.scope, interval:interval,version:version};
 		
 		if (on)
 		{
-			Appcelerator.Compiler.parseOnAttribute(element);
 			return {
 				'position' : Appcelerator.Compiler.POSITION_REMOVE,
 				'functions': ['execute'],

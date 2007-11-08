@@ -16,6 +16,10 @@ Appcelerator.Module.Chart =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},	
 	getAuthor: function()
 	{
 		return 'Amro Mousa';
@@ -32,46 +36,45 @@ Appcelerator.Module.Chart =
 	{
 		return 'app:chart';
 	},
-	buildWidget: function(element)
+	getAttributes: function()
 	{
-		var parameters = {};
-		
-		parameters['type'] = element.getAttribute('type')||'';
-		parameters['title'] = element.getAttribute('title')||'';
-		parameters['color'] = element.getAttribute('color')||'#477398';
-		parameters['angle'] = element.getAttribute('angle')||'15';
-		parameters['thickness'] = element.getAttribute('thickness')||'15';
-		parameters['width'] = element.getAttribute('width')||'400';
-		parameters['height'] = element.getAttribute('height')||'360';
-		parameters['chartMode'] = element.getAttribute('chartMode')||'clustered';
-		parameters['barOrientation'] = element.getAttribute('barOrientation')||'vertical';
-		parameters['rotateXAxisLabel'] = element.getAttribute('rotateXAxisLabel')||'false';
-		parameters['rotateYAxisLabel'] = element.getAttribute('rotateYAxisLabel')||'false';
-		parameters['legend_enabled'] = element.getAttribute('legend')||'false';
-		parameters['brightness_step'] = '15';
-		parameters['textSize'] = element.getAttribute('textSize')||'11';
-		parameters['propertyName'] = element.getAttribute('property');
-		parameters['titlePropertyName'] = element.getAttribute('chartTitles');
-		parameters['fillAlpha'] = element.getAttribute('fillAlpha')||'30';
-		parameters['indicator'] = element.getAttribute('indicator')||'false';
-		parameters['marginTop'] = element.getAttribute('marginTop')||'50';
-		parameters['marginLeft'] = element.getAttribute('marginLeft')||'50';
-		parameters['marginRight'] = element.getAttribute('marginRight')||'50';
-		parameters['marginBottom'] = element.getAttribute('marginBottom')||'50';
-		parameters['legendHighlight'] = element.getAttribute('legendHighlight')||'true';
-		parameters['oneBalloon'] = element.getAttribute('oneBalloon')||'true';
-		parameters['backgroundColor'] = element.getAttribute('backgroundColor')||'#FFFFFF';
-		
+		return [{name: 'on', optional: true, description: "Used to display the chart."},
+				{name: 'type', optional: true, defaultValue: ''},
+				{name: 'title', optional: true, defaultValue: ''},
+				{name: 'color', optional: true, defaultValue: '#477398'},
+				{name: 'angle', optional: true, defaultValue: '15'},
+				{name: 'thickness', optional: true, defaultValue: '15'},
+				{name: 'width', optional: true, defaultValue: '400'},
+				{name: 'height', optional: true, defaultValue: '360'},
+				{name: 'chartMode', optional: true, defaultValue: 'clustered'},
+				{name: 'barOrientation', optional: true, defaultValue: '400'},
+				{name: 'rotateXAxisLabel', optional: true, defaultValue: 'vertical'},
+				{name: 'rotateYAxisLabel', optional: true, defaultValue: 'false'},
+				{name: 'legend', optional: true, defaultValue: 'false'},
+				{name: 'brightness_step', optional: true, defaultValue: '15'},
+				{name: 'textSize', optional: true, defaultValue: '11'},
+				{name: 'property', optional: true, defaultValue: ''},
+				{name: 'chartTitles', optional: true, defaultValue: ''},
+				{name: 'fillAlpha', optional: true, defaultValue: '30'},
+				{name: 'indicator', optional: true, defaultValue: 'false'},
+				{name: 'marginTop', optional: true, defaultValue: '50'},
+				{name: 'marginLeft', optional: true, defaultValue: '50'},
+				{name: 'marginRight', optional: true, defaultValue: '50'},
+				{name: 'marginBottom', optional: true, defaultValue: '50'},
+				{name: 'legendHighlight', optional: true, defaultValue: 'true'},
+				{name: 'backgroundColor', optional: true, defaultValue: 'true'},
+				{name: 'marginTop', optional: true, defaultValue: '#FFFFFF'}];
+	},
+	buildWidget: function(element, parameters)
+	{
 		var html = '<div id="' + element.id + '"></div>';
-		
-		Appcelerator.Compiler.parseOnAttribute(element);
 		
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters,
 			'functions' : ['execute']
-		};		
+		};
 	},
 	execute: function(id,parameterMap,data)
 	{
@@ -86,19 +89,19 @@ Appcelerator.Module.Chart =
 		var barOrientation = parameterMap['barOrientation'];
 		var rotateXAxisLabel = parameterMap['rotateXAxisLabel'];
 		var rotateYAxisLabel = parameterMap['rotateYAxisLabel'];
-		var legend_enabled = parameterMap['legend_enabled'];
+		var legend_enabled = parameterMap['legend'];
 		var brightness_step = parameterMap['brightness_step'];
-		var propertyName = parameterMap['propertyName'];
-		var titlePropertyName = parameterMap['titlePropertyName'];
-	  var textSize = parameterMap['textSize'];
-	  var fillAlpha = parameterMap['fillAlpha'];
-	  var indicator = parameterMap['indicator'];
+		var propertyName = parameterMap['property'];
+		var titlePropertyName = parameterMap['chartTitles'];
+	  	var textSize = parameterMap['textSize'];
+	  	var fillAlpha = parameterMap['fillAlpha'];
+	  	var indicator = parameterMap['indicator'];
 		var marginTop = parameterMap['marginTop'];
 		var marginLeft = parameterMap['marginLeft'];
 		var marginRight = parameterMap['marginRight'];
 		var marginBottom = parameterMap['marginBottom'];
-	  var legendHighlight = parameterMap['legendHighlight'];
-	  var oneBalloon = parameterMap['oneBalloon'];
+	  	var legendHighlight = parameterMap['legendHighlight'];
+	  	var oneBalloon = parameterMap['oneBalloon'];
 		var backgroundColor = parameterMap['backgroundColor'];
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
@@ -129,11 +132,15 @@ Appcelerator.Module.Chart =
 		{
 			rotateYAxisLabel = 0;
 		}
-		
+
 		if (propertyName)
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
 			parameterMap['data'] = array;
+		}
+		else
+		{
+			array = [];
 		}
 
 		if (title != '')

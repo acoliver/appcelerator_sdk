@@ -13,6 +13,10 @@ Appcelerator.Module.Modaldialog =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -83,7 +87,13 @@ Appcelerator.Module.Modaldialog =
 		overlaydata.style.top = dataTop + 'px';
 		Element.show(overlaydata);
 	},
-	buildWidget: function(element,state)
+	getAttributes: function()
+	{
+		return [{name: 'on', optional: false, description: "Used to show the modal dialog"},
+				{name: 'property', optional: true},
+				{name: 'top', optional: true}];
+	},	
+	buildWidget: function(element,parameters,state)
 	{
 		var hidemessage = 'l:appcelerator.modaldialog.hide';
 
@@ -117,12 +127,7 @@ Appcelerator.Module.Modaldialog =
 			Appcelerator.Compiler.compileElement(overlaydata,state);
 		}
 		
-		var parameters = {};
 		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getWidgetHTML(element),true,'init_'+element.id);
-		parameters['property'] = element.getAttribute('property');
-		parameters['top'] = element.getAttribute('top');
-		
-		Appcelerator.Compiler.parseOnAttribute(element);	
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE,

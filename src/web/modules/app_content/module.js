@@ -13,6 +13,10 @@ Appcelerator.Module.Content =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Jeff Haynie';
@@ -29,6 +33,16 @@ Appcelerator.Module.Content =
 	{
 		return 'app:content';
 	},
+	getAttributes: function()
+	{
+		return [{name: 'on', optional: true, description: "May be used to execute/load the content."},
+				{name: 'src', optional: false, description: "The source for the content file to load."},
+				{name: 'args', optional: true, description: "Used to replace text in the content file."},
+				{name: 'lazy', optional: true, defaultValue: 'false', description: "Indicates whether the content file should be lazy loaded."},
+				{name: 'reload', optional: true, defaultValue: 'false', description: "Indicates whether the content file should be refetched and reloaded on every execute. If false, execute will do nothing if already executed."},
+				{name: 'onload', optional: true, description: "Fire this message when content file is loaded."},
+				{name: 'onfetch', optional: true, description: "Fire this message when content file is fetched but before being loaded."}];
+	},	
 	execute: function(id,parameterMap,data,scope)
 	{
 		if (!parameterMap['reload'])
@@ -44,39 +58,22 @@ Appcelerator.Module.Content =
 			Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
 		}
 	},
-	buildWidget: function(element,state)
+	buildWidget: function(element,parameters,state)
 	{
-		var on = element.getAttribute('on');
-		var src = element.getAttribute('src');
-		var args = element.getAttribute('args');
-		var lazy = (element.getAttribute('lazy') == 'true');
-		var reload = (element.getAttribute('reload') == 'true');
-		var onload = element.getAttribute('onload');
-		var onfetch = element.getAttribute('onfetch');
+		parameters['reload'] = (parameters['reload'] == 'true');
 		
-		var parameters = {};
-		parameters['onload'] = onload;		
-		parameters['onfetch'] = onfetch;		
-		parameters['src'] = src;
-		parameters['args'] = args;
-		parameters['reload'] = reload;
-
-		if (on)
+		if (!(parameters['lazy'] == 'true'))
 		{
-			Appcelerator.Compiler.parseOnAttribute(element);
-		}
-		
-		if (!lazy)
-		{
-			Appcelerator.Module.Content.fetch(element.id,src,args,onload,onfetch);
+			Appcelerator.Module.Content.fetch(element.id,parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch']);
 			parameters['fetched'] = true;
 		}
+		
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
 			'parameters': parameters,
-			'functions': on ? ['execute'] : null
+			'functions': parameters['on'] ? ['execute'] : null
 		};
 	},
 	fetch: function (target,src,args,onload,onfetch)
