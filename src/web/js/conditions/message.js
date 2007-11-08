@@ -34,7 +34,8 @@ Appcelerator.Compiler.MessageAction.onMessage = function(type,data,datatype,dire
 			var p = actionParams[c];
 			var not_cond = p.key.charAt(p.key.length-1) == '!';
 			var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
-			var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
+			var boundGetEvaluatedValue = Appcelerator.Compiler.getEvaluatedValue.bind(data);
+			var v = boundGetEvaluatedValue(k,data);
 			if (not_cond)
 			{
 				if (v == p.value)
