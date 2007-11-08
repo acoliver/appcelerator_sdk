@@ -16,7 +16,7 @@
     <app:modaldialog on="r:edit.layout.response then execute and script[$MQ('r:load.layout.dialog.request')]">         
         <html:div width="80%" class="modal_dialog">
             <html:div class="dialog_header">
-                Edit #{layout_title} <span style='display: none' on="l:layout.save then show and effect[Fade]">(Saved)</span>
+                Edit #{layout_title} <span style='display: none' on="r:save.layout.response then show and effect[Fade]">(Saved)</span>
             </html:div>
             <html:div class="dialog_body">
                 <html:table width="100%" height="30px">
@@ -72,11 +72,15 @@
                     </html:div>
                     <html:div style="clear: both"></html:div>
                 </html:div>
-                <html:button on="click then l:appcelerator.modaldialog.hide">Close</html:button> 
-                <html:button on="click then l:snippet.save">Save</html:button> 
-                <html:button>Save and Close</html:button>
+                <html:input type="button" on="click then l:appcelerator.modaldialog.hide" value="close"></html:input> 
+                <html:input type="button" on="click then l:save.layout[layout_id=#{id}]" value="save"></html:input> 
+                <html:input type="button" on="click then l:save.layout[layout_id=#{id},close=true]" value="Save and Close"></html:input>
             </html:div>
         </html:div>
     </app:modaldialog>
+    <app:message on="r:save.layout.response[result=success,close=true] then execute" name="l:appcelerator.modaldialog.hide"></app:message>
+    <app:script on="l:save.layout then execute">
+        saveLayoutData(this.data);
+    </app:script>
 </body>
 </html>

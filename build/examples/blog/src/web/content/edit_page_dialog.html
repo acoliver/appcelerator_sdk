@@ -10,9 +10,10 @@
 <app:modaldialog on="r:edit.page.response then execute and l:set.status[value=status]">  
     <html:div width="80%" class="modal_dialog">
         <html:div class="dialog_header">
-            Edit #{title} <span style='display: none' on="l:page.save then show and effect[Fade]">(Saved)</span>
+            Edit #{title} <span style='display: none' on="r:save.page.response[result=success] then show and effect[Fade]">(Saved)</span>
         </html:div>
         <html:div class="dialog_body">
+            <html:input fieldset="edit_page" type="hidden" name="page_id" value="#{id}"></html:input>
             <html:table width="100%" height="30px">
             <html:tr>
                 <html:th>
@@ -29,19 +30,22 @@
                 </html:th>
                 <html:td>
                     <app:field validator="required" type="dropdown" langid="status_codes" 
-                        on="l:set.status then value[value]" >
+                        on="l:set.status then value[value]" fieldset="edit_page" >
                     </app:field>
                 </html:td>
             </html:tr>    
             </html:table>
             <html:h3 class="text_area">Page</html:h3>
             <html:div class="text_area">
-                <textarea>#{text}</textarea>            
+                <textarea fieldset="edit_page">#{text}</textarea>            
             </html:div>
-            <html:button on="click then l:appcelerator.modaldialog.hide">Close</html:button> <html:button on="click then l:page.save">Save</html:button> <html:button>Save and Close</html:button>
+            <html:input type="button" on="click then l:appcelerator.modaldialog.hide" value="close"></html:input> 
+            <html:input fieldset="edit_page" type="button" on="click then r:save.page.request" value="save"></html:input> 
+            <html:input fieldset="edit_page" type="button" on="click then r:save.page.request[close=true]" value="Save and Close"></html:input>
         </html:div>
     </html:div>
-</app:modaldialog>
 
+    <app:message on="r:save.page.response[result=success,close=true] then execute" name="l:appcelerator.modaldialog.hide"></app:message>
+</app:modaldialog>
 </body>
 </html>
