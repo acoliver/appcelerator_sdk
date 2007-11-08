@@ -320,7 +320,7 @@ Appcelerator.Util.ServiceBroker =
                 }
                 else
                 {
-                    Logger.error(this + ' message:' + name + " ignored since we don't have a messageQueue!");
+                    $E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
                 }
                 var arraydirect = this.remoteDirectListeners[name];
                 var arraypattern = this.remotePatternListeners;
@@ -396,7 +396,7 @@ Appcelerator.Util.ServiceBroker =
                         }
                         catch (e)
                         {
-                            Logger.error(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
+                            $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
                         }
                     }
                 }
@@ -427,7 +427,7 @@ Appcelerator.Util.ServiceBroker =
             }
             catch (e)
             {
-                Logger.error('Error received evaluating: ' + text + ' for ' + msg + ', type:' + type + ", " + Object.getExceptionDetail(e));
+                $E('Error received evaluating: ' + text + ' for ' + msg + ', type:' + type + ", " + Object.getExceptionDetail(e));
                 return;
             }
         }
@@ -527,7 +527,7 @@ Appcelerator.Util.ServiceBroker =
         }
         catch (e)
         {
-            Logger.error("Unhandled Exception dispatching:" + type + ", " + msg + ", to listener:" + listener + ", " + Object.getExceptionDetail(e));
+            $E("Unhandled Exception dispatching:" + type + ", " + msg + ", to listener:" + listener + ", " + Object.getExceptionDetail(e));
         }
         return true;
     },
@@ -542,7 +542,7 @@ Appcelerator.Util.ServiceBroker =
         {
             // we're dead and destroyed, cool, just
             // return silently
-            Logger.error(this.toString()+', deliver called but no message queue');
+            $E(this.toString()+', deliver called but no message queue');
             return;
         }
 		if (this.remoteDisabled)
@@ -594,7 +594,7 @@ Appcelerator.Util.ServiceBroker =
 
 		if (count > 3)
 		{
-			Logger.error('too many attempts sending a re-authorization request.');
+			$E('too many attempts sending a re-authorization request.');
 			return;
 		}
 		
@@ -666,7 +666,7 @@ Appcelerator.Util.ServiceBroker =
                 // 503 is service unavailable, which we handle already
                 if (result && result.status && result.status != 200 && result.status != 503 && result.status != 204 && result.status != 202)
                 {
-                    Logger.error(self.toString() + ' Response Failure: ' + result.status + ' ' + result.statusText);
+                    $E(self.toString() + ' Response Failure: ' + result.status + ' ' + result.statusText);
                 }
 
             },
@@ -697,7 +697,7 @@ Appcelerator.Util.ServiceBroker =
                 }
                 else
                 {
-                    Logger.error(self.toString() + ' Failure: ' + transport.status + ' ' + transport.statusText);
+                    $E(self.toString() + ' Failure: ' + transport.status + ' ' + transport.statusText);
                 }
 
                 // restart the timer
@@ -725,7 +725,7 @@ Appcelerator.Util.ServiceBroker =
 
                 if (log)
                 {
-                    Logger.error(self.toString() + ' Exception: ' + msg);
+                    $E(self.toString() + ' Exception: ' + msg);
                 }
 
                 if (restartTimer)
@@ -888,7 +888,7 @@ Appcelerator.Util.ServiceBroker =
         }
         else
         {
-        	Logger.error(toString() + ' startTimer called and we have no message queue');
+        	$E(toString() + ' startTimer called and we have no message queue');
         }
     },
     maxWaitPollTime: 200,   /*how long to poll the message queue on the server */
@@ -1016,7 +1016,7 @@ else
 			},
 			onFailure:function()
 			{
-				Logger.error('ServiceBroker error received from '+Appcelerator.Util.ServiceBroker.serverPath);
+				$E('ServiceBroker error received from '+Appcelerator.Util.ServiceBroker.serverPath);
 				Appcelerator.Util.ServiceBroker.triggerConfig();
 			}
 		});

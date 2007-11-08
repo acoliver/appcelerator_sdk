@@ -100,3 +100,13 @@ function $D()
         Logger.debug(msg);
     }
 }
+
+function $E()
+{
+    if (Logger.errorEnabled)
+    {
+        var args = $A(arguments);
+        var msg = (args.length > 1) ? args.join(" ") : args[0];
+        Logger.error(msg);
+    }
+}

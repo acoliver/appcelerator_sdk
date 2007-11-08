@@ -52,7 +52,7 @@ Appcelerator.Util.ServerConfig.load = function()
 			},
 			onFailure:function(r)
 			{
-				Logger.error('Failed to load configuration from '+xmlPath);
+				$E('Failed to load configuration from '+xmlPath);
 				Appcelerator.Util.ServerConfig.loadComplete();
 			}
 		});
@@ -73,7 +73,7 @@ Appcelerator.Util.ServerConfig.loadComplete = function()
 		}
 		catch (e)
 		{
-			Logger.error('error calling server config listener = '+l+', Exception = '+Object.getExceptionDetail(e));
+			$E('error calling server config listener = '+l+', Exception = '+Object.getExceptionDetail(e));
 		}
 	});
 	Appcelerator.Util.ServerConfig.listeners = null;

@@ -39,7 +39,7 @@ Appcelerator.Core.require = function (moduleName,onload)
 		script.setAttribute('src',path);
 		script.onerror = function(e)
 		{
-			Logger.error('Error loading module '+moduleName+' from '+path+'\n Exception: '+Object.getExceptionDetail(e));
+			$E('Error loading module '+moduleName+' from '+path+'\n Exception: '+Object.getExceptionDetail(e));
 			alert('error loading module '+moduleName+' from '+path);
 		};
 		Appcelerator.Core.HeadElement.appendChild(script);

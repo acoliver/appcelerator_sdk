@@ -787,7 +787,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				var value = element.getAttribute(modAttr.name) || modAttr.defaultValue;
 				if (!value && !modAttr.optional)
 				{
-					// error out
+					$E('required attribute ' + modAttr.name + ' not defined for widget ' + name);
 				}
 				widgetParameters[modAttr.name] = value;
 			})();
@@ -908,7 +908,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				}
 				else
 				{
-					Logger.error("couldn't find temp ID:"+id);
+					$E("couldn't find temp ID:"+id);
 				}
 			}
 			
@@ -931,7 +931,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						}
 						catch (e)
 						{
-							Logger.error('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+							$E('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
 						}
 					};
 					Appcelerator.Compiler.attachFunction(id,name,f);
@@ -1899,7 +1899,7 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 
 	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ('+tag+') with ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <code>'+(context||'unknown')+'</code></div></div>';
-	Logger.error(msg);
+	$E(msg);
 
 	var makeDiv = false;
 	

@@ -312,7 +312,34 @@ Appcelerator.Util.Dom =
             }
         }, null, true);
         return html;
-    }
+    },
+	createElement: function (type, options)
+	{
+	    var elem = document.createElement(type);
+	    if (options)
+	    {
+	        if (options['parent'])
+	        {
+	            options['parent'].appendChild(elem);
+	        }
+	        if (options['className'])
+	        {
+	            elem.className = options['className'];
+	        }
+	        if (options['html'])
+	        {
+	            elem.innerHTML = options['html'];
+	        }
+	        if (options['children'])
+	        {
+	            options['children'].each(function(child)
+	            {
+	                elem.appendChild(child);
+	            });
+	        }
+	    }
+	    return elem;
+	}
 };
 
 try
@@ -330,31 +357,3 @@ try
 catch(e)
 {
 }
-
-var $E = function (type, options)
-{
-    var elem = document.createElement(type);
-    if (options)
-    {
-        if (options['parent'])
-        {
-            options['parent'].appendChild(elem);
-        }
-        if (options['className'])
-        {
-            elem.className = options['className'];
-        }
-        if (options['html'])
-        {
-            elem.innerHTML = options['html'];
-        }
-        if (options['children'])
-        {
-            options['children'].each(function(child)
-            {
-                elem.appendChild(child);
-            });
-        }
-    }
-    return elem;
-};

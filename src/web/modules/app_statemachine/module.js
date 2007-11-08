@@ -133,7 +133,7 @@ Appcelerator.Module.Statemachine =
 				}
 				catch (e)
 				{
-					Logger.error('Error processing message: '+direction+':'+type+' - '+Object.getExceptionDetail(e));
+					$E('Error processing message: '+direction+':'+type+' - '+Object.getExceptionDetail(e));
 				}
 			}
 		};
