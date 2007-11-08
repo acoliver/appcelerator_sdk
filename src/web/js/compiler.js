@@ -1339,6 +1339,7 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 	{
 		scope = 'appcelerator';
 	}
+	
 	$MQ(type,data,scope);
 };
 
@@ -1464,6 +1465,7 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data)
 		{
 			// determine if this is a dynamic javascript
 			// expression that needs to be executed on-the-fly
+			
 			var match = Appcelerator.Compiler.expressionRE.exec(v);
 			if (match)
 			{
@@ -1474,10 +1476,17 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data)
 			
 			try 
 			{
-				return eval(v, this);
+				var result = eval(v, this);
+				if (result)
+				{
+					return result;
+				}
 			} 
-			catch(e){}
-			
+			catch(e)
+			{
+				
+			}
+
 			if (data)
 			{
 				return Object.getNestedProperty(data,v,v);

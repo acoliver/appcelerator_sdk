@@ -15,7 +15,7 @@ Appcelerator.History.go = function(historyToken)
 
 Appcelerator.History.fireChange = function(newState)
 {
-    if (newState && newState.charAt(0)=='#')
+	if (newState && newState.charAt(0)=='#')
     {
         newState = newState.substring(1);
     }

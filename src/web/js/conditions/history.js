@@ -22,13 +22,32 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		
 		Appcelerator.History.onChange(function(newLocation,data,scope)
 		{
-			if (newLocation+operator+token)
+			switch (operator)
 			{
-				Appcelerator.Compiler.executeAfter(actionFunc,delay,{data:data});
-			}
-			else
-			{
-				Appcelerator.Compiler.executeAfter(elseActionFunc,delay,{data:data});
+				case '==':
+				{
+					if (newLocation == token)
+					{
+						Appcelerator.Compiler.executeAfter(actionFunc,delay,{data:data});
+					}
+					else if (elseActionFunc)
+					{
+						Appcelerator.Compiler.executeAfter(elseActionFunc,delay,{data:data});
+					}
+					break;
+				}
+				case '!=':
+				{
+					if (newLocation != token)
+					{
+						Appcelerator.Compiler.executeAfter(actionFunc,delay,{data:data});
+					}
+					else if (elseActionFunc)
+					{
+						Appcelerator.Compiler.executeAfter(elseActionFunc,delay,{data:data});
+					}
+					break;
+				}
 			}
 		});
 		return true;
