@@ -1280,13 +1280,11 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 {
 	var data = args || {};
 	var element = $(id);
-	
 	if (!element)
 	{
 		return;
 	}
 	var fieldset = element.getAttribute('fieldset');
-	
 	for (var p in data)
 	{
 		var v = data[p];
@@ -1329,7 +1327,7 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 			}
 		}
 	}
-
+	
 	if (local && data['id']==null)
 	{
 		data['id'] = id;
@@ -1476,16 +1474,13 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data)
 			
 			try 
 			{
-				var result = eval(v, this);
+				var result = this.eval(v);
 				if (result)
 				{
 					return result;
 				}
 			} 
-			catch(e)
-			{
-				
-			}
+			catch(e){}
 
 			if (data)
 			{

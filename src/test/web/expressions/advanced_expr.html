@@ -223,6 +223,18 @@
             </div>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-100 Code tabs are broken in opera-->
+            Message with right hand side of a paramater equal to the name of an input.
+        </td>
+        <td class="result">
+            <a on="click then l:appsdk100[show=code]">Click to run</a>
+            <div style="display:none" on="l:appsdk100[show=code] then show">
+                <input name="code" type="text" disabled="true" value="Test Passed" />
+            </div>
+        </td>
+    </tr>
 
 </table>
 
