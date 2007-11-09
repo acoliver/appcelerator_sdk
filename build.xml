@@ -108,7 +108,7 @@
 	</target>
 	<target name="copy_web_files">
 		<copy todir="${stage.dir}/web" filtering="no">
-			<fileset dir="${src.web.dir}" includes="**/*" excludes="**/js/**"/>
+			<fileset dir="${src.web.dir}" excludes="js/**"/>
 		</copy>
 	</target>
 	
