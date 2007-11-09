@@ -487,7 +487,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
         
         InetAddress address = InetAddress.getByName(request.getRemoteAddr());
         long timestamp = Long.parseLong(root.getAttribute("timestamp"));
-        int tz = Integer.parseInt(root.getAttribute("tz"));
+        float tz = Float.parseFloat(root.getAttribute("tz"));
         
         NodeList nodes = root.getChildNodes();
         if (nodes != null)

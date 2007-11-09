@@ -163,3 +163,20 @@ Appcelerator.Util.Cookie =
     	return this.GetCookie(name) != null;
     }
 };    
+
+
+(function()
+{
+	Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
+	if (Appcelerator.Util.Cookie.GetCookie('CookieCheck')!='1')
+	{
+	   // cookies not working
+	   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
+	}
+	else
+	{
+	   // just delete it
+	   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
+	}
+})();
+

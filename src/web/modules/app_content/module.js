@@ -78,6 +78,9 @@ Appcelerator.Module.Content =
 	},
 	fetch: function (target,src,args,onload,onfetch)
 	{
+        target = $(target);
+        target.style.visibility='hidden';
+
 		Appcelerator.Util.IFrame.fetch(src,function(doc)
 		{
 			if (onfetch)
@@ -85,7 +88,6 @@ Appcelerator.Module.Content =
 				$MQ(onfetch,{'src':src,'args':args});
 			}
 			
-			target = $(target);
 			var scope = target.getAttribute('scope') || target.scope;
 			doc.setAttribute('scope',scope);
 			doc.scope = scope;
@@ -99,21 +101,19 @@ Appcelerator.Module.Content =
 				html = t(args.evalJSON());
 			}
 			// turn off until we're done compiling
-			target.style.visibility='hidden';
 			target.innerHTML = html;
 			state.onafterfinish=function()
 			{
-				// turn it back on once we're done compiling
+				 // turn it back on once we're done compiling
 			     target.style.visibility='visible';
+	             if (onload)
+	             {
+	                $MQ(onload,{'src':src,'args':args});
+	             }
 			};
 			Appcelerator.Compiler.compileElement(target.firstChild,state,false);
 			state.scanned=true;
 			Appcelerator.Compiler.checkLoadState(state);
-			
-			if (onload)
-			{
-				$MQ(onload,{'src':src,'args':args});
-			}
 		},true,true);
 	}
 };

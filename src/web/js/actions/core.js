@@ -777,6 +777,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 			html = elementHtml + '.' + variable + '=' + valueHtml + expression;
 		}
 		html += suffix;
+		Logger.info(html);
 		return html;
 	}
 });

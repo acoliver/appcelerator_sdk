@@ -61,7 +61,8 @@ Appcelerator.Module.Validation =
 	buildWidget: function(element,parameters,state)
 	{
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REPLACE
+			'position' : Appcelerator.Compiler.POSITION_REPLACE,
+			'presentation':''
 		};
 	},
 	create: function (element,condition,action,elseAction,delay,ifCond)

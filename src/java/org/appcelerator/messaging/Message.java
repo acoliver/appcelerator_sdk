@@ -48,7 +48,7 @@ public class Message implements Serializable
     private MessageDataType dataType = MessageDataType.XML;
     private long timestamp;
     private long sendTimestamp;
-    private int timezoneOffset;
+    private float timezoneOffset;
     private String scope;
     private InetAddress address;
     private String version;
@@ -130,7 +130,7 @@ public class Message implements Serializable
      * @param sentTimestamp message sender timestamp
      * @param tz        timezone offset of message sender
      */
-    public Message(Subject user, String sessionid, String instanceid, String requestid, String type, MessageDirection direction, MessageDataType dataType, IMessageDataObject data, String scope, InetAddress addr, String version, long sentTimestamp, int timezoneOffset)
+    public Message(Subject user, String sessionid, String instanceid, String requestid, String type, MessageDirection direction, MessageDataType dataType, IMessageDataObject data, String scope, InetAddress addr, String version, long sentTimestamp, float timezoneOffset)
     {
         super();
         this.user = user;
@@ -390,12 +390,12 @@ public class Message implements Serializable
         this.version = version;
     }
 
-    public int getTimezoneOffset()
+    public float getTimezoneOffset()
     {
         return timezoneOffset;
     }
 
-    public void setTimezoneOffset(int timezoneOffset)
+    public void setTimezoneOffset(float timezoneOffset)
     {
         this.timezoneOffset = timezoneOffset;
     }

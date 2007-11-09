@@ -962,13 +962,14 @@ public class Util
      * @param value    cookie value
      * @param maxage   cookie max age
      */
-    public static void addCookie(HttpServletResponse response, String name, String value, String domain, int maxage)
+    public static Cookie addCookie(HttpServletResponse response, String name, String value, String domain, int maxage)
     {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxage);
         cookie.setPath("/");
         if (domain!=null) cookie.setDomain(domain);
         response.addCookie(cookie);
+        return cookie;
     }
 
     /**
@@ -979,9 +980,9 @@ public class Util
      * @param value    cookie value
      * @param maxage   cookie max age
      */
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxage)
+    public static Cookie addCookie(HttpServletResponse response, String name, String value, int maxage)
     {
-        addCookie(response,name,value,null,maxage);
+        return addCookie(response,name,value,null,maxage);
     }
 
     /**

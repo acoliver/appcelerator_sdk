@@ -247,7 +247,7 @@ Appcelerator.Core.onloadInvoker = function()
 	Logger.info('Appcelerator v'+Appcelerator.Version+' ... loaded in '+(new Date().getTime()-ts)+' ms');
 	Logger.info(Appcelerator.Copyright);
 	Logger.info(Appcelerator.LicenseMessage);
-	Logger.info('Less Code. More App.');
+	Logger.info('More App. Less Code.');
 };
 Appcelerator.Core.onunloadInvoker = function()
 {

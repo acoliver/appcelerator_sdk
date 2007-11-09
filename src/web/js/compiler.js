@@ -232,10 +232,13 @@ Appcelerator.Compiler.checkLoadState = function (state)
 //
 Appcelerator.Compiler.dynamicCompile = function(element)
 {
-	var state = Appcelerator.Compiler.createCompilerState();
-	Appcelerator.Compiler.compileElement(element,state);
-	state.scanned = true;
-	Appcelerator.Compiler.checkLoadState(state);
+    setTimeout(function()
+    {    
+	    var state = Appcelerator.Compiler.createCompilerState();
+	    Appcelerator.Compiler.compileElement(element,state);
+	    state.scanned = true;
+	    Appcelerator.Compiler.checkLoadState(state);
+    },0);
 };
 
 Appcelerator.Compiler.createCompilerState = function ()
@@ -250,40 +253,45 @@ Appcelerator.Compiler.afterDocumentCompile = function(l)
 };
 Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 {
-	if (!document.body.id || Appcelerator.Compiler.automatedIDRegex.test(document.body.id))
-	{
-		Appcelerator.Compiler.setElementId(document.body, 'app_body');
-	}
-	
-	var state = Appcelerator.Compiler.createCompilerState();
-	var container = document.body;	
-	var containerChildren = [];
-    
-	// start scanning at the body
-	Appcelerator.Compiler.compileElement(container,state);
+    var container = document.body;  
+    var originalVisibility = container.style.visibility || 'visible';
+    container.style.visibility = 'hidden';
 
-	// mark it as complete and check the loading state
-	state.scanned = true;
-	state.onafterfinish = function(code)
-	{
-		if (Appcelerator.Compiler.oncompileListeners)
-		{
-			for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
-			{
-				Appcelerator.Compiler.oncompileListeners[c]();
-			}
-			delete Appcelerator.Compiler.oncompileListeners;
-		}
-		if (typeof(onFinishCompiled)=='function') onFinishCompiled();
-		$MQ('l:app.compiled');
-	};
-	Appcelerator.Compiler.checkLoadState(state);
-		
-	// re-adjust display after compile is complete
-	if (Appcelerator._originalDisplay!=null && document.body.style.visibility=='hidden')
-	{
-		document.body.style.visibility = Appcelerator._originalDisplay;
-	}
+    if (!document.body.id || Appcelerator.Compiler.automatedIDRegex.test(document.body.id))
+    {
+        Appcelerator.Compiler.setElementId(document.body, 'app_body');
+    }
+    
+
+    var state = Appcelerator.Compiler.createCompilerState();
+    var containerChildren = [];
+    
+    // start scanning at the body
+    Appcelerator.Compiler.compileElement(container,state);
+
+    // mark it as complete and check the loading state
+    state.scanned = true;
+    state.onafterfinish = function(code)
+    {
+        setTimeout(function()
+        {
+            if (Appcelerator.Compiler.oncompileListeners)
+            {
+                for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
+                {
+                    Appcelerator.Compiler.oncompileListeners[c]();
+                }
+                delete Appcelerator.Compiler.oncompileListeners;
+            }
+            if (typeof(onFinishCompiled)=='function') onFinishCompiled();
+            if (originalVisibility!=container.style.visibility)
+            {
+               container.style.visibility = originalVisibility;
+            }
+            $MQ('l:app.compiled');
+        },0);
+    };
+    Appcelerator.Compiler.checkLoadState(state);
 };
 
 Appcelerator.Compiler.compileInterceptors=[];
@@ -350,13 +358,17 @@ Appcelerator.Compiler.compileElement = function(element,state)
 		}
 		else
 		{
+    		element.style.display='none';
 			state.pending+=1;
-			Appcelerator.Core.require(name,function()
+			setTimeout(function()
 			{
-				Appcelerator.Compiler.compileWidget(element,state);
-				state.pending-=1;
-				Appcelerator.Compiler.checkLoadState(state);
-			});
+	            Appcelerator.Core.require(name,function()
+	            {
+	                Appcelerator.Compiler.compileWidget(element,state);
+	                state.pending-=1;
+	                Appcelerator.Compiler.checkLoadState(state);
+	            });
+			},0);
 		}
 	}	
 	else
@@ -454,6 +466,33 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 	return result;
 };
 
+Appcelerator.Compiler.tagNamespaces = [];
+if (Appcelerator.Browser.isIE)
+{
+    Appcelerator.Compiler.tagNamespaces.push('app');
+}
+else
+{
+    for (var x=0;x<document.documentElement.attributes.length;x++)
+    {
+        var attr = document.documentElement.attributes[x];
+        var name = attr.name;
+        var value = attr.value;
+        var idx = name.indexOf(':');
+        if (idx > 0)
+        {
+            Appcelerator.Compiler.tagNamespaces.push(name.substring(idx+1));
+        }
+    }
+}
+Appcelerator.Compiler.removeHtmlPrefix = function(html)
+{
+    if (Appcelerator.Browser.isIE)
+    {
+        html = html.gsub(/<\?xml:namespace(.*?)\/>/i,'');
+    }
+    return html.gsub(/html:/i,'').gsub(/><\/img>/i,'/>');
+};
 //
 // this super inefficient but nifty function will
 // parse our HTML: namespace tags required when HTML is 
@@ -463,43 +502,62 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 // so we need to strip the HTML: before passing to browser
 // as long as it's outside a appcelerator widget
 //
-Appcelerator.Compiler.specialMagicParseHtml = function(html)
+Appcelerator.Compiler.specialMagicParseHtml = function(html,prefix)
 {
-	var idx = html.indexOf('<app:');
-	if (idx < 0) return Appcelerator.Compiler.removeHtmlPrefix(html);
-
-	var pos = 0;
-	var len = html.length;
-	var str = [];
-
-	while ( pos < len && idx!=-1)
-	{
-		var endIdx = html.indexOf('>',idx+10);
-		var token = html.substring(idx,endIdx+1);
-		var spaceIdx = token.indexOf(' ');
-		if (spaceIdx>0) 
-		{
-			token = token.substring(0,spaceIdx)+'>';
-		}
-		str.push(Appcelerator.Compiler.removeHtmlPrefix(html.substring(pos,idx)));
-		var end = html.indexOf('</'+token.substring(1),endIdx+1);
-		var idx2 = html.indexOf('>',end);
-		str.push(html.substring(idx,idx2+1));
-		pos = idx2+1;
-		idx = html.indexOf('<app:',pos);
-	}
-
-	if (pos < len)
-	{
-		str.push(Appcelerator.Compiler.removeHtmlPrefix(html.substring(pos)));
-	}
-	
-	return str.join('');
+    var newhtml = html;
+    for (var c=0;c<Appcelerator.Compiler.tagNamespaces.length;c++)
+    {
+        newhtml = Appcelerator.Compiler.specialMagicParseTagSet(newhtml,Appcelerator.Compiler.tagNamespaces[c]);
+    }
+    return newhtml;
 };
-
-Appcelerator.Compiler.removeHtmlPrefix = function(html)
+Appcelerator.Compiler.specialMagicParseTagSet = function(html,prefix)
 {
-	return html.replace(/html:/ig,'').replace(/><\/img>/ig,'/>');
+    var beginTag = '<'+prefix+':';
+    var endTag = '</'+prefix+':';
+    
+    var idx = html.indexOf(beginTag);
+    if (idx < 0)
+    {
+        return Appcelerator.Compiler.removeHtmlPrefix(html);
+    }
+    
+    var myhtml = Appcelerator.Compiler.removeHtmlPrefix(html.substring(0,idx));
+    
+    var startIdx = idx + beginTag.length;
+
+    var tagEnd = html.indexOf('>',startIdx);
+    var tagSpace = html.indexOf(' ',startIdx);
+    if (tagSpace<0)
+    {
+        tagSpace=tagEnd;
+    }
+    var tagName = html.substring(startIdx,tagSpace);
+    var endTagName = endTag+tagName+'>';
+
+    while ( true )
+    {
+        var lastIdx = html.indexOf(endTagName,startIdx);
+        var endTagIdx = html.indexOf('>',startIdx);
+        var lastTagIdx = html.indexOf('>',lastIdx);
+        var content = html.substring(endTagIdx+1,lastIdx);
+        // check to see if we're within a nested element of the same name
+        var dupidx = content.indexOf(beginTag+tagName);
+        if (dupidx!=-1)
+        {   
+            startIdx=lastIdx+endTagName.length;
+            continue;
+        }
+        var specialHtml = html.substring(idx,lastIdx+endTagName.length);
+        if (Appcelerator.Browser.isIE)
+        {
+            specialHtml = Appcelerator.Compiler.removeHtmlPrefix(specialHtml);
+        }
+        myhtml+=specialHtml;
+        break;
+    }
+    myhtml+=Appcelerator.Compiler.specialMagicParseHtml(html.substring(lastTagIdx+1),prefix);
+    return myhtml;
 };
 
 Appcelerator.Compiler.copyAttributes = function (sourceElement, targetElement)
@@ -601,63 +659,66 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 //
 Appcelerator.Compiler.installChangeListener = function (element, action)
 {
-	var type = element.getAttribute('type') || 'text';
-	var tag = Appcelerator.Compiler.getTagname(element);
-	if (tag == 'select' || tag == 'textarea')
-	{
-		type = tag;
-	}
-	
-	switch(type)
-	{
-		case 'radio':
-		case 'checkbox':
-		{ 
-			Appcelerator.Compiler.addEventListener(element,'click',action);
-			break;
-		}
-		case 'select':
-		{
-			Appcelerator.Compiler.addEventListener(element,'change',action);
-			break;
-		}
-		case 'input':
-		case 'textarea':
-		default:
-		{
-			if (Appcelerator.Browser.isIE)
-			{
-				Appcelerator.Compiler.addEventListener(element,'keyup',action);
-				// as usual, for IE, you have to wait a bit before
-				// you can determine if there's a value
-				var delayedListener = function()
-				{
-					return Appcelerator.Compiler.executeAfter(action,100);
-				};
-				Appcelerator.Compiler.addEventListener(element,'paste',delayedListener);
-			}
-			else
-			{
-				if (type == 'file')
-				{
-					Appcelerator.Compiler.addEventListener(element,'change',action);
-				}
-				else
-				{
-					if (Appcelerator.Browser.isSafari && type == 'textarea')
-					{
-						Appcelerator.Compiler.addEventListener(element,'keyup',action);
-					}
-					else
-					{
-						// changed from 'input' 
-						Appcelerator.Compiler.addEventListener(element,'keyup',action);
-					}
-				}
-			}
-			break;
-		}
-	}
+    setTimeout(function()
+    {
+	    var type = element.getAttribute('type') || 'text';
+	    var tag = Appcelerator.Compiler.getTagname(element);
+	    if (tag == 'select' || tag == 'textarea')
+	    {
+	        type = tag;
+	    }
+	    
+	    switch(type)
+	    {
+	        case 'radio':
+	        case 'checkbox':
+	        { 
+	            Appcelerator.Compiler.addEventListener(element,'click',action);
+	            break;
+	        }
+	        case 'select':
+	        {
+	            Appcelerator.Compiler.addEventListener(element,'change',action);
+	            break;
+	        }
+	        case 'input':
+	        case 'textarea':
+	        default:
+	        {
+	            if (Appcelerator.Browser.isIE)
+	            {
+	                Appcelerator.Compiler.addEventListener(element,'keyup',action);
+	                // as usual, for IE, you have to wait a bit before
+	                // you can determine if there's a value
+	                var delayedListener = function()
+	                {
+	                    return Appcelerator.Compiler.executeAfter(action,100);
+	                };
+	                Appcelerator.Compiler.addEventListener(element,'paste',delayedListener);
+	            }
+	            else
+	            {
+	                if (type == 'file')
+	                {
+	                    Appcelerator.Compiler.addEventListener(element,'change',action);
+	                }
+	                else
+	                {
+	                    if (Appcelerator.Browser.isSafari && type == 'textarea')
+	                    {
+	                        Appcelerator.Compiler.addEventListener(element,'keyup',action);
+	                    }
+	                    else
+	                    {
+	                        // changed from 'input' 
+	                        Appcelerator.Compiler.addEventListener(element,'keyup',action);
+	                    }
+	                }
+	            }
+	            break;
+	        }
+	    }
+    },0);
 };
 
 Appcelerator.Compiler.ElementFunctions = {};
@@ -787,6 +848,8 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				var value = element.getAttribute(modAttr.name) || modAttr.defaultValue;
 				if (!value && !modAttr.optional)
 				{
+				    //TODO: we need to display a nicely formatted box here in place of the 
+				    //widget with the error message
 					$E('required attribute ' + modAttr.name + ' not defined for widget ' + name);
 				}
 				widgetParameters[modAttr.name] = value;
@@ -830,7 +893,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					Appcelerator.Compiler.setElementId(element, id+'_widget');
 					//TODO: look to see how we can deal with this without adding DIV so we 
 					//can support things like TR inside an iterator
-					html = '<div id="'+id+'_temp" style="margin:0;padding:0;">'+html+'</div>';
+					html = '<div id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</div>';
 					added = true;
 					switch(position)
 					{
@@ -908,7 +971,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				}
 				else
 				{
-					$E("couldn't find temp ID:"+id);
+				    // this is OK, will happen if module async removes element
 				}
 			}
 			
@@ -938,38 +1001,41 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				}
 			}
 			
-			//
-			// run initialization
-			//
-			if (instructions.compile)
+			// run the rest of the compiler for the widget 
+			// after re-queuing so that we can prevent the UI thread from freezing
+			setTimeout(function()
 			{
-				module.compileWidget(widgetParameters);
-			}
-			
-			if (added && instructions.wire)
-			{
-				Appcelerator.Compiler.compileElement($(id),state);
-			}
-			
-			// fix any issues from the new HTML (only matters in IE6 otherwise no-op)
-			Appcelerator.Browser.fixImageIssues();
+	            //
+	            // run initialization
+	            //
+	            if (instructions.compile)
+	            {
+	                module.compileWidget(widgetParameters);
+	            }
+	            
+	            if (added && instructions.wire)
+	            {
+	                Appcelerator.Compiler.compileElement($(id),state);
+	            }
+	            
+	            // fix any issues from the new HTML (only matters in IE6 otherwise no-op)
+	            Appcelerator.Browser.fixImageIssues();
+	            
+	            // reset the display for the widget
+                var e = $(id);
+                if (e) e.style.display='';
+			},0);
 		}
 	}
 	else
 	{
 		// reset to the original
-		if (element.style) element.style.display = element.style.originalDisplay;
+		if (element.style && element.style.display != element.style.originalDisplay) 
+		{
+		  element.style.display = element.style.originalDisplay;
+		}
 	}
 }; 
-
-Appcelerator.Compiler.getJSCode = function(code,location)
-{
-	if (code!=null && code!=undefined && code!='true' && code!='undefined' && code!='null' && code.trim()!='')
-	{
-		return code + ';';
-	}
-	return '';
-};
 
 Appcelerator.Compiler.determineScope = function(element)
 {
@@ -1293,67 +1359,70 @@ Appcelerator.Compiler.getMessageType = function (value)
 
 Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 {
-	var data = args || {};
-	var element = $(id);
-	if (!element)
-	{
-		return;
-	}
-	var fieldset = element.getAttribute('fieldset');
-	for (var p in data)
-	{
-		var v = data[p];
-		var boundGetEvaluatedValue = Appcelerator.Compiler.getEvaluatedValue.bind(this);
-		data[p] = boundGetEvaluatedValue(v,data);
-	}
-	
-	var local = type.startsWith('local:') || type.startsWith('l:');
-	
-	if (fieldset)
-	{
-		var fields = Appcelerator.Compiler.fieldSets[fieldset];
-		if (fields && fields.length > 0)
+    setTimeout(function()
+    {
+		var data = args || {};
+		var element = $(id);
+		if (!element)
 		{
-			for (var c=0,len=fields.length;c<len;c++)
+			return;
+		}
+		var fieldset = element.getAttribute('fieldset');
+		for (var p in data)
+		{
+			var v = data[p];
+			var boundGetEvaluatedValue = Appcelerator.Compiler.getEvaluatedValue.bind(this);
+			data[p] = boundGetEvaluatedValue(v,data);
+		}
+		
+		var local = type.startsWith('local:') || type.startsWith('l:');
+		
+		if (fieldset)
+		{
+			var fields = Appcelerator.Compiler.fieldSets[fieldset];
+			if (fields && fields.length > 0)
 			{
-				var fieldid = fields[c];
-				var field = $(fieldid);
-				var name = field.name || fieldid;
-				
-				if (null == data[name])
+				for (var c=0,len=fields.length;c<len;c++)
 				{
-					// special case type field we only want to add 
-					// the value if it's checked
-					if (field.type == 'radio' && !field.checked)
+					var fieldid = fields[c];
+					var field = $(fieldid);
+					var name = field.name || fieldid;
+					
+					if (null == data[name])
 					{
-						continue;					
-					}
-					var newvalue = Appcelerator.Compiler.getInputFieldValue(field,true,local);
-					var valuetype = typeof(newvalue);
-					if (newvalue!=null && valuetype=='object' || newvalue.length > 0 || valuetype=='boolean')
-					{
-						data[name] = newvalue;
-					}
-					else
-					{
-						data[name] = '';
+						// special case type field we only want to add 
+						// the value if it's checked
+						if (field.type == 'radio' && !field.checked)
+						{
+							continue;					
+						}
+						var newvalue = Appcelerator.Compiler.getInputFieldValue(field,true,local);
+						var valuetype = typeof(newvalue);
+						if (newvalue!=null && valuetype=='object' || newvalue.length > 0 || valuetype=='boolean')
+						{
+							data[name] = newvalue;
+						}
+						else
+						{
+							data[name] = '';
+						}
 					}
 				}
 			}
 		}
-	}
-	
-	if (local && data['id']==null)
-	{
-		data['id'] = id;
-	}
-	var scope = element.scope;
-	if (!scope || scope == '*')
-	{
-		scope = 'appcelerator';
-	}
-	
-	$MQ(type,data,scope);
+		
+		if (local && data['id']==null)
+		{
+			data['id'] = id;
+		}
+		var scope = element.scope;
+		if (!scope || scope == '*')
+		{
+			scope = 'appcelerator';
+		}
+		
+		$MQ(type,data,scope);
+	},0);
 };
 
 
@@ -1869,7 +1938,6 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 
 Appcelerator.Compiler.publishEvent = function (element,event)
 {
-	//FIXME
 };
 
 //
@@ -2167,6 +2235,6 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 Appcelerator.Compiler.setHTML = function(element,html)
 {
 	$(element).innerHTML = html;
-	Appcelerator.Browser.fixImageIssues();
+	setTimeout(Appcelerator.Browser.fixImageIssues,0);
 };
 

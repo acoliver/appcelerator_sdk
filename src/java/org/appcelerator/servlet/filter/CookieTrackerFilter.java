@@ -27,10 +27,12 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.appcelerator.util.GUID;
 import org.appcelerator.util.TimeUtil;
 import org.appcelerator.util.Util;
@@ -43,8 +45,10 @@ import org.appcelerator.util.Util;
  */
 public class CookieTrackerFilter implements Filter
 {
+    private static final Logger LOG = Logger.getLogger(CookieTrackerFilter.class);
+    
     private String cookieName = "AUID";
-    private long duration = TimeUtil.ONE_YEAR * 5;
+    private int duration = (int)(TimeUtil.ONE_YEAR / TimeUtil.ONE_SECOND);
     private boolean trackSubdomains = true;
 
     public void destroy()
@@ -58,22 +62,20 @@ public class CookieTrackerFilter implements Filter
         {
             HttpServletRequest req = (HttpServletRequest)arg0;
             String auid = Util.getCookieValue(req,cookieName);
-            if (auid==null)
+            if (auid==null || auid.equals("") || auid.equals("null"))
             {
                 String domain = trackSubdomains ? Util.getDomain(req.getServerName()) : null;
                 HttpServletResponse resp=(HttpServletResponse)arg1;
                 auid = req.getParameter("auid");
-                if (auid == null || "".equals(auid))
+                if (auid == null || "".equals(auid) || "null".equals(auid))
                 {
                     auid = GUID.asGUID();
                 }                
-                Util.addCookie(resp, cookieName, auid, domain, (int)duration);
+                Cookie newCookie = Util.addCookie(resp, cookieName, auid, domain, duration);
+                LOG.info("created new AUID cookie = "+newCookie+", auid="+auid+", duration="+duration);
             }
             HttpSession httpSession = req.getSession();
-            if (httpSession.getAttribute("AUID")==null)
-            {
-                httpSession.setAttribute("AUID", auid);
-            }
+            httpSession.setAttribute("AUID", auid);
         }
         arg2.doFilter(arg0, arg1);
     }
@@ -88,7 +90,7 @@ public class CookieTrackerFilter implements Filter
         String time = arg0.getInitParameter("cookieDuration");
         if (time!=null)
         {
-            duration = TimeUtil.getTime(time);
+            duration = (int)(TimeUtil.getTime(time) / TimeUtil.ONE_SECOND);
         }
         String subdomain = arg0.getInitParameter("trackSubdomains");
         if (subdomain!=null)

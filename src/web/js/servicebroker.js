@@ -612,63 +612,66 @@ Appcelerator.Util.ServiceBroker =
             },
             onSuccess: function (result)
             {
-                self.fetching = false;
-                self.startTimer(false);
-
-                if (result && result.status)
+                setTimeout(function()
                 {
-                    if (result.status == 401)
-                    {
-                        self.onServiceBrokerInvalidLogin();
-                        return;
-                    }
-                    // 204 is no content, in which case the content-type is text/plain
-                    if (result.status != 204 && result.status != 202)
-                    {
-                        var contentType = result.getResponseHeader('Content-type');
-                        // do indexOf instead of equals since we sometime tack on the character encoding
-                        if (!contentType || contentType.indexOf('text/xml') == -1)
-                        {
-                            // this most likely means we've been redirected on the
-                            // server to another page or something, in which case
-                            // we (default) will just go to the landing page
-                            self.onServiceBrokerInvalidContentType(contentType);
-                            return;
-                        }
-                    }
-                    if (self.serverDown)
-                    {
-                        self.serverDown = false;
-                        var downtime = new Date().getTime() - self.serverDownStarted;
-                        if (Logger.infoEnabled) Logger.info('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Server is UP at ' + self.serverPath);
-                        self.queue({type:'local:appcelerator.servicebroker.server.up',data:{path:this.serverPath,downtime:downtime}});
-                    }
-                    if (result.status == 200)
-                    {
-                        var skip = false;
-                        var cl = result.getResponseHeader("Content-Length");
-                        if (cl && cl == "0")
-                        {
-                            // this is OK, just means no messages from the other side
-                            skip = true;
-                            $D(self.toString() + ' Receiving no messages on response');
-                        }
-                        if (!skip)
-                        {
-                            // now process them
-                            $D('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Receiving: ' + result.responseText);
-                            self.processIncoming(result.responseXML);
-                        }
-                    }
-                }
-
-                // 204 is no content, which is OK
-                // 503 is service unavailable, which we handle already
-                if (result && result.status && result.status != 200 && result.status != 503 && result.status != 204 && result.status != 202)
-                {
-                    $E(self.toString() + ' Response Failure: ' + result.status + ' ' + result.statusText);
-                }
-
+	                self.fetching = false;
+	                self.startTimer(false);
+	
+	                if (result && result.status)
+	                {
+	                    if (result.status == 401)
+	                    {
+	                        self.onServiceBrokerInvalidLogin();
+	                        return;
+	                    }
+	                    // 204 is no content, in which case the content-type is text/plain
+	                    if (result.status != 204 && result.status != 202)
+	                    {
+	                        var contentType = result.getResponseHeader('Content-type');
+	                        // do indexOf instead of equals since we sometime tack on the character encoding
+	                        if (!contentType || contentType.indexOf('text/xml') == -1)
+	                        {
+	                            // this most likely means we've been redirected on the
+	                            // server to another page or something, in which case
+	                            // we (default) will just go to the landing page
+	                            self.onServiceBrokerInvalidContentType(contentType);
+	                            return;
+	                        }
+	                    }
+	                    if (self.serverDown)
+	                    {
+	                        self.serverDown = false;
+	                        var downtime = new Date().getTime() - self.serverDownStarted;
+	                        if (Logger.infoEnabled) Logger.info('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Server is UP at ' + self.serverPath);
+	                        self.queue({type:'local:appcelerator.servicebroker.server.up',data:{path:this.serverPath,downtime:downtime}});
+	                    }
+	                    if (result.status == 200)
+	                    {
+	                        var skip = false;
+	                        var cl = result.getResponseHeader("Content-Length");
+	                        if (cl && cl == "0")
+	                        {
+	                            // this is OK, just means no messages from the other side
+	                            skip = true;
+	                            $D(self.toString() + ' Receiving no messages on response');
+	                        }
+	                        if (!skip)
+	                        {
+	                            // now process them
+	                            $D('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Receiving: ' + result.responseText);
+	                            self.processIncoming(result.responseXML);
+	                        }
+	                    }
+	                }
+	
+	                // 204 is no content, which is OK
+	                // 503 is service unavailable, which we handle already
+	                if (result && result.status && result.status != 200 && result.status != 503 && result.status != 204 && result.status != 202)
+	                {
+	                    $E(self.toString() + ' Response Failure: ' + result.status + ' ' + result.statusText);
+	                }
+	
+                },0);
             },
             onFailure: function (transport, json)
             {

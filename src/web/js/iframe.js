@@ -6,35 +6,38 @@ Appcelerator.Util.IFrame =
 {
 	fetch: function(src,onload,removeOnLoad,copyContent)
 	{
-		copyContent = (copyContent==null) ? false : copyContent;
-		var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
-		var frame = document.createElement('iframe');
-		Appcelerator.Compiler.setElementId(frame, frameid);
-	   	//This prevents Firefox 1.5 from getting stuck while trying to get the contents of the new iframe
-	   	if(!Appcelerator.Browser.isFirefox)
-	   	{
-	   		frame.setAttribute('name', frameid);
-	   	}
-	   	frame.setAttribute('src',Appcelerator.DocumentPath+src);
-	   	frame.style.position = 'absolute';
-	   	frame.style.width = frame.style.height = frame.borderWidth = '1px';
-		// in Opera and Safari you'll need to actually show it or the frame won't load
-		// so we just put it off screen
-		frame.style.left = "-50px";
-		frame.style.top = "-50px";
-	   	var iframe = document.body.appendChild(frame);
-		// this is a IE speciality
-  		if (window.frames && window.frames[frameid]) iframe = window.frames[frameid];
-  		iframe.name = frameid;
-  		var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src,copyContent:copyContent};
-  		if (!Appcelerator.Browser.isFirefox)
-  		{
-  			setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
-  		}
-  		else
-  		{
-	  		iframe.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
-  		}
+	    setTimeout(function()
+	    {
+	        copyContent = (copyContent==null) ? false : copyContent;
+	        var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
+	        var frame = document.createElement('iframe');
+	        Appcelerator.Compiler.setElementId(frame, frameid);
+	        //This prevents Firefox 1.5 from getting stuck while trying to get the contents of the new iframe
+	        if(!Appcelerator.Browser.isFirefox)
+	        {
+	            frame.setAttribute('name', frameid);
+	        }
+	        frame.setAttribute('src',Appcelerator.DocumentPath+src);
+	        frame.style.position = 'absolute';
+	        frame.style.width = frame.style.height = frame.borderWidth = '1px';
+	        // in Opera and Safari you'll need to actually show it or the frame won't load
+	        // so we just put it off screen
+	        frame.style.left = "-50px";
+	        frame.style.top = "-50px";
+	        var iframe = document.body.appendChild(frame);
+	        // this is a IE speciality
+	        if (window.frames && window.frames[frameid]) iframe = window.frames[frameid];
+	        iframe.name = frameid;
+	        var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src,copyContent:copyContent};
+	        if (!Appcelerator.Browser.isFirefox)
+	        {
+	            setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
+	        }
+	        else
+	        {
+	            iframe.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
+	        }
+	    },0);
 	},
 	monitor: function(frame,onload)
 	{
