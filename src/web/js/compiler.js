@@ -855,6 +855,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				widgetParameters[modAttr.name] = value;
 			})();
 		}
+		widgetParameters['id'] = id;
 
 		//
 		// parse on attribute
@@ -946,15 +947,6 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					}
 				}
 			}
-
-			//
-			// remove element
-			//
-			if (removeElement)
-			{
-				Appcelerator.Compiler.removeElementId(id);
-				Element.remove(element);
-			}
 			
 			var outer = null;
 			if (added)
@@ -965,23 +957,22 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					// in case we're in a content file or regular unattached DOM
 					outer = element.ownerDocument.getElementById(id+'_temp');
 				}
-				if (outer)
-				{
-					// check to see if widget assigned id in presentation
-					if (!$(id))
-					{
-						Appcelerator.Compiler.setElementId(outer, id);
-					}
-					Appcelerator.Compiler.delegateToContainerProcessors(outer, $(id));
-				}
-				else
-				{
-				    // this is OK, will happen if module async removes element
-				}
+				Appcelerator.Compiler.delegateToContainerProcessors(element, outer);
 			}
-			else
+
+			//
+			// remove element
+			//
+			if (removeElement)
 			{
-				outer = $(id);
+				Appcelerator.Compiler.removeElementId(id);
+				Element.remove(element);
+			}
+			
+			if (added && outer && !$(id))
+			{
+				// set outer div only if widget id was not used in presentation
+				Appcelerator.Compiler.setElementId(outer, id);
 			}
 			
 			// 
@@ -1022,16 +1013,19 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 	                module.compileWidget(widgetParameters);
 	            }
 	            
-	            if (added && instructions.wire)
+	            if (added && instructions.wire && outer)
 	            {
-	                Appcelerator.Compiler.compileElement($(id),state);
+	                Appcelerator.Compiler.compileElement(outer, state);
 	            }
 	            
 	            // fix any issues from the new HTML (only matters in IE6 otherwise no-op)
 	            Appcelerator.Browser.fixImageIssues();
 	            
 	            // reset the display for the widget
-                outer.style.display='';
+				if (outer)
+				{
+	                outer.style.display='';
+				}
 			},0);
 		}
 	}

@@ -58,21 +58,22 @@ Appcelerator.Module.Content =
 			Appcelerator.Module.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
 		}
 	},
+	compileWidget: function(parameters)
+	{
+		if (!(parameters['lazy'] == 'true'))
+		{
+			Appcelerator.Module.Content.fetch(parameters['id'],parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch']);
+			parameters['fetched'] = true;
+		}
+	},
 	buildWidget: function(element,parameters,state)
 	{
 		parameters['reload'] = (parameters['reload'] == 'true');
 		
-		if (!(parameters['lazy'] == 'true'))
-		{
-			Appcelerator.Module.Content.fetch(element.id,parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch']);
-			parameters['fetched'] = true;
-		}
-		
-		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
-			'parameters': parameters,
+			'compile' : true,
 			'functions': parameters['on'] ? ['execute'] : null
 		};
 	},
