@@ -23,31 +23,42 @@ Appcelerator.Core.require = function (moduleName,onload)
 	if (!module)
 	{
 		var path = Appcelerator.ModulePath + moduleName + '/module.js';
-
-		// first check to see if we're already fetching this module and if so
-		// just add ourselves as a listener to be notified		
-		var array = Appcelerator.Core.fetching[path];
-		if (array)
-		{
-			array.push(onload);
-			return;
-		}
-		Appcelerator.Core.fetching[path]=[onload];
-		
-		var script = document.createElement('script');
-		script.setAttribute('type','text/javascript');
-		script.setAttribute('src',path);
-		script.onerror = function(e)
-		{
-			$E('Error loading module '+moduleName+' from '+path+'\n Exception: '+Object.getExceptionDetail(e));
-			alert('error loading module '+moduleName+' from '+path);
-		};
-		Appcelerator.Core.HeadElement.appendChild(script);
+		Appcelerator.Core.loadJS(path,onload);
 	}
 	else
 	{
 		if (typeof onload == 'function') onload();
 	}
+};
+
+Appcelerator.Core.loadJS = function (path, onload)
+{
+	// first check to see if we're already fetching this script and if so
+	// just add ourselves as a listener to be notified
+	var array = Appcelerator.Core.fetching[path];
+	if (array)
+	{
+		if (onload)
+		{
+			array.push(onload);
+		}
+		return;
+	}
+	if (onload)
+	{
+		Appcelerator.Core.fetching[path]=[onload];
+	}
+	
+	var script = document.createElement('script');
+	script.setAttribute('type','text/javascript');
+	script.setAttribute('src',path);
+	script.onerror = function(e)
+	{
+		$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
+		alert('error loading '+path);
+	};
+	
+	Appcelerator.Core.HeadElement.appendChild(script);	
 };
 
 Appcelerator.Core.widgets = {};
@@ -210,6 +221,51 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 		}
 	}
     delete Appcelerator.Core.fetching[path];
+};
+
+Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
+{
+	var state = 
+	{
+		count : js.length
+	};
+	
+	var checkState = function()
+	{
+		state.count--;
+		if (state.count==0)
+		{
+			Appcelerator.Core.registerModule(moduleName, module);
+		}
+	};
+	
+	for (var i=0; i < js.length; i++)
+	{
+		var file = js[i];
+		moduleName = moduleName.replace(':','_');
+		var path = Appcelerator.ModulePath + moduleName + '/js/' + file;
+
+		var script = document.createElement('script');
+		script.setAttribute('type','text/javascript');
+		script.setAttribute('src',path);
+		script.onerror = function(e)
+		{
+			$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
+			alert('error loading '+path);
+		};
+		script.onload = checkState;
+		script.onreadystatechange = checkState;
+
+		if (Appcelerator.Browser.isSafari2)
+		{
+			setTimeout(function()
+			{
+				checkState();
+			}, 1000);
+		}
+		
+		Appcelerator.Core.HeadElement.appendChild(script);
+	}
 };
 
 //

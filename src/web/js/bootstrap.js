@@ -109,6 +109,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isPreCompiler = (ua.indexOf('Appcelerator Compiler') > -1);
 	Appcelerator.Browser.isOpera = (ua.indexOf('opera') > -1);
 	Appcelerator.Browser.isSafari = (ua.indexOf('safari') > -1);
+	Appcelerator.Browser.isSafari2 = false;
 	Appcelerator.Browser.isIE = (window.ActiveXObject);
 	Appcelerator.Browser.isIE6 = false;
 	Appcelerator.Browser.isIE7 = false;
@@ -120,6 +121,15 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.Browser.isIE6 = version >= 6.0 && version < 7;
 		Appcelerator.Browser.isIE7 = version >= 7.0 && version < 8;
 	}
+	
+	if (Appcelerator.Browser.isSafari)
+	{
+		var webKitFields = RegExp("( applewebkit/)([^ ]+)").exec(ua);
+		if (webKitFields[2] > 400 && webKitFields[2] < 500)
+		{
+			Appcelerator.Browser.isSafari2 = true;
+		}
+	}	
 
 	Appcelerator.Browser.isGecko = !Appcelerator.Browser.isSafari && (ua.indexOf('gecko') > -1);
 	Appcelerator.Browser.isCamino = Appcelerator.Browser.isGecko && ua.indexOf('camino') > -1;
