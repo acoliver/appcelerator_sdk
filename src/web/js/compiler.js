@@ -1761,7 +1761,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						{
 							state = STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER;
 							append = false;
-							key = currentstr;
+							key = currentstr.trim();
 							currentstr = '';
 						}
 						break;
@@ -1811,7 +1811,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 					{
 						append = false;
 						state = STATE_LOOKING_FOR_VALUE_BEGIN;
-						key = currentstr;
+						key = currentstr.trim();
 						currentstr = '';
 						break;
 					}
@@ -1858,6 +1858,9 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 				break;
 			}
 			case ' ':
+			{
+			    break;
+			}
 			case '\n':
 			case '\t':
 			case '\r':

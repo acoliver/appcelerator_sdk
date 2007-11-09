@@ -174,7 +174,7 @@ var addsetBuilder =
 		var value = obj.value;
 		if (Appcelerator.Compiler.isCSSAttribute(key))
 		{
-			return "Element.setStyle('" + id + "',{" + key + ':' + Appcelerator.Compiler.generateSetter(value) + "})";				
+			return "Element.setStyle('" + id + "',{'" + key + "':" + Appcelerator.Compiler.generateSetter(value) + "})";				
 		}
 		else if (key == 'class')
 		{
@@ -777,7 +777,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 			html = elementHtml + '.' + variable + '=' + valueHtml + expression;
 		}
 		html += suffix;
-		Logger.info(html);
 		return html;
 	}
 });
