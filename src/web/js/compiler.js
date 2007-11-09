@@ -952,27 +952,36 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			//
 			if (removeElement)
 			{
-				Appcelerator.Compiler.removeElementId(element.id);
+				Appcelerator.Compiler.removeElementId(id);
 				Element.remove(element);
 			}
 			
+			var outer = null;
 			if (added)
 			{
-				var te = $(id+'_temp');
-				if (!te)
+				outer = $(id+'_temp');
+				if (!outer)
 				{
 					// in case we're in a content file or regular unattached DOM
-					te = element.ownerDocument.getElementById(id+'_temp');
+					outer = element.ownerDocument.getElementById(id+'_temp');
 				}
-				if (te)
+				if (outer)
 				{
-					Appcelerator.Compiler.setElementId(te, id);
-					Appcelerator.Compiler.delegateToContainerProcessors(te);
+					// check to see if widget assigned id in presentation
+					if (!$(id))
+					{
+						Appcelerator.Compiler.setElementId(outer, id);
+					}
+					Appcelerator.Compiler.delegateToContainerProcessors(outer, $(id));
 				}
 				else
 				{
 				    // this is OK, will happen if module async removes element
 				}
+			}
+			else
+			{
+				outer = $(id);
 			}
 			
 			// 
@@ -1022,8 +1031,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 	            Appcelerator.Browser.fixImageIssues();
 	            
 	            // reset the display for the widget
-                var e = $(id);
-                if (e) e.style.display='';
+                outer.style.display='';
 			},0);
 		}
 	}
