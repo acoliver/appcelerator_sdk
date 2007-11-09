@@ -1,0 +1,86 @@
+
+The Appcelerator SDK for Python allows web developers to
+build service-oriented rich-internet-applications in the Python language.
+
+We're working on example applications now,
+in the meantime, the instructions below will get you started.
+
+If you hit any snags,
+come see us at #appcelerator on irc.freenode.net 
+
+
+
+------- Creating a new Appcelerator project ------
+
+The easiest way to create a new Appcelerator project is with Pylons.
+
+1) at the command line, type:
+ 
+      "easy_install pylons"
+      
+   this will download and install the pylons package, and may take a few minutes.
+
+2) now, type:
+
+      "paste create -t pylons my_revolutionary_socializr"
+      
+   where "my_revolutionary_socializr" is the name of your project,
+   final "r" NOT optional.
+
+3) now you have a pylons project,
+   for more documentation on buildings apps with pylons,
+   see http://www.pylonshq.com
+   to appcelerate your project, continue with the directions below.
+
+
+------- Adding to an existing Pylons project ------
+
+If you're using the Pylons framework, and have an existing project
+to which you'd like to add Appcelerator,
+
+1) add the following lines to your development.ini file:
+
+"""
+[composite:main]
+use = egg:Paste#urlmap
+/ = home
+/servicebroker = servicebroker
+
+[app:servicebroker]
+use = egg:Appcelerator#service_broker
+"""
+
+2) then change your "[app:main]" heading to "[app:home]"
+   if you don't have an "[app:main]" section,
+   you probably understand pylons config file well enough to
+   figure out the right thing to do here.
+   We're trying to
+
+3) now add a 'services' directory as a sibling to the 'controllers'
+   directory in your project
+
+
+
+------- Implementation ------
+
+
+The Appcelerator SDK for Python is implemented as a piece of WSGI middleware.
+This means that it is easy to add to most python web frameworks.
+
+Currently, we provide special support for the pylons framework,
+attempting to automatically load services from the 'services' directory of the project.
+
+We depend on the Beaker library for user session handling,
+but our service dispatcher is agnostic to the type of session used,
+and other session management libraries (like django's, for example)
+could be used with only minor changes. Just tell us what you use,
+and we'll add support for it.
+
+
+------- Building ------
+
+    python setup.py install
+
+or, when this is on the cheeseshop
+
+    easy_install Appcelerator 
