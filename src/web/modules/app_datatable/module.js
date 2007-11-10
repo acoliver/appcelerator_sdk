@@ -263,7 +263,6 @@ Appcelerator.Module.Datatable =
 	},
 	paginateContinuously: function (id, direction)
 	{
-		Logger.info('bleh ' + id + ', dir ' + direction);
 		var paginator = function()
 		{
 			if (direction == 'forward') Appcelerator.Module.Datatable.createDataTable(id,'forward');
