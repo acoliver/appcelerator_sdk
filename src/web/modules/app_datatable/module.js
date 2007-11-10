@@ -246,6 +246,8 @@ Appcelerator.Module.Datatable =
 		$(myidforward).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'forward');}.bind(this);
 		$(myidback).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
 		$(myidforward).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
+		$(myidback).onmouseout = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
+		$(myidforward).onmouseout = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
 		
 		var on_run_array = [];
 		
