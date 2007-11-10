@@ -30,3 +30,7 @@
 	border-left: 1px solid #aaa;
 	background-color: #fff;		
 }
+.pagination_links
+{
+	cursor: pointer;
+}

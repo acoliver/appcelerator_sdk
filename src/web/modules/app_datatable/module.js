@@ -232,8 +232,8 @@ Appcelerator.Module.Datatable =
 			var backward = "'backward'";
 			
 			pag_html = '<div style="padding-bottom: 5px;">'+
-								 '<a id="'+myidback+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;' +
-								 '<a id="'+myidforward+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(length)+' of '+array.length+'</div>';
+								 '<a class="pagination_links" id="'+myidback+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;' +
+								 '<a class="pagination_links" id="'+myidforward+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(length)+' of '+array.length+'</div>';
 			
 			html = pag_html + html;
 		}
