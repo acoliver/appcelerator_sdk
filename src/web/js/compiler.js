@@ -1010,7 +1010,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 	            //
 	            if (instructions.compile)
 	            {
-	                module.compileWidget(widgetParameters);
+	                module.compileWidget(widgetParameters,outer);
 	            }
 	            
 	            if (added && instructions.wire && outer)
