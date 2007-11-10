@@ -20,6 +20,10 @@ Appcelerator.Module.Datatable =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Amro Mousa';
@@ -63,19 +67,20 @@ Appcelerator.Module.Datatable =
 		var array = parameterMap['array'];
 		
 		var pagination = parameterMap['pagination'];
-		var maxRows = parameterMap['maxRows'];
+		var maxRows = parseInt(parameterMap['maxRows']);
 
 		if (pagination == 'true' && !pagination_direction)
 		{
 			pagination_direction = 'forward';
 			maxRows = maxRows == 0 ? 10 : maxRows;
 		}
-		
+
 		if (pagination == 'false')
 		{
 			maxRows = maxRows == 0 ? array.length : maxRows;
 		}
-		
+		parameterMap['maxRows'] = maxRows;
+
 		var html = '';
 			
 		//Default class names -- the only class names accepted directly by the table are rowEvenClass and rowOddClass
@@ -162,7 +167,7 @@ Appcelerator.Module.Datatable =
 	
 		//Create the table body
 		var x = 0;
-		var len = maxRows;
+		var length = maxRows;
 
 		if (pagination == 'true')
 		{
@@ -176,26 +181,25 @@ Appcelerator.Module.Datatable =
 				{
 					x = this.position+maxRows >= array.length ? this.position : this.position+maxRows;					
 				}
-				len = x+maxRows > array.length ? array.length : x+maxRows;
+				length = x+maxRows > array.length ? array.length : x+maxRows;
 			} else
 			{
 				if(this.position-maxRows < 0)
 				{
 					x = 0;					
-					len = maxRows;
+					length = maxRows;
 				} else
 				{
 					x = this.position-maxRows;
-					len = x+maxRows > array.length ? array.length : x+maxRows;
+					length = x+maxRows > array.length ? array.length : x+maxRows;
 				}
-//				alert('x is ' + x + ', len is ' + len + ', position is '+ this.position);
 			}
 			this.position = x;
 		}
 		
 		var xrun = x;
 		
-		for (; xrun < len; xrun++)
+		for (; xrun < length; xrun++)
 		{
 			table_data_content += '<tr class="table_row">';				
 			for (var h = 0, lenH = header_array.length; h < lenH; h++)
@@ -223,7 +227,9 @@ Appcelerator.Module.Datatable =
 			var forward = "'forward'";
 			var backward = "'backward'";
 			
-			pag_html = '<div style="padding-bottom: 5px;"><a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+backward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;<a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+forward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(len)+' of '+array.length+'</div>';
+//			alert ('x is ' + xrun + ', len is ' + length);
+			
+			pag_html = '<div style="padding-bottom: 5px;"><a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+backward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;<a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+forward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(length)+' of '+array.length+'</div>';
 			html = pag_html + html;
 		}
 			
@@ -370,33 +376,12 @@ Appcelerator.Module.Datatable =
 				{name: 'rowEvenClass', optional: true, defaultValue: ''},
 				{name: 'rowOddClass', optional: true, defaultValue: ''},
 				{name: 'width', optional: true, defaultValue: '100%', description: "Width % of entire table."},
-				{name: 'property', optional: true, defaultValue: ''}];
+				{name: 'property', optional: true, defaultValue: ''},
+				{name: 'pagination', optional: true, defaultValue: 'false'},
+				{name: 'maxRows', optional: true, defaultValue: 0}];
 	},	
-	buildWidget: function(element)
+	buildWidget: function(element, parameters)
 	{
- 		var parameters = {};
-		parameters['wire'] = element.getAttribute('wire')||'';
-		
-		//Valid values are 'client', 'server', and 'off'
-		parameters['sort'] = element.getAttribute('sort')||'client';
-		
-		//Message to be sent when the sort mode is 'server' and a column header is clicked
-		parameters['sortRequest'] = element.getAttribute('sortRequest')||'';
-		
-		//Really applies styles to the CELLS on the even and odd rows
-		parameters['rowEvenClass'] = element.getAttribute('rowEvenClass')||'';
-		parameters['rowOddClass'] = element.getAttribute('rowOddClass')||'';
-		
-		//Width % of entire table
-		parameters['width'] = element.getAttribute('width')||'100%';
-		
-		//Data property
-		parameters['property'] = element.getAttribute('property')||'';
-
-		//pagination properties
-		parameters['pagination'] = element.getAttribute('pagination')||'false';
-		parameters['maxRows'] = parseInt(element.getAttribute('maxRows')||'0');
-		
 		//Header array		
 		var temp_element = document.createElement('div');
 		temp_element.innerHTML = element.innerHTML.replace(/<HEADER/gi, '<div').replace(/<\/HEADER/gi,'</div');
@@ -437,8 +422,6 @@ Appcelerator.Module.Datatable =
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'initialization':  Appcelerator.Compiler.parseOnAttribute(element),
-			'cleanup' : null,
 			'parameters': parameters,
 			'functions' : ['execute']
 		};
