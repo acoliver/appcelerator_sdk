@@ -2,7 +2,8 @@
 Appcelerator.Module.Datatable =
 {	
 	modulePath:null,
-	
+	position: 0,
+	initialLoad: true,
 	setPath: function(path)
 	{
 		this.modulePath = path;
@@ -16,10 +17,6 @@ Appcelerator.Module.Datatable =
 		return 'datatable widget';
 	},
 	getVersion: function()
-	{
-		return 1.0;
-	},
-	getSpecVersion: function()
 	{
 		return 1.0;
 	},
@@ -39,11 +36,11 @@ Appcelerator.Module.Datatable =
 	{
 		return 'app:datatable';
 	},
-	createDataTable: function (id)
+	createDataTable: function (id, pagination_direction)
 	{
 		//list of on attributes to be parsed and evaluated at the end of create
 		var on_array = [];
-		
+
 		var parameterMap = $(id).parameterMap;
 	
 		var scope = parameterMap['scope'];
@@ -64,6 +61,21 @@ Appcelerator.Module.Datatable =
 		
 		var header_array = parameterMap['header_array'];
 		var array = parameterMap['array'];
+		
+		var pagination = parameterMap['pagination'];
+		var maxRows = parameterMap['maxRows'];
+
+		if (pagination == 'true' && !pagination_direction)
+		{
+			pagination_direction = 'forward';
+			maxRows = maxRows == 0 ? 10 : maxRows;
+		}
+		
+		if (pagination == 'false')
+		{
+			maxRows = maxRows == 0 ? array.length : maxRows;
+		}
+		
 		var html = '';
 			
 		//Default class names -- the only class names accepted directly by the table are rowEvenClass and rowOddClass
@@ -149,25 +161,72 @@ Appcelerator.Module.Datatable =
 		table_header_content = '<tr class="table_row_header">' + table_header_content + '</tr>';
 	
 		//Create the table body
-		for (var x = 0, len = array.length; x < len; x++)
+		var x = 0;
+		var len = maxRows;
+
+		if (pagination == 'true')
+		{
+			if (pagination_direction == 'forward')
+			{
+				if (this.initialLoad)
+				{
+					x = this.position;
+					this.initialLoad = false;
+				} else
+				{
+					x = this.position+maxRows >= array.length ? this.position : this.position+maxRows;					
+				}
+				len = x+maxRows > array.length ? array.length : x+maxRows;
+			} else
+			{
+				if(this.position-maxRows < 0)
+				{
+					x = 0;					
+					len = maxRows;
+				} else
+				{
+					x = this.position-maxRows;
+					len = x+maxRows > array.length ? array.length : x+maxRows;
+				}
+//				alert('x is ' + x + ', len is ' + len + ', position is '+ this.position);
+			}
+			this.position = x;
+		}
+		
+		var xrun = x;
+		
+		for (; xrun < len; xrun++)
 		{
 			table_data_content += '<tr class="table_row">';				
 			for (var h = 0, lenH = header_array.length; h < lenH; h++)
 			{
-				var cell_class = (x % 2 == 0) ? rowEvenClass : rowOddClass;
+				var cell_class = (xrun % 2 == 0) ? rowEvenClass : rowOddClass;
 				if (cell_class == '')
 				{
 					cell_class = 'table_cell';
 				}
+				
 				//Get the column property needed to figure out what column from the current array item we need
 				var column_property_name = header_array[h]['property'];
-				var cell_value = (array[x][column_property_name]||'');
-				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value + '</span></td>';
+				var cell_value = (array[xrun][column_property_name]||'');
+				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value.toString().escapeHTML() +'</span></td>';
 				table_data_content += td;
 			}
 			table_data_content += '</tr>';
 		}
-		html = table_open + table_header_content + table_data_content + table_close;		
+		html = table_open + table_header_content + table_data_content + table_close;	
+		
+		if (pagination == 'true')
+		{
+			var pag_html = '';
+			var myid = "'" + id + "'";
+			var forward = "'forward'";
+			var backward = "'backward'";
+			
+			pag_html = '<div style="padding-bottom: 5px;"><a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+backward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;<a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+forward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(len)+' of '+array.length+'</div>';
+			html = pag_html + html;
+		}
+			
 		Appcelerator.Compiler.setHTML(id,html);
 		
 		var on_run_array = [];
@@ -185,7 +244,10 @@ Appcelerator.Module.Datatable =
 		var header_array = parameterMap['header_array'];
 		var array = parameterMap['array'];
 		var column_property_name = header_array[index]['property'];
-	
+
+		this.position = 0;
+		this.initialLoad = true;
+
 		//Are we sorting numbers or strings? Check only the column we're sorting by..
 		var num_sort = true;
 		for (var x = 0, len = array.length; x < len; x++)
@@ -310,8 +372,31 @@ Appcelerator.Module.Datatable =
 				{name: 'width', optional: true, defaultValue: '100%', description: "Width % of entire table."},
 				{name: 'property', optional: true, defaultValue: ''}];
 	},	
-	buildWidget: function(element, parameters)
+	buildWidget: function(element)
 	{
+ 		var parameters = {};
+		parameters['wire'] = element.getAttribute('wire')||'';
+		
+		//Valid values are 'client', 'server', and 'off'
+		parameters['sort'] = element.getAttribute('sort')||'client';
+		
+		//Message to be sent when the sort mode is 'server' and a column header is clicked
+		parameters['sortRequest'] = element.getAttribute('sortRequest')||'';
+		
+		//Really applies styles to the CELLS on the even and odd rows
+		parameters['rowEvenClass'] = element.getAttribute('rowEvenClass')||'';
+		parameters['rowOddClass'] = element.getAttribute('rowOddClass')||'';
+		
+		//Width % of entire table
+		parameters['width'] = element.getAttribute('width')||'100%';
+		
+		//Data property
+		parameters['property'] = element.getAttribute('property')||'';
+
+		//pagination properties
+		parameters['pagination'] = element.getAttribute('pagination')||'false';
+		parameters['maxRows'] = parseInt(element.getAttribute('maxRows')||'0');
+		
 		//Header array		
 		var temp_element = document.createElement('div');
 		temp_element.innerHTML = element.innerHTML.replace(/<HEADER/gi, '<div').replace(/<\/HEADER/gi,'</div');
@@ -350,8 +435,10 @@ Appcelerator.Module.Datatable =
 		parameters['add_spacers_to_header'] = true;
 		
 		return {
-			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
+			'position' : Appcelerator.Compiler.POSITION_REPLACE,
+			'initialization':  Appcelerator.Compiler.parseOnAttribute(element),
+			'cleanup' : null,
 			'parameters': parameters,
 			'functions' : ['execute']
 		};
