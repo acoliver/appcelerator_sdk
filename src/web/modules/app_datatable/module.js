@@ -4,6 +4,7 @@ Appcelerator.Module.Datatable =
 	modulePath:null,
 	position: 0,
 	initialLoad: true,
+	paginationInterval: null,
 	setPath: function(path)
 	{
 		this.modulePath = path;
@@ -41,12 +42,12 @@ Appcelerator.Module.Datatable =
 		return 'app:datatable';
 	},
 	createDataTable: function (id, pagination_direction)
-	{
+	{		
 		//list of on attributes to be parsed and evaluated at the end of create
 		var on_array = [];
 
 		var parameterMap = $(id).parameterMap;
-	
+		
 		var scope = parameterMap['scope'];
 		var wire = parameterMap['wire'];
 		
@@ -220,20 +221,31 @@ Appcelerator.Module.Datatable =
 		}
 		html = table_open + table_header_content + table_data_content + table_close;	
 		
+		var myidback = id + "_pagination_back";
+		var myidforward = id + "_pagination_forward";
+
 		if (pagination == 'true')
 		{
 			var pag_html = '';
 			var myid = "'" + id + "'";
-			var forward = "'forward'";
+			var forward = '"forward"';
 			var backward = "'backward'";
 			
-//			alert ('x is ' + xrun + ', len is ' + length);
+			pag_html = '<div style="padding-bottom: 5px;">'+
+								 '<a id="'+myidback+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;' +
+								 '<a id="'+myidforward+'"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(length)+' of '+array.length+'</div>';
 			
-			pag_html = '<div style="padding-bottom: 5px;"><a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+backward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath+'images/resultset_previous.png"/></a>&nbsp;<a href="#" onclick="Appcelerator.Module.Datatable.createDataTable('+myid+','+forward+')"><img style="border: 0;" src="'+Appcelerator.Module.Datatable.modulePath + 'images/resultset_next.png"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Showing '+(x+1)+'-'+(length)+' of '+array.length+'</div>';
 			html = pag_html + html;
 		}
-			
+		
 		Appcelerator.Compiler.setHTML(id,html);
+
+		$(myidback).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'backward');}.bind(this);
+		$(myidforward).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'forward');}.bind(this);
+		$(myidback).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'backward');}.bind(this);
+		$(myidforward).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'forward');}.bind(this);
+		$(myidback).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
+		$(myidforward).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
 		
 		var on_run_array = [];
 		
@@ -241,8 +253,25 @@ Appcelerator.Module.Datatable =
 		{
 			on_run_array.push(Appcelerator.Compiler.compileExpression($(on_array[i]['id']),on_array[i]['on'],false));
 		}
-		
+
 		eval(on_run_array.join(';'));
+	},
+	compileWidget: function (parameters, element)
+	{		
+	},
+	paginateContinuously: function (id, direction)
+	{
+		Logger.info('bleh ' + id + ', dir ' + direction);
+		var paginator = function()
+		{
+			if (direction == 'forward') Appcelerator.Module.Datatable.createDataTable(id,'forward');
+			else Appcelerator.Module.Datatable.createDataTable(id,'backward');
+		};
+		this.paginationInterval = setInterval(paginator,250);
+	},
+	stopContinuousPagination: function ()
+	{
+		clearInterval(this.paginationInterval);
 	},
 	sortDataTableClient: function (index, id)
 	{
@@ -363,8 +392,9 @@ Appcelerator.Module.Datatable =
 		}
 		parameterMap['array'] = array;
 		parameterMap['scope'] = scope;
-		$(id).parameterMap = parameterMap;
-		
+
+		$(id).parameterMap = parameterMap;	
+
 		Appcelerator.Module.Datatable.createDataTable(id);
 	},
 	getAttributes: function()
@@ -418,10 +448,11 @@ Appcelerator.Module.Datatable =
 		}
 		parameters['header_array'] = header_array;
 		parameters['add_spacers_to_header'] = true;
-		
+
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
+			'compile': true,
 			'parameters': parameters,
 			'functions' : ['execute']
 		};
