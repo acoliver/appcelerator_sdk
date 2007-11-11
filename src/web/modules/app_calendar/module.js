@@ -15,6 +15,10 @@ Appcelerator.Module.Calendar =
 	{
 		return 1.0;
 	},
+	getSpecVersion: function()
+	{
+		return 1.0;
+	},
 	getAuthor: function()
 	{
 		return 'Nolan Wright';
