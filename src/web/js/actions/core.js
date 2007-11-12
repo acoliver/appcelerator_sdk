@@ -210,7 +210,7 @@ var addsetBuilder =
 				default:
 					code+='if(isOperaSetIframe) {' + 'e.location.href' + " = " + Appcelerator.Compiler.generateSetter(value) + '; }';
 					code+='else { e.' + key + " = " + Appcelerator.Compiler.generateSetter(value) + '; }'; 
-		}
+			}
 			code+='} else {';
 			code+="e.setAttribute('"+key+"'," + Appcelerator.Compiler.generateSetter(value) + ")";
 			code+='}';
