@@ -387,6 +387,7 @@ Appcelerator.Module.Datatable =
 		//Data property
 		var propertyName = parameterMap['property'];
 		var array;
+		this.position = 0;
 		if (propertyName)
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
