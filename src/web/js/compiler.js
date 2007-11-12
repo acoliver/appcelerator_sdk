@@ -584,8 +584,6 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
        
 	if (convertHtmlPrefix)
 	{
-		$D('ORIG\n' + html);
-		$D('AFTER\n' + Appcelerator.Compiler.specialMagicParseHtml(html));
 		return (html!=null) ? Appcelerator.Compiler.specialMagicParseHtml(html) : '';
 	}
 	else
