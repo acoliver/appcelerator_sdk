@@ -167,16 +167,19 @@ Appcelerator.Util.Cookie =
 
 (function()
 {
-	Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
-	if (Appcelerator.Util.Cookie.GetCookie('CookieCheck')!='1')
+	if (Appcelerator.Config['cookie_check'])
 	{
-	   // cookies not working
-	   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
-	}
-	else
-	{
-	   // just delete it
-	   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
+		Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
+		if (Appcelerator.Util.Cookie.GetCookie('CookieCheck')!='1')
+		{
+		   // cookies not working
+		   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
+		}
+		else
+		{
+		   // just delete it
+		   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
+		}
 	}
 })();
 

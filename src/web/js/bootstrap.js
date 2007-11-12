@@ -20,12 +20,24 @@ Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.L
 Appcelerator.Browser = {};
 Appcelerator.Util = {};
 Appcelerator.Parameters = $H({});
+Appcelerator.Config = {};
 
 // 
 // basic initialization for the core
 // 
 (function()
 {
+	if (window.AppceleratorConfig)
+	{
+		Appcelerator.Config = window.AppceleratorConfig;
+	}
+	else
+	{
+		Appcelerator.Config['cookie_check'] = false;
+		Appcelerator.Config['browser_check'] = true;
+		Appcelerator.Config['hide_body'] = true;		
+	}
+	
 	var jsFileLocation = null;
 	
 	$A(document.getElementsByTagName("script")).findAll( function(s) 
@@ -219,6 +231,5 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';
 	Appcelerator.Browser.autocheckBrowserSupport = true;
 	Appcelerator.Browser.autoReportStats = true;
-	
 })();
 

@@ -255,7 +255,11 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 {
     var container = document.body;  
     var originalVisibility = container.style.visibility || 'visible';
-    container.style.visibility = 'hidden';
+
+	if (Appcelerator.Config['hide_body'])
+	{
+	    container.style.visibility = 'hidden';
+	}
 
     if (!document.body.id || Appcelerator.Compiler.automatedIDRegex.test(document.body.id))
     {
