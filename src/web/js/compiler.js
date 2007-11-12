@@ -1312,8 +1312,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 					params[p] = additionalParams[p];
 				}
 			}
-			html+='var boundFireServiceBrokerMessage = Appcelerator.Compiler.fireServiceBrokerMessage.bind(this);';
-			html+='boundFireServiceBrokerMessage("'+id+'","'+action+'",'+Object.toJSON(params)+')';
+			html+='Appcelerator.Compiler.fireServiceBrokerMessage("'+id+'","'+action+'",'+Object.toJSON(params)+', this);';
 		}
 		else
 		{
@@ -1359,7 +1358,7 @@ Appcelerator.Compiler.getMessageType = function (value)
 	return Appcelerator.Compiler.convertMessageType(actionParams && actionParams.length > 0 ? actionParams[1] : value);
 };
 
-Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
+Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scopedata)
 {
     setTimeout(function()
     {
@@ -1372,9 +1371,7 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args)
 		var fieldset = element.getAttribute('fieldset');
 		for (var p in data)
 		{
-			var v = data[p];
-			var boundGetEvaluatedValue = Appcelerator.Compiler.getEvaluatedValue.bind(this);
-			data[p] = boundGetEvaluatedValue(v,data);
+			data[p] = Appcelerator.Compiler.getEvaluatedValue(data[p],data,scopedata);
 		}
 		
 		var local = type.startsWith('local:') || type.startsWith('l:');
@@ -1531,7 +1528,7 @@ Appcelerator.Compiler.getKeyValue = function (value)
 	return Appcelerator.Compiler.formatValue(value,false);
 };
 
-Appcelerator.Compiler.getEvaluatedValue = function(v,data)
+Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 {
 	if (v && typeof(v) == 'string')
 	{
@@ -1558,16 +1555,15 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data)
 				return func.call(data);
 			}
 			
-			try 
+			if (scope)
 			{
-				var result = this.eval(v);
+				var result = Object.getNestedProperty(scope,v,null);
 				if (result)
 				{
 					return result;
 				}
-			} 
-			catch(e){}
-
+			}
+			
 			if (data)
 			{
 				return Object.getNestedProperty(data,v,v);

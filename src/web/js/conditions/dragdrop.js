@@ -37,7 +37,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			{
 				onHover: function(e)
 				{
-					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dragged:e});
+					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dragged:e.id});
 				}
 			});
 			return true;
@@ -59,7 +59,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			{
 				onDrop: function(e)
 				{
-					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dropped:e});
+					Appcelerator.Compiler.executeAfter(actionFunc,delay,{id:element.id,dropped:e.id});
 				}
 			});
 			return true;
