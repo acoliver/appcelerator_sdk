@@ -515,20 +515,21 @@ Appcelerator.Compiler.specialMagicParseTagSet = function(html,prefix)
 {
     var beginTag = '<'+prefix+':';
     var endTag = '</'+prefix+':';
-    
+
     var idx = html.indexOf(beginTag);
     if (idx < 0)
     {
         return Appcelerator.Compiler.removeHtmlPrefix(html);
     }
-    
+
     var myhtml = Appcelerator.Compiler.removeHtmlPrefix(html.substring(0,idx));
-    
+
     var startIdx = idx + beginTag.length;
 
     var tagEnd = html.indexOf('>',startIdx);
+
     var tagSpace = html.indexOf(' ',startIdx);
-    if (tagSpace<0)
+    if (tagSpace<0 || tagEnd<tagSpace)
     {
         tagSpace=tagEnd;
     }
@@ -556,6 +557,7 @@ Appcelerator.Compiler.specialMagicParseTagSet = function(html,prefix)
         myhtml+=specialHtml;
         break;
     }
+
     myhtml+=Appcelerator.Compiler.specialMagicParseHtml(html.substring(lastTagIdx+1),prefix);
     return myhtml;
 };
@@ -582,6 +584,8 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
        
 	if (convertHtmlPrefix)
 	{
+		$D('ORIG\n' + html);
+		$D('AFTER\n' + Appcelerator.Compiler.specialMagicParseHtml(html));
 		return (html!=null) ? Appcelerator.Compiler.specialMagicParseHtml(html) : '';
 	}
 	else
