@@ -132,7 +132,8 @@ Appcelerator.Module.Modaldialog =
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE,
 			'functions' : ['execute'],
-			'parameters': parameters
+			'parameters': parameters,
+			'wire':true			
 		};
 	}
 };

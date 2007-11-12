@@ -136,7 +136,8 @@ Appcelerator.Module.Iterator =
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters,
-			'functions' : ['execute']
+			'functions' : ['execute'],
+			'wire':true
 		};
 	}
 };
