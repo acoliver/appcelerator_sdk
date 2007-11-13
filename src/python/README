@@ -12,10 +12,9 @@ come see us at #appcelerator on irc.freenode.net
 ------- Installing ------
 
 If you have checked-out the svn trunk,
-you can install the python sdk by running this command,
-from the /src/python/ directory.
+you can install the python sdk by running
 
-    python setup.py install
+    ant install_python
 
 or, when this is on the python cheeseshop
 
