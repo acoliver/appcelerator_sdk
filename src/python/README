@@ -9,28 +9,80 @@ If you hit any snags,
 come see us at #appcelerator on irc.freenode.net 
 
 
+------- Installing ------
+
+If you have checked-out the svn trunk,
+you can install the python sdk by running this command,
+from the /src/python/ directory.
+
+    python setup.py install
+
+or, when this is on the python cheeseshop
+
+    easy_install Pylons
+    easy_install Appcelerator 
+
+
 
 ------- Creating a new Appcelerator project ------
 
 The easiest way to create a new Appcelerator project is with Pylons.
 
-1) at the command line, type:
+1) type:
+      
+      paste create -t appcelerator my_social_revolutionizr
+      
+   where "my_social_revolutionizr" is the name of your project.
+
+2) open:
+        
+        http//localhost:5000
+
+
+    You have an appcelerator project!
+
+
+
+------- Adding services to your project ------
+
+Appcelerator apps are built of
+    a layer of client-side widgets and components,
+and a layer of server-side services that communicate
+ by sending messages in response to user input.
  
-      "easy_install pylons"
-      
-   this will download and install the pylons package, and may take a few minutes.
+Python functions that are decorated with "@Service" will be exposed
+as message responders. For example, the function:
 
-2) now, type:
+@Service(request="friend.add.request", response="friend.add.response")
+def add_friend(msg, session):
+    you = Folks.get(session['person_id'])
+    friend = Folks.get(msg['friend_id'])
+    
+    if Friendships.allowed(you, friend):
+        fship = Friendships.make(you, friend, now())
+        return {'success':True, 'friendship': fship}
+    else:
+        return {'success':False, 'reason': Friendships.get_reason_blocked(you, friend)}
 
-      "paste create -t pylons my_revolutionary_socializr"
-      
-   where "my_revolutionary_socializr" is the name of your project,
-   final "r" NOT optional.
+Will be called whenever the server receives a "friend.add.request" message.
+The arguments passed to the handler are:
+    1) The payload of the message, a dict
+    2) The user-session of the sender of the event, a Beaker session
+    3) The name of the message triggering this call
 
-3) now you have a pylons project,
-   for more documentation on buildings apps with pylons,
-   see http://www.pylonshq.com
-   to appcelerate your project, continue with the directions below.
+Handlers can omit parameters that they do not need.
+
+The return value of the function is converted in a JSON object,
+and returned to the client-side, in this case,
+as a "friend.add.response" message.
+
+
+------- Building rich-user interfaces ------
+
+To learn about using the Appcelerator widget library,
+see the main documentation and examples.
+
+
 
 
 ------- Adding to an existing Pylons project ------
@@ -54,10 +106,22 @@ use = egg:Appcelerator#service_broker
    if you don't have an "[app:main]" section,
    you probably understand pylons config file well enough to
    figure out the right thing to do here.
-   We're trying to
+   
+   We're trying to route requests from http://yourdomain.com/servicebroker
+   to the appcelerator service broker,
+   and route everything else to your standard pylons app.
 
 3) now add a 'services' directory as a sibling to the 'controllers'
-   directory in your project
+   directory in your project, and add an empty __init__.py file in it.
+
+
+That should be all, if you have an odd configuration problem
+(or solution!) come to #appcelerator on irc.freenode.net
+
+
+for more documentation on buildings apps with pylons,
+see http://www.pylonshq.com
+
 
 
 
@@ -68,7 +132,8 @@ The Appcelerator SDK for Python is implemented as a piece of WSGI middleware.
 This means that it is easy to add to most python web frameworks.
 
 Currently, we provide special support for the pylons framework,
-attempting to automatically load services from the 'services' directory of the project.
+attempting to automatically load services from the 'services' directory of the project,
+and using the Pylons config files and static file serving from public/.
 
 We depend on the Beaker library for user session handling,
 but our service dispatcher is agnostic to the type of session used,
@@ -76,11 +141,3 @@ and other session management libraries (like django's, for example)
 could be used with only minor changes. Just tell us what you use,
 and we'll add support for it.
 
-
-------- Building ------
-
-    python setup.py install
-
-or, when this is on the cheeseshop
-
-    easy_install Appcelerator 

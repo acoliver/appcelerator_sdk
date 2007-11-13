@@ -1,8 +1,17 @@
 from setuptools import setup, find_packages
 
-# we're going to keep the version number in sync with the main appcelerator version,
-# even though it's somewhat silly to release a new port at version 2
-version = '2.0'
+import os
+version = os.environ.get('APP_VERSION', '2.0.1')
+
+'''
+def getPublicFiles():
+    for dir,files,_ in os.walk('./appcelerator/templates'):
+        for file in files:
+            yield os.path.join(dir,file) 
+
+def makeManifest():
+    f = open('MANIFSET.in')
+'''
 
 setup(name='Appcelerator',
       version=version,
@@ -16,15 +25,18 @@ setup(name='Appcelerator',
         'Intended Audience :: Developers',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware'
         'Programming Language :: Python',
+        'Programming Language :: JavaScript',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         
       ],
-      keywords='wsgi web middleware soa ria',
+      keywords='wsgi web soa ria javascript',
       author='Mark Luffel',
       author_email='mluffel@appcelerator.com',
       url='http://appcelerator.org',
       license='GPL',
-      packages=find_packages(exclude=['ez_setup', 'tests']),
+      packages=find_packages(exclude=['ez_setup']),
+      include_package_data=True,
+      zip_safe=False,
       install_requires=[
           'beaker',
           'simplejson',
@@ -33,5 +45,8 @@ setup(name='Appcelerator',
       entry_points="""
       [paste.app_factory]
       service_broker = appcelerator.core:service_broker_factory
+ 
+      [paste.paster_create_template]
+      appcelerator = appcelerator.commands:AppceleratorTemplate
       """
 )

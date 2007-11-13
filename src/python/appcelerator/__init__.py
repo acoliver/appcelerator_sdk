@@ -1,3 +1,2 @@
 
-__all__ = ['core']
-# TODO: templates, paster, etc
+__all__ = ['core','commands']

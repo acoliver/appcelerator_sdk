@@ -3,7 +3,7 @@ __all__ = ['service_broker_factory', 'MessageBroker', 'Service']
 
 import traceback
 import logging
-from beaker.session import SessionMiddleware
+from beaker.middleware import SessionMiddleware
 
 import simplejson as json
 try:
@@ -22,16 +22,22 @@ class ServiceBroker(object):
         if not self.services_loaded:
             self.load_services()
             self.services_loaded = True
-        " wsgi app that handles all messages "
+        " wsgi app that handles all appcelerator messages "
         # TODO: support other session middleware
         session = environ['beaker.session']
         session.save()
         
-        start_response('200 OK', [('Content-type', 'text/xml; charset=utf-8')])
+        start_response('200 OK', [
+            ('Content-Type', 'text/xml; charset=utf-8'),
+            ('Pragma', 'no-cache'),
+            ('Cache-Control', 'no-cache, no-store, private, must-revalidate'),
+            ('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
+        ])
         yield "<?xml version=\"1.0\"?><messages version='1.0' sessionid='%s'>"%session.id
         
         content_len = int(environ.get('CONTENT_LENGTH', '0')) # http://trac.edgewall.org/ticket/5697#comment:1
         input = environ['wsgi.input'].read(content_len)
+        
         if input:
             req = ElementTree.fromstring(input)
             for r in self.respond(self.handle(session, req)):
@@ -60,7 +66,7 @@ class ServiceBroker(object):
             )
 
     def load_services(self):
-        " if we are running with a pylons app, "
+        " if we are running with a pylons app, load files in 'services' directory"
         import os
             
         try:
