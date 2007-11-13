@@ -80,17 +80,17 @@
 				<exclude name="servicebroker.js"/>
 			</fileset>
 		</concat>
-		<antcall target="jsmin"/>
-		<antcall target="nojsmin"/>
+		<antcall target="jscompress"/>
+		<antcall target="nojscompress"/>
 	</target>
 	<target name="nomin">
-		<property name="dont.jsmin" value="anything"/>
+		<property name="dont.jscompress" value="anything"/>
 	</target>
-	<target name="jsmin" unless="dont.jsmin">
-    	<exec executable="ruby" failonerror="true" failifexecutionfails="true">
-    		<arg line="${build.bin.dir}/jsmin.rb"/>
+	<target name="jscompress" unless="dont.jscompress">
+    	<exec executable="java" failonerror="true" failifexecutionfails="true">
+    		<arg line="-jar ${build.bin.dir}/yuicompressor-2.2.5.jar"/>
     		<arg line="${stage.dir}/web/js/appcelerator-debug.js"/>
-    		<arg line="${stage.dir}/web/js/appcelerator-temp.js"/>
+    		<arg line="-o ${stage.dir}/web/js/appcelerator-temp.js"/>
     	</exec>
 		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
 			<fileset file="${build.dir}/license_header.txt"/>
@@ -99,7 +99,7 @@
 		<delete file="${stage.dir}/web/js/appcelerator-temp.js"/>
 		<echo message="minimized"/>
 	</target>
-	<target name="nojsmin" if="dont.jsmin">
+	<target name="nojscompress" if="dont.jscompress">
 		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
 			<fileset file="${build.dir}/license_header.txt"/>
     		<fileset file="${stage.dir}/web/js/appcelerator-debug.js"/>
