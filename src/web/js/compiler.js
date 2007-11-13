@@ -1370,11 +1370,14 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
     {
 		var data = args || {};
 		var element = $(id);
-		if (!element)
+		var fieldset = null;
+		var scope = null;
+		if (element)
 		{
-			return;
+			fieldset = element.getAttribute('fieldset');
+			scope = element.scope;
 		}
-		var fieldset = element.getAttribute('fieldset');
+		
 		for (var p in data)
 		{
 			data[p] = Appcelerator.Compiler.getEvaluatedValue(data[p],data,scopedata);
@@ -1420,7 +1423,7 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 		{
 			data['id'] = id;
 		}
-		var scope = element.scope;
+		
 		if (!scope || scope == '*')
 		{
 			scope = 'appcelerator';

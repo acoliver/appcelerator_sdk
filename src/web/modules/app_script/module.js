@@ -72,7 +72,7 @@ Appcelerator.Module.Script =
 				};
 			}
 		}
-		
+
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE
 		};
