@@ -922,7 +922,7 @@ function $MQ (type,data,scope,version)
 //
 // convenience macro for adding a message queue listener
 //
-function $MQL (type,f,myscope)
+function $MQL (type,f,myscope,element)
 {
 	var listener = 
 	{
@@ -949,6 +949,14 @@ function $MQL (type,f,myscope)
 	};
 	
 	Appcelerator.Util.ServiceBroker.addListener(listener);
+
+	if (element)
+	{
+		Appcelerator.Compiler.addTrash(element,function()
+		{
+			Appcelerator.Util.ServiceBroker.removeListener(listener);
+		});
+	}
 
 	return listener;
 }

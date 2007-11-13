@@ -75,7 +75,7 @@ Appcelerator.Compiler.MessageAction.makeMBListener = function(element,type,actio
 	$MQL(type,function(type,data,datatype,direction,scope)
 	{
 		Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,paramsStr,action,delay,elseaction);
-	},element.scope);
+	},element.scope,element);
 	
 	return true;
 };
