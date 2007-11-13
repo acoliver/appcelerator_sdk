@@ -23,32 +23,39 @@
 
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
-	<h2>Google Analytics</h2>
+	<h2>Calendar</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:googleanalytics[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:googleanalytics[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:googleanalytics[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:calendar[show=example] and add[class=active] or l:calendar[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:calendar[show=code] and add[class=active] or l:calendar[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:calendar[show=usage] and add[class=active] or l:calendar[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
 
 	<!-- EXAMPLE -->
-	<div on="l:googleanalytics[show=example] then show else hide">
-		googleanalytics example placeholder
+	<div on="l:calendar[show=example] then show else hide">
+		<app:calendar title="Select Start Date" inputId="jobfilter_date_start" on="l:calendarexample.start then execute"
+			minDate="10/16/2007">
+		</app:calendar>
+		<input type="text" id="jobfilter_date_start"></input>
+		<a on="click then l:calendarexample.start">select</a>
 	</div>
 
 	<!-- CODE -->
-	<div on="l:googleanalytics[show=code] then show else hide" style="display:none">
+	<div on="l:calendar[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				googleanalytics code placeholder
+				<app:calendar title="Select Start Date" elementId="jobfilter_date_start" 
+					on="l:calendarexample.start then execute">
+				</app:calendar>
+				<input type="text" id="jobfilter_date_start"></input>
+				<a on="click then l:calendarexample.start">select</a>
 			</textarea>	
 		</p>
 	</div>
-
 	<!-- USAGE -->
-	<div on="l:googleanalytics[show=usage] then show else hide" style="display:none">
+	<div on="l:calendar[show=usage] then show else hide" style="display:none">
 		<p>
 			 Required Options:
 				<table cellspacing="5px">
@@ -58,16 +65,27 @@
 					</tr>
 				</table>
 		</p>
-<!--		<p>
+		<p>
 			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term"></td>
+					  <td class="term">on</td>
 					  <td class="def"></td>
+					</tr>
+					<tr>
+					  <td class="term">inputId or elementId</td>
+					  <td class="def">both resolve to the same parameter: the id for the element which the calendar will set the value to</td>
+					</tr>
+					<tr>
+					  <td class="term">minDate</td>
+					  <td class="def">the minimum date that can be selected in the widget of the format mm/dd/yyyy</td>
+					</tr>
+					<tr>
+					  <td class="term">title</td>
+					  <td class="def">title for the widget.  defaults to ''</td>
 					</tr>
 				</table>
 		</p>
--->
 	</div>	
 	
 	<script>

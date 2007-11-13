@@ -335,22 +335,17 @@
 		<copy todir="${stage.dir}/sdk/php" filtering="false" overwrite="true"> 
 			<fileset dir="${build.php.dir}/sdk/dist" includes="**"/>
 		</copy>
+		<!--
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
-		</copy>
-		<copy todir="${stage.dir}/sdk/php/examples" filtering="false"> 
-			<fileset dir="${stage.dir}/examples">
-				<include name="**/*"/>
-				<exclude name="**/setupfiles" />
-				<exclude name="**/*.jar" />
-			</fileset>	
 		</copy>
 		<copy todir="${stage.dir}/sdk/php/test" filtering="false"> 
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php" filtering="false"> 
-			<fileset dir="build" includes="examples/**" excludes="examples/**/lib" />
+		<copy todir="${stage.dir}/sdk/php/examples" filtering="false"> 
+			<fileset dir="${stage.dir}/examples" includes="**/*" excludes="**/setupfiles,blog/**,forums/**,**/*.jar" />
 		</copy>
+	-->
 	</target>
 	
 	<target name="sdk_java_dist" depends="build_sdk" description="* Builds the Java SDK distribution">
@@ -368,7 +363,7 @@
 	<target name="sdk_php_dist" depends="build_sdk" description="* Builds the PHP SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
-			<zipfileset dir="stage/sdk/php" prefix="appcelerator_sdk_php_${VERSION}">
+			<zipfileset dir="stage/sdk/php" prefix="">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
@@ -451,7 +446,7 @@
             <fileset dir="build" includes="**"/>
         </delete>
 -->
-    </target>
+	</target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
@@ -556,7 +551,7 @@
         <exec executable="easy_install" failonerror="false">
             <arg line="stage/python/Appcelerator-${APP_VERSION}-py2.5.egg"/>
         </exec>
-    </target>
+	</target>
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
@@ -616,7 +611,6 @@
 	<target name="gendoc_widget">
 		<input message="what is the title (ex: Tree View)?" addproperty="title"/>
 		<input message="what is the name (ex: treeview)?" addproperty="name"/>
-		<input message="what is the tree parent name (ex: overview,started,framework,forms,charts,visual,nonvisual,services)?" addproperty="parent"/>
 		<copy file="${src.doc.dir}/gendoc-templates/widget.html" tofile="${src.doc.dir}/${name}.html" overwrite="true">
 			<filterchain>
 			    <replacetokens>
@@ -625,38 +619,10 @@
 			    </replacetokens>
 			  </filterchain>
 		</copy>
-		<antcall target="gendoc_treechild"/>
-	</target>
-	<target name="gendoc_treechild">
-		<copy file="${src.doc.dir}/gendoc-templates/treechild.html" tofile="${src.doc.dir}/treechild/${name}.html" overwrite="true">
-			<filterchain>
-			    <replacetokens>
-			      <token key="title" value="${title}"/>
-			      <token key="name" value="${name}"/>
-			      <token key="parent" value="${parent}"/>
-			    </replacetokens>
-			  </filterchain>
-		</copy>
-		<loadfile property="treechild" srcFile="${src.doc.dir}/treechild/${name}.html"/>
-		<echo>you may want to past the following into index.html
-${treechild}
-cat ${src.doc.dir}/treechild/${name}.html</echo>
 	</target>
 	<target name="promptnametitle">
 		<input message="what is the title (ex: .NET)?" addproperty="title"/>
 		<input message="what is the name (ex: dotnet)?" addproperty="name"/>
-		<input message="what is the tree parent name (ex: overview,started,framework,forms,charts,visual,nonvisual,services)?" addproperty="parent"/>
-	</target>
-	<target name="gendoc_lang" depends="promptnametitle,gendoc_service,gendoc_gettingstarted,gendoc_treechild"/>
-	<target name="gendoc_service" depends="promptnametitle">
-		<copy file="${src.doc.dir}/gendoc-templates/service.html" tofile="${src.doc.dir}/${name}service.html" overwrite="true">
-			<filterchain>
-			    <replacetokens>
-			      <token key="title" value="${title}"/>
-			      <token key="name" value="${name}service"/>
-			    </replacetokens>
-			  </filterchain>
-		</copy>
 	</target>
 	<target name="gendoc_gettingstarted" depends="promptnametitle">
 		<copy file="${src.doc.dir}/gendoc-templates/gettingstarted.html" tofile="${src.doc.dir}/${name}gettingstarted.html" overwrite="true">

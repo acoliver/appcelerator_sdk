@@ -23,32 +23,32 @@
 
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
-	<h2>Java</h2>
+	<h2>Canvas</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:javaservice[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:javaservice[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:javaservice[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:canvas[show=example] and add[class=active] or l:canvas[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:canvas[show=code] and add[class=active] or l:canvas[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:canvas[show=usage] and add[class=active] or l:canvas[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
 
 	<!-- EXAMPLE -->
-	<div on="l:javaservice[show=example] then show else hide">
-		javaservice example placeholder
+	<div on="l:canvas[show=example] then show else hide">
+		canvas example placeholder
 	</div>
 
 	<!-- CODE -->
-	<div on="l:javaservice[show=code] then show else hide" style="display:none">
+	<div on="l:canvas[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				javaservice code placeholder
+				canvas code placeholder
 			</textarea>	
 		</p>
 	</div>
 
 	<!-- USAGE -->
-	<div on="l:javaservice[show=usage] then show else hide" style="display:none">
+	<div on="l:canvas[show=usage] then show else hide" style="display:none">
 		<p>
 			 Required Options:
 				<table cellspacing="5px">

@@ -23,32 +23,32 @@
 
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
-	<h2>.Net</h2>
+	<h2>Box</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:dotnetservice[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:dotnetservice[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:dotnetservice[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:box[show=example] and add[class=active] or l:box[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:box[show=code] and add[class=active] or l:box[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:box[show=usage] and add[class=active] or l:box[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
 
 	<!-- EXAMPLE -->
-	<div on="l:dotnetservice[show=example] then show else hide">
-		dotnetservice example placeholder
+	<div on="l:box[show=example] then show else hide">
+		box example placeholder
 	</div>
 
 	<!-- CODE -->
-	<div on="l:dotnetservice[show=code] then show else hide" style="display:none">
+	<div on="l:box[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				dotnetservice code placeholder
+				box code placeholder
 			</textarea>	
 		</p>
 	</div>
 
 	<!-- USAGE -->
-	<div on="l:dotnetservice[show=usage] then show else hide" style="display:none">
+	<div on="l:box[show=usage] then show else hide" style="display:none">
 		<p>
 			 Required Options:
 				<table cellspacing="5px">

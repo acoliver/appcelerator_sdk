@@ -23,32 +23,32 @@
 
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
-	<h2>Ruby</h2>
+	<h2>Pagination</h2>
 
 	<!-- NAVIGATION -->
 	<p>
-	<a class="active" on="click then l:rubyservice[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
-	<a  on="click then l:rubyservice[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
-	<a  on="click then l:rubyservice[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	<a class="active" on="click then l:pagination[show=example] and add[class=active] or l:pagination[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:pagination[show=code] and add[class=active] or l:pagination[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:pagination[show=usage] and add[class=active] or l:pagination[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
 
 	<!-- EXAMPLE -->
-	<div on="l:rubyservice[show=example] then show else hide">
-		rubyservice example placeholder
+	<div on="l:pagination[show=example] then show else hide">
+		pagination example placeholder
 	</div>
 
 	<!-- CODE -->
-	<div on="l:rubyservice[show=code] then show else hide" style="display:none">
+	<div on="l:pagination[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				rubyservice code placeholder
+				pagination code placeholder
 			</textarea>	
 		</p>
 	</div>
 
 	<!-- USAGE -->
-	<div on="l:rubyservice[show=usage] then show else hide" style="display:none">
+	<div on="l:pagination[show=usage] then show else hide" style="display:none">
 		<p>
 			 Required Options:
 				<table cellspacing="5px">
