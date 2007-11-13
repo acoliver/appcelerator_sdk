@@ -55,7 +55,6 @@ Appcelerator.Core.loadJS = function (path, onload)
 	script.onerror = function(e)
 	{
 		$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
-		alert('error loading '+path);
 	};
 	
 	Appcelerator.Core.HeadElement.appendChild(script);	
@@ -259,7 +258,6 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
 		script.onerror = function(e)
 		{
 			$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
-			alert('error loading '+path);
 		};
 		script.onload = checkState;
 		script.onreadystatechange = checkState;
