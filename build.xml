@@ -425,6 +425,33 @@
 			</zipfileset>
 		</zip>
 	</target>
+    <target name="sdk_python_dist" depends="build_core_javascript" description="* Builds the Python SDK distribution">
+        <mkdir dir="${stage.dir}/python"/>
+        <property name="python.public.dir" value="appcelerator/templates/hello_project/+package+/public"/>
+        <copy todir="${src.python.dir}/${python.public.dir}" filtering="false">
+             <fileset dir="${stage.dir}/web" includes="js/appcelerator.js"/>
+             <fileset dir="${src.web.dir}" includes="modules**/**"/>
+             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
+             <fileset dir="${build.python.dir}" includes="appcelerator.xml"/>
+        </copy>
+        <exec dir="${src.python.dir}" executable="python" failonerror="false">
+            <arg line="setup.py bdist_egg"/>
+        </exec>
+        <copy todir="${stage.dir}/python">
+            <fileset dir="${src.python.dir}/dist" includes="*.egg"/>
+        </copy>
+        <!-- The EGG is made, now remove build artifacts -->
+
+<!--
+        <delete failonerror="false">
+            <fileset dir="${src.python.dir}/${python.public.dir}" includes="**"/>
+        </delete>
+        <delete dir="${src.python.dir}">
+            <fileset dir="dist" includes="**"/>
+            <fileset dir="build" includes="**"/>
+        </delete>
+-->
+    </target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
@@ -523,6 +550,13 @@
 			<fileset dir="build/examples/${example}/src/web" includes="**/**"/>
 		</copy>
 	</target>
+    <target name="install_python" depends="sdk_python_dist">
+        <!-- this may fail with permissions errors, in which case you should rerun with sudo -->
+        <echo>This task assumes python2.5</echo>
+        <exec executable="easy_install" failonerror="false">
+            <arg line="stage/python/Appcelerator-${APP_VERSION}-py2.5.egg"/>
+        </exec>
+    </target>
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
