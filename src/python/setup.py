@@ -3,16 +3,6 @@ from setuptools import setup, find_packages
 import os
 version = os.environ.get('APP_VERSION', '2.0.1')
 
-'''
-def getPublicFiles():
-    for dir,files,_ in os.walk('./appcelerator/templates'):
-        for file in files:
-            yield os.path.join(dir,file) 
-
-def makeManifest():
-    f = open('MANIFSET.in')
-'''
-
 setup(name='Appcelerator',
       version=version,
       description="Python version of the Appcelerator web application framework for building fast, dynamic, AJAX based web 2.0 applications.",

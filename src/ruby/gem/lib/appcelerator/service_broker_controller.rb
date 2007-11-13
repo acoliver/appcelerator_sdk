@@ -9,7 +9,7 @@ module RequestMixin
   end
 end
 
-module MessageBroker
+module ServiceBroker
   
     @logger = nil
 

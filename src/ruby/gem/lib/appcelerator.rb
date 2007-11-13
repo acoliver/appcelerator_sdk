@@ -50,13 +50,13 @@ unless defined?(APP_VERSION)
     Appcelerator::Service.load_services
     
     #
-    # register a message broker listener for admin appcelerator models
+    # register a service broker listener for admin appcelerator models
     #
     sam_proc = Proc.new do |req,type,obj|
       resp = {'success'=>true, 'models'=> APP_SERVICES}
   	  Appcelerator::Dispatcher.instance.outgoing(req,'app.admin.models.response',resp)
     end
-    Appcelerator::MessageBroker.register_listener('app.admin.models.request',sam_proc)
+    Appcelerator::ServiceBroker.register_listener('app.admin.models.request',sam_proc)
 
   	puts "=> Appcelerator on Rails #{APP_VERSION}"
 end

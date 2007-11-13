@@ -1,11 +1,11 @@
 #
-# implementation of the message broker which only dispatches
+# implementation of the service broker which only dispatches
 # messages to internally registered listeners
 #
 #
 require 'set'
 module Appcelerator
-	class InmemoryMessageBroker
+	class InmemoryServiceBroker
 		include Singleton
 
 		def initialize 

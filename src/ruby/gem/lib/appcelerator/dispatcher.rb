@@ -37,7 +37,7 @@ module Appcelerator
 				  text = message.text
 				  msg = JSON.parse(text)
 				  req = {'requestid'=>requestid, 'session'=>session, 'orig_request'=>request}
-				  MessageBroker.send(req,type,msg)
+				  ServiceBroker.send(req,type,msg)
 			   end
 			end      
 		end

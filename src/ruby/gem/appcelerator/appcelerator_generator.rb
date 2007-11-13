@@ -50,8 +50,8 @@ class AppceleratorGenerator < Rails::Generator::Base
       m.template "templates/test_service.rb",                         "app/services/test_service.rb"
       m.template "#{@railspath}/helpers/application_helper.rb",       "app/helpers/application_helper.rb"
       m.template "#{@railspath}/helpers/test_helper.rb",              "test/test_helper.rb"
-      m.template "templates/message_broker.rb",					  	          "app/controllers/message_broker_controller.rb"
-      m.template "templates/message_broker_helper.rb",	              "app/helpers/message_broker_helper.rb"
+      m.template "templates/service_broker.rb",					  	          "app/controllers/service_broker_controller.rb"
+      m.template "templates/service_broker_helper.rb",	              "app/helpers/service_broker_helper.rb"
 
       # database.yml and .htaccess
       m.template "#{@railspath}/configs/databases/#{options[:db]}.yml", "config/database.yml", :assigns => {

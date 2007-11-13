@@ -1,5 +1,22 @@
+"""
 
-__all__ = ['service_broker_factory', 'MessageBroker', 'Service']
+Annotate your services with @Service,
+  these functions receive
+    1) message payload
+    2) user session
+    3) message name/type
+
+Add a service broker to your service,
+built with the service_broker_factory.
+
+
+If you want to see what services are registered,
+look at ServiceBroker.listeners
+
+
+"""
+__all__ = ['service_broker_factory', 'ServiceBroker', 'Service']
+
 
 import traceback
 import logging
@@ -13,7 +30,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 
-class ServiceBroker(object):
+class ServiceDispatcher(object):
     
     def __init__(self):
         self.services_loaded = False
@@ -53,7 +70,7 @@ class ServiceBroker(object):
             payload = json.loads(msg.text)
             
             # TODO: match args with ruby/java
-            responses = MessageBroker.send(msgtype, payload, session)
+            responses = ServiceBroker.send(msgtype, payload, session)
             for responsetype,result in responses:
                 yield responsetype,result,reqid
         
@@ -93,10 +110,10 @@ class ServiceBroker(object):
 def service_broker_factory(global_config, **local_conf):
     " factory for building a new service broker that implements the Appcelerator protocol"
     secret = local_conf.get('beaker.session_secret', 'vzabgjrnevatnalcnagf')
-    return SessionMiddleware(ServiceBroker(), key='app_session_id', secret=secret)
+    return SessionMiddleware(ServiceDispatcher(), key='app_session_id', secret=secret)
 
 
-class InMemoryMessageBroker(object):
+class InMemoryServiceBroker(object):
     " singleton that dispatches incoming messages to @Service annotated functions"
     def __init__(self):
         self.listeners = {}
@@ -137,7 +154,7 @@ class InMemoryMessageBroker(object):
             except:
                 traceback.print_exc()
 
-MessageBroker = InMemoryMessageBroker()
+ServiceBroker = InMemoryServiceBroker()
 
 
 
@@ -163,7 +180,7 @@ def Service(request, response):
         
         listener.responsetype = response
         listener.func_name = func.func_name
-        MessageBroker.registerListener(request, listener)
+        ServiceBroker.registerListener(request, listener)
         return listener
     return _
 

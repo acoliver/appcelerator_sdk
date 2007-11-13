@@ -13,6 +13,6 @@ ActionController::Routing::Routes.draw do |map|
   # -- just remember to delete public/index.html.
   # map.connect '', :controller => "welcome"
 
-  # Install the appcelerator messagebroker
-  map.connect 'servicebroker', :controller => 'message_broker', :action => 'dispatch'
+  # Install the appcelerator servicebroker
+  map.connect 'servicebroker', :controller => 'service_broker', :action => 'dispatch'
 end

@@ -146,7 +146,7 @@ module Appcelerator
     def self.load_services
       APP_SERVICES.clear
       # TODO: remove this and solve the multiple singleton issue
-      Appcelerator::MessageBroker.clear_listeners
+      Appcelerator::ServiceBroker.clear_listeners
       Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
         
         name = Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
@@ -171,7 +171,7 @@ module Appcelerator
         end
       end
       puts 'done loading services'
-      puts Appcelerator::MessageBroker.diagnostics
+      puts Appcelerator::ServiceBroker.diagnostics
     end
 
     def initialize
@@ -195,7 +195,7 @@ module Appcelerator
     def clear_listeners
       num_cleared = @listeners.length
       @listeners.each do |listener|
-        MessageBroker.unregister_listener(listener.msgtype, listener)
+        ServiceBroker.unregister_listener(listener.msgtype, listener)
       end
       @listeners.clear
       num_cleared
@@ -224,12 +224,12 @@ module Appcelerator
 			  Dispatcher.instance.outgoing(req,responsetype,resp||{})
 		   end
       end
-		  MessageBroker.register_listener(msgtype,proc)
+		  ServiceBroker.register_listener(msgtype,proc)
       proc
 	  end
 	
 	  def send_message(req,type,message)
-		  MessageBroker.send(req,type,message)
+		  ServiceBroker.send(req,type,message)
 	  end
 	  
 	  def secure_password_matches?(request,message,password_field,password)
