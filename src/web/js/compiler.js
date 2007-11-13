@@ -849,17 +849,21 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		var widgetParameters = {};
 		for (var i = 0; i < moduleAttributes.length; i++)
 		{
+			var error = false;
 			(function(){
 				var modAttr = moduleAttributes[i];
 				var value = element.getAttribute(modAttr.name) || modAttr.defaultValue;
 				if (!value && !modAttr.optional)
 				{
-				    //TODO: we need to display a nicely formatted box here in place of the 
-				    //widget with the error message
-					$E('required attribute ' + modAttr.name + ' not defined for widget ' + name);
+					Appcelerator.Compiler.handleElementException(element, null, 'required attribute "' + modAttr.name + '" not defined for ' + id);
+					error = true;
 				}
 				widgetParameters[modAttr.name] = value;
 			})();
+			if (error)
+			{
+				return;
+			}
 		}
 		widgetParameters['id'] = id;
 
@@ -870,8 +874,17 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		
 		//
 		// hande off widget for building
-		//		
-		var instructions = module.buildWidget(element,widgetParameters,state);
+		//
+		var instructions = null;
+		try
+		{
+			instructions = module.buildWidget(element,widgetParameters,state);
+		}
+		catch (exxx)
+		{
+			Appcelerator.Compiler.handleElementException(element, exxx, 'building widget ' + element.id);
+			return;
+		}
 		
 		//
 		// allow the widget to change its id
@@ -1016,7 +1029,15 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 	            //
 	            if (instructions.compile)
 	            {
-	                module.compileWidget(widgetParameters,outer);
+					try
+					{
+						module.compileWidget(widgetParameters,outer);
+					}
+					catch (exxx)
+					{
+						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id);
+						return;
+					}
 	            }
 	            
 	            if (added && instructions.wire && outer)
@@ -1972,15 +1993,21 @@ Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 //
 Appcelerator.Compiler.handleElementException = function(element,e,context)
 {
-	if (!element) return;
+	var makeDiv = false;
+	
+	if (!element)
+	{
+		var id = Appcelerator.Compiler.generateId();
+		new Insertion.Bottom(document.body,'<div  id="'+id+'"></div>');
+		makeDiv = true;
+		element = $(id);
+	}
 	
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 
 	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ('+tag+') with ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <code>'+(context||'unknown')+'</code></div></div>';
 	$E(msg);
 
-	var makeDiv = false;
-	
 	switch (tag)
 	{
 		case 'input':
@@ -2015,12 +2042,19 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 			break;
 		}
 	}
+	
+	if (tag.indexOf(':')>0)
+	{
+		makeDiv=true;
+	}
 
 	if (makeDiv)
 	{
-		element.style.border='2px dotted #900';
+		Appcelerator.Compiler.removeElementId(id);
+		Element.remove(element);
+		
 		var id = Appcelerator.Compiler.generateId();
-		new Insertion.Bottom(document.body,'<div wire="false"><img src="'+Appcelerator.ImagePath+'warning.png"/> <span id="'+id+'"></span></div>');
+		new Insertion.Bottom(document.body,'<div style="2px dotted #900"><img src="'+Appcelerator.ImagePath+'warning.png"/> <span id="'+id+'"></span></div>');
 		element = $(id);
 		var p = element.parentNode;
 		p.style.display='block';
@@ -2032,8 +2066,8 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 		p.style.zIndex='9999';
 		p.style.opacity='1.0';
 		p.style.backgroundColor='#fcc';
-
 	}
+	
 	Appcelerator.Compiler.setHTML(element,msg);
 };
 
