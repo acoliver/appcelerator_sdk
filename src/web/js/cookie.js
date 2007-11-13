@@ -61,7 +61,6 @@ Appcelerator.Util.Cookie =
       var arg = escape(name) + "=";
       var alen = arg.length;
       var clen = document.cookie.length;
-      $D(this,"GetCookie: value=",document.cookie);
       var i = 0;
       while (i < clen) {
         var j = i + alen; 
@@ -147,8 +146,7 @@ Appcelerator.Util.Cookie =
       	var self = this;
       	args.each(function(name)
       	{
-	      var cval = self.GetCookie (name);
-	      $D(self,"DeleteCookie",name);		
+	      $D(self,"DeleteCookie",name);
 	      // delete both local path and the root path (seems to be the only sure way)
 		  document.cookie = name+"="+expires+"; path=/";
 		  document.cookie = name+"="+expires+";";
