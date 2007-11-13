@@ -106,7 +106,7 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 		}
 		Appcelerator.Core.widgets_css[path]=moduleName;
 
-		//Refresh css (link tags only) in IE 6/7 because the give priority to css in load order, not document order
+		//Refresh css in IE 6/7 because the give priority to css in load order, not document order
 		if (Appcelerator.Browser.isIE)
 		{
 			var link = document.styleSheets[document.styleSheets.length-1].owningElement;
@@ -159,8 +159,16 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 							
 				for (var i = 0; i < arr.length; i++)
 				{
-					var elem = document.createElement(arr[i][1]);
-					Appcelerator.Core.HeadElement.appendChild(elem);
+					if(arr[i][0].nodeName == 'STYLE')
+					{
+						var style = document.createStyleSheet();
+						style.cssText = arr[i][0].styleSheet.cssText;
+					}
+					else 
+					{
+						var elem = document.createElement(arr[i][1]);
+						Appcelerator.Core.HeadElement.appendChild(elem);
+					}
 				}
 			} 
 			catch (e) 
