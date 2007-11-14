@@ -91,34 +91,26 @@
 			<li><b>data.message</b>: "I received from you: Hello,world"
 			<li><b>data.success</b>: "true"
 		</ul>
-
 		<h3>Next Steps</h3>
 		You are now ready to proceed to creating your <a on="click then l:pythongettingstarted[show=client]">Web Client</a>
 	</div>
 	<div on="l:pythongettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
-		<h3>PHP Service</h3>
+		<h3>Python Service</h3>
 		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
 		<ul>
-			<li>the file ends with <tt>_service.php</tt>
-			<li>the class ends with <tt>Service</tt>
-			<li>you put the proper method signature <tt>method_name(&amp;$request,&amp;$response)</tt>
-			<li>you put the proper comments directly above the method <tt>@Service(request=xxx,response=xxx,version=xx) </tt>
+			<li>the file ends with <tt>_service.py</tt>
+			<li>you put the proper method signature <tt>method_name(message)</tt>
+			<li>you put the proper annotations directly above the method <tt>@Service(request=xxx,response=xxx) </tt>
 		</ul>
 
-		<h3>src/php/services/contact_manager_service.php</h3>
-		You could create a new class ContactManagerService with the following source
+		<h3>hello_service.py</h3>
+		As is done with the hello_service in $PROJECT/services/hello_service.py with the following source
 		<textarea name="code" class="xml:nocontrols">
-@contact_manager_service.php@
+			@Service(request='app.test.message.request', response='app.test.message.response')
+			def hello(msg):
+			    message = msg.get('message', 'World')
+			    return {'message': 'I recieved from you: %s'%message}
 		</textarea>
-		
-		<h3>Next Steps</h3>
-		Copy over your php files
-		<pre class="command">cp -R src/php/* $APACHE_USERHOME</pre>
-
-		<h3>Troubleshooting</h3>
-		On apache, you can view the logs to see what exceptions may occur based upon your ErrorLog config (/etc/httpd/httpd.conf)
-		<pre class="command">ErrorLog "/private/var/log/httpd/error_log"</pre>
-		You may want to restart apache (rarely needed)
 	</div>
 	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
@@ -144,9 +136,7 @@
 			</textarea>
 
 			<h3>Next Steps</h3>
-			Copy over your web files
-			<pre class="command">cp -R src/web/* $APACHE_USERHOME</pre>
-			You are now ready to proceed to creating your <a on="click then l:pythongettingstarted[show=service]">PHP Service</a>
+			You are now ready to proceed to creating your <a on="click then l:pythongettingstarted[show=service]">Python Service</a>
 		</p>
 	</div>
 	<script>

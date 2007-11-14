@@ -2,7 +2,7 @@
 from appcelerator.core import Service
 
 
-@Service(request='hello.request', response='hello.response')
+@Service(request='app.test.message.request', response='app.test.message.response')
 def hello(msg):
-    name = msg.get('name', 'World')
-    return {'greeting': 'Hello %s!'%name}
+    message = msg.get('message', 'World')
+    return {'message': 'I recieved from you: %s'%message}
