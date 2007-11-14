@@ -40,7 +40,15 @@
 			<li><a href="http://java.sun.com/" target="_blank">JDK</a> 1.5
 		</ul>
 		</p>
-	
+		<h3>Reference</h3>
+		<p>
+		In the documentation below, the following symbols will be used in leau of concrete examples
+		<ul>
+			<li><tt>$TOMCAT_HOME</tt>: ex: /Applications/apache-tomcat-6.0.14
+			<li><tt>$HOME</tt>: ex: /Users/azuercher
+		</ul>
+		</p>
+		
 		<h3>Get the Distribution</h3>
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
@@ -64,7 +72,7 @@ myapp
 	
 		<h3>Start the Web Container</h3>
 		set your deploy.dir in your ~/.ant.properties (this will be used later in deployment)
-		<pre class="command">deploy.dir=/Applications/apache-tomcat-6.0.14/webapps</pre>
+		<pre class="command">deploy.dir=$TOMCAT_HOME/webapps</pre>
 		first lets begin by starting your web container
 		<pre class="command">cd /Applications/apache-tomcat-6.0.14/bin
 ./catalina.sh run</pre>
@@ -100,7 +108,7 @@ ant update</pre>
 		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: /Users/azuercher/workspace/myapp)
 		<pre class="command">
 [input] Where does the project exist?
-/Users/azuercher/workspace/myapp
+$HOME/workspace/myapp
 [echo] updating application az
 [input] would you like to overwrite project specific src/web and build scripts including build.xml, 
 build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?(y,n)

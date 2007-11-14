@@ -41,6 +41,15 @@
 		</ul>
 		</p>
 
+		<h3>Reference</h3>
+		<p>
+		In the documentation below, the following symbols will be used in leau of concrete examples
+		<ul>
+			<li><tt>$APACHE_USERHOME</tt>: ex: /Users/azuercher/Sites
+			<li><tt>$USER</tt>: ex: azuercher
+		</ul>
+		</p>
+
 		<h3>Get the distribution</h3>
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
@@ -55,12 +64,12 @@
 		<h3>Deploy</h3>
 		<p>
 		If you are running apache with the php5 support then you can simply copy to your sites directory
-			<pre class="command">cp -R src/web/* ~/Sites
-cp -R src/php/* ~/Sites</pre>
-		Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html" target="_blank">http://localhost/~myname/index.html</a>
+			<pre class="command">cp -R src/web/* $APACHE_USERHOME
+cp -R src/php/* $APACHE_USERHOME</pre>
+		Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html" target="_blank">http://localhost/~$USER/index.html</a>
 
 		<h3>Testing</h3>
-		You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html" target="_blank">http://localhost/~myname/servicetester.html</a> and put the following in
+		You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html" target="_blank">http://localhost/~$USER/servicetester.html</a> and put the following in
 		<ul>
 			<li><b>message type</b>: remote:app.test.message.request.response
 		</ul>
@@ -92,7 +101,7 @@ cp -R src/php/* ~/Sites</pre>
 		
 		<h3>Next Steps</h3>
 		Copy over your php files
-		<pre class="command">cp -R src/php/* ~/Sites</pre>
+		<pre class="command">cp -R src/php/* $APACHE_USERHOME</pre>
 
 		<h3>Troubleshooting</h3>
 		On apache, you can view the logs to see what exceptions may occur based upon your ErrorLog config (/etc/httpd/httpd.conf)
@@ -124,7 +133,7 @@ cp -R src/php/* ~/Sites</pre>
 
 			<h3>Next Steps</h3>
 			Copy over your web files
-			<pre class="command">cp -R src/web/* ~/Sites</pre>
+			<pre class="command">cp -R src/web/* $APACHE_USERHOME</pre>
 			You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=service]">PHP Service</a>
 		</p>
 	</div>
