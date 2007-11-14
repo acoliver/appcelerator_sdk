@@ -75,8 +75,15 @@
 	<!-- EXAMPLE -->
 	<div on="l:tabpanel[show=example] then show else hide">
 		<p>
-			The Tab Panel widget allows you to easily create tab-based navigational controls.  Here's an
-			example of a basic tab panel with no custom styling
+			The Tab Panel widget allows you to easily create tab-based navigational controls.  Internally the tab panel implements a state machine where:
+			<ul>
+				<li>tabpanel id: the statemachine
+				<li>tab name: individual states
+			</ul>
+ 			Please see the state machine for more information.  
+		</p>
+		<p>
+			Here's an example of a basic tab panel with no custom styling
 		</p>
 
 		<app:tabpanel id="contentmenu" initial="tab1">
