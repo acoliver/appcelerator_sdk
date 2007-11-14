@@ -34,19 +34,41 @@ input[type=text]
 			Basic Pagination: click the start link to get the initial fetch.  should display 4 items at a time starting with 1 through 4.
 		</td>
 		<td class="result" >
-			<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
-				resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
-				prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
-			</app:pagination>
 			<app:iterator on="l:paginationexample.response then execute" property="rows">
 				<html:div style="margin-bottom:15px">
 					#{idx}:#{name}
 				</html:div>
 			</app:iterator>
-			<a on="click then l:paginationexample.request[dir=previous,end=4,total=20,start=1]">start</a>
+			<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
+				resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
+				prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
+			</app:pagination>
+			<app:script>
+				var start = 1;
+				var end = 4;
+				var total = 20;
+				var rows = new Array();
+				for (var i=start;i&lt;=end;i++)
+				{
+					var name = 'app '+i;
+					rows.push ({'name':name,'idx':i});
+				}
+				var result = {'end':end,'start':start,'total':total,'rows':rows}
+				$MQ('l:paginationexample.response',result);
+			</app:script>
 			<app:script on="l:paginationexample.request then execute">
-				var start = this.data.start;
-				var end = this.data.end;
+				var start = 0;
+				var end = 0;
+				if (this.data.dir == 'next')
+				{
+					start = this.data.end + 1;
+					end = this.data.end + 4;
+				}
+				else
+				{
+					start = this.data.start - 4;
+					end = this.data.end - 4;
+				}
 				var dir = this.data.dir;
 				var total = this.data.total;
 				var rows = new Array();

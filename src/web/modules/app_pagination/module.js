@@ -139,7 +139,7 @@ Appcelerator.Module.Pagination =
 		var id = parameters['id'];
 				
 		// build html
-		var html = '<span style="display:none" on="'+request+' then hide or '+response+'['+totalProperty+'!=0] then show">';
+		var html = '<span style="display:none" on="'+response+'['+totalProperty+'!=0] then show else hide">';
 		html += '<span id="app_pagination_showing_'+id + '"></span>';
 		if (prevLangId)
 		{
