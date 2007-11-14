@@ -49,10 +49,13 @@
 			<li>appcelerator_sdk_java_@VERSION@.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
 		</ul>
 		<h3>Create a Project</h3>
-		unzip the distribution and create your project (ex: myapp)
+		unzip the distribution and get the initial jars (this is a one time thing)
 		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
 cd appcelerator_sdk_java_@VERSION@
-ant create
+ant copy_script_jars</pre>
+		
+		now create your project (ex: myapp)
+		<pre class="command">ant create
 [input] What would you like to name the project?
 myapp
 [input] Where would you like to create?
