@@ -423,33 +423,6 @@
 			</zipfileset>
 		</zip>
 	</target>
-    <target name="sdk_python_dist" depends="build_core_javascript" description="* Builds the Python SDK distribution">
-        <mkdir dir="${stage.dir}/python"/>
-        <property name="python.public.dir" value="appcelerator/templates/hello_project/+package+/public"/>
-        <copy todir="${src.python.dir}/${python.public.dir}" filtering="false">
-             <fileset dir="${stage.dir}/web" includes="js/appcelerator.js"/>
-             <fileset dir="${src.web.dir}" includes="modules**/**"/>
-             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
-             <fileset dir="${build.python.dir}" includes="appcelerator.xml"/>
-        </copy>
-        <exec dir="${src.python.dir}" executable="python" failonerror="false">
-            <arg line="setup.py bdist_egg"/>
-        </exec>
-        <copy todir="${stage.dir}/python">
-            <fileset dir="${src.python.dir}/dist" includes="*.egg"/>
-        </copy>
-        <!-- The EGG is made, now remove build artifacts -->
-
-<!--
-        <delete failonerror="false">
-            <fileset dir="${src.python.dir}/${python.public.dir}" includes="**"/>
-        </delete>
-        <delete dir="${src.python.dir}">
-            <fileset dir="dist" includes="**"/>
-            <fileset dir="build" includes="**"/>
-        </delete>
--->
-	</target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
@@ -548,12 +521,59 @@
 			<fileset dir="build/examples/${example}/src/web" includes="**/**"/>
 		</copy>
 	</target>
-    <target name="install_python" depends="sdk_python_dist">
-        <!-- this may fail with permissions errors, in which case you should rerun with sudo -->
-        <echo>This task assumes python2.5</echo>
-        <exec executable="easy_install" failonerror="false">
-            <arg line="stage/python/Appcelerator-${APP_VERSION}-py2.5.egg"/>
+    <target name="sdk_python_dist" depends="build_core_javascript" description="* Builds the Python SDK distribution">
+        <mkdir dir="${stage.dir}/python"/>
+        <property name="python.public.dir" value="appcelerator/templates/hello_project/+package+/public"/>
+        <copy todir="${src.python.dir}/${python.public.dir}" filtering="false">
+             <fileset dir="${stage.dir}/web" includes="js/appcelerator.js"/>
+             <fileset dir="${src.web.dir}" includes="modules**/**"/>
+             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
+             <fileset dir="${build.python.dir}" includes="appcelerator.xml"/>
+        </copy>
+        <exec dir="${src.python.dir}" executable="python" failonerror="false">
+            <arg line="setup.py bdist_egg"/>
         </exec>
+        <copy todir="${stage.dir}">
+            <fileset dir="${src.python.dir}/dist" includes="*.egg"/>
+        </copy>
+        <!-- The EGG is made, now remove build artifacts -->
+<!--
+        <delete failonerror="false">
+            <fileset dir="${src.python.dir}/${python.public.dir}" includes="**"/>
+        </delete>
+        <delete dir="${src.python.dir}">
+            <fileset dir="dist" includes="**"/>
+            <fileset dir="build" includes="**"/>
+        </delete>
+-->
+	</target>
+	<target name="remove_python_egg" depends="copy_script_jars">
+		<delete failonerror="false" dir="/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/Appcelerator-${APP_VERSION}-py2.5.egg"/>
+		<script language="ruby">
+			config = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install.pth"
+			confignew = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install_temp.pth", "w"
+			config.each_line do |line|
+				if line =~ /.\/Appcelerator-2.0.1-py2.5.egg.*/
+					puts "ingoring #{line}".chomp
+				else
+					confignew.puts "#{line}".chomp
+				end
+			end
+			confignew.close
+			File.delete "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install.pth"
+			File.rename "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install_temp.pth", "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install.pth"
+		</script>
+	</target>
+    <target name="install_python" depends="sdk_python_dist">
+        <echo>This task assumes python2.5</echo>
+		<antcall target="remove_python_egg"/>
+        <exec executable="sudo" failonerror="false">
+            <arg line="easy_install stage/Appcelerator-${APP_VERSION}-py2.5.egg"/>
+        </exec>
+		<mkdir dir="${stage.dir}/sdkprojects"/>
+		<exec dir="${stage.dir}/sdkprojects" executable="paster" failonerror="false">
+			<arg line="create -t appcelerator mypythonapp"/>
+		</exec>
 	</target>
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
@@ -809,5 +829,17 @@
         </scp>
         <sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
             command="echo ${scp.pwd} | sudo -S mv /tmp/${file} ${scp.dir}"/>
+	</target>
+	<target name="copy_script_jars" description="** copies the required script jars to ${ant.home}/lib">
+		<copy todir="${ant.home}/lib">
+			<fileset dir="build/java/antlib" includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar"/>
+			<fileset dir="build/java/lib" includes="commons-logging-1.0.4.jar"/>
+		</copy>
+	</target>
+	<target name="remove_script_jars">
+		<delete>
+			<fileset dir="${ant.home}/lib" 
+				includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar,jline.jar,commons-logging-1.0.4.jar"/>
+		</delete>
 	</target>
 </project>

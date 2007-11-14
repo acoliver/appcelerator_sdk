@@ -23,21 +23,21 @@
 
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
-	<h2>PHP</h2>
+	<h2>Python</h2>
 	<p>
-	<a class="active" on="click then l:phpgettingstarted[show=install] and add[class=active] or l:phpgettingstarted[show!=install] then remove[class=active]">Installation</a> |
-	<a  on="click then l:phpgettingstarted[show=client] and add[class=active] or l:phpgettingstarted[show!=client] then remove[class=active]">Web Client</a> |
-	<a  on="click then l:phpgettingstarted[show=service] and add[class=active] or l:phpgettingstarted[show!=service] then remove[class=active]">PHP Service</a> 
+	<a class="active" on="click then l:pythongettingstarted[show=install] and add[class=active] or l:pythongettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:pythongettingstarted[show=client] and add[class=active] or l:pythongettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:pythongettingstarted[show=service] and add[class=active] or l:pythongettingstarted[show!=service] then remove[class=active]">Python Service</a> 
 	</p>
 
-	<div on="l:phpgettingstarted[show=install] then effect[Appear] else effect[Fade]">
+	<div on="l:pythongettingstarted[show=install] then effect[Appear] else effect[Fade]">
 
 		<h3>Pre-requisettes</h3>
 		<p>
 		It is assumed that you already have the following installed:
 		<ul>
-			<li><a href="http://httpd.apache.org/" target="_blank">apache</a> 1.3 or higher
-			<li>php5 support for apache (ex: <a href="http://www.entropy.ch/software/macosx/php/" target="_blank">http://www.entropy.ch/software/macosx/php/</a>)
+			<li>python 2.5 <a href="http://www.python.org" target="_blank">http://www.python.org/</a>
+			<li>setuptools <a href="http://peak.telecommunity.com/DevCenter/setuptools" target="_blank">http://peak.telecommunity.com/DevCenter/setuptools</a>
 		</ul>
 		</p>
 
@@ -45,8 +45,7 @@
 		<p>
 		In the documentation below, the following symbols will be used in leau of concrete examples
 		<ul>
-			<li><tt>$APACHE_USERHOME</tt>: ex: /Users/azuercher/Sites
-			<li><tt>$USER</tt>: ex: azuercher
+			<li><tt>$PROJECT</tt>: the name of the project that we will create ex: myfirstapplciation
 		</ul>
 		</p>
 
@@ -54,23 +53,35 @@
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
 		<ul>
-			<li>Appcelerator-${APP_VERSION}-py2.5.egg - this is the distribution for creating your python services
+			<li>Appcelerator-@VERSION@-py2.5.egg - this is the distribution for creating your python services
 		</ul>
 		
 		<h3>Easy install</h3>
 		<p>
-			<pre class="command">easy_install Appcelerator-${APP_VERSION}-py2.5.egg</pre>
+			Lets install Appcelerator
+			<pre class="command">easy_install Appcelerator-@VERSION@-py2.5.egg</pre>
+			
+			Now lets install Pylons (will be used later for creating the project)
+			<pre class="command">easy_install Pylons</pre>
+			
+			And you will need sqlalchemy (beaker requires it)
+			<pre class="command">easy_install sqlalchemy</pre>
 		</p>
 	
-		<h3>Deploy</h3>
+		<h3>Create your project</h3>
 		<p>
-		If you are running apache with the php5 support then you can simply copy to your sites directory
-			<pre class="command">cp -R src/web/* $APACHE_USERHOME
-cp -R src/php/* $APACHE_USERHOME</pre>
-		Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html" target="_blank">http://localhost/~$USER/index.html</a>
+			<pre class="command">paster create -t appcelerator $PROJECT</pre>
+			this will generate your project for you in a subdirecty named <tt>$PROJECT</tt>
+		</p>
+		
+		<h3>start the server</h3>
+		<p>
+			<pre class="command">paster serve --reload development.ini</pre>
+			You should now be able to open <a href="http//localhost:5000" target="_blank">http//localhost:5000</a>
+		</p>
 
 		<h3>Testing</h3>
-		You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html" target="_blank">http://localhost/~$USER/servicetester.html</a> and put the following in
+		You should now be able to hit the test service.  Goto <a href="http://localhost:5000/servicetester.html" target="_blank">http://localhost:5000/servicetester.html</a> and put the following in
 		<ul>
 			<li><b>message type</b>: remote:app.test.message.request.response
 		</ul>
@@ -82,9 +93,9 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 		</ul>
 
 		<h3>Next Steps</h3>
-		You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=client]">Web Client</a>
+		You are now ready to proceed to creating your <a on="click then l:pythongettingstarted[show=client]">Web Client</a>
 	</div>
-	<div on="l:phpgettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
+	<div on="l:pythongettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<h3>PHP Service</h3>
 		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
 		<ul>
@@ -109,7 +120,7 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 		<pre class="command">ErrorLog "/private/var/log/httpd/error_log"</pre>
 		You may want to restart apache (rarely needed)
 	</div>
-	<div on="l:phpgettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
+	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
 			Once you have created the java project, your web source will exist in:
@@ -135,7 +146,7 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 			<h3>Next Steps</h3>
 			Copy over your web files
 			<pre class="command">cp -R src/web/* $APACHE_USERHOME</pre>
-			You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=service]">PHP Service</a>
+			You are now ready to proceed to creating your <a on="click then l:pythongettingstarted[show=service]">PHP Service</a>
 		</p>
 	</div>
 	<script>
