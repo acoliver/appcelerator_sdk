@@ -129,5 +129,34 @@
 			<fileset dir="." includes="test/**,doc/**" excludes="${plat.excludes}"/>
 		</copy>
 	</target>
-		
+	<target name="script" depends="script.ruby">
+		<echo>${dir}</echo>
+	</target>
+	<target name="script.ruby" depends="copy_script_jars">
+		<property name="message" value="Hello world"/>
+	    <script language="ruby">
+			def getdir prompt
+				request =org.apache.tools.ant.input.InputRequest.new prompt
+				$project.getInputHandler().handleInput(request)
+				request.getInput
+			end
+			dir =getdir 'whats your filename'
+			while File.exists? dir
+				dir = getdir 'sorry a file/directory with that name already exists, please reenter:'
+			end
+			$project.setProperty('dir',dir)
+	    </script>
+	</target>
+	<target name="copy_script_jars">
+		<copy todir="${ant.home}/lib">
+			<fileset dir="dist/antlib/appcelerator" includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar"/>
+			<fileset dir="dist/lib/appcelerator" includes="commons-logging-1.0.4.jar"/>
+		</copy>
+	</target>
+	<target name="remove_script_jars">
+		<delete>
+			<fileset dir="${ant.home}/lib" 
+				includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar,jline.jar,commons-logging-1.0.4.jar"/>
+		</delete>
+	</target>
 </project>

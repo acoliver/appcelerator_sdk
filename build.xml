@@ -122,7 +122,7 @@
 				<expandproperties/>
 			</filterchain>
 		</copy>
-		<javac debug="true" srcdir="${stage.dir}/src-java" destdir="${stage.dir}/java/classes" classpathref="classpath" excludes="**/myappcelerator/*"/>
+		<javac debug="true" srcdir="${stage.dir}/src-java" destdir="${stage.dir}/java/classes" classpathref="classpath" excludes="**/myappcelerator/*" includeAntRuntime="false"/>
 		<jar destfile="${stage.dir}/java/appcelerator-${version.major}.${version.minor}.${version.rev}.jar">
 			<fileset dir="${stage.dir}/java/classes">
 				<include name="**/*"/>
@@ -294,6 +294,9 @@
 		<copy todir="${stage.dir}/sdk/java/dist/lib/appcelerator" filtering="false"> 
 			<fileset dir="${build.java.dir}/lib" includes="**/*"/>
 			<fileset dir="${stage.dir}/java" includes="appcelerator-${VERSION}.jar"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/java/dist" filtering="false"> 
+			<fileset dir="${build.java.dir}" includes="antlib/**"/>
 		</copy>
 		<copy todir="${stage.dir}/sdk/java/dist/src/web" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
@@ -555,7 +558,7 @@
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
-		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp/appcelerator_sdk_php_${VERSION}"/>
+		<property name="php.project.dir" value="${stage.dir}/sdkprojects/myphpapp"/>
 		<antcall target="undeploy_php"/>
 		<antcall target="deploy_php"/>
 	</target>

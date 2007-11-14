@@ -171,7 +171,7 @@
 	<target name="java_compile" depends="init">
 		<mkdir dir="${stage.dir}/assemble/java/classes"/>
 		<mkdir dir="${stage.dir}/assemble/lib"/>
-		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/assemble/java/classes" classpathref="classpath"/>
+		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/assemble/java/classes" classpathref="classpath" includeAntRuntime="false"/>
 		<jar destfile="${stage.dir}/assemble/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
 			<fileset dir="${stage.dir}/assemble/java/classes">
 				<include name="**/*"/>
