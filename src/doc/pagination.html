@@ -19,6 +19,7 @@
 <script type="text/javascript" src="js/sh/shBrushJava.js"></script>
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 
+<script type="text/javascript" src="js/locale/en.js"></script>
 
 
 </head>
@@ -32,17 +33,62 @@
 	<a  on="click then l:pagination[show=usage] and add[class=active] or l:pagination[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
-
 	<!-- EXAMPLE -->
 	<div on="l:pagination[show=example] then show else hide">
-		pagination example placeholder
+		<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
+			resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
+			prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
+		</app:pagination>
+		<app:iterator on="l:paginationexample.response then execute" property="rows">
+			<html:div style="margin-bottom:15px">
+				#{idx}:#{name}
+			</html:div>
+		</app:iterator>
+		<a on="click then l:paginationexample.request[dir=previous,end=4,total=20,start=1]">start</a>
+		<app:script on="l:paginationexample.request then execute">
+			var start = this.data.start;
+			var end = this.data.end;
+			var dir = this.data.dir;
+			var total = this.data.total;
+			var rows = new Array();
+			for (var i=start;i&lt;=end;i++)
+			{
+				var name = 'app '+i;
+				rows.push ({'name':name,'idx':i});
+			}
+			var result = {'end':end,'start':start,'total':total,'rows':rows}
+			$MQ('l:paginationexample.response',result);
+		</app:script>
 	</div>
 
 	<!-- CODE -->
 	<div on="l:pagination[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				pagination code placeholder
+				<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
+					resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
+					prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
+				</app:pagination>
+				<app:iterator on="l:paginationexample.response then execute" property="rows">
+					<html:div style="margin-bottom:15px">
+						#{idx}:#{name}
+					</html:div>
+				</app:iterator>
+				<a on="click then l:paginationexample.request[dir=previous,end=4,total=20,start=1]">start</a>
+				<app:script on="l:paginationexample.request then execute">
+					var start = this.data.start;
+					var end = this.data.end;
+					var dir = this.data.dir;
+					var total = this.data.total;
+					var rows = new Array();
+					for (var i=start;i&lt;=end;i++)
+					{
+						var name = 'app '+i;
+						rows.push ({'name':name,'idx':i});
+					}
+					var result = {'end':end,'start':start,'total':total,'rows':rows}
+					$MQ('l:paginationexample.response',result);
+				</app:script>
 			</textarea>	
 		</p>
 	</div>
@@ -53,21 +99,68 @@
 			 Required Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
+					  <td class="term">request</td>
+					  <td class="def">the request message</td>
+					</tr>
+					<tr>
+					  <td class="term">response</td>
+					  <td class="def">the response message</td>
 					</tr>
 				</table>
 		</p>
-<!--		<p>
+		<p>
 			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
+					  <td class="term">startProperty</td>
+					  <td class="def">defaults to start: the data property name that contains the start record for the current results (e.g., Showing 1-10 of 500 - in this case "1" is the startProperty value - the default is "start"</td>
+					</tr>
+					<tr>
+					  <td class="term">endProperty</td>
+					  <td class="def">defaults to end: the data property name that contains the end record for the current results (e.g., Showing 1-10 of 500 - in this case "10" is the endProperty value - the default is "end"</td>
+					</tr>
+					<tr>
+					  <td class="term">totalProperty</td>
+					  <td class="def">defaults to total: the data property name that contains the total records for the current results (e.g., Showing 1-10 of 500 - in this case "500" is the totalProperty value - the default is "total"</td>
+					</tr>
+					<tr>
+					  <td class="term">nextText</td>
+					  <td class="def">the text displayed for the "next" link</td>
+					</tr>
+					<tr>
+					  <td class="term">prevText</td>
+					  <td class="def">the text displayed for the "prev" link</td>
+					</tr>
+					<tr>
+					  <td class="term">nextLangId</td>
+					  <td class="def">the text displayed for the next link using a locale value</td>
+					</tr>
+					<tr>
+					  <td class="term">prevLangId</td>
+					  <td class="def">the text displayed for the prev link using a locale value</td>
+					</tr>
+					<tr>
+					  <td class="term">resultsString</td>
+					  <td class="def">a template string for text - default is "Showing #{start} of #{end}</td>
+					</tr>
+					<tr>
+					  <td class="term">totalsString</td>
+					  <td class="def">a template string for totals text - default is "#{total} records found</td>
+					</tr>
+					<tr>
+					  <td class="term">resultsLangId</td>
+					  <td class="def">resultString using a langId</td>
+					</tr>
+					<tr>
+					  <td class="term">totalsLangId</td>
+					  <td class="def">totalsString using a langid</td>
+					</tr>
+					<tr>
+					  <td class="term">showTotals</td>
+					  <td class="def">true or false - in some cases the total number of records are not available</td>
 					</tr>
 				</table>
 		</p>
--->
 	</div>	
 	
 	<script>

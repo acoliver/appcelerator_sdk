@@ -12,7 +12,11 @@ var my_lang_bundle =
 		{id:'III',value:'III'},
 		{id:'IV',value:'IV'}
 	],
-	'my.option':{'id':'test',value:'Test Passed'}
+	'my.option':{'id':'test',value:'Test Passed'},
+	'pagination.searchresults': 'results',
+	'pagination.totals': 'totals',
+	'pagination.next': 'next',
+	'pagination.prev' : 'prev'
 };
 
 Appcelerator.Localization.addLanguageBundle('en','English',$H(my_lang_bundle));
