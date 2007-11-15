@@ -37,6 +37,7 @@ Appcelerator.Compiler.wireSelectable = function(element,value)
 		members = {selected:v,members:[]};
 		Appcelerator.Compiler.SelectableGroups[name] = members;
 	}
+	
 	var selectFunc = function(element,selected,count,unselect)
 	{
 		count = count || 0;
@@ -55,6 +56,7 @@ Appcelerator.Compiler.wireSelectable = function(element,value)
 		}
 		Appcelerator.Compiler.executeFunction(element,'selected',[selected,count,unselect]);
 	}
+
 	for (var c=0,len=element.childNodes.length;c<len;c++)
 	{
 		var child = element.childNodes[c];
@@ -64,7 +66,7 @@ Appcelerator.Compiler.wireSelectable = function(element,value)
 			members.members.push(childid);
 			var scope = {};
 			scope.element = child;
-			child.selectable = true;
+			child.app_selectable = true;
 			var selectListener = function(e,unselectOnly)
 			{
 				e = Event.getEvent(e);
@@ -88,7 +90,7 @@ Appcelerator.Compiler.wireSelectable = function(element,value)
 						var p = t.parentNode;
 						while (p && p!=document.body)
 						{
-							if (p.selectable)
+							if (p.app_selectable)
 							{
 								target = p;
 								if (e._selectedEventSeen)
