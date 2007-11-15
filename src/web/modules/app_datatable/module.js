@@ -2,9 +2,6 @@
 Appcelerator.Module.Datatable =
 {	
 	modulePath:null,
-	position: 0,
-	initialLoad: true,
-	paginationInterval: null,
 	setPath: function(path)
 	{
 		this.modulePath = path;
@@ -174,28 +171,28 @@ Appcelerator.Module.Datatable =
 		{
 			if (pagination_direction == 'forward')
 			{
-				if (this.initialLoad)
+				if ($(id).initialLoad)
 				{
-					x = this.position;
-					this.initialLoad = false;
+					x = $(id).position;
+					$(id).initialLoad = false;
 				} else
 				{
-					x = this.position+maxRows >= array.length ? this.position : this.position+maxRows;					
+					x = $(id).position+maxRows >= array.length ? $(id).position : $(id).position+maxRows;					
 				}
 				length = x+maxRows > array.length ? array.length : x+maxRows;
 			} else
 			{
-				if(this.position-maxRows < 0)
+				if($(id).position-maxRows < 0)
 				{
 					x = 0;
 					length = maxRows > array.length ? array.length : maxRows;
 				} else
 				{
-					x = this.position-maxRows;
+					x = $(id).position-maxRows;
 					length = x+maxRows > array.length ? array.length : x+maxRows;
 				}
 			}
-			this.position = x;
+			$(id).position = x;
 		}
 		
 		var xrun = x;
@@ -244,10 +241,10 @@ Appcelerator.Module.Datatable =
 		$(myidforward).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'forward');}.bind(this);
 		$(myidback).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'backward');}.bind(this);
 		$(myidforward).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'forward');}.bind(this);
-		$(myidback).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
-		$(myidforward).onmouseup = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
-		$(myidback).onmouseout = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
-		$(myidforward).onmouseout = Appcelerator.Module.Datatable.stopContinuousPagination.bind(this);
+		$(myidback).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+		$(myidforward).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+		$(myidback).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+		$(myidforward).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
 		
 		var on_run_array = [];
 		
@@ -268,11 +265,11 @@ Appcelerator.Module.Datatable =
 			if (direction == 'forward') Appcelerator.Module.Datatable.createDataTable(id,'forward');
 			else Appcelerator.Module.Datatable.createDataTable(id,'backward');
 		};
-		this.paginationInterval = setInterval(paginator,250);
+		$(id).paginationInterval = setInterval(paginator,250);
 	},
-	stopContinuousPagination: function ()
+	stopContinuousPagination: function (id)
 	{
-		clearInterval(this.paginationInterval);
+		clearInterval($(id).paginationInterval);
 	},
 	sortDataTableClient: function (index, id)
 	{
@@ -281,8 +278,8 @@ Appcelerator.Module.Datatable =
 		var array = parameterMap['array'];
 		var column_property_name = header_array[index]['property'];
 
-		this.position = 0;
-		this.initialLoad = true;
+		$(id).position = 0;
+		$(id).initialLoad = true;
 
 		//Are we sorting numbers or strings? Check only the column we're sorting by..
 		var num_sort = true;
@@ -387,7 +384,9 @@ Appcelerator.Module.Datatable =
 		//Data property
 		var propertyName = parameterMap['property'];
 		var array;
-		this.position = 0;
+		$(id).position = 0;
+		$(id).initialLoad = true;
+		
 		if (propertyName)
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
