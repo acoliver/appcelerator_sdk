@@ -42,7 +42,7 @@
 		</app:iterator>		
 		<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
 			resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
-			prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
+			prevLangId="pagination.prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
 		</app:pagination>
 		<app:script>
 			var start = 1;
@@ -78,7 +78,7 @@
 				var name = 'app '+i;
 				rows.push ({'name':name,'idx':i});
 			}
-			var result = {'end':end,'start':start,'total':total,'rows':rows}
+			var result = {'end':end,'start':start,'total':total,'rows':rows};
 			$MQ('l:paginationexample.response',result);
 		</app:script>
 	</div>

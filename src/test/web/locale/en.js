@@ -13,8 +13,8 @@ var my_lang_bundle =
 		{id:'IV',value:'IV'}
 	],
 	'my.option':{'id':'test',value:'Test Passed'},
-	'pagination.searchresults': 'results',
-	'pagination.totals': 'totals',
+	'pagination.searchresults': 'results #{start} - #{end}',
+	'pagination.totals': 'total #{total}',
 	'pagination.next': 'next',
 	'pagination.prev' : 'prev'
 };

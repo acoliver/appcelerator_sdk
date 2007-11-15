@@ -31,7 +31,7 @@ input[type=text]
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Basic Pagination: click the start link to get the initial fetch.  should display 4 items at a time starting with 1 through 4.
+			Basic Pagination: click the start link to get the initial fetch.  should display 4 items at a time starting with 1 through 4.  This hides totals and uses langid.
 		</td>
 		<td class="result" >
 			<app:iterator on="l:paginationexample.response then execute" property="rows">
@@ -81,6 +81,54 @@ input[type=text]
 				$MQ('l:paginationexample.response',result);
 			</app:script>
 			
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Hide totals using strings
+		</td>
+		<td class="result" >
+			<app:iterator on="l:paginationexample.response then execute" property="rows">
+				<html:div style="margin-bottom:15px">
+					#{idx}:#{name}
+				</html:div>
+			</app:iterator>
+			<app:pagination id="example_pagination2" request="l:paginationexample.request" response="l:paginationexample.response"
+				resultsString="widgets #{start} through #{end}" totalsString="outta" nextText="forward"
+				prevText="b4" showTotals="false">
+			</app:pagination>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Show totals using strings
+		</td>
+		<td class="result" >
+			<app:iterator on="l:paginationexample.response then execute" property="rows">
+				<html:div style="margin-bottom:15px">
+					#{idx}:#{name}
+				</html:div>
+			</app:iterator>
+			<app:pagination id="example_pagination3" request="l:paginationexample.request" response="l:paginationexample.response"
+				resultsString="ding dongs #{start}::#{end}" totalsString="outta #{total}" nextText="forward"
+				prevText="b4" showTotals="true">
+			</app:pagination>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Show totals using langid
+		</td>
+		<td class="result" >
+			<app:iterator on="l:paginationexample.response then execute" property="rows">
+				<html:div style="margin-bottom:15px">
+					#{idx}:#{name}
+				</html:div>
+			</app:iterator>
+			<app:pagination id="example_pagination4" request="l:paginationexample.request" response="l:paginationexample.response"
+				resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
+				prevLangId="pagination.prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
+			</app:pagination>
 		</td>
 	</tr>
 </table>
