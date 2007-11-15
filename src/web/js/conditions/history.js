@@ -18,7 +18,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		}
 		
 		// support a null (no history) history
-		token = token.length == 0 || token=='_none_' || token==='null' ? 'null' : "'" + token + "'";
+		token = token.length == 0 || token=='_none_' || token==='null' ? null : token;
 		
 		Appcelerator.History.onChange(function(newLocation,data,scope)
 		{
