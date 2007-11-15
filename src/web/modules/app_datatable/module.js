@@ -237,15 +237,17 @@ Appcelerator.Module.Datatable =
 		
 		Appcelerator.Compiler.setHTML(id,html);
 
-		$(myidback).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'backward');}.bind(this);
-		$(myidforward).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'forward');}.bind(this);
-		$(myidback).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'backward');}.bind(this);
-		$(myidforward).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'forward');}.bind(this);
-		$(myidback).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
-		$(myidforward).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
-		$(myidback).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
-		$(myidforward).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
-		
+		if (pagination == 'true')
+		{
+			$(myidback).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'backward');}.bind(this);
+			$(myidforward).onclick = function(){Appcelerator.Module.Datatable.createDataTable(id, 'forward');}.bind(this);
+			$(myidback).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'backward');}.bind(this);
+			$(myidforward).onmousedown = function(){Appcelerator.Module.Datatable.paginateContinuously(id, 'forward');}.bind(this);
+			$(myidback).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+			$(myidforward).onmouseup = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+			$(myidback).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+			$(myidforward).onmouseout = function(){Appcelerator.Module.Datatable.stopContinuousPagination(id)}.bind(this);
+		}
 		var on_run_array = [];
 		
 		for (var i = 0, len = on_array.length; i < len; i++)
