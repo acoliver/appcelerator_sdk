@@ -61,7 +61,7 @@ namespace Appcelerator
         /// </summary>
         /// <param name="request">The ServiceRequest object corresponding to the incoming request</param>
         /// <param name="response">The ServiceResponse object corresponding to the outgoing response</param>
-        public void HandleRequest(Message request, ref Message response, HttpSessionState session)
+        public void HandleRequest(Message request, Message response, HttpSessionState session, HttpResponse httpresponse)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace Appcelerator
 
                 foreach (Service handler in handlers)
                 {
-                    handler.InvokeServiceHandler(request, ref response, session);
+                    handler.InvokeServiceHandler(request, response, session, httpresponse);
                 }
             }
             catch (KeyNotFoundException)

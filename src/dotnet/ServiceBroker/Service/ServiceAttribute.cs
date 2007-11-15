@@ -19,8 +19,8 @@ namespace Appcelerator
         /// <summary>
         /// Creates a Service Attribute
         /// </summary>
-        /// <param name="request">The service request string (e.g. "r:my.message.request)</param>
-        /// <param name="response">The service response string (e.g. "r:my.message.response)</param>
+        /// <param name="request">The service request string (e.g. "r:my.message.request")</param>
+        /// <param name="response">The service response string (e.g. "r:my.messagege.response")</param>
         public ServiceAttribute(string request, string response)
         {
             _request = request;
@@ -28,7 +28,7 @@ namespace Appcelerator
         }
 
         /// <summary>
-        /// The service request string (e.g. "r:my.message.request)
+        /// The service request string (e.g. "r:my.message.request")
         /// </summary>
         public string Request
         {
@@ -39,7 +39,7 @@ namespace Appcelerator
         }
 
         /// <summary>
-        /// The service response string (e.g. "r:my.message.response)
+        /// The service response string (e.g. "r:my.messagege.response")
         /// </summary>
         public string Response
         {

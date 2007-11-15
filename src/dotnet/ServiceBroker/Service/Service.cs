@@ -7,10 +7,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.Web.SessionState;
+using System.IO;
+using System.Web;
 
 namespace Appcelerator
 {
-    public class Service
+    class Service
     {
         //Private members
         private String _request;
@@ -20,8 +22,8 @@ namespace Appcelerator
         /// <summary>
         /// Creates an Appcelerator Service
         /// </summary>
-        /// <param name="request">The service request string (e.g. "r:my.message.request)</param>
-        /// <param name="response">The service response string (e.g. "r:my.message.response)</param>
+        /// <param name="request">The service request string (e.g. "r:my.message.request")</param>
+        /// <param name="response">The service response string (e.g. "r:my.message.response")</param>
         /// <param name="methodInfo">The MethodInfo object describing the method to invoke upon receiving a request</param>
         public Service(String request, String response, MethodInfo methodInfo)
         {
@@ -33,31 +35,38 @@ namespace Appcelerator
         /// <summary>
         /// Invokes the appropriate service handler (registered using a ServiceAttribute)
         /// </summary>
-        public void InvokeServiceHandler(Message request, ref Message response, HttpSessionState session)
+        public void InvokeServiceHandler(Message request, Message response, HttpSessionState session, HttpResponse httpresponse)
         {
             if (request.Equals(this.Request))
             {
                 try
                 {
-                    response.Type = this.Response;
-                    
+                    Message temp_response = response;
+                    Object[] parameters = new Object[] { request, temp_response };
                     Object declaringTypeInstance = Activator.CreateInstance(this.MethodInfo.DeclaringType);
-                    Object o = this.MethodInfo.Invoke(declaringTypeInstance, new object[] { request, response });
-                    Dispatcher.Instance.EnqueueOutgoingMessage(response, session.SessionID);
+                    this.MethodInfo.Invoke(declaringTypeInstance, parameters);
+                    temp_response = (Message)parameters[1];
+                    temp_response.Type = this.Response;
+
+                    httpresponse.AppendToLog("BLEH " + temp_response.GetMessageXML());
+
+                    Dispatcher.Instance.EnqueueOutgoingMessage(temp_response, session.SessionID);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error: Exception while invoking service handler - " + this.MethodInfo.Name + " in " + this.MethodInfo.DeclaringType.Name);
-                    Console.WriteLine("Error: Request Message - " + request.Type);
-                    Console.WriteLine("Error: Response Message - " + response.Type);
-                    Console.WriteLine("Error: Message - " + e.Message);
-                    Console.WriteLine("Error: Stacktrace - " + e.StackTrace);
+                    String err = "";
+                    err+="Error: Exception while invoking service handler - " + this.MethodInfo.Name + " in " + this.MethodInfo.DeclaringType.Name + "\n";
+                    err += "Error: Request Message - " + request.Type + "\n";
+                    err += "Error: Response Message - " + response.Type + "\n";
+                    err += "Error: Message - " + e.Message + "\n";
+                    err += "Error: Stacktrace - " + e.StackTrace + "\n";
+                    httpresponse.AppendToLog(err);
                 }
             }
         }
 
         /// <summary>
-        /// The service request string (e.g. "r:my.message.request)
+        /// The service request string (e.g. "r:my.message.request")
         /// </summary>
         public String Request
         {
@@ -66,7 +75,7 @@ namespace Appcelerator
         }
 
         /// <summary>
-        /// The service response string (e.g. "r:my.message.response)
+        /// The service response string (e.g. "r:my.message.response")
         /// </summary>
         public String Response
         {
@@ -75,7 +84,7 @@ namespace Appcelerator
         }
 
         /// <summary>
-        /// The service response string (e.g. "r:my.message.response)
+        /// The service response string (e.g. "r:my.message.response")
         /// </summary>
         public MethodInfo MethodInfo
         {

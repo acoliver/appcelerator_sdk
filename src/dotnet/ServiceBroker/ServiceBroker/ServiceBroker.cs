@@ -39,15 +39,7 @@ namespace Appcelerator
             switch (request.HttpMethod)
             {
                 case "GET": // Send waiting message(s) to client [from queue]
-                    try
-                    {
-                        if (dispatcher.id_queue[session_id].Count > 0) response_text = dispatcher.GetQueuedMessages(session_id);
-                        else response_text = "Loading...";
-
-                    } catch (KeyNotFoundException)
-                    {
-                        response_text = "Loading...";
-                    }
+                    response_text = dispatcher.GetQueuedMessages(session_id);
                     break;
                 case "POST": // Dispatch incoming message(s) and send waiting message(s) to client [[from queue]
                     XPathDocument doc = new XPathDocument(request.InputStream);
