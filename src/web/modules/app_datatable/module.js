@@ -187,8 +187,8 @@ Appcelerator.Module.Datatable =
 			{
 				if(this.position-maxRows < 0)
 				{
-					x = 0;					
-					length = maxRows;
+					x = 0;
+					length = maxRows > array.length ? array.length : maxRows;
 				} else
 				{
 					x = this.position-maxRows;
