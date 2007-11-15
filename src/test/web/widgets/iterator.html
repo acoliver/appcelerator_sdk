@@ -127,13 +127,14 @@ th
 					<app:iterator on="l:iterator4a then execute" property="cars">
 							<html:div style="clear:both;display:block">#{car}</html:div>
 					</app:iterator>
+					<app:script>
+						$MQ('l:iterator4a',{cars:[{'car':'mazda (nested data)'},{'car':'toyota (nested data)'}]});
+					</app:script>
 				</html:div>
 			</app:iterator>
 			
 			<app:script on="l:load.iterator4 then execute">
 				$MQ('l:iterator4',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
-				$MQ('l:iterator4a',{cars:[{'car':'mazda (nested data)'},{'car':'toyota (nested data)'}]});
-
 			</app:script>
 		</td>
 	</tr>
