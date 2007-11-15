@@ -22,7 +22,6 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 	var tokens = condition.split(' ');
 	var condition = '';
 	var statemachines = [];
-	var operator = null;
 	
 	for (var c=0,len=tokens.length;c<len;c++)
 	{
@@ -81,8 +80,6 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 		$D('compiled state => '+condition);
 	}
 
-	var code = '';
-	
 	for (var c=0,len=statemachines.length;c<len;c++)
 	{
 		var statemachine = statemachines[c][0];

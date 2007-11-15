@@ -54,7 +54,6 @@ Appcelerator.Util.Dom =
                 	  	  }
                 	  	  if (cont) continue;
                 	}
-                    var attr = item.value;
                     iterator(item.name, item.value, item.specified, c, map.length);
                 }
             }

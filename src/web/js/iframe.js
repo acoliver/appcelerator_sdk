@@ -65,7 +65,6 @@ Appcelerator.Util.IFrame =
 		if (this.copyContent)
 		{
 	        var div = document.createElement('div');
-	        var head = doc.documentElement.getElementsByTagName('head')[0];
 	        
 	        Appcelerator.Util.IFrame.loadStyles(doc.documentElement);
 	        
@@ -97,7 +96,7 @@ Appcelerator.Util.IFrame =
 	checkIFrame:function()
 	{
 		var doc = this.iframe.contentDocument || this.iframe.document;
-		var il = this.iframe.location, dr = doc.readyState;
+		var dr = doc.readyState;
 		if (dr == 'complete' || (!document.getElementById && dr == 'interactive'))
 	 	{
 	 		Appcelerator.Util.IFrame.doIFrameLoad.call(this);

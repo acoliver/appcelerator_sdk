@@ -20,8 +20,6 @@ Appcelerator.Compiler.Selected.makeSelectedListener = function(element,condition
 
 Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
 {
-	var code = '';
-	
 	switch (condition)
 	{
 		case 'selected':

@@ -11,7 +11,7 @@ Appcelerator.Compiler.registerAttributeProcessor('input','activators',
 			// see if we're part of a field set and if so, add
 			// our reference
 			//
-			var fieldset = Appcelerator.Compiler.addFieldSet(element,true);
+			Appcelerator.Compiler.addFieldSet(element,true);
 			var fields = value.split(',');
 			if (fields.length > 0)
 			{

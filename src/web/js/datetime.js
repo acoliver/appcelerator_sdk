@@ -133,7 +133,6 @@ Appcelerator.Util.DateTime =
 			seconds = "0" + seconds;
 		}
 		
-		var value = "";
 		if (hours > 0)
 		{
 			return hours + ":" + minutes + ":" + seconds;
@@ -539,7 +538,6 @@ Appcelerator.Util.DateTime =
         // difference from Universal Time, and the last two digits indicate the
         // number of minutes difference from Universal Time.
         var hourOffset = this.intval(tokens[5].substring(0, 3));
-        var minOffset = this.intval(tokens[5].substring(3));
 
         // convert to GMT (if we're behind GMT, we need to add
         // and if we're ahead of GMT, we need to subtract)

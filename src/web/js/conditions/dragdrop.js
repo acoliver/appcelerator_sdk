@@ -1,8 +1,7 @@
 Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
 {
 	var eventName = null;
-	var code = '';
-
+	
 	switch (condition)
 	{
 		case 'dragstart':

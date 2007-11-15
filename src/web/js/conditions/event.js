@@ -55,7 +55,6 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 	{
 		throw "syntax error: 'else' action not supported on event conditions for: "+condition;
 	}
-	var id = element.id;
 	var stopEvent = false;
 	if (condition.charAt(condition.length-1)=='!')
 	{

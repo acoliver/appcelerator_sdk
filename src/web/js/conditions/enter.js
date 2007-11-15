@@ -25,7 +25,7 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			for (var c=0;c<inputs.length;c++)
 			{
 				var input = inputs[c];
-				var inputid = Appcelerator.Compiler.getAndEnsureId(input);
+				Appcelerator.Compiler.getAndEnsureId(input);
 				Appcelerator.Util.KeyManager.installHandler(Appcelerator.Util.KeyManager.KEY_ENTER,input,action);
 				Appcelerator.Compiler.addTrash(input,function()
 				{

@@ -559,7 +559,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var targetId = id;
 		var idFound = false;
 		var valueHtml = null;
-		var setFromParameter = false;
 		var params = parameters;
 		var append = false;
 		var valueExpr = parameters;

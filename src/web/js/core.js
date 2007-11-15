@@ -120,15 +120,15 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 			
 			try
 			{
-				for (var i = 0; i < document.styleSheets.length; i++)
+				for (var i = 0; i < ss.length; i++)
 				{
-					if (document.styleSheets[i].owningElement.moduleCSS)
+					if (ss[i].owningElement.moduleCSS)
 					{
-						modarr.push ([document.styleSheets[i].owningElement,document.styleSheets[i].owningElement.outerHTML]);
+						modarr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
 					}
 					else
 					{
-						arr.push ([document.styleSheets[i].owningElement,document.styleSheets[i].owningElement.outerHTML]);
+						arr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
 					}
 				}
 			} 

@@ -141,10 +141,8 @@ Appcelerator.Compiler.afterDocumentCompile(function()
         
         setInterval( function () 
         {
-            var state;
             var newHash;
             var newCounter;
-            var oldHash = hash;
 
             newHash = document.location.hash;
             newCounter = history.length;

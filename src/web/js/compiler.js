@@ -266,9 +266,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
         Appcelerator.Compiler.setElementId(document.body, 'app_body');
     }
     
-
     var state = Appcelerator.Compiler.createCompilerState();
-    var containerChildren = [];
     
     // start scanning at the body
     Appcelerator.Compiler.compileElement(container,state);
@@ -1109,7 +1107,6 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
     value = value.trim();
 
     var ors = Appcelerator.Compiler.smartSplit(value,' or ');
-	var scripts = [];
 	
 	for (var c=0,len=ors.length;c<len;c++)
 	{
