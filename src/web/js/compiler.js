@@ -583,7 +583,10 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
 	{
 	   html = html.gsub('#%7B','#{').gsub('%7D','}');
     }
-       
+
+	// IE/Opera unescape XML in innerHTML, need to escape it back
+	html = html.gsub(/\\\"/,'&quot;');
+
 	if (convertHtmlPrefix)
 	{
 		return (html!=null) ? Appcelerator.Compiler.specialMagicParseHtml(html) : '';
