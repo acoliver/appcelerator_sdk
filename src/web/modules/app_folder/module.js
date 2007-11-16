@@ -81,7 +81,7 @@ Appcelerator.Module.Folder =
 					
 					if (open)
 					{
-						var scriptcode = "$('"+childid+"')._onopened(); $('"+parentid+"')._onopened();";
+						var scriptcode = "$('"+parentid+"')._onopened(); $('"+childid+"')._onopened();";
 						Appcelerator.Compiler.handleCondition(child, open, 'function['+scriptcode+']', null, 0, null);
 					}
 					$(childid)._onopened = function() 
@@ -105,7 +105,7 @@ Appcelerator.Module.Folder =
 					$(childid)._onclosed = function()
 					{
 						if ($(childid).opened)
-						{ 
+						{
 							$(childid).opened=false; 
 							Element.removeClassName(childid+'_item','open');
 							Element.addClassName(childid+'_item','closed');
