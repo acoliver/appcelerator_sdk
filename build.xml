@@ -173,7 +173,7 @@
 			<zipfileset dir="stage" includes="doc/**" prefix="appcelerator_server_${VERSION}"/>
 		</zip>
 	</target>
-	<target name="build_web_unit" depends="build_web" description="* Builds the web unit test suite">
+	<target name="build_web_unit" depends="init,build_web" description="* Builds the web unit test suite">
 		<mkdir dir="${stage.dir}/test/web"/>
 		<copy todir="${stage.dir}/test/web">
 			<fileset dir="${stage.dir}/web">
@@ -193,7 +193,7 @@
 		</war>
 	</target>
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
-	<target name="build_doc" depends="build_web,build_java" description="* Builds the documentation">
+	<target name="build_doc" depends="init,build_web,build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
 		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
