@@ -24,7 +24,7 @@
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<h2>Calendar</h2>
-
+		
 	<!-- NAVIGATION -->
 	<p>
 	<a class="active" on="click then l:calendar[show=example] and add[class=active] or l:calendar[show!=example] then remove[class=active]">Example</a> |
@@ -32,14 +32,16 @@
 	<a  on="click then l:calendar[show=usage] and add[class=active] or l:calendar[show!=usage] then remove[class=active]">Usage</a> 
 
 	</p>
-
+	<p>
+		The calendar widget provides a control for selecting dates and populates a target input such as a text input.
+	</p>
 	<!-- EXAMPLE -->
 	<div on="l:calendar[show=example] then show else hide">
 		<app:calendar title="Select Start Date" inputId="jobfilter_date_start" on="l:calendarexample.start then execute"
 			minDate="10/16/2007">
 		</app:calendar>
-		<input type="text" id="jobfilter_date_start"></input>
-		<a on="click then l:calendarexample.start">select</a>
+		<input type="text" id="jobfilter_date_start" size="10" MAXLENGTH="10"></input>
+		<img src="images/calendar.png" on="click then l:calendarexample.start"></img>
 	</div>
 
 	<!-- CODE -->
@@ -50,7 +52,7 @@
 					on="l:calendarexample.start then execute">
 				</app:calendar>
 				<input type="text" id="jobfilter_date_start"></input>
-				<a on="click then l:calendarexample.start">select</a>
+				<img src="images/calendar.png" on="click then l:calendarexample.start">select</a>
 			</textarea>	
 		</p>
 	</div>
