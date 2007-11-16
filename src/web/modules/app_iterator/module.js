@@ -89,7 +89,7 @@ Appcelerator.Module.Iterator =
 				{
 					if (typeof o[idx] == 'string')
 					{
-						o[idx] = o[idx].replace(/'/,"`");
+						o[idx] = o[idx].replace(/'/,'\u2019');
 					}
 				}
 				html += compiled(o);
