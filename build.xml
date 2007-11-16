@@ -198,6 +198,8 @@
 		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
+		<loadfile property="appcelerator-dotnet.xml" srcFile="src/dotnet/appcelerator.xml"/>
+		<loadfile property="TestService.cs" srcFile="build/dotnet/TestService.cs"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
@@ -214,6 +216,8 @@
 				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 				<filter token="index.html" value="${index.html}"/>
+				<filter token="TestService.cs" value="${TestService.cs}"/>
+				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
 			</filterset>
 		</copy>
         <copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
@@ -228,6 +232,8 @@
                 <filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
                 <filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 				<filter token="index.html" value="${index.html}"/>
+				<filter token="TestService.cs" value="${TestService.cs}"/>
+				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
             </filterset>
         </copy>
 		<copy todir="${stage.dir}/doc" filtering="false" overwrite="true">
@@ -411,6 +417,9 @@
 	</target>
 	<target name="sdk_dotnet_dist" depends="build_web,build_doc,build_web_unit" description="* Builds the .NET SDK distribution">
 		<mkdir dir="stage"/>
+		<copy todir="${stage.dir}/sdk/dotnet/src/web" filtering="false"> 
+			<fileset dir="${stage.dir}/web" includes="**/*"/>
+		</copy>
 		<copy todir="stage/sdk/dotnet">
 			<fileset dir="src/dotnet/bin/Release" includes="Appcelerator.dll"/>
 			<fileset dir="build/dotnet" includes="**/**"/>

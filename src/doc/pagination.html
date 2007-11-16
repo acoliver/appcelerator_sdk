@@ -81,11 +81,6 @@ td.away
 	padding-top:10px;
 	padding-bottom:10px;
 }
-
-
-
-
-
 </style>
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
@@ -100,6 +95,10 @@ td.away
 	</p>
 	<!-- EXAMPLE -->
 	<div on="l:pagination[show=example] then show else hide">
+		<p>
+			The pagination widget provides you with the appropriate rendering of the control to page through a resultset.  It is usually used in conjunction
+			with an iterator or datatable.  
+		</p>
 		<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
 			resultsString="#{start}-#{end}" totalsString="of #{total} scores" nextText="next"
 			prevText="prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
@@ -157,24 +156,30 @@ td.away
 	<div on="l:pagination[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				<app:iterator on="l:paginationexample.response then execute" property="rows">
-					<html:div style="margin-bottom:15px">
-						#{idx}:#{name}
-					</html:div>
-				</app:iterator>		
 				<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
-					resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
-					prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
+					resultsString="#{start}-#{end}" totalsString="of #{total} scores" nextText="next"
+					prevText="prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
 				</app:pagination>
+				<div class="scorecontainer">
+					<app:iterator on="l:paginationexample.response then execute" property="rows" >
+						<html:div class="scoreentry">
+							<html:table>
+								<html:tr><html:td class="scoretitle">#{date} </html:td></html:tr>
+								<html:tr><html:td class="home">#{home} #{homescore}</html:td></html:tr>
+								<html:tr><html:td class="away">#{away} #{awayscore}</html:td></html:tr>
+							</html:table>
+							<html:div class="scoretime">#{timeleft}</html:div>
+						</html:div>
+					</app:iterator>
+				</div>
 				<app:script>
 					var start = 1;
 					var end = 4;
 					var total = 12;
 					var rows = new Array();
-					for (var i=start;i&lt;=end;i++)
+					for (var i=start-1;i&lt;=end-1;i++)
 					{
-						var name = 'app '+i;
-						rows.push ({'name':name,'idx':i});
+						rows.push (PaginationExample.rows[i]);
 					}
 					var result = {'end':end,'start':start,'total':total,'rows':rows};
 					$MQ('l:paginationexample.response',result);
@@ -195,10 +200,9 @@ td.away
 					var dir = this.data.dir;
 					var total = this.data.total;
 					var rows = new Array();
-					for (var i=start;i&lt;=end;i++)
+					for (var i=start-1;i&lt;=end-1;i++)
 					{
-						var name = 'app '+i;
-						rows.push ({'name':name,'idx':i});
+						rows.push (PaginationExample.rows[i]);
 					}
 					var result = {'end':end,'start':start,'total':total,'rows':rows};
 					$MQ('l:paginationexample.response',result);

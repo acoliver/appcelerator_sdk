@@ -24,42 +24,130 @@
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<h2>.Net</h2>
+	<p>
+	<a class="active" on="click then l:dotnetgettingstarted[show=install] and add[class=active] or l:dotnetgettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:dotnetgettingstarted[show=client] and add[class=active] or l:dotnetgettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:dotnetgettingstarted[show=service] and add[class=active] or l:dotnetgettingstarted[show!=service] then remove[class=active]">C# .Net Service</a> 
+	</p>
 
-	<div>
-		We are still working on this, it will be here very very soon. 
-	</div>
+	<div on="l:dotnetgettingstarted[show=install] then effect[Appear] else effect[Fade]">
 
-	<script>
-		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
-		dp.SyntaxHighlighter.HighlightAll('code');
-	</script>
-<!--
 		<h3>Pre-requisettes</h3>
 		<p>
 		It is assumed that you already have the following installed:
 		<ul>
-			<li>Microsoft .Net Studio
-			<li>Microsoft IIS
+			<li>IIS 5 or newer (installed and running)
+			<li>.Net framework 2.0
+			<li>Visual Studio 2005 or newer for development
 		</ul>
 		</p>
 
-		<h3>Get the distribution</h3>
+		<h3>Reference</h3>
 		<p>
-		Download the java sdk distribution from <a href="http://www.appcelerator.org">http://www.appcelerator.org</a>
+		In the documentation below, the following symbols will be used in leau of concrete examples
 		<ul>
-			<li>appcelerator_server_dotnet_2.0.0.zip - this is the distribution for the appcelerator service manager
-			<li>appcelerator_sdk_dotnet_2.0.0.zip - this is the distribution for creating your .Net services (which are deployed as appcelerator services and applications)
+			<li><tt>$IIS_APPROOT</tt>: ex: C:\Inetpub\wwwroot
+			<li><tt>$ISAPI_DLL</tt>: ex: C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\Aspnet_isapi.dll
 		</ul>
-		<h3>Install the appcelerator service manager</h3>
-		<p>
-			to be completed
 		</p>
+
+		<h3>Extract the distribution</h3>
+		Download the dot net sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
+		<ul>
+			<li>appcelerator_sdk_dotnet_@VERSION@.zip - this is the distribution for creating your .Net services
+		</ul>
+
+		<h3>Configuring IIS</h3>
+		See the "Deploy the Handler" section at <a href="http://support.microsoft.com/?id=308001" target="_blank">http://support.microsoft.com/?id=308001</a> for more information
+		<ul>
+			<li>Create a subfolder in your wwwroot folder. We will assume the default location of <tt>$IIS_APPROOT</tt>.  Our application is called "sb"
+		   so we create a folder called "sb" in the wwwroot folder
+			<li>Now, open up the IIS management console (on Windows XP w/ IIS5.1, right click My Computer, choose Manage, Expand Services and Applications, 
+		   Expand Internet Information Services, Expand Websites, Expand Default Web Site)
+			<li>Right Click on your application name ("sb" in this case) and click on properties
+			<li>Click the Create button on the Properties window
+			<li>Click the Configuration button on the Properties window
+			<li>Click the Add button on the Application Configuration window
+			<li>Click the Browse button on the Add/Edit Extension Mapping window
+			<li>Select the aspnet_isapi.dll file (location varies - in our case it was <tt>$ISAPI_DLL</tt>)
+			<li>Type ".app" in the Extension text box
+			<li>Make sure "Script engine" and "Check that file exists" are both checked
+			<li>Click Ok three times to close all of the windows and get back to the IIS management console 
+		</ul>
 		
-		<h3>Create your own project</h3>
+		<h3>Create and build your project</h3>
+		Now that you've extracted the template visual studio project you can build your DLL.  Note that the default provides you with a sample service implemented in C#.
+		<ul>
+			<li>Build your project to create a DLL
+			<li>Copy the DLL to your application's root\bin\deploy directory (e.g. $IIS_APPROOT\sb\bin\deploy; create the deploy directory 
+			   if it doesn't exist)
+		</ul>
+	
+		<h3>Testing</h3>
+		You should now be able to hit the test service.  Goto <a href="http://localhost/servicetester.html" target="_blank">http://localhost/servicetester.html</a> and put the following in
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request.response
+		</ul>
+		you should get the following back
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.response
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:dotnetgettingstarted[show=client]">Web Client</a>
+	</div>
+	<div on="l:dotnetgettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
+		<h3>C# .Net Service</h3>
+		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
+		<ul>
+			<li>the file ends with <tt>Service.cs</tt>
+			<li>the class ends with <tt>Service</tt>
+			<li>you put the proper method signature <tt>method_name(Message request, ref Message response)</tt>
+			<li>you put the proper anootations directly above the method <tt>[Service("xxx", "xxx")] </tt>
+		</ul>
+
+		<h3>TestService.cs</h3>
+		You can check out the existing TestService.vs with the following source
+		<textarea name="code" class="xml:nocontrols">
+@TestService.cs@
+		</textarea>
+		
+		<h3>Next Steps</h3>
+		Build your DLL and deploy it to IIS
+
+	</div>
+	<div on="l:dotnetgettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
-			to be completed
+			<h3>Web Implementation</h3>
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/web</b>: directory where all your html exists
+				<li><b>appcelerator.xml</b>: defines the location and behaviour of the service broker
+			</ul>
+
+			<h3>src/web/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator-dotnet.xml@
+			</textarea>
+
+			<h3>src/web/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div. 
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+
+			<h3>Next Steps</h3>
+			You are now ready to proceed to creating your <a on="click then l:dotnetgettingstarted[show=service]">PHP Service</a>
 		</p>
--->
+	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
 </body>
 
 </html>
