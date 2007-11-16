@@ -1033,7 +1033,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					}
 					catch (exxx)
 					{
-						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id);
+						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id + ', type ' + element.nodeName);
 						return;
 					}
 	            }

@@ -53,7 +53,7 @@ input[type=text]
 					var name = 'app '+i;
 					rows.push ({'name':name,'idx':i});
 				}
-				var result = {'end':end,'start':start,'total':total,'rows':rows}
+				var result = {'end':end,'start':start,'total':total,'rows':rows};
 				$MQ('l:paginationexample.response',result);
 			</app:script>
 			<app:script on="l:paginationexample.request then execute">
@@ -77,7 +77,7 @@ input[type=text]
 					var name = 'app '+i;
 					rows.push ({'name':name,'idx':i});
 				}
-				var result = {'end':end,'start':start,'total':total,'rows':rows}
+				var result = {'end':end,'start':start,'total':total,'rows':rows};
 				$MQ('l:paginationexample.response',result);
 			</app:script>
 			
