@@ -28,7 +28,7 @@ setup(name='Appcelerator',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'beaker',
+          'beaker>=0.8.1',
           'simplejson',
           'elementtree'
       ],

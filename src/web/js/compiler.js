@@ -1250,13 +1250,14 @@ Appcelerator.Compiler.properCase = function (value)
 
 Appcelerator.Compiler.smartSplit = function(value,splitter)
 {
-	var array = [];
 	var tokens = value.split(splitter);
+	if(tokens.length == 1) return tokens;
+	var array = [];
 	var current = null;
 	for (var c=0;c<tokens.length;c++)
 	{
 		var line = tokens[c];
-		if (!current && line.indexOf('[')>0 && line.indexOf(']')==-1)
+		if (!current && line.indexOf('[')>=0 && line.indexOf(']')==-1)
 		{
 			if (current)
 			{

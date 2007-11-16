@@ -97,7 +97,7 @@ Appcelerator.Validator =
 		
     wholenumber: function (value)
     {
-		if (value < 0) return false;
+		if (!value || value < 0) return false;
 		
 		for (var i = 0; i < value.length; i++)
 		{   
