@@ -15,7 +15,7 @@
 		<fileset dir="${build.java.dir}/lib" includes="*.jar"/>
 	</path>
 
-	<target name="dist" depends="build_sdk,build_server"></target>
+	<!--<target name="dist" depends="build_sdk,build_server"></target>-->
 	
 	<target name="clean" description="* Removes temporary build directories">
 		<delete dir="${stage.dir}"/>
@@ -141,10 +141,10 @@
 		<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="c" />
 		<appc srcdir="${stage.dir}/web" destdir="test"/>
 	</target>
-	
-	<target name="build_java" depends="build_core_javascript,copy_web_files,java_compile"/>
+	<target name="build_web" depends="build_core_javascript,copy_web_files"/>
+	<target name="build_java" depends="build_web,java_compile"/>
 	<target name="build_server.nomin" depends="nomin,build_server"/>
-	<target name="build_server" depends="build_java,build_doc" description="* Builds the Java Server">
+	<target name="build_server" depends="build_java" description="* Builds the Java Server">
 		<mkdir dir="${stage.dir}/java/server/web"/>
 		<copy todir="${stage.dir}/java/server/web">
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
@@ -173,7 +173,7 @@
 			<zipfileset dir="stage" includes="doc/**" prefix="appcelerator_server_${VERSION}"/>
 		</zip>
 	</target>
-	<target name="build_web_unit" depends="build_java" description="* Builds the web unit test suite">
+	<target name="build_web_unit" depends="build_web" description="* Builds the web unit test suite">
 		<mkdir dir="${stage.dir}/test/web"/>
 		<copy todir="${stage.dir}/test/web">
 			<fileset dir="${stage.dir}/web">
@@ -193,7 +193,7 @@
 		</war>
 	</target>
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
-	<target name="build_doc" depends="build_java" description="* Builds the documentation">
+	<target name="build_doc" depends="build_web,build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
 		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
@@ -244,7 +244,7 @@
 		</war>
 	</target>
 	<target name="build_examples.nomin" depends="nomin,build_examples"/>
-	<target name="build_examples" depends="build_java" description="* Builds the examples">
+	<target name="build_examples" depends="build_java,build_server,build_web,build_doc,build_web_unit" description="* Builds the examples">
 		<antcall target="build_example">
 			<param name="example" value="blog"/>
 		</antcall>
@@ -277,10 +277,8 @@
 		
 	</target>
 	
-
-	<target name="build_sdk" depends="init,build_web_unit,build_doc,build_java_sdk,build_php_sdk" description="* Builds all language SDKs"></target>
 	
-	<target name="build_java_sdk" depends="build_web_unit,build_doc,build_server,build_examples" description="* Builds the SDK for Java">
+	<target name="build_java_sdk" depends="build_java,build_web_unit,build_doc,build_server,build_examples" description="* Builds the SDK for Java">
 		<mkdir dir="${stage.dir}/sdk/java"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib"/>
 		<mkdir dir="${stage.dir}/sdk/java/dist/lib/appcelerator"/>
@@ -321,7 +319,7 @@
 			<fileset dir="${stage.dir}/test/web" includes="**/*"/>
 		</copy>
 	</target>
-	<target name="build_php_sdk" depends="build_web_unit,build_doc,build_examples" description="* Builds the SDK for PHP">
+	<target name="build_php_sdk" depends="build_web,build_web_unit,build_doc,build_examples" description="* Builds the SDK for PHP">
 		<mkdir dir="${stage.dir}/sdk/php"/>
 		<mkdir dir="${stage.dir}/sdk/php/doc"/>
 		<mkdir dir="${stage.dir}/sdk/php/test"/>
@@ -351,7 +349,7 @@
 	-->
 	</target>
 	
-	<target name="sdk_java_dist" depends="build_sdk" description="* Builds the Java SDK distribution">
+	<target name="sdk_java_dist" depends="build_java_sdk" description="* Builds the Java SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
 			<zipfileset dir="stage/sdk/java" prefix="appcelerator_sdk_java_${VERSION}">
@@ -363,7 +361,7 @@
 		</zip>
 	</target>
 	
-	<target name="sdk_php_dist" depends="build_sdk" description="* Builds the PHP SDK distribution">
+	<target name="sdk_php_dist" depends="build_php_sdk" description="* Builds the PHP SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
 			<zipfileset dir="stage/sdk/php" prefix="">
@@ -374,7 +372,6 @@
 			</zipfileset>
 		</zip>
 	</target>
-	
 	<target name="examples_dist" depends="build_examples" description="* Builds the examples distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_examples_${VERSION}.zip" comment="Appcelerator Examples">
@@ -382,7 +379,7 @@
 		</zip>
 	</target>
 
-	<target name="sdk_ruby_dist" depends="build_core_javascript,build_examples" description="* Builds the Ruby on Rails SDK distribution">
+	<target name="sdk_ruby_dist" depends="build_web,build_examples" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
@@ -412,10 +409,15 @@
 			<fileset dir="${stage.dir}/ruby/pkg" includes="*.gem"/>
 		</copy>
 	</target>
-	<target name="sdk_dotnet_dist" depends="build_sdk" description="* Builds the .NET SDK distribution">
+	<target name="sdk_dotnet_dist" depends="build_web,build_doc,build_web_unit" description="* Builds the .NET SDK distribution">
 		<mkdir dir="stage"/>
-		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET" prefix="appcelerator_sdk_dotnet_${VERSION}">
-			<zipfileset dir="stage/sdk/dotnet">
+		<copy todir="stage/sdk/dotnet">
+			<fileset dir="src/dotnet/bin/Release" includes="Appcelerator.dll"/>
+			<fileset dir="build/dotnet" includes="**/**"/>
+		</copy>
+		<copy tofile="stage/sdk/dotnet/Appcelerator-debug.dll" file="src/dotnet/bin/Release/Appcelerator.dll"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET">
+			<zipfileset prefix="appcelerator_sdk_dotnet_${VERSION}" dir="stage/sdk/dotnet">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
@@ -423,7 +425,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php"/>
 	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
