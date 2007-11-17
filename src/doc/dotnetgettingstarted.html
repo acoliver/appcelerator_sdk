@@ -46,21 +46,21 @@
 		<p>
 		In the documentation below, the following symbols will be used in leau of concrete examples
 		<ul>
-			<li><tt>$IIS_APPROOT</tt>: ex: C:\Inetpub\wwwroot
-			<li><tt>$ISAPI_DLL</tt>: ex: C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\Aspnet_isapi.dll
+			<li><tt>%IIS_APPROOT%</tt>: ex: C:\Inetpub\wwwroot
+			<li><tt>%ISAPI_DLL%</tt>: ex: C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\Aspnet_isapi.dll
+			<li><tt>%PROJECT%</tt>: your project name ex: sb
 		</ul>
+		Heres the sample
+		<pre class="command">set IIS_APPROOT=C:\Inetpub\wwwroot
+set ISAPI_DLL="C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\Aspnet_isapi.dll"
+set PROJECT=sb</pre>
 		</p>
 
-		<h3>Extract the distribution</h3>
-		Download the dot net sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
-		<ul>
-			<li>appcelerator_sdk_dotnet_@VERSION@.zip - this is the distribution for creating your .Net services
-		</ul>
 
 		<h3>Configuring IIS</h3>
 		See the "Deploy the Handler" section at <a href="http://support.microsoft.com/?id=308001" target="_blank">http://support.microsoft.com/?id=308001</a> for more information
 		<ul>
-			<li>Create a subfolder in your wwwroot folder. We will assume the default location of <tt>$IIS_APPROOT</tt>.  Our application is called "sb"
+			<li>Create a subfolder in your wwwroot folder. We will assume the default location of <tt>%IIS_APPROOT%</tt>.  Our application is called "sb"
 		   so we create a folder called "sb" in the wwwroot folder
 			<li>Now, open up the IIS management console (on Windows XP w/ IIS5.1, right click My Computer, choose Manage, Expand Services and Applications, 
 		   Expand Internet Information Services, Expand Websites, Expand Default Web Site)
@@ -69,22 +69,55 @@
 			<li>Click the Configuration button on the Properties window
 			<li>Click the Add button on the Application Configuration window
 			<li>Click the Browse button on the Add/Edit Extension Mapping window
-			<li>Select the aspnet_isapi.dll file (location varies - in our case it was <tt>$ISAPI_DLL</tt>)
+			<li>Select the aspnet_isapi.dll file (location varies - in our case it was <tt>%ISAPI_DLL%</tt>)
 			<li>Type ".app" in the Extension text box
 			<li>Make sure "Script engine" and "Check that file exists" are both checked
 			<li>Click Ok three times to close all of the windows and get back to the IIS management console 
 		</ul>
 		
-		<h3>Create and build your project</h3>
-		Now that you've extracted the template visual studio project you can build your DLL.  Note that the default provides you with a sample service implemented in C#.
+		<h3>Extract the distribution</h3>
+		Download the dot net sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
 		<ul>
-			<li>Build your project to create a DLL
-			<li>Copy the DLL to your application's root\bin\deploy directory (e.g. $IIS_APPROOT\sb\bin\deploy; create the deploy directory 
-			   if it doesn't exist)
+			<li>appcelerator_sdk_dotnet_@VERSION@.zip - this is the distribution for creating your .Net services
+		</ul>
+
+		<h3>Create project</h3>
+		Now that you've extracted the template visual studio project lets create/import the project.  Note that the default provides you with a sample service implemented in 
+		C#.  Open the visual studio project Appcelerator.sln.  If you have problems with this, you can perform the following to manually create your solution
+		<ul>
+			<li>Create a new "Class Library" project, using Visual Studio 
+			<li>Right-Click your project name in the Solution Explorer and choose "Add reference..."
+			<li>Click on the Browse tab
+			<li>Navigate to and select the Appcelerator.dll file 
+			<li>Add the TestService.cs to your project
+		</ul>
+		
+		<h3>Build and deploy</h3>
+		Now that you have succesfulyy setup your project, you can build.  Once you have build your DLL, copy the DLL your application's deploy directory:
+		<pre class="command">rmdir %IIS_APPROOT%\%PROJECT% /S /Q
+mkdir %IIS_APPROOT%\%PROJECT%\bin\deploy
+cd bin\Release
+copy *.dll %IIS_APPROOT%\%PROJECT%\bin\deploy /Y</pre>
+		Now lets copy the html files on over
+		<pre class="command">cd ..\..\src\web
+xcopy * %IIS_APPROOT%\%PROJECT% /S</pre>
+		</ul>
+
+		<h3>Troubleshooting</h3>
+		Getting a 404? Try the following in this order..
+		<ul>
+			<li>Create an empty file in your application's root directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%</tt>) called "ServiceBroker.app"
+			<li>Reinstall .net framework 2.0
+			<li>Make sure you have Appcelerator.dll in your application's root\bin directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%\bin</tt>)
+			<li>Make sure you have the appcelerator.xml and web.config files in your application's root directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%</tt>)
+		</ul>
+		Not getting a response from your service? Try the following..
+		<ul>
+			<li>Make sure your service is in your application's root\bin\deploy directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%\bin\deploy</tt>)
 		</ul>
 	
 		<h3>Testing</h3>
-		You should now be able to hit the test service.  Goto <a href="http://localhost/servicetester.html" target="_blank">http://localhost/servicetester.html</a> and put the following in
+		You should now be able to hit the test service.  Goto <a href="http://localhost/%PROJECT%/servicetester.html" target="_blank">http://localhost/%PROJECT%/servicetester.html</a> and put the following in
 		<ul>
 			<li><b>message type</b>: remote:app.test.message.request.response
 		</ul>
@@ -124,10 +157,10 @@
 			Once you have created the java project, your web source will exist in:
 			<ul>
 				<li><b>src/web</b>: directory where all your html exists
-				<li><b>appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
 			</ul>
 
-			<h3>appcelerator.xml</h3>
+			<h3>src/web/appcelerator.xml</h3>
 			You should not have to make any changes to this file
 			<textarea name="code" class="xml:nocontrols">
 @appcelerator-dotnet.xml@
