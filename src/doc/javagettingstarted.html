@@ -46,6 +46,8 @@
 		<ul>
 			<li><tt>$TOMCAT_HOME</tt>: ex: /Applications/apache-tomcat-6.0.14
 			<li><tt>$HOME</tt>: ex: /Users/azuercher
+			<li><tt>$APP</tt>: ex: myapp
+			<li><tt>$APPDIR</tt>: ex: $HOME/projects/$APP
 		</ul>
 		</p>
 		
@@ -53,7 +55,6 @@
 		<p>
 		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
 		<ul>
-			<!--<li>appcelerator_server_@VERSION@.zip - this is the distribution for the appcelerator service manager (runs in a java web container)-->
 			<li>appcelerator_sdk_java_@VERSION@.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
 		</ul>
 		<h3>Create a Project</h3>
@@ -65,31 +66,31 @@ ant copy_script_jars</pre>
 		now create your project (ex: myapp)
 		<pre class="command">ant create
 [input] What would you like to name the project?
-myapp
+$APP
 [input] Where would you like to create?
-./projects/myapp</pre>
+$APPDIR</pre>
 		this will create a project workspace for you with an eclipse project and ant build file. 
 	
 		<h3>Start the Web Container</h3>
-		set your deploy.dir in your ~/.ant.properties (this will be used later in deployment)
+		set your <tt>deploy.dir</tt> in your <tt>$HOME/.ant.properties</tt> (this will be used later in deployment)
 		<pre class="command">deploy.dir=$TOMCAT_HOME/webapps</pre>
 		first lets begin by starting your web container
-		<pre class="command">cd /Applications/apache-tomcat-6.0.14/bin
+		<pre class="command">cd $TOMCAT_HOME/bin
 ./catalina.sh run</pre>
 
 		<h3>Build and Deploy the Solution</h3>
 			Lets build the distribution
-				<pre class="command">cd ./projects/myapp
+				<pre class="command">cd $APPDIR
 ant dist</pre>
 				This project will build a properly built war file that you can deploy with your services and the appcelerator framework in
 				<ul>
-					<li> stage/myapp.war
+					<li> stage/$APP.war
 				</ul>
-		Now you can deploy with the simple ant task (requires that you set deploy.dir in ~/.ant.properties from the above step)
+		Now you can deploy with the simple ant task (requires that you set <tt>deploy.dir</tt> in <tt>$HOME/.ant.properties</tt> from the above step)
 		<pre class="command">ant deploy</pre>
 	
 		<h3>Testing</h3>
-		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/myapp/servicetester.html" target="_blank">http://localhost:8080/myapp/servicetester.html</a> and use the following:
+		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/$APP/servicetester.html" target="_blank">http://localhost:8080/$APP/servicetester.html</a> and use the following:
 		<ul>
 			<li><b>message type</b>: remote:app.test.message.request
 		</ul>
@@ -101,15 +102,15 @@ ant dist</pre>
 		</ul>
 
 		<h3>Updating the project</h3>
-		You can alternatively update your project to a new version of the sdk very simply.  Just extract the new sdk and run the update task
+		You can alternatively update your project to a new version of the sdk very simply.  Just extract the new sdk and run the update task.  Note that when you extract the zip, you will want to extract it to a different directory than where your older distribution exists.
 		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
 cd appcelerator_sdk_java_@VERSION@
 ant update</pre>
-		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: /Users/azuercher/workspace/myapp)
+		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: <tt>$APPDIR</tt>
 		<pre class="command">
 [input] Where does the project exist?
-$HOME/workspace/myapp
-[echo] updating application az
+$APPDIR
+[echo] updating application $APP
 [input] would you like to overwrite project specific src/web and build scripts including build.xml, 
 build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?(y,n)
 y
