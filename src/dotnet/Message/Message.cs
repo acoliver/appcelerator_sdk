@@ -51,6 +51,7 @@ namespace Appcelerator
             this.session = session;
             this.servicebroker = servicebroker;
             sessionid = session.SessionID;
+			json = new JsonObject();
         }
 
         private JsonObject parseMessagePayload(String messagePayload)
@@ -81,11 +82,8 @@ namespace Appcelerator
             { 
                 using (JsonWriter writer = new JsonWriter())
                 {
-                    if (Data != null)
-                    {
-                        Data.Write(writer);
-                        return writer.ToString();
-                    } else return ""; 
+	                Data.Write(writer);
+	                return writer.ToString();
                 }
             }
             set { Data = parseMessagePayload(value); }
