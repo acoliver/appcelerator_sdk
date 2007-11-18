@@ -43,8 +43,6 @@ Appcelerator.Compiler.POSITION_HEAD_BOTTOM = 8;
 Appcelerator.Compiler.nextId = 0;
 Appcelerator.Compiler.functionId = 1;
 
-appCompilerIdCache = {};
-
 Appcelerator.Compiler.getAndEnsureId = function(element)
 {
 	if (!element.id)
