@@ -49,6 +49,7 @@
 /* The following files are subject to license agreements by their respective license owners */
 		</concat>
 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
+            <fileset file="${src.web.dir}/js/prolog.js"/>
 			<fileset file="${build.web.dir}/prototype/prototype.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/scriptaculous.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/effects.js"/>
@@ -87,6 +88,7 @@
 				<exclude name="datetime.js"/>
 				<exclude name="object.js"/>
 				<exclude name="servicebroker.js"/>
+				<exclude name="prolog.js"/>
 			</fileset>
 		</concat>
 	</target>
