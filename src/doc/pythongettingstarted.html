@@ -32,7 +32,7 @@
 
 	<div on="l:pythongettingstarted[show=install] then effect[Appear] else effect[Fade]">
 
-		<h3>Pre-requisettes</h3>
+		<h3>Pre-requisites</h3>
 		<p>
 		It is assumed that you already have the following installed:
 		<ul>
@@ -43,7 +43,7 @@
 
 		<h3>Reference</h3>
 		<p>
-		In the documentation below, the following symbols will be used in leau of concrete examples
+		In the documentation below, the following symbols will be used in lieu of concrete examples
 		<ul>
 			<li><tt>$PROJECT</tt>: the name of the project that we will create ex: myfirstapplciation
 		</ul>
@@ -58,14 +58,11 @@
 		
 		<h3>Easy install</h3>
 		<p>
-			Lets install Appcelerator
+			Let's install Appcelerator
 			<pre class="command">easy_install Appcelerator-@VERSION@-py2.5.egg</pre>
 			
-			Now lets install Pylons (will be used later for creating the project)
+			Now let's install Pylons (which will be used later for creating the project)
 			<pre class="command">easy_install Pylons</pre>
-			
-			And you will need sqlalchemy (beaker requires it)
-			<pre class="command">easy_install sqlalchemy</pre>
 		</p>
 	
 		<h3>Create your project</h3>
@@ -74,10 +71,12 @@
 			this will generate your project for you in a subdirecty named <tt>$PROJECT</tt>
 		</p>
 		
-		<h3>start the server</h3>
+		<h3>Start the server</h3>
 		<p>
-			<pre class="command">paster serve --reload development.ini</pre>
-			You should now be able to open <a href="http//localhost:5000" target="_blank">http//localhost:5000</a>
+			<pre class="command">
+cd $PROJECT
+paster serve --reload development.ini</pre>
+			You should now be able to open <a href="http://localhost:5000" target="_blank">http//localhost:5000</a>
 		</p>
 
 		<h3>Testing</h3>
@@ -96,22 +95,36 @@
 	</div>
 	<div on="l:pythongettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<h3>Python Service</h3>
-		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
-		<ul>
-			<li>the file ends with <tt>_service.py</tt>
-			<li>you put the proper method signature <tt>method_name(message)</tt>
-			<li>you put the proper annotations directly above the method <tt>@Service(request=xxx,response=xxx) </tt>
+		To add a new service, simply add a function with the <b>@Service</b> decorator.
+        To have your service recognized and registered with the Appcelerator Service Broker,
+        make sure that you:
+        <ul>
+            <li>place service functions in the <tt>services</tt> directory</li>
+            <li>use method signature <tt>method_name(message)</tt></li>
+			<li>you put the proper annotations directly above the method <tt>@Service(request=xxx,response=xxx) </tt></li>
 		</ul>
 
 		<h3>hello_service.py</h3>
-		As is done with the hello_service in $PROJECT/services/hello_service.py with the following source
-		<textarea name="code" class="xml:nocontrols">
-			@Service(request='app.test.message.request', response='app.test.message.response')
-			def hello(msg):
-			    message = msg.get('message', 'World')
-			    return {'message': 'I recieved from you: %s'%message}
+		In your project, the hello_service in $PROJECT/services/hello_service.py provides an example
+        of properly registering a service:
+        <!-- The highlighter claims that it can do python, but... doesn't work for me! -->
+        <textarea name="code" class="xml:nocontrols">
+            @Service(request='app.test.message.request', response='app.test.message.response')
+            def hello(msg):
+                message = msg.get('message', 'World')
+                return {'message': 'I recieved from you: %s'%message}
 		</textarea>
-	</div>
+
+        <p>
+        Whenever your interface sends a message named "app.test.message.request" to the server,
+        this service will be called.
+        </p>
+        <p>
+        After the function runs, its return value is sent as a javascript object to the interface.
+        If your interface needs to use this value, add an event handler that listens for the
+        <tt>r:app.test.message.response</tt> message and examine the value of <tt>this.data</tt>.
+        </p>
+    </div>
 	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>

@@ -500,7 +500,9 @@ dp.sh.Highlighter.prototype.Highlight = function(code)
 	if(this.noGutter)
 		this.div.className += ' nogutter';
 
-	// replace tabs with spaces
+    var self = this;
+    setTimeout(function() { (function () {
+    // replace tabs with spaces
 	if(this.tabsToSpaces == true)
 		this.code = this.ProcessSmartTabs(this.code);
 
@@ -545,6 +547,7 @@ dp.sh.Highlighter.prototype.Highlight = function(code)
 	this.SwitchToList();
 	this.div.appendChild(this.bar);
 	this.div.appendChild(this.ol);
+    }).apply(self)}, 17);
 }
 
 dp.sh.Highlighter.prototype.GetKeywords = function(str) 
