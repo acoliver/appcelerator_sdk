@@ -42,12 +42,13 @@
 </script>
 
 <style>
-td.scoretitle
+.scoretitle
 {
 	color:#696969;
+	background-color:#FFFFCC;
 	font-weight:bold;
 }
-td.home
+.home
 {
 	font-weight:bold;
 	font-size:10px;
@@ -55,13 +56,12 @@ td.home
 .scoretime
 {
 	color:#F00;
-	font-weight:bold;
 	font-size:10px;
 	position:absolute;
 	top:5px;
-	right:5px;
+	right:14px;
 }
-td.away
+.away
 {
 	font-size:10px;
 }
@@ -71,7 +71,7 @@ td.away
 	border-top:1px solid #ccc;
 	border-right:1px solid #ccc;
 	border-bottom:1px solid #ccc;
-	padding:3px 10px;
+	padding:3px 3px;
 	margin-bottom:5px;
 	width:150px;
 	position:relative;
@@ -106,8 +106,8 @@ td.away
 		<div class="scorecontainer">
 			<app:iterator on="l:paginationexample.response then execute" property="rows" >
 				<html:div class="scoreentry">
-					<html:table>
-						<html:tr><html:td class="scoretitle">#{date} </html:td></html:tr>
+					<html:table width="100%">
+						<html:tr class="scoretitle"><html:td>#{date} </html:td></html:tr>
 						<html:tr><html:td class="home">#{home} #{homescore}</html:td></html:tr>
 						<html:tr><html:td class="away">#{away} #{awayscore}</html:td></html:tr>
 					</html:table>
