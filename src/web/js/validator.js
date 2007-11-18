@@ -1,4 +1,4 @@
-Appcelerator.Validator =
+Object.extend(Appcelerator.Validator,
 {
     toString: function ()
     {
@@ -239,5 +239,5 @@ Appcelerator.Validator =
 		}
 		return true;
 	}
-};
+});
 

@@ -75,6 +75,7 @@ Object.extend(Appcelerator.Util.KeyManager,
     KEY_ESCAPE: 2,
     KEY_SPACEBAR: 3,
     disabled: false,
+    installed:false,
 
     toString: function ()
     {
@@ -93,6 +94,7 @@ Object.extend(Appcelerator.Util.KeyManager,
 
     install: function ()
     {
+        this.installed = true;
         this.keyPressFunc = this.onkeypress.bindAsEventListener(this);
         // NOTE: you *must* not use Event.observe here for this or you
         // won't be able to stop propogration (and you'll get a page reload on
@@ -166,6 +168,8 @@ Object.extend(Appcelerator.Util.KeyManager,
 
     installHandler: function (key, element, handler)
     {
+        if (!this.installed) this.install.bind(this);
+        
         var self = this;
 
         this.removeHandler(key, element);
@@ -237,5 +241,3 @@ Object.extend(Appcelerator.Util.KeyManager,
         return true;
     }
 });
-
-Appcelerator.Core.onload(Appcelerator.Util.KeyManager.install.bind(Appcelerator.Util.KeyManager));

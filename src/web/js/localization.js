@@ -1,5 +1,3 @@
-Appcelerator.Localization = Class.create();
-
 Appcelerator.Localization.currentLanguage = 'en';
 Appcelerator.Localization.LanguageMap = {};
 
@@ -9,7 +7,26 @@ Appcelerator.Localization.LanguageMap = {};
 //
 Appcelerator.Localization.addLanguageBundle = function(lang,displayName,map)
 {
-	Appcelerator.Localization.LanguageMap['language_'+lang] = {map:map,display:displayName};
+    map = map==null ? $H() : typeof(map.get)=='function' ? map : $H(map);
+	Appcelerator.Localization.LanguageMap['language_'+lang] = {'map':map,'display':displayName};
+};
+
+//
+// update changes (merge them) with an existing language bundle possibly overwriting
+// existing keys found
+//
+Appcelerator.Localization.updateLanguageBundle = function(lang,displayName,map)
+{
+    map = map==null ? $H() : typeof(map.get)=='function' ? map : $H(map);
+    var bundle = Appcelerator.Localization.LanguageMap['language_'+lang];
+    if (!bundle)
+    {
+        Appcelerator.Localization.addLanguageBundle(lang,displayName,map);
+    }
+    else
+    {
+        bundle.map = bundle.map.merge(map);
+    }
 };
 
 //
@@ -49,7 +66,7 @@ Appcelerator.Localization.set = function(key,value,lang)
 	{
 		throw "language bundle not found for language: "+lang;
 	}
-	map[key]=value;
+	map.set(key,value);
 }
 
 //
@@ -59,11 +76,12 @@ Appcelerator.Localization.get = function(key,defValue,lang)
 {
 	lang = (lang==null) ? Appcelerator.Localization.currentLanguage : lang;
 	
-	var map = Appcelerator.Localization.LanguageMap['language_'+lang];
+	var bundle = Appcelerator.Localization.LanguageMap['language_'+lang];
 	
-	if (map && map.map)
+	if (bundle && bundle.map)
 	{
-		return map.map[key] || defValue;
+		var value = bundle.map.get(key);
+		return value || defValue;
 	}
 	return defValue;
 };

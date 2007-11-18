@@ -12,5 +12,11 @@ Appcelerator.Compiler.registerAttributeProcessor(['textarea','input','select'],'
 			//
 			Appcelerator.Compiler.addFieldSet(element,false);
 		}		
+        // autocomplete causes some problems with validators - turn off for now
+        var auto = element.getAttribute('autocomplete');
+        if (!auto)
+        {
+            element.setAttribute('autocomplete','off');
+        }
 	}
 });

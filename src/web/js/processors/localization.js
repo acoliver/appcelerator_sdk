@@ -10,6 +10,11 @@ Appcelerator.Localization.AttributeProcessor =
 		if (value)
 		{
 			var v = Appcelerator.Localization.get(value);
+			if (!v) 
+			{
+			     Logger.error("couldn't find localization key for "+value);
+			     return;
+			}
 			switch (Appcelerator.Compiler.getTagname(element))
 			{
 				case 'select':

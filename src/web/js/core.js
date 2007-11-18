@@ -2,9 +2,6 @@
  * Appcelerator Core
  */
 
-Appcelerator.Core = {};
-Appcelerator.Core.Browser = {};
-
 Appcelerator.Core.usedModules = {};
 Appcelerator.Core.modules = [];
 Appcelerator.Core.fetching = {};
@@ -232,46 +229,54 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 
 Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
 {
-	var state = 
-	{
-		count : js.length
-	};
-	
-	var checkState = function()
-	{
-		state.count--;
-		if (state.count==0)
-		{
-			Appcelerator.Core.registerModule(moduleName, module);
-		}
-	};
-	
-	for (var i=0; i < js.length; i++)
-	{
-		var file = js[i];
-		moduleName = moduleName.replace(':','_');
-		var path = Appcelerator.ModulePath + moduleName + '/js/' + file;
+    moduleName = moduleName.replace(':','_');
+    setTimeout(function()
+    {
+        Appcelerator.Core.loadAsyncJS(moduleName,module,js,0);
+    },0);
+};
 
-		var script = document.createElement('script');
-		script.setAttribute('type','text/javascript');
-		script.setAttribute('src',path);
-		script.onerror = function(e)
-		{
-			$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
-		};
-		script.onload = checkState;
-		script.onreadystatechange = checkState;
-
-		if (Appcelerator.Browser.isSafari2)
-		{
-			setTimeout(function()
-			{
-				checkState();
-			}, 1000);
-		}
-		
-		Appcelerator.Core.HeadElement.appendChild(script);
-	}
+Appcelerator.Core.loadAsyncJS = function(moduleName,module,array,idx)
+{
+    if (!array || idx == array.length)
+    {
+        Appcelerator.Core.registerModule(moduleName, module);
+    }
+    else
+    {
+        var path = Appcelerator.ModulePath + moduleName + '/js/' + array[idx];
+        new Ajax.Request(path,
+        {
+            asynchronous:true,
+            method:'get',
+            evalJS:false,
+            onSuccess:function(response)
+            {
+                try
+                {
+                    if (Appcelerator.Browser.isSafari)
+                    {
+                        // global eval is broken in safari so we have to trick it by
+                        // adding script tag directly
+                        var script_tag = document.createElement('script');
+                        script_tag.type = 'text/javascript';
+                        script_tag.appendChild(document.createTextNode(response.responseText));
+                        Appcelerator.Core.HeadElement.appendChild(script_tag);
+                    }
+                    else
+                    {
+                        // window prefix is important here as it will eval on global scope
+                        window.eval(response.responseText);
+                    }
+                }
+                catch (e)
+                {
+                    $E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
+                }
+                Appcelerator.Core.loadAsyncJS(moduleName,module,array,idx+1);
+            }
+        });
+    }
 };
 
 //

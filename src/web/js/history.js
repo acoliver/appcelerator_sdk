@@ -42,79 +42,82 @@ Appcelerator.History.fireChange = function(newState)
     }
 };
 
-Appcelerator.History.loadIE = function()
+if (Appcelerator.Browser.isIE)
 {
-    var iframe = document.createElement('iframe');
-    iframe.id='app_hist_frame';
-    iframe.style.position='absolute';
-    iframe.style.left='-10px';
-    iframe.style.top='-10px';
-    iframe.style.width='1px';
-    iframe.style.height='1px';
-    document.body.appendChild(iframe);
-
-    var frame = $('app_hist_frame');
-    var stateField = null;
-    var state = null;
-    var initial = false;
-    
-    setInterval(function()
-    {
-        var doc = frame.contentWindow.document;
-        if (!doc)
-        {
-            return;
-        }
-
-        stateField = doc.getElementById('state');
-        var cur = document.location.hash;
-        
-        if (cur!==initial)
-        {
-            initial = cur;
-            doc.open();
-            doc.write( '<html><body><div id="state">' + cur + '</div></body></html>' );
-            doc.close();
-            Appcelerator.History.fireChange(cur);
-        }
-        else
-        {
-            // check for state
-            if (stateField)
-            {
-                var newState = stateField.innerText;
-                if (state!=newState)
-                {
-                    state = newState;
-                    if (newState==null || newState==='')
-                    {
-                        if (document.location.hash)
-                        {
-                            initial = '#';
-                            document.location.hash='';
-                            Appcelerator.History.fireChange('#');
-                        }
-                    }
-                    else
-                    {
-                        if (newState!=document.location.hash)
-                        {
-                            document.location.hash=newState;
-                            Appcelerator.History.fireChange(document.location.hash);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (initial)
-                {
-                    initial = false;
-                }
-            }
-        }
-    },50);	
-};
+	Appcelerator.History.loadIE = function()
+	{
+	    var iframe = document.createElement('iframe');
+	    iframe.id='app_hist_frame';
+	    iframe.style.position='absolute';
+	    iframe.style.left='-10px';
+	    iframe.style.top='-10px';
+	    iframe.style.width='1px';
+	    iframe.style.height='1px';
+	    document.body.appendChild(iframe);
+	
+	    var frame = $('app_hist_frame');
+	    var stateField = null;
+	    var state = null;
+	    var initial = false;
+	    
+	    setInterval(function()
+	    {
+	        var doc = frame.contentWindow.document;
+	        if (!doc)
+	        {
+	            return;
+	        }
+	
+	        stateField = doc.getElementById('state');
+	        var cur = document.location.hash;
+	        
+	        if (cur!==initial)
+	        {
+	            initial = cur;
+	            doc.open();
+	            doc.write( '<html><body><div id="state">' + cur + '</div></body></html>' );
+	            doc.close();
+	            Appcelerator.History.fireChange(cur);
+	        }
+	        else
+	        {
+	            // check for state
+	            if (stateField)
+	            {
+	                var newState = stateField.innerText;
+	                if (state!=newState)
+	                {
+	                    state = newState;
+	                    if (newState==null || newState==='')
+	                    {
+	                        if (document.location.hash)
+	                        {
+	                            initial = '#';
+	                            document.location.hash='';
+	                            Appcelerator.History.fireChange('#');
+	                        }
+	                    }
+	                    else
+	                    {
+	                        if (newState!=document.location.hash)
+	                        {
+	                            document.location.hash=newState;
+	                            Appcelerator.History.fireChange(document.location.hash);
+	                        }
+	                    }
+	                }
+	            }
+	            else
+	            {
+	                if (initial)
+	                {
+	                    initial = false;
+	                }
+	            }
+	        }
+	    },50);	
+	};
+}
 
 Appcelerator.Compiler.afterDocumentCompile(function()
 {

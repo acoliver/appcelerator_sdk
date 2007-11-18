@@ -3,6 +3,17 @@
  * Appcelerator bootstrap loader
  */
 var Appcelerator = {};
+Appcelerator.Util={};
+Appcelerator.Browser={};
+Appcelerator.Compiler={};
+Appcelerator.Config={};
+Appcelerator.Core={};
+Appcelerator.Localization={};
+Appcelerator.Validator={};
+Appcelerator.Decorator={};
+Appcelerator.Module={};
+Appcelerator.Shortcuts={}; // please do not touch this
+
 Appcelerator.Version = 
 {
 	major: parseInt('${version.major}'),
@@ -17,10 +28,7 @@ Appcelerator.Version =
 Appcelerator.LicenseType = 'GNU Public License, version 2.0 (GPL)';
 Appcelerator.Copyright = 'Copyright (c) 2006-2007 by Appcelerator, Inc. All Rights Reserved.';
 Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
-Appcelerator.Browser = {};
-Appcelerator.Util = {};
 Appcelerator.Parameters = $H({});
-Appcelerator.Config = {};
 
 // 
 // basic initialization for the core
@@ -33,7 +41,7 @@ Appcelerator.Config = {};
 	}
 	else
 	{
-		Appcelerator.Config['cookie_check'] = false;
+		Appcelerator.Config['cookie_check'] = true;
 		Appcelerator.Config['browser_check'] = true;
 		Appcelerator.Config['hide_body'] = true;		
 	}
@@ -112,7 +120,6 @@ Appcelerator.Config = {};
      	cssPath: Appcelerator.StylePath,
      	contentPath: Appcelerator.DocumentPath + 'content',
      	modulePath: Appcelerator.DocumentPath + 'modules',
-     	soundPath: Appcelerator.DocumentPath + 'sounds',
      	instanceid: Appcelerator.instanceid
 	};
 

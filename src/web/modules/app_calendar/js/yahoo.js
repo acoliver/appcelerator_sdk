@@ -440,3 +440,4 @@ YAHOO.augment = YAHOO.lang.augment;
 YAHOO.extend = YAHOO.lang.extend;
 
 YAHOO.register("yahoo", YAHOO, {version: "2.2.2", build: "204"});
+

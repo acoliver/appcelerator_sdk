@@ -1,4 +1,4 @@
-Appcelerator.Decorator =
+Object.extend(Appcelerator.Decorator,
 {
 	invalidImage: Appcelerator.ImagePath + 'warning.png',
 	validImage: Appcelerator.ImagePath + 'confirm.png',
@@ -178,4 +178,4 @@ Appcelerator.Decorator =
             this.checkInvalid(element, valid, decId, element.value.length + ' characters', true);
         }
     }
-};
+});

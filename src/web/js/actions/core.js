@@ -192,7 +192,7 @@ var addsetBuilder =
 			}
 			
 			var code = 'var e = $("'+id+'"); if (!e) throw "syntax error: element with ID: '+id+' doesn\'t exist";'
-			code+= "var isOperaSetIframe =  e.nodeName=='IFRAME' && '"+key+"'=='src' && " + Appcelerator.Browser.isOpera + ";";
+			code+= "var isOperaSetIframe =  " + Appcelerator.Browser.isOpera + " && e.nodeName=='IFRAME' && '"+key+"'=='src';";
             code+="if (e.nodeName=='IFRAME' && '"+key+"'=='src'){";
             code+="var onload=e.getAttribute('onloaded');";
             code+="if (onload){";
@@ -208,7 +208,7 @@ var addsetBuilder =
 					code+='e.'+key + " = ('true' == ''+" + Appcelerator.Compiler.generateSetter(value) + ')';
 					break;
 				default:
-					code+='if(isOperaSetIframe) {' + 'e.location.href' + " = " + Appcelerator.Compiler.generateSetter(value) + '; }';
+					code+='if(isOperaSetIframe) {e.location.href='+ Appcelerator.Compiler.generateSetter(value) + '; }';
 					code+='else { e.' + key + " = " + Appcelerator.Compiler.generateSetter(value) + '; }'; 
 			}
 			code+='} else {';

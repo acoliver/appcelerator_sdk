@@ -282,4 +282,4 @@ Appcelerator.Module.Chart =
 	}
 };
 
-Appcelerator.Core.registerModule('app:chart',Appcelerator.Module.Chart);
+Appcelerator.Core.registerModuleWithJS('app:chart',Appcelerator.Module.Chart,['swfobject.js']);

@@ -1012,26 +1012,9 @@ else
 		}
 		Appcelerator.Util.ServiceBroker.serverPath = config.value;
 		Appcelerator.Util.ServiceBroker.poll = (config.poll == 'true');
-
-		// do a HEAD request to get the SESSIONID from the server in case
-		// we have an expired SESSIONID cookie on startup
-		new Ajax.Request(Appcelerator.Util.ServiceBroker.serverPath+'?init=1&ts='+new Date().getTime(),
-		{
-			asychronous:true,
-			method:'get',
-			onComplete:function()
-			{
-				Appcelerator.Util.ServiceBroker.triggerConfig();
-				Logger.info('ServiceBroker ready');
-				Appcelerator.Util.ServiceBroker.startTimer();
-			},
-			onFailure:function()
-			{
-				$E('ServiceBroker error received from '+Appcelerator.Util.ServiceBroker.serverPath);
-				Appcelerator.Util.ServiceBroker.triggerConfig();
-			}
-		});
-
+        Appcelerator.Util.ServiceBroker.triggerConfig();
+        Appcelerator.Util.ServiceBroker.startTimer();
+        Logger.info('ServiceBroker ready');
 	});
 	
 	//

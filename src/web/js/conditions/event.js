@@ -20,8 +20,6 @@ Appcelerator.Compiler.Events =
 	'paste'
 ];
 
-Event.DOMEvents = Event.DOMEvents.concat(['contextmenu','input','paste']);
-
 Appcelerator.Compiler.actionId = 0;
 
 Appcelerator.Compiler.isEventSelector = function (token)
@@ -147,31 +145,31 @@ Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,
 			for (var c=0;c<element.childNodes.length;c++)
 			{
 				(function(){
-				var child = element.childNodes[c];
-				if (child.nodeType == 1)
-				{
-					Appcelerator.Compiler.getAndEnsureId(child);
-					$D('adding listener to '+child.id+' for event: '+event);
-					var cf = function(event)
+					var child = element.childNodes[c];
+					if (child.nodeType == 1)
 					{
-						var me = child;
-						if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
-						var actionFunc = Appcelerator.Compiler.makeConditionalAction(Appcelerator.Compiler.getAndEnsureId(child),action,ifCond);
-					    var __method = actionFunc, args = $A(arguments);
-					    return __method.apply(this, [event || window.event].concat(args));
-					};
-					var f = cf;
-					if (stopEvent)
-					{
-						f = function(e)
+						Appcelerator.Compiler.getAndEnsureId(child);
+						$D('adding listener to '+child.id+' for event: '+event);
+						var cf = function(event)
 						{
-							cf(e);
-							Event.stop(e);
-							return false;
+							var me = child;
+							if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
+							var actionFunc = Appcelerator.Compiler.makeConditionalAction(Appcelerator.Compiler.getAndEnsureId(child),action,ifCond);
+						    var __method = actionFunc, args = $A(arguments);
+						    return __method.apply(this, [event || window.event].concat(args));
 						};
+						var f = cf;
+						if (stopEvent)
+						{
+							f = function(e)
+							{
+								cf(e);
+								Event.stop(e);
+								return false;
+							};
+						}
+						Appcelerator.Compiler.addEventListener(child,event,f,delay);					
 					}
-					Appcelerator.Compiler.addEventListener(child,event,f,delay);					
-				}
 				})();
 			}
 		}

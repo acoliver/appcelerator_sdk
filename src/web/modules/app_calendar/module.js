@@ -114,7 +114,8 @@ Appcelerator.Module.Calendar =
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
 			'functions' : ['execute'],
-			'compile' : true };	
+			'compile' : true 
+	   };	
 	}
 };
 
