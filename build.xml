@@ -163,7 +163,7 @@
 		<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="c" />
 		<appc srcdir="${stage.dir}/web" destdir="test"/>
 	</target>
-	<target name="build_sdks" depends="sdk_python_dist,sdk_java_dist,sdk_dotnet_dist,sdk_php_dist,sdk_ruby_dist"></target>
+	<target name="build_sdks" depends="sdk_python_dist,sdk_java_dist,sdk_dotnet_dist,sdk_php_dist,sdk_ruby_dist,build_src_dist"></target>
 	<target name="build_web" depends="build_core_javascript,copy_web_files"/>
 	<target name="build_java" depends="build_web,java_compile"/>
 	<target name="build_server.nomin" depends="nomin,build_server"/>
@@ -657,7 +657,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-    <target name="build_src_dist" description="* Builds the source distribution">
+    <target name="build_src_dist" description="* Builds the source distribution" depends="init">
         <echo>Building the Appcelerator Platform SDK source code distribution</echo>
         <mkdir dir="stage"/>
         <zip destfile="${stage.dir}/appcelerator_sdk_source_${VERSION}.zip" comment="Appcelerator Platform SDK sourcecode for ${VERSION}">
