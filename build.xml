@@ -451,7 +451,7 @@
 			<fileset dir="build/dotnet" includes="**/**"/>
 			<fileset dir="stage" includes="doc/**"/>
 		</copy>
-		<copy tofile="stage/sdk/dotnet/Appcelerator-debug.dll" file="src/dotnet/bin/Release/Appcelerator.dll"/>
+		<copy tofile="stage/sdk/dotnet/Appcelerator-debug.dll" file="src/dotnet/bin/Debug/Appcelerator.dll"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET">
 			<zipfileset dir="stage/sdk/dotnet">
 				<include name="**/*"/>
