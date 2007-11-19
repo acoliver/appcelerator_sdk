@@ -88,6 +88,7 @@ Appcelerator.Module.EditinPlace =
 			editinplace_input.style.display = 'none';
 			editinplace_text.innerHTML = editinplace_input.value;
 			element.value = editinplace_input.value;
+			editinplace_buttons.style.display = 'none';
 		}
 		
 		var cancelClickListener = function(e)
