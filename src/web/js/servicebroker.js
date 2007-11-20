@@ -6,6 +6,9 @@ Appcelerator.Util.ServiceBroker =
     serverPath: Appcelerator.DocumentPath + "servicebroker",
     interceptors: [],
     messageQueue: [],
+	localMessageQueue: [],
+	localTimer: null,
+	localTimerPoll: 100,
     initQueue:[],
     timer: null,
     time: null,
@@ -184,6 +187,7 @@ Appcelerator.Util.ServiceBroker =
     {
     	this.compileComplete = true;
     	this.runInitQueue();
+		this.startLocalTimer();
     },
     triggerConfig:function()
     {
@@ -322,59 +326,10 @@ Appcelerator.Util.ServiceBroker =
                 {
                     $E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
                 }
-                var arraydirect = this.remoteDirectListeners[name];
-                var arraypattern = this.remotePatternListeners;
-                if (arraydirect)
-                {
-                    for (var c = 0, len = arraydirect.length; c < len; c++)
-                    {
-                        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-                    }
-                }
-                if (arraypattern)
-                {
-                    for (var c = 0, len = arraypattern.length; c < len; c++)
-                    {
-                        var entry = arraypattern[c];
-                        var listener = entry[0];
-                        var pattern = entry[1];
-                        if (pattern.test(name))
-                        {
-                            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-                        }
-                    }
-                }
-                break;
-            }
-            case 'local':
-            {
-                var arraydirect = this.localDirectListeners[name];
-                var arraypattern = this.localPatternListeners;
-
-                if (arraydirect)
-                {
-                    for (var c = 0, len = arraydirect.length; c < len; c++)
-                    {
-                        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-                    }
-                }
-                if (arraypattern)
-                {
-                    for (var c = 0, len = arraypattern.length; c < len; c++)
-                    {
-                        var entry = arraypattern[c];
-                        var listener = entry[0];
-                        var pattern = entry[1];
-                        if (pattern.test(name))
-                        {
-                            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-                        }
-                    }
-                }
-
-                break;
-            }
+				break;
+			}
         }
+		this.localMessageQueue.push([name,data,dest,scope,version]);
     },
 
     processIncoming: function (xml)
@@ -743,7 +698,9 @@ Appcelerator.Util.ServiceBroker =
     destroy: function ()
     {
         this.cancelTimer();
+		this.cancelLocalTimer();
         if (this.messageQueue) this.messageQueue.clear();
+        if (this.localMessageQueue) this.localMessageQueue.clear();
         this.messageQueue = null;
         this.time = null;
         if (this.localDirectListeners)
@@ -776,6 +733,15 @@ Appcelerator.Util.ServiceBroker =
         this.remotePatternListeners = null;
     },
 
+    cancelLocalTimer: function ()
+    {
+        if (this.locaTimer)
+        {
+            clearInterval(this.locaTimer);
+            this.locaTimer = 0;
+        }
+    },
+
     cancelTimer: function ()
     {
         if (this.timer)
@@ -799,6 +765,71 @@ Appcelerator.Util.ServiceBroker =
         if (Logger.fatalEnabled) Logger.fatal(this + ', received an invalid credentials, probably need to re-login, redirecting to landing page');
     },
 
+    startLocalTimer: function ()
+    {		
+		this.localTimer = setInterval(function()
+        {
+			var queue = this.localMessageQueue; 
+			if (queue && queue.length)
+			{
+				var message = queue[queue.length-1];
+				var name = message[0];
+				var data = message[1];
+				var dest = message[2];
+				var scope = message[3];
+				var version = message[4];
+				
+				var arraydirect = this.remoteDirectListeners[name];
+				var arraypattern = this.remotePatternListeners;
+				if (arraydirect)
+				{
+				    for (var c = 0, len = arraydirect.length; c < len; c++)
+				    {
+				        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+				    }
+				}
+				if (arraypattern)
+				{
+				    for (var c = 0, len = arraypattern.length; c < len; c++)
+				    {
+				        var entry = arraypattern[c];
+				        var listener = entry[0];
+				        var pattern = entry[1];
+				        if (pattern.test(name))
+				        {
+				            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+				        }
+				    }
+				}
+
+				arraydirect = this.localDirectListeners[name];
+				arraypattern = this.localPatternListeners;
+				if (arraydirect)
+				{
+				    for (var c = 0, len = arraydirect.length; c < len; c++)
+				    {
+				        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+				    }
+				}
+				if (arraypattern)
+				{
+				    for (var c = 0, len = arraypattern.length; c < len; c++)
+				    {
+				        var entry = arraypattern[c];
+				        var listener = entry[0];
+				        var pattern = entry[1];
+				        if (pattern.test(name))
+				        {
+				            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+				        }
+				    }
+				}
+
+				queue.remove(message);
+			}
+        }.bind(this), this.localTimerPoll);
+	},
+	
     startTimer: function (force)
     {
     	if (!this.init)
