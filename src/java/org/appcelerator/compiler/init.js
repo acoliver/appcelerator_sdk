@@ -773,4 +773,4 @@ var top = window;
 	};
 })();
 
-window.location = appcelerator_app_html;
+window.location = appcelerator_app_html; // inserted by org.appcelerator.compiler.Compiler

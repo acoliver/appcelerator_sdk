@@ -49,17 +49,10 @@
 		</ul>
 		</p>
 
-		<h3>Get the distribution</h3>
-		<p>
-		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
-		<ul>
-			<li>Appcelerator-@VERSION@-py2.5.egg - this is the distribution for creating your python services
-		</ul>
-		
 		<h3>Easy install</h3>
 		<p>
 			Let's install Appcelerator
-			<pre class="command">easy_install Appcelerator-@VERSION@-py2.5.egg</pre>
+			<pre class="command">easy_install Appcelerator</pre>
 			
 			Now let's install Pylons (which will be used later for creating the project)
 			<pre class="command">easy_install Pylons</pre>
@@ -111,15 +104,15 @@ paster serve --reload development.ini</pre>
 		</textarea>
 
 		<h3>Next Steps</h3>
-		You are now ready to proceed to restarting/re-inovking your python service
+		You are now ready to proceed to restarting/re-invoking your python service
     </div>
 	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
-			Once you have created the java project, your web source will exist in:
+			Once you have created the project, your web source will exist in:
 			<ul>
 				<li><b>$PROJECT/public</b>: directory where all your html exists
-				<li><b>$PROJECT/public/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>$PROJECT/public/appcelerator.xml</b>: defines the location and behaviour of the Service Broker
 			</ul>
 
 			<h3>$PROJECT/public/appcelerator.xml</h3>
