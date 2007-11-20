@@ -445,6 +445,7 @@
 		<mkdir dir="stage"/>
 		<copy todir="${stage.dir}/sdk/dotnet/src/web" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
+			<fileset dir="src/dotnet" includes="web.config"/>
 		</copy>
 		<copy todir="stage/sdk/dotnet" overwrite="true">
 			<fileset dir="src/dotnet/bin/Release" includes="Appcelerator.dll"/>

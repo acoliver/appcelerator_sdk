@@ -94,10 +94,10 @@ set PROJECT=sb</pre>
 		
 		<h3>Build and deploy</h3>
 		Now that you have succesfully setup your project, you can build.  Once you have build your DLL, copy the DLL your application's deploy directory:
-		<pre class="command">rmdir %IIS_APPROOT%\%PROJECT% /S /Q
-mkdir %IIS_APPROOT%\%PROJECT%\bin\deploy
+		<pre class="command">mkdir %IIS_APPROOT%\%PROJECT%\bin\deploy
 cd bin\Release
-copy *.dll %IIS_APPROOT%\%PROJECT%\bin\deploy /Y</pre>
+copy TestService.dll %IIS_APPROOT%\%PROJECT%\bin\deploy /Y
+copy Appcelerator.dll %IIS_APPROOT%\%PROJECT%\bin /Y</pre>
 		Now lets copy the html files on over
 		<pre class="command">cd ..\..\src\web
 xcopy * %IIS_APPROOT%\%PROJECT% /S</pre>
@@ -106,10 +106,7 @@ xcopy * %IIS_APPROOT%\%PROJECT% /S</pre>
 		<h3>Troubleshooting</h3>
 		Getting a 404? Try the following in this order..
 		<ul>
-			<li>Create an empty file in your application's root directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%</tt>) called <tt>ServiceBroker.app</tt>
 			<li>Reinstall .net framework 2.0
-			<li>Make sure you have <tt>Appcelerator.dll</tt> in your application's root\bin directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%\bin</tt>)
-			<li>Make sure you have the <tt>appcelerator.xml</tt> and web.config files in your application's root directory (e.g. <tt>%IIS_APPROOT%\%PROJECT%</tt>)
 		</ul>
 		Not getting a response from your service? Try the following..
 		<ul>
