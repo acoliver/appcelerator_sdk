@@ -263,6 +263,10 @@ Appcelerator.Core.loadAsyncJS = function(moduleName,module,array,idx)
                         script_tag.appendChild(document.createTextNode(response.responseText));
                         Appcelerator.Core.HeadElement.appendChild(script_tag);
                     }
+                    else if (Appcelerator.Browser.isIE)
+                    {
+                        window.execScript(response.responseText);
+                    }
                     else
                     {
                         // window prefix is important here as it will eval on global scope
