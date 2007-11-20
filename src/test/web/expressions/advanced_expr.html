@@ -235,6 +235,22 @@
             </div>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-153 Enforce Ordering In Local Service Broker -->
+            Correct message ordering in local service broker
+        </td>
+        <td class="result">
+			<a on="click then l:appsdk153.one">Click to run</a>
+
+			<app:script on="l:appsdk153.one then execute">
+			$MQ('l:appsdk153.two');
+			</app:script>
+
+			<app:script on="l:appsdk153.one then javascript[alert('you should see this first')] or l:appsdk153.two then javascript[alert('you should see this second')]">	
+			</app:script>
+        </td>
+    </tr>
 
 </table>
 
