@@ -7,33 +7,48 @@ namespace TestService
 {
     public class TestService
     {
-	    [Service("app.test.message.request", "app.test.message.response")]
-	    public void HelloWorld(Message request, ref Message response)
-	    {
-	        JsonObject data = response.Data;
+        [Service("app.test.message.request", "app.test.message.response")]
+        public void TestMessageHandler(Message request, ref Message response)
+        {
+            response.Data.Add("success", true);
+            String message;
+            try
+            {
+                message = ((JsonString)request.Data["message"]).Value;
+            }
+            catch
+            {
+                message = "";
+            }
+            response.Data.Add("message", "I received from you " + message);
+        }
 
-	        data.Add("framework_name", "Appcelerator");
-	        data.Add("framework_version", 2);
-	        data.Add("framework_isAwesome", true);
+        [Service("hello.request", "hello.response")]
+        public void HelloWorld(Message request, ref Message response)
+        {
+            JsonObject data = response.Data;
 
-	        JsonArray items = new JsonArray();
-	        for (int i = 0; i < 11; i++)
-	        {
-	            items.Add("item " + i);
-	        }
+            data.Add("framework_name", "Appcelerator");
+            data.Add("framework_version", 2);
+            data.Add("framework_isAwesome", true);
 
-	        data.Add("Hello", "world");
-	        data.Add("items", items);
+            JsonArray items = new JsonArray();
+            for (int i = 0; i < 11; i++)
+            {
+                items.Add("item " + i);
+            }
 
-	        JsonObject person = new JsonObject();
-	        person.Add("age", 24);
-	        person.Add("sex", "male");
-	        person.Add("name", "Amro");
-	        person.Add("us_citizen", true);
-	        data.Add("person", person);
+            data.Add("Hello", "world");
+            data.Add("items", items);
 
-	        response.Data = data;
-	    }
+            JsonObject person = new JsonObject();
+            person.Add("age", 24);
+            person.Add("sex", "male");
+            person.Add("name", "Amro");
+            person.Add("us_citizen", true);
+            data.Add("person", person);
+
+            response.Data = data;
+        }
     }
 }
-
