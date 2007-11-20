@@ -95,7 +95,10 @@
 	<target name="nomin">
 		<property name="dont.jscompress" value="anything"/>
 	</target>
-	<target name="jscompress" depends="copy_web_files" unless="dont.jscompress">
+	<target name="min" unless="dont.jscompress">
+		<property name="do.jscompress" value="anything"/>
+	</target>
+	<target name="jscompress" depends="copy_web_files" if="do.jscompress">
     	<exec executable="java" failonerror="true" failifexecutionfails="true">
     		<arg line="-jar ${build.bin.dir}/yuicompressor-2.2.5.jar"/>
     		<arg line="${stage.dir}/web/js/appcelerator-debug.js"/>
@@ -121,7 +124,7 @@
     	</exec>
 		<echo message="minimized"/>
 	</target>
-	<target name="nojscompress" if="dont.jscompress">
+	<target name="nojscompress" unless="do.jscompress">
 		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
 			<fileset file="${build.dir}/license_header.txt"/>
     		<fileset file="${stage.dir}/web/js/appcelerator-debug.js"/>
@@ -167,6 +170,7 @@
 	<target name="build_web" depends="build_core_javascript,copy_web_files"/>
 	<target name="build_java" depends="build_web,java_compile"/>
 	<target name="build_server.nomin" depends="nomin,build_server"/>
+	<target name="build_server.min" depends="min,build_server"/>
 	<target name="build_server" depends="build_java" description="* Builds the Java Server">
 		<mkdir dir="${stage.dir}/java/server/web"/>
 		<copy todir="${stage.dir}/java/server/web">
@@ -216,6 +220,7 @@
 		</war>
 	</target>
 	<target name="build_doc.nomin" depends="nomin,build_doc"/>
+	<target name="build_doc.min" depends="min,build_doc"/>
 	<target name="build_doc" depends="init,build_web,build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
 		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
@@ -391,7 +396,7 @@
 	-->
 	</target>
 	
-	<target name="sdk_java_dist" depends="build_java_sdk" description="* Builds the Java SDK distribution">
+	<target name="sdk_java_dist" depends="min,build_java_sdk" description="* Builds the Java SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" comment="Appcelerator Platform SDK for Java">
 			<zipfileset dir="stage/sdk/java" prefix="appcelerator_sdk_java_${VERSION}">
@@ -403,7 +408,7 @@
 		</zip>
 	</target>
 	
-	<target name="sdk_php_dist" depends="build_php_sdk" description="* Builds the PHP SDK distribution">
+	<target name="sdk_php_dist" depends="min,build_php_sdk" description="* Builds the PHP SDK distribution">
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
 			<zipfileset dir="stage/sdk/php" prefix="">
@@ -421,7 +426,7 @@
 		</zip>
 	</target>
 
-	<target name="sdk_ruby_dist" depends="build_web,build_examples" description="* Builds the Ruby on Rails SDK distribution">
+	<target name="sdk_ruby_dist" depends="min,build_web,build_examples" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
@@ -451,7 +456,7 @@
 			<fileset dir="${stage.dir}/ruby/pkg" includes="*.gem"/>
 		</copy>
 	</target>
-	<target name="sdk_dotnet_dist" depends="build_web,build_doc,build_web_unit" description="* Builds the .NET SDK distribution">
+	<target name="sdk_dotnet_dist" depends="min,build_web,build_doc,build_web_unit" description="* Builds the .NET SDK distribution">
 		<mkdir dir="stage"/>
 		<copy todir="${stage.dir}/sdk/dotnet/src/web" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
@@ -472,7 +477,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="sdk_all_dist" depends="min,sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php,install_python,install_dotnet"/>
 	<target name="install_all_examples" depends="force_examples,install_java_examples,install_ruby_examples,install_php_examples,install_python_examples,install_dotnet_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
@@ -590,7 +595,7 @@
 			<fileset dir="build/examples/${example}/src/web" includes="**/**"/>
 		</copy>
 	</target>
-    <target name="sdk_python_dist" depends="build_core_javascript" description="* Builds the Python SDK distribution">
+    <target name="sdk_python_dist" depends="min,build_core_javascript" description="* Builds the Python SDK distribution">
         <mkdir dir="${stage.dir}/python"/>
         <property name="python.public.dir" value="appcelerator/templates/hello_project/+package+/public"/>
         <copy todir="${src.python.dir}/${python.public.dir}" filtering="false">
