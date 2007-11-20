@@ -1134,7 +1134,23 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 		var condition = expression.substring(0,thenidx);
 		var elseAction = null;
 		var nextstr = expression.substring(thenidx+6);
-		var elseidx = nextstr.indexOf('else');
+		var elseidx = -1;
+		if (nextstr.indexOf('['))
+		{
+			var result = Appcelerator.Compiler.smartSplit(nextstr,'else');
+			if (result.length > 1)
+			{
+				elseidx = result[0].length;
+			}
+			else
+			{
+				elseidx = result[0].length+1;
+			}
+		}
+		else
+		{
+			elseidx = nextstr.indexOf('else');		
+		}
 		var increment = 5;
 		if (elseidx == -1)
 		{
