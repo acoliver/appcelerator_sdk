@@ -35,7 +35,7 @@
         <property name="VERSION" value="${APP_VERSION}"/>		
 	</target>
 
-	<target name="build_core_javascript" depends="build_core_javascript_js,jscompress,nojscompress" description="* Builds the core JS framework">
+	<target name="build_core_javascript" depends="build_core_javascript_js,copy_web_files,jscompress,nojscompress" description="* Builds the core JS framework">
 	</target>
 	
 	<target name="build_core_javascript_js" depends="init" description="* Builds the core JS framework">
@@ -124,7 +124,7 @@
     	</exec>
 		<echo message="minimized"/>
 	</target>
-	<target name="nojscompress" unless="do.jscompress">
+	<target name="nojscompress" unless="do.jscompress" depends="copy_web_files" >
 		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
 			<fileset file="${build.dir}/license_header.txt"/>
     		<fileset file="${stage.dir}/web/js/appcelerator-debug.js"/>
