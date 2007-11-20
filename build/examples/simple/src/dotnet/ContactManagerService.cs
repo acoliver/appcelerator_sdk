@@ -16,7 +16,6 @@ namespace ContactManagerService
         [Service("example.contactdetails.request", "example.contactdetails.response")]
         public void GetDetails(Message request, ref Message response)
         {
-            JsonObject data = response.Data;
             JsonArray people = new JsonArray();
             for (int i = 0; i < 3; i++)
             {
@@ -27,9 +26,8 @@ namespace ContactManagerService
 	            person.Add("us_citizen", true);
                 people.Add(person);
             }
-            data.Add("people", people);
-            data.Add("success", true);
-            response.Data = data;
+            response.Data.Add("people", people);
+            response.Data.Add("success", true);
         }
     }
 }
