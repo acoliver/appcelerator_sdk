@@ -26,10 +26,10 @@ namespace TestService
 	        data.Add("items", items);
 
 	        JsonObject person = new JsonObject();
-	        another_object.Add("age", 24);
-	        another_object.Add("sex", "male");
-	        another_object.Add("name", "Amro");
-	        another_object.Add("us_citizen", true);
+	        person.Add("age", 24);
+	        person.Add("sex", "male");
+	        person.Add("name", "Amro");
+	        person.Add("us_citizen", true);
 	        data.Add("person", person);
 
 	        response.Data = data;
