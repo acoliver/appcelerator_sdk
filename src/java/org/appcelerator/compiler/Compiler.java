@@ -20,24 +20,19 @@
 
 package org.appcelerator.compiler;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.appcelerator.compiler.compressor.Compressor;
 import org.appcelerator.util.Util;
 import org.cyberneko.html.parsers.DOMParser;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Appcelerator client code compiler
@@ -49,8 +44,10 @@ public class Compiler
 	public static final String VERSION = "${version.major}.${version.minor}.${version.rev}";
 	
     private static final Map<String,String> FROM_HTML_ENTITIES = new HashMap<String,String>();
-	
-	static
+
+    private static final Pattern APPCELERATOR_SCRIPT_RE = Pattern.compile("<script[^>]+src=\"([^\"]*appcelerator)(-debug)?\\.js\"");
+
+    static
 	{
         // TODO: map the rest from http://www.w3schools.com/tags/ref_entities.asp
 	    FROM_HTML_ENTITIES.put("nbsp", "#160"); 
@@ -75,9 +72,9 @@ public class Compiler
         FROM_HTML_ENTITIES.put("sup2", "#178"); 
 	}
 
-	private static File makeTempHTML (File file) throws Exception
+	private static HtmlTempFile makeTempHTML (File file) throws Exception
 	{
-		File f = File.createTempFile("app", ".tmp", file.getParentFile());
+		File tempFile = File.createTempFile("app", ".tmp", file.getParentFile());
         FileReader fileReader = new FileReader(file);
         
         BufferedReader reader = new BufferedReader(fileReader);
@@ -100,21 +97,39 @@ public class Compiler
         	int end = html.indexOf('>',idx);
         	html = html.substring(end+1);
         }
+
+
+        Matcher matcher = APPCELERATOR_SCRIPT_RE.matcher(html);
+        matcher.find();
+        String appceleratorJsPath = matcher.group(1)+"-debug.js";
+        File appceleratorJs = new File(file.getParent(), appceleratorJsPath);
         
-        FileOutputStream fos=new FileOutputStream(f);
+        FileOutputStream fos=new FileOutputStream(tempFile);
         PrintWriter w = new PrintWriter(fos);
         w.println(html);
         w.flush();
         w.close();
         fos.close();
-        return f;
+
+        return new HtmlTempFile(appceleratorJs, tempFile);
 	}
+
+    private static class HtmlTempFile {
+        File appceleratorJs;
+        File tempFile;
+        HtmlTempFile(File appceleratorJs, File tempFile) {
+            this.appceleratorJs = appceleratorJs;
+            this.tempFile = tempFile;
+        }
+    }
+
     private static void loadFile (Context ctx, Scriptable scope, File file) throws Exception
     {
     	if (!file.exists())
     	{
     		throw new FileNotFoundException("couldn't find source file: "+file);
     	}
+        System.out.println("Loading Javascript from: "+file.getParent()+"/"+file.getName());
         FileReader fileReader = new FileReader(file);
         ctx.evaluateReader(scope, fileReader, file.getName(), 1, null);
     }
@@ -143,8 +158,9 @@ public class Compiler
             DOMParser parser = new DOMParser();
             parser.setFeature("http://cyberneko.org/html/features/scanner/notify-builtin-refs", true);
             ScriptableObject.putProperty(scope, "DOMParser", Context.toObject(parser, scope));
-            
-            tempFile = makeTempHTML(infile);
+
+            HtmlTempFile tmp = makeTempHTML(infile);
+            tempFile = tmp.tempFile;
             
             ScriptableObject.putProperty(scope, "appcelerator_app_html", Context.toObject(tempFile.toURI(), scope));
             
@@ -155,16 +171,15 @@ public class Compiler
             
             // load up our appcelerator file - use debug in case we have errors it's easier to debug line numbers
             File jsDir = new File(infile.getParentFile(),"js");
-            File appceleratorJS = new File(jsDir,"appcelerator-debug.js");
             File outJSFile = new File(jsDir,infile.getName()+".js");
             ScriptableObject.putProperty(scope, "appcelerator_app_js", outJSFile.getName());
             
             
-            loadFile(ctx,scope,appceleratorJS);
+            loadFile(ctx,scope,tmp.appceleratorJs);
             
 
             // load all modules
-            File moduleDir = new File(infile.getParentFile(),"modules");
+            File moduleDir = new File(tmp.appceleratorJs.getParentFile().getParentFile(), "modules");
             for (File file : moduleDir.listFiles())
             {
             	if (file.isDirectory())
@@ -172,8 +187,12 @@ public class Compiler
             		File moduleFile = new File(file,"module.js");
             		if (moduleFile.exists())
             		{
-            			loadFile(ctx,scope,moduleFile);
-            		}
+                        try {
+                            loadFile(ctx,scope,moduleFile);
+                        } catch(EvaluatorException e) {
+                            e.printStackTrace();
+                        }
+                    }
             	}
             }
 
@@ -203,7 +222,7 @@ public class Compiler
             
             // get the result
             String compiledDocument = null;
-            
+
             while (compiledDocument==null)
             {
                 compiledDocument = (String)ctx.evaluateString(scope, "Appcelerator.Compiler.compiledDocument", null, 1, null);
@@ -340,13 +359,39 @@ public class Compiler
     	out.close();
     }
     
+    private static void printUsage() {
+    	System.err.println(
+			"Appcelerator Compiler\n\n"+
+			"Usage: appc input_directory output_directory\n\n"+
+			"Compiles all html files from input_directory into output directory"
+		);
+    }
+    
     public static void main (String args[]) throws Exception
     {
-        File in = new File(args[0]);
-        File out = new File(args[1]);
-        System.err.println("in = "+in.getAbsolutePath());
-        System.err.println("out = "+out.getAbsolutePath());
-        compile(in,out,new PrintWriter(System.out),true,true);
-        System.exit(0);
+    	if(args.length >= 1) {
+            File inputDirectory = new File(args[0]);
+	        File outputDirectory;
+            if(args.length >= 2) {
+                outputDirectory = new File(args[1]);
+            } else {
+               outputDirectory = new File(inputDirectory.getAbsolutePath()+"-compiled");
+            }
+
+            if(!inputDirectory.exists()) {
+                System.err.println("Directory '"+args[0]+"' could not be found\n");
+                printUsage();
+            } else if(!inputDirectory.isDirectory()) {
+                System.err.println("Path '"+args[0]+"' must be a directory\n");
+                printUsage();
+            } else {
+                System.err.println("inputDirectory = "+ inputDirectory.getAbsolutePath());
+	            System.err.println("outputDirectory = "+ outputDirectory.getAbsolutePath());
+                compile(inputDirectory, outputDirectory,new PrintWriter(System.out),true,true);
+            }
+        } else {
+    		printUsage();
+    	}
+        System.exit(0); // why?
     }
 }
