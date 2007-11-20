@@ -222,10 +222,14 @@
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="appcelerator-dotnet.xml" srcFile="build/dotnet/src/web/appcelerator.xml"/>
+		<loadfile property="appcelerator-php.xml" srcFile="build/php/sdk/dist/src/web/appcelerator.xml"/>
+		<loadfile property="appcelerator-python.xml" srcFile="build/python/appcelerator.xml"/>
 		<loadfile property="TestService.cs" srcFile="build/dotnet/TestService.cs"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
+		<loadfile property="ContactManagerService.cs" srcFile="build/examples/simple/src/dotnet/ContactManagerService.cs"/>
+		<loadfile property="contact_manager_service.py" srcFile="build/examples/simple/src/python/services/contact_manager_service.py"/>
 		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
 		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
 			<fileset dir="${stage.dir}/web" includes="**/*" excludes="images/**"/>
@@ -233,14 +237,17 @@
 				<filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
 				<filter token="appcelerator.xml" value="${appcelerator.xml}"/>
 				<filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
-				<filter token="ContactManager.java" value="${ContactManager.java}"/>
-				<filter token="ContactManager.java" value="${ContactManager.java}"/>
 				<filter token="VERSION" value="${VERSION}"/> 
+				<filter token="ContactManager.java" value="${ContactManager.java}"/>
 				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+				<filter token="contact_manager_service.py" value="${contact_manager_service.py}"/>
+				<filter token="ContactManagerService.cs" value="${ContactManagerService.cs}"/>
 				<filter token="index.html" value="${index.html}"/>
 				<filter token="TestService.cs" value="${TestService.cs}"/>
 				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
+				<filter token="appcelerator-php.xml" value="${appcelerator-php.xml}"/>
+				<filter token="appcelerator-python.xml" value="${appcelerator-python.xml}"/>
 			</filterset>
 		</copy>
         <copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
@@ -249,14 +256,17 @@
                 <filter token="ruby_appcelerator.xml" value="${ruby_appcelerator.xml}"/>
                 <filter token="appcelerator.xml" value="${appcelerator.xml}"/>
                 <filter token="appcelerator-services.xml" value="${appcelerator-services.xml}"/>
-                <filter token="ContactManager.java" value="${ContactManager.java}"/>
-                <filter token="ContactManager.java" value="${ContactManager.java}"/>
                 <filter token="VERSION" value="${VERSION}"/> 
-                <filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
-                <filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+				<filter token="ContactManager.java" value="${ContactManager.java}"/>
+				<filter token="contact_manager_service.php" value="${contact_manager_service.php}"/>
+				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
+				<filter token="contact_manager_service.py" value="${contact_manager_service.py}"/>
+				<filter token="ContactManagerService.cs" value="${ContactManagerService.cs}"/>
 				<filter token="index.html" value="${index.html}"/>
 				<filter token="TestService.cs" value="${TestService.cs}"/>
 				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
+				<filter token="appcelerator-php.xml" value="${appcelerator-php.xml}"/>
+				<filter token="appcelerator-python.xml" value="${appcelerator-python.xml}"/>
             </filterset>
         </copy>
 		<copy todir="${stage.dir}/doc" filtering="false" overwrite="true">
@@ -272,10 +282,11 @@
             <fileset dir="${build.java.dir}/server" includes="WEB-INF/**"/>
 		</war>
 	</target>
+	<target name="force_examples">
+		<property name="explicitlybuild.examples" value="true"/>
+	</target>
 	<target name="build_examples.nomin" depends="nomin,build_examples"/>
-	<target name="build_examples" depends="build_java,build_server,build_web,build_doc,build_web_unit" description="* Builds the examples">
-	<!--
-		JGH: for now i've commented out until we can build separate download distribution
+	<target name="build_examples" depends="build_java,build_server,build_web,build_doc,build_web_unit" description="* Builds the examples" if="explicitlybuild.examples">
 		<antcall target="build_example">
 			<param name="example" value="blog"/>
 		</antcall>
@@ -285,7 +296,6 @@
 		<antcall target="build_example">
 			<param name="example" value="simple"/>
 		</antcall>
-	-->
 	</target>
 	<target name="build_example">
 		<delete dir="${stage.dir}/examples/${example}" failonerror="false"/>
@@ -463,8 +473,8 @@
 		</zip>
 	</target>
 	<target name="sdk_all_dist" depends="sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
-	<target name="install_all" depends="install_java,install_ruby,install_php"/>
-	<target name="install_all_examples" depends="install_java_examples,install_ruby_examples,install_php_examples"/>
+	<target name="install_all" depends="install_java,install_ruby,install_php,install_python,install_dotnet"/>
+	<target name="install_all_examples" depends="force_examples,install_java_examples,install_ruby_examples,install_php_examples,install_python_examples,install_dotnet_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
@@ -478,7 +488,7 @@
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="undeploy"/>
 		<ant dir="${basedir}/${stage.dir}/sdkprojects/myjavaapp" target="deploy"/>
 	</target>
-	<target name="install_forums" depends="init,install_java_sdk">
+	<target name="install_forums" depends="force_examples,init,install_java_sdk">
 		<antcall target="install_java_example">
 			<param name="example" value="forums"/>
 			<param name="plat.excludes" value="doc/**,examples/**,src/web/modules/**,test/**"/>
@@ -493,7 +503,7 @@
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
 	</target>
-	<target name="install_java_examples" depends="sdk_java_dist">
+	<target name="install_java_examples" depends="force_examples, sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
 
@@ -504,6 +514,26 @@
 			<param name="example" value="simple"/>
 		</antcall>
 	</target>
+	<target name="install_dotnet" depends="force_examples, sdk_dotnet_dist">
+		<delete dir="${stage.dir}/sdkprojects/dotnet" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" dest="${stage.dir}/sdkprojects/dotnet"/>
+	</target>
+	<target name="install_dotnet_examples" depends="force_examples, sdk_dotnet_dist">
+		<antcall target="install_dotnet_example">
+			<param name="example" value="simple"/>
+		</antcall>
+	</target>
+	<target name="install_dotnet_example" depends="force_examples, sdk_dotnet_dist">
+		<delete dir="${stage.dir}/exampleprojects/${example}_dotnet" failonerror="false"/>
+		<unzip src="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" dest="${stage.dir}/exampleprojects/${example}_dotnet"/>
+		<copy todir="${stage.dir}/exampleprojects/${example}_dotnet" overwrite="true">
+			<fileset dir="build/examples/${example}/src/dotnet" includes="**"/>
+		</copy>
+		<copy todir="${stage.dir}/exampleprojects/${example}_dotnet/src/web" overwrite="true">
+			<fileset dir="build/examples/${example}/src/web" includes="**"/>
+		</copy>
+	</target>
+
 	<target name="install_java_example">
 		<delete dir="${basedir}/${stage.dir}/exampleprojects/${example}_java" failonerror="false"/>
 		<ant dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" target="create.silent">
@@ -530,7 +560,7 @@
 			<arg line="myrubyapp"/>
 		</exec>
 	</target>
-	<target name="install_ruby_examples" depends="sdk_ruby_dist">
+	<target name="install_ruby_examples" depends="force_examples, sdk_ruby_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<exec dir="${stage.dir}" executable="gem" failonerror="false">
 			<arg line="uninstall appcelerator"/>
@@ -571,6 +601,7 @@
         </copy>
         <exec dir="${src.python.dir}" executable="python" failonerror="false">
             <arg line="setup.py bdist_egg"/>
+			<env key="APP_VERSION" value="${APP_VERSION}"/>
         </exec>
         <copy todir="${stage.dir}">
             <fileset dir="${src.python.dir}/dist" includes="*.egg"/>
@@ -587,7 +618,12 @@
 -->
 	</target>
 	<target name="remove_python_egg" depends="copy_script_jars">
-		<delete failonerror="false" dir="/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/Appcelerator-${APP_VERSION}-py2.5.egg"/>
+        <exec executable="sudo" failonerror="false" dir="/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages">
+            <arg line="chmod -R 777 *"/>
+        </exec>
+        <exec executable="rm" failonerror="false">
+            <arg line="-rf /Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/Appcelerator-*.egg"/>
+        </exec>
 		<script language="ruby">
 			config = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install.pth"
 			confignew = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install_temp.pth", "w"
@@ -604,16 +640,48 @@
 		</script>
 	</target>
     <target name="install_python" depends="sdk_python_dist">
+		<antcall target="do.install_python"/>
+		<antcall target="do.install_python_createproject">
+			<param name="dir" value="${stage.dir}/sdkprojects"/>
+			<param name="app" value="mypythonapp"/>
+		</antcall>
+	</target>
+    <target name="do.install_python" depends="">
         <echo>This task assumes python2.5</echo>
 		<antcall target="remove_python_egg"/>
         <exec executable="sudo" failonerror="false">
             <arg line="easy_install stage/Appcelerator-${APP_VERSION}-py2.5.egg"/>
         </exec>
-		<mkdir dir="${stage.dir}/sdkprojects"/>
-		<exec dir="${stage.dir}/sdkprojects" executable="paster" failonerror="false">
-			<arg line="create -t appcelerator mypythonapp"/>
+        <exec executable="sudo" failonerror="false" dir="/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages">
+            <arg line="chmod -R 777 *"/>
+        </exec>
+	</target>
+    <target name="do.install_python_createproject" depends="">
+		<delete dir="${dir}" failonerror="false"/>
+		<mkdir dir="${dir}"/>
+		<exec dir="${dir}" executable="paster" failonerror="false">
+			<arg line="create -t appcelerator ${app}"/>
 		</exec>
 	</target>
+	<target name="install_python_examples" depends="sdk_python_dist">
+		<antcall target="do.install_python"/>
+		<antcall target="install_python_example">
+			<param name="example" value="simple"/>
+		</antcall>
+	</target>
+	<target name="install_python_example" depends="sdk_python_dist">
+		<antcall target="do.install_python_createproject">
+			<param name="dir" value="${stage.dir}/exampleprojects"/>
+			<param name="app" value="${example}_python"/>
+		</antcall>
+		<copy todir="${stage.dir}/exampleprojects/${example}_python/${example}_python" overwrite="true">
+			<fileset dir="build/examples/${example}/src/python" includes="**"/>
+		</copy>
+		<copy todir="${stage.dir}/exampleprojects/${example}_python/${example}_python/public" overwrite="true">
+			<fileset dir="build/examples/${example}/src/web" includes="**"/>
+		</copy>
+	</target>
+
 	<target name="install_php" depends="sdk_php_dist">
 		<delete dir="${stage.dir}/sdkprojects/myphpapp" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" dest="${stage.dir}/sdkprojects/myphpapp"/>
@@ -621,7 +689,7 @@
 		<antcall target="undeploy_php"/>
 		<antcall target="deploy_php"/>
 	</target>
-	<target name="install_php_examples" depends="sdk_php_dist">
+	<target name="install_php_examples" depends="force_examples, sdk_php_dist">
 		<antcall target="install_php_example">
 			<param name="example" value="simple"/>
 		</antcall>

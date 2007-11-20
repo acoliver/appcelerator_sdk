@@ -104,26 +104,14 @@ paster serve --reload development.ini</pre>
 			<li>you put the proper annotations directly above the method <tt>@Service(request=xxx,response=xxx) </tt></li>
 		</ul>
 
-		<h3>hello_service.py</h3>
-		In your project, the hello_service in $PROJECT/services/hello_service.py provides an example
-        of properly registering a service:
-        <!-- The highlighter claims that it can do python, but... doesn't work for me! -->
+		<h3>$PROJECT/services/contact_manager_service.py</h3>
+		You can check out the existing contact_manager_service.py with the following source
         <textarea name="code" class="xml:nocontrols">
-            @Service(request='app.test.message.request', response='app.test.message.response')
-            def hello(msg):
-                message = msg.get('message', 'World')
-                return {'message': 'I recieved from you: %s'%message}
+@contact_manager_service.py@
 		</textarea>
 
-        <p>
-        Whenever your interface sends a message named "app.test.message.request" to the server,
-        this service will be called.
-        </p>
-        <p>
-        After the function runs, its return value is sent as a javascript object to the interface.
-        If your interface needs to use this value, add an event handler that listens for the
-        <tt>r:app.test.message.response</tt> message and examine the value of <tt>this.data</tt>.
-        </p>
+		<h3>Next Steps</h3>
+		You are now ready to proceed to restarting/re-inovking your python service
     </div>
 	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
@@ -137,7 +125,7 @@ paster serve --reload development.ini</pre>
 			<h3>$PROJECT/public/appcelerator.xml</h3>
 			You should not have to make any changes to this file
 			<textarea name="code" class="xml:nocontrols">
-@appcelerator.xml@
+@appcelerator-python.xml@
 			</textarea>
 
 			<h3>$PROJECT/public/index.html</h3>
