@@ -155,6 +155,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isFirefox = Appcelerator.Browser.isGecko && (ua.indexOf('firefox') > -1 || ua.indexOf('minefield') > -1 || Appcelerator.Browser.isCamino);
 	Appcelerator.Browser.isIPhone = Appcelerator.Browser.isSafari && ua.indexOf('iphone') > -1;
 	Appcelerator.Browser.isMozilla = Appcelerator.Browser.isGecko && ua.indexOf('mozilla/') > -1;
+	Appcelerator.Browser.isWebkit = Appcelerator.Browser.isMozilla && Appcelerator.Browser.isGecko && ua.indexOf('applewebkit') > 0;
 
 	Appcelerator.Browser.isWindows = false;
 	Appcelerator.Browser.isMac = false;
@@ -233,7 +234,7 @@ Appcelerator.Parameters = $H({});
 			}
 		}
 	}
-	Appcelerator.Browser.isBrowserSupported = Appcelerator.Browser.isOpera || Appcelerator.Browser.isSafari || Appcelerator.Browser.isIE6 || Appcelerator.Browser.isIE7 || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isCamino;
+	Appcelerator.Browser.isBrowserSupported = Appcelerator.Browser.isOpera || Appcelerator.Browser.isSafari || Appcelerator.Browser.isIE6 || Appcelerator.Browser.isIE7 || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isCamino || Appcelerator.Browser.isWebkit;
 	Appcelerator.Browser.unsupportedBrowserMessage = "<h1>Browser Upgrade Required</h1><p>We're sorry, but your browser version is not supported by this application.</p><p>This application requires a modern browser, such as <a href='http://www.getfirefox.com'>Firefox 2.0+</a>, <a href='http://www.apple.com/safari/'>Safari 2.0+</a>, <a href='http://www.microsoft.com/windows/products/winfamily/ie/default.mspx'>Internet Explorer 6.0+</a> or <a href='http://www.opera.com'>Opera 9.0+</a>.</p><p>Your browser reported: <font face='courier'>" + ua + "</font></p>";
 	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';
 	Appcelerator.Browser.autocheckBrowserSupport = true;
