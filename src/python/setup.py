@@ -10,10 +10,10 @@ setup(name='Appcelerator',
       
 """,
       classifiers=[
-        'Development Status :: 3 - Alpha'
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
-        'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware'
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware',
         'Programming Language :: Python',
         'Programming Language :: JavaScript',
         'License :: OSI Approved :: GNU General Public License (GPL)',
