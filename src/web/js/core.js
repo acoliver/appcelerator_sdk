@@ -19,7 +19,7 @@ Appcelerator.Core.require = function (moduleName,onload)
 	var module = Appcelerator.Core.modules[moduleName];
 	if (!module)
 	{
-		var path = Appcelerator.ModulePath + moduleName + '/module.js';
+		var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';
 		Appcelerator.Core.loadJS(path,onload);
 	}
 	else
@@ -214,7 +214,7 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 		window.observe(window,'unload',module.onUnload);
 	}
 
-	var path = Appcelerator.ModulePath + moduleName + '/module.js';	
+	var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';	
 	var listeners = Appcelerator.Core.fetching[path];
 	if (listeners)
 	{
