@@ -373,7 +373,7 @@
 		<td class="result">	
 			<input type="button"  value="button" id="mylink" on="l:test38 then click[id=mylink] or click then script[alert('test passed')]"/>
 		</td>
-	</tr>	
+	</tr>
 	<tr>
 		<td class="test" valign="middle">
 			<a on="click then l:test39">Run Test</a>
@@ -501,8 +501,9 @@
 			Focus Condition
 		</td>
 		<td class="result">	
-			<input type="text" value="focus on me to see alert" on="focus then script[alert('you set focus on me')]"/>
-		</td>
+			<input type="text" value="focus on me to see alert" on="focus then l:focused"/>
+            <div style="display: none" on="l:focused then show or l:focused then effect[Fade] after 1500ms">you set focus on me (click to hide)</div>
+        </td>
 	</tr>	
 	<tr>
 		<td class="test" valign="middle">
