@@ -9,11 +9,13 @@ using System.Text;
 namespace Appcelerator
 {
     /// <summary>
-    /// The data type of the message payload
+    /// Level to log.  We'll eventually make this configurable using an xml file...
     /// </summary>
-    public enum MessageDataType
+    public enum LoggingLevel
     {
-        XML,
-        JSON
+        INFO = 0,
+        WARN = 1,
+        ERROR = 2,
+        DEBUG = 3
     }
 }

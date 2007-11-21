@@ -58,6 +58,8 @@
     <Compile Include="JSON\JsonTypeFactory.cs" />
     <Compile Include="JSON\JsonTypeSkeleton.cs" />
     <Compile Include="JSON\JsonWriter.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Log\LoggingLevel.cs" />
     <Compile Include="Request\RequestDetails.cs" />
     <Compile Include="Service\Service.cs" />
     <Compile Include="ServiceBroker\Dispatcher.cs" />

@@ -74,7 +74,10 @@ namespace Appcelerator
             {
                 Assembly.LoadFile(file_location);
             }
-            catch { };
+            catch 
+            {
+                Logger.Instance.Log(LoggingLevel.ERROR, "Unable to load services from " + file_location);
+            };
         }
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace Appcelerator
             catch (KeyNotFoundException)
             {
                 //There's no Service to handle the incoming request -- Log it to the console
-                Console.WriteLine("Info: No server registered to handle request: " + request.Type);
+                Logger.Instance.Log(LoggingLevel.INFO, "No server registered to handle request: " + request.Type);
             }
         }
 

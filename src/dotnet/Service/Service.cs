@@ -51,19 +51,18 @@ namespace Appcelerator
                     temp_response.Scope = request.Scope;
                     temp_response.Version = request.Version;
                     temp_response.RequestDetails = request.RequestDetails;
-                    httpresponse.AppendToLog("BLEH " + temp_response.GetMessageXML());
 
                     Dispatcher.Instance.EnqueueOutgoingMessage(temp_response, session.SessionID);
                 }
                 catch (Exception e)
                 {
                     String err = "";
-                    err+="Erro Exception while invoking service handler - " + this.MethodInfo.Name + " in " + this.MethodInfo.DeclaringType.Name + "\n";
-                    err += "Erro Request Message - " + request.Type + "\n";
-                    err += "Erro Response Message - " + response.Type + "\n";
-                    err += "Erro Message - " + e.Message + "\n";
-                    err += "Erro Stacktrace - " + e.StackTrace + "\n";
-                    httpresponse.AppendToLog(err);
+                    err+="Exception while invoking service handler - " + this.MethodInfo.Name + " in " + this.MethodInfo.DeclaringType.Name + "\n";
+                    err += "Request Message - " + request.Type + "\n";
+                    err += "Response Message - " + response.Type + "\n";
+                    err += "Message - " + e.Message + "\n";
+                    err += "Stacktrace - " + e.StackTrace + "\n";
+                    Logger.Instance.Log(LoggingLevel.ERROR, err);
                 }
             }
         }
