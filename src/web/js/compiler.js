@@ -1035,8 +1035,8 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			
 			// run the rest of the compiler for the widget 
 			// after re-queuing so that we can prevent the UI thread from freezing
-			setTimeout(function()
-			{
+			//setTimeout(function()
+		//	{
 	            //
 	            // run initialization
 	            //
@@ -1066,7 +1066,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				{
 	                outer.style.display='';
 				}
-			},0);
+			///},0);
 		}
 	}
 	else

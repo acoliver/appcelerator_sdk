@@ -241,3 +241,5 @@ Object.extend(Appcelerator.Util.KeyManager,
         return true;
     }
 });
+
+Appcelerator.Core.onload(Appcelerator.Util.KeyManager.install.bind(Appcelerator.Util.KeyManager));

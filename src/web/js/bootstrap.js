@@ -41,9 +41,9 @@ Appcelerator.Parameters = $H({});
 	}
 	else
 	{
-		Appcelerator.Config['cookie_check'] = true;
+		Appcelerator.Config['cookie_check'] = false;
 		Appcelerator.Config['browser_check'] = true;
-		Appcelerator.Config['hide_body'] = true;		
+		Appcelerator.Config['hide_body'] = false;		
 	}
 	
 	var jsFileLocation = null;
@@ -59,7 +59,7 @@ Appcelerator.Parameters = $H({});
 	}).each( function(s) 
 	{
 		Appcelerator.Parameters = $H(s.src.toQueryParams());
-	});
+	});	
 	
     var idx = window.document.location.href.lastIndexOf('/');
     if (idx == window.document.location.href.length - 1)
@@ -87,7 +87,11 @@ Appcelerator.Parameters = $H({});
 		if (jsFileLocation!=Appcelerator.DocumentPath+'js')
 		{
 			idx = jsFileLocation.lastIndexOf('/');
-			Appcelerator.DocumentPath = jsFileLocation.substring(0,idx+1);
+			var newpath = jsFileLocation.substring(0,idx+1);
+			if (newpath)
+			{
+			    Appcelerator.DocumentPath = newpath;
+			}
 		}
 	}
 	else
@@ -156,6 +160,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isIPhone = Appcelerator.Browser.isSafari && ua.indexOf('iphone') > -1;
 	Appcelerator.Browser.isMozilla = Appcelerator.Browser.isGecko && ua.indexOf('mozilla/') > -1;
 	Appcelerator.Browser.isWebkit = Appcelerator.Browser.isMozilla && Appcelerator.Browser.isGecko && ua.indexOf('applewebkit') > 0;
+	Appcelerator.Browser.isSeamonkey = Appcelerator.Browser.isMozilla && ua.indexOf('seamonkey') > -1;
 
 	Appcelerator.Browser.isWindows = false;
 	Appcelerator.Browser.isMac = false;
@@ -234,7 +239,15 @@ Appcelerator.Parameters = $H({});
 			}
 		}
 	}
-	Appcelerator.Browser.isBrowserSupported = Appcelerator.Browser.isOpera || Appcelerator.Browser.isSafari || Appcelerator.Browser.isIE6 || Appcelerator.Browser.isIE7 || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isCamino || Appcelerator.Browser.isWebkit;
+	Appcelerator.Browser.isBrowserSupported = false;
+	['Firefox','IE6','IE7','Safari','Camino','Opera','Webkit','Seamonkey'].each(function(name)
+	{
+        if (Appcelerator.Browser['is'+name]===true)
+        {
+            Appcelerator.Browser.isBrowserSupported=true;
+            throw $break;    	   
+        }
+	});
 	Appcelerator.Browser.unsupportedBrowserMessage = "<h1>Browser Upgrade Required</h1><p>We're sorry, but your browser version is not supported by this application.</p><p>This application requires a modern browser, such as <a href='http://www.getfirefox.com'>Firefox 2.0+</a>, <a href='http://www.apple.com/safari/'>Safari 2.0+</a>, <a href='http://www.microsoft.com/windows/products/winfamily/ie/default.mspx'>Internet Explorer 6.0+</a> or <a href='http://www.opera.com'>Opera 9.0+</a>.</p><p>Your browser reported: <font face='courier'>" + ua + "</font></p>";
 	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';
 	Appcelerator.Browser.autocheckBrowserSupport = true;

@@ -27,7 +27,7 @@ if (Appcelerator.Browser.isIE6)
 		var sizing = "width:" + width + "px; height:" + height + "px;";
         strNewHTML+= " style=\"" + sizing + imgStyle + ";"
         + "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader"
-        + "(src=\'" + (src||img.src) + "\', sizingMethod='image');\" src='"+Appcelerator.ImagePath+"blank_1x1.gif'></img>" ;
+        + "(src=\'" + (src||img.src) + "\', sizingMethod='image');\" src='"+Appcelerator.ImagePath+"blank_1x1.gif' />" ;
 		return strNewHTML;
 	};
 
@@ -68,7 +68,8 @@ Appcelerator.Browser.fixImage = function(element,value)
 	if (Appcelerator.Browser.isIE6 && value)
 	{
      	var imgName = value.toUpperCase();
-      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG")
+     	// make sure it's a PNG and hasn't been compiled with on attribute
+      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG" && element.getAttribute('on')==null)
       	{
       		var height = element.height, width = element.width;
 		 	if (!height || !width)

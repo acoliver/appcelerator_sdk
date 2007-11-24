@@ -46,7 +46,7 @@ Appcelerator.Module.Script =
 	},
 	compileWidget: function(params)
 	{
-		eval(params['code']);
+		window.eval(params['code']);
 	},
 	buildWidget: function(element,parameters)
 	{
@@ -81,3 +81,4 @@ Appcelerator.Module.Script =
 
 
 Appcelerator.Core.registerModule('app:script',Appcelerator.Module.Script);
+

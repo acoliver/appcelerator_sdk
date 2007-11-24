@@ -103,75 +103,81 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 		Appcelerator.Core.widgets_css[path]=moduleName;
 
 		//Refresh css in IE 6/7 because the give priority to css in load order, not document order
+		/*
 		if (Appcelerator.Browser.isIE)
 		{
-			var link = document.styleSheets[document.styleSheets.length-1].owningElement;
-			if (link)
-			{
-				link.moduleCSS = 1;
-			}
-			
-			var ss = document.styleSheets;
-			var arr = [];
-			var modarr = [];
-			
-			try
-			{
-				for (var i = 0; i < ss.length; i++)
-				{
-					if (ss[i].owningElement.moduleCSS)
-					{
-						modarr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
-					}
-					else
-					{
-						arr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
-					}
-				}
-			} 
-			catch (e) 
-			{ 
-				throw 'Failed to gather CSS: ' + e.message; 
-			}
-					
-			try
-			{
-				for (var i = arr.length-1; i >= 0; i--)
-				{
-					Element.remove(arr[i][0]);
-				}
-				
-				for (var i = modarr.length-1; i >= 0; i--)
-				{
-					Element.remove(modarr[i][0]);
-				}
-				
-				for (var i = 0; i < modarr.length; i++)
-				{
-					var elem = document.createElement(modarr[i][1]);
-					elem.moduleCSS = 1;
-					Appcelerator.Core.HeadElement.appendChild(elem);
-				}
-							
-				for (var i = 0; i < arr.length; i++)
-				{
-					if(arr[i][0].nodeName == 'STYLE')
-					{
-						var style = document.createStyleSheet();
-						style.cssText = arr[i][0].styleSheet.cssText;
-					}
-					else 
-					{
-						var elem = document.createElement(arr[i][1]);
-						Appcelerator.Core.HeadElement.appendChild(elem);
-					}
-				}
-			} 
-			catch (e) 
-			{ 
-				throw 'Failed to refresh CSS: ' + e.message; 
-			}
-		}
+		    // fun with IE, crashes in IE6 is you do this on the same thread so we 
+		    // have to give it up
+		    setTimeout(function()
+		    {
+	            var link = document.styleSheets[document.styleSheets.length-1].owningElement;
+	            if (link)
+	            {
+	                link.moduleCSS = 1;
+	            }
+	            
+	            var ss = document.styleSheets;
+	            var arr = [];
+	            var modarr = [];
+	            
+	            try
+	            {
+	                for (var i = 0; i < ss.length; i++)
+	                {
+	                    if (ss[i].owningElement.moduleCSS)
+	                    {
+	                        modarr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
+	                    }
+	                    else
+	                    {
+	                        arr.push ([ss[i].owningElement,ss[i].owningElement.outerHTML]);
+	                    }
+	                }
+	            } 
+	            catch (e) 
+	            { 
+	                throw 'Failed to gather CSS: ' + e.message; 
+	            }
+	                    
+	            try
+	            {
+	                for (var i = arr.length-1; i >= 0; i--)
+	                {
+	                    Element.remove(arr[i][0]);
+	                }
+	                
+	                for (var i = modarr.length-1; i >= 0; i--)
+	                {
+	                    Element.remove(modarr[i][0]);
+	                }
+	                
+	                for (var i = 0; i < modarr.length; i++)
+	                {
+	                    var elem = document.createElement(modarr[i][1]);
+	                    elem.moduleCSS = 1;
+	                    Appcelerator.Core.HeadElement.appendChild(elem);
+	                }
+	                            
+	                for (var i = 0; i < arr.length; i++)
+	                {
+	                    if(arr[i][0].tagName == 'STYLE')
+	                    {
+	                        var style = document.createStyleSheet();
+	                        style.cssText = arr[i][0].styleSheet.cssText;
+	                    }
+	                    else 
+	                    {
+	                        var elem = document.createElement(arr[i][1]);
+	                        Appcelerator.Core.HeadElement.appendChild(elem);
+	                    }
+	                }
+	            } 
+	            catch (e) 
+	            { 
+	                throw 'Failed to refresh CSS: ' + e.message; 
+	            }
+		    },100);
+		}*/
 	}
 };
 
@@ -227,59 +233,127 @@ Appcelerator.Core.registerModule = function (moduleName,module)
     delete Appcelerator.Core.fetching[path];
 };
 
+if (Appcelerator.Browser.isIE)
+{
+    //
+    // special loader function for IE which seems to load async when
+    // you loop over multiple scripts and add to DOM - this will ensure
+    // that only one JS is loaded in order 
+    // 
+	Appcelerator.Core.registerModuleWithJSInIE = function(moduleName,module,js,idx)
+	{
+	    var file = js[idx];
+	    moduleName = moduleName.replace(':','_');
+	    var path = Appcelerator.ModulePath + moduleName + '/js/' + file;
+
+	    var script = document.createElement('script');
+	    script.setAttribute('type','text/javascript');
+	    script.setAttribute('src',path);
+	    script.onerror = function(e)
+	    {
+	        $E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
+	    };
+	    var loaded = false;
+	    script.onreadystatechange = function()
+	    {
+	        switch(this.readyState)
+	        {
+	            case 'loaded':   // state when loaded first time
+	            case 'complete': // state when loaded from cache
+	                break;
+	            default:
+	                return;
+	        }
+	        if (loaded) return;
+	        loaded = true;
+	        
+	        // prevent memory leak
+	        this.onreadystatechange = null;
+
+	        idx=idx+1;
+	        
+	        if (idx == js.length)
+	        {
+	            // do something
+	            Appcelerator.Core.registerModule(moduleName, module);
+	        }
+	        else
+	        {
+	            // continue to the next one
+	            Appcelerator.Core.registerModuleWithJSInIE(moduleName,module,js,idx);
+	        }
+	    };
+        Appcelerator.Core.HeadElement.appendChild(script);
+	};
+}
+
 Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
 {
-    moduleName = moduleName.replace(':','_');
-    setTimeout(function()
+    if (Appcelerator.Browser.isIE)
     {
-        Appcelerator.Core.loadAsyncJS(moduleName,module,js,0);
-    },0);
-};
-
-Appcelerator.Core.loadAsyncJS = function(moduleName,module,array,idx)
-{
-    if (!array || idx == array.length)
-    {
-        Appcelerator.Core.registerModule(moduleName, module);
+        Appcelerator.Core.registerModuleWithJSInIE(moduleName,module,js,0);
+        return;
     }
-    else
+    
+    var state = 
     {
-        var path = Appcelerator.ModulePath + moduleName + '/js/' + array[idx];
-        new Ajax.Request(path,
+        count : js.length
+    };
+    
+    var checkState = function()
+    {
+        state.count--;
+        if (state.count==0)
         {
-            asynchronous:true,
-            method:'get',
-            evalJS:false,
-            onSuccess:function(response)
+            Appcelerator.Core.registerModule(moduleName, module);
+        }
+    };
+    
+    for (var i=0; i < js.length; i++)
+    {
+        var file = js[i];
+        moduleName = moduleName.replace(':','_');
+        var path = Appcelerator.ModulePath + moduleName + '/js/' + file;
+
+        var script = document.createElement('script');
+        script.setAttribute('type','text/javascript');
+        script.setAttribute('src',path);
+        script.onerror = function(e)
+        {
+            $E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
+        };
+        if (Appcelerator.Browser.isSafari2)
+        {
+            //this is a hack because we can't determine in safari 2
+            //when the script has finished loading
+            setTimeout(function()
             {
-                try
-                {
-                    if (Appcelerator.Browser.isSafari)
-                    {
-                        // global eval is broken in safari so we have to trick it by
-                        // adding script tag directly
-                        var script_tag = document.createElement('script');
-                        script_tag.type = 'text/javascript';
-                        script_tag.appendChild(document.createTextNode(response.responseText));
-                        Appcelerator.Core.HeadElement.appendChild(script_tag);
-                    }
-                    else if (Appcelerator.Browser.isIE)
-                    {
-                        window.execScript(response.responseText);
-                    }
-                    else
-                    {
-                        // window prefix is important here as it will eval on global scope
-                        window.eval(response.responseText);
-                    }
-                }
-                catch (e)
-                {
-                    $E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
-                }
-                Appcelerator.Core.loadAsyncJS(moduleName,module,array,idx+1);
-            }
-        });
+                checkState();
+            }, 1000);
+        }
+        else
+        {
+	        var loaded = false;
+	        script.onload = checkState;
+	        script.onreadystatechange = function()
+	        {
+	            switch(this.readyState)
+	            {
+	                case 'loaded':   // state when loaded first time
+	                case 'complete': // state when loaded from cache
+	                    break;
+	                default:
+	                    return;
+	            }
+	            if (loaded) return;
+	            loaded = true;
+	            
+	            // prevent memory leak
+	            this.onreadystatechange = null;
+	            checkState();
+            }	
+        }
+        Appcelerator.Core.HeadElement.appendChild(script);
     }
 };
 

@@ -162,22 +162,24 @@ Appcelerator.Util.Cookie =
     }
 };    
 
-
-(function()
+if (window.location.protocol!='file:')
 {
-	if (Appcelerator.Config['cookie_check'])
+	(function()
 	{
-		Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
-		if (Appcelerator.Util.Cookie.GetCookie('CookieCheck')!='1')
+		if (Appcelerator.Config['cookie_check'])
 		{
-		   // cookies not working
-		   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
+			Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
+			var cookie = Appcelerator.Util.Cookie.GetCookie('CookieCheck');
+			if (!cookie)
+			{
+			   // cookies not working
+			   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
+			}
+			else
+			{
+			   // just delete it
+			   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
+			}
 		}
-		else
-		{
-		   // just delete it
-		   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
-		}
-	}
-})();
-
+	})();
+}	

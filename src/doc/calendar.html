@@ -19,8 +19,6 @@
 <script type="text/javascript" src="js/sh/shBrushJava.js"></script>
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 
-
-
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<h2>Calendar</h2>
@@ -40,8 +38,8 @@
 		<app:calendar title="Select Start Date" inputId="jobfilter_date_start" on="l:calendarexample.start then execute"
 			minDate="10/16/2007">
 		</app:calendar>
-		<input type="text" id="jobfilter_date_start" size="10" MAXLENGTH="10"></input>
-		<img src="images/calendar.png" on="click then l:calendarexample.start"></img>
+		<input type="text" id="jobfilter_date_start" size="10" MAXLENGTH="10" />
+		<img src="images/calendar.png" on="click then l:calendarexample.start" />
 	</div>
 
 	<!-- CODE -->
@@ -52,7 +50,7 @@
 					on="l:calendarexample.start then execute">
 				</app:calendar>
 				<input type="text" id="jobfilter_date_start"></input>
-				<img src="images/calendar.png" on="click then l:calendarexample.start">select</a>
+				<img src="images/calendar.png" on="click then l:calendarexample.start"></img>
 			</textarea>	
 		</p>
 	</div>
@@ -61,10 +59,6 @@
 		<p>
 			 Required Options:
 				<table cellspacing="5px">
-					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
-					</tr>
 				</table>
 		</p>
 		<p>
@@ -91,9 +85,8 @@
 		</p>
 	</div>	
 	
-	<script>
+  	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
-
 		dp.SyntaxHighlighter.HighlightAll('code');
 	</script>
 

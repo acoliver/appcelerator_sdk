@@ -102,13 +102,13 @@ Appcelerator.Module.Calendar =
 	},
 	buildWidget: function(element, parameters)
 	{
+        if (!parameters['inputId'] && !parameters['elementId'])
+        {
+            throw "inputId or elementId is required";
+        }
+        
 		parameters['name'] = 'app_calendar_' + Appcelerator.Module.Calendar.calendarCount++;
 		var html = '<div style="position:absolute;z-index:1000;display:none" id="'+parameters['name']+'"></div>';
-		
-		if (!parameters['inputId'] && !parameters['elementId'])
-		{
-			throw "inputId or elementId is required";
-		}
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,

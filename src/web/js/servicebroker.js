@@ -8,7 +8,7 @@ Appcelerator.Util.ServiceBroker =
     messageQueue: [],
 	localMessageQueue: [],
 	localTimer: null,
-	localTimerPoll: 100,
+	localTimerPoll: 10,
     initQueue:[],
     timer: null,
     time: null,
