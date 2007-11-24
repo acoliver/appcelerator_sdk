@@ -50,7 +50,7 @@ post.gsub!(/Appcelerator\.Core\./,'$$AR.')
 post.gsub!(/Appcelerator\.Module\./,'$$AM.')
 post.gsub!(/Appcelerator\.Localization\./,'$$AL.')
 post.gsub!(/Appcelerator\.Config\./,'$$AF.')
-post.gsub!(/Appcelerator\.Browser./,'$$AB.')
+post.gsub!(/Appcelerator\.Browser\./,'$$AB.')
 
 # we can do this at the top since they're global scope
 outfile.print "$$w=window;"
