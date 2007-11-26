@@ -601,7 +601,7 @@
         <copy todir="${src.python.dir}/${python.public.dir}" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator*.js"/>
              <fileset dir="${stage.dir}/web" includes="modules/**/**"/>
-             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
+             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html,servicetester.html"/>
              <fileset dir="${build.python.dir}" includes="appcelerator.xml"/>
         </copy>
         <exec dir="${src.python.dir}" executable="python" failonerror="false">
