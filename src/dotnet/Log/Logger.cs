@@ -15,7 +15,7 @@ namespace Appcelerator
     sealed class Logger
     {
         private static readonly Logger instance = new Logger();
-        private static LoggingLevel loggingLevel = LoggingLevel.DEBUG;
+        private static LoggingLevel loggingLevel = LoggingLevel.ERROR;
         private static StreamWriter writer;
         static readonly object padlock = new object();
 
