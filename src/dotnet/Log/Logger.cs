@@ -37,7 +37,8 @@ namespace Appcelerator
         {
             if (writer == null) setupLogFile();
             String level = logLevel.ToString();
-            if (loggingLevel <= this.LoggingLevel)
+
+            if (logLevel <= this.LoggingLevel)
             {
                 String timestamp = "[" + level + " | " + DateTime.Now.ToString("M/d/yyyy HH:mm:ss") + "] ";
                 writer.WriteLine(timestamp + logMessage);
