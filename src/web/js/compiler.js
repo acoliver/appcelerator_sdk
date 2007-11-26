@@ -1262,7 +1262,7 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 			code+='Appcelerator.Compiler.publishEvent("'+id+'","'+action+'");'; // TODO: is this needed?
 			code+='}';
 			code+='catch(exxx){';
-			code+=' Appcelerator.Compiler.handleElementException($("'+id+'"),exxx,"Executing:'+action+'");';
+			code+='Appcelerator.Compiler.handleElementException($("'+id+'"),exxx,"Executing:'+action+'");';
 			code+='}';
 			return code;
 		}
@@ -2179,10 +2179,31 @@ Appcelerator.Compiler.isCSSAttribute = function (name)
 		{
 			return true;
 		}
+		
+		var css = Appcelerator.Compiler.CSSAttributes[c];
+		var index = css.indexOf('-');
+		if (index > 0)
+		{
+			var converted = css.substring(0,index) + css.substring(index+1).capitalize();
+			if (converted == name)
+			{
+				return true;
+			}
+		}
 	}
 	return false;
 };
 
+Appcelerator.Compiler.convertCSSAttribute = function (css)
+{
+	var index = css.indexOf('-');
+	if (index > 0)
+	{
+		var converted = css.substring(0,index) + css.substring(index+1).capitalize();
+		return converted;
+	}
+	return css;
+}
 
 //
 // start the compile once the document is loaded - we need to run this each

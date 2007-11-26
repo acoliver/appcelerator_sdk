@@ -112,6 +112,7 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 			{
 				if (Appcelerator.Compiler.isCSSAttribute(key))
 				{
+					key = Appcelerator.Compiler.convertCSSAttribute(key);
 					switch (key)
 					{
 						case 'display':
@@ -174,6 +175,7 @@ var addsetBuilder =
 		var value = obj.value;
 		if (Appcelerator.Compiler.isCSSAttribute(key))
 		{
+			key = Appcelerator.Compiler.convertCSSAttribute(key);
 			return "Element.setStyle('" + id + "',{'" + key + "':" + Appcelerator.Compiler.generateSetter(value) + "})";				
 		}
 		else if (key == 'class')
