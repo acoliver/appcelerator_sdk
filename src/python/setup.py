@@ -1,7 +1,11 @@
 from setuptools import setup, find_packages
 
-import os
-version = os.environ.get('APP_VERSION', '2.0.1')
+import os,sys
+try:
+    version = os.environ['APP_VERSION']
+except KeyError:
+    raise "Please set the APP_VERSION environment variable"
+
 
 setup(name='Appcelerator',
       version=version,
