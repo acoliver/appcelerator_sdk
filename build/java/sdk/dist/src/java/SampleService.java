@@ -11,6 +11,6 @@ public class SampleService {
 		LOG.info("hello. you sent"+ request);
 		
 		response.getData().put("success", "true");
-		response.getData().put("message", "I recieved from you "+ request.getData().optString("message"));
+		response.getData().put("message", "I received from you "+ request.getData().optString("message"));
 	}
 }

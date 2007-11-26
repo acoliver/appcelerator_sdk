@@ -10,7 +10,7 @@
 		{
 			$data = &$response['data'];
 			$requestdata = $request['data'];
-			$data['message']='I recieved from you: ' . $requestdata['message'];
+			$data['message']='I received from you: ' . $requestdata['message'];
 			$data['success']='true';
 		}
 	}
