@@ -442,7 +442,7 @@
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator*.js"/>
              <fileset dir="${stage.dir}/web" includes="modules/**/**"/>
-             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html"/>
+             <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html,servicetester.html"/>
         	 <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
              <fileset dir="${build.ruby.dir}/dist/src/web" includes="**/**"/>
         </copy>

@@ -11,25 +11,18 @@ end
 
 module ServiceBroker
   
-    @logger = nil
-
     def log_processing
       # turn off logging since we get a lot of these requests
     end
 
-	  def dispatch
-	    
-	    if not @logger
-	      @logger = Appcelerator::Model.logger
-      end
-    
+	  def dispatch	    
   		session = request.session
   		
       # we check to make sure we're coming from an XHR request
       # this is easy to forge but a simple check
       #
   	  if not request.xml_http_request? and not request.xhr?
-        @logger.error("client error = not XHR request")
+        logger.error("client error = not XHR request")
         session.delete
   	    render :nothing => true, :status => 400
   	    return
