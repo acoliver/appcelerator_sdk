@@ -9,6 +9,8 @@ using System.Web;
 using System.Web.SessionState;
 using Appcelerator;
 using System.IO;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace Appcelerator
 {
@@ -67,11 +69,75 @@ namespace Appcelerator
 
         private static void setupLogFile()
         {
-            String logFileLocation = AppDomain.CurrentDomain.BaseDirectory + @"\bin\appcelerator.log";
+            String bin = AppDomain.CurrentDomain.BaseDirectory + @"\bin";
+            String logFileLocation = bin + @"\appcelerator.log";
+            String xmlsettingsFileLocation = bin + @"\appcelerator-config.xml";
 
             //Set append to true so we automatically create a new file when needed but append otherwise
             writer = new StreamWriter(logFileLocation, true);
-            writer.AutoFlush = true;
+
+            try
+            {
+                XmlDocument settings = new XmlDocument();
+                settings.Load(xmlsettingsFileLocation);
+
+                XPathNodeIterator autoIter = settings.CreateNavigator().Select("//logger/autoflush");
+                XPathNodeIterator loglevelIter = settings.CreateNavigator().Select("//logger/loglevel");
+                autoIter.MoveNext();
+                loglevelIter.MoveNext();
+
+                bool autoflush = false;
+                try
+                {
+                    autoflush = autoIter.Current.ValueAsBoolean;
+                }
+                catch { autoflush = false; }
+                writer.AutoFlush = autoflush;
+
+                try
+                {
+                    Logger.Instance.LoggingLevel = StringToLoggingLevel(loglevelIter.Current.Value);
+                }
+                catch { Logger.Instance.LoggingLevel = LoggingLevel.ERROR; }
+            }
+            catch 
+            {
+                //If we can't open the settings file
+                Logger.Instance.LoggingLevel = LoggingLevel.ERROR;
+                writer.AutoFlush = false;
+            }
+        }
+
+        public void forceWrite(String s)
+        {
+            writer.WriteLine(s);
+            writer.Flush();
+        }
+
+        private static LoggingLevel StringToLoggingLevel(string level)
+        {
+            LoggingLevel levelToUse;
+
+            switch (level.ToUpper())
+            {
+                case "DEBUG":
+                    levelToUse = LoggingLevel.DEBUG;
+                    break;
+                case "ERROR":
+                    levelToUse = LoggingLevel.ERROR;
+                    break;
+                case "WARN":
+                    levelToUse = LoggingLevel.WARN;
+                    break;
+                case "INFO":
+                    levelToUse = LoggingLevel.INFO;
+                    break;
+                default:
+                    levelToUse = LoggingLevel.ERROR;
+                    break;
+            }
+
+            return levelToUse;
         }
     }
 }
