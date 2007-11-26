@@ -69,14 +69,14 @@ namespace Appcelerator
         /// <param name="file_location">The full path location of the file from which to load assemblies</param>
         private void LoadSingleAssembly(String file_location)
         {
-            //FIXME: Load assembly or do nothing -- need logging or something 
             try
             {
-                Assembly.LoadFile(file_location);
+                Assembly assy = Assembly.LoadFile(file_location);
+                //RegisterServicesFromAssembly(assy);
             }
             catch 
             {
-                Logger.Instance.Log(LoggingLevel.ERROR, "Unable to load services from " + file_location);
+                Logger.Instance.Error("Unable to load services from " + file_location);
             };
         }
 
@@ -91,30 +91,35 @@ namespace Appcelerator
             Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assy in asms)
             {
-                Type[] types = assy.GetTypes();
+                RegisterServicesFromAssembly(assy);
+            }
+        }
 
-                foreach (Type type in types)
+        private void RegisterServicesFromAssembly(Assembly assy)
+        {
+            Type[] types = assy.GetTypes();
+
+            foreach (Type type in types)
+            {
+                MethodInfo[] methodInfos = type.GetMethods();
+
+                foreach (MethodInfo method in methodInfos)
                 {
-                    MethodInfo[] methodInfos = type.GetMethods();
+                    ServiceAttribute attr = (ServiceAttribute)Attribute.GetCustomAttribute(method, typeof(ServiceAttribute));
 
-                    foreach (MethodInfo method in methodInfos)
+                    if (attr != null)
                     {
-                        ServiceAttribute attr = (ServiceAttribute)Attribute.GetCustomAttribute(method, typeof(ServiceAttribute));
-
-                        if (attr != null)
+                        Service service = new Service(attr.Request, attr.Response, method);
+                        Logger.Instance.Debug("Registering request: " + attr.Request + " to service handler: " + method.Name + " with response: " + attr.Response);
+                        try
                         {
-                            Service service = new Service(attr.Request, attr.Response, method);
-
-                            try
-                            {
-                                this.RequestToServiceMap.Add(attr.Request, new List<Service>());
-                                this.RequestToServiceMap[attr.Request].Add(service);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // There's already another list of handlers for this request, so add the new service to that list
-                                this.RequestToServiceMap[attr.Request].Add(service);
-                            }
+                            this.RequestToServiceMap.Add(attr.Request, new List<Service>());
+                            this.RequestToServiceMap[attr.Request].Add(service);
+                        }
+                        catch (ArgumentException)
+                        {
+                            // There's already another list of handlers for this request, so add the new service to that list
+                            this.RequestToServiceMap[attr.Request].Add(service);
                         }
                     }
                 }
@@ -131,6 +136,7 @@ namespace Appcelerator
 
             try
             {
+                Logger.Instance.Debug("Invoking services for request: " + request.Type);
                 List<Service> handlers = RequestToServiceMap[request.Type];
 
                 foreach (Service handler in handlers)
@@ -141,7 +147,7 @@ namespace Appcelerator
             catch (KeyNotFoundException)
             {
                 //There's no Service to handle the incoming request -- Log it to the console
-                Logger.Instance.Log(LoggingLevel.INFO, "No server registered to handle request: " + request.Type);
+                Logger.Instance.Debug("No service registered to handle request: " + request.Type);
             }
         }
 
@@ -163,6 +169,8 @@ namespace Appcelerator
                 m.Direction = MessageDirection.INCOMING;
                 messages.Add(m);
             }
+
+            Logger.Instance.Debug("Parsed " + messages.Count + " incoming message(s)");
 
             return messages;
         }

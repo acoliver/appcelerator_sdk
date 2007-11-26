@@ -28,6 +28,7 @@ namespace Appcelerator
         //Sends messages to Services -- called from the ServiceBroker
         public void Dispatch(List<Message> messageList, ServiceManager manager, HttpRequest httprequest, HttpResponse httpresponse, HttpSessionState session, ServiceBroker broker)
         {
+            Logger.Instance.Debug("Dispatching " + messageList.Count + " message(s) for Session ID: " + session.SessionID);
 
             foreach (Message request in messageList)
             {
@@ -40,6 +41,7 @@ namespace Appcelerator
         //Enqueues an outgoing message -- called from the Service code
         public void EnqueueOutgoingMessage(Message msg, String session_id)
         {
+            Logger.Instance.Debug("Enqueuing outgoing message: " + msg.Type);
             lock (padlock)
             {
                 GuaranteeSessionMapped(session_id);
@@ -53,6 +55,8 @@ namespace Appcelerator
             GuaranteeSessionMapped(session_id);
 
             String outgoing_messages = "";
+
+            Logger.Instance.Debug("Returning " + id_queue[session_id].Count + " queued messages for Session ID: " + session_id);
 
             if (id_queue[session_id].Count > 0)
             {

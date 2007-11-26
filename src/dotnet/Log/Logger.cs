@@ -44,6 +44,26 @@ namespace Appcelerator
             }
         }
 
+        public void Info(String logMessage)
+        {
+            Log(LoggingLevel.INFO, logMessage);
+        }
+
+        public void Warn(String logMessage)
+        {
+            Log(LoggingLevel.WARN, logMessage);
+        }
+
+        public void Error(String logMessage)
+        {
+            Log(LoggingLevel.ERROR, logMessage);
+        }
+
+        public void Debug(String logMessage)
+        {
+            Log(LoggingLevel.DEBUG, logMessage);
+        }
+
         private static void setupLogFile()
         {
             String logFileLocation = AppDomain.CurrentDomain.BaseDirectory + @"\bin\appcelerator.log";

@@ -18,10 +18,12 @@ namespace Appcelerator
     {
         private Dispatcher dispatcher = Dispatcher.Instance;
         private ServiceManager serviceManager;
-
+        private Logger logger;
         public ServiceBroker()
         {
             serviceManager = new ServiceManager();
+            logger = Logger.Instance;
+            logger.Debug("Initialized ServiceBroker");
         }
 
         public void ProcessRequest(HttpContext context)
@@ -34,8 +36,13 @@ namespace Appcelerator
             response.Expires = 0;
             response.CacheControl = "Private"; //no-cache, no-store, private, must-revalidate
 
+            //This is needed to prevent the SessionID from changing on every request (if nothing is stored
+            //in the session object
+            context.Session["make_persistant"] = 1;
+
             String response_text = "";
 
+            logger.Debug("Received HTTP Reqest of type: " + request.HttpMethod);
             switch (request.HttpMethod)
             {
                 case "GET": // Send waiting message(s) to client [from queue]

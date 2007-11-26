@@ -52,6 +52,7 @@ namespace Appcelerator
                     temp_response.Version = request.Version;
                     temp_response.RequestDetails = request.RequestDetails;
 
+                    Logger.Instance.Debug("Invoked service for request: " + request.Type);
                     Dispatcher.Instance.EnqueueOutgoingMessage(temp_response, session.SessionID);
                 }
                 catch (Exception e)
@@ -62,7 +63,7 @@ namespace Appcelerator
                     err += "Response Message - " + response.Type + "\n";
                     err += "Message - " + e.Message + "\n";
                     err += "Stacktrace - " + e.StackTrace + "\n";
-                    Logger.Instance.Log(LoggingLevel.ERROR, err);
+                    Logger.Instance.Error(err);
                 }
             }
         }
