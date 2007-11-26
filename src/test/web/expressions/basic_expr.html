@@ -473,7 +473,15 @@
 			</div>
 
 		</td>
-	</tr>	
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resize Attribute/Condition
+		</td>
+		<td class="result">	
+			<img src="../images/tree.jpg" resizable="true" on="resize then javascript[alert('test passed')]"/>
+		</td>
+	</tr>		
 	<tr>
 		<td class="test" valign="middle">
 		Enter Condition (hit enter see alert)
@@ -651,16 +659,6 @@
             <div on="l:test34 then set[border-bottom='1px solid red']">This should be underlined red when the test runs</div>
         </td>
     </tr>   
-	<tr>
-		<td class="test" valign="middle">
-			Resize Condition (resize window)
-		</td>
-		<td class="result">	
-			<div width="10%" on="resize then set[color=red]">
-				i should turn red
-			</div>
-		</td>
-	</tr>	
 	<tr>
 		<td class="test" valign="middle">
 			Scroll Condition (scroll textarea see alert)

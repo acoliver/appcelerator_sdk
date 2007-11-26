@@ -5,7 +5,6 @@ Appcelerator.Compiler.Events =
 	'blur',
 	'dblclick',
 	'mousedown',
-	'resize',
 	'mouseout',
 	'mouseover',
 	'mousemove',

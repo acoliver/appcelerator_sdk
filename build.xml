@@ -54,6 +54,7 @@
 			<fileset file="${build.web.dir}/scriptaculous/scriptaculous.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/effects.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/dragdrop.js"/>
+			<fileset file="${build.web.dir}/scriptaculous/resizable.js"/>
 		</concat>
 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes" fixlastline="yes">
 /* END THIRD PARTY SOURCE */
