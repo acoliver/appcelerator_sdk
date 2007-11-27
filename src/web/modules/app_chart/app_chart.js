@@ -253,7 +253,7 @@ Appcelerator.Module.Chart =
 		var legend_comp = legend_enabled ? Math.floor(height*0.06) : 0;
 		var g_height = height - legend_comp;
 								
-		var so
+		var so;
 		if (type.toLowerCase() == "pie")
 		{
 			so = new SWFObject(Appcelerator.DocumentPath + "swf/ampie.swf", "ampie", width, height, "8", "#FFFFFF");
