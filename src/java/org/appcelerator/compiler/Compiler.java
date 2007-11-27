@@ -167,14 +167,20 @@ public class Compiler
             ctx.evaluateReader(scope, reader, "init.js", 1, null);
             
             // load up our appcelerator file - use debug in case we have errors it's easier to debug line numbers
-            File jsDir = new File(infile.getParentFile(),"js");
+            File jsDir = new File(outfile.getParentFile(),"js");
             File outJSFile = new File(jsDir,infile.getName()+".js");
             ScriptableObject.putProperty(scope, "appcelerator_app_js", outJSFile.getName());
-            
-            
-            loadFile(ctx,scope,tmp.appceleratorJs);
-            
 
+            loadFile(ctx,scope,tmp.appceleratorJs);            
+
+            // we have to re-map our element lookup to be smart about native java strings mapping as objects
+            ctx.evaluateString(scope, "function $(element){var node,id; if (!id && typeof(element)=='string') {id=String(element); } if (!id) { id = element.id; } node = window.document.getElementById(id); return node;}", null, 1, null);
+            // initialize and start load, compile
+            ctx.evaluateString(scope, "Object.extend(DOMNodeList.prototype, Array.prototype);", null, 1, null);
+            ctx.evaluateString(scope, "Appcelerator.Compiler.isCompiledMode = true;", null, 1, null);
+            ctx.evaluateString(scope, "Appcelerator.Compiler.isInterpretiveMode = false;", null, 1, null);
+            ctx.evaluateString(scope, "Appcelerator.Compiler.scopeMap = {};", null, 1, null);
+            
             // load all modules
             File moduleDir = new File(tmp.appceleratorJs.getParentFile().getParentFile(), "modules");
             for (File file : moduleDir.listFiles())
@@ -206,15 +212,7 @@ public class Compiler
             // 2. create one big JS file instead of running JS inline (before for caching)
             //
             //
-            
-            
-            // we have to re-map our element lookup to be smart about native java strings mapping as objects
-            ctx.evaluateString(scope, "function $(element){var node,id; if (!id && typeof(element)=='string') {id=String(element); } if (!id) { id = element.id; } node = window.document.getElementById(id); return node;}", null, 1, null);
-            // initialize and start load, compile
-            ctx.evaluateString(scope, "Object.extend(DOMNodeList.prototype, Array.prototype);", null, 1, null);
-            ctx.evaluateString(scope, "Appcelerator.Compiler.isCompiledMode = true;", null, 1, null);
-            ctx.evaluateString(scope, "Appcelerator.Compiler.isInterpretiveMode = false;", null, 1, null);
-            ctx.evaluateString(scope, "Appcelerator.Compiler.scopeMap = {};", null, 1, null);
+                        
             ctx.evaluateString(scope, "Appcelerator.Core.onloadInvoker();", null, 1, null);
             
             // get the result

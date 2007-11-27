@@ -79,6 +79,4 @@ Appcelerator.Module.Script =
 	}
 };
 
-
 Appcelerator.Core.registerModule('app:script',Appcelerator.Module.Script);
-

@@ -176,12 +176,6 @@ Appcelerator.Compiler.delegateToAttributeListeners = function(element)
 	{
 		Appcelerator.Compiler.forwardToAttributeListener(element,p,'*');
 	}
-    /*  // current compiler parses on expressions at load-time, not compile-time
-    if (Appcelerator.Compiler.isCompiledMode)
-	{
-		element.removeAttribute('on');
-	}
-	*/
 };
 
 Appcelerator.Compiler.containerProcessors=[];
@@ -382,7 +376,13 @@ Appcelerator.Compiler.compileElement = function(element,state)
 		element.style.originalDisplay = element.style.display || 'block';
 		if (Appcelerator.Compiler.isCompiledMode)
 		{
-			Appcelerator.Compiler.compileWidget(element,state);
+			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+			var code = 'setTimeout(function()';
+			code += '{';
+			code += 'Appcelerator.Core.require("'+name+'",function()'
+			code += '{' + widgetJS + '});';
+			code += '},0);';
+			Appcelerator.Compiler.compiledCode += code;
 		}
 		else
 		{
@@ -843,6 +843,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 {
 	var name = Appcelerator.Compiler.getTagname(element);
 	var module = Appcelerator.Core.widgets[name];
+	var compiledCode = '';
 	
 	if (module)
 	{
@@ -897,7 +898,10 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		//
 		// parse on attribute
 		//
-		Appcelerator.Compiler.parseOnAttribute(element);
+		if (!Appcelerator.Compiler.isCompiledMode)
+		{
+			Appcelerator.Compiler.parseOnAttribute(element);
+		}
 		
 		//
 		// hande off widget for building
@@ -1011,8 +1015,17 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			//
 			if (removeElement)
 			{
+				if (Appcelerator.Compiler.isCompiledMode)
+				{
+					// add an empty div to handle attribute processors
+					var replacedId = Appcelerator.Compiler.generateId();
+					var replaceHtml = '<div id="'+replacedId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
+					// new Insertion.Before(element,'<div></div>');
+					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+replacedId+'"));';
+				}
+				
 				Appcelerator.Compiler.removeElementId(id);
-				Element.remove(element);
+				Element.remove(element);				
 			}
 			
 			if (added && outer && !$(id))
@@ -1032,30 +1045,68 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					var name = functions[c];
 					var method = module[name];
 					if (!method) throw "couldn't find method named: "+name+" for module = "+module;
-					var f = function(id,m,data,scope)
+					
+					if (Appcelerator.Compiler.isCompiledMode)
 					{
-						try
+						var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
+						compiledCode += 'var f = function(id,m,data,scope)';
+						compiledCode += '{';
+						compiledCode += 'try';
+						compiledCode += '{';
+						compiledCode += 'var method = Appcelerator.Core.widgets["'+name+'"];';
+						compiledCode += 'method(id,\''+paramsJSON+'\'.evalJSON(),data,scope);';
+						compiledCode += '}';
+						compiledCode += 'catch (e) {';
+						compiledCode += '$E("Error executing '+name+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
+						compiledCode += '}';
+						compiledCode += '};';
+						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+name+'",f);';
+					}
+					else
+					{
+						var f = function(id,m,data,scope)
 						{
-							method(id,widgetParameters,data,scope);
-						}
-						catch (e)
-						{
-							$E('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
-						}
-					};
-					Appcelerator.Compiler.attachFunction(id,name,f);
+							try
+							{
+								method(id,widgetParameters,data,scope);
+							}
+							catch (e)
+							{
+								$E('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+							}
+						};
+						Appcelerator.Compiler.attachFunction(id,name,f);
+					}
 				}
 			}
 			
-			// run the rest of the compiler for the widget 
-			// after re-queuing so that we can prevent the UI thread from freezing
-			//setTimeout(function()
-		//	{
-	            //
-	            // run initialization
-	            //
-	            if (instructions.compile)
-	            {
+            //
+            // run initialization
+            //
+            if (instructions.compile)
+            {
+				if (Appcelerator.Compiler.isCompiledMode)
+				{
+					var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
+					compiledCode += 'try';
+					compiledCode += '{';
+					compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
+					if (outer)
+					{
+						compiledCode += 'module.compileWidget(\''+paramsJSON+'\'.evalJSON(),$("'+outer.id+'"));';
+					}
+					else
+					{
+						compiledCode += 'module.compileWidget(\''+paramsJSON+'\'.evalJSON(),null);';
+					}
+					compiledCode += '}';
+					compiledCode += 'catch (exxx) {';
+					compiledCode += 'Appcelerator.Compiler.handleElementException($("'+id+'"), exxx, "compiling widget '+id+', type '+element.nodeName+'");';
+					compiledCode += 'return;';
+					compiledCode += '}';
+				}
+				else
+				{
 					try
 					{
 						module.compileWidget(widgetParameters,outer);
@@ -1065,22 +1116,36 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id + ', type ' + element.nodeName);
 						return;
 					}
-	            }
-	            
-	            if (added && instructions.wire && outer)
-	            {
-	                Appcelerator.Compiler.compileElement(outer, state);
-	            }
-	            
-	            // fix any issues from the new HTML (only matters in IE6 otherwise no-op)
-	            Appcelerator.Browser.fixImageIssues();
-	            
-	            // reset the display for the widget
-				if (outer)
-				{
-	                outer.style.display='';
 				}
-			///},0);
+            }
+            
+            if (added && instructions.wire && outer)
+            {
+				if (Appcelerator.Compiler.isCompiledMode)
+				{
+					compiledCode += 'Appcelerator.Compiler.dynamicCompile($("'+outer+'"));'; // is dynamic ok?
+				}
+				else
+				{
+                	Appcelerator.Compiler.compileElement(outer, state);
+				}
+            }
+
+            // fix any issues from the new HTML (only matters in IE6 otherwise no-op)
+			if (Appcelerator.Compiler.isCompiledMode)
+			{
+            	compiledCode += 'Appcelerator.Browser.fixImageIssues();';
+			}
+			else
+			{
+            	Appcelerator.Browser.fixImageIssues();
+			}
+
+            // reset the display for the widget
+			if (outer)
+			{
+                outer.style.display='';
+			}			
 		}
 	}
 	else
@@ -1091,7 +1156,9 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		  element.style.display = element.style.originalDisplay;
 		}
 	}
-}; 
+	
+	return compiledCode;
+};
 
 Appcelerator.Compiler.determineScope = function(element)
 {
@@ -2282,7 +2349,6 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
             }
         }
 
-
         if (Appcelerator.Compiler.compiledCode)
         {
             codeArray.push(Appcelerator.Compiler.compiledCode);
@@ -2361,7 +2427,6 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
 
         Appcelerator.Compiler.compiledJS = code;
         Appcelerator.Compiler.compiledDocument = html;
-
     }
 };
 

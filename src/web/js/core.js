@@ -54,7 +54,7 @@ Appcelerator.Core.loadJS = function (path, onload)
 		$E('Error loading '+path+'\n Exception: '+Object.getExceptionDetail(e));
 	};
 	
-	Appcelerator.Core.HeadElement.appendChild(script);	
+	Appcelerator.Core.HeadElement.appendChild(script);
 };
 
 Appcelerator.Core.widgets = {};
