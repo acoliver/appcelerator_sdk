@@ -23,10 +23,7 @@ package org.appcelerator.compiler;
 import org.appcelerator.compiler.compressor.Compressor;
 import org.appcelerator.util.Util;
 import org.cyberneko.html.parsers.DOMParser;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -196,7 +193,7 @@ public class Compiler
             	}
             }
 
-            if (compress)
+            if (compress) // for testing only
             {
                 Scriptable scriptable = (Scriptable) ctx.evaluateString(scope, "Appcelerator.Compiler", null, 1, null);
                 ScriptableObject.putProperty(scriptable, "compressor", Context.toObject(compressor,scriptable));
@@ -242,8 +239,23 @@ public class Compiler
                 copy(infile, outfile);
                 return;
             }
+
+            String compiledJS;
+            Object jsObject = ctx.evaluateString(scope, "Appcelerator.Compiler.compiledJS", null, 1, null);
+            if (jsObject instanceof String)
+            {
+                compiledJS = (String) jsObject;
+            }
+            else if (jsObject instanceof NativeJavaObject)
+            {
+                NativeJavaObject nativeJavaObject = (NativeJavaObject) jsObject;
+                compiledJS = (String)nativeJavaObject.unwrap();
+            }
+            else
+            {
+                compiledJS = jsObject.toString(); // probably wrong
+            }
             
-            String compiledJS = (String)ctx.evaluateString(scope, "Appcelerator.Compiler.compiledJS", null, 1, null);
             Util.copyToFile(compiledJS, outJSFile);
             
             compiledDocument = compiledDocument.replaceAll("></img>", "/>");
@@ -387,7 +399,8 @@ public class Compiler
             } else {
                 System.err.println("inputDirectory = "+ inputDirectory.getAbsolutePath());
 	            System.err.println("outputDirectory = "+ outputDirectory.getAbsolutePath());
-                compile(inputDirectory, outputDirectory,new PrintWriter(System.out),true,true);
+                compile(inputDirectory, outputDirectory,new PrintWriter(System.out),true, false);
+                // TODO: add commandline options for verbose and for compress
             }
         } else {
     		printUsage();

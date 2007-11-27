@@ -23,6 +23,8 @@ Appcelerator.Compiler.isCompiledMode = false;
 Appcelerator.Compiler.compiledCode = '';
 Appcelerator.Compiler.compiledDocument = null;
 Appcelerator.Compiler.compiledJS = null;
+// list of strings of code that forwards to attribute listeners handlers (in compiled mode)
+Appcelerator.Compiler.compiledAttributeListeners = [];
 
 //
 // delay before showing loading message in number of milliseconds
@@ -135,16 +137,26 @@ Appcelerator.Compiler.registerAttributeProcessor = function(name,attribute,liste
 	}
 };
 
-Appcelerator.Compiler.forwardToAttributeListener = function(element,array)
+Appcelerator.Compiler.forwardToAttributeListener = function(element,array,tagname)
 {
-	for (var c=0;c<array.length;c++)
+    for (var i=0;i<array.length;i++)
 	{
-		var entry = array[c];
-		var attribute = entry[0];
+		var entry = array[i];
+		var attributeName = entry[0];
 		var listener = entry[1];
-		var value = element.getAttribute(attribute);
-		listener.handle(element,attribute,value);
-	}
+		var value = element.getAttribute(attributeName);
+        if (value) // optimization to avoid adding listeners if the attribute isn't present
+        {
+            if (Appcelerator.Compiler.isCompiledMode)
+            {
+                Appcelerator.Compiler.compiledAttributeListeners.push([element.id,attributeName,tagname,i]);
+            }
+            else
+            {
+                listener.handle(element,attributeName,value);
+            }
+        }
+    }
 };
 
 //
@@ -157,17 +169,19 @@ Appcelerator.Compiler.delegateToAttributeListeners = function(element)
 	var p = Appcelerator.Compiler.attributeProcessors[tagname];
 	if (p && p.length > 0)
 	{
-		Appcelerator.Compiler.forwardToAttributeListener(element,p);
+		Appcelerator.Compiler.forwardToAttributeListener(element,p,tagname);
 	}
 	p = Appcelerator.Compiler.attributeProcessors['*'];
 	if (p && p.length > 0)
 	{
-		Appcelerator.Compiler.forwardToAttributeListener(element,p);
+		Appcelerator.Compiler.forwardToAttributeListener(element,p,'*');
 	}
-	if (Appcelerator.Compiler.isCompiledMode)
+    /*  // current compiler parses on expressions at load-time, not compile-time
+    if (Appcelerator.Compiler.isCompiledMode)
 	{
 		element.removeAttribute('on');
 	}
+	*/
 };
 
 Appcelerator.Compiler.containerProcessors=[];
@@ -2249,37 +2263,50 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
         script.setAttribute('src','js/'+appcelerator_app_js);
         script.setAttribute('type','text/javascript');
         Appcelerator.Core.HeadElement.appendChild(script);
-        var code = 'Appcelerator.Compiler.compileOnLoad=false;';
 
+        var code = null;
 
-        if (Appcelerator.Compiler.compiledCode && Appcelerator.Compiler.compiledCode.length > 0)
+        // set scopes for all our elements
+        var codeArray = [
+            'Appcelerator.Compiler.compileOnLoad=false;',
+            'Appcelerator.Core.onload(function(){',
+            'function setScope(id,scope){var e = $(id); if (e) e.scope = scope;}'
+        ];
+
+        for (var i in Appcelerator.Compiler.scopeMap)
         {
-            code+='Appcelerator.Core.onload(function(){';
-
-            // set scopes for all our elements
-            var jscode = 'function setScope(id,scope){var e = $(id); if (e) e.scope = scope;}';
-
-            for (var i in Appcelerator.Compiler.scopeMap)
+            var scope = Appcelerator.Compiler.scopeMap[i];
+            if (typeof(scope)=='string')
             {
-                var scope = Appcelerator.Compiler.scopeMap[i];
-                if (typeof(scope)=='string')
-                {
-                    jscode+='setScope("'+i+'","'+scope+'");';
-                }
+                codeArray.push('setScope("'+i+'","'+scope+'");');
             }
+        }
 
-            jscode+=Appcelerator.Compiler.compiledCode;
 
-            if (Appcelerator.Compiler.compressor)
-            {
-                // run the JS compressor
-                code+=Appcelerator.Compiler.compressor.compress(jscode);
-            }
-            else
-            {
-                code+=jscode;
-            }
-            code+='});';
+        if (Appcelerator.Compiler.compiledCode)
+        {
+            codeArray.push(Appcelerator.Compiler.compiledCode);
+        }
+
+        codeArray.push("var attributeProcessors = Appcelerator.Compiler.attributeProcessors;");
+        codeArray.push("function handleListener(elementId, attributeName, tagname, handlerIndex) {");
+        codeArray.push("var element = $(elementId); var value = element.getAttribute(attributeName);");
+        codeArray.push("attributeProcessors[tagname][handlerIndex][1].handle(element,attributeName,value);}");
+
+        var listeners = Appcelerator.Compiler.compiledAttributeListeners;
+        for(i = 0; i < listeners.length; i++) {
+            codeArray.push('handleListener("'+listeners[i].join('","')+'");');
+        }
+
+        // close the entire onload handler
+        codeArray.push('});');
+
+        code = codeArray.join('');
+
+        if (Appcelerator.Compiler.compressor)
+        {
+            // run the JS compressor (a java class)
+            code = Appcelerator.Compiler.compressor.compress(code);
         }
 
         // remove unnecessary ids from <head>
