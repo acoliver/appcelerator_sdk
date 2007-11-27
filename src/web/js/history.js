@@ -125,6 +125,11 @@ Appcelerator.Compiler.afterDocumentCompile(function()
     {
     	Appcelerator.History.loadIE();
     }
+    else if (Appcelerator.Compiler.isCompiledMode)
+    {
+        // init.js does not define history, maybe it should
+        return;
+    }
     else
     {
     	// THIS TRICK CAME FROM YUI's HISTORY COMPONENT

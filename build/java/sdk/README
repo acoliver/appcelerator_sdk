@@ -2,6 +2,12 @@
 Appcelerator Platform SDK for Java
 ==================================
 
+First, in this directory, run:
+
+> ant copy_script_jars
+
+This allows ant to find the libraries it needs to create your project.
+
 To create a new Appcelerator Java project, run:
 
 > ant create

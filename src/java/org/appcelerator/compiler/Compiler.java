@@ -184,7 +184,7 @@ public class Compiler
             {
             	if (file.isDirectory())
             	{
-            		File moduleFile = new File(file,"module.js");
+                    File moduleFile = new File(file, file.getName()+".js");
             		if (moduleFile.exists())
             		{
                         try {

@@ -110,3 +110,19 @@ function $E()
         Logger.error(msg);
     }
 }
+
+
+if(typeof err == 'undefined') {
+    var err = {
+        println: function(msg) {
+            console.log(msg); // TODO: switch to Logger
+        }
+    };
+}
+if(typeof out == 'undefined') {
+    var out = {
+        println: function(msg) {
+            console.log(msg); // TODO: switch to Logger
+        }
+    };
+}

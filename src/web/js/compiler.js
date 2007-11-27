@@ -264,7 +264,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
        }
        delete Appcelerator.Compiler.onbeforecompileListeners;
     }
-    
+
     var container = document.body;  
     var originalVisibility = container.style.visibility || 'visible';
 
@@ -279,7 +279,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     }
     
     var state = Appcelerator.Compiler.createCompilerState();
-    
+
     // start scanning at the body
     Appcelerator.Compiler.compileElement(container,state);
 
@@ -2212,125 +2212,131 @@ Appcelerator.Compiler.convertCSSAttribute = function (css)
 //
 Appcelerator.Util.ServerConfig.addConfigListener(function()
 {
-	if (Appcelerator.Compiler.compileOnLoad)
+    if (Appcelerator.Compiler.compileOnLoad)
 	{
-        if (Appcelerator.Compiler.isCompiledMode)
+        var outputHandler;
+        if(Appcelerator.Compiler.isCompiledMode)
         {
-	        Appcelerator.Compiler.compileDocument(function()
-	        {
-	            if (Appcelerator.Compiler.isCompiledMode)
-	            {
-	                var html='';
-	        
-	                // add the version metadata
-	                var meta=window.document.createElement('meta');
-	                meta.setAttribute('name','generator');
-	                meta.setAttribute('content','Appcelerator '+Appcelerator.Version);
-	                Appcelerator.Core.HeadElement.appendChild(meta);
-	                
-	                // add the license metadata
-	                meta=window.document.createElement('meta');
-	                meta.setAttribute('name','license');
-	                meta.setAttribute('content',Appcelerator.LicenseMessage);
-	                Appcelerator.Core.HeadElement.appendChild(meta);
-	                
-	                var script=window.document.createElement('script');
-	                script.setAttribute('src','js/'+appcelerator_app_js);
-	                script.setAttribute('type','text/javascript');
-	                Appcelerator.Core.HeadElement.appendChild(script);
-	                var code = 'Appcelerator.Compiler.compileOnLoad=false;';
-	                
-	        
-	                if (Appcelerator.Compiler.compiledCode && Appcelerator.Compiler.compiledCode.length > 0)
-	                {
-	                    code+='Appcelerator.Core.onload(function(){';
-	                    
-	                    // set scopes for all our elements
-	                    var jscode = 'function setScope(id,scope){var e = $(id); if (e) e.scope = scope;}';
-	                    
-	                    for (var i in Appcelerator.Compiler.scopeMap)
-	                    {
-	                        var scope = Appcelerator.Compiler.scopeMap[i];
-	                        if (typeof(scope)=='string')
-	                        {
-	                            jscode+='setScope("'+i+'","'+scope+'");';
-	                        }               
-	                    }
-	                    
-	                    jscode+=Appcelerator.Compiler.compiledCode;
-	                    
-	                    if (Appcelerator.Compiler.compressor)
-	                    {
-	                        // run the JS compressor
-	                        code+=Appcelerator.Compiler.compressor.compress(jscode);
-	                    }
-	                    else
-	                    {
-	                        code+=jscode;
-	                    }
-	                    code+='});';
-	                }
-	                
-	                // remove unnecessary ids from <head>
-	                Appcelerator.Core.HeadElement.getElementsByTagName('*').each(function(n)
-	                {
-	                    if (n.nodeType == 1 && Appcelerator.Compiler.automatedIDRegex.test(n.id))
-	                    {
-	                        n.removeAttribute('id');
-	                    }
-	                });
-	                if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.id))
-	                {
-	                    Appcelerator.Core.HeadElement.removeAttribute('id');
-	                }
-	                if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.parentNode.id))
-	                {
-	                    Appcelerator.Core.HeadElement.parentNode.removeAttribute('id');
-	                }
-	                
-	                //
-	                // sweep through and figure out which CSS links are not really
-	                // used by the app (since we import all on compile)
-	                // 
-	                var css = {};
-	                document.getElementsByTagName('link').each(function(link)
-	                {
-	                    if (link.id)
-	                    {
-	                        css[link.id] = link;
-	                    }
-	                });
-	                
-	                for (var path in Appcelerator.Core.widgets_css)
-	                {
-	                    var module = Appcelerator.Core.widgets_css[path];
-	                    if (typeof module == 'string' && Appcelerator.Core.usedModules[module])
-	                    {
-	                        delete css['css_'+module];
-	                    }
-	                }
-	                
-	                for (var name in css)
-	                {
-	                    if (name && typeof(name)=='string' && name.indexOf('css_')!=-1)
-	                    {
-	                        var link = css[name];
-	                        link.parentNode.removeChild(link);
-	                    }
-	                }
-	                
-	                html+=Appcelerator.Util.Dom.getText(window.document.documentElement,false,null,true,true);
-	                Appcelerator.Compiler.compiledJS = code;
-	                Appcelerator.Compiler.compiledDocument = html;
-	            }
-	        });
-	    }
-	    else
-	    {
-            Appcelerator.Compiler.compileDocument();
-	    }
+            outputHandler = Appcelerator.Util.ServerConfig.outputCompiledDocument;
+        }
+        else
+        {
+            outputHandler = Prototype.K;
+        }
+        Appcelerator.Compiler.compileDocument(outputHandler);
 	}
 });
+
+Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
+{
+    if (Appcelerator.Compiler.isCompiledMode)
+    {
+        var html='';
+
+        // add the version metadata
+        var meta=window.document.createElement('meta');
+        meta.setAttribute('name','generator');
+        meta.setAttribute('content','Appcelerator '+Appcelerator.Version);
+        Appcelerator.Core.HeadElement.appendChild(meta);
+
+        // add the license metadata
+        meta=window.document.createElement('meta');
+        meta.setAttribute('name','license');
+        meta.setAttribute('content',Appcelerator.LicenseMessage);
+        Appcelerator.Core.HeadElement.appendChild(meta);
+
+        var script=window.document.createElement('script');
+        script.setAttribute('src','js/'+appcelerator_app_js);
+        script.setAttribute('type','text/javascript');
+        Appcelerator.Core.HeadElement.appendChild(script);
+        var code = 'Appcelerator.Compiler.compileOnLoad=false;';
+
+
+        if (Appcelerator.Compiler.compiledCode && Appcelerator.Compiler.compiledCode.length > 0)
+        {
+            code+='Appcelerator.Core.onload(function(){';
+
+            // set scopes for all our elements
+            var jscode = 'function setScope(id,scope){var e = $(id); if (e) e.scope = scope;}';
+
+            for (var i in Appcelerator.Compiler.scopeMap)
+            {
+                var scope = Appcelerator.Compiler.scopeMap[i];
+                if (typeof(scope)=='string')
+                {
+                    jscode+='setScope("'+i+'","'+scope+'");';
+                }
+            }
+
+            jscode+=Appcelerator.Compiler.compiledCode;
+
+            if (Appcelerator.Compiler.compressor)
+            {
+                // run the JS compressor
+                code+=Appcelerator.Compiler.compressor.compress(jscode);
+            }
+            else
+            {
+                code+=jscode;
+            }
+            code+='});';
+        }
+
+        // remove unnecessary ids from <head>
+        Appcelerator.Core.HeadElement.getElementsByTagName('*').each(function(n)
+        {
+            if (n.nodeType == 1 && Appcelerator.Compiler.automatedIDRegex.test(n.id))
+            {
+                n.removeAttribute('id');
+            }
+        });
+        if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.id))
+        {
+            Appcelerator.Core.HeadElement.removeAttribute('id');
+        }
+        if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.parentNode.id))
+        {
+            Appcelerator.Core.HeadElement.parentNode.removeAttribute('id');
+        }
+
+        //
+        // sweep through and figure out which CSS links are not really
+        // used by the app (since we import all on compile)
+        //
+        var css = {};
+        document.getElementsByTagName('link').each(function(link)
+        {
+            if (link.id)
+            {
+                css[link.id] = link;
+            }
+        });
+
+        for (var path in Appcelerator.Core.widgets_css)
+        {
+            var module = Appcelerator.Core.widgets_css[path];
+            if (typeof module == 'string' && Appcelerator.Core.usedModules[module])
+            {
+                delete css['css_'+module];
+            }
+        }
+
+        for (var name in css)
+        {
+            if (name && typeof(name)=='string' && name.indexOf('css_')!=-1)
+            {
+                var link = css[name];
+                link.parentNode.removeChild(link);
+            }
+        }
+
+        html+=Appcelerator.Util.Dom.getText(window.document.documentElement,false,null,true,true);
+
+        Appcelerator.Compiler.compiledJS = code;
+        Appcelerator.Compiler.compiledDocument = html;
+
+    }
+};
 
 
 Appcelerator.Compiler.setHTML = function(element,html)
