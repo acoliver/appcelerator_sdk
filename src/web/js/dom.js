@@ -305,9 +305,9 @@ Appcelerator.Util.Dom =
         var html = '';
         this.eachAttribute(element, function(name, value)
         {
-            if (!excludes || !excludes.indexOf(name))
+            if (false == (excludes && excludes.indexOf(name) > -1))
             {
-                html += name + '="' + String.escapeXML(value||'') + '" ';
+				html += name + '="' + String.escapeXML(value||'') + '" ';                
             }
         }, null, true);
         return html;

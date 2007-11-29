@@ -297,24 +297,29 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     {
         setTimeout(function()
         {
-            if (Appcelerator.Compiler.oncompileListeners)
-            {
-                for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
-                {
-                    Appcelerator.Compiler.oncompileListeners[c]();
-                }
-                delete Appcelerator.Compiler.oncompileListeners;
-            }
-            if (typeof(onFinishCompiled)=='function') onFinishCompiled();
-            if (originalVisibility!=container.style.visibility)
-            {
-               container.style.visibility = originalVisibility;
-            }
-            $MQ('l:app.compiled');
+		    if (typeof(onFinishCompiled)=='function') onFinishCompiled();
+		    if (originalVisibility!=container.style.visibility)
+		    {
+		       container.style.visibility = originalVisibility;
+		    }
+			Appcelerator.Compiler.compileDocumentOnFinish();
         },0);
     };
     Appcelerator.Compiler.checkLoadState(state);
 };
+
+Appcelerator.Compiler.compileDocumentOnFinish = function ()
+{
+    if (Appcelerator.Compiler.oncompileListeners)
+    {
+        for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
+        {
+            Appcelerator.Compiler.oncompileListeners[c]();
+        }
+        delete Appcelerator.Compiler.oncompileListeners;
+    }
+    $MQ('l:app.compiled');	
+}
 
 Appcelerator.Compiler.compileInterceptors=[];
 
@@ -1020,7 +1025,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					// add an empty div to handle attribute processors
 					var replacedId = Appcelerator.Compiler.generateId();
 					var replaceHtml = '<div id="'+replacedId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
-					// new Insertion.Before(element,'<div></div>');
+					new Insertion.Before(element,replaceHtml);
 					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+replacedId+'"));';
 				}
 				
@@ -2295,6 +2300,12 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 {
     if (Appcelerator.Compiler.compileOnLoad)
 	{
+		// prototype/rhino problem
+		for (var name in Event.Methods) 
+		{
+			delete Object.prototype[name];
+		}
+		
         var outputHandler;
         if(Appcelerator.Compiler.isCompiledMode)
         {
@@ -2425,6 +2436,7 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
 
         html+=Appcelerator.Util.Dom.getText(window.document.documentElement,false,null,true,true);
 
+		code += 'Appcelerator.Compiler.compileDocumentOnFinish();';
         Appcelerator.Compiler.compiledJS = code;
         Appcelerator.Compiler.compiledDocument = html;
     }
