@@ -94,8 +94,6 @@ Appcelerator.Module.Upload =
 		// put iframe as child of body so position absolute won't be relative in case parent is relative
 		new Insertion.Bottom(document.body,'<iframe name="'+targetid+'" id="'+targetid+'" width="1" height="1" src="about:blank" style="position:absolute;top:-400px;left:-400px;width:1px;height:1px;"></iframe>');
 
-		parameters['id'] = id;
-		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
