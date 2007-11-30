@@ -7,6 +7,7 @@ class ItemService < Appcelerator::Service
   Service 'wl.add.item.request', :addItem, 'wl.add.item.response'
   Service 'wl.edit.item.request', :editItem, 'wl.edit.item.response'
   Service 'wl.remove.item.request', :removeItem, 'wl.remove.item.response'
+  Service 'wl.list.item.request', :listItem, 'wl.list.item.response'
   
   def claimItem(request,message)
       p "received message: #{message.inspect}"
@@ -42,6 +43,36 @@ class ItemService < Appcelerator::Service
       p "received message: #{message.inspect}"
       msg = message["message"]
       {"message"=>"I received from you: #{msg}","success"=>true}
+  end
+  
+  def listItem(request,message)
+      user_id = message['user_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'You must log in to view or modify a Wishalista'}
+      end      
+
+      raw_items = Item.find(:all, :condition => ['user_id = ?', user_id], :order => 'created_at DESC')
+      
+      items = Array.new 
+      raw_items.each do |raw_item|
+        item = {}
+        item['item_id'] = raw_item.id        
+        item['name'] = raw_item.name
+        item['note'] = raw_item.note
+        item['occasion'] = raw_item.occasion
+        item['claimed'] = raw_item.claimed        
+        item['claimed_name'] = raw_item.claimed_user.nil? ? '' : raw_item.claimed_user.name
+        item['claimed'] = raw_item.claimed        
+        item['bought'] = raw_item.bought        
+        items.push(item)
+      end
+
+      is_me = logged_in_user_id == user_id ? true : false
+      
+      {'success' => true, 'isMe'=> is_me, 'items' => items}
   end
 end
 
