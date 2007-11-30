@@ -13,9 +13,9 @@ class FriendService < Appcelerator::Service
     email_to = message["email_to"]
     
     begin
-      user = User.find(user)
+      user = User.find(user_id)
       
-      {"success"=>true,"list"=>user.list}
+      {"success"=>true,"items"=>user.items}
     rescue 
       {"message"=>"problem doing that: #{$!}","success"=>false}
     end
