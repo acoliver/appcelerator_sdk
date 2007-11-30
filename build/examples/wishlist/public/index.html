@@ -18,7 +18,7 @@
 					<h1>Goodbye Fruitcakes!</h1>
 		            <p>Nobody likes gifts that suck. Tell them what you're wishing for... build your <span class="branding_text">wishalista</span>.</p>
 		            <h2>What's a wishalista?</h2>
-					<p>Dude, a <span class="branding_text"></span>wishalista is a list of stuff you want.
+					<p>Dude, a <span class="branding_text">wishalista</span> is a list of stuff you want.
 					Just make a list of all the stuff you want people to buy for you,
 					and send it to all your friends and family.
 					It's so easy your grandma could do it
@@ -27,53 +27,65 @@
 			    <td class="index_right_column">
 					<div on="l:app.compiled then show">
 						<div on="l:wl.account.create then hide or l:wl.account.login then show">
-						    Don't have a <span class="branding_text">wishalist</span> yet?
-						    <span class="link" on="click then l:wl.account.create">Create one now!</span>
+							<div class="switch_text">
+						      Don't have a <span class="branding_text">wishalist</span> yet?
+						      <span class="link" on="click then l:wl.account.create">Create one now!</span>
+						    </div>
 						    <div class="account_box">
 						    	<div class="account_box_top"></div>
 								<div class="account_box_content">
+									<form on="enter then r:wl.login.request" fieldset="login">
+								    <div class="account_orange">Login to your wistalista!</div>
 			                        <table>
 	                                    <tr>
-	                                        <td>email:</td>
+	                                        <th>email:</th>
 	                                        <td><input name="email" fieldset="login"/></td>
 	                                    </tr>
 	                                    <tr>
-	                                        <td>password:</td>
+	                                        <th>password:</th>
 	                                        <td><input name="password" type="password" fieldset="login"/></td>
 	                                    </tr>
-                                    </table>
+	                                </table>
 									<div on="click then r:wl.login.request"
-									     fieldset="login""
+									     fieldset="login"
 		                                 class="green_button"
 										 style="width: 200px"><div class="green_button_right">
 		                                Take me to my wistalista!
+										<img src="images/indicator_web2.3.gif" style="display: none;"
+										     class="indicator"
+                                             on="r:wl.login.request then show or r:wl.login.response then hide"/>
 		                            </div></div>
+									</form>
 								</div>
 								<div class="account_box_bottom"></div>
 						    </div>
 						</div>
 						<div style="display: none;"
 						     on="l:wl.account.login then hide or l:wl.account.create then show">
-					   Dude... I've already signed-up.
-					   <span class="link" on="click then l:wl.account.login">Let me log-in.</span>
+						<div class="switch_text">
+							Dude... I've already signed-up.
+					        <span class="link" on="click then l:wl.account.login">Let me log-in.</span>
+					    </div>
 	                    <div class="account_box">
 	                        <div class="account_box_top"></div>
 	                        <div class="account_box_content">
+	                        	<form on="enter then r:wl.signup.request" fieldset="signup">
+	                            <div class="account_orange">Create your wistalista!</div>
 	                        	<table>
 	                        		<tr>
-	                        			<td>first name:</td>
+	                        			<th>first name:</th>
 										<td><input name="firstname" fieldset="signup"/></td>
 	                        		</tr>
                                     <tr>
-                                        <td>last name:</td>
+                                        <th>last name:</th>
                                         <td><input name="lastname" fieldset="signup"/></td>
                                     </tr>
 									<tr>
-										<td>email:</td>
+										<th>email:</th>
 										<td><input name="email" fieldset="signup"/></td>
 									</tr>
 									<tr>
-										<td>password:</td>
+										<th>password:</th>
 										<td><input name="password" type="password" fieldset="signup"/></td>
 									</tr>
 	                        	</table>
@@ -81,8 +93,13 @@
 								     fieldset="signup"
 								     class="green_button"
 									 style="width: 200px"><div class="green_button_right">
-									Make my wistalista!
+									Make my wishalista!
+									<img src="images/indicator_web2.3.gif" style="display: none;"
+                                             class="indicator"
+                                             on="r:wl.signup.request then show or r:wl.signup.response then hide"/>
 								</div></div>
+								<div style="display: none;" on>that </div>
+                                </form>
 	                        </div>
 	                        <div class="account_box_bottom"></div>
 	                    </div>
