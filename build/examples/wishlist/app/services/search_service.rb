@@ -23,7 +23,7 @@ class SearchService < Appcelerator::Service
         end
       end
     end
-    return {'success' => true, 'results' => search_results}
+    return {'success' => true, 'results' => search_results, 'length' => search_results.size}
   end
 
 end

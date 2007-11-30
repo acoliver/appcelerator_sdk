@@ -9,24 +9,24 @@ class FriendService < Appcelerator::Service
   
 
   def emaillist(request,message)
-    user_id = message["user_id"]
-    email_to = message["email_to"]
+    user_id = message['user_id']
+    email_to = message['email_to']
     
     begin
       user = User.find(user_id)
       
-      {"success"=>true,"items"=>user.items}
+      {'success'=>true,'items'=>user.items}
     rescue 
-      {"message"=>"problem doing that: #{$!}","success"=>false}
+      {'message'=>"problem doing that: #{$!}","success"=>false}
     end
   end
   def viewuser(request,message)
-      user_id = message["user_id"]
+      user_id = message['user_id']
       begin
         user = User.find(user_id)
-        {"user"=>user, "profile"=> user.profile,"success"=>true}
+        {'user'=>user, 'profile'=> user.profile,'success'=>true}
       rescue 
-        {"message"=>"problem looking up user: #{$!}","success"=>false}
+        {"message"=>"problem looking up user: #{$!}",'success'=>false}
       end
   end 
   # addFriend nil {'friend_id': 44}
@@ -45,13 +45,14 @@ class FriendService < Appcelerator::Service
 
   # empty request
   def getFriends(request,message)
+    puts "getfirneds"
       me = get_me(request)
       friendsInfo = me.friends.map do |friend|
         {'friend_id' => friend.id,
          'name' => friend.full_name,
          'picture' => friend.picture}
       end
-      {"friends" => friendsInfo, "success"=>true}    
+      {'results' => friendsInfo, 'success'=>true, 'length' => friendsInfo.length }    
   end
   
   #  inviteFriend nil {'friend_email': 'mkyfriend@blah.org'}

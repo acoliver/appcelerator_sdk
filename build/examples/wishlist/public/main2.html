@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org" xmlns:google="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="description" content=""/>
+	<meta name="keywords" content="" />
+	<title>WishaLista</title>
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+	<link rel="stylesheet" href="css/main.css" type="text/css" media="screen" charset="utf-8"/>
+	<script type="text/javascript" src="js/appcelerator.js"></script>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<div id="header">
+		<div id="header_content">
+			<img src="images/banner_badge.png" alt="Wishalista" /> <span>Welcome back asshole</span>
+		</div>
+	</div>
+	<div id="content_header"></div>
+	<div id="content">
+		<div id="content_body">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+				<tr valign="top">
+					<td width="20%">
+						<div id="mypicture">
+							<div><img src="images/picture.gif"/></div>
+							<div id="mypicture_footer">
+								<div><h1>Tyrus</h1></div>
+								<div><a on="click then l:edit.profile">edit profile</a></div>
+							</div>
+						</div>
+					</td>
+					<td width="40%">
+						<div id="mylist" on="content[list] then show else hide">
+							<div id="mylist_header"></div>
+							<div id="mylist_header_content"><h1>My Wisha Lista</h1><div class="button" on="click then l:send.list">send list</div></div>
+							<div id="mylist_content">
+								<div id="mylist_content_body">
+									<div>Hello</div>
+									<div id="mylist_add"><div id="mylist_add_button">Add something to my Wisha Lista!</div></div>
+								</div>
+							</div>
+							<div id="mylist_footer"></div>
+						</div>
+                        <div id="edit" style="display:none" on="content[edit] then show else hide">
+                            <div id="edit_header"></div>
+                            <div id="edit_header_content"><h1>Edit My Profile</h1></div>
+                            <div id="edit_content">
+                                <div id="edit_content_body">
+								    <table width="100%" cellspacing="10">
+								       <tr>
+								        <td>First Name:</td>
+								        <td><input name="first_name" on="r:wl.profile.info.response then value[first_name]" fieldset="profile"></td>
+								       </tr>
+								       <tr>
+								        <td>Last Name:</td>
+								        <td><input name="last_name" on="r:wl.profile.info.response then value[last_name]" fieldset="profile"></td>
+								       </tr>
+								       <tr>
+								        <td>Email:</td>
+								        <td><input name="email" on="r:wl.profile.info.response then value[email]" fieldset="profile"/></td>
+								       </tr>
+								    </table>
+								    <table cellspacing="10">
+										<tr>
+											<td><div class="button">save</div></td>
+											<td><div class="button" on="click then l:show.list">cancel</div></td>
+										</tr>
+									</table>
+                                </div>
+                            </div>
+                            <div id="mylist_footer"></div>
+                        </div>
+                        <div id="send" style="display:none" on="content[send] then show else hide">
+                            <div id="send_header"></div>
+                            <div id="send_header_content"><h1>Send MyLista to a Frienda</h1></div>
+                            <div id="send_content">
+                                <div id="send_content_body">
+                                    <table width="100%" cellspacing="10">
+                                       <tr>
+                                        <td>Email:</td>
+                                        <td>
+                                            <div style="height:30px;">
+                                                <div><input name="email" fieldset="sendlist" validator="email" decorator="custom" decoratorId="sendlist_email_dec"/></div>
+                                                <div id="sendlist_email_dec" class="field_decorator">Please enter a valid email address</div>
+                                            </div>
+                                        </td>
+                                       </tr>
+                                    </table>
+                                    <table cellspacing="10">
+                                        <tr>
+                                            <td><div class="button">send</div></td>
+                                            <td><div class="button" on="click then l:show.list">cancel</div></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="mylist_footer"></div>
+                        </div>
+					</td>
+					<td width="40%">
+						<div id="myfriends">
+							<div id="myfriends_header">
+								<h1>My Homies</h1>
+								<div id="searchbox" on="click then r:search"><input type="text" value="" id="search"/></div>
+							</div>
+							<div id="myfriends_content">
+								<div id="searchresults">
+									<app:iterator on="r:wl.search.response[success=true,length!=0] then execute and show else hide or
+										r:wl.friends.get.response[success=true,length!=0] then execute and show else hide" 
+										property="results" style="display:none">
+										<html:div class="search_result">
+										   <html:div><html:img src="images/small_picture.gif"></html:img></html:div>
+										   <html:div>#{name}</html:div>
+										</html:div>
+									</app:iterator>
+									<div on="r:wl.search.response[length=0] then show else hide" class="search_noresults" style="display:none">Oops, we didn't find any matches. Refine your search and try again...</div>
+									<div on="r:wl.friends.get.response[length=0] then show else hide" class="search_noresults" style="display:none">You have no friends yet. Why not invite someone to join?</div>
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="content_footer"></div>
+	<div id="footer">
+		<a href="http://www.appcelerator.org"><img align="right" src="images/poweredby.png"/></a>
+	</div>
+	
+
+
+    <app:statemachine id="content" initial="list">
+       <state name="list" if="l:show.list"></state>
+       <state name="edit" if="l:edit.profile"></state>
+       <state name="send" if="l:send.list"></state>
+    </app:statemachine>
+    
+    <app:message name="r:wl.profile.info.request"></app:message>
+	<app:message name="r:wl.friends.get.request"></app:message>
+
+</body>
+</html>
