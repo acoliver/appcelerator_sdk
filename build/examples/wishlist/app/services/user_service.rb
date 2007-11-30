@@ -8,7 +8,7 @@ class UserService < Appcelerator::Service
   Service 'wl.profile.edit.request', :editprofile, 'wl.profile.edit.response'
   
   def signup(request,message)
-    if not message['email'].strip or not message['password'] or not message['firstname'].strip or not message['lastname'].strip
+    if not message['email'] or not message['email'].strip or not message['password'] or not message['firstname'] or not message['firstname'].strip or not message['lastname'] or not message['lastname'].strip
       return {'scucess' => false, 'msg' => 'Required fields missing.'}
     end
     
@@ -89,19 +89,25 @@ class UserService < Appcelerator::Service
       return {'success' => false}
     end
     
-    if message['firstname'].strip
+    if message['firstname'] and message['firstname'].strip
       user.profile.firstname = message['firstname'].strip
     end
-    if message['lastname'].strip
+    if message['lastname'] and message['lastname'].strip
       user.profile.lastname = message['lastname'].strip
     end
-    if message['email'].strip
-      user.email = message['email'].strip
-      user.save!
+    if message['email'] and message['email'].strip
+      found = User.find_by_email(message['email'].strip)
+      if not found
+        user.email = message['email'].strip
+        user.save!
+      elsif message['email'] != user.email
+        return {'success' => false, 'msg' => 'Email address already exists.'}
+      end
     end
 
     user.profile.save!
+    return {'success' => true}
   end
-  
+
 end
 
