@@ -16,9 +16,9 @@ class FriendService < Appcelerator::Service
     begin
       user = User.find(user)
       
-      {"success"=>true}
+      {"success"=>true,"list"=>user.list}
     rescue 
-      {"message"=>"problem doing that #{$!}","success"=>false}
+      {"message"=>"problem doing that: #{$!}","success"=>false}
     end
   end
   def viewuser(request,message)
@@ -27,9 +27,9 @@ class FriendService < Appcelerator::Service
         user = User.find(user_id)
         {"user"=>user, "profile"=> user.profile,"success"=>true}
       rescue 
-        {"message"=>"problem looking up user #{$!}","success"=>false}
+        {"message"=>"problem looking up user: #{$!}","success"=>false}
       end
-   
+  end 
   # addFriend nil {'friend_id': 44}
   #
   def addFriend(request,message)
@@ -72,8 +72,3 @@ class FriendService < Appcelerator::Service
       Users.find(request['session'][:user_id])
   end
 end
-
-end
-  
-end
-
