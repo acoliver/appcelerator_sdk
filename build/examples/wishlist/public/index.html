@@ -92,9 +92,9 @@
 			    </td>
 		  </tr>
 		</table>
-		<app:script on="wl.account.login.response[success=true] then execute
-		              or wl.account.signup.response[success=true] then execute">
-			document.location = "main.html";
+		<app:script on="r:wl.login.response[success=true] then execute
+		              or r:wl.signup.response[success=true] then execute">
+			window.location.href = "main.html";
 		</app:script>
     </div>
 </body>

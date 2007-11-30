@@ -52,6 +52,7 @@ class UserService < Appcelerator::Service
     
     user.last_login = Time.now
     user.save!
+    return {'success' => true}
   end
 
   def logout(request,message)
