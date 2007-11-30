@@ -1,12 +1,12 @@
 
 class ItemService < Appcelerator::Service
   
-  Service 'claim.item.request', :claimItem, 'claim.item.response'
-  Service 'unclaim.item.request', :unclaimItem, 'unclaim.item.response'
-  Service 'mark.purchased.item.request', :markItemPurchased, 'mark.purchased.item.response'
-  Service 'add.item.request', :addItem, 'add.item.response'
-  Service 'edit.item.request', :editItem, 'edit.item.response'
-  Service 'remove.item.request', :removeItem, 'remove.item.response'
+  Service 'wl.claim.item.request', :claimItem, 'wl.claim.item.response'
+  Service 'wl.unclaim.item.request', :unclaimItem, 'wl.unclaim.item.response'
+  Service 'wl.mark.purchased.item.request', :markItemPurchased, 'wl.mark.purchased.item.response'
+  Service 'wl.add.item.request', :addItem, 'wl.add.item.response'
+  Service 'wl.edit.item.request', :editItem, 'wl.edit.item.response'
+  Service 'wl.remove.item.request', :removeItem, 'wl.remove.item.response'
   
   def claimItem(request,message)
       p "received message: #{message.inspect}"
