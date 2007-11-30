@@ -34,7 +34,7 @@ class FriendService < Appcelerator::Service
   def addFriend(request,message)
       me = get_me(request)
       
-      new_friend = Users.find(message['friend_id'])
+      new_friend = User.find(message['friend_id'])
       if not me.has_friend? new_friend
         me.add_friend new_friend
         return {'success' => true}
