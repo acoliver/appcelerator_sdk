@@ -29,3 +29,19 @@
 {
 	width: 200px;
 }
+.user_controls[showMyControls=true]
+{
+	display: block;
+}
+.user_controls[showMyControls=false]
+{
+	display: none;
+}
+.other_user_controls[showMyControls=false]
+{
+	display: block;
+}
+.other_user_controls[showMyControls=true]
+{
+	display: none;
+}
