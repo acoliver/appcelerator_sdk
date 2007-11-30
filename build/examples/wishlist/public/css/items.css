@@ -1,0 +1,31 @@
+.item_list
+{
+	width: 100%;
+	position: relative;
+	float:left;
+}
+
+.edit, .remove
+{
+	position:relative;
+	float: left;
+	width: 20px;
+	height: 20px;
+	border: 1px solid black;
+	background: blue;
+}
+.name
+{
+	position: relative;
+	float: left;
+	padding: 0;
+	margin: 0;
+}
+.edit_item
+{
+	width: 210px;
+}
+.edit_item input, .edit_item textarea
+{
+	width: 200px;
+}

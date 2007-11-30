@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org" xmlns:html="http://www.appcelerator.org">
+<head>
+<noscript><meta http-equiv="refresh" content="0;URL=upgrade_script.html"></noscript>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>WISHALISTA powered by Appcelerator&trade;</title>
+
+<script type="text/javascript" src="js/appcelerator-debug.js"></script>
+<script type="text/javascript" src="locale/en.js"></script>
+<link rel="stylesheet" type="text/css" href="css/items.css" />
+<script type="text/javascript">
+    items = [
+        {'item_id': 1, 'name': 'Ferrari', 'note':'I need a fast car', 'occasion': 'Christmas', 'claimed': false},
+        {'item_id': 2, 'name': 'Axiom Audio Epic Grand Master 500', 'note':"An audio system powerful enough to blow a girl's clothes off", 'occasion': 'Christmas', 'claimed': true, 'claimed_user': 'Nolan Wright', 'claimed_date': 'November, 30'},
+        {'item_id': 3, 'name': 'XBox 360', 'note':'I really want this for HD', 'occasion': 'Birthday', 'claimed': false},
+        {'item_id': 4, 'name': 'Heart Rate Montior', 'note':'I like conducting science on the effects of caffiene', 'occasion': 'Christmas', 'claimed': false},
+        {'item_id': 5, 'name': "Year's supply of diet coke", 'note':'All programming and no fun make tejus a dull boy', 'occasion': 'Christmas', 'claimed': false},
+        {'item_id': 6, 'name': "New Andy CD", 'note':'I heard a couple tracks on Radio Javan.  It is AWESOME', 'occasion': 'Eid ul-Fitr', 'claimed': true, 'claimed_user': 'Hamed Hashemi', 'claimed_date': 'November, 30'}
+    ];
+</script>
+</head>
+
+<body style="display: none" on="l:app.compiled then show">
+    <div class="item_list">
+        <h2>My Wishalista</h2>
+        <div style="display: false" class="error" on="r:~.*[success=false] then value[message] and show else hide"></div>
+        <app:iterator on="r:wl.list.item.response[success=true] then execute" property="items">
+            <html:div class="item_list">
+                <html:div class="remove" on='click then r:wl.remove.item.request[item_id=#{item_id}] if expr[confirm("Are you sure?")]'><span>remove</span></html:div>
+                <html:div class="edit" on='click then l:wl.expand.edit[item_id=#{item_id}]'><span>edit</span></html:div>
+                <html:h4 class="name" on="click then l:wl.expand.description[item_id=#{item_id}]">#{name}</html:h4>
+            </html:div>
+            <html:div class="description" on="l:wl.expand.description[item_id=#{item_id}] then toggle[display]" style="display: none"><html:p>#{note}</html:p></html:div>
+            <html:div style="display: none" class="edit_item" on="l:wl.expand.edit[item_id=#{item_id}] then toggle[display]">
+                <html:input type="hidden" name="item_id" fieldset="#{item_id}" value="#{item_id}"></html:input>
+                <html:input type="text" fieldset="#{item_id}" name="name" value="#{name}"></html:input>
+                <html:textarea fieldset="#{item_id}" name="note">#{note}</html:textarea>
+                <html:input type="text" fieldset="#{item_id}" name="occasion" value="#{occasion}"></html:input>
+                <html:input type="button" value="Wish It!" fieldset="#{item_id}" on="click then l:show_values and l:wl.expand.edit[item_id=#{item_id}]"></html:input>
+            </html:div>
+        </app:iterator>
+    </div>
+    <!-- Remove when this gets tied into a backend -->
+    <app:message on="l:app.compiled then execute" name="r:wl.list.item.request"></app:message>
+    <app:script on="r:wl.list.item.request then execute">
+        $MQ("r:wl.list.item.response", {'items': items, 'is_me': true, 'success': true});
+    </app:script>
+    <app:script on="l:show_values then execute">
+        alert(this.data);
+    </app:script>
+</body>
+</html>
