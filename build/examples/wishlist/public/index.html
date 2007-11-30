@@ -35,7 +35,7 @@
 			                        <table>
 	                                    <tr>
 	                                        <td>email:</td>
-	                                        <td><input name="login_email" fieldset="login"/></td>
+	                                        <td><input name="email" fieldset="login"/></td>
 	                                    </tr>
 	                                    <tr>
 	                                        <td>password:</td>
@@ -61,12 +61,16 @@
 	                        <div class="account_box_content">
 	                        	<table>
 	                        		<tr>
-	                        			<td>name:</td>
-										<td><input name="name" fieldset="signup"/></td>
+	                        			<td>first name:</td>
+										<td><input name="firstname" fieldset="signup"/></td>
 	                        		</tr>
+                                    <tr>
+                                        <td>last name:</td>
+                                        <td><input name="lastname" fieldset="signup"/></td>
+                                    </tr>
 									<tr>
 										<td>email:</td>
-										<td><input name="login_email" fieldset="signup"/></td>
+										<td><input name="email" fieldset="signup"/></td>
 									</tr>
 									<tr>
 										<td>password:</td>
@@ -82,10 +86,16 @@
 	                        </div>
 	                        <div class="account_box_bottom"></div>
 	                    </div>
+						<div>
+						</div>
 				    </div>
 			    </td>
 		  </tr>
 		</table>
+		<app:script on="wl.account.login.response[success=true] then execute
+		              or wl.account.signup.response[success=true] then execute">
+			document.location = "main.html";
+		</app:script>
     </div>
 </body>
 </html>

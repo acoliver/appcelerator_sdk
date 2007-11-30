@@ -9,18 +9,18 @@ class UserService < Appcelerator::Service
   
   def signup(request,message)
     if not message['email'] or not message['email'].strip or not message['password'] or not message['firstname'] or not message['firstname'].strip or not message['lastname'] or not message['lastname'].strip
-      return {'scucess' => false, 'msg' => 'Required fields missing.'}
+      return {'success' => false, 'msg' => 'Required fields missing.'}
     end
     
     found = User.find_by_email(message['email'])
     if found
-      return {'scucess' => false, 'msg' => 'Email address already exists.'}
+      return {'success' => false, 'msg' => 'Email address already exists.'}
     end
     
     user = User.new
     user.email = message['email'].strip
     user.salt = [Array.new(6){rand(256).chr}.join].pack("m")[0..7]; 
-    user.password = MD5.new(MD5.new(message['password'] + salt).hexdigest).hexdigest
+    user.password = MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest
     user.last_login = Time.now
     user.save!
     
@@ -41,7 +41,7 @@ class UserService < Appcelerator::Service
       return {'success' => false}
     end
     
-    user = User.find_by_email(message['login_email'])
+    user = User.find_by_email(message['email'])
     
     if (not user or user.password != MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest)
       return {'success' => false}
