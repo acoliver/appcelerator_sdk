@@ -3,9 +3,9 @@ class FriendService < Appcelerator::Service
   
   Service 'wl.emaillist.request', :emaillist, 'wl.emaillist.response'
   Service 'wl.viewuser.request', :viewuser, 'wl.viewuser.response'
-  Service 'wl.add.friend.request', :addFriend, 'wl.add.friend.response'
-  Service 'wl.get.friends.request', :getFriends, 'wl.get.friends.response'
-  Service 'wl.invite.friend.request', :inviteFriend, 'wl.invite.friend.response'
+  Service 'wl.friend.add.request', :addFriend, 'wl.friend.add.response'
+  Service 'wl.friends.get.request', :getFriends, 'wl.friends.get.response'
+  Service 'wl.friend.invite.request', :inviteFriend, 'wl.friend.invite.response'
   
 
   def emaillist(request,message)
@@ -59,7 +59,7 @@ class FriendService < Appcelerator::Service
   def inviteFriend(request,message)
       me = get_me(request)
       friend_email = message['friend_email']
-      existing = Invites.find_by_user_id_friend_email(me.id, friend_email)
+      existing = Invite.find_by_user_id_friend_email(me.id, friend_email)
       if existing:
           {'success' => 'You have already invited that friend.'}
       else 
@@ -68,6 +68,6 @@ class FriendService < Appcelerator::Service
   end 
 
   def get_me(request)
-      Users.find(request['session'][:user_id])
+      User.find(request['session'][:user_id])
   end
 end

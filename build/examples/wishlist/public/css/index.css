@@ -1,0 +1,102 @@
+
+.left_column {
+	width: 200px;
+	float: left;
+}
+.middle_column {
+	width: 380px;
+	float: left;
+}
+.right_column {
+	width: 350px;
+	float: left;
+}
+.after_columns {
+	clear: both;
+}
+
+.index_body {
+	background-image: url("../images/green_hair.gif");
+	background-repeat: repeat-x;
+	padding: 0;
+	margin: 0;
+	background-color: #d1d1d1;
+	font-family: Tahoma;
+	font-weight: bold;
+}
+
+.index_page {
+	width: 780px;
+	margin: 0 auto;
+	
+}
+.big_logo {
+	position: absolute;
+}
+
+.index_left_column {
+	width: 415px;
+	float: left;
+}
+.index_right_column {
+	width: 400px;
+	float: left;
+}
+
+.after_index_columns {
+	clear: both;
+}
+.branding_text {
+	color: #3b810b;
+}
+
+.index_body h1 {
+    color: #333;
+}
+.index_body h2 {
+	color: #333;
+}
+
+.link {
+	color: #0071ff;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.account_box {
+	position: relative;
+	width: 376px;
+}
+.account_box_top {
+	background-image: url("../images/login_top.gif");
+    background-repeat: no-repeat;
+	width: 375px;
+	height: 17px;
+}
+.account_box_content {
+	margin: 0 9px;
+	background-color: #f2f2f2;
+}
+.account_box_bottom {
+    background-image: url("../images/login_bottom.gif");
+	background-repeat: no-repeat;
+	width: 375px;
+    height: 18px;
+}
+
+.green_button {
+	height: 31px;
+	background-image: url("../images/button_left.gif");
+	background-repeat: no-repeat;
+	color: white;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: Tahoma;
+}
+.green_button_right {
+	height: 25px;
+	background-image: url("../images/button_right.gif");
+	background-position: right;
+	background-repeat: no-repeat;
+	padding: 3px 6px;
+}

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
+    <title></title>
+    <script src="js/appcelerator.js" type="text/javascript"></script>
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+    
+    <div class="left_column">
+        <div on="click then l:wl.profile.edit
+              or l:wl.profile.show[user_id=me] then show else hide">edit profile</div>
+        <div on="click then r:wl.friend.add.request">add friend</div>
+    </div>
+    <div class="middle_column">
+       <app:content
+           lazy="false"
+           src="items.html"
+           on="  l:wl.profile.edit then hide
+              or l:wl.profile.edit.complete then show"
+       </app:content>
+       <app:content
+           lazy="true"
+           src="profile.html"
+           on="  l:wl.profile.edit then execute and show
+              or r:wl.profile.save.response then hide and l:wl.profile.edit.complete
+              or l:wl.profile.edit.cancel then hide and l:wl.profile.edit.complete">
+       </app:content>
+    </div>
+    <div class="right_column">
+        
+    </div>
+    <div class="after_columns"></div>
+</body>
+</html>
