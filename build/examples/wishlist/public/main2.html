@@ -50,20 +50,20 @@
 								    <table width="100%" cellspacing="10">
 								       <tr>
 								        <td>First Name:</td>
-								        <td><input name="first_name" on="r:wl.profile.info.response then value[first_name]" fieldset="profile"></td>
+								        <td><input id="editprofile_firstname" validator="required" name="first_name" on="r:wl.profile.info.response then value[first_name]" fieldset="profile"></td>
 								       </tr>
 								       <tr>
 								        <td>Last Name:</td>
-								        <td><input name="last_name" on="r:wl.profile.info.response then value[last_name]" fieldset="profile"></td>
+								        <td><input id="editprofile_lastname" validator="required" name="last_name" on="r:wl.profile.info.response then value[last_name]" fieldset="profile"></td>
 								       </tr>
 								       <tr>
 								        <td>Email:</td>
-								        <td><input name="email" on="r:wl.profile.info.response then value[email]" fieldset="profile"/></td>
+								        <td><input id="editprofile_email" validator="email" name="email" on="r:wl.profile.info.response then value[email]" fieldset="profile"/></td>
 								       </tr>
 								    </table>
 								    <table cellspacing="10">
 										<tr>
-											<td><div class="button">save</div></td>
+											<td><div class="button" activators="editprofile_firstname,editprofile_lastname,editprofile_email" on="click then r:save.profile" fieldset="profile">save</div></td>
 											<td><div class="button" on="click then l:show.list">cancel</div></td>
 										</tr>
 									</table>
@@ -81,7 +81,7 @@
                                         <td>Email:</td>
                                         <td>
                                             <div style="height:30px;">
-                                                <div><input name="email" fieldset="sendlist" validator="email" decorator="custom" decoratorId="sendlist_email_dec"/></div>
+                                                <div><input name="email" id="sendlist_email" fieldset="sendlist" validator="email" decorator="custom" decoratorId="sendlist_email_dec"/></div>
                                                 <div id="sendlist_email_dec" class="field_decorator">Please enter a valid email address</div>
                                             </div>
                                         </td>
@@ -89,7 +89,7 @@
                                     </table>
                                     <table cellspacing="10">
                                         <tr>
-                                            <td><div class="button">send</div></td>
+                                            <td><div class="button" activators="sendlist_email" on="click then r:send.list" fieldset="sendlist">send</div></td>
                                             <td><div class="button" on="click then l:show.list">cancel</div></td>
                                         </tr>
                                     </table>

@@ -8724,24 +8724,29 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     {
         setTimeout(function()
         {
-            if (Appcelerator.Compiler.oncompileListeners)
-            {
-                for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
-                {
-                    Appcelerator.Compiler.oncompileListeners[c]();
-                }
-                delete Appcelerator.Compiler.oncompileListeners;
-            }
-            if (typeof(onFinishCompiled)=='function') onFinishCompiled();
-            if (originalVisibility!=container.style.visibility)
-            {
-               container.style.visibility = originalVisibility;
-            }
-            $MQ('l:app.compiled');
+		    if (typeof(onFinishCompiled)=='function') onFinishCompiled();
+		    if (originalVisibility!=container.style.visibility)
+		    {
+		       container.style.visibility = originalVisibility;
+		    }
+			Appcelerator.Compiler.compileDocumentOnFinish();
         },0);
     };
     Appcelerator.Compiler.checkLoadState(state);
 };
+
+Appcelerator.Compiler.compileDocumentOnFinish = function ()
+{
+    if (Appcelerator.Compiler.oncompileListeners)
+    {
+        for (var c=0;c<Appcelerator.Compiler.oncompileListeners.length;c++)
+        {
+            Appcelerator.Compiler.oncompileListeners[c]();
+        }
+        delete Appcelerator.Compiler.oncompileListeners;
+    }
+    $MQ('l:app.compiled');	
+}
 
 Appcelerator.Compiler.compileInterceptors=[];
 
@@ -8804,11 +8809,11 @@ Appcelerator.Compiler.compileElement = function(element,state)
 		if (Appcelerator.Compiler.isCompiledMode)
 		{
 			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
-			var code = 'setTimeout(function()';
+			var code = '(function()';
 			code += '{';
 			code += 'Appcelerator.Core.require("'+name+'",function()'
 			code += '{' + widgetJS + '});';
-			code += '},0);';
+			code += '})();';
 			Appcelerator.Compiler.compiledCode += code;
 		}
 		else
@@ -9447,7 +9452,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					// add an empty div to handle attribute processors
 					var replacedId = Appcelerator.Compiler.generateId();
 					var replaceHtml = '<div id="'+replacedId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
-					// new Insertion.Before(element,'<div></div>');
+					new Insertion.Before(element,replaceHtml);
 					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+replacedId+'"));';
 				}
 				
@@ -9469,14 +9474,14 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			{
 				for (var c=0;c<functions.length;c++)
 				{
-					var name = functions[c];
-					var method = module[name];
-					if (!method) throw "couldn't find method named: "+name+" for module = "+module;
+					var methodname = functions[c];
+					var method = module[methodname];
+					if (!method) throw "couldn't find method named: "+methodname+" for module = "+module;
 					
 					if (Appcelerator.Compiler.isCompiledMode)
 					{
 						var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-						compiledCode += 'var f = function(id,m,data,scope)';
+						compiledCode += '(function(){ var f = function(id,m,data,scope)';
 						compiledCode += '{';
 						compiledCode += 'try';
 						compiledCode += '{';
@@ -9484,10 +9489,10 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						compiledCode += 'method(id,\''+paramsJSON+'\'.evalJSON(),data,scope);';
 						compiledCode += '}';
 						compiledCode += 'catch (e) {';
-						compiledCode += '$E("Error executing '+name+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
+						compiledCode += '$E("Error executing '+methodname+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
 						compiledCode += '}';
 						compiledCode += '};';
-						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+name+'",f);';
+						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+methodname+'",f);})();';
 					}
 					else
 					{
@@ -9499,10 +9504,10 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 							}
 							catch (e)
 							{
-								$E('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+								$E('Error executing '+methodname+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
 							}
 						};
-						Appcelerator.Compiler.attachFunction(id,name,f);
+						Appcelerator.Compiler.attachFunction(id,methodname,f);
 					}
 				}
 			}
@@ -9515,7 +9520,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				if (Appcelerator.Compiler.isCompiledMode)
 				{
 					var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-					compiledCode += 'try';
+					compiledCode += '(function(){try';
 					compiledCode += '{';
 					compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
 					if (outer)
@@ -9530,7 +9535,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					compiledCode += 'catch (exxx) {';
 					compiledCode += 'Appcelerator.Compiler.handleElementException($("'+id+'"), exxx, "compiling widget '+id+', type '+element.nodeName+'");';
 					compiledCode += 'return;';
-					compiledCode += '}';
+					compiledCode += '}})();';
 				}
 				else
 				{
@@ -10722,6 +10727,12 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 {
     if (Appcelerator.Compiler.compileOnLoad)
 	{
+		// prototype/rhino problem
+		for (var name in Event.Methods) 
+		{
+			delete Object.prototype[name];
+		}
+		
         var outputHandler;
         if(Appcelerator.Compiler.isCompiledMode)
         {
@@ -10791,6 +10802,7 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
             codeArray.push('handleListener("'+listeners[i].join('","')+'");');
         }
 
+		codeArray.push('Appcelerator.Compiler.compileDocumentOnFinish();');
         // close the entire onload handler
         codeArray.push('});');
 
@@ -11171,9 +11183,9 @@ Appcelerator.Util.Dom =
         var html = '';
         this.eachAttribute(element, function(name, value)
         {
-            if (!excludes || !excludes.indexOf(name))
+            if (false == (excludes && excludes.indexOf(name) > -1))
             {
-                html += name + '="' + String.escapeXML(value||'') + '" ';
+				html += name + '="' + String.escapeXML(value||'') + '" ';                
             }
         }, null, true);
         return html;
@@ -16180,11 +16192,11 @@ Appcelerator.Util.MD5 =
 // register our input button listener for handling
 // activators
 // 
-Appcelerator.Compiler.registerAttributeProcessor('input','activators',
+Appcelerator.Compiler.registerAttributeProcessor(['div','input'],'activators',
 {
 	handle: function(element,attribute,value)
 	{
-		if (value && element.getAttribute('type') == 'button')
+		if (value && (element.nodeName == 'DIV' || element.getAttribute('type') == 'button'))
 		{
 			// see if we're part of a field set and if so, add
 			// our reference
@@ -16206,6 +16218,7 @@ Appcelerator.Compiler.registerAttributeProcessor('input','activators',
 							break;
 						}
 					}
+					element.setAttribute('disabled',!valid);
 					element.disabled = !valid;
 				};
 				for (var c=0,len=fields.length;c<len;c++)
