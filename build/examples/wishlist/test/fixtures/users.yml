@@ -1,5 +1,15 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 one:
   id: 1
+  email: punk@punk.com
+  password: password
+  last_login: 2007-11-30 13:52:12
+  created_at: 2007-11-29 13:52:12
+  updated_at: 2007-11-29 13:52:12
 two:
   id: 2
+  email: dude@dude.com
+  password: password
+  last_login: 2007-11-30 13:52:12
+  created_at: 2007-11-29 13:52:12
+  updated_at: 2007-11-29 13:52:12

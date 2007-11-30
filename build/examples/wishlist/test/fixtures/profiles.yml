@@ -1,5 +1,13 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 one:
   id: 1
+  user_id: 1
+  full_name: Al Punk
+  created_at: 2007-11-29 13:52:12
+  updated_at: 2007-11-29 13:52:12
 two:
   id: 2
+  user_id: 2
+  full_name: Some Dude
+  created_at: 2007-11-29 13:52:12
+  updated_at: 2007-11-29 13:52:12
