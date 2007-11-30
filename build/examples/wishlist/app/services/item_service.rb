@@ -211,13 +211,11 @@ class ItemService < Appcelerator::Service
   
   def loggedInUserId(request)
       session = request['session']
-#      return session[:user_id]
-      return 2
+      return session[:user_id]
   end
 
   def messageUserId(message)
-#      return message['user_id']
-    return 1
+      return message['user_id']
   end
 
 end
