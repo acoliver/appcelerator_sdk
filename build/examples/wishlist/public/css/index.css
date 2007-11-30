@@ -31,30 +31,28 @@
 	
 }
 .big_logo {
-	position: absolute;
+	margin-left: 50px;
 }
 
+.index_content {
+	margin-top: 0px;
+}
 .index_left_column {
 	width: 415px;
-	float: left;
 }
 .index_right_column {
 	width: 400px;
-	float: left;
 }
 
-.after_index_columns {
-	clear: both;
-}
 .branding_text {
 	color: #3b810b;
 }
 
 .index_body h1 {
-    color: #333;
+    color: #3f830c;
 }
 .index_body h2 {
-	color: #333;
+	color: #3f830c;
 }
 
 .link {
@@ -74,7 +72,8 @@
 	height: 17px;
 }
 .account_box_content {
-	margin: 0 9px;
+	margin: 0 8px;
+	padding: 10px;
 	background-color: #f2f2f2;
 }
 .account_box_bottom {
@@ -92,11 +91,13 @@
 	font-size: 13px;
 	font-weight: bold;
 	font-family: Tahoma;
+	cursor: pointer;
 }
 .green_button_right {
-	height: 25px;
+	height: 17px;
 	background-image: url("../images/button_right.gif");
 	background-position: right;
 	background-repeat: no-repeat;
-	padding: 3px 6px;
+	padding: 7px 6px;
+	text-align: center;
 }

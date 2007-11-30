@@ -11,76 +11,81 @@
 </head>
 <body class="index_body">
     <div class="index_page">
-    	<div class="big_logo"><img src="images/big_logo.gif"/></div>
-		<div class="index_left_column">
-			<h1>Goodbye Fruitcakes!</h1>
-            <p>Nobody likes gifts that suck. Tell them what you're wishing for... build your <span class="branding_text">wishalista</span>.</p>
-            <h2>What's a wishalista?</h2>
-			<p>Dude, a <span class="branding_text"></span>wishalista is a list of stuff you want.
-			Just make a list of all the stuff you want people to buy for you,
-			and send it to all your friends and family.
-			It’s so easy your grandma could do it
-			(speaking of which, what do you buy for a grandma?).</p>
-
-
-        </div>
-		<div class="index_right_column">
-			<div on="l:app.compiled then show">
-				<div on="l:wl.account.create then hide or l:wl.account.login then show">
-				    Don't have a <span class="branding_text">wishalist</span> yet?
-				    <span class="link" on="click then l:wl.account.create">Create one now!</span>
-				    <div class="account_box">
-				    	<div class="account_box_top"></div>
-						<div class="account_box_content">
-	                         <table>
-                                <tr>
-                                    <td>email:</td>
-                                    <td><input/></td>
-                                </tr>
-                                <tr>
-                                    <td>password:</td>
-                                    <td><input/></td>
-                                </tr>
-                            </table>
-							<div on="click then r:blah"
-                                 class="green_button"
-								 width="200"><div class="green_button_right">
-                                Take me to my wistalista!
-                            </div></div>
+    	<div class="big_logo"><img src="images/big_logo.png"/></div>
+		<table class="index_content">
+			<tr>
+				<td class="index_left_column">
+					<h1>Goodbye Fruitcakes!</h1>
+		            <p>Nobody likes gifts that suck. Tell them what you're wishing for... build your <span class="branding_text">wishalista</span>.</p>
+		            <h2>What's a wishalista?</h2>
+					<p>Dude, a <span class="branding_text"></span>wishalista is a list of stuff you want.
+					Just make a list of all the stuff you want people to buy for you,
+					and send it to all your friends and family.
+					It's so easy your grandma could do it
+					(speaking of which, what do you buy for a grandma?).</p>
+                </td>
+			    <td class="index_right_column">
+					<div on="l:app.compiled then show">
+						<div on="l:wl.account.create then hide or l:wl.account.login then show">
+						    Don't have a <span class="branding_text">wishalist</span> yet?
+						    <span class="link" on="click then l:wl.account.create">Create one now!</span>
+						    <div class="account_box">
+						    	<div class="account_box_top"></div>
+								<div class="account_box_content">
+			                        <table>
+	                                    <tr>
+	                                        <td>email:</td>
+	                                        <td><input name="login_email" fieldset="login"/></td>
+	                                    </tr>
+	                                    <tr>
+	                                        <td>password:</td>
+	                                        <td><input name="password" type="password" fieldset="login"/></td>
+	                                    </tr>
+                                    </table>
+									<div on="click then r:wl.login.request"
+									     fieldset="login""
+		                                 class="green_button"
+										 style="width: 200px"><div class="green_button_right">
+		                                Take me to my wistalista!
+		                            </div></div>
+								</div>
+								<div class="account_box_bottom"></div>
+						    </div>
 						</div>
-						<div class="account_box_bottom"></div>
+						<div style="display: none;"
+						     on="l:wl.account.login then hide or l:wl.account.create then show">
+					   Dude... I've already signed-up.
+					   <span class="link" on="click then l:wl.account.login">Let me log-in.</span>
+	                    <div class="account_box">
+	                        <div class="account_box_top"></div>
+	                        <div class="account_box_content">
+	                        	<table>
+	                        		<tr>
+	                        			<td>name:</td>
+										<td><input name="name" fieldset="signup"/></td>
+	                        		</tr>
+									<tr>
+										<td>email:</td>
+										<td><input name="login_email" fieldset="signup"/></td>
+									</tr>
+									<tr>
+										<td>password:</td>
+										<td><input name="password" type="password" fieldset="signup"/></td>
+									</tr>
+	                        	</table>
+								<div on="click then r:wl.signup.request"
+								     fieldset="signup"
+								     class="green_button"
+									 style="width: 200px"><div class="green_button_right">
+									Make my wistalista!
+								</div></div>
+	                        </div>
+	                        <div class="account_box_bottom"></div>
+	                    </div>
 				    </div>
-				</div>
-				<div style="display: none;" on="l:wl.account.login then hide or l:wl.account.create then show">
-					Dude... I've already signed-up.
-					<span class="link" on="click then l:wl.account.login">Let me log-in.</span>
-                    <div class="account_box">
-                        <div class="account_box_top"></div>
-                        <div class="account_box_content">
-                        	<table>
-                        		<tr>
-                        			<td>name:</td>
-									<td><input/></td>
-                        		</tr>
-								<tr>
-									<td>email:</td>
-									<td><input/></td>
-								</tr>
-								<tr>
-									<td>password:</td>
-									<td><input/></td>
-								</tr>
-                        	</table>
-							<div on="click then r:blah"
-							     class="green_button"><div class="green_button_right">
-								Make my wistalista!
-							</div></div>
-                        </div>
-                        <div class="account_box_bottom"></div>
-                    </div>
-				</div>
-			</div>
-		</div>
+			    </td>
+		  </tr>
+		</table>
     </div>
 </body>
 </html>
