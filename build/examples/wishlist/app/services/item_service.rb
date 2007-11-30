@@ -3,28 +3,101 @@ class ItemService < Appcelerator::Service
   
   Service 'wl.claim.item.request', :claimItem, 'wl.claim.item.response'
   Service 'wl.unclaim.item.request', :unclaimItem, 'wl.unclaim.item.response'
-  Service 'wl.mark.purchased.item.request', :markItemPurchased, 'wl.mark.purchased.item.response'
+  Service 'wl.purchase.item.request', :purchaseItem, 'wl.purchase.item.response'
+  Service 'wl.unpurchase.item.request', :unpurchaseItem, 'wl.unpurchase.item.response'
   Service 'wl.add.item.request', :addItem, 'wl.add.item.response'
   Service 'wl.edit.item.request', :editItem, 'wl.edit.item.response'
   Service 'wl.remove.item.request', :removeItem, 'wl.remove.item.response'
   Service 'wl.list.item.request', :listItem, 'wl.list.item.response'
   
   def claimItem(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+      item_id = message['item_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+      
+      logged_in_user = User.find_by_id(logged_in_user_id)
+      item = Item.find_by_id(item_id)
+
+      if item
+        item.claimed = true
+        item.claimed_user = logged_in_user
+        item.bought = false
+        item.save!
+        {'success' => true}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
+      end
   end
 
   def unclaimItem(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+      item_id = message['item_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+      
+      item = Item.find_by_id(item_id)
+
+      if item
+        item.claimed = false
+        item.claimed_user = nil
+        item.bought = false
+        item.save!
+        {'success' => true}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
+      end
   end
   
-  def markItemPurchased(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+  def purchaseItem(request,message)
+      item_id = message['item_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+      
+      logged_in_user = User.find_by_id(logged_in_user_id)
+      item = Item.find_by_id(item_id)
+
+      if item
+        item.claimed = true
+        item.claimed_user = logged_in_user
+        item.bought = true
+        item.save!
+        {'success' => true}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
+      end
+  end
+
+  def unpurchaseItem(request,message)
+      item_id = message['item_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+      
+      item = Item.find_by_id(item_id)
+
+      if item
+        item.claimed = false
+        item.claimed_user = nil
+        item.bought = false
+        item.save!
+        {'success' => true}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
+      end
   end
 
   def addItem(request,message)
@@ -50,7 +123,7 @@ class ItemService < Appcelerator::Service
       item.occasion = item_occasion
       item.save!
       item.destroy
-      {'success' => true, 'message' => 'We successfully removed the Wishalista item named ' + item.name}
+      {'success' => true}
   end
 
   def editItem(request,message)
@@ -76,7 +149,7 @@ class ItemService < Appcelerator::Service
         item.note = item_note
         item.occasion = item_occasion
         item.save!
-        {'success' => true, 'message' => 'We successfully changed the Wishalista item named ' + item.name}
+        {'success' => true}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
@@ -99,7 +172,7 @@ class ItemService < Appcelerator::Service
      
       if item
         item.destroy
-        {'success' => true, 'message' => 'We successfully removed the Wishalista item named ' + item.name}
+        {'success' => true}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and remove the specified Wishalista'}
       end
