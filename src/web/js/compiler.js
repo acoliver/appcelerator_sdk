@@ -382,11 +382,11 @@ Appcelerator.Compiler.compileElement = function(element,state)
 		if (Appcelerator.Compiler.isCompiledMode)
 		{
 			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
-			var code = 'setTimeout(function()';
+			var code = '(function()';
 			code += '{';
 			code += 'Appcelerator.Core.require("'+name+'",function()'
 			code += '{' + widgetJS + '});';
-			code += '},0);';
+			code += '})();';
 			Appcelerator.Compiler.compiledCode += code;
 		}
 		else
@@ -1047,14 +1047,14 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			{
 				for (var c=0;c<functions.length;c++)
 				{
-					var name = functions[c];
-					var method = module[name];
-					if (!method) throw "couldn't find method named: "+name+" for module = "+module;
+					var methodname = functions[c];
+					var method = module[methodname];
+					if (!method) throw "couldn't find method named: "+methodname+" for module = "+module;
 					
 					if (Appcelerator.Compiler.isCompiledMode)
 					{
 						var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-						compiledCode += 'var f = function(id,m,data,scope)';
+						compiledCode += '(function(){ var f = function(id,m,data,scope)';
 						compiledCode += '{';
 						compiledCode += 'try';
 						compiledCode += '{';
@@ -1062,10 +1062,10 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						compiledCode += 'method(id,\''+paramsJSON+'\'.evalJSON(),data,scope);';
 						compiledCode += '}';
 						compiledCode += 'catch (e) {';
-						compiledCode += '$E("Error executing '+name+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
+						compiledCode += '$E("Error executing '+methodname+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
 						compiledCode += '}';
 						compiledCode += '};';
-						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+name+'",f);';
+						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+methodname+'",f);})();';
 					}
 					else
 					{
@@ -1077,10 +1077,10 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 							}
 							catch (e)
 							{
-								$E('Error executing '+name+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+								$E('Error executing '+methodname+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
 							}
 						};
-						Appcelerator.Compiler.attachFunction(id,name,f);
+						Appcelerator.Compiler.attachFunction(id,methodname,f);
 					}
 				}
 			}
@@ -1093,7 +1093,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				if (Appcelerator.Compiler.isCompiledMode)
 				{
 					var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-					compiledCode += 'try';
+					compiledCode += '(function(){try';
 					compiledCode += '{';
 					compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
 					if (outer)
@@ -1108,7 +1108,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					compiledCode += 'catch (exxx) {';
 					compiledCode += 'Appcelerator.Compiler.handleElementException($("'+id+'"), exxx, "compiling widget '+id+', type '+element.nodeName+'");';
 					compiledCode += 'return;';
-					compiledCode += '}';
+					compiledCode += '}})();';
 				}
 				else
 				{
@@ -2375,6 +2375,7 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
             codeArray.push('handleListener("'+listeners[i].join('","')+'");');
         }
 
+		codeArray.push('Appcelerator.Compiler.compileDocumentOnFinish();');
         // close the entire onload handler
         codeArray.push('});');
 
@@ -2436,7 +2437,6 @@ Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
 
         html+=Appcelerator.Util.Dom.getText(window.document.documentElement,false,null,true,true);
 
-		code += 'Appcelerator.Compiler.compileDocumentOnFinish();';
         Appcelerator.Compiler.compiledJS = code;
         Appcelerator.Compiler.compiledDocument = html;
     }
