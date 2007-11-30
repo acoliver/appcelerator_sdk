@@ -47,22 +47,22 @@ end
 
 
 # this is the rails dispatcher
-require 'dispatcher'
-
-module ClassMethods
-  def reset_application_and_services!
-    Appcelerator::Service.load_services
-    reset_application_but_not_services!
-  end
-end
-
-Dispatcher.extend(ClassMethods)
-Dispatcher.class_eval do
-  class << self
-    unless method_defined? :reset_application_but_not_services!
-      alias_method :reset_application_but_not_services!, :reset_application!
-    end
-    alias_method :reset_application!, :reset_application_and_services!
-  end
-end
-
+#require 'dispatcher'
+#
+#module ClassMethods
+#  def reset_application_and_services!
+#    Appcelerator::Service.load_services
+#    reset_application_but_not_services!
+#  end
+#end
+#
+#Dispatcher.extend(ClassMethods)
+#Dispatcher.class_eval do
+#  class << self
+#    unless method_defined? :reset_application_but_not_services!
+#      alias_method :reset_application_but_not_services!, :reset_application!
+#    end
+#    alias_method :reset_application!, :reset_application_and_services!
+#  end
+#end
+#
