@@ -186,7 +186,6 @@ class ItemService < Appcelerator::Service
         item['isMe'] = is_me
         items.push(item)
       end
-
       
       {'success' => true, 'isMe'=> is_me, 'items' => items}
   end
