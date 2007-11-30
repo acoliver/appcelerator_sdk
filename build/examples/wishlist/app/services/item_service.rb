@@ -28,21 +28,81 @@ class ItemService < Appcelerator::Service
   end
 
   def addItem(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+      item_name = message['item_name']
+      item_note = message['item_note']
+      item_occasion = message['occasion']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+
+      item = Item.find_by_id(item_id)
+
+      if item.user.id != logged_in_user_id
+        return {'success' => false, 'message' => 'Oops! You cannot modify someone else\'s Wishalista'}       
+      end
+     
+      item = Item.new
+      item.name = item_name
+      item.note = item_note
+      item.occasion = item_occasion
+      item.save!
+      item.destroy
+      {'success' => true, 'message' => 'We successfully removed the Wishalista item named ' + item.name}
   end
 
   def editItem(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+      item_id = message['item_id']
+      item_name = message['item_name']
+      item_note = message['item_note']
+      item_occasion = message['occasion']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+
+      item = Item.find_by_id(item_id)
+
+      if item.user.id != logged_in_user_id
+        return {'success' => false, 'message' => 'Oops! You cannot modify someone else\'s Wishalista'}       
+      end
+     
+      if item
+        item.name = item_name
+        item.note = item_note
+        item.occasion = item_occasion
+        item.save!
+        {'success' => true, 'message' => 'We successfully changed the Wishalista item named ' + item.name}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
+      end
   end
 
   def removeItem(request,message)
-      p "received message: #{message.inspect}"
-      msg = message["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
+      item_id = message['item_id']
+      session = request['session']
+      logged_in_user_id = request.session['user_id']
+      
+      if logged_in_user_id.nil?
+        return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
+      end
+
+      item = Item.find_by_id(item_id)
+
+      if item.user.id != logged_in_user_id
+        return {'success' => false, 'message' => 'Oops! You cannot modify someone else\'s Wishalista'}       
+      end
+     
+      if item
+        item.destroy
+        {'success' => true, 'message' => 'We successfully removed the Wishalista item named ' + item.name}
+      else
+        {'success' => false, 'message' => 'Oops! We failed to find and remove the specified Wishalista'}
+      end
   end
   
   def listItem(request,message)
@@ -50,7 +110,7 @@ class ItemService < Appcelerator::Service
       session = request['session']
       logged_in_user_id = request.session['user_id']
       
-      if logged_in_user_id.nil?
+      if logged_in_user_id
         return {'success' => false, 'message' => 'You must log in to view or modify a Wishalista'}
       end      
 
