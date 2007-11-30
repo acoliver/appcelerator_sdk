@@ -8,7 +8,6 @@ class FriendService < Appcelerator::Service
   Service 'wl.invite.friend.request', :inviteFriend, 'wl.invite.friend.response'
   
 
-
   def emaillist(request,message)
     user_id = message["user_id"]
     email_to = message["email_to"]
@@ -36,11 +35,11 @@ class FriendService < Appcelerator::Service
       me = get_me(request)
       
       new_friend = Users.find(message['friend_id'])
-      if not me.has_friend new_friend
+      if not me.has_friend? new_friend
         me.add_friend new_friend
-        return {'status' => 'success'}
+        return {'success' => true}
       else
-        return {'status' => 'already friended'}
+        return {'sucess' => false, 'message' => 'That person is already your friend.'}
       end
   end
 
@@ -52,7 +51,7 @@ class FriendService < Appcelerator::Service
          'name' => friend.full_name,
          'picture' => friend.picture}
       end
-      {"friends" => friendsInfo,"success"=>true}    
+      {"friends" => friendsInfo, "success"=>true}    
   end
   
   #  inviteFriend nil {'friend_email': 'mkyfriend@blah.org'}
@@ -62,9 +61,9 @@ class FriendService < Appcelerator::Service
       friend_email = message['friend_email']
       existing = Invites.find_by_user_id_friend_email(me.id, friend_email)
       if existing:
-          {'status' => 'already invited'}
+          {'success' => 'You have already invited that friend.'}
       else 
-          {'status' => 'invited!!'}
+          {'success' => true}
       end
   end 
 
