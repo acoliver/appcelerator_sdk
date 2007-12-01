@@ -2,9 +2,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org" xmlns:google="http://www.appcelerator.org">
 <head>
+    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="description" content=""/>
-    <meta name="keywords" content="" />
+    <meta name="description" content="WishaLista is a simple utility to managing your wish lists and sharing them with your friends"/>
+    <meta name="keywords" content="wishlist,web2.0,appcelerator,friends,socialmedia,purchase,socialtransactions" />
     <title>WishaLista</title>
     <link rel="shortcut icon" href="favicon.ico"/>
     <link rel="icon" href="favicon.ico"/>
@@ -44,7 +45,7 @@
 	                            <div><img src="images/picture.gif"/></div>
 	                            <div id="mypicture_footer">
 	                                <div><h1 on="r:wl.list.item.response[success=true] then value[name]"></h1></div>
-	                                <div on="r:wl.list.item.response[isMe=true] then show else hide"><a on="click then l:edit.profile">edit profile</a></div>
+	                                <div on="r:wl.list.item.response[isMe=true] then show else hide"><a on="click then l:edit.profile">edit your profile</a></div>
 	                                <div on="r:wl.list.item.response[isMe=false,friended!=true] then show else hide"><a on="click then r:wl.friend.add.request[friend_id=$user_id]"><img src="images/user_add.png"/> add as friend</a></div>
 	                                <div on="r:wl.list.item.response[isMe=false,friended=true] then show else hide"><img src="images/user.png"/> your friend</div>
 	                            </div>
@@ -291,7 +292,12 @@
     </div>
     <div id="content_footer"></div>
     <div id="footer">
-        <a href="http://www.appcelerator.org"><img align="right" src="images/poweredby.png"/></a>
+        <table width="100%">
+            <tr>
+                <td align="left"><small>Copyright &copy; 2007 by <a href="http://www.appcelerator.com">Appcelerator, Inc.</a> All Rights Reserved.</small></td>
+                <td align="right"><a href="http://www.appcelerator.org"><img align="right" alt="Appcelerator" src="images/poweredby.png"/></a></td>
+            </tr>
+        </table>
     </div>
     
     
