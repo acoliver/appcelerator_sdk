@@ -194,6 +194,7 @@ class ItemService < Appcelerator::Service
         item['state'] = raw_item.bought ? 'purchased' : raw_item.claimed ? 'claimed' : 'available'
         item['claimed_name'] = raw_item.claimed_user.nil? ? '' : raw_item.claimed_user.full_name
         item['claimed_user_id'] = raw_item.claimed_user.nil? ? -1 : raw_item.claimed_user.id;
+        item['claimable'] = raw_item.user.has_friend? me
         item['isMe'] = is_me
         items.push(item)
       end

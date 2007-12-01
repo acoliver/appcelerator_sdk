@@ -39,25 +39,31 @@
 								<div class="account_box_content">
 									<form on="enter then r:wl.login.request" fieldset="login">
 								    <div class="account_orange">Login to your wistalista!</div>
-			                        <table>
-	                                    <tr>
-	                                        <th>email:</th>
-	                                        <td><input name="email" fieldset="login"/></td>
-	                                    </tr>
-	                                    <tr>
-	                                        <th>password:</th>
-	                                        <td><input name="password" type="password" fieldset="login"/></td>
-	                                    </tr>
-	                                </table>
-									<div on="click then r:wl.login.request"
-									     fieldset="login"
-		                                 class="green_button"
-										 style="width: 200px"><div class="green_button_right">
-		                                Take me to my wistalista!
-										<img src="images/indicator_web2.3.gif" style="display: none;"
-										     class="indicator"
-                                             on="r:wl.login.request then show or r:wl.login.response then hide"/>
-		                            </div></div>
+			                        	<table>
+		                                    <tr>
+		                                        <th>email:</th>
+		                                        <td><input id="email" fieldset="login" validator="email"/></td>
+		                                    </tr>
+		                                    <tr>
+		                                        <th>password:</th>
+		                                        <td><input id="password" type="password" fieldset="login" validator="password"/></td>
+		                                    </tr>
+		                                </table>
+										<div on="click then r:wl.login.request"
+										     fieldset="login" activators="email,password"
+			                                 class="green_button"
+											 style="width: 200px">
+											<div class="green_button_right">
+			                                Take me to my wistalista!
+											<img src="images/indicator_web2.3.gif" style="display: none;"
+											     class="indicator"
+	                                             on="r:wl.login.request then show or r:wl.login.response then hide"/>
+			                            	</div>
+										</div>
+					                	<div on="r:wl.login.response[success=false] then visible else hidden" class="flash" style="visibility:hidden;">
+											<img src="images/exclamation.png"/>
+											<span on="r:wl.login.response[success=false] then value[message]"></span>
+										</div>
 									</form>
 								</div>
 								<div class="account_box_bottom"></div>
@@ -77,23 +83,24 @@
 	                        	<table>
 	                        		<tr>
 	                        			<th>first name:</th>
-										<td><input name="firstname" fieldset="signup"/></td>
+										<td><input name="firstname" id="s_firstname" fieldset="signup" validator="required"/></td>
 	                        		</tr>
                                     <tr>
                                         <th>last name:</th>
-                                        <td><input name="lastname" fieldset="signup"/></td>
+                                        <td><input name="lastname" id="s_lastname" fieldset="signup" validator="required"/></td>
                                     </tr>
 									<tr>
 										<th>email:</th>
-										<td><input name="email" fieldset="signup"/></td>
+										<td><input name="email" id="s_email" fieldset="signup" validator="email"/></td>
 									</tr>
 									<tr>
 										<th>password:</th>
-										<td><input name="password" type="password" fieldset="signup"/></td>
+										<td><input name="password" id="s_password" type="password" validator="password" fieldset="signup"/></td>
 									</tr>
 	                        	</table>
 								<div on="click then r:wl.signup.request"
 								     fieldset="signup"
+									 activators="s_firstname,s_lastname,s_email,s_password"
 								     class="green_button"
 									 style="width: 200px"><div class="green_button_right">
 									Make my wishalista!
@@ -101,8 +108,11 @@
                                              class="indicator"
                                              on="r:wl.signup.request then show or r:wl.signup.response then hide"/>
 								</div></div>
-								<div style="display: none;" on>that </div>
                                 </form>
+			                	<div on="r:wl.signup.response[success=false] then visible else hidden" class="flash" style="visibility:hidden;">
+									<img src="images/exclamation.png"/>
+									<span on="r:wl.signup.response[success=false] then value[message]"></span>
+								</div>
 	                        </div>
 	                        <div class="account_box_bottom"></div>
 	                    </div>

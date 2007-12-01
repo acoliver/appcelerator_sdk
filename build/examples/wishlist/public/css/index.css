@@ -1,3 +1,4 @@
+
 img { border: 0 }
 
 .left_column {
@@ -107,6 +108,8 @@ img { border: 0 }
 	background-repeat: no-repeat;
 	width: 375px;
     height: 18px;
+	margin-top:0;
+	padding-top:0;
 }
 
 .account_box_content form {
@@ -160,4 +163,20 @@ img { border: 0 }
 
 #footer a {
     color:#3f830c;
+}
+
+.flash {
+	margin:0;
+	padding:0;
+	margin-top:10px;
+	margin-bottom:0px;
+	text-align:center;
+	color:#e95d00;
+	font-weight:normal;
+}
+
+.green_button[disabled=true]
+{
+	opacity:0.5;
+	-moz-opacity:0.5;
 }
