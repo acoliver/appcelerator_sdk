@@ -4,17 +4,17 @@ class UserService < Appcelerator::Service
   Service 'wl.signup.request', :signup, 'wl.signup.response'
   Service 'wl.login.request', :login, 'wl.login.response'
   Service 'wl.logout.request', :logout, 'wl.logout.response'
-  Service 'wl.profile.view.request', :viewprofile, 'wl.profile.view.response'
-  Service 'wl.profile.edit.request', :editprofile, 'wl.profile.edit.response'
+  Service 'wl.profile.view.request', :view_profile, 'wl.profile.view.response'
+  Service 'wl.profile.edit.request', :edit_profile, 'wl.profile.edit.response'
   
   def signup(request,message)
     if not message['email'] or not message['email'].strip or not message['password'] or not message['firstname'] or not message['firstname'].strip or not message['lastname'] or not message['lastname'].strip
-      return {'success' => false, 'msg' => 'Required fields missing.'}
+      return {'success' => false, 'message' => 'Required fields missing.'}
     end
     
     found = User.find_by_email(message['email'])
     if found
-      return {'success' => false, 'msg' => 'Email address already exists.'}
+      return {'success' => false, 'message' => 'Email address already exists.'}
     end
     
     user = User.new
@@ -33,18 +33,18 @@ class UserService < Appcelerator::Service
     session = request['session']
     session[:user_id] = user.id
             
-    return {'success' => true}
+    {'success' => true, 'message' => 'Signup complete'}
   end
   
   def login(request,message)
     if not message['email'] or not message['password']
-      return {'success' => false}
+      return {'success' => false, 'message' => 'invalid login'}
     end
     
     user = User.find_by_email(message['email'])
     
     if (not user or user.password != MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest)
-      return {'success' => false}
+      return {'success' => false, 'message' => 'invalid login'}
     end
     
     session = request['session']
@@ -52,22 +52,26 @@ class UserService < Appcelerator::Service
     
     user.last_login = Time.now
     user.save!
-    return {'success' => true}
+    {'success' => true}
   end
 
   def logout(request,message)
-    session[:user_id] = nil
+    session = request['session']
+    if session
+      session[:user_id] = nil
+    end
+    {'result'=>true}
   end
 
-  def viewprofile(request,message)
+  def view_profile(request,message)
     session = request['session']
     if not session[:user_id]
-      return {'success' => false}
+      return {'success' => false, 'message' => 'not logged in'}
     end
     
     user = User.find_by_id(session[:user_id])
     if not user
-      return {'success' => false}
+      return {'success' => false, 'message' => 'invalid user'}
     end
     
     result = {}
@@ -79,15 +83,15 @@ class UserService < Appcelerator::Service
     result
   end
 
-  def editprofile(request,message)
+  def edit_profile(request,message)
     session = request['session']
     if not session[:user_id]
-      return {'success' => false}
+      return {'success' => false, 'message' => 'not logged in'}
     end
     
     user = User.find_by_id(session[:user_id])
     if not user
-      return {'success' => false}
+      return {'success' => false, 'message' => 'invalid user'}
     end
     
     if message['firstname'] and message['firstname'].strip
@@ -102,12 +106,13 @@ class UserService < Appcelerator::Service
         user.email = message['email'].strip
         user.save!
       elsif message['email'] != user.email
-        return {'success' => false, 'msg' => 'Email address already exists.'}
+        return {'success' => false, 'message' => 'Email address already exists.'}
       end
     end
 
+    user.password = MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest
     user.profile.save!
-    return {'success' => true}
+    {'success' => true, 'message' => 'Your profile has been updated'}
   end
 
 end

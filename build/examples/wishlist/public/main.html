@@ -1,39 +1,233 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org" xmlns:google="http://www.appcelerator.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
-    <title></title>
-    <script src="js/appcelerator.js" type="text/javascript"></script>
-    <link rel="shortcut icon" href="images/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content=""/>
+    <meta name="keywords" content="" />
+    <title>WishaLista</title>
+    <link rel="shortcut icon" href="favicon.ico"/>
+    <link rel="icon" href="favicon.ico"/>
+    <link rel="stylesheet" href="css/main.css" type="text/css" media="screen" charset="utf-8"/>
+    <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
+    <div id="header">
+        <div id="header_content">
+            <img src="images/banner_badge.png" alt="Wishalista" /> 
+            <span id="header_content_welcome">Welcome back, <span on="r:wl.list.item.response[success=true] then value[my_firstname]">loading</span></span>
+            <span id="header_content_logout"><a on="click then r:wl.logout.request">Logout</a></span>
+        </div>
+    </div>
+    <div id="content_header"></div>
+    <div id="content">
+        <div id="content_body">
+            <div id="error" style="display:none" on="r:~.*[success=false] then effect[appear] or l:error.close then hide">
+                <div id="error_closer" on="click then l:error.close">
+                    <img src="images/dialog_close.gif"/>
+                </div>
+                <div>
+                    <img src="images/exclamation.png" />
+                    <span on="r:~.*[success=false] then value[message]"></span>
+                </div>
+            </div>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr valign="top">
+                    <td width="20%">
+                        <div id="mypicture">
+                            <div><img src="images/picture.gif"/></div>
+                            <div id="mypicture_footer">
+                                <div><h1 on="r:wl.list.item.response[success=true] then value[firstname]"></h1></div>
+                                <div on="r:wl.list.item.response[isMe=true] then show else hide"><a on="click then l:edit.profile">edit profile</a></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td width="40%">
+                        <div id="mylist" on="content[list] then show else hide">
+                            <div id="mylist_header"></div>
+                            <div id="mylist_header_content">
+                                <h1 id="mylist_header_title"></h1>
+                                <div class="button" on="click then l:send.list">send list</div>
+                            </div>
+                            <div id="mylist_content">
+                                <div id="mylist_content_body">
+                                    <div>Hello</div>
+                                    <div id="mylist_add"><div id="mylist_add_button" on="click then l:create.item">Add something to my Wisha Lista!</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="edit" style="display:none" on="content[edit] then show else hide">
+                            <div class="body_header"></div>
+                            <div class="body_header_content"><h1>Edit My Profile</h1></div>
+                            <div class="body_content">
+                                <div class="body_content_body">
+                                    <form on="enter then l:save.profile or r:wl.profile.edit.request then disable or r:wl.profile.edit.response then enable">
+	                                    <table width="100%" cellspacing="10">
+	                                       <tr>
+	                                        <td>First Name:</td>
+	                                        <td><input type="text" id="editprofile_firstname" validator="required" name="firstname" on="r:wl.list.item.response[isMe=true] then value[my_firstname]" fieldset="profile"></td>
+	                                       </tr>
+	                                       <tr>
+	                                        <td>Last Name:</td>
+	                                        <td><input type="text" id="editprofile_lastname" validator="required" name="lastname" on="r:wl.list.item.response[isMe=true] then value[my_lastname]" fieldset="profile"></td>
+	                                       </tr>
+	                                       <tr>
+	                                        <td>Email:</td>
+	                                        <td><input type="text" id="editprofile_email" validator="email" name="email" on="r:wl.list.item.response[isMe=true] then value[my_email]" fieldset="profile"/></td>
+	                                       </tr>
+	                                       <tr>
+	                                        <td>Password:</td>
+	                                        <td><input type="password" id="editprofile_pwd" validator="password" name="password" fieldset="profile"/></td>
+	                                       </tr>
+	                                    </table>
+	                                    <table cellspacing="10">
+	                                        <tr>
+	                                            <td><div class="button" activators="editprofile_firstname,editprofile_lastname,editprofile_email,editprofile_pwd" id="save_profile_btn"
+	                                            on="click then r:wl.profile.edit.request or l:save.profile then r:wl.profile.edit.request if expr[!$('save_profile_btn').disabled]" fieldset="profile" id="save_profile">save</div></td>
+	                                            <td><div class="button" on="click then l:show.list">close</div></td>
+	                                        </tr>
+	                                    </table>
+                                    </form>
+                                </div>
+	                            <div>
+	                                <img src="images/indicator_web2.3.gif" style="display: none;" class="indicator"
+	                                    on="r:wl.profile.edit.request then show or r:wl.profile.edit.response then hide"/>
+	                            </div>
+	                            <div on="r:wl.profile.edit.request then hide or r:wl.profile.edit.response[success=true] then show or r:wl.profile.edit.response[success=true] then effect[fade] after 2s" style="display:none" class="flash">
+	                                <img src="images/confirm.png"/> <span on="r:wl.profile.edit.response then value[message]"></span>
+	                            </div>
+                            </div>
+                        </div>
+                        <div id="send" style="display:none" on="content[send] then show else hide">
+                            <div class="body_header"></div>
+                            <div class="body_header_content"><h1>Send MyLista to a Frienda</h1></div>
+                            <div class="body_content">
+                                <div class="body_content_body">
+                                    <form on="">
+	                                    <table width="100%" cellspacing="10">
+	                                       <tr>
+	                                        <td>Email:</td>
+	                                        <td>
+	                                            <div style="height:30px;">
+	                                                <div><input name="email" id="sendlist_email" fieldset="sendlist" validator="email" decorator="custom" decoratorId="sendlist_email_dec"/></div>
+	                                                <div id="sendlist_email_dec" class="field_decorator">Please enter a valid email address</div>
+	                                            </div>
+	                                        </td>
+	                                       </tr>
+	                                    </table>
+	                                    <table cellspacing="10">
+	                                        <tr>
+	                                            <td><div class="button" activators="sendlist_email" on="click then r:send.list" fieldset="sendlist">send</div></td>
+	                                            <td><div class="button" on="click then l:show.list">close</div></td>
+	                                        </tr>
+	                                    </table>
+	                                </form>
+                                </div>
+                                <div>
+                                    <img src="images/indicator_web2.3.gif" style="display: none;" class="indicator"
+                                        on="r:wl.profile.edit.request then show or r:wl.profile.edit.response then hide"/>
+                                </div>
+                                <div on="r:wl.profile.edit.request then hide or r:wl.profile.edit.response[success=true] then show or r:wl.profile.edit.response[success=true] then effect[fade] after 2s" style="display:none" class="flash">
+                                    <img src="images/confirm.png"/> <span on="r:wl.profile.edit.response then value[message]"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="create" style="display:none" on="content[create] then show else hide">
+                            <div class="body_header"></div>
+                            <div class="body_header_content"><h1>Add Item to MyLista</h1></div>
+                            <div class="body_content">
+                                <div class="body_content_body">
+                                    <form on="enter then l:add.item or r:wl.add.item.request then disable or r:wl.add.item.response then enable">
+	                                    <table width="100%" cellspacing="10">
+	                                       <tr>
+	                                        <td>Name:</td>
+	                                        <td>
+	                                            <input name="name" id="create_name" fieldset="create" validator="required"/>
+	                                        </td>
+	                                       </tr>
+	                                       <tr>
+	                                        <td>Occasion:</td>
+	                                        <td>
+	                                            <input name="occasion" id="create_occasion" fieldset="create" validator="required"/>
+	                                        </td>
+	                                       </tr>
+	                                       <tr>
+	                                        <td>Note:</td>
+	                                        <td>
+	                                            <textarea cols="27" rows="4" name="note" id="create_note" fieldset="create" validator="required"></textarea>
+	                                        </td>
+	                                       </tr>
+	                                    </table>
+	                                    <table cellspacing="10">
+	                                        <tr>
+	                                            <td><div class="button" activators="create_name,create_occasion,create_note" id="add_item_btn"
+	                                               on="click then r:wl.add.item.request or l:add.item then r:wl.add.item.request if expr[!$('add_item_btn').disabled]" 
+	                                               fieldset="create">add</div>
+	                                            </td>
+	                                            <td><div class="button" on="click then l:show.list">close</div></td>
+	                                        </tr>
+	                                    </table>
+	                               </form>
+                                </div>
+                                <div>
+                                    <img src="images/indicator_web2.3.gif" style="display: none;" class="indicator"
+                                        on="r:wl.add.item.request then show or r:wl.add.item.response then hide"/>
+                                </div>
+                                <div on="r:wl.add.item.request then hide or r:wl.add.item.response[success=true] then show or r:wl.add.item.response[success=true] then effect[fade] after 2s" style="display:none" class="flash">
+                                    <img src="images/confirm.png"/> <span on="r:wl.add.item.response then value[message]"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td width="40%">
+                        <div id="myfriends">
+                            <div id="myfriends_header">
+                                <h1>My Homies</h1>
+                                <div id="searchbox" on="click then r:search"><input type="text" value="" id="search"/></div>
+                            </div>
+                            <div id="myfriends_content">
+                                <div id="searchresults">
+                                    <app:iterator on="r:wl.search.response[success=true,length!=0] then execute and show else hide or
+                                        r:wl.friends.get.response[success=true,length!=0] then execute and show else hide" 
+                                        property="results" style="display:none">
+                                        <html:div class="search_result">
+                                           <html:div><html:img src="images/small_picture.gif"></html:img></html:div>
+                                           <html:div>#{name}</html:div>
+                                        </html:div>
+                                    </app:iterator>
+                                    <div on="r:wl.search.response[length=0] then show else hide" class="search_noresults" style="display:none">Oops, we didn't find any matches. Refine your search and try again...</div>
+                                    <div on="r:wl.friends.get.response[length=0] then show else hide" class="search_noresults" style="display:none">You have no friends yet. Why not invite someone to join?</div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="content_footer"></div>
+    <div id="footer">
+        <a href="http://www.appcelerator.org"><img align="right" src="images/poweredby.png"/></a>
+    </div>
     
-    <div class="left_column">
-        <div on="click then l:wl.profile.edit
-              or l:wl.profile.show[user_id=me] then show else hide">edit profile</div>
-        <div on="click then r:wl.friend.add.request">add friend</div>
-    </div>
-    <div class="middle_column">
-       <app:content
-           lazy="false"
-           src="items.html"
-           on="  l:wl.profile.edit then hide
-              or l:wl.profile.edit.complete then show"
-       </app:content>
-       <app:content
-           lazy="true"
-           src="profile.html"
-           on="  l:wl.profile.edit then execute and show
-              or r:wl.profile.save.response then hide and l:wl.profile.edit.complete
-              or l:wl.profile.edit.cancel then hide and l:wl.profile.edit.complete">
-       </app:content>
-    </div>
-    <div class="right_column">
-        
-    </div>
-    <div class="after_columns"></div>
+    <app:script on="r:wl.list.item.response[success=true] then execute">
+      $('mylist_header_title').innerHTML = (this.data.isMe ? 'My' : this.data.firstname+"'s")  +  'Wisha List';
+    </app:script>
+    
+    <app:script on="r:wl.logout.response then execute">
+        window.location.href = Appcelerator.DocumentPath + 'index.html';
+    </app:script>
+
+    <app:statemachine id="content" initial="list">
+       <state name="list" if="l:show.list"></state>
+       <state name="edit" if="l:edit.profile"></state>
+       <state name="send" if="l:send.list"></state>
+       <state name="create" if="l:create.item"></state>
+    </app:statemachine>
+    
+    <app:message name="r:wl.list.item.request"></app:message>
+    <app:message name="r:wl.profile.info.request"></app:message>
+    <app:message name="r:wl.friends.get.request"></app:message>
+
 </body>
 </html>

@@ -1,21 +1,21 @@
 
 class ItemService < Appcelerator::Service
   
-  Service 'wl.claim.item.request', :claimItem, 'wl.claim.item.response'
-  Service 'wl.unclaim.item.request', :unclaimItem, 'wl.unclaim.item.response'
-  Service 'wl.purchase.item.request', :purchaseItem, 'wl.purchase.item.response'
-  Service 'wl.unpurchase.item.request', :unpurchaseItem, 'wl.unpurchase.item.response'
-  Service 'wl.add.item.request', :addItem, 'wl.add.item.response'
-  Service 'wl.edit.item.request', :editItem, 'wl.edit.item.response'
-  Service 'wl.remove.item.request', :removeItem, 'wl.remove.item.response'
-  Service 'wl.list.item.request', :listItem, 'wl.list.item.response'
+  Service 'wl.claim.item.request', :claim_item, 'wl.claim.item.response'
+  Service 'wl.unclaim.item.request', :unclaim_item, 'wl.unclaim.item.response'
+  Service 'wl.purchase.item.request', :purchase_item, 'wl.purchase.item.response'
+  Service 'wl.unpurchase.item.request', :unpurchase_item, 'wl.unpurchase.item.response'
+  Service 'wl.add.item.request', :add_item, 'wl.add.item.response'
+  Service 'wl.edit.item.request', :edit_item, 'wl.edit.item.response'
+  Service 'wl.remove.item.request', :remove_item, 'wl.remove.item.response'
+  Service 'wl.list.item.request', :list_item, 'wl.list.item.response'
   
-  def claimItem(request,message)
+  def claim_item(request,message)
       item_id = message['item_id']
       session = request['session']
       logged_in_user_id = session[:user_id]
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
       
@@ -27,16 +27,16 @@ class ItemService < Appcelerator::Service
         item.claimed_user = logged_in_user
         item.bought = false
         item.save!
-        {'success' => true}
+        {'success' => true, 'message' => 'You have claimed this item'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
   end
 
-  def unclaimItem(request,message)
+  def unclaim_item(request,message)
       item_id = message['item_id']
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
       
@@ -47,20 +47,20 @@ class ItemService < Appcelerator::Service
         item.claimed_user = nil
         item.bought = false
         item.save!
-        {'success' => true}
+        {'success' => true, 'message' => 'Item has been unclaimed'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
   end
   
-  def purchaseItem(request,message)
+  def purchase_item(request,message)
       item_id = message['item_id']
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
       
-      logged_in_user = User.find_by_id(loggedInUserId(request))
+      logged_in_user = User.find_by_id(logged_in_userid(request))
       item = Item.find_by_id(item_id)
 
       if item
@@ -68,16 +68,16 @@ class ItemService < Appcelerator::Service
         item.claimed_user = logged_in_user
         item.bought = true
         item.save!
-        {'success' => true}
+        {'success' => true, 'message' => 'Item has been marked as purchased'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
   end
 
-  def unpurchaseItem(request,message)
+  def unpurchase_item(request,message)
       item_id = message['item_id']
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
       
@@ -88,18 +88,18 @@ class ItemService < Appcelerator::Service
         item.claimed_user = nil
         item.bought = false
         item.save!
-        {'success' => true}
+        {'success' => true, 'message' => 'Item has been marked as unpurchased'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
   end
 
-  def addItem(request,message)
+  def add_item(request,message)
       item_name = message['name']
       item_note = message['note']
       item_occasion = message['occasion']
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
      
@@ -107,25 +107,25 @@ class ItemService < Appcelerator::Service
       item.name = item_name
       item.note = item_note
       item.occasion = item_occasion
-      item.user_id = loggedInUserId(request)
+      item.user_id = logged_in_userid(request)
       item.save!
-      {'success' => true}
+      {'success' => true, 'message' => 'Item has been added'}
   end
 
-  def editItem(request,message)
+  def edit_item(request,message)
       item_id = message['item_id']
       item_name = message['name']
       item_note = message['note']
       item_occasion = message['occasion']
       session = request['session']
 
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
 
       item = Item.find_by_id(item_id)
 
-      if !isCurrentUser?(request,item.user.id)
+      if not current_user?(request,item.user.id)
         return {'success' => false, 'message' => 'Oops! You cannot modify someone else\'s Wishalista'}       
       end
      
@@ -134,43 +134,54 @@ class ItemService < Appcelerator::Service
         item.note = item_note
         item.occasion = item_occasion
         item.save!
-        {'success' => true}
+        {'success' => true, 'message' => 'Item has been updated'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and change the specified Wishalista'}
       end
   end
 
-  def removeItem(request,message)
+  def remove_item(request,message)
       item_id = message['item_id']
 
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'Oops! You have to log in to view or modify a Wishalista'}
       end
 
       item = Item.find_by_id(item_id)
 
-      if !isCurrentUser?(request,item.user.id)
+      if not current_user?(request,item.user.id)
         return {'success' => false, 'message' => 'Oops! You cannot modify someone else\'s Wishalista'}       
       end
      
       if item
         item.destroy
-        {'success' => true, 'item_id' => item.id}
+        {'success' => true, 'item_id' => item.id, 'message' => 'Item has been removed'}
       else
         {'success' => false, 'message' => 'Oops! We failed to find and remove the specified Wishalista'}
       end
   end
   
-  def listItem(request,message)
-      user_id = messageUserId(message)
+  def list_item(request,message)
       
-      if loggedIn?(request)
+      if not logged_in?(request)
         return {'success' => false, 'message' => 'You must log in to view or modify a Wishalista'}
       end      
 
+      user_id = message_userid(message)
+      
+      if user_id.nil?
+        user_id = logged_in_userid(request)
+      end
+
+      user = User.find_by_id(user_id)
+      
+      if not user
+        return {'success' => false, 'message' => 'Invalid user'}
+      end
+
       raw_items = Item.find(:all, :conditions => ['user_id = ?', user_id], :order => 'created_at DESC')
 
-      is_me = isCurrentUser?(request, user_id)
+      is_me = current_user?(request, user_id)
       
       items = Array.new 
       raw_items.each do |raw_item|
@@ -186,35 +197,43 @@ class ItemService < Appcelerator::Service
         item['isMe'] = is_me
         items.push(item)
       end
-      
-      {'success' => true, 'isMe'=> is_me, 'items' => items}
-  end
-  
-  def loggedIn?(request)
-      logged_in_user_id = loggedInUserId(request)
 
-      if !logged_in_user_id.nil?
-        return false
-      else
-        return true
-      end  
-  end
 
-  def isCurrentUser?(request, user_id)
-      if user_id != loggedInUserId(request)
-        return false
-      else
-        return true
+      result = {'success' => true, 'isMe'=> is_me, 'items' => items}
+      result['firstname'] = user.profile.firstname
+      result['lastname'] = user.profile.lastname
+      result['picture'] = user.profile.picture
+
+      me = user
+
+      if not is_me
+        my_user_id = logged_in_userid(request)
+        me = User.find_by_id(my_user_id)
       end
+
+      result['my_firstname'] = user.profile.firstname
+      result['my_lastname'] = user.profile.lastname
+      result['my_email'] = user.email
+
+      result
   end
   
-  def loggedInUserId(request)
-      session = request['session']
-      return session[:user_id]
+  def logged_in?(request)
+      logged_in_user_id = logged_in_userid(request)
+      !logged_in_user_id.nil? 
   end
 
-  def messageUserId(message)
-      return message['user_id']
+  def current_user?(request, user_id)
+      user_id == logged_in_userid(request)
+  end
+  
+  def logged_in_userid(request)
+      session = request['session']
+      session[:user_id]
+  end
+
+  def message_userid(message)
+      message['user_id']
   end
 
 end
