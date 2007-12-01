@@ -19,7 +19,11 @@
         <div id="header_content">
             <img src="images/banner_badge.png" alt="Wishalista" /> 
             <span id="header_content_welcome">Welcome back, <a on="r:wl.list.item.response[success=true] then value[my_firstname]" id="my_profile">...</a></span>
-            <span id="header_content_logout"><a on="click then r:wl.logout.request">Logout</a></span>
+            <span id="header_content_logout">
+                <a href="index.html">Home</a> |
+                <a href="main.html">Profile</a> |
+                <a href="#" on="click then r:wl.logout.request">Logout</a>
+            </span>
         </div>
     </div>
     <div id="content_header"></div>
