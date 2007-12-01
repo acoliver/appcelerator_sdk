@@ -311,6 +311,7 @@
 										<input type="hidden" id="y2" value=""/>
 										<input type="hidden" id="width" value=""/>
 										<input type="hidden" id="height" value=""/>
+										<input type="hidden" id="path" value=""/>
 										
 										<app:script on="l:save.picture then execute">
 											$MQ('r:wl.profile.picture.crop.request',
@@ -320,7 +321,8 @@
 												'y1':$('y1').value,
 												'y2':$('y2').value,
 												'width':$('width').value,
-												'height':$('height').value
+												'height':$('height').value,
+												'path':$('path').value
 											});
 											if (window.preview)
 											{
@@ -355,6 +357,7 @@
 										            } 
 										        );
 											};
+											$('path').value = name;
 											$('imagePreview').src=path;
 									    </app:script>
                                     </div>

@@ -1,5 +1,5 @@
 require 'ftools'
-#require 'RMagick'
+require 'RMagick'
 
 class UserService < Appcelerator::Service
   
@@ -104,14 +104,33 @@ class UserService < Appcelerator::Service
   end
   
   def crop_picture(request,message)
-
     session = request['session']
     if not session[:user_id]
       return {'success' => false, 'message' => 'not logged in'}
     end
     
     user = User.find_by_id(session[:user_id])
-    user.profile.picture = "uploads/#{MD5.new(user.id.to_s).hexdigest}.png"
+    if not user
+      return {'success' => false, 'message' => 'Invalid User'}
+    end
+
+    path = message['path']
+    x = message['x1'].to_i
+    y = message['y1'].to_i
+    w = message['width'].to_i
+    h = message['height'].to_i
+
+    # change the path and hash the userid as the name of the profile image
+    # so it's not too easy to guess it
+    FileUtils.mkdir_p("#{FileUtils.pwd}/public/images/profiles")
+    name = "images/profiles/#{MD5.new(user.id.to_s).hexdigest}.png"
+    
+    # crop picture and save the cropped version
+    picture = Magick::ImageList.new("#{FileUtils.pwd}/public/#{path}")
+    picture.crop!(x,y,w,h)
+    picture.write "#{FileUtils.pwd}/public/#{name}"
+    
+    user.profile.picture = name
     user.profile.save!
     
     {'success'=>true, 'path'=> user.profile.picture}
