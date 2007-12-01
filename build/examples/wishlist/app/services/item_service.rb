@@ -168,11 +168,12 @@ class ItemService < Appcelerator::Service
       end      
 
       user_id = message_userid(message)
+      my_user_id = logged_in_userid(request)
       
       if user_id.nil?
-        user_id = logged_in_userid(request)
+        user_id = my_user_id
       end
-
+      
       user = User.find_by_id(user_id)
       
       if not user
@@ -181,7 +182,7 @@ class ItemService < Appcelerator::Service
 
       raw_items = Item.find(:all, :conditions => ['user_id = ?', user_id], :order => 'created_at DESC')
 
-      is_me = current_user?(request, user_id)
+      is_me = user_id.to_i === my_user_id.to_i
       
       items = Array.new 
       raw_items.each do |raw_item|
@@ -199,21 +200,24 @@ class ItemService < Appcelerator::Service
       end
 
 
-      result = {'success' => true, 'isMe'=> is_me, 'items' => items}
+      result = {'success' => true, 'isMe'=> is_me, 'items' => items, 'length' => items.length }
       result['firstname'] = user.profile.firstname
       result['lastname'] = user.profile.lastname
       result['picture'] = user.profile.picture
+      result['name'] = user.profile.firstname
 
       me = user
 
       if not is_me
-        my_user_id = logged_in_userid(request)
         me = User.find_by_id(my_user_id)
+        result['name'] = "#{user.profile.firstname} #{user.profile.lastname}"
+        result['friended'] = me.has_friend? user
       end
 
-      result['my_firstname'] = user.profile.firstname
-      result['my_lastname'] = user.profile.lastname
-      result['my_email'] = user.email
+      result['my_firstname'] = me.profile.firstname
+      result['my_lastname'] = me.profile.lastname
+      result['my_email'] = me.email
+      result['my_userid'] = me.id
 
       result
   end
@@ -233,7 +237,13 @@ class ItemService < Appcelerator::Service
   end
 
   def message_userid(message)
-      message['user_id']
+      u = message['user_id']
+      if not u.nil?
+        if u == ''
+          return nil
+        end
+      end
+      u
   end
 
 end

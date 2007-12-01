@@ -1,73 +1,95 @@
 
 class FriendService < Appcelerator::Service
   
-  Service 'wl.emaillist.request', :emaillist, 'wl.emaillist.response'
-  Service 'wl.viewuser.request', :viewuser, 'wl.viewuser.response'
-  Service 'wl.friend.add.request', :addFriend, 'wl.friend.add.response'
-  Service 'wl.friends.get.request', :getFriends, 'wl.friends.get.response'
-  Service 'wl.friend.invite.request', :inviteFriend, 'wl.friend.invite.response'
+  Service 'wl.email_list.request', :email_list, 'wl.email_list.response'
+#  Service 'wl.viewuser.request', :viewuser, 'wl.viewuser.response'
+  Service 'wl.friend.add.request', :add_friend, 'wl.friend.add.response'
+  Service 'wl.friends.get.request', :get_friends, 'wl.friends.get.response'
+  Service 'wl.friend.invite.request', :invite_friend, 'wl.friend.invite.response'
   
 
-  def emaillist(request,message)
-    user_id = message['user_id']
+  def email_list(request,message)
+    user_id = get_user_id(request)
     email_to = message['email_to']
     
     begin
       user = User.find(user_id)
       
-      {'success'=>true,'items'=>user.items}
-    rescue 
-      {'message'=>"problem doing that: #{$!}","success"=>false}
+      Mailer.deliver_list(user,email_to)
+      {'success'=>true, 'message' => "Your list has been sent to #{email_to}"}
+    rescue => e
+      puts e
+      {'message'=>'problem emailing your list','success'=>false}
     end
   end
-  def viewuser(request,message)
-      user_id = message['user_id']
-      begin
-        user = User.find(user_id)
-        {'user'=>user, 'profile'=> user.profile,'success'=>true}
-      rescue 
-        {"message"=>"problem looking up user: #{$!}",'success'=>false}
-      end
-  end 
-  # addFriend nil {'friend_id': 44}
+# def viewuser(request,message)
+#      user_id = message['user_id']
+#      begin
+#        user = User.find(user_id)
+#        {'user'=>user, 'profile'=> user.profile,'success'=>true}
+#      rescue 
+#        {"message"=>"problem looking up user: #{$!}",'success'=>false}
+#      end
+#  end 
+
+  # add_friend nil {'friend_id': 44}
   #
-  def addFriend(request,message)
+  def add_friend(request,message)
       me = get_me(request)
       
       new_friend = User.find(message['friend_id'])
+      
+      if new_friend.nil?
+        return {'success' => false, 'message' => 'Invalid friend id'}
+      end
+      
       if not me.has_friend? new_friend
         me.add_friend new_friend
         return {'success' => true}
       else
-        return {'sucess' => false, 'message' => 'That person is already your friend.'}
+        return {'success' => false, 'message' => 'That person is already your friend.'}
       end
   end
 
-  # empty request
-  def getFriends(request,message)
-    puts "getfirneds"
-      me = get_me(request)
-      friendsInfo = me.friends.map do |friend|
-        {'friend_id' => friend.id,
-         'name' => friend.full_name,
-         'picture' => friend.picture}
+  def get_friends(request,message)
+      begin
+        user_id = message['user_id']
+        if user_id.nil?
+            user_id = get_user_id(request)
+        end
+        me = User.find(user_id)
+        friendsInfo = me.friends.map do |friend|
+          if friend.friend_id != me.id
+            u = User.find(friend.friend_id)
+            {'friend_id' => u.id,
+             'name' => u.full_name,
+             'picture' => u.profile.picture,
+             'path' => "main.html?id=#{u.id}"}
+          end
+        end
+        {'results' => friendsInfo.compact, 'success'=>true, 'length' => friendsInfo.nitems }    
+      rescue
+        {'success' => false, 'message' => 'Invalid User'}
       end
-      {'results' => friendsInfo, 'success'=>true, 'length' => friendsInfo.length }    
   end
   
-  #  inviteFriend nil {'friend_email': 'mkyfriend@blah.org'}
+  #  invite_friend nil {'friend_email': 'mkyfriend@blah.org'}
   #
-  def inviteFriend(request,message)
+  def invite_friend(request,message)
       me = get_me(request)
       friend_email = message['friend_email']
       existing = Invite.find_by_user_id_friend_email(me.id, friend_email)
       if existing:
-          {'success' => 'You have already invited that friend.'}
+          {'success' => false, 'message' => 'You have already invited that friend.'}
       else 
           {'success' => true}
       end
   end 
 
+  def get_user_id(request)
+    request['session'][:user_id]
+  end
+  
   def get_me(request)
       User.find(request['session'][:user_id])
   end

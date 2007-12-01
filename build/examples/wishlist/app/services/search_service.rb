@@ -6,7 +6,7 @@ class SearchService < Appcelerator::Service
   def search(request,message)
     session = request['session']
     if not session[:user_id]
-      return {'success' => false, 'msg' => 'You must be logged in'}
+      return {'success' => false, 'message' => 'You must be logged in'}
     end
     
     query = message['query']
@@ -15,11 +15,11 @@ class SearchService < Appcelerator::Service
       results = User.multi_search(query.strip, [Profile, Item])
       results.each do |result|
         if result.class == User
-          search_results.push({'type' => 'user', 'email' => result.email, 'firstname' => result.profile.firstname, 'lastname' => result.profile.lastname})
+          search_results.push({'type' => 'user', 'email' => result.email, 'firstname' => result.profile.firstname, 'lastname' => result.profile.lastname, 'path' => "main.html?id=#{result.user.id}"})
         elsif result.class == Profile
-          search_results.push({'type' => 'profile', 'email' => result.user.email, 'firstname' => result.firstname, 'lastname' => result.lastname})
+          search_results.push({'type' => 'profile', 'email' => result.user.email, 'firstname' => result.firstname, 'lastname' => result.lastname, 'path' => "main.html?id=#{result.id}"})
         elsif result.class == Item
-          search_results.push({'type' => 'item', 'email' => result.user.email, 'firstname' => result.user.profile.firstname, 'lastname' =>  result.user.profile.lastname, 'name' => result.name, 'occassion' => result.occasion, 'note' => result.note})
+          search_results.push({'type' => 'item', 'email' => result.user.email, 'firstname' => result.user.profile.firstname, 'lastname' =>  result.user.profile.lastname, 'name' => result.name, 'occassion' => result.occasion, 'note' => result.note, 'path' => "main.html?id=#{result.user.id}"})
         end
       end
     end

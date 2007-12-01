@@ -34,6 +34,11 @@ a { cursor: pointer; }
     color:#fff;
 }
 
+#header_content_welcome a
+{
+    color:#fff;
+}
+
 #header_content_logout
 {
     position:absolute;
@@ -64,6 +69,7 @@ a { cursor: pointer; }
 #content_body
 {
     padding:30px;
+    position:relative;
 }
 
 #content_footer
@@ -98,6 +104,8 @@ a { cursor: pointer; }
     height:77px;
     width:157px;
     text-align:center;
+    font-size:12px;
+    color:#4170ab;
 }
 #mypicture_footer h1
 {
@@ -109,7 +117,6 @@ a { cursor: pointer; }
 }
 #mypicture_footer a
 {
-    font-size:12px;
     color:#4170ab;
 }
 
@@ -160,7 +167,7 @@ a { cursor: pointer; }
 }
 #mylist_add
 {
-    margin-top:50px;
+    margin-top:100px;
 }
 
 #mylist_add_button
@@ -265,8 +272,8 @@ a { cursor: pointer; }
     width:164px;
     height:29px;
     position:absolute;
-    right:5px;
-    top:10px;
+    right:15px;
+    top:0px;
     cursor:pointer;
 }
 
@@ -334,6 +341,7 @@ a { cursor: pointer; }
     border-color: #F0C000; 
     background-color: #FFFFCE;
     margin:10px;
+    width:400px;
 } 
 
 #error
