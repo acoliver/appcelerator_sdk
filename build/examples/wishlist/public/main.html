@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="favicon.ico"/>
     <link rel="icon" href="favicon.ico"/>
     <link rel="stylesheet" href="css/main.css" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" href="css/items.css" type="text/css" media="screen" charset="utf-8"/>
     <script type="text/javascript" src="js/appcelerator.js"></script>
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
@@ -51,7 +52,77 @@
                             </div>
                             <div id="mylist_content">
                                 <div id="mylist_content_body">
-                                    <div>Hello</div>
+                                    <div>
+                                        <div on="r:wl.list.item.response then hide">Loading list...</div>
+                                        <div on="r:wl.list.item.response[length=0] then show else hide" style="display:none">
+                                            You have no items in your list.  <a on="click then l:create.item">Why not add some?</a>
+                                        </div>
+								        <app:iterator on="r:wl.list.item.response[success=true,length!=0] then execute" property="items">
+								            <html:div class="item_list" on="r:wl.remove.item.response[success=true,item_id=#{item_id}] then effect[Fade]">
+								                <html:div class="user_controls" showMyControls="#{isMe}">
+								                    <html:div 
+								                        class="remove"
+								                        on='click then r:wl.remove.item.request[item_id=#{item_id}] 
+								                            if expr[confirm("Are you sure you want to delete this item?")]'>
+								                            <html:img src="images/delete.png"></html:img>
+								                    </html:div>
+								                    <html:div 
+								                        class="edit" 
+								                        on='click then l:wl.expand.edit[item_id=#{item_id}]'>
+                                                            <html:img src="images/pencil.png"></html:img>
+								                    </html:div>
+								                </html:div>
+								                <html:div class="other_user_controls" showMyControls="#{isMe}">
+								                    <html:div 
+								                        class="remove"
+								                        on='click then r:wl.claim.item.request[item_id=#{item_id}]'>
+                                                            <html:img src="images/delete.png"></html:img>
+								                    </html:div>
+								                    <html:div 
+								                        class="edit" 
+								                        on='click then r:wl.purchase.item.request[item_id=#{item_id}]'>
+                                                            <html:img src="images/delete.png"></html:img>
+								                    </html:div>
+								                </html:div>
+								                <html:h4 
+								                    class="name" 
+								                    on="click then l:wl.expand.description[item_id=#{item_id}]">
+								                    #{name}
+								                </html:h4>
+								            </html:div>
+								            <html:div 
+								                class="description" 
+								                on="l:wl.expand.description[item_id=#{item_id}] then toggle[display]" 
+								                style="display: none;">
+								                <html:p>#{note}</html:p>
+								            </html:div>
+								            <html:div style="display: none" class="edit_item" on="l:wl.expand.edit[item_id=#{item_id}] then toggle[display]">
+                                                <html:input type="hidden" name="item_id" fieldset="#{item_id}" value="#{item_id}"></html:input>
+								                <html:table>
+    								                <html:tr>
+	   							                      <html:td>Name:</html:td>
+								                      <html:td><html:input type="text" fieldset="#{item_id}" name="name" value="#{name}"></html:input></html:td>
+								                    </html:tr>
+                                                    <html:tr>
+                                                      <html:td>Occasion</html:td>                                               
+                                                      <html:td><html:input type="text" fieldset="#{item_id}" name="occasion" value="#{occasion}"></html:input></html:td>
+                                                    </html:tr>
+								                    <html:tr>
+								                      <html:td>Note:</html:td>
+								                      <html:td><html:textarea fieldset="#{item_id}" name="note">#{note}</html:textarea></html:td>
+								                    </html:tr>
+                                                    <html:tr>
+                                                      <html:td>
+                                                        <html:div class="edit_button" fieldset="#{item_id}" on="click then r:wl.edit.item.request"><html:a>Update</html:a></html:div>
+                                                      </html:td>                                               
+                                                      <html:td>
+                                                        <html:div style="margin-left:10px;" class="edit_button" on="click then l:wl.expand.edit[item_id=#{item_id}]"><html:a>Close</html:a></html:div>
+                                                      </html:td>                                               
+                                                    </html:tr>
+								                </html:table>
+								            </html:div>
+								        </app:iterator>
+                                    </div>
                                     <div id="mylist_add"><div id="mylist_add_button" on="click then l:create.item">Add something to my Wisha Lista!</div></div>
                                 </div>
                             </div>
@@ -217,6 +288,8 @@
     <app:script on="r:wl.logout.response then execute">
         window.location.href = Appcelerator.DocumentPath + 'index.html';
     </app:script>
+    
+    <app:script on="r:wl.add.item.response[success=true] then r:wl.list.item.request"></app:script>
 
     <app:statemachine id="content" initial="list">
        <state name="list" if="l:show.list"></state>

@@ -160,8 +160,7 @@ a { cursor: pointer; }
 }
 #mylist_add
 {
-    text-align:center;
-    margin-top:20px;
+    margin-top:50px;
 }
 
 #mylist_add_button
@@ -177,6 +176,7 @@ a { cursor: pointer; }
     font-size:14px;
     font-weight:bold;
     cursor:pointer;
+    text-align:center;
 }
 
 .body_header
@@ -308,6 +308,10 @@ a { cursor: pointer; }
     height:27px;
     font-weight:bold;
     font-size:12px;
+    color:#fff;
+    text-align:center;
+    padding-top:5px;
+    cursor:pointer;
 }
 
 .button[disabled=true]
