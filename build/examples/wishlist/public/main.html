@@ -254,7 +254,9 @@
                         <div id="myfriends">
                             <div id="myfriends_header">
                                 <h1>My Homies</h1>
-                                <div id="searchbox" on="click then r:search"><input type="text" value="" id="search"/></div>
+                                <form on="enter then r:wl.search.request[query=$search] if expr[$('search').value]">
+                                    <div id="searchbox" on="click then r:wl.search.request[query=$search] if expr[$('search').value]"><input type="text" value="" id="search"/></div>
+                                </form>
                             </div>
                             <div id="myfriends_content">
                                 <div id="searchresults">
@@ -267,7 +269,7 @@
                                         </html:div>
                                     </app:iterator>
                                     <div on="r:wl.search.response[length=0] then show else hide" class="search_noresults" style="display:none">Oops, we didn't find any matches. Refine your search and try again...</div>
-                                    <div on="r:wl.friends.get.response[length=0] then show else hide" class="search_noresults" style="display:none">You have no friends yet. Why not invite someone to join?</div>
+                                    <div on="r:wl.friends.get.response[length=0] then show else hide or r:wl.search.response then hide" class="search_noresults" style="display:none">You have no friends yet. Why not invite someone to join?</div>
                                 </div>
                             </div>
                         </div>
