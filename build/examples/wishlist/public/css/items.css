@@ -21,6 +21,10 @@
 {
 	display:none;
 }
+.unavailable
+{
+	display:none;
+}
 .available .claimed_icon, .available .purchased_icon
 {
 	display:none;

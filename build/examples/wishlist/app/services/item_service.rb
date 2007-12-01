@@ -183,6 +183,13 @@ class ItemService < Appcelerator::Service
       raw_items = Item.find(:all, :conditions => ['user_id = ?', user_id], :order => 'created_at DESC')
 
       is_me = user_id.to_i === my_user_id.to_i
+      me = user
+      myfriend = false
+
+      if not is_me
+        me = User.find_by_id(my_user_id)
+        myfriend = me.has_friend? user
+      end
       
       items = Array.new 
       raw_items.each do |raw_item|
@@ -191,14 +198,12 @@ class ItemService < Appcelerator::Service
         item['name'] = raw_item.name
         item['note'] = raw_item.note
         item['occasion'] = raw_item.occasion
-        item['state'] = raw_item.bought ? 'purchased' : raw_item.claimed ? 'claimed' : 'available'
+        item['state'] = raw_item.bought ? 'purchased' : raw_item.claimed ? 'claimed' : myfriend ? 'available' : 'unavailable'
         item['claimed_name'] = raw_item.claimed_user.nil? ? '' : raw_item.claimed_user.full_name
         item['claimed_user_id'] = raw_item.claimed_user.nil? ? -1 : raw_item.claimed_user.id;
-        item['claimable'] = raw_item.user.has_friend? me
         item['isMe'] = is_me
         items.push(item)
       end
-
 
       result = {'success' => true, 'isMe'=> is_me, 'items' => items, 'length' => items.length, 'my_userid'=> my_user_id }
       result['firstname'] = user.profile.firstname
@@ -206,12 +211,9 @@ class ItemService < Appcelerator::Service
       result['picture'] = user.profile.picture
       result['name'] = user.profile.firstname
 
-      me = user
-
       if not is_me
-        me = User.find_by_id(my_user_id)
         result['name'] = "#{user.profile.firstname} #{user.profile.lastname}"
-        result['friended'] = me.has_friend? user
+        result['friended'] = myfriend
       end
 
       result['my_firstname'] = me.profile.firstname
