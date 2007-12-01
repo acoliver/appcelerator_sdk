@@ -191,16 +191,15 @@ class ItemService < Appcelerator::Service
         item['name'] = raw_item.name
         item['note'] = raw_item.note
         item['occasion'] = raw_item.occasion
-        item['claimed'] = raw_item.claimed        
-        item['claimed_name'] = raw_item.claimed_user.nil? ? '' : raw_item.claimed_user.name
-        item['claimed'] = raw_item.claimed        
-        item['bought'] = raw_item.bought        
+        item['state'] = raw_item.bought ? 'purchased' : raw_item.claimed ? 'claimed' : 'available'
+        item['claimed_name'] = raw_item.claimed_user.nil? ? '' : raw_item.claimed_user.full_name
+        item['claimed_user_id'] = raw_item.claimed_user.nil? ? -1 : raw_item.claimed_user.id;
         item['isMe'] = is_me
         items.push(item)
       end
 
 
-      result = {'success' => true, 'isMe'=> is_me, 'items' => items, 'length' => items.length }
+      result = {'success' => true, 'isMe'=> is_me, 'items' => items, 'length' => items.length, 'my_userid'=> my_user_id }
       result['firstname'] = user.profile.firstname
       result['lastname'] = user.profile.lastname
       result['picture'] = user.profile.picture

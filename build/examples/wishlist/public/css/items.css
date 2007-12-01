@@ -1,45 +1,43 @@
 .item_list
 {
-	width: 100%;
-	position: relative;
-	float:left;
+    width: 100%;
 }
-
-.edit, .remove
+.icon
 {
-	position:relative;
-	float: left;
-	width: 20px;
-	height: 20px;
-	cursor:pointer;
+    width: 20px;
+    height: 20px;
+    cursor:pointer;
 }
-
-.edit
-{
-	border-left:1px solid #fff;
-	margin-left:5px;
-	padding-left:5px;
-	margin-right:5px;
-}
-
 .name
 {
-	position: relative;
-	float: left;
-	padding: 0;
-	margin: 0;
-	font-weight:normal;
-	cursor:pointer;
+    font-weight:normal;
+    cursor:pointer;
 }
-.name:hover
+.purchased .claim, .purchased .purchase
 {
-	background-color:#ffe;
+	display:none;
+}
+.claimed .claim
+{
+	display:none;
+}
+.available .claimed_icon, .available .purchased_icon
+{
+	display:none;
+}
+.purchased .claimed_icon, .claimed .purchased_icon
+{
+	display:none;
+}
+.claimed .purchased_icon, .purchased .claimed_icon
+{
+    display:none;
 }
 .description
 {
-	color:#777;
-	padding:15px;
-	padding-top:30px;
+    color:#777;
+    padding:15px;
+    padding-top:30px;
 }
 .edit_item
 {
@@ -54,30 +52,20 @@
 }
 .edit_item input, .edit_item textarea
 {
-	width: 200px;
-	margin:4px;
-	font-size:16px;
+    width: 200px;
+    margin:4px;
+    font-size:16px;
 }
-.user_controls[showMyControls=true]
+.user_controls_me_false
 {
-	display: block;
+    display: none;
 }
-.user_controls[showMyControls=false]
+.other_user_controls_me_true
 {
-	display: none;
+    display: none;
 }
-.other_user_controls[showMyControls=false]
-{
-	display: block;
-}
-.other_user_controls[showMyControls=true]
-{
-	display: none;
-}
-
-
 .edit_button a
 {
-	text-decoration:underline;
-	font-size:smaller;
+    text-decoration:underline;
+    font-size:smaller;
 }

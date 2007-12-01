@@ -84,6 +84,6 @@
 	<div on="r:wl.add.item.response[success=true] then r:wl.list.item.request or r:wl.edit.item.request then r:wl.list.item.request"></div>
 
 	<!-- Remove when this gets tied into a backend -->
-    <app:message on="l:app.compiled then execute" name="r:wl.list.item.request"></app:message>
+    <app:message on="l:app.compiled then execute" name="r:wl.list.item.request" args="{user_id:1}"></app:message>
 </body>
 </html>
