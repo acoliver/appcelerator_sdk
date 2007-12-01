@@ -63,7 +63,7 @@ class FriendService < Appcelerator::Service
             u = User.find(friend.friend_id)
             {'friend_id' => u.id,
              'name' => u.full_name,
-             'picture' => u.profile.picture,
+             'picture' => u.profile.picture || 'images/small_picture.gif',
              'path' => "main.html?id=#{u.id}"}
           end
         end

@@ -374,7 +374,7 @@
 	                                        r:wl.friends.get.response[success=true,length!=0] then execute and show else hide" 
 	                                        property="results" style="display:none">
 	                                        <html:div class="search_result">
-	                                           <html:div><html:img src="images/small_picture.gif"></html:img></html:div>
+	                                           <html:div><html:img src="#{picture}" width="97" height="96"></html:img></html:div>
 	                                           <html:div><html:a href="#{path}">#{name}</html:a></html:div>
 	                                        </html:div>
 	                                    </app:iterator>
@@ -412,6 +412,7 @@
       $('myfriends_title').innerHTML = (this.data.isMe ? 'My' : this.data.firstname+"'s")  +  ' Homies';
       $('my_profile').href = Appcelerator.DocumentPath + 'main.html?id=' + this.data.my_userid;
       $('friend_search_title').innerHTML = this.data.isMe ? 'You have no friends yet. Why not invite someone?' : this.data.firstname + ' has no friends yet.';
+	  user_id = this.data.user_id;
     </app:script>
     
     <app:script on="r:wl.logout.response then execute">

@@ -15,11 +15,14 @@ class SearchService < Appcelerator::Service
       results = User.multi_search(query.strip, [Profile, Item])
       results.each do |result|
         if result.class == User
-          search_results.push({'type' => 'user', 'email' => result.email, 'firstname' => result.profile.firstname, 'lastname' => result.profile.lastname, 'path' => "main.html?id=#{result.user.id}"})
+          picture = result.profile.picture || 'images/small_picture.gif'
+          search_results.push({'type' => 'user', 'email' => result.email, 'firstname' => result.profile.firstname, 'lastname' => result.profile.lastname, 'path' => "main.html?id=#{result.user.id}", 'picture'=> picture})
         elsif result.class == Profile
-          search_results.push({'type' => 'profile', 'email' => result.user.email, 'firstname' => result.firstname, 'lastname' => result.lastname, 'path' => "main.html?id=#{result.id}"})
+          picture = result.user.profile.picture || 'images/small_picture.gif'
+          search_results.push({'type' => 'profile', 'email' => result.user.email, 'firstname' => result.firstname, 'lastname' => result.lastname, 'path' => "main.html?id=#{result.id}", 'picture'=> picture})
         elsif result.class == Item
-          search_results.push({'type' => 'item', 'email' => result.user.email, 'firstname' => result.user.profile.firstname, 'lastname' =>  result.user.profile.lastname, 'name' => result.name, 'occassion' => result.occasion, 'note' => result.note, 'path' => "main.html?id=#{result.user.id}"})
+          picture = result.user.profile.picture || 'images/small_picture.gif'
+          search_results.push({'type' => 'item', 'email' => result.user.email, 'firstname' => result.user.profile.firstname, 'lastname' =>  result.user.profile.lastname, 'name' => result.name, 'occassion' => result.occasion, 'note' => result.note, 'path' => "main.html?id=#{result.user.id}"}, 'picture' => picture)
         end
       end
     end
