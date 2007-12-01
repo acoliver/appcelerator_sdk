@@ -219,7 +219,7 @@ a { cursor: pointer; }
     cursor:pointer;
 }
 
-.body_content_body input
+.body_content_body input, .body_content_body textarea
 {
     border: 2px solid #ccc;
     background-color: #f2f2f2;
