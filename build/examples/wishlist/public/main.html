@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="css/items.css" type="text/css" media="screen" charset="utf-8"/>
     <script type="text/javascript" src="js/appcelerator.js"></script>
     <script type="text/javascript" src="js/user.js"></script>
+    <script type="text/javascript" src="js/builder.js"></script>
+    <script type="text/javascript" src="js/cropper.js"></script>
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
     <div id="header">
@@ -39,14 +41,16 @@
                   </div>
               </div>
             <div on="r:wl.list.item.response[success=true] then show else hide" style="display:none">
-	            <form on="enter then r:wl.search.request[query=$search] if expr[$('search').value]">
+	            <form on="enter then r:wl.search.request[query=$search] if expr[$('search').value] or content[picture] then hide else show">
 	                 <div id="searchbox" on="click then r:wl.search.request[query=$search] if expr[$('search').value]"><input type="text" value="" id="search"/></div>
 	            </form>
 	            <table border="0" cellpadding="0" cellspacing="0" width="100%">
 	                <tr valign="top">
 	                    <td width="20%">
 	                        <div id="mypicture">
-	                            <div><img src="images/picture.gif"/></div>
+	                            <div id="profile_picture_container" on="click then l:update.picture if expr[user_id==$('my_user_id').value]">
+										<img id="profile_picture" src="images/picture.gif"/>
+								</div>
 	                            <div id="mypicture_footer">
 	                                <div><h1 on="r:wl.list.item.response[success=true] then value[name]"></h1></div>
 	                                <div on="r:wl.list.item.response[isMe=true] then show else hide"><a on="click then l:edit.profile">edit your profile</a></div>
@@ -285,8 +289,78 @@
 	                                </div>
 	                            </div>
 	                        </div>
+                            <div id="picture" style="display:none" on="content[picture] then show else hide">
+                                <div class="body_header_content" style="width:700px"><h1>Edit your profile picture</h1></div>
+                                <div class="body_content" style="width:700px">
+                                    <div class="body_content_body">
+	
+									    <app:upload action="-/fileupload" maxsize="3145728" on="r:wl.profile.picture.upload.response[success=true] then hide or content[picture] then show or l:image.upload.start then submit and disable or r:wl.profile.picture.upload.response then enable" service="wl.profile.picture.upload.request">
+									        <html:span id="uploadtext">Select a picture: </html:span>
+									        <html:input type="file" value="" id="file" name="filename" on="r:wl.profile.picture.upload.response[success=true] then clearform"></html:input>
+									        <html:input type="button" value="Upload" id="upload" on="click then l:image.upload.start if expr[$('file').value!='']"></html:input>
+									    </app:upload>
+										
+										<div style="display:none;text-align:right;" on="r:wl.profile.picture.upload.response[success=true] then show or content[picture] then hide">
+											<div class="button" on="click then l:save.picture">Save</div>
+										</div>
+										<div style="width:690px;height:400px;overflow:auto;"><img id="imagePreview"/></div>
+										
+										<input type="hidden" id="x1" value=""/>
+										<input type="hidden" id="x2" value=""/>
+										<input type="hidden" id="y1" value=""/>
+										<input type="hidden" id="y2" value=""/>
+										<input type="hidden" id="width" value=""/>
+										<input type="hidden" id="height" value=""/>
+										
+										<app:script on="l:save.picture then execute">
+											$MQ('r:wl.profile.picture.crop.request',
+											{
+												'x1':$('x1').value,
+												'x2':$('x2').value,
+												'y1':$('y1').value,
+												'y2':$('y2').value,
+												'width':$('width').value,
+												'height':$('height').value
+											});
+											if (window.preview)
+											{
+												window.preview.remove();
+												delete window.preview;
+											}
+										</app:script>
+										
+									    <app:script on="r:wl.profile.picture.upload.response[success=true] then execute">
+											var name = this.data.path;
+									       	var path = Appcelerator.DocumentPath + name;
+											$('imagePreview').onload = function()
+											{
+												function onEndCrop( coords, dimensions ) {
+													$( 'x1' ).value = coords.x1;
+													$( 'y1' ).value = coords.y1;
+													$( 'x2' ).value = coords.x2;
+													$( 'y2' ).value = coords.y2;
+													$( 'width' ).value = dimensions.width;
+													$( 'height' ).value = dimensions.height;
+												}
+
+												window.preview = new Cropper.ImgWithPreview( 
+										            'imagePreview',
+										            { 
+										                minWidth: 157, 
+										                minHeight: 189,
+										                ratioDim: { x: 157, y: 189 },
+										                displayOnInit: true, 
+														onEndCrop:onEndCrop,
+										                previewWrap: 'profile_picture_container'
+										            } 
+										        );
+											};
+											$('imagePreview').src=path;
+									    </app:script>
+                                    </div>
+                            </div>
 	                    </td>
-	                    <td width="40%">
+	                    <td width="40%" on="content[picture] then hide else show">
 	                        <div id="myfriends">
 	                            <div id="myfriends_header">
 	                                <h1 id="myfriends_title"></h1>
@@ -330,6 +404,7 @@
     <app:script>$('user_id').value=user_id</app:script>
     
     <app:script on="r:wl.list.item.response[success=true] then execute">
+	  if (this.data.picture) $('profile_picture').src = Appcelerator.DocumentPath + this.data.picture;
       $('mylist_header_title').innerHTML = (this.data.isMe ? 'My' : this.data.firstname+"'s")  +  ' Wisha List';
       $('myfriends_title').innerHTML = (this.data.isMe ? 'My' : this.data.firstname+"'s")  +  ' Homies';
       $('my_profile').href = Appcelerator.DocumentPath + 'main.html?id=' + this.data.my_userid;
@@ -353,10 +428,11 @@
     </app:script>
 
     <app:statemachine id="content" initial="list">
-       <state name="list" if="l:show.list"></state>
+       <state name="list" if="l:show.list or r:wl.profile.picture.crop.response"></state>
        <state name="edit" if="l:edit.profile"></state>
        <state name="send" if="l:send.list"></state>
        <state name="create" if="l:create.item"></state>
+       <state name="picture" if="l:update.picture"></state>
     </app:statemachine>
     
     <app:message name="r:wl.list.item.request" args="{user_id:user_id}"></app:message>

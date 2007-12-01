@@ -382,3 +382,10 @@ a { cursor: pointer; }
 {
     color:#999;
 }
+
+#profile_picture
+{
+	width:157px;
+	height:189px;
+	border:0;
+}

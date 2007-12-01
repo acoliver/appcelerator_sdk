@@ -1,3 +1,5 @@
+require 'ftools'
+#require 'RMagick'
 
 class UserService < Appcelerator::Service
   
@@ -6,6 +8,8 @@ class UserService < Appcelerator::Service
   Service 'wl.logout.request', :logout, 'wl.logout.response'
   Service 'wl.profile.view.request', :view_profile, 'wl.profile.view.response'
   Service 'wl.profile.edit.request', :edit_profile, 'wl.profile.edit.response'
+  Service 'wl.profile.picture.upload.request', :upload_picture, 'wl.profile.picture.upload.response'
+  Service 'wl.profile.picture.crop.request', :crop_picture, 'wl.profile.picture.crop.response'
   
   def signup(request,message)
     if not message['email'] or not message['email'].strip or not message['password'] or not message['firstname'] or not message['firstname'].strip or not message['lastname'] or not message['lastname'].strip
@@ -81,6 +85,36 @@ class UserService < Appcelerator::Service
     result['email'] = user.email
     result['success'] = true
     result
+  end
+  
+  def upload_picture(request,message)
+    tmpfile = message['filename']
+
+    # get the public folder
+    FileUtils.mkdir_p("#{FileUtils.pwd}/public/uploads")
+    newfile = File.new("#{FileUtils.pwd}/public/uploads/#{File.basename(tmpfile.path)}", 'wb')
+
+    # place in preview
+    File.copy tmpfile.path, newfile.path
+    
+    # delete temp uploaded file
+    File.delete tmpfile.path
+
+    {'success'=>true, 'path'=>"uploads/#{File.basename(newfile.path)}"}
+  end
+  
+  def crop_picture(request,message)
+
+    session = request['session']
+    if not session[:user_id]
+      return {'success' => false, 'message' => 'not logged in'}
+    end
+    
+    user = User.find_by_id(session[:user_id])
+    user.profile.picture = "uploads/#{MD5.new(user.id.to_s).hexdigest}.png"
+    user.profile.save!
+    
+    {'success'=>true, 'path'=> user.profile.picture}
   end
 
   def edit_profile(request,message)
