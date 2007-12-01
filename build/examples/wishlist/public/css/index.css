@@ -149,3 +149,14 @@
 	top: 0px;
 	left: 210px;
 }
+
+#footer {
+	margin-top:50px;
+	font-size:10px;
+	color:#777;
+	font-weight:normal;
+}
+
+#footer a {
+    color:#3f830c;
+}
