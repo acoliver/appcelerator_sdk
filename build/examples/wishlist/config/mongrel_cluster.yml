@@ -1,6 +1,6 @@
 --- 
-log_file: log/mongrel.log
+log_file: ../shared/log/mongrel.log
 port: "3100"
 environment: production
-pid_file: tmp/pids/mongrel.pid
+pid_file: ../shared/pids/mongrel.pid
 servers: 5
