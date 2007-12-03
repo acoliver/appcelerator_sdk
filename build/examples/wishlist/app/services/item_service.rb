@@ -164,7 +164,7 @@ class ItemService < Appcelerator::Service
   def list_item(request,message)
       
       if not logged_in?(request)
-        return {'success' => false, 'message' => 'You must log in to view or modify a Wishalista'}
+        return {'success' => false, 'message' => 'You must log in to view or modify a Wishalista', 'login_required':true}
       end      
 
       user_id = message_userid(message)
@@ -177,7 +177,7 @@ class ItemService < Appcelerator::Service
       user = User.find_by_id(user_id)
       
       if not user
-        return {'success' => false, 'message' => 'Invalid user'}
+        return {'success' => false, 'message' => 'Invalid user', 'login_required':true}
       end
 
       raw_items = Item.find(:all, :conditions => ['user_id = ?', user_id], :order => 'created_at DESC')

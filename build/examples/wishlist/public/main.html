@@ -448,7 +448,7 @@
 	  user_id = this.data.user_id;
     </app:script>
     
-    <app:script on="r:wl.logout.response then execute">
+    <app:script on="r:wl.logout.response then execute or r:~.*response[login_required=true] then execute">
         window.location.href = Appcelerator.DocumentPath + 'index.html';
     </app:script>
     
