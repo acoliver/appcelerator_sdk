@@ -18,7 +18,7 @@ class SearchService < Appcelerator::Service
           picture = result.profile.picture || 'images/small_picture.gif'
           search_results.push({'type' => 'user', 'email' => result.email, 'firstname' => result.profile.firstname, 'lastname' => result.profile.lastname, 'path' => "main.html?id=#{result.user.id}", 'picture'=> picture})
         elsif result.class == Profile
-          picture = result.user.profile.picture || 'images/small_picture.gif'
+          picture = result.picture || 'images/small_picture.gif'
           search_results.push({'type' => 'profile', 'email' => result.user.email, 'firstname' => result.firstname, 'lastname' => result.lastname, 'path' => "main.html?id=#{result.id}", 'picture'=> picture})
         elsif result.class == Item
           picture = result.user.profile.picture || 'images/small_picture.gif'

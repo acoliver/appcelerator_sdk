@@ -193,8 +193,12 @@
 		                                       </tr>
 		                                       <tr>
 		                                        <td>Password:</td>
-		                                        <td><input type="password" id="editprofile_pwd" validator="password" name="password" fieldset="profile"/></td>
+		                                        <td><input type="password" id="editprofile_pwd" validator="password" name="password" value="#changeme#" fieldset="profile"/></td>
 		                                       </tr>
+											   <tr>
+												<td>Picture:</td>
+												<td><div class="button" on="click then l:update.picture">Edit</div></td>
+											   </tr>
 		                                    </table>
 		                                    <table cellspacing="10">
 		                                        <tr>
@@ -209,8 +213,8 @@
 		                                <img src="images/indicator_web2.3.gif" style="display: none;" class="indicator"
 		                                    on="r:wl.profile.edit.request then show or r:wl.profile.edit.response then hide"/>
 		                            </div>
-		                            <div on="r:wl.profile.edit.request then hide or r:wl.profile.edit.response[success=true] then show or r:wl.profile.edit.response[success=true] then effect[fade] after 2s" style="display:none" class="flash">
-		                                <img src="images/confirm.png"/> <span on="r:wl.profile.edit.response then value[message]"></span>
+		                            <div on="r:wl.profile.edit.request then hide or r:wl.profile.edit.response[success=true] then show or r:wl.profile.edit.response[success=true] then effect[fade] after 2s" style="display:none;width:200px" class="flash">
+		                                <img src="images/confirm.png"/> Updated</span>
 		                            </div>
 	                            </div>
 	                        </div>
@@ -265,19 +269,19 @@
 		                                       <tr>
 		                                        <td>Occasion:</td>
 		                                        <td>
-		                                            <input name="occasion" id="create_occasion" fieldset="create" validator="required"/>
+		                                            <input name="occasion" id="create_occasion" fieldset="create"/>
 		                                        </td>
 		                                       </tr>
 		                                       <tr>
 		                                        <td>Note:</td>
 		                                        <td>
-		                                            <textarea cols="20" rows="4" name="note" id="create_note" fieldset="create" validator="required"></textarea>
+		                                            <textarea cols="20" rows="4" name="note" id="create_note" fieldset="create"></textarea>
 		                                        </td>
 		                                       </tr>
 		                                    </table>
 		                                    <table cellspacing="10">
 		                                        <tr>
-		                                            <td><div class="button" activators="create_name,create_occasion,create_note" id="add_item_btn"
+		                                            <td><div class="button" activators="create_name" id="add_item_btn"
 		                                               on="click then r:wl.add.item.request or l:add.item then r:wl.add.item.request if expr[!$('add_item_btn').disabled]" 
 		                                               fieldset="create">add</div>
 		                                            </td>
@@ -290,8 +294,8 @@
 	                                    <img src="images/indicator_web2.3.gif" style="display: none;" class="indicator"
 	                                        on="r:wl.add.item.request then show or r:wl.add.item.response then hide"/>
 	                                </div>
-	                                <div on="r:wl.add.item.request then hide or r:wl.add.item.response[success=true] then show or r:wl.add.item.response[success=true] then effect[fade] after 2s" style="display:none" class="flash">
-	                                    <img src="images/confirm.png"/> <span on="r:wl.add.item.response then value[message]"></span>
+	                                <div on="r:wl.add.item.request then hide or r:wl.add.item.response[success=true] then show or r:wl.add.item.response[success=true] then effect[fade] after 2s" style="display:none;width:200px;" class="flash">
+	                                    <img src="images/confirm.png"/> Added
 	                                </div>
 	                            </div>
 	                        </div>
@@ -307,7 +311,12 @@
 									    </app:upload>
 										
 										<div style="display:none;text-align:right;" on="r:wl.profile.picture.upload.response[success=true] then show or content[picture] then hide">
-											<div class="button" on="click then l:save.picture">Save</div>
+											<table>
+												<tr>
+													<td><div class="button" on="click then l:save.picture">Save</div></td>
+													<td><div class="button" on="click then l:close.picture">Close</div></td>
+												</tr>
+											</table>
 										</div>
 										<div style="width:690px;height:400px;overflow:auto;"><img id="imagePreview"/></div>
 										
@@ -334,7 +343,18 @@
 											{
 												window.preview.remove();
 												delete window.preview;
+												Element.remove('imgCrop_imagePreview');
 											}
+> 											Element.hide('imagePreview');
+										</app:script>
+										
+										<app:script on="l:close.picture then execute">
+										   if (window.preview)
+										   {
+												window.preview.remove();
+												delete window.preview;
+												Element.remove('imgCrop_imagePreview');
+										   }
 										</app:script>
 										
 									    <app:script on="r:wl.profile.picture.upload.response[success=true] then execute">
@@ -350,7 +370,7 @@
 													$( 'width' ).value = dimensions.width;
 													$( 'height' ).value = dimensions.height;
 												}
-
+												
 												window.preview = new Cropper.ImgWithPreview( 
 										            'imagePreview',
 										            { 
@@ -365,6 +385,7 @@
 											};
 											$('path').value = name;
 											$('imagePreview').src=path;
+											Element.show('imagePreview');
 									    </app:script>
                                     </div>
                             </div>
@@ -446,7 +467,7 @@
 
     <app:statemachine id="content" initial="list">
        <state name="list" if="l:show.list or r:wl.profile.picture.crop.response"></state>
-       <state name="edit" if="l:edit.profile"></state>
+       <state name="edit" if="l:edit.profile or l:close.picture"></state>
        <state name="send" if="l:send.list"></state>
        <state name="create" if="l:create.item"></state>
        <state name="picture" if="l:update.picture"></state>

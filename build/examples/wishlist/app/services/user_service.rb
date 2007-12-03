@@ -7,7 +7,6 @@ class UserService < Appcelerator::Service
   Service 'wl.login.request', :login, 'wl.login.response'
   Service 'wl.logout.request', :logout, 'wl.logout.response'
   Service 'wl.activate.request', :activate, 'wl.activate.response'
-  Service 'wl.profile.view.request', :view_profile, 'wl.profile.view.response'
   Service 'wl.profile.edit.request', :edit_profile, 'wl.profile.edit.response'
   Service 'wl.profile.picture.upload.request', :upload_picture, 'wl.profile.picture.upload.response'
   Service 'wl.profile.picture.crop.request', :crop_picture, 'wl.profile.picture.crop.response'
@@ -86,26 +85,6 @@ class UserService < Appcelerator::Service
     end
     {'result'=>true}
   end
-
-  def view_profile(request,message)
-    session = request['session']
-    if not session[:user_id]
-      return {'success' => false, 'message' => 'not logged in'}
-    end
-    
-    user = User.find_by_id(session[:user_id])
-    if not user
-      return {'success' => false, 'message' => 'invalid user'}
-    end
-    
-    result = {}
-    result['firstname'] = user.profile.firstname
-    result['lastname'] = user.profile.lastname
-    result['picture'] = user.profile.picture
-    result['email'] = user.email
-    result['success'] = true
-    result
-  end
   
   def upload_picture(request,message)
     tmpfile = message['filename']
@@ -182,8 +161,11 @@ class UserService < Appcelerator::Service
         return {'success' => false, 'message' => 'Email address already exists.'}
       end
     end
+    
+    if message['password'] and message['password']!='#changeme#'
+      user.password = MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest
+    end
 
-    user.password = MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest
     user.profile.save!
     {'success' => true, 'message' => 'Your profile has been updated'}
   end
