@@ -31,6 +31,12 @@
     <div id="content_header"></div>
     <div id="content">
         <div id="content_body">
+			  <div id="activation_required" class="flash" style="display:none" on="r:wl.list.item.response[activated=false] then show">
+				 <img src="images/warning.png"/> Activation required. Please check your email
+			  </div>
+			  <div id="activation_required" class="flash" style="display:none" on="l:activated then show or l:activated then effect[fade] after 3s">
+				 <img src="images/confirm.png"/> Activation complete. Have fun!
+			  </div>
               <div id="error" style="display:none" on="r:~.*[success=false] then effect[appear] or l:error.close then hide">
                   <div id="error_closer" on="click then l:error.close">
                       <img src="images/dialog_close.gif"/>
@@ -404,7 +410,10 @@
     
     <input type="hidden" id="user_id" value=""/>
     <input type="hidden" id="my_user_id" value="" on="r:wl.list.item.response then value[my_userid]"/>
-    <app:script>$('user_id').value=user_id</app:script>
+    <app:script>
+		$('user_id').value=user_id;
+		if (Appcelerator.Parameters['newactivation']) $MQ('l:activated');
+	</app:script>
     
     <app:script on="r:wl.list.item.response[success=true] then execute">
 	  if (this.data.picture) $('profile_picture').src = Appcelerator.DocumentPath + this.data.picture;
@@ -430,6 +439,7 @@
     <app:script on="r:wl.search.response[success=true] then execute">
       $('myfriends_title').innerHTML = 'Search Results';
     </app:script>
+
 
     <app:statemachine id="content" initial="list">
        <state name="list" if="l:show.list or r:wl.profile.picture.crop.response"></state>

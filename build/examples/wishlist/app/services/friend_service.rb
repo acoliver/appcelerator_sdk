@@ -2,7 +2,6 @@
 class FriendService < Appcelerator::Service
   
   Service 'wl.email_list.request', :email_list, 'wl.email_list.response'
-#  Service 'wl.viewuser.request', :viewuser, 'wl.viewuser.response'
   Service 'wl.friend.add.request', :add_friend, 'wl.friend.add.response'
   Service 'wl.friends.get.request', :get_friends, 'wl.friends.get.response'
   Service 'wl.friend.invite.request', :invite_friend, 'wl.friend.invite.response'
@@ -22,15 +21,6 @@ class FriendService < Appcelerator::Service
       {'message'=>'problem emailing your list','success'=>false}
     end
   end
-# def viewuser(request,message)
-#      user_id = message['user_id']
-#      begin
-#        user = User.find(user_id)
-#        {'user'=>user, 'profile'=> user.profile,'success'=>true}
-#      rescue 
-#        {"message"=>"problem looking up user: #{$!}",'success'=>false}
-#      end
-#  end 
 
   # add_friend nil {'friend_id': 44}
   #

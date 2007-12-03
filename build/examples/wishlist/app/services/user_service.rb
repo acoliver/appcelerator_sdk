@@ -6,6 +6,7 @@ class UserService < Appcelerator::Service
   Service 'wl.signup.request', :signup, 'wl.signup.response'
   Service 'wl.login.request', :login, 'wl.login.response'
   Service 'wl.logout.request', :logout, 'wl.logout.response'
+  Service 'wl.activate.request', :activate, 'wl.activate.response'
   Service 'wl.profile.view.request', :view_profile, 'wl.profile.view.response'
   Service 'wl.profile.edit.request', :edit_profile, 'wl.profile.edit.response'
   Service 'wl.profile.picture.upload.request', :upload_picture, 'wl.profile.picture.upload.response'
@@ -26,6 +27,8 @@ class UserService < Appcelerator::Service
     user.salt = [Array.new(6){rand(256).chr}.join].pack("m")[0..7]; 
     user.password = MD5.new(MD5.new(message['password'] + user.salt).hexdigest).hexdigest
     user.last_login = Time.now
+    user.activation = MD5.new(user.email + user.salt).hexdigest
+    user.activated = false
     user.save!
     
     profile = Profile.new
@@ -36,8 +39,25 @@ class UserService < Appcelerator::Service
     
     session = request['session']
     session[:user_id] = user.id
+    
+    Mailer.deliver_activation(user)
             
     {'success' => true, 'message' => 'Signup complete'}
+  end
+  
+  def activate(request,message)
+    code = message['code']
+    if !code
+      return {'success'=>false,'message'=>'Invalid activation code'}
+    end
+    user = User.find_by_activation(code)
+    if !user
+      return {'success'=>false,'message'=>'Invalid activation code'}
+    end
+    user.activated = true
+    user.activated_on = Time.now
+    user.save!
+    {'success'=>true,'user_id'=>user.id}
   end
   
   def login(request,message)

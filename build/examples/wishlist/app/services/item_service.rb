@@ -221,6 +221,7 @@ class ItemService < Appcelerator::Service
       result['my_email'] = me.email
       result['my_userid'] = me.id
       result['user_id'] = user_id
+      result['activated'] = me.activated
 
       result
   end
