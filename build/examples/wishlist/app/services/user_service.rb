@@ -63,6 +63,7 @@ class UserService < Appcelerator::Service
     session = request['session']
     if session
       session[:user_id] = nil
+      reset_session
     end
     {'result'=>true}
   end
