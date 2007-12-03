@@ -35,6 +35,7 @@ class FriendService < Appcelerator::Service
       
       if not me.has_friend? new_friend
         me.add_friend new_friend
+        Mailer.deliver_friend(me,new_friend.email)
         return {'success' => true}
       else
         return {'success' => false, 'message' => 'That person is already your friend.'}
