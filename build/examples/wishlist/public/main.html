@@ -141,7 +141,7 @@
                                                             <html:p>#{note}</html:p>
                                                         </html:div>
 									            </html:div>
-									            <html:div style="display: none" class="edit_item" on="l:wl.expand.edit[item_id=#{item_id}] then toggle[display]">
+									            <html:div style="display: none" class="edit_item" on="l:wl.expand.edit[item_id=#{item_id}] then toggle[display] or r:wl.edit.item.response then l:wl.expand.edit[item_id=#{item_id}]">
 	                                                <html:input type="hidden" name="item_id" fieldset="#{item_id}" value="#{item_id}"></html:input>
 									                <html:table>
 	    								                <html:tr>
