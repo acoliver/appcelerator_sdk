@@ -200,8 +200,7 @@
 				foreach ($methods as $m => $method)
 				{
 					$rm = new ReflectionMethod($str,$method);
-					if ($rm->isUserDefined() && $rm->isPublic() && 
-					   !$rm->isConstructor() && !$rm->isDestructor() && $rm->getNumberOfParameters()==2)
+					if ($rm->isUserDefined() && !$rm->isConstructor() && !$rm->isDestructor() && $rm->getNumberOfParameters()==2)
 					{
 						$comment = $rm->getDocComment();
 						$metadata = getServiceMetadata($comment);

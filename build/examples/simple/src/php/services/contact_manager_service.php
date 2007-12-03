@@ -6,7 +6,7 @@
 		 *
 		 * @Service(request=example.createcontact.request,response=example.createcontact.response,version=1.0)
 		 */
-		public function create_contact (&$request,&$response)
+		function create_contact (&$request,&$response)
 		{
 			$data = &$response['data'];
 			$requestdata = $request['data'];
