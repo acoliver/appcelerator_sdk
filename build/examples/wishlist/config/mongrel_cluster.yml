@@ -1,5 +1,4 @@
 --- 
-cwd: config/mongrel_cluster.yml
 log_file: log/mongrel.log
 port: "3100"
 environment: production
