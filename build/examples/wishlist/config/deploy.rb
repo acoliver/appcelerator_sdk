@@ -50,6 +50,7 @@ task :after_update_code, :roles => :app do
 
   run "rm -rf #{release_path}/tmp"
   run "ln -nfs #{deploy_to}/shared/tmp #{release_path}/tmp"
+  run "ln -nfs #{deploy_to}/shared/profiles #{release_path}/public/images/profiles"
 end
 
 
