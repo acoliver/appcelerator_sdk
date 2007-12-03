@@ -46,7 +46,7 @@
                       <span on="r:~.*[success=false] then value[message]"></span>
                   </div>
               </div>
-            <div on="r:wl.list.item.response[success=true] then show else hide" style="display:none">
+            <div on="r:wl.list.item.response[success=true,activated=true] then show else hide" style="display:none">
 	            <form on="enter then r:wl.search.request[query=$search] if expr[$('search').value] or content[picture] then hide else show">
 	                 <div id="searchbox" on="click then r:wl.search.request[query=$search] if expr[$('search').value]"><input type="text" value="" id="search"/></div>
 	            </form>
