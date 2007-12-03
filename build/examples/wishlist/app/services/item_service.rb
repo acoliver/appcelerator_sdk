@@ -222,6 +222,8 @@ class ItemService < Appcelerator::Service
       result['my_userid'] = me.id
       result['user_id'] = user_id
       result['activated'] = me.activated
+      
+      puts "activated=#{me.activated}"
 
       result
   end

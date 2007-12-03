@@ -34,7 +34,7 @@
 			  <div id="activation_required" class="flash" style="display:none" on="r:wl.list.item.response[activated=false] then show">
 				 <img src="images/warning.png"/> Activation required. Please check your email
 			  </div>
-			  <div id="activation_required" class="flash" style="display:none" on="l:activated then show or l:activated then effect[fade] after 3s">
+			  <div id="activation_complete" class="flash" style="display:none" on="l:activated then show or l:activated then effect[fade] after 3s">
 				 <img src="images/confirm.png"/> Activation complete. Have fun!
 			  </div>
               <div id="error" style="display:none" on="r:~.*[success=false] then effect[appear] or l:error.close then hide">
@@ -412,7 +412,10 @@
     <input type="hidden" id="my_user_id" value="" on="r:wl.list.item.response then value[my_userid]"/>
     <app:script>
 		$('user_id').value=user_id;
-		if (Appcelerator.Parameters['newactivation']) $MQ('l:activated');
+		if (Appcelerator.Parameters['newactivation']=='1') 
+		{
+		   $MQ('l:activated');	
+		}
 	</app:script>
     
     <app:script on="r:wl.list.item.response[success=true] then execute">
