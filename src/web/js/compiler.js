@@ -1018,19 +1018,19 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			//
 			// remove element
 			//
+			var removeId = id;
 			if (removeElement)
 			{
 				if (Appcelerator.Compiler.isCompiledMode)
 				{
 					// add an empty div to handle attribute processors
-					var replacedId = Appcelerator.Compiler.generateId();
-					var replaceHtml = '<div id="'+replacedId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
+					removeId = Appcelerator.Compiler.generateId();
+					var replaceHtml = '<div id="'+removeId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
 					new Insertion.Before(element,replaceHtml);
-					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+replacedId+'"));';
+					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+removeId+'"));';
 				}
-				
 				Appcelerator.Compiler.removeElementId(id);
-				Element.remove(element);				
+				Element.remove(element);
 			}
 			
 			if (added && outer && !$(id))
@@ -1058,14 +1058,15 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						compiledCode += '{';
 						compiledCode += 'try';
 						compiledCode += '{';
-						compiledCode += 'var method = Appcelerator.Core.widgets["'+name+'"];';
-						compiledCode += 'method(id,\''+paramsJSON+'\'.evalJSON(),data,scope);';
+						compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
+						compiledCode += 'var method = module["'+methodname+'"];';
+						compiledCode += 'method("'+id+'",\''+paramsJSON+'\'.evalJSON(),data,scope);';
 						compiledCode += '}';
 						compiledCode += 'catch (e) {';
 						compiledCode += '$E("Error executing '+methodname+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
 						compiledCode += '}';
 						compiledCode += '};';
-						compiledCode += 'Appcelerator.Compiler.attachFunction("'+id+'","'+methodname+'",f);})();';
+						compiledCode += 'Appcelerator.Compiler.attachFunction("'+removeId+'","'+methodname+'",f);})();';
 					}
 					else
 					{
