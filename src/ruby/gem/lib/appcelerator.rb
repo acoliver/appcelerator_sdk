@@ -2,6 +2,7 @@ require 'json'
 require 'action_controller'
 require 'active_record'
 require 'md5'
+#require 'dependencies'
 
 unless defined?(APP_VERSION)
 
@@ -47,8 +48,14 @@ unless defined?(APP_VERSION)
        log_to STDOUT
     end	
     
-    Appcelerator::Service.load_services
-    
+    # just do this once, make rails do the implicit loading for us
+    Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
+        #Dependencies.load_file file
+        name = Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
+        Object.const_get name
+    end
+    puts Appcelerator::ServiceBroker.diagnostics
+      
     #
     # register a service broker listener for admin appcelerator models
     #

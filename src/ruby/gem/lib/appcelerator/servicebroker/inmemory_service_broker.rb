@@ -16,7 +16,7 @@ module Appcelerator
         begin
           @listeners[msgtype] << listener
         rescue
-          @listeners[msgtype] = Set.new << listener
+          @listeners[msgtype] = LastInSet.new << listener
         end
       end
 	  	
@@ -54,5 +54,14 @@ module Appcelerator
       end
       all.join "\n"
     end
+  end
+  
+  class LastInSet < Set
+    alias :first_in_add :add
+    def add elem
+      delete elem
+      first_in_add elem
+    end
+    alias :<< :add
   end
 end

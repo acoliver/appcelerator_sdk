@@ -1,11 +1,11 @@
 
 
-module Appcelerator
+module Appcelerator  
 	class Service
 	  include Singleton
     	      
     def Service.Service(messagetype,handler,responsetype)
-      self.instance.preregister(messagetype,handler,responsetype)
+      self.instance.register(messagetype,handler,responsetype)
     end
     
     def Service.service_scaffold(model)
@@ -15,7 +15,7 @@ module Appcelerator
           messagetype = "app."+ servicename +"."+ operation
           request = messagetype + ".request"
           response = messagetype + ".response"
-          self.instance.preregister(request,operation,response)
+          self.instance.register(request,operation,response)
           APP_SERVICES << {'name'=>name, 'model'=>servicename}
       end
     end
@@ -141,39 +141,7 @@ module Appcelerator
 			  end
 			  response
 			end
-	  
-
-    def self.load_services
-      APP_SERVICES.clear
-      # TODO: remove this and solve the multiple singleton issue
-      Appcelerator::ServiceBroker.clear_listeners
-      Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
-        
-        name = Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
-        
-        if Dependencies.load?
-          if defined?(name)
-            klass = eval(name)
-            # clear the service class's existing listeners, if possible
-            klass.instance.clear_listeners
-          end
-          load file
-        else
-          require file[0..-4]
-        end
-        
-        begin
-          klass = eval(name)
-          klass.instance.register_listeners
-        rescue
-          puts 'Unable to find class "'+ name +'" in file "'+ file +'"'
-          puts $!
-        end
-      end
-      puts 'done loading services'
-      puts Appcelerator::ServiceBroker.diagnostics
-    end
-
+    
     def initialize
       @listeners = []
       @preregistrations = []
@@ -201,30 +169,30 @@ module Appcelerator
       num_cleared
     end
     
-	  def register(msgtype,methodname,responsetype = nil)
-      service = self.class # add to the ServiceProc binding
-		  handler = self.method(methodname)
-		  args = handler.arity
+	  def register(message_type,method_name,response_type = nil)
+      # adding to the ServiceProc binding, for preventing dups 
+      service_name = self.class.name
+        
 		  proc = ServiceProc.new do |req,msgtype,obj|
+        service = Object.const_get(service_name)
+        handler = service.instance.method(method_name)
+        args = handler.arity
+        
+        # a service method can accept either 2,3,4 arguments
+        case args
+          when 2
+            resp = handler.call(req,obj)
+          when 3
+            resp = handler.call(req,obj,req['session'])
+          when 4
+            resp = handler.call(req,obj,req['session'],req['session']['username'])
+        end
 		   
-		   #
-		   # try and be smart about sending in the request to the
-		   # service based on the arguments he supports
-		   # 
-		   case args
-		   	when 2
-		   		resp = handler.call(req,obj)
-		    when 3
-		    	resp = handler.call(req,obj,req['session'])
-		    when 4
-		    	resp = handler.call(req,obj,req['session'],req['session']['username'])
-		   end
-		   
-		   if responsetype
-			  Dispatcher.instance.outgoing(req,responsetype,resp||{})
-		   end
+        if response_type
+          Dispatcher.instance.outgoing(req,response_type,resp||{})
+        end
       end
-		  ServiceBroker.register_listener(msgtype,proc)
+		  ServiceBroker.register_listener(message_type, proc)
       proc
 	  end
 	
@@ -250,7 +218,7 @@ module Appcelerator
   #
   class ServiceProc < Proc
     def self.vars
-        [:msgtype, :service, :methodname, :responsetype]
+        [:message_type, :service_name, :method_name, :response_type]
     end
     
     def method_missing name
@@ -258,7 +226,7 @@ module Appcelerator
     end
     
     def to_s
-        "#{msgtype} -> #{service}.#{methodname} -> #{responsetype}"
+        "#{message_type} -> #{service_name}.#{method_name} -> #{response_type}"
     end
     
     def eql?(other)
