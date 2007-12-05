@@ -62,8 +62,7 @@ Appcelerator.Module.Chart =
 				{name: 'marginRight', optional: true, defaultValue: '50'},
 				{name: 'marginBottom', optional: true, defaultValue: '50'},
 				{name: 'legendHighlight', optional: true, defaultValue: 'true'},
-				{name: 'backgroundColor', optional: true, defaultValue: 'true'},
-				{name: 'marginTop', optional: true, defaultValue: '#FFFFFF'}];
+				{name: 'backgroundColor', optional: true, defaultValue: '#FFFFFF'}];
 	},
 	buildWidget: function(element, parameters)
 	{
