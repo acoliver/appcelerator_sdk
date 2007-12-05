@@ -1,6 +1,0 @@
---- 
-log_file: log/mongrel.log
-port: "3100"
-environment: production
-pid_file: tmp/mongrel.pid
-servers: 5
