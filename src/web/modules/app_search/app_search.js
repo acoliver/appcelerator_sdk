@@ -44,7 +44,6 @@ Appcelerator.Module.Search =
 				{name: 'resultWidth', optional: true, defaultValue: '220', description: "Width of the results"},
 				{name: 'delay', optional: true, defaultValue: 200, description: "Delay before firing request message"},
 				{name: 'indicator', optional: true, description: "Indicator id to show or hide"},
-				{name: 'hideResults', optional: true, defaultValue: true, description: "Whether or not to show existing results when doing another search"},
 				{name: 'activeClass', optional: true, defaultValue: 'search_result_active', description: "Active class for selecting search results"},
 				{name: 'inactiveClass', optional: true, defaultValue: 'search_result_inactive', description: "Inactive class for selecting search results"}];
 	},
@@ -160,7 +159,7 @@ Appcelerator.Module.Search =
 				
 				if (select.selectableData.length > 0)
 				{
-					Effect.Appear(id+'_results');
+					Effect.Appear(id+'_results', {duration: 0.5});
 				}
 			}
 		};
@@ -208,11 +207,6 @@ Appcelerator.Module.Search =
 				Element.show(indicator);
 			}
 			
-			if (hideResults)
-			{
-				Effect.Fade(id+'_results');
-			}
-			
 			keystrokeCount = 0;
 			var payload = {};
 			payload[key] = input.value; 
@@ -231,13 +225,13 @@ Appcelerator.Module.Search =
 					case Event.KEY_RIGHT:
 					case Event.KEY_ESC:
 					{
-						Effect.Fade(id+'_results');
+						Effect.Fade(id+'_results', {duration: 0.5});
 						Event.stop(event);
 						return;
 					}
 					case Event.KEY_RETURN:
 					{
-						Effect.Fade(id+'_results');
+						Effect.Fade(id+'_results', {duration: 0.5});
 						if (select.selectableData && select.selectedIndex >= 0)
 						{
 							if (compiled)
@@ -256,7 +250,7 @@ Appcelerator.Module.Search =
 					{
 						if (select.selectableData && select.selectableData.length > 0)
 						{
-							Effect.Appear(id+'_results');
+							Effect.Appear(id+'_results', {duration: 0.5});
 							select.selectedIndex--;
 							if (select.selectedIndex < 0)
 							{
@@ -271,7 +265,7 @@ Appcelerator.Module.Search =
 					{
 						if (select.selectableData && select.selectableData.length > 0)
 						{
-							Effect.Appear(id+'_results');
+							Effect.Appear(id+'_results', {duration: 0.5});
 							select.selectedIndex++;
 							if (select.selectedIndex > select.selectableData.length-1)
 							{
@@ -305,7 +299,7 @@ Appcelerator.Module.Search =
 		{
 			setTimeout(function()
 			{
-				Effect.Fade(id+'_results');
+				Effect.Fade(id+'_results', {duration: 0.5});
 			},100);
 		}
 		
@@ -313,7 +307,7 @@ Appcelerator.Module.Search =
 		{
 			if (input.value.length > 0 && select.selectableData && select.selectableData.length > 0)
 			{
-				Effect.Appear(id+'_results');
+				Effect.Appear(id+'_results', {duration: 0.5});
 			}
 		}
 	},
