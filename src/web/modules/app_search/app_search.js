@@ -44,6 +44,7 @@ Appcelerator.Module.Search =
 				{name: 'resultWidth', optional: true, defaultValue: '220', description: "Width of the results"},
 				{name: 'delay', optional: true, defaultValue: 200, description: "Delay before firing request message"},
 				{name: 'indicator', optional: true, description: "Indicator id to show or hide"},
+				{name: 'hideResults', optional: true, defaultValue: true, description: "Whether or not to show existing results when doing another search"},
 				{name: 'activeClass', optional: true, defaultValue: 'search_result_active', description: "Active class for selecting search results"},
 				{name: 'inactiveClass', optional: true, defaultValue: 'search_result_inactive', description: "Inactive class for selecting search results"}];
 	},
@@ -63,6 +64,7 @@ Appcelerator.Module.Search =
 		var resultId = params['resultId'];
 		var delay = params['delay'];
 		var indicator = params['indicator'];
+		var hideResults = params['hideResults'];
 		var compiled = null;
 		
 		if (params['template'])
@@ -158,7 +160,7 @@ Appcelerator.Module.Search =
 				
 				if (select.selectableData.length > 0)
 				{
-					Element.show(id+'_results');
+					Effect.Appear(id+'_results');
 				}
 			}
 		};
@@ -206,6 +208,11 @@ Appcelerator.Module.Search =
 				Element.show(indicator);
 			}
 			
+			if (hideResults)
+			{
+				Effect.Fade(id+'_results');
+			}
+			
 			keystrokeCount = 0;
 			var payload = {};
 			payload[key] = input.value; 
@@ -216,7 +223,7 @@ Appcelerator.Module.Search =
 		{
 			(function(){
 				event = event || window.event;
-			
+
 				switch(event.keyCode) 
 				{
 					case Event.KEY_TAB:
@@ -224,13 +231,13 @@ Appcelerator.Module.Search =
 					case Event.KEY_RIGHT:
 					case Event.KEY_ESC:
 					{
-						Element.hide(id+'_results');
+						Effect.Fade(id+'_results');
 						Event.stop(event);
 						return;
 					}
 					case Event.KEY_RETURN:
 					{
-						Element.hide(id+'_results');
+						Effect.Fade(id+'_results');
 						if (select.selectableData && select.selectedIndex >= 0)
 						{
 							if (compiled)
@@ -249,7 +256,7 @@ Appcelerator.Module.Search =
 					{
 						if (select.selectableData && select.selectableData.length > 0)
 						{
-							Element.show(id+'_results');
+							Effect.Appear(id+'_results');
 							select.selectedIndex--;
 							if (select.selectedIndex < 0)
 							{
@@ -264,7 +271,7 @@ Appcelerator.Module.Search =
 					{
 						if (select.selectableData && select.selectableData.length > 0)
 						{
-							Element.show(id+'_results');
+							Effect.Appear(id+'_results');
 							select.selectedIndex++;
 							if (select.selectedIndex > select.selectableData.length-1)
 							{
@@ -276,7 +283,7 @@ Appcelerator.Module.Search =
 						return;
 					}
 				}
-			
+							
 				if (timer)
 				{
 					clearTimeout(timer);
@@ -291,8 +298,6 @@ Appcelerator.Module.Search =
 				{
 					timerFunc();
 				}
-				
-				return true;
 			})();
 		};
 		
@@ -300,7 +305,7 @@ Appcelerator.Module.Search =
 		{
 			setTimeout(function()
 			{
-				Element.hide(id+'_results');
+				Effect.Fade(id+'_results');
 			},100);
 		}
 		
@@ -308,7 +313,7 @@ Appcelerator.Module.Search =
 		{
 			if (input.value.length > 0 && select.selectableData && select.selectableData.length > 0)
 			{
-				Element.show(id+'_results');
+				Effect.Appear(id+'_results');
 			}
 		}
 	},

@@ -23,11 +23,84 @@
 			<app:script on="l:search.test1.request then execute">
 				$MQ('l:search.test1.response', {result: ['123','abc','cde']});
 			</app:script>
-			<app:script on="l:search.test1.selected then execute">
+			<app:script on="l:search.test1.selected then execute after 1s">
 				alert('test passed, selected ' + this.data['value']);
 			</app:script>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Search With A Complex Template
+		</td>
+		<td class="result">
+			<app:search request="l:search.test2.request" response="l:search.test2.response" selected="l:search.test2.selected" key="search" property="result">
+				<html:div>
+					#{name}
+				</html:div>
+				<html:div>
+					#{city}, #{job}
+				</html:div>
+			</app:search>
+			<app:script on="l:search.test2.request then execute">
+				$MQ('l:search.test2.response', {result: [{id: 1, name: 'John', city: 'Atlanta', job: 'Engineer'}, {id: 2, name: 'Bob', city: 'New York', job: 'Mayor'}, {id: 3, name: 'Bill', city: 'Seattle', job: 'Plumber'}]});
+			</app:script>
+			<app:script on="l:search.test2.selected then execute after 1s">
+				alert('test passed, selected ' + this.data['value']);
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Search With An Indicator
+		</td>
+		<td class="result">
+			<table>
+				<tr>
+					<td>
+						<app:search request="l:search.test3.request" response="l:search.test3.response" selected="l:search.test3.selected" key="search" property="result" indicator="myindicator3">
+						</app:search>
+						<app:script on="l:search.test3.request then execute after 4s">
+							$MQ('l:search.test3.response', {result: ['123','abc','cde']});
+						</app:script>
+						<app:script on="l:search.test3.selected then execute">
+							alert('test passed, selected ' + this.data['value']);
+						</app:script>
+					</td>
+					<td>
+						<div id="myindicator3" style="display: none">
+							<img src="../images/indicator.gif"/>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="50%" valign="middle">
+			Search With A 5s Delay Between Keystrokes
+		</td>
+		<td class="result">
+			<table>
+				<tr>
+					<td>
+						<app:search request="l:search.test4.request" response="l:search.test4.response" selected="l:search.test4.selected" key="search" property="result" indicator="myindicator4" delay="5000">
+						</app:search>
+						<app:script on="l:search.test4.request then execute">
+							$MQ('l:search.test4.response', {result: ['123','abc','cde']});
+						</app:script>
+						<app:script on="l:search.test4.selected then execute after 1s">
+							alert('test passed, selected ' + this.data['value']);
+						</app:script>
+					</td>
+					<td>
+						<div id="myindicator4" style="display: none">
+							<img src="../images/indicator.gif"/>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>	
 </table>
 
 </body>
