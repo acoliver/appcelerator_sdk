@@ -240,21 +240,21 @@ public interface IDAO<T, ID extends Serializable>
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @return list of results meeting query and page delineation
      */
-    List<T> findResultsByPage(String sql, int startResult, int endResult);
+    List<T> findResultsByPage(String sql, int startResult, int maxResults);
 
     /**
      * find results of a sql query in a page delineated by specified start and end results
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @param transformer transformer to apply
      * @return list of results meeting query and page delineation, transformed
      */
-    List<T> findResultsByPage(String sql, int startResult, int endResult, IDAOValueTransformer<T> transformer);
+    List<T> findResultsByPage(String sql, int startResult, int maxResults, IDAOValueTransformer<T> transformer);
 
     /**
      * find persisted objects represented by specified ids with named identifier
@@ -380,32 +380,32 @@ public interface IDAO<T, ID extends Serializable>
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @return list of results meeting query and page delineation
      */
-    IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int endResult);
+    IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int maxResults);
 
     /**
      * find results of a sql query in a page delineated by specified start and end results
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @param transformer transformer to apply
      * @return list of results meeting query and page delineation, transformed, represented as a message-based data list
      */
-    IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int endResult, IDAOValueTransformer<T> transformer);
+    IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int maxResults, IDAOValueTransformer<T> transformer);
 
     /**
      * find results of a sql query in a page delineated by specified start and end results
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @param marshaller  marshaller to apply
      * @return list of results meeting query and page delineation, represented as a message-based data list
      */
-    IMessageDataList<IMessageDataObject> findResultsByPageAsDataList(String sql, int startResult, int endResult, IMessageDataMarshaller<T> marshaller);
+    IMessageDataList<IMessageDataObject> findResultsByPageAsDataList(String sql, int startResult, int maxResults, IMessageDataMarshaller<T> marshaller);
 
     /**
      * find by example with exclusions

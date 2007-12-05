@@ -334,13 +334,13 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   Number of results to return
      * @param transformer transformer to apply
      * @return list of results meeting query and page delineation, transformed
      */
-    public List<T> findResultsByPage(String sql, int startResult, int endResult, IDAOValueTransformer<T> transformer)
+    public List<T> findResultsByPage(String sql, int startResult, int maxResults, IDAOValueTransformer<T> transformer)
     {
-        return transform(findResultsByPage(sql, startResult, endResult), transformer);
+        return transform(findResultsByPage(sql, startResult, maxResults), transformer);
     }
 
     /**
@@ -348,13 +348,13 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of rows to return
      * @param transformer transformer to apply
      * @return list of results meeting query and page delineation, transformed, represented as a message-based data list
      */
-    public IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int endResult, IDAOValueTransformer<T> transformer)
+    public IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int maxResults, IDAOValueTransformer<T> transformer)
     {
-        return transform(findResultsByPageAsDataList(sql, startResult, endResult), transformer);
+        return transform(findResultsByPageAsDataList(sql, startResult, maxResults), transformer);
     }
 
     /**
@@ -649,12 +649,12 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of rows to return
      * @return list of results meeting query and page delineation
      */
     @SuppressWarnings("unchecked")
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<T> findResultsByPage(final String sql, final int startResult, final int endResult)
+    public List<T> findResultsByPage(final String sql, final int startResult, final int maxResults)
     {
         HibernateTemplate ht = getHibernateTemplate();
         return (List<T>) ht.execute(new HibernateCallback()
@@ -664,7 +664,7 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
                 Query q = session.createQuery(sql);
                 q.setReadOnly(true);
                 q.setFirstResult(startResult);
-                q.setMaxResults(endResult);
+                q.setMaxResults(maxResults);
                 return q.list();
             }
         });
@@ -886,12 +886,12 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of rows to return
      * @return list of results meeting query and page delineation
      */
-    public IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int endResult)
+    public IMessageDataList<T> findResultsByPageAsDataList(String sql, int startResult, int maxResults)
     {
-        return MessageUtils.createMessageDataObjectList(findResultsByPage(sql, startResult, endResult));
+        return MessageUtils.createMessageDataObjectList(findResultsByPage(sql, startResult, maxResults));
     }
 
     /**
@@ -978,13 +978,13 @@ public abstract class AbstractHibernateDAO<T, ID extends Serializable> extends H
      *
      * @param sql         sql query to execute
      * @param startResult starting result desired
-     * @param endResult   ending result desired
+     * @param maxResults   number of results to return
      * @param marshaller  marshaller to apply
      * @return list of results meeting query and page delineation, represented as a message-based data list
      */
-    public IMessageDataList<IMessageDataObject> findResultsByPageAsDataList(String sql, int startResult, int endResult, IMessageDataMarshaller<T> marshaller)
+    public IMessageDataList<IMessageDataObject> findResultsByPageAsDataList(String sql, int startResult, int maxResults, IMessageDataMarshaller<T> marshaller)
     {
-        return MessageUtils.createMessageDataObjectList(findResultsByPage(sql, startResult, endResult), marshaller);
+        return MessageUtils.createMessageDataObjectList(findResultsByPage(sql, startResult, maxResults), marshaller);
     }
 
     /**
