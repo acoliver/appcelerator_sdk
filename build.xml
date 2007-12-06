@@ -441,6 +441,11 @@
         	 <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
              <fileset dir="${build.ruby.dir}/dist/src/web" includes="**/**"/>
         </copy>
+		<move file="${stage.dir}/ruby/appcelerator/templates/js" tofile="${stage.dir}/ruby/appcelerator/templates/javascripts"/>
+		<move file="${stage.dir}/ruby/appcelerator/templates/css" tofile="${stage.dir}/ruby/appcelerator/templates/stylesheets"/>		
+		<replaceregexp match="src=&quot;js" replace="src=&quot;javascripts" flags="g" byline="true">
+		    <fileset dir="${stage.dir}/ruby/appcelerator/templates" includes="**/*.html"/>
+		</replaceregexp>
 		<antcall target="gem"/>
 	</target>
 	<target name="gem" depends="init">

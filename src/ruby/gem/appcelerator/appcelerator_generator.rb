@@ -88,7 +88,7 @@ class AppceleratorGenerator < Rails::Generator::Base
       
       mydir = File.dirname(__FILE__)
       
-      %w(images js).each do |dir|
+      %w(images javascripts).each do |dir|
         Dir.new(mydir + "/templates/#{dir}").each do |file|
           if file!="." and file!=".."
             m.file "templates/#{dir}/#{file}", "public/#{dir}/#{file}"
@@ -164,8 +164,8 @@ class AppceleratorGenerator < Rails::Generator::Base
     lib/tasks
     log
     public/images
-    public/js
-    public/css
+    public/javascripts
+    public/stylesheets
     public/modules
     script/performance
     script/process
