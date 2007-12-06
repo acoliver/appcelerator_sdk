@@ -33,8 +33,7 @@ module ServiceBroker
   		response.headers['Cache-Control'] = 'no-cache, no-store, private, must-revalidate'
   		response.headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT'
 
-  		Appcelerator::Dispatcher.instance.incoming(session,request,response)
-  		Appcelerator::Dispatcher.instance.serialize(session,response.body)
+  		Appcelerator::Dispatcher.dispatch_request(request,response,session)
 
       @performed_render = true
 	end

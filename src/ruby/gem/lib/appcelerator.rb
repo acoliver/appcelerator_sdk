@@ -2,7 +2,6 @@ require 'json'
 require 'action_controller'
 require 'active_record'
 require 'md5'
-#require 'dependencies'
 
 unless defined?(APP_VERSION)
 
@@ -59,9 +58,9 @@ unless defined?(APP_VERSION)
     #
     # register a service broker listener for admin appcelerator models
     #
-    sam_proc = Proc.new do |req,type,obj|
+    sam_proc = Proc.new do |request,type,obj|
       resp = {'success'=>true, 'models'=> APP_SERVICES}
-  	  Appcelerator::Dispatcher.instance.outgoing(req,'app.admin.models.response',resp)
+  	  Appcelerator::Dispatcher.instance.outgoing(request,'app.admin.models.response',resp)
     end
     Appcelerator::ServiceBroker.register_listener('app.admin.models.request',sam_proc)
 
