@@ -421,7 +421,7 @@
 		</zip>
 	</target>
 
-	<target name="sdk_ruby_dist" depends="min,build_web,build_examples" description="* Builds the Ruby on Rails SDK distribution">
+	<target name="sdk_ruby_dist" depends="min,build_web" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
