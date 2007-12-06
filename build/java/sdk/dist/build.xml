@@ -261,5 +261,12 @@
 		    <fileset dir="${dir}" includes="${includes}"/>
 		</scp>
 	</target>
-
+    <target name="update_platform">
+        <!-- unzip to sdk.dir-->
+        <echo message="Updating Platfrom from ${java.sdk.update.dir}" />
+        <ant dir="${java.sdk.update.dir}" target="do.update" inheritAll="false" inheritRefs="false">
+            <property name="create.dir" value="${basedir}"/>
+            <property name="overwrite.plat" value="true" />
+        </ant>
+    </target>
 </project>

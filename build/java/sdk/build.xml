@@ -60,21 +60,23 @@
 			<equals arg1="y" arg2="${overwrite.projectspecific.input}"/>
 		</condition> 
 
-		<input message="would you like to overwrite the lib, examples, server, sample java, test, doc and platform web source?" validargs="y,n" addproperty="overwrite.plat.input"/>
+		<input message="would you like to overwrite the lib, server, sample java, and platform web source?" validargs="y,n" addproperty="overwrite.plat.input"/>
 		<condition property="overwrite.plat">
 			<equals arg1="y" arg2="${overwrite.plat.input}"/>
 		</condition> 
-
+        <antcall target="do.update">
+            <param name="create.dir" value="${create.dir}"/>
+        </antcall>
+    </target>
+    <target name="do.update">
 		<antcall target="overwrite.projectspecific"/>
 		<antcall target="overwrite.plat"/>
-		<echo>congrads you are set</echo>
+		<echo>congrats you are set</echo>
 	</target>
 	<target name="overwrite.plat" if="overwrite.plat">
-		<echo>overwriting platform</echo>
+		<echo>overwriting platform at ${create.dir}</echo>
 		<delete>
 			<fileset dir="${create.dir}/lib/appcelerator"/>
-			<fileset dir="${create.dir}/doc"/>
-			<fileset dir="${create.dir}/examples"/>
 			<fileset dir="${create.dir}/server"/>
 			<fileset dir="${create.dir}/src/java" includes="SampleService.java"/>
 			<fileset dir="${create.dir}/src/web/modules"/>
@@ -115,9 +117,9 @@
 		<mkdir dir="${create.dir}/lib/appcelerator" />
 		<mkdir dir="${create.dir}/src/java" />
 		<mkdir dir="${create.dir}/src/web" />
+        <echo message="Copying ${basedir}/dist to ${create.dir}" />
 		<copy todir="${create.dir}" filtering="false" overwrite="true">
-			<fileset dir="dist" includes="lib/**,server/**,examples/**" excludes="${plat.excludes}"/>
-			<fileset dir="." includes="test/**,doc/**" excludes="${plat.excludes}"/>
+			<fileset dir="${basedir}/dist/" includes="lib/**,server/**,src/web/js/**,src/web/modules/**,src/web/swf/**" excludes="${plat.excludes}"/>
 		</copy>
 	</target>
 	<target name="create" depends="banner" description="** Create a new Appcelerator for Java project">
