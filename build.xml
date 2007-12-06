@@ -420,12 +420,6 @@
 			</zipfileset>
 		</zip>
 	</target>
-	<target name="examples_dist" depends="build_examples" description="* Builds the examples distribution">
-		<mkdir dir="stage"/>
-		<zip destfile="${stage.dir}/appcelerator_examples_${VERSION}.zip" comment="Appcelerator Examples">
-			<zipfileset dir="stage/examples" includes="**/*" prefix="appcelerator_examples_${VERSION}"/>
-		</zip>
-	</target>
 
 	<target name="sdk_ruby_dist" depends="min,build_web,build_examples" description="* Builds the Ruby on Rails SDK distribution">
 		<mkdir dir="${stage.dir}/ruby"/>
@@ -478,9 +472,8 @@
 			</zipfileset>
 		</zip>
 	</target>
-	<target name="sdk_all_dist" depends="min,sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist,examples_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="sdk_all_dist" depends="min,sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php,install_python,install_dotnet"/>
-	<target name="install_all_examples" depends="force_examples,install_java_examples,install_ruby_examples,install_php_examples,install_python_examples,install_dotnet_examples"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
 		<unzip src="${stage.dir}/appcelerator_sdk_java_${VERSION}.zip" dest="${stage.dir}"/>
