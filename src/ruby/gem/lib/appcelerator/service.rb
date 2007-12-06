@@ -5,7 +5,7 @@ module Appcelerator
     include Singleton
     
     # registration point of standard services
-    def Service.Service(messagetype,handler,responsetype)
+    def Service.Service(messagetype,handler,responsetype = nil)
       self.instance.register(messagetype,handler,responsetype)
     end
 
@@ -29,8 +29,6 @@ module Appcelerator
         @response_type = response_type
       end
     end
-
-
 
     # internal
     attr_accessor :before_filters, :after_filters

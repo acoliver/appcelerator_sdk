@@ -1,12 +1,12 @@
 
 class <%= messageclass %> < Appcelerator::Service
 
-  Service '<%= messagetype %>', :<%= messagefunc %><%= responsetype %>
+  Service '<%= messagetype %>', :<%= messagefunc %>, '<%= responsetype %>'
 
-  def <%= messagefunc %>(request,message)
+  def <%= messagefunc %>
 
       # TODO: implement service code
-      p "received message #{type} with #{message.inspect}"
+      p "received message #{type} with #{params.inspect}"
       
       <%= response %>
   end
