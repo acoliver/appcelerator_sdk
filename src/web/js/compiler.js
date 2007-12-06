@@ -950,6 +950,11 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					//TODO: look to see how we can deal with this without adding DIV so we 
 					//can support things like TR inside an iterator
 					html = '<div id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</div>';
+					
+					if (Appcelerator.Browser.isIE)
+					{
+						html = '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+					}
 					added = true;
 					switch(position)
 					{
