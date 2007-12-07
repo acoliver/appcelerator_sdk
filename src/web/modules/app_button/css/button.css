@@ -1,0 +1,17 @@
+.button_table { padding: 0pt; margin: 0pt; }
+.button_table_text { font-family: Tahoma; color: #f7f7f7; font-weight: bold; font-size: 12px; padding-left: 7px; padding-right: 7px; padding-bottom: 2px; }
+.button_dark_round_left { background-image: url('../images/dark_round_left.png'); height: 32px; width: 9px; }
+.button_dark_round_middle { background-image: url('../images/dark_round_middle.png'); background-repeat: repeat-x; }
+.button_dark_round_right { background-image: url('../images/dark_round_right.png'); height: 32px; width: 9px; }
+.button_dark_round_left_over { background-image: url('../images/dark_round_left_over.png'); height: 32px; width: 9px; }
+.button_dark_round_middle_over { background-image: url('../images/dark_round_middle_over.png'); background-repeat: repeat-x; }
+.button_dark_round_right_over { background-image: url('../images/dark_round_right_over.png'); height: 32px; width: 9px; }
+.button_dark_round_left_press { background-image: url('../images/dark_round_left_press.png'); height: 32px; width: 9px; }
+.button_dark_round_middle_press { background-image: url('../images/dark_round_middle_press.png'); background-repeat: repeat-x; }
+.button_dark_round_right_press { background-image: url('../images/dark_round_right_press.png'); height: 32px; width: 9px; }
+.button_dark_round_left_disabled { background-image: url('../images/dark_round_left_disabled.png'); height: 32px; width: 9px; }
+.button_dark_round_middle_disabled { background-image: url('../images/dark_round_middle_disabled.png'); background-repeat: repeat-x; }
+.button_dark_round_right_disabled { background-image: url('../images/dark_round_right_disabled.png'); height: 32px; width: 9px; }
+.button_widget { border: none; background: none; cursor: pointer;}
+.button_widget_disabled { border: none; background: none; cursor: normal;}
+.button_table_text_disabled { font-family: Tahoma; color: #efefef; font-weight: bold; font-size: 12px; padding-left: 7px; padding-right: 7px; padding-bottom: 2px; }

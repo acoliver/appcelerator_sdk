@@ -53,6 +53,8 @@ if (Appcelerator.Browser.isIE6)
 	
 	Appcelerator.Browser.fixBackgroundPNG = function(obj) 
 	{
+		obj.style.backgroundImage = '';
+		obj.style.filter = '';
 		var bg	= obj.currentStyle.backgroundImage;
 		var src = bg.substring(5,bg.length-2);
 		var scale = obj.currentStyle.backgroundRepeat == 'no-repeat' ? 'image' : 'scale';
@@ -114,7 +116,7 @@ Appcelerator.Browser.fixImageIssues = function()
 
 		for (var i = document.all.length - 1, obj = null; (obj = document.all[i]); i--) 
 		{
-			if (obj.currentStyle.backgroundImage.match(/\.png/i) != null) 
+			if (obj.currentStyle.backgroundImage.match(/(\.png)|(blank_1x1\.gif)/i) != null) 
 			{
 				Appcelerator.Browser.fixBackgroundPNG(obj);
 				//obj.attachEvent("onpropertychange", fnPropertyChanged);

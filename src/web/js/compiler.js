@@ -1075,18 +1075,23 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					}
 					else
 					{
-						var f = function(id,m,data,scope)
+						(function()
 						{
-							try
+							var attachMethodName = functions[c];
+							var attachMethod = module[methodname];
+							var f = function(id,m,data,scope)
 							{
-								method(id,widgetParameters,data,scope);
-							}
-							catch (e)
-							{
-								$E('Error executing '+methodname+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
-							}
-						};
-						Appcelerator.Compiler.attachFunction(id,methodname,f);
+								try
+								{
+									attachMethod(id,widgetParameters,data,scope);
+								}
+								catch (e)
+								{
+									$E('Error executing '+attachMethodName+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+								}
+							};
+							Appcelerator.Compiler.attachFunction(id,attachMethodName,f);
+						})();
 					}
 				}
 			}
