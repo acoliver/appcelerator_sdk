@@ -1,7 +1,7 @@
 //
 // register our resizable attribute listener
 //
-Appcelerator.Compiler.registerAttributeProcessor(['div','img'],'resizable',
+Appcelerator.Compiler.registerAttributeProcessor(['div','img', 'table'],'resizable',
 {
 	handle: function(element,attribute,value)
 	{
