@@ -143,6 +143,34 @@
 	<p>
 		In this example, any local messages begining with <tt>app.content.loaded</tt> will display the payload as an alert.
 	</p>
+    
+    <h3>Multiple messages in one <tt>on</tt> attribute</h3>
+
+    <p>
+        You can have one on attribute respond to multiple messages by joining <tt>condition</tt> then <tt>action</tt>
+        statements with an <tt>or</tt>.  
+    </p>
+    <p>
+    <textarea name="code" class="xml:nocontrols">
+        <div on="r:your.message then value[yours] or r:my.message then value[mine]">
+            
+        </div>
+    </textarea>
+    </p>
+
+    <p>
+        In this example, on the message <tt>r:your.message</tt> the contents of the div will be replaced with 'yours'.  However
+        on <tt>r:my.message</tt> the contents will be 'mine.' You can think of the <tt>or</tt>
+        keyword like a switch statement without a break.  Viewed this way, the statements in the on condition become:
+        <pre>
+switch(condition)
+    case 'r:your.message':
+        value['yours'];
+    case 'r:my.message':
+        value['mine'];
+        </pre>
+    </p>
+    
 	<script>
 		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
 
