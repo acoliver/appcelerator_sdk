@@ -905,7 +905,17 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		//
 		if (!Appcelerator.Compiler.isCompiledMode)
 		{
-			Appcelerator.Compiler.parseOnAttribute(element);
+			if (module.dontParseOnAttributes)
+			{
+				if (!module.dontParseOnAttributes())
+				{
+					Appcelerator.Compiler.parseOnAttribute(element);
+				}
+			}
+			else
+			{
+				Appcelerator.Compiler.parseOnAttribute(element);
+			}
 		}
 		
 		//
