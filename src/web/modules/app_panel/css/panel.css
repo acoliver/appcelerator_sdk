@@ -1,0 +1,122 @@
+/* Styles for all panel themes */
+.app_panel table
+{
+    border-collapse: collapse;
+    border-spacing: 0px;
+    padding: 0px;
+    border: 0px;
+    width: 100%;
+}
+
+.app_panel .top_row, .app_panel .bottom_row {height: 6px;}
+.app_panel .header_row { height: 29px;}
+.app_panel tr.without_header {display: none;}
+.app_panel .content_row {}
+.app_panel .left_column{width: 4px;}
+.app_panel .right_column {width: 6px}
+.app_panel h3 {font-weight: bold; font-family: Tahoma, sans-serif; padding: 0px 0px 0px 10px;; font-size: 12px; margin: 0px}
+
+.app_panel .panel_tl {background-repeat: no-repeat; background-position: top left;}
+.app_panel .panel_tc {background-repeat: repeat-x; background-position: top; }
+.app_panel .panel_tr {background-repeat: no-repeat; background-position: top left;}
+
+.app_panel .panel_hl {background-repeat: no-repeat; background-position: left; }
+.app_panel .panel_hc {background-repeat: repeat-x; }
+.app_panel .panel_hr {background-repeat: no-repeat; background-position: left; }
+
+.app_panel .panel_cl {background-repeat: repeat-y; background-position: left; }
+.app_panel .panel_cc {background-repeat: repeat; padding: 10px;}
+.app_panel .panel_cr {background-repeat: repeat-y; background-position: left; }
+
+.app_panel .panel_gl {background-repeat: repeat-y; background-position: left; }
+.app_panel .panel_gc {background-repeat: repeat-x; background-position: top;}
+.app_panel .panel_gr {background-repeat: repeat-y; background-position: left; }
+
+/* Styles for Dark Gray Rounded Panel */
+.AP_DGRP .without_header .panel_tl {background-image: url(../images/app_panel_no_header_15.png)}
+.AP_DGRP .without_header .panel_tc {background-image: url(../images/app_panel_no_header_16.png)}
+.AP_DGRP .without_header .panel_tr {background-image: url(../images/app_panel_no_header_17.png)}
+
+.AP_DGRP .panel_tl {background-image: url(../images/app_panel_15.png)}
+.AP_DGRP .panel_tc {background-image: url(../images/app_panel_16.png)}
+.AP_DGRP .panel_tr {background-image: url(../images/app_panel_17.png)}
+
+.AP_DGRP .panel_hl {background-image: url(../images/app_panel_24.png)}
+.AP_DGRP .panel_hc {background-image: url(../images/app_panel_25.png)}
+.AP_DGRP .panel_hr {background-image: url(../images/app_panel_26.png)}
+.AP_DGRP h3 {color: rgb(84,84,84)}
+
+.AP_DGRP .panel_cl {background-image: url(../images/app_panel_33.png)}
+.AP_DGRP .panel_cc {background-image: url(../images/app_panel_34.png); color: rgb(84,84,84);}
+.AP_DGRP .panel_cr {background-image: url(../images/app_panel_35.png)}
+
+.AP_DGRP .panel_gl {background-image: url(../images/app_panel_42.png)}
+.AP_DGRP .panel_gc {background-image: url(../images/app_panel_43.png)}
+.AP_DGRP .panel_gr {background-image: url(../images/app_panel_44.png)}
+
+/* Styles for Dark Gray Square Panel */
+.AP_DGSP .without_header .panel_tl {background-image: url(../images/app_panel_no_header_11.png)}
+.AP_DGSP .without_header .panel_tc {background-image: url(../images/app_panel_no_header_12.png)}
+.AP_DGSP .without_header .panel_tr {background-image: url(../images/app_panel_no_header_13.png)}
+
+.AP_DGSP .panel_tl {background-image: url(../images/app_panel_11.png)}
+.AP_DGSP .panel_tc {background-image: url(../images/app_panel_12.png)}
+.AP_DGSP .panel_tr {background-image: url(../images/app_panel_13.png)}
+
+.AP_DGSP .panel_hl {background-image: url(../images/app_panel_24.png)}
+.AP_DGSP .panel_hc {background-image: url(../images/app_panel_25.png)}
+.AP_DGSP .panel_hr {background-image: url(../images/app_panel_26.png)}
+.AP_DGSP h3 {color: rgb(84,84,84)}
+
+.AP_DGSP .panel_cl {background-image: url(../images/app_panel_33.png)}
+.AP_DGSP .panel_cc {background-image: url(../images/app_panel_34.png); color: rgb(84,84,84);}
+.AP_DGSP .panel_cr {background-image: url(../images/app_panel_35.png)}
+
+.AP_DGSP .panel_gl {background-image: url(../images/app_panel_38.png)}
+.AP_DGSP .panel_gc {background-image: url(../images/app_panel_39.png)}
+.AP_DGSP .panel_gr {background-image: url(../images/app_panel_40.png)}
+
+/* Styles for Light Gray Rounded Panel */
+.AP_LGRP .without_header .panel_tl {background-image: url(../images/app_panel_no_header_60.png)}
+.AP_LGRP .without_header .panel_tc {background-image: url(../images/app_panel_no_header_61.png)}
+.AP_LGRP .without_header .panel_tr {background-image: url(../images/app_panel_no_header_62.png)}
+
+.AP_LGRP .panel_tl {background-image: url(../images/app_panel_60.png)}
+.AP_LGRP .panel_tc {background-image: url(../images/app_panel_61.png)}
+.AP_LGRP .panel_tr {background-image: url(../images/app_panel_62.png)}
+
+.AP_LGRP .panel_hl {background-image: url(../images/app_panel_65.png)}
+.AP_LGRP .panel_hc {background-image: url(../images/app_panel_66.png)}
+.AP_LGRP .panel_hr {background-image: url(../images/app_panel_67.png)}
+.AP_LGRP h3 {color: rgb(84,84,84)}
+
+.AP_LGRP .panel_cl {background-image: url(../images/app_panel_74.png)}
+.AP_LGRP .panel_cc {background-image: url(../images/app_panel_75.png); color: rgb(84,84,84);}
+.AP_LGRP .panel_cr {background-image: url(../images/app_panel_76.png)}
+.AP_LGRP h3 {color: rgb(84,84,84)}
+
+.AP_LGRP .panel_gl {background-image: url(../images/app_panel_87.png)}
+.AP_LGRP .panel_gc {background-image: url(../images/app_panel_88.png)}
+.AP_LGRP .panel_gr {background-image: url(../images/app_panel_89.png)}
+
+/* Styles for Light Gray Square Panel*/
+.AP_LGSP .without_header .panel_tl {background-image: url(../images/app_panel_no_header_56.png)}
+.AP_LGSP .without_header .panel_tc {background-image: url(../images/app_panel_no_header_57.png)}
+.AP_LGSP .without_header .panel_tr {background-image: url(../images/app_panel_no_header_58.png)}
+
+.AP_LGSP .panel_tl {background-image: url(../images/app_panel_56.png)}
+.AP_LGSP .panel_tc {background-image: url(../images/app_panel_57.png)}
+.AP_LGSP .panel_tr {background-image: url(../images/app_panel_58.png)}
+
+.AP_LGSP .panel_hl {background-image: url(../images/app_panel_65.png)}
+.AP_LGSP .panel_hc {background-image: url(../images/app_panel_66.png)}
+.AP_LGSP .panel_hr {background-image: url(../images/app_panel_67.png)}
+.AP_LGSP h3 {color: rgb(84,84,84)}
+
+.AP_LGSP .panel_cl {background-image: url(../images/app_panel_74.png)}
+.AP_LGSP .panel_cc {background-image: url(../images/app_panel_75.png); color: rgb(84,84,84);}
+.AP_LGSP .panel_cr {background-image: url(../images/app_panel_76.png)}
+
+.AP_LGSP .panel_gl {background-image: url(../images/app_panel_83.png)}
+.AP_LGSP .panel_gc {background-image: url(../images/app_panel_84.png)}
+.AP_LGSP .panel_gr {background-image: url(../images/app_panel_85.png)}
