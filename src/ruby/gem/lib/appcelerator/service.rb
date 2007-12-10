@@ -30,6 +30,8 @@ module Appcelerator
       end
     end
 
+
+
     # internal
     attr_accessor :before_filters, :after_filters
     
@@ -57,10 +59,7 @@ module Appcelerator
    
     def do_after_filters
       @after_filters.each do |filter|
-          rsp = method(filter).call()
-          if rsp
-            @response = rsp
-          end
+          method(filter).call()
       end
     end
     
