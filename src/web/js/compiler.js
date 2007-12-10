@@ -482,6 +482,16 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 	element.trashcan.push(trash);
 };
 
+Appcelerator.Compiler.getJsonTemplateVar = function(values,var_name,template_var) {
+	var o = Object.getNestedProperty(values,var_name,template_var);
+	if (typeof(o) == 'object')
+	{
+		o = Object.toJSON(o);
+		o = o.replace(/"/g,'&quot;');
+	}
+	return o;
+}
+
 Appcelerator.Compiler.templateRE = /#\{(.*?)\}/g;
 Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)			 
 {
@@ -489,11 +499,11 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 	
 	var fn = function(m, name, format, args)
 	{
-		return "'; o = Object.getNestedProperty(values,'"+name+"','#{"+name+"}'); o = (typeof(o)=='object') ? o.toJSON() : o; str+=o; str+='";
+		return "', jtv(values,'"+name+"','#{"+name+"}'),'";
 	};
-	var body = "var "+varname+" = function(values){ var o; var str = '" +
+	var body = "var "+varname+" = function(values){ var jtv = Appcelerator.Compiler.getJsonTemplateVar; return ['" +
             html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(Appcelerator.Compiler.templateRE, fn) +
-            "'; return str; };" + (htmlonly?'':varname);
+            "'].join('');};" + (htmlonly?'':varname);
 	
 	var result = htmlonly ? body : eval(body);
 	return result;
@@ -1221,13 +1231,14 @@ Appcelerator.Compiler.parseOnAttribute = function(element)
 	return false;
 };
 
-Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
+Appcelerator.Compiler.parseExpression = function(value)
 {
     value = value.gsub('\n',' ');
     value = value.gsub('\r',' ');
     value = value.gsub('\t',' ');
     value = value.trim();
 
+    var thens = [];
     var ors = Appcelerator.Compiler.smartSplit(value,' or ');
 	
 	for (var c=0,len=ors.length;c<len;c++)
@@ -1317,14 +1328,26 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 			}
 		}
 		
-		$D('compiling condition=['+condition+'], action=['+action+'], elseAction=['+elseAction+'], delay=['+delay+'], ifCond=['+ifCond+']');
+		thens.push([null,condition,action,elseAction,delay,ifCond]);
+	}
+	return thens;
+};
+
+ 
+Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
+{
+	var clauses = Appcelerator.Compiler.parseExpression(value);
+	for(var i = 0; i < clauses.length; i++) {
+		var clause = clauses[i];
+        $D('compiling condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
+        
+        clause[0] = element;
+        var handled = Appcelerator.Compiler.handleCondition.apply(this, clause);
 		
-		var handled = Appcelerator.Compiler.handleCondition(element,condition,action,elseAction,delay,ifCond);
-		
-		if (!handled)
-		{
-			throw "syntax error: unknown condition type: "+condition+" for "+value;
-		}
+        if (!handled)
+        {
+            throw "syntax error: unknown condition type: "+clause[1]+" for "+value;
+        }
 	}
 };
 

@@ -37,6 +37,8 @@ Appcelerator.Module.Iterator =
 	{
 		var compiled = parameterMap['compiled'];
 		var propertyName = parameterMap['property'];
+		var items = parameterMap['items'];
+		
 		var table = parameterMap['table'];
 		var width = parameterMap['width'];
 		var headers = parameterMap['headers'];
@@ -49,9 +51,17 @@ Appcelerator.Module.Iterator =
 			parameterMap['compiled'] = compiled;
 		}
 		
+		if (items) {
+			data = items.evalJSON() || [];
+		}
+		
 		if (propertyName)
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
+		}
+		else
+		{
+			array = data;
 		}
 		
 		var html = '';
@@ -74,6 +84,10 @@ Appcelerator.Module.Iterator =
 			for (var c = 0, len = array.length; c < len; c++)
 			{
 				var o = array[c];
+				if(typeof o != "object")
+				{
+					o = {'iterator_value': o};
+				}
 				o['iterator_index']=c;
 				o['iterator_length']=len;
 				o['iterator_odd_even']=(c%2==0)?'even':'odd';
@@ -113,16 +127,23 @@ Appcelerator.Module.Iterator =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: false, description: "Used to execute the iterator"},
+		return [{name: 'on', optional: true, description: "Used to execute the iterator"},
+				{name: 'property', optional: true},
+				{name: 'items', optional: true},
+				
 				{name: 'rowEvenClassName', optional: true},
-				{name: 'rowOddClassName', optional: true},
-				{name: 'property', optional: false},
+                {name: 'rowOddClassName', optional: true},
 				{name: 'table', optional: true, defaultValue: 'false'},
 				{name: 'width', optional: true, defaultValue: '100%'},
 				{name: 'headers', optional: true, defaultValue: ','},
 				{name: 'cellspacing', optional: true, defaultValue: '0'},
 				{name: 'selectable', optional: true}];
-	},	
+	},
+	compileWidget: function(params) {
+		// no message payload to pass for data,
+		// maybe we should plumb the triggering message of a dynamic compile through?
+        this.execute(params['id'], params, null, '');
+	},
 	buildWidget: function(element, parameters)
 	{
 		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);
@@ -132,12 +153,15 @@ Appcelerator.Module.Iterator =
 			parameters['headers'] = parameters['headers'].split(',');
 		}
 		
+		var compile = !!(!parameters['on'] && parameters['items']);
+		
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters,
 			'functions' : ['execute'],
-			'wire':true
+			'wire':true,
+			'compile':compile
 		};
 	}
 };
