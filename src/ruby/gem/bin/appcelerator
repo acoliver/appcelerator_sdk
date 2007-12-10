@@ -1,36 +1,50 @@
-#!/usr/bin/env ruby
+require 'pathname'
+require 'erb'
+require 'md5'
+require 'socket'
+require 'fileutils'
 
-freeze   = ARGV.any? { |option| %w(--freeze -f).include?(option) }
 app_path = ARGV.first
+system('rails ' + app_path + ' >> rails.log')
+FileUtils.rm_r 'rails.log'
+p = Pathname.new(app_path)
 
-require 'rubygems'
-gem 'rails', '>= 1.2.3'
+secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)   
 
-# find the path to RAILS
+# 
+# remove rails files
+#
+FileUtils.rm_r "#{p}/public/javascripts"
+
+#
+# add appcelerator files
+#
+APP_GEM = Gem.cache.search('appcelerator').last.full_gem_path
+FileUtils.mkdir "#{p}/public/javascripts"
+FileUtils.mkdir "#{p}/app/services"
+
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/appcelerator.xml", "#{p}/public"
 rails_gem = Gem.cache.search('rails').last
-RAILS = rails_gem.full_gem_path
-
-require RAILS + '/lib/ruby_version_check'
-Signal.trap("INT") { puts; exit }
-
-require RAILS + '/lib/rails/version'
-if %w(--version -v).include? ARGV.first
-  puts "Rails #{Rails::VERSION::STRING}"
-  exit(0)
+if rails_gem.version.to_s.to_f >= 2
+  FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/application.rb", "#{p}/app/controllers"
 end
+f = File.open("#{p}/config/environment.rb", 'a')
+f.write("\n\nrequire 'appcelerator'")
+f.close
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/generate", "#{p}/script"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/index.html", "#{p}/public"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/images", "#{p}/public"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/javascripts", "#{p}/public"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/modules", "#{p}/public"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/README", "#{p}"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/routes.rb", "#{p}/config"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_controller.rb", "#{p}/app/controllers"
+result = ERB.new(File.read("#{p}/app/controllers/service_broker_controller.rb")).result(binding)
+f = File.new("#{p}/app/controllers/service_broker_controller.rb",'w')
+f.write(result)
+f.close
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_helper.rb", "#{p}/app/helpers"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/servicetester.html", "#{p}/public"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/test_service.rb", "#{p}/app/services"
 
-
-require RAILS + '/lib/rails_generator'
-require 'rails_generator/scripts/generate'
-
-Rails::Generator::Base.use_application_sources!
-
-path = File.dirname(__FILE__) + '/../'
-
-Rails::Generator::Base.sources << Rails::Generator::PathSource.new('', path)
-
-# execute the appcelerator generator
-Rails::Generator::Scripts::Generate.new.run(ARGV, {:generator => 'appcelerator', :source => path + 'appcelerator', :source_root => path + 'appcelerator', 'railspath'=>'../../rails-'+rails_gem.version.to_s})
-
-Dir.chdir(app_path) { `rake rails:freeze:gems`; puts "froze" } if freeze
-
+puts "Successfully created new Appcelerator project in '#{app_path}'"
