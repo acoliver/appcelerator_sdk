@@ -19,7 +19,7 @@ Appcelerator.Module.Button =
 	},
 	getAuthor: function()
 	{
-		return 'Jeff Haynie';
+		return 'Hamed Hashemi';
 	},
 	getModuleURL: function ()
 	{

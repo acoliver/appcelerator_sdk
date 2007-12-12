@@ -619,6 +619,11 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
 
 	var html = element.innerHTML || Appcelerator.Util.Dom.getText(element);
 	
+	return Appcelerator.Compiler.convertHtml(html, convertHtmlPrefix);
+};
+
+Appcelerator.Compiler.convertHtml = function (html, convertHtmlPrefix)
+{
 	// convert funky url-encoded parameters escaped
 	if (html.indexOf('#%7B')!=-1)
 	{
