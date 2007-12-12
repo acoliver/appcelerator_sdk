@@ -1,4 +1,8 @@
-/* Styles for all panel themes */
+/* General app panel styles */
+.app_panel
+{
+    position: relative;
+}
 .app_panel table
 {
     border-collapse: collapse;
@@ -6,6 +10,7 @@
     padding: 0px;
     border: 0px;
     width: 100%;
+    height: 100%;
 }
 
 .app_panel .top_row, .app_panel .bottom_row {height: 6px;}
@@ -14,23 +19,65 @@
 .app_panel .content_row {}
 .app_panel .left_column{width: 4px;}
 .app_panel .right_column {width: 6px}
-.app_panel h3 {font-weight: bold; font-family: Tahoma, sans-serif; padding: 0px 0px 0px 10px;; font-size: 12px; margin: 0px}
 
-.app_panel .panel_tl {background-repeat: no-repeat; background-position: top left;}
-.app_panel .panel_tc {background-repeat: repeat-x; background-position: top; }
-.app_panel .panel_tr {background-repeat: no-repeat; background-position: top left;}
+.app_panel td {padding: 0px; margin: 0px}
+.app_panel h3 
+{
+    font-weight: bold; 
+    font-family: Tahoma, sans-serif; 
+    padding: 0px 0px 0px 10px; 
+    font-size: 12px; 
+    margin: 0px
+}
+.app_panel .button_panel 
+{
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    position: absolute; 
+    z-index: 1000;
+}
 
-.app_panel .panel_hl {background-repeat: no-repeat; background-position: left; }
-.app_panel .panel_hc {background-repeat: repeat-x; }
-.app_panel .panel_hr {background-repeat: no-repeat; background-position: left; }
+.app_panel .app_panel_button 
+{
+    height: 21px; 
+    width: 21px; 
+    position: relative;
+    float: left;
+    margin-left: 5px; 
+    cursor: pointer;
+}
+.app_panel .app_panel_button span {display: none}
+.app_panel .close_button { background: url(../images/close.png); }
+.app_panel .close_button_hover { background: url(../images/close_hover.png); }
+.app_panel .close_button_onclick { background: url(../images/close_onclick.png); }
+.app_panel .shade_button { background: url(../images/up.png); }
+.app_panel .shade_button_hover { background: url(../images/up_hover.png); }
+.app_panel .shade_button_onclick { background: url(../images/up_onclick.png); }
+.app_panel .unshade_button { background: url(../images/down.png); display: none; }
+.app_panel .unshade_button_hover { background: url(../images/down_hover.png); }
+.app_panel .unshade_button_onclick { background: url(../images/down_onclick.png); }
+
+.shade .app_panel .content_row { display:none}
+.shade .app_panel .bottom_row { display:none}
+
+/* Styles for all panel themes */
+
+.app_panel .panel_tl {height: 6px; background-repeat: no-repeat; background-position: top left;}
+.app_panel .panel_tc {height: 6px; background-repeat: repeat-x; background-position: top; }
+.app_panel .panel_tr {height: 6px; background-repeat: no-repeat; background-position: top left;}
+
+.app_panel .panel_hl {height: 29px; background-repeat: no-repeat; background-position: top left; }
+.app_panel .panel_hc {height: 29px; background-repeat: repeat-x; padding: 0px }
+.app_panel .panel_hr {height: 29px; background-repeat: no-repeat; background-position: top left; }
 
 .app_panel .panel_cl {background-repeat: repeat-y; background-position: left; }
 .app_panel .panel_cc {background-repeat: repeat; padding: 10px;}
 .app_panel .panel_cr {background-repeat: repeat-y; background-position: left; }
 
-.app_panel .panel_gl {background-repeat: repeat-y; background-position: left; }
-.app_panel .panel_gc {background-repeat: repeat-x; background-position: top;}
-.app_panel .panel_gr {background-repeat: repeat-y; background-position: left; }
+.app_panel .panel_gl {height: 6px; background-repeat: no-repeat; background-position: bottom left; }
+.app_panel .panel_gc {height: 6px; background-repeat: repeat-x; background-position: bottom;}
+.app_panel .panel_gr {height: 6px; background-repeat: no-repeat; background-position: bottom left; }
 
 /* Styles for Dark Gray Rounded Panel */
 .AP_DGRP .without_header .panel_tl {background-image: url(../images/app_panel_no_header_15.png)}
@@ -120,3 +167,9 @@
 .AP_LGSP .panel_gl {background-image: url(../images/app_panel_83.png)}
 .AP_LGSP .panel_gc {background-image: url(../images/app_panel_84.png)}
 .AP_LGSP .panel_gr {background-image: url(../images/app_panel_85.png)}
+
+/* Force overrides */
+.app_panel .extra_padding {padding-top: 20px}
+
+
+/* IE hacks */

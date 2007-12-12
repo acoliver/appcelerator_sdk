@@ -15,6 +15,66 @@
 <table width="90%">
     <tr>
         <td class="test" width="50%" valign="middle">
+            You should see a shadeable panel without a close button and no header text
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' shade="true" >
+                To be, or not to be--that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a shadeable and closeable panel
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" shade="true" close="true" header_text="Hamlet By Shakespeare">
+                To be, or not to be--that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            Hide Via a Message: <a on="click then l:panel.shade.example1">Hide me</a>
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' shade="true" on="l:panel.shade.example1 then hide">
+                To be, or not to be--that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            This panel should be resizable (broken in IE <a href="http://jira.appcelerator.org/jira/browse/APPSDK-246">see open issue</a>)
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' header_text="Resize Me" resizable="true">
+                To be, or not to be--that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            This panel should be draggable
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" rounded='true' shade="true" draggable="true" >
+                To be, or not to be--that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
             You should see a short, dark gray panel with a header
         </td>
         <td class="result">
@@ -111,6 +171,18 @@
     </tr>
     <tr>
         <td class="test" width="50%" valign="middle">
+            The buttons shouldn't block any of the text
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded="true" close="true" shadable="true">
+                To be, or not to be--that is the question:
+                Whether 'tis nobler in the mind to suffer
+                The slings and arrows of outrageous fortune 
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
             You should see a long panel, dark_gray panel without a header
         </td>
         <td class="result">
@@ -196,8 +268,9 @@
                 Be all my sins remembered. <br />
             </app:panel>
         </td>
-    </tr>
+    </tr>    
 </table>
+
 
 </body>
 
