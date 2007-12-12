@@ -45,7 +45,9 @@ Appcelerator.Module.Search =
 				{name: 'delay', optional: true, defaultValue: 200, description: "Delay before firing request message"},
 				{name: 'indicator', optional: true, description: "Indicator id to show or hide"},
 				{name: 'activeClass', optional: true, defaultValue: 'search_result_active', description: "Active class for selecting search results"},
-				{name: 'inactiveClass', optional: true, defaultValue: 'search_result_inactive', description: "Inactive class for selecting search results"}];
+				{name: 'inactiveClass', optional: true, defaultValue: 'search_result_inactive', description: "Inactive class for selecting search results"},
+				{name: 'fieldset', optional: true, description: "Fieldset applied to the input element"},
+				{name: 'name', optional: true, description: "Name applied to the input element"}];
 	},
 	compileWidget: function(params)
 	{
@@ -131,6 +133,7 @@ Appcelerator.Module.Search =
 							else
 							{
 								$MQ(selected, {value: optionValue});
+								input.value = optionValue;
 							}
 						}
 						option.onmouseover = function()
@@ -321,7 +324,16 @@ Appcelerator.Module.Search =
 		}
 		
 		var html = '<div style="position: relative">';
-		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="text" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px"/></td></tr>';
+		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="text" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
+		if (parameters['fieldset'])
+		{
+			html += ' fieldset="'+parameters['fieldset']+'" ';
+		}
+		if (parameters['name'])
+		{
+			html += ' name="'+parameters['name']+'" ';
+		}
+		html += '/></td></tr>';
 		html += '<tr><td><div style="display:none;z-index:2;position:absolute;" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
 		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div></td></tr></table>';
 		html += '</div>';
