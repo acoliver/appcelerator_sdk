@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:35%;
+}
+input[type=text]
+{
+	width:40%;
+	border:1px solid #ccc;
+	padding:3px;
+	font-size:12px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> If Widget </h3> 
+<p>
+	These tests exercise the if widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic If
+		</td>
+		<td class="result" >
+			<app:if expr="true">
+				Test Passed
+			</app:if>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			If With Else
+		</td>
+		<td class="result" >
+			<app:if expr="false">
+				Should not be shown (test failed)
+			<else expr="true">
+				Test Passed
+			</else>
+			</app:if>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			If With Elseif
+		</td>
+		<td class="result" >
+			<app:if expr="false">
+				Should not be shown (test failed)
+			<elseif expr="true">
+				Test Passed
+			</elseif>
+			<else expr="true">
+				Should not be shown (test failed)
+			</else>			
+			</app:if>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
