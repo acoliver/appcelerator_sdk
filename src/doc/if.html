@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>If</h2>
+		
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:if[show=example] and add[class=active] or l:if[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:if[show=code] and add[class=active] or l:if[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:if[show=usage] and add[class=active] or l:if[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+		The if widget provides control for displaying content by using javascript expressions.
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:if[show=example] then show else hide">
+		<p>
+			Here's an example:
+		</p>
+		<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer">
+			<span on="click then l:message.trigger
+				or l:message.example then hide">
+				Click me to send a message
+			</span>
+		</div>
+		
+		<div style="margin-top: 20px">
+			<app:iterator on="l:if.example then execute" property="results">
+				<app:if expr="#{show}">
+					<html:div style="padding: 5px;margin-bottom: 10px; border:1px solid #ccc;background-color:#f6f6f6">
+						#{text} (shown conditionally)
+					</html:div>
+				</app:if>
+			</app:iterator>
+		</div>
+
+		<app:message on="l:message.trigger then execute" 
+			name="l:if.example" args="{results: [{show: true, text: 'Example 1'},{show: false, text: 'Example 2'},{show: true, text: 'Example 3'}]}">
+		</app:message>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:if[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer">
+					<span on="click then l:message.trigger
+						or l:message.example then hide">
+						Click me to send a message
+					</span>
+				</div>
+
+				<div style="margin-top: 20px">
+					<app:iterator on="l:if.example then execute" property="results">
+						<app:if expr="#{show}">
+							<html:div style="padding: 5px;margin-bottom: 10px; border:1px solid #ccc;background-color:#f6f6f6">
+								#{text} (shown conditionally)
+							</html:div>
+						</app:if>
+					</app:iterator>
+				</div>
+
+				<app:message on="l:message.trigger then execute" 
+					name="l:if.example" args="{results: [{show: true, text: 'Example 1'},{show: false, text: 'Example 2'},{show: true, text: 'Example 3'}]}">
+				</app:message>
+			</textarea>	
+		</p>
+	</div>
+	<!-- USAGE -->
+	<div on="l:if[show=usage] then show else hide" style="display:none">
+		<p
+			<textarea name="code" class="xml:nocontrols">
+				<app:if expr="cat == true">
+					Show this
+				<elseif expr="dog > 3">
+					Else if show this
+				</elseif>
+				<elseif expr="pig(10)">
+					Else if show this
+				</elseif>
+				<else>
+					Otherwise, just show this
+				</else>
+				</app:if>
+			</textarea>
+		</p>
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">expr</td>
+					  <td class="def">Javascript expression to evaluate</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Elements:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">elseif</td>
+					  <td class="def">Executes if the 'expr' attribute is true</tt>
+					</tr>
+					<tr>
+					  <td class="term">else</td>
+					  <td class="def">Executes if none of the other expressions evaluate to true</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+  	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

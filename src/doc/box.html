@@ -35,14 +35,36 @@
 
 	<!-- EXAMPLE -->
 	<div on="l:box[show=example] then show else hide">
-		box example placeholder
+		The box widget lets you layout items vertically or horizontally.
+		<p>
+			Here's some examples.
+		</p>
+		<app:box mode="horizontal" style="background-color:#f6f6f6;margin:20px" cellPadding="0">
+			<html:div>Container 1</html:div>
+			<html:div>Container 2</html:div>
+			<html:div>Container 3</html:div>
+		</app:box>
+		<app:box mode="vertical" style="background-color:#f6f6f6;margin:20px" cellPadding="0">
+			<html:div>Container 1</html:div>
+			<html:div>Container 2</html:div>
+			<html:div>Container 3</html:div>
+		</app:box>
 	</div>
 
 	<!-- CODE -->
 	<div on="l:box[show=code] then show else hide" style="display:none">
 		<p>Here's the code:
 			<textarea name="code" class="xml:nocontrols">
-				box code placeholder
+				<app:box mode="horizontal" style="background-color:#f6f6f6;margin:20px" cellPadding="0">
+					<html:div>Container 1</html:div>
+					<html:div>Container 2</html:div>
+					<html:div>Container 3</html:div>
+				</app:box>
+				<app:box mode="vertical" style="background-color:#f6f6f6;margin:20px" cellPadding="0">
+					<html:div>Container 1</html:div>
+					<html:div>Container 2</html:div>
+					<html:div>Container 3</html:div>
+				</app:box>
 			</textarea>	
 		</p>
 	</div>
@@ -53,21 +75,28 @@
 			 Required Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
+					  <td class="term">mode</td>
+					  <td class="def">Vertical or horizontal.</td>
 					</tr>
 				</table>
 		</p>
-<!--		<p>
+		<p>
 			 Optional Options:
 				<table cellspacing="5px">
 					<tr>
-					  <td class="term"></td>
-					  <td class="def"></td>
+					  <td class="term">width</td>
+					  <td class="def">Style width on the box. Defaults to 100%.</td>
+					</tr>
+					<tr>
+					  <td class="term">verticalAlign</td>
+					  <td class="def">Alignment on each cell. Defaults to top.</td>
+					</tr>
+					<tr>
+					  <td class="term">cellpadding</td>
+					  <td class="def">Cellpadding on each cell. Defaults to 0.</td>
 					</tr>
 				</table>
 		</p>
--->
 	</div>	
 	
 	<script>

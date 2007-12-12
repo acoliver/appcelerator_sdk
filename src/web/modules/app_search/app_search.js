@@ -36,7 +36,7 @@ Appcelerator.Module.Search =
 	{
 		return [{name: 'request', optional: false, description: "Request message being sent to search"},
 				{name: 'response', optional: false, description: "Response message for search results"},
-				{name: 'selected', optional: false, description: "Message to be used when the user has selected an option"},				
+				{name: 'selected', optional: false, description: "Message sent when the user has selected an option"},				
 				{name: 'key', optional: true, defaultValue: 'key', description: "Parameter name used in the request for the query"},
 				{name: 'property', optional: true, defaultValue: 'result', description: "Property in the response used for the results"},
 				{name: 'resultId', optional: true, defaultValue: 'id', description: "Property to use from the result to send selected message when using complex results"},
