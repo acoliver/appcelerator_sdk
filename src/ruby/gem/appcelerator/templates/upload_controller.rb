@@ -22,7 +22,7 @@ class UploadController < ApplicationController
     f
   end
   
-  def upload
+  def index
     msg = {}
     params.each do |key, value|
       case value.class.to_s
