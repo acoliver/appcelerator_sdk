@@ -15,4 +15,6 @@ ActionController::Routing::Routes.draw do |map|
 
   # Install the appcelerator servicebroker
   map.connect 'servicebroker', :controller => 'service_broker', :action => 'dispatch'
+  map.connect ':controller/:action/:id.:format'
+  map.connect ':controller/:action/:id'  
 end
