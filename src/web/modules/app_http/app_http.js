@@ -31,7 +31,7 @@ Appcelerator.Module.Http =
 	},
 	getWidgetName: function()
 	{
-		return 'app:rest';
+		return 'app:http';
 	},
 	getAttributes: function()
 	{
@@ -88,7 +88,7 @@ Appcelerator.Module.Http =
 			}
 		}
 
-		$D('app:rest sending request to ' + uriLink + ' with params '  + methodParams);
+		$D('app:http sending request to ' + uriLink + ' with params '  + methodParams);
 		new Ajax.Request(uriLink,
 		{
 			method: method,
@@ -99,7 +99,7 @@ Appcelerator.Module.Http =
 				if (result.status == 200)
                 {
 					var json_result = {};
-                    $D('app:rest onSuccess doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', contentType = ' + contentType + ', text = '+ result.responseText);
+                    $D('app:http onSuccess doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', contentType = ' + contentType + ', text = '+ result.responseText);
 
 					if (contentType.indexOf('/xml') > 0)
 					{
@@ -121,7 +121,7 @@ Appcelerator.Module.Http =
 					}
 					else
 					{
-						$E('app: rest onSuccess received invalid content type = ' + contentType);
+						$E('app: http onSuccess received invalid content type = ' + contentType);
 						return;
 					}
 					if (response)
@@ -133,7 +133,7 @@ Appcelerator.Module.Http =
 			onException: function (resp, ex)
 			{
 				var msg = new String(ex);
-				$E('app:rest onException doing ' + method + ' to ' + msg);
+				$E('app:http onException doing ' + method + ' to ' + msg);
 				if (error)
 				{
 					$MQ(error, {msg: msg});
@@ -141,7 +141,7 @@ Appcelerator.Module.Http =
 			},
             onFailure: function (result, json)
 			{
-				$E('app:rest onFailure doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', text = ' + result.statusText);
+				$E('app:http onFailure doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', text = ' + result.statusText);
 				if (error)
 				{
 					$MQ(error, {msg: result.statusText});
