@@ -12,7 +12,6 @@ Appcelerator.Util.ServiceBroker =
     initQueue:[],
     timer: null,
     time: null,
-    currentRequestId:1,
     serverDown: false,
     poll: false,
     fetching: false,
@@ -21,8 +20,11 @@ Appcelerator.Util.ServiceBroker =
     localPatternListeners: [],
     remotePatternListeners: [],
     devmode: (window.location.href.indexOf('devmode=1') > 0),
-    disabled: this.devmode || (window.location.href.indexOf('file:/') == 0) || Appcelerator.Parameters['mbDisabled']=='1',
-	remoteDisabled: this.disabled || Appcelerator.Parameters['remoteDisabled']=='1',
+    disabled: this.devmode || (window.location.href.indexOf('file:/') == 0) || Appcelerator.Parameters.get('mbDisabled')=='1',
+	remoteDisabled: this.disabled || Appcelerator.Parameters.get('remoteDisabled')=='1',
+	marshaller:'xml/json',
+	transport:'appcelerator',
+	multiplex:true,
 
     toString: function ()
     {
@@ -331,7 +333,7 @@ Appcelerator.Util.ServiceBroker =
         }
 		this.localMessageQueue.push([name,data,dest,scope,version]);
     },
-
+/*
     processIncoming: function (xml)
     {
         if (xml)
@@ -358,34 +360,13 @@ Appcelerator.Util.ServiceBroker =
             }
         }
     },
-    
-    dispatch: function (requestid, msg)
+  */  
+    dispatch: function (msg)
     {
-        var type = msg.getAttribute("type");
-        var datatype = msg.getAttribute("datatype");
-        var scope = msg.getAttribute("scope") || 'appcelerator';
-
-        var data = msg;
-
-        if (datatype == 'JSON')
-        {
-            var text;
-            try
-            {
-                text = Appcelerator.Util.Dom.getText(msg);
-                data = text.evalJSON();
-                data.toString = function ()
-                {
-                    return Object.toJSON(this);
-                };
-                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-            }
-            catch (e)
-            {
-                $E('Error received evaluating: ' + text + ' for ' + msg + ', type:' + type + ", " + Object.getExceptionDetail(e));
-                return;
-            }
-        }
+		var requestid = msg.requestid;
+        var type = msg.type;
+        var datatype = msg.datatype;
+        var scope = msg.scope;
 
         // let the interceptors have at it
         if (this.interceptors.length > 0)
@@ -397,7 +378,7 @@ Appcelerator.Util.ServiceBroker =
                 var func = interceptor['interceptDispatch'];
                 if (func)
                 {
-                    var result = func.apply(interceptor, [requestid,type,data,datatype,scope]);
+                    var result = func.apply(interceptor, [requestid,type,msg,datatype,scope]);
                     if (result != null && !result)
                     {
                         send = false;
@@ -491,8 +472,6 @@ Appcelerator.Util.ServiceBroker =
 
     deliver: function (initialrequest)
     {
-        var xml = null;
-
         if (this.messageQueue == null)
         {
             // we're dead and destroyed, cool, just
@@ -505,94 +484,89 @@ Appcelerator.Util.ServiceBroker =
 			// remote disabled
             return;
 		}
+
+		// get the marshaller to use
+		var marshaller = Appcelerator.Util.ServiceBrokerMarshaller[this.marshaller];
+		if (!marshaller)
+		{
+			$E(this+' - no marshaller defined, will not send message to remote endpoint');
+			this.remoteDisabled = true;
+			return;
+		}
+		var transportHandler = Appcelerator.Util.ServiceBrokerTransportHandler[this.transport];
+		if (!transportHandler)
+		{
+			$E(this+' - no transport handler defined, will not send message to remote endpoint');
+			this.remoteDisabled = true;
+			return;
+		}
 		
-        // send	if we have stuff
-        var time = new Date();
-        var timestamp = time.getTime();
-        if (this.messageQueue.length > 0)
-        {
-            xml = "<?xml version='1.0'?>\n";
-			var tz = time.getTimezoneOffset()/60;
-            var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
-            xml += "<request version='1.0' idle='" + idleMs + "' timestamp='"+timestamp+"' tz='"+tz+"'>\n";
-            for (var c = 0,len = this.messageQueue.length; c < len; c++)
-            {
-                var msg = this.messageQueue[c];
-                var requestid = this.currentRequestId++;
-                var scope = msg[2];
-                var version = msg[3];
-                var datatype = 'JSON';
-                var data = msg[0]['data'];
-                xml += "<message requestid='" + requestid + "' type='" + msg[0]['type'] + "' datatype='" + datatype + "' scope='"+scope+"' version='"+version+"'>";
-                xml += '<![CDATA[' + Object.toJSON(data) + ']]>';
-                xml += "</message>";
-            }
-            this.messageQueue.clear();
-            xml += "</request>";
-        }
-		// get the auth token
-		var cookieName = Appcelerator.ServerConfig['sessionid'].value||'JSESSIONID';
-		var authToken = Appcelerator.Util.Cookie.GetCookie(cookieName);
-		// calculate the token we send back to the server
-		var token = (authToken) ? Appcelerator.Util.MD5.hex_md5(authToken+this.instanceid) : '';
-        var _method = (xml == null) ? 'get' : 'post';
-        var p = (initialrequest && xml == null) ? "?maxwait=1&initial=1&instanceid="+this.instanceid : "?maxwait=" + ((!initialrequest && xml) ? this.maxWaitPollTime : this.maxWaitPollTimeWhenSending)+"&instanceid="+this.instanceid+'&auth='+token+'&ts='+timestamp;
+		this.fetching = true;
+		
+		var payloadObj = marshaller.serialize(this.messageQueue,this.multiplex);
+		var payload = payloadObj.postBody;
+		var contentType = payloadObj.contentType;
+	
+		var instructions = transportHandler.prepare(this,initialrequest,payload,contentType);
 
-        Logger.trace(this.toString() + ' Sending (poll=' + (this.poll) + '): ' + (xml || '<empty>'));
+		if (this.multiplex)
+		{
+			this.messageQueue.clear();
+		}
+		else
+		{
+			if (this.messageQueue.length > 0)
+			{
+				this.messageQueue.removeAt(0);
+			}
+		}
 
-        this.fetching = true;
-  		this.sendRequest(p,_method,xml,0)
+		var url = instructions.url;
+		var method = instructions.method;
+		var postBody = instructions.postBody;
+		var contentType = instructions.contentType;
+
+		this.sendRequest(url,method,postBody,contentType,marshaller,0);
+		
+		if (!this.multiplex && this.messageQueue.length > 0)
+		{
+			this.deliver.defer();
+		}
 	},
-	sendRequest: function(p,_method,xml,count)
+	sendRequest: function(url,method,body,contentType,marshaller,count)
 	{
-		count = count++;
+		count = count+1;
 
 		if (count > 3)
 		{
+			self.fetching = false;
 			$E('too many attempts sending a re-authorization request.');
 			return;
 		}
 		
 		var self = this;
 		
-        new Ajax.Request(this.serverPath + p,
+        new Ajax.Request(url,
         {
             asynchronous: true,
-            method: _method,
-            postBody: xml || "",
-            contentType: 'text/xml',
+            method: method,
+            postBody: body,
+            contentType: contentType,
+			evalJSON:false,
+			evalJS:false,
             onComplete: function()
             {
                 self.fetching = false;
             },
             onSuccess: function (result)
             {
-                setTimeout(function()
+                (function()
                 {
 	                self.fetching = false;
 	                self.startTimer(false);
 	
-	                if (result && result.status)
-	                {
-	                    if (result.status == 401)
-	                    {
-	                        self.onServiceBrokerInvalidLogin();
-	                        return;
-	                    }
-	                    // 204 is no content, in which case the content-type is text/plain
-	                    if (result.status != 204 && result.status != 202)
-	                    {
-	                        var contentType = result.getResponseHeader('Content-type');
-	                        // do indexOf instead of equals since we sometime tack on the character encoding
-	                        if (!contentType || contentType.indexOf('text/xml') == -1)
-	                        {
-	                            // this most likely means we've been redirected on the
-	                            // server to another page or something, in which case
-	                            // we (default) will just go to the landing page
-	                            self.onServiceBrokerInvalidContentType(contentType);
-	                            return;
-	                        }
-	                    }
+					if (result && result.status && result.status >= 200 && result.status < 300)
+					{
 	                    if (self.serverDown)
 	                    {
 	                        self.serverDown = false;
@@ -600,33 +574,23 @@ Appcelerator.Util.ServiceBroker =
 	                        if (Logger.infoEnabled) Logger.info('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Server is UP at ' + self.serverPath);
 	                        self.queue({type:'local:appcelerator.servicebroker.server.up',data:{path:this.serverPath,downtime:downtime}});
 	                    }
-	                    if (result.status == 200)
-	                    {
-	                        var skip = false;
-	                        var cl = result.getResponseHeader("Content-Length");
-	                        if (cl && cl == "0")
-	                        {
-	                            // this is OK, just means no messages from the other side
-	                            skip = true;
-	                            $D(self.toString() + ' Receiving no messages on response');
-	                        }
-	                        if (!skip)
-	                        {
-	                            // now process them
-	                            $D('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Receiving: ' + result.responseText);
-	                            self.processIncoming(result.responseXML);
-	                        }
-	                    }
-	                }
-	
-	                // 204 is no content, which is OK
-	                // 503 is service unavailable, which we handle already
-	                if (result && result.status && result.status != 200 && result.status != 503 && result.status != 204 && result.status != 202)
-	                {
-	                    $E(self.toString() + ' Response Failure: ' + result.status + ' ' + result.statusText);
-	                }
-	
-                },0);
+
+                        var cl = parseInt(result.getResponseHeader("Content-Length") || '1');
+						var contentType = result.getResponseHeader('Content-Type') || 'unknown';
+						
+                        if (cl > 0)
+                        {
+							var msgs = marshaller.deserialize(result,parseInt(cl),contentType);
+							if (msgs && msgs.length > 0)
+							{
+								for (var c=0;c<msgs.length;c++)
+								{
+		                            self.dispatch(msgs[c]);
+								}
+							}
+						}
+					}
+                }).defer();
             },
             onFailure: function (transport, json)
             {
@@ -636,13 +600,13 @@ Appcelerator.Util.ServiceBroker =
                     if (!cl)
                     {
                     	Logger.warn("Failed authentication, will retry 1 more time");
-			  			self.sendRequest(p+"&retry=1",_method,xml,count);
+			  			self.sendRequest(url,method,body,contentType,marshaller,count);
 			  			return;
                     }
             	}
 				if (transport.status == 406)
 				{
-			  		self.sendRequest(p,_method,xml,count);
+			  		self.sendRequest(url,method,body,contentType,marshaller,count);
 					return;
 				}
                 self.fetching = false;
@@ -708,7 +672,7 @@ Appcelerator.Util.ServiceBroker =
             for (var p in this.localDirectListeners)
             {
                 var a = this.localDirectListeners[p];
-                if (typeof(a) == 'array')
+                if (Object.isArray(a))
                 {
                     a.clear();
                 }
@@ -720,7 +684,7 @@ Appcelerator.Util.ServiceBroker =
             for (var p in this.remoteDirectListeners)
             {
                 var a = this.remoteDirectListeners[p];
-                if (typeof(a) == 'array')
+                if (Object.isArray(a))
                 {
                     a.clear();
                 }
@@ -959,7 +923,7 @@ function $MQL (type,f,myscope,element)
 	{
 		accept: function ()
 		{
-			if (typeof(type)=='array')
+			if (Object.isArray(type))
 			{
 				return type;
 			}
@@ -991,6 +955,259 @@ function $MQL (type,f,myscope,element)
 
 	return listener;
 }
+
+
+Appcelerator.Util.ServiceBrokerMarshaller={};
+Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] = 
+{
+	currentRequestId:1,
+	jsonify:function(msg)
+	{
+        var requestid = this.currentRequestId++;
+        var scope = msg[2];
+        var version = msg[3];
+        var datatype = 'JSON';
+        var data = msg[0]['data'];
+        var xml = "<message requestid='" + requestid + "' type='" + msg[0]['type'] + "' datatype='" + datatype + "' scope='"+scope+"' version='"+version+"'>";
+        xml += '<![CDATA[' + Object.toJSON(data) + ']]>';
+        xml += "</message>";
+		return xml;
+	},
+	serialize: function(messageQueue,multiplex)
+	{
+		var xml = null;
+        if (messageQueue.length > 0)
+        {
+			xml = '';
+	        var time = new Date();
+	        var timestamp = time.getTime();
+            xml = "<?xml version='1.0'?>\n";
+			var tz = time.getTimezoneOffset()/60;
+            var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
+            xml += "<request version='1.0' idle='" + idleMs + "' timestamp='"+timestamp+"' tz='"+tz+"'>\n";
+			if (multiplex)
+			{
+	            for (var c = 0,len = messageQueue.length; c < len; c++)
+	            {
+					xml+=this.jsonify(messageQueue[c]);
+	            }
+			}
+			else
+			{
+				xml+=this.jsonify(messageQueue[0]);
+			}
+            xml += "</request>";
+        }
+		return {
+			'postBody': xml,
+			'contentType':'text/xml'
+		};
+	},
+	deserialize: function(response,length,contentType)
+	{
+		if (response.status == 202)
+		{
+			return null;
+		}
+		if (contentType.indexOf('text/xml')==-1)
+		{
+			$E(this+', invalid content type: '+contentType+', excepted: text/xml');
+			return null;
+		}
+		var xml = response.responseXML;
+		if (!xml)
+		{
+			return null;
+		}
+        var children = xml.documentElement.childNodes;
+		var msgs = null;
+        if (children && children.length > 0)
+        {
+			msgs = [];
+            for (var c = 0; c < children.length; c++)
+            {
+                var child = children.item(c);
+                if (child.nodeType == Appcelerator.Util.Dom.ELEMENT_NODE)
+                {
+                    var requestid = child.getAttribute("requestid");
+                    try
+                    {
+				        var type = child.getAttribute("type");
+				        var datatype = child.getAttribute("datatype");
+				        var scope = child.getAttribute("scope") || 'appcelerator';
+			            var data, text;
+			            try
+			            {
+			                text = Appcelerator.Util.Dom.getText(msg);
+			                data = text.evalJSON();
+			                data.toString = function () { return Object.toJSON(this); };
+			            }
+			            catch (e)
+			            {
+			                $E('Error received evaluating: ' + text + ' for type: ' + type + ", error: " + Object.getExceptionDetail(e));
+			                return;
+			            }
+		                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+						msgs.push({type:type,datatype:datatype,scope:scope,requestid:requestid});
+                    }
+                    catch (e)
+                    {
+                        $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
+                    }
+                }
+            }
+        }
+		return msgs;
+	}
+};
+
+
+function jsonParameterEncode (key, value, array)
+{
+	switch(typeof(value))
+	{
+		case 'string':
+		case 'number':
+		case 'boolean':
+		{
+			array.push(key+'='+encodeURIComponent(value));
+			break;
+		}
+		case 'array':
+		case 'object':
+		{
+			// check to see if the object is an array
+			if (Object.isArray(value))
+			{
+				for (var c=0;c<value.length;c++)
+				{
+					jsonParameterEncode(key+'.'+c,value[c],array);
+				}
+			}
+			else
+			{
+				for (var p in value)
+				{
+					jsonParameterEncode(key+'.'+p,value[p],array);
+				}
+			}
+			break;
+		}
+		case 'function':
+		{
+			break;
+		}
+		default:
+		{
+			array.push(encodeURIComponent(key)+'=');
+			break;
+		}
+	}
+}
+
+function jsonToQueryParams(json)
+{
+	var parameters = [];
+
+	for (var key in json)
+	{
+		var value = json[key];
+		jsonParameterEncode(key,value,parameters);
+	}
+	
+	return parameters.join('&');
+};
+
+/**
+ * Form URL encoded service marshaller
+ */
+Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] = 
+{
+	currentRequestId:1,
+	parameterize: function(msg)
+	{
+        var requestid = this.currentRequestId++;
+        var scope = msg[2];
+        var version = msg[3];
+        var datatype = 'JSON';
+        var data = msg[0]['data'];
+
+		var str = '$messagetype='+msg[0]['type']+'&$requestid='+requestid+'&$datatype='+datatype+'&$scope='+scope+'&$version='+version;
+		
+		if (data)
+		{
+			str+='&' + jsonToQueryParams(data);
+		}
+		return str;
+	},
+	serialize: function(messageQueue,multiplex)
+	{
+		var xml = null;
+        if (messageQueue.length > 0)
+        {
+			xml = '';
+			if (multiplex)
+			{
+	            for (var c = 0,len = messageQueue.length; c < len; c++)
+	            {
+					xml+=this.parameterize(messageQueue[c]);
+	            }
+			}
+			else
+			{
+				xml+=this.parameterize(messageQueue[0]);
+			}
+        }
+		return {
+			'postBody': xml,
+			'contentType':'application/x-www-form-urlencoded'
+		};
+	},
+	deserialize: function(response,length,contentType)
+	{
+		if (response.status == 202)
+		{
+			return null;
+		}
+		if (contentType.indexOf('/json')==-1)
+		{
+			$E(this+', invalid content type: '+contentType+', excepted json mimetype');
+			return null;
+		}
+		return [response.responseText.evalJSON(true)];
+	}
+};
+
+Appcelerator.Util.ServiceBrokerTransportHandler = {};
+
+/**
+ * Appcelerator based protocol transport handler
+ */
+Appcelerator.Util.ServiceBrokerTransportHandler['appcelerator'] = 
+{
+	prepare: function(serviceBroker,initialrequest,payload,contentType)
+	{
+		// get the auth token
+		var cookieName = Appcelerator.ServerConfig['sessionid'].value||'JSESSIONID';
+		var authToken = Appcelerator.Util.Cookie.GetCookie(cookieName);
+		
+		// calculate the token we send back to the server
+		var token = (authToken) ? Appcelerator.Util.MD5.hex_md5(authToken+serviceBroker.instanceid) : '';
+		
+		// create parameters for URL
+        var parameters = "?maxwait=" + ((!initialrequest && payload) ? serviceBroker.maxWaitPollTime : serviceBroker.maxWaitPollTimeWhenSending)+"&instanceid="+serviceBroker.instanceid+'&auth='+token+'&ts='+new Date().getTime();
+		var url = serviceBroker.serverPath + parameters;
+		var method = payload ? 'post' : 'get';
+		
+		return { 
+			'url':url, 
+			'method': method, 
+			'postBody': payload||'', 
+			'contentType':contentType 
+		};
+	}
+};
+
 
 Appcelerator.Util.ServiceBrokerInterceptor = Class.create();
 /**
@@ -1043,6 +1260,9 @@ else
 		}
 		Appcelerator.Util.ServiceBroker.serverPath = config.value;
 		Appcelerator.Util.ServiceBroker.poll = (config.poll == 'true');
+		Appcelerator.Util.ServiceBroker.multiplex = config.multiplex ? (config.multiplex == 'true') : true;
+		Appcelerator.Util.ServiceBroker.transport = config.transport || Appcelerator.Util.ServiceBroker.transport;
+		Appcelerator.Util.ServiceBroker.marshaller = config.marshaller || Appcelerator.Util.ServiceBroker.marshaller;
         Appcelerator.Util.ServiceBroker.triggerConfig();
         Appcelerator.Util.ServiceBroker.startTimer();
         Logger.info('ServiceBroker ready');
@@ -1087,9 +1307,12 @@ else
 	}
 }
 
+
 Appcelerator.Core.onunload(Appcelerator.Util.ServiceBroker.destroy.bind(Appcelerator.Util.ServiceBroker));
 Appcelerator.Compiler.afterDocumentCompile(function()
 {
 	Appcelerator.Util.ServiceBroker.triggerComplete();
 });
+
+
 
