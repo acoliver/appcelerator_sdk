@@ -916,6 +916,19 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		widgetParameters['id'] = id;
 
 		//
+		// building custom functions
+		//
+		var functions = null;
+		if (module.getFunctions)
+		{
+			functions = module.getFunctions();
+			for (var c=0;c<functions.length;c++)
+			{
+				Appcelerator.Compiler.buildCustomAction(functions[c]);
+			}
+		}
+
+		//
 		// parse on attribute
 		//
 		if (!Appcelerator.Compiler.isCompiledMode)
@@ -1071,8 +1084,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			
 			// 
 			// attach any special widget functions
-			// 				
-			var functions = instructions.functions;
+			//
 			if (functions)
 			{
 				for (var c=0;c<functions.length;c++)

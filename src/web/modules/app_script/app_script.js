@@ -33,6 +33,10 @@ Appcelerator.Module.Script =
 	{
 		return 'app:script';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "May be used to execute the script's content."}];
@@ -60,8 +64,7 @@ Appcelerator.Module.Script =
 			if (parameters['on'])
 			{
 				return {
-					'position' : Appcelerator.Compiler.POSITION_REMOVE,
-					'functions' : ['execute']
+					'position' : Appcelerator.Compiler.POSITION_REMOVE
 				};
 			}
 			else

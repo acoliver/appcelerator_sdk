@@ -35,6 +35,10 @@ Appcelerator.Module.Calendar =
 	{
 		return 'app:calendar';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "May be used to execute the calendar."},
@@ -113,7 +117,6 @@ Appcelerator.Module.Calendar =
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
-			'functions' : ['execute'],
 			'compile' : true 
 	   };	
 	}

@@ -323,14 +323,6 @@ Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabl
 	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope])' + suffix;
 };
 
-Appcelerator.Compiler.registerCustomAction('execute',
-{
-	build: function(id,action,params)
-	{
-		return Appcelerator.Compiler.buildActionFunction(id,'execute',params);
-	}
-});
-
 Appcelerator.Compiler.registerCustomAction('selectOption',
 {
 	build: function(id,action,params)
@@ -817,3 +809,15 @@ for (var c=0,len=Appcelerator.Compiler.GenericFunctions.length;c<len;c++)
 	var f = new GenericActionFunction(gf[1]);
 	Appcelerator.Compiler.registerCustomAction(gf[0],f);
 }
+
+Appcelerator.Compiler.buildCustomAction = function (name)
+{
+	$D('building ' + name);
+	var action = Appcelerator.Compiler.customActions[name];
+	
+	if (!action)
+	{
+		var f = new GenericActionFunction(false);
+		Appcelerator.Compiler.registerCustomAction(name,f);
+	}
+};

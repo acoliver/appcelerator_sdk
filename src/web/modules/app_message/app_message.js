@@ -37,6 +37,10 @@ Appcelerator.Module.Message =
 	{
 		Appcelerator.Module.Message.sendMessage(parameterMap);
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "May be used to express when the message should be fired (executed)."},
@@ -62,7 +66,6 @@ Appcelerator.Module.Message =
 		{
 			return {
 				'position' : Appcelerator.Compiler.POSITION_REMOVE,
-				'functions': ['execute'],
 				'parameters': parameters
 			};
 		}

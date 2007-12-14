@@ -33,6 +33,10 @@ Appcelerator.Module.Iterator =
 	{
 		return 'app:iterator';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	execute: function(id,parameterMap,data,scope)
 	{
 		var compiled = parameterMap['compiled'];
@@ -159,7 +163,6 @@ Appcelerator.Module.Iterator =
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters,
-			'functions' : ['execute'],
 			'wire' : true,
 			'compile' : compile
 		};

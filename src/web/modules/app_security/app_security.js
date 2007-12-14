@@ -40,6 +40,10 @@ Appcelerator.Module.Security =
 		Appcelerator.Module.Security.eventReceived = {data:data,scope:scope,version:version};
 		Appcelerator.Module.Security.executeSecurity();
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "May be used to execute the widget"}];
@@ -74,8 +78,7 @@ Appcelerator.Module.Security =
 				
 				return {
 					'position' : Appcelerator.Compiler.POSITION_REMOVE,
-					'parameters': parameters,
-					'functions' : ['execute']
+					'parameters': parameters
 				};
 			}
 			else

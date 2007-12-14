@@ -33,6 +33,10 @@ Appcelerator.Module.Modaldialog =
 	{
 		return 'app:modaldialog';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	execute: function(id,parameterMap,data,scope)
 	{
 		var compiled = parameterMap['compiled'];
@@ -131,7 +135,6 @@ Appcelerator.Module.Modaldialog =
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE,
-			'functions' : ['execute'],
 			'parameters': parameters,
 			'wire':true			
 		};

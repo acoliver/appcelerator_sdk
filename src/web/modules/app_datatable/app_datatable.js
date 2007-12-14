@@ -38,6 +38,10 @@ Appcelerator.Module.Datatable =
 	{
 		return 'app:datatable';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	createDataTable: function (id, pagination_direction)
 	{		
 		//list of on attributes to be parsed and evaluated at the end of create
@@ -456,8 +460,7 @@ Appcelerator.Module.Datatable =
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'compile': true,
-			'parameters': parameters,
-			'functions' : ['execute']
+			'parameters': parameters
 		};
 	}
 };

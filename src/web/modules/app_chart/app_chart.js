@@ -36,6 +36,10 @@ Appcelerator.Module.Chart =
 	{
 		return 'app:chart';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "Used to display the chart."},
@@ -71,8 +75,7 @@ Appcelerator.Module.Chart =
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'parameters': parameters,
-			'functions' : ['execute']
+			'parameters': parameters
 		};
 	},
 	execute: function(id,parameterMap,data)

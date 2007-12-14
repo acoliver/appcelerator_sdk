@@ -33,6 +33,10 @@ Appcelerator.Module.Content =
 	{
 		return 'app:content';
 	},
+	getFunctions: function()
+	{
+		return ['execute']
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "May be used to execute/load the content."},
@@ -73,8 +77,7 @@ Appcelerator.Module.Content =
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
-			'compile' : true,
-			'functions': parameters['on'] ? ['execute'] : null
+			'compile' : true
 		};
 	},
 	fetch: function (target,src,args,onload,onfetch)
