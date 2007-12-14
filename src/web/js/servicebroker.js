@@ -1119,6 +1119,48 @@ function jsonToQueryParams(json)
 };
 
 /**
+ * given an element will encode the element and it's children to 
+ * json
+ */
+function json_encode_xml (node,json)
+{
+   var obj = {};
+   var found = json[node.nodeName];
+   if (found)
+   {
+       if (Object.isArray(found))
+       {
+          found.push(obj);
+       } 
+       else
+       {
+          json[node.nodeName] = [found,obj];
+       }
+   }
+   else
+   {
+       json[node.nodeName] = obj;
+   }
+ 
+   Appcelerator.Util.Dom.eachAttribute(node,function(name,value)
+   {
+       obj[name]=value;
+   });
+   var added = false;
+   Appcelerator.Util.Dom.each(node.childNodes,Appcelerator.Util.Dom.ELEMENT_NODE,function(child)
+   {
+       json_encode_xml(child,obj);
+       added = true;
+   });
+   if (!added)
+   {
+     var text = Appcelerator.Util.Dom.getText(node);
+     json[node.nodeName] = text;
+   }
+}
+
+
+/**
  * Form URL encoded service marshaller
  */
 Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] = 
