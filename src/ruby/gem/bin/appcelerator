@@ -39,6 +39,7 @@ FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/modules", "#{p}/public"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/README", "#{p}"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/routes.rb", "#{p}/config"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_controller.rb", "#{p}/app/controllers"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/upload_controller.rb", "#{p}/app/controllers"
 result = ERB.new(File.read("#{p}/app/controllers/service_broker_controller.rb")).result(binding)
 f = File.new("#{p}/app/controllers/service_broker_controller.rb",'w')
 f.write(result)
