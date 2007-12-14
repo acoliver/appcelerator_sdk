@@ -61,11 +61,11 @@
 .button_light_square_middle_disabled { background-image: url('../images/light_square_middle_disabled.png'); background-repeat: repeat-x; }
 .button_light_square_right_disabled { background-image: url('../images/light_square_right_disabled.png'); height: 32px; width: 9px; }
 
-.button_icon_add_green { background-image: url('../images/icon_add_green.png'); height: 17px; width: 17px; }
-.button_icon_add_gray { background-image: url('../images/icon_add_gray.png'); height: 17px; width: 17px; }
-.button_icon_delete_red { background-image: url('../images/icon_delete_red.png'); height: 17px; width: 17px; }
-.button_icon_delete_gray { background-image: url('../images/icon_delete_gray.png'); height: 17px; width: 17px; }
-.button_icon_edit_yellow { background-image: url('../images/icon_edit_yellow.png'); height: 17px; width: 17px; }
-.button_icon_edit_gray { background-image: url('../images/icon_edit_gray.png'); height: 17px; width: 17px; }
-.button_icon_save_blue { background-image: url('../images/icon_save_blue.png'); height: 17px; width: 17px; }
-.button_icon_save_gray { background-image: url('../images/icon_save_gray.png'); height: 17px; width: 17px; }
+.button_icon_add_green { background-repeat: no-repeat; background-image: url('../images/icon_add_green.png'); height: 17px; width: 17px; }
+.button_icon_add_gray { background-repeat: no-repeat; background-image: url('../images/icon_add_gray.png'); height: 17px; width: 17px; }
+.button_icon_delete_red { background-repeat: no-repeat; background-image: url('../images/icon_delete_red.png'); height: 17px; width: 17px; }
+.button_icon_delete_gray { background-repeat: no-repeat; background-image: url('../images/icon_delete_gray.png'); height: 17px; width: 17px; }
+.button_icon_edit_yellow { background-repeat: no-repeat; background-image: url('../images/icon_edit_yellow.png'); height: 17px; width: 17px; }
+.button_icon_edit_gray { background-repeat: no-repeat; background-image: url('../images/icon_edit_gray.png'); height: 17px; width: 17px; }
+.button_icon_save_blue { background-repeat: no-repeat; background-image: url('../images/icon_save_blue.png'); height: 17px; width: 17px; }
+.button_icon_save_gray { background-repeat: no-repeat; background-image: url('../images/icon_save_gray.png'); height: 17px; width: 17px; }
