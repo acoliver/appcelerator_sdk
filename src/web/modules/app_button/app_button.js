@@ -33,6 +33,10 @@ Appcelerator.Module.Button =
 	{
 		return 'app:button';
 	},
+	getActions: function()
+	{
+		return ['enable', 'disable'];
+	},	
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true},
@@ -207,7 +211,6 @@ Appcelerator.Module.Button =
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'functions' : ['enable', 'disable'],
 			'compile' : true,
 			'wire' : true
 		};

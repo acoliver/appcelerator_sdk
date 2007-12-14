@@ -38,7 +38,7 @@ Appcelerator.Module.Chart =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	getAttributes: function()
 	{

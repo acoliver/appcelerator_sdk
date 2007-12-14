@@ -40,7 +40,7 @@ Appcelerator.Module.Datatable =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	createDataTable: function (id, pagination_direction)
 	{		

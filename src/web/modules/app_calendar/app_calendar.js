@@ -37,7 +37,7 @@ Appcelerator.Module.Calendar =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},
 	getAttributes: function()
 	{

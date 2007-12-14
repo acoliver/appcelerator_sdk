@@ -42,7 +42,7 @@ Appcelerator.Module.Security =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	getAttributes: function()
 	{

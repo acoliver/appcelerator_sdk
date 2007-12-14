@@ -35,7 +35,7 @@ Appcelerator.Module.Script =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	getAttributes: function()
 	{

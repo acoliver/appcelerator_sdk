@@ -42,6 +42,10 @@ Appcelerator.Module.Panel =
     {
         return true;
     },
+	getActions: function()
+	{
+		return ['toggle', 'shade', 'unshade', 'close'];
+	},	
 	getAttributes: function()
 	{
         return [{name: 'header_text', optional: true, description: 'The text that should be displayed in the header.  Setting a value implies a header will be shown'},
@@ -235,7 +239,6 @@ Appcelerator.Module.Panel =
 		return {
             'presentation': html.join(' '),
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-            'functions' : ['toggle', 'shade', 'unshade', 'close'],
             'compile': true,
             'wire': true
 		};

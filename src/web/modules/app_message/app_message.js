@@ -39,7 +39,7 @@ Appcelerator.Module.Message =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	getAttributes: function()
 	{

@@ -41,7 +41,7 @@ Appcelerator.Module.Rest =
 	},
 	getActions: function()
 	{
-		return ['post', 'get']
+		return ['post', 'get'];
 	},
 	post: function(id,params,data,scope,version)
 	{

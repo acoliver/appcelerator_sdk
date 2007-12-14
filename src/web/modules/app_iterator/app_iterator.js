@@ -35,7 +35,7 @@ Appcelerator.Module.Iterator =
 	},
 	getActions: function()
 	{
-		return ['execute']
+		return ['execute'];
 	},	
 	execute: function(id,parameterMap,data,scope)
 	{
