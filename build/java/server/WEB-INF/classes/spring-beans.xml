@@ -77,6 +77,10 @@
         <property name="urlPattern" value="/download"/>
     </bean>
 
+    <bean id="proxyServlet" class="org.appcelerator.servlet.proxy.ProxyServlet">
+        <property name="urlPattern" value="/proxy"/>
+    </bean>
+
     <bean id="routerService" class="org.appcelerator.router.ServiceRouter">
         <property name="sharedSecret" value="#{shared.secret}"/>
     </bean>

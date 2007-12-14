@@ -634,7 +634,7 @@
 			config = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install.pth"
 			confignew = File.open "/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/easy-install_temp.pth", "w"
 			config.each_line do |line|
-				if line =~ /.\/Appcelerator-2.0.1-py2.5.egg.*/
+				if line =~ /.\/Appcelerator-2.0.2-py2.5.egg.*/
 					puts "ingoring #{line}".chomp
 				else
 					confignew.puts "#{line}".chomp
