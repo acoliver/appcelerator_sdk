@@ -39,7 +39,7 @@ Appcelerator.Module.Rest =
 				{name: 'response', optional: true, description: "Response message when success"},
 				{name: 'error', optional: true, description: "Message to fire when errors received"}];
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['post', 'get']
 	},

@@ -33,7 +33,7 @@ Appcelerator.Module.Iterator =
 	{
 		return 'app:iterator';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

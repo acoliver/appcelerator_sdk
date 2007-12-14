@@ -33,7 +33,7 @@ Appcelerator.Module.Modaldialog =
 	{
 		return 'app:modaldialog';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

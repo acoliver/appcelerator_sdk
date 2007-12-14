@@ -35,7 +35,7 @@ Appcelerator.Module.Calendar =
 	{
 		return 'app:calendar';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},

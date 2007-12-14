@@ -37,7 +37,7 @@ Appcelerator.Module.Message =
 	{
 		Appcelerator.Module.Message.sendMessage(parameterMap);
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

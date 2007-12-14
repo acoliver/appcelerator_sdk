@@ -40,7 +40,7 @@ Appcelerator.Module.Security =
 		Appcelerator.Module.Security.eventReceived = {data:data,scope:scope,version:version};
 		Appcelerator.Module.Security.executeSecurity();
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

@@ -919,9 +919,9 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		// building custom functions
 		//
 		var functions = null;
-		if (module.getFunctions)
+		if (module.getActions)
 		{
-			functions = module.getFunctions();
+			functions = module.getActions();
 			for (var c=0;c<functions.length;c++)
 			{
 				Appcelerator.Compiler.buildCustomAction(functions[c]);

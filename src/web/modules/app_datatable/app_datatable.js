@@ -38,7 +38,7 @@ Appcelerator.Module.Datatable =
 	{
 		return 'app:datatable';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

@@ -33,7 +33,7 @@ Appcelerator.Module.Content =
 	{
 		return 'app:content';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

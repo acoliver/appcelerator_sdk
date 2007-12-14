@@ -36,7 +36,7 @@ Appcelerator.Module.Chart =
 	{
 		return 'app:chart';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	

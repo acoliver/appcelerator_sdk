@@ -33,7 +33,7 @@ Appcelerator.Module.Script =
 	{
 		return 'app:script';
 	},
-	getFunctions: function()
+	getActions: function()
 	{
 		return ['execute']
 	},	
