@@ -59,6 +59,8 @@ Appcelerator.Module.Rest =
 
 		var property = uri['property'];
 		var methodParams = uri['args'];
+		var responseRegex = uri['responseRegex'];
+		
 		if (!methodParams && property)
 		{
 	 		var array = Object.getNestedProperty(data,property);
@@ -81,7 +83,7 @@ Appcelerator.Module.Rest =
 				var proxy = Appcelerator.ServerConfig['proxy'];
 				if (proxy)
 				{
-					uriLink = proxy.value + '?url='+ uriLink;
+					uriLink = proxy.value + '?url='+ encodeURIComponent(uriLink);
 				}
 			}
 		}
@@ -103,9 +105,19 @@ Appcelerator.Module.Rest =
 					{
 						json_encode_xml(result.responseXML.documentElement, json_result);
 					}
-					else if (contentType.indexOf('/json') > 0)
+					else if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0)
 					{
-						json_result = result.responseText.evalJSON();
+					    var text = result.responseText.trim();
+					    if (responseRegex)
+					    {
+					       var re = new RegExp(responseRegex);
+					       var match = re.exec(text);
+					       if (match && match.length > 1)
+					       {
+					          text = match[1];
+					       }
+					    }
+						json_result = text.evalJSON();
 					}
 					else
 					{
@@ -157,7 +169,7 @@ Appcelerator.Module.Rest =
 				if (node.nodeType == 1 && node.nodeName == 'URI')
 				{
 					uriLink = Appcelerator.Compiler.compileTemplate(node.getAttribute('uri'),true,'init_'+element.id);
-					var uri = {uri: uriLink, response: node.getAttribute('response'), args: node.getAttribute('args'), property: node.getAttribute('property'), error: node.getAttribute('error')};
+					var uri = {uri: uriLink, response: node.getAttribute('response'), args: node.getAttribute('args'), property: node.getAttribute('property'), error: node.getAttribute('error'), responseRegex: node.getAttribute('responseRegex')};
 					uris[node.getAttribute('method')] = uri;
 				}
 			})();
