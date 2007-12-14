@@ -70,6 +70,21 @@ Appcelerator.Module.Rest =
 		
 		var compiled = eval(uri['uri'] + '; init_'+params['id']);
 		var uriLink = compiled(data);
+		
+		if (uriLink.startsWith('http://'))
+		{
+			var uriStrip = uriLink.match('http://[^/]*');
+			var currentStrip = window.location.href.match('http://[^/]*');
+			
+			if (uriStrip[0].toLowerCase() != currentStrip[0].toLowerCase())
+			{
+				var proxy = Appcelerator.ServerConfig['proxy'];
+				if (proxy)
+				{
+					uriLink = proxy.value + '?'+ uriLink;
+				}
+			}
+		}
 
 		$D('app:rest sending request to ' + uriLink + ' with params '  + methodParams);
 		new Ajax.Request(uriLink,
