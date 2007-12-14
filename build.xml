@@ -25,6 +25,8 @@
 	
 	<target name="clean" description="* Removes temporary build directories">
 		<delete dir="${stage.dir}"/>
+		<delete dir="${src.python.dir}/dist"/>
+		<delete dir="${src.python.dir}/build"/>
 	</target>
 
 	<target name="init">
