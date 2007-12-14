@@ -81,7 +81,7 @@ Appcelerator.Module.Rest =
 				var proxy = Appcelerator.ServerConfig['proxy'];
 				if (proxy)
 				{
-					uriLink = proxy.value + '?'+ uriLink;
+					uriLink = proxy.value + '?url='+ uriLink;
 				}
 			}
 		}
