@@ -20,8 +20,8 @@ spec = Gem::Specification.new do |s|
     s.require_path  =   "lib"
     s.default_executable = %q{appcelerator}
     s.executables = %w(appcelerator)
+    s.requirements << 'One of the following gems: json or json_pure, version 0.4.3 or newer'
     s.add_dependency('rails', '>= 1.2.3')
-    s.add_dependency('json', '>= 0.4.3')
     s.add_dependency('hpricot', '>= 0.5.0')
 end
 

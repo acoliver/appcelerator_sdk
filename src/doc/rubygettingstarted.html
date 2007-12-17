@@ -41,7 +41,7 @@
 			<li>Additional gems (the following are not packaged with the distribution)</li>
 			<ul>
 				<li>rails (>= 1.2.3)</li>
-				<li>json (>= 0.4.3)</li>
+				<li>json (>= 0.4.3) [if using Windows and you do not have Visual Studio installed, use json_pure (>= 0.4.3) instead]</li>
 				<li>hpricot (>= 0.5.0)</li>
 			</ul>
 		</ul>
@@ -69,6 +69,9 @@
 			now you can start the service
 			<pre class="command">cd $APP
 script/server</pre>
+			In Windows, use
+			<pre class="command">cd $APP
+ruby script/server</pre>
 			You can take a look at the starting page at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>
 		</p>
 	
@@ -129,6 +132,8 @@ script/server</pre>
 			<h3>Next Steps</h3>
 			You may want to kill and restart rails
 			<pre class="command">script/server</pre>
+			In Windows, use 
+			<pre class="command">ruby script/server</pre>
 		</p>
 	</div>
 	<script>
