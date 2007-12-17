@@ -1021,7 +1021,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 			                return;
 			            }
 		                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-						msgs.push({type:type,datatype:datatype,scope:scope,requestid:requestid});
+						msgs.push({type:type,data:data,datatype:datatype,scope:scope,requestid:requestid});
                     }
                     catch (e)
                     {
