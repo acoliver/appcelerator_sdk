@@ -57,8 +57,7 @@
 		<h3>Deploy</h3>
 		<p>
 		If you are running apache with the php support then you can simply copy to your sites directory
-			<pre class="command">cp -R src/web/* $APACHE_USERHOME
-cp -R src/php/* $APACHE_USERHOME</pre>
+			<pre class="command">cp -R src/* $APACHE_USERHOMEE</pre>
 		Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html" target="_blank">http://localhost/~$USER/index.html</a>
 
 		<h3>Testing</h3>
@@ -86,7 +85,7 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 			<li>you put the proper comments directly above the method <tt>@Service(request=xxx,response=xxx,version=xx) </tt>
 		</ul>
 
-		<h3>src/php/services/contact_manager_service.php</h3>
+		<h3>src/services/contact_manager_service.php</h3>
 		You could create a new class ContactManagerService with the following source
 		<textarea name="code" class="xml:nocontrols">
 @contact_manager_service.php@
@@ -94,7 +93,7 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 		
 		<h3>Next Steps</h3>
 		Copy over your php files
-		<pre class="command">cp -R src/php/* $APACHE_USERHOME</pre>
+		<pre class="command">cp -R src/* $APACHE_USERHOME</pre>
 
 		<h3>Troubleshooting</h3>
 		On apache, you can view the logs to see what exceptions may occur based upon your ErrorLog config (/etc/httpd/httpd.conf)
@@ -106,18 +105,18 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 			<h3>Web Implementation</h3>
 			Once you have created your project, your web source will exist in:
 			<ul>
-				<li><b>src/web</b>: directory where all your html exists
-				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
-				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+				<li><b>src</b>: directory where all your html exists
+				<li><b>src/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>examples/simple/src/index.html</b>: the sample source used for this demonstration
 			</ul>
 
-			<h3>src/web/appcelerator.xml</h3>
+			<h3>src/appcelerator.xml</h3>
 			You should not have to make any changes to this file
 			<textarea name="code" class="xml:nocontrols">
 @appcelerator-php.xml@
 			</textarea>
 
-			<h3>src/web/index.html</h3>
+			<h3>src/index.html</h3>
 			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
 			source for this is also available under examples/simple/src/web/index.html in your project directory.
 			<textarea name="code" class="xml:nocontrols">
@@ -126,7 +125,7 @@ cp -R src/php/* $APACHE_USERHOME</pre>
 
 			<h3>Next Steps</h3>
 			Copy over your web files
-			<pre class="command">cp -R src/web/* $APACHE_USERHOME</pre>
+			<pre class="command">cp -R src/* $APACHE_USERHOME</pre>
 			You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=service]">PHP Service</a>
 		</p>
 	</div>

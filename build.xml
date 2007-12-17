@@ -377,14 +377,15 @@
 			<fileset dir="${build.php.dir}/sdk" includes="README,*.*"/>
 			<fileset dir="." includes="LICENSE"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php/src/web" filtering="false"> 
+		<copy todir="${stage.dir}/sdk/php/src" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php/src/php" filtering="false"> 
+		<copy todir="${stage.dir}/sdk/php/src" filtering="false"> 
 			<fileset dir="${src.php.dir}" includes="**/*"/>
 		</copy>
-		<copy todir="${stage.dir}/sdk/php" filtering="false" overwrite="true"> 
-			<fileset dir="${build.php.dir}/sdk/dist" includes="**"/>
+		<copy todir="${stage.dir}/sdk/php/src" filtering="false" overwrite="true"> 
+			<fileset dir="${build.php.dir}/sdk/dist/src/php" includes="**"/>
+			<fileset dir="${build.php.dir}/sdk/dist/src/web" includes="**"/>
 		</copy>
 		<!--
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
@@ -826,8 +827,7 @@
 		<fail unless="php.deploy.dir.exists">Directory ${php.deploy.dir} doesn't exist.</fail>
 		<echo>using src dir of ${php.project.dir}</echo>
 		<copy todir="${php.deploy.dir}">
-			<fileset dir="${php.project.dir}/src/web" includes="**/**,*.*" />
-			<fileset dir="${php.project.dir}/src/php" includes="**/**,*.*" />
+			<fileset dir="${php.project.dir}/src" includes="**/**,*.*" />
 		</copy>
 	</target>
 	<target name="undeploy_php">
