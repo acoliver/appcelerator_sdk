@@ -55,7 +55,11 @@ Appcelerator.Module.Panel =
             {name: 'shade', optional: true, description: 'Set to true to enable shade/unshade.  Setting this implies the header will be shown'},
             {name: 'on', optional: true, description: 'Set to enable the widget to listen to events'},
             {name: 'draggable', optional: true, description: 'Set to enable draging'},
-            {name: 'resizable', optional: true, description: 'Set to enable the widget to be resized'}
+            {name: 'resizable', optional: true, description: 'Set to enable the widget to be resized'},
+            {name: 'tail', optional: true, description: 'Set to right or left to show a tail under the box (speech bubble)'},
+            {name: 'width', optional: true, description: 'Width of the dialog box'},
+            {name: 'height', optional: true, description: 'Height for the dialog box'},
+            {name: 'userClass', optional: true, description: 'Additional classes for the dialog'}
         ];
 	},
     toggle: function(id,parameters,data,scope,version) 
@@ -81,7 +85,7 @@ Appcelerator.Module.Panel =
         {
             shadeButton.style.display = 'none';
             $(id + '_unshade').style.display = 'block';
-            $(id).addClassName("shade");
+            $(id).firstDescendant().addClassName("shade");
             $MQ('l:' + id + '.shaded');
             if(Appcelerator.Browser.isIE)
             {
@@ -97,7 +101,7 @@ Appcelerator.Module.Panel =
         {
             $(id + '_unshade').style.display = 'none';
             $(id + '_shade').style.display = 'block';
-            $(id).removeClassName("shade");
+            $(id).firstDescendant().removeClassName("shade");
             $MQ('l:' + id + '.unshaded');
         }
     },
@@ -107,6 +111,16 @@ Appcelerator.Module.Panel =
         var shadeButton = $(id + "_shade"); 
         var unshadeButton = $(id + "_unshade"); 
         var closeButton = $(id + "_close"); 
+        
+        if(typeof params['height'] != "undefined")
+        {
+            $(id ).style.height = params['height'];   
+        }
+        
+        if(typeof params['width'] != "undefined")
+        {
+            $(id).style.width = params['width'];
+        }
         
         if(null != closeButton) 
         {
@@ -136,23 +150,24 @@ Appcelerator.Module.Panel =
             Event.observe(unshadeButton, "click", function(event){ Appcelerator.Module.Panel.unshade(id)});
         }
         
-		// window.eval(params['code']);
 	},
 	buildWidget: function(element,parameters)
 	{
         var panelStyle = 'AP_DGRP';
         var headerText = parameters['header_text'];
         var shadeButton = parameters['shade'] == 'true';
-        var hideHeader = "without_header";
+        var collapsed = "collapsed";
         var closeButton = parameters['close'] == 'true';
+        var tail = parameters['tail'];
         
         if(typeof headerText != 'undefined' || shadeButton)
         {
-            hideHeader = "";
-            if(typeof headerText == 'undefined')
-            {
-                headerText = "";
-            }
+            collapsed = "";
+        }
+        
+        if(typeof headerText == 'undefined')
+        {
+            headerText = "";
         }
         
         var color = 'light_gray';
@@ -172,31 +187,46 @@ Appcelerator.Module.Panel =
         }
         
         var extraPadding = "";
-        if(closeButton && hideHeader == 'without_header')
+        if(closeButton && collapsed == 'collapsed')
         {
             extraPadding = "extra_padding";
         }
         var text = Appcelerator.Compiler.getHtml(element);
        
+        /* build the main div declaration */
+        var divTop = [];
         var html = [];
-        var divTop = '<div class="app_panel ' + panelStyle + '" id="' + element.id + '"';
+        var userClassName = "";
+        
+        if(typeof parameters['userClass'] != 'undefined')
+        {
+            userClassName = parameters['userClass'];
+        }
+        divTop.push('<div class="app_panel ' + panelStyle + ' ' + userClassName + '" id="' + element.id + '"');
+        
         if(typeof parameters['on'] != 'undefined')
         {
-            divTop += ' on="' + parameters['on'] + '"'; 
+            divTop.push(' on="' + parameters['on'] + '"'); 
         }
         if(typeof parameters['draggable'] != 'undefined')
         {
-            divTop += ' draggable="' + parameters['draggable'] + '"'; 
+            divTop.push(' draggable="' + parameters['draggable'] + '"'); 
         }
         
         if(typeof parameters['resizable'] != 'undefined')
         {
-            divTop += ' resizable="' + parameters['resizable'] + '"'; 
+            divTop.push(' resizable="' + parameters['resizable'] + '"'); 
         }
         
-        divTop += '>';
+        divTop.push('>');
         
-		html.push(divTop);
+        var html = [];
+        
+		html.push(divTop.join(' '));
+        html.push('<div class="app_panel_container ' + collapsed + '">');
+        
+        html.push('<div class="panel_header_container"> <div class="panel_hl"> </div> <div class="panel_hr"> </div>');
+        html.push('<div class="panel_hc">');
         if(closeButton || shadeButton)
         {
             html.push("<div class='button_panel'>");
@@ -211,31 +241,32 @@ Appcelerator.Module.Panel =
             }
             html.push('</div>');
         }
-        html.push('<table class="app_panel ' + hideHeader + '">');
-        html.push('<tr class="top_row">');
-        html.push('<td class="panel_tl left_column"></td>');
-        html.push('<td class="panel_tc"></td>');
-        html.push('<td class="panel_tr right_column"></td>');
-        html.push('</tr>');
-        html.push('<tr class="header_row ' + hideHeader + '">');
-        html.push('<td class="panel_hl left_column"></td>');
-        html.push('<td class="panel_hc"><h3>' + headerText + '</h3></td>');
-        html.push('<td class="panel_hr right_column"></td>');
-        html.push('</tr>');
-        html.push('<tr class="content_row">');
-        html.push('<td class="panel_cl left_column"></td>');
-        html.push('<td class="panel_cc ' + extraPadding + '">'+ text +'</td>');
-        html.push('<td class="panel_cr right_column"></td>');
-        html.push('</tr>');
-        html.push('<tr class="bottom_row">');
-        html.push('<td class="panel_gl left_column"></td>');
-        html.push('<td class="panel_gc"></td>');
-        html.push('<td class="panel_gr right_column"></td>');
-        html.push('</tr>');
-        html.push('</table>');
+        html.push('<div class="panel_header">');
+        html.push('<h3>' + headerText + '</h3>');
         html.push('</div>');
-        
-		
+        html.push('</div> </div>');
+        html.push('<div id="' + element.id + '_content" class="ap_body"> ');
+        html.push('<div class="panel_content_container" >');
+        html.push('<div class="panel_cl"></div>');
+        html.push('<div class="panel_cr"></div>');
+        html.push('<div class="panel_cc">');
+        html.push('<div class="panel_body"  >');
+        html.push(text);
+        html.push('</div>');
+        html.push('</div>');
+        html.push('</div>');
+        html.push('<div class="panel_footer_container"> <div class="panel_fl"> </div> <div class="panel_fr"> </div> <div class="panel_fc"> </div>');
+        if (typeof tail != 'undefined') {
+            html.push('<div class="panel_tail">');
+            html.push('<div class="tail_' + tail + '">');
+            html.push('</div>');
+            html.push('</div>');
+        }
+        html.push('</div>');
+        html.push('</div>');
+        html.push('</div>');
+        html.push('</div>');
+        Logger.info(html.join('\n'));
 		return {
             'presentation': html.join(' '),
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
