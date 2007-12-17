@@ -1,9 +1,23 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
+
+
+
+
+
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+    
 <head>
     <script type="text/javascript" src="../js/appcelerator.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/test.css" />
+    <style type="text/css">
+        .my_dimensions 
+        {
+            height: 100px;
+            width: 100px;
+        }   
+             
+    </style>
 </head>
 <body>
 
@@ -11,15 +25,175 @@
 <p>
     These tests exercise the panel widget
 </p>
-
+<!--
+<div class="app_panel AP_DGRP " id="app_43" > 
+    <div class="app_panel_container collapsed">  
+        <div class="panel_header_container"> <div class="panel_hl"> </div> <div class="panel_hr"> </div>
+            <div class="panel_hc">
+                <div class="panel_header"> 
+                    <h3></h3> 
+                </div> 
+            </div>
+        </div>
+ 
+        <div class="ap_body"> 
+            <div class="panel_cl">
+                <div class="panel_cr"> 
+                    <div class="panel_cc"> 
+                        <div class="panel_body">  To be, or not to be - that is the question: 
+                            <br>  Whether 'tis nobler in the mind to suffer 
+                            <br>  The slings and arrows of outrageous fortune 
+                            <br>  
+                        </div> 
+                        <div class="panel_tail"> 
+                            <div class="tail_right"> 
+                            </div>
+                        </div> 
+                    </div> 
+                </div>
+            </div> 
+            <div class="panel_footer_container"> <div class="panel_fl"> </div> <div class="panel_fr"> </div> <div class="panel_fc"> </div>
+            </div>
+        </div> 
+    </div>
+ </div>
+ -->
 <table width="90%">
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            Set dimensions via width and height
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" rounded='true' tail="left" width="100px" height="150px">
+                BAM!
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            Set dimensions via style
+        </td>
+        <td class="result">
+            <app:panel userClass="my_dimensions" color="light_gray" rounded='true' tail="right">
+                POW!
+            </app:panel>
+        </td>
+    </tr>
+     <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a light gray speech bubble with the tail in the left
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' tail="left">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a light gray speech bubble with the tail in the right
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' tail="right">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a light gray squared speech bubble with the tail on the left
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" tail="left">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a light gray squared speech bubble with the tail on the right
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" tail="right">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+     <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a dark gray speech bubble with the tail in the left
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" rounded='true' tail="left">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a dark gray speech bubble with the tail in the right
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" rounded='true' tail="right">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a dark gray squared speech bubble with the tail on the left
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" tail="left">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a dark gray squared speech bubble with the tail on the right
+        </td>
+        <td class="result">
+            <app:panel color="dark_gray" tail="right">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
     <tr>
         <td class="test" width="50%" valign="middle">
             You should see a shadeable panel without a close button and no header text
         </td>
         <td class="result">
             <app:panel color="light_gray" rounded='true' shade="true" >
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+        <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a shadeable panel without a close button and no header text
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' shade="true" >
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -31,7 +205,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" shade="true" close="true" header_text="Hamlet By Shakespeare">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -43,7 +217,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" rounded='true' shade="true" on="l:panel.shade.example1 then hide">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -55,7 +229,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" rounded='true' header_text="Resize Me" resizable="true">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -67,7 +241,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" rounded='true' shade="true" draggable="true" >
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -79,7 +253,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" header_text="Hamlet By Shakespeare">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -91,7 +265,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -103,7 +277,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" header_text="Hamlet By Shakespeare" rounded="true">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -115,7 +289,7 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" rounded="true">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -127,7 +301,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" header_text="Hamlet By Shakespeare">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -139,7 +313,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -151,7 +325,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" header_text="Hamlet By Shakespeare" rounded="true">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -163,7 +337,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" rounded="true">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
             </app:panel>
@@ -175,7 +349,7 @@
         </td>
         <td class="result">
             <app:panel color="light_gray" rounded="true" close="true" shadable="true">
-                To be, or not to be--that is the question:
+                To be, or not to be - that is the question:
                 Whether 'tis nobler in the mind to suffer
                 The slings and arrows of outrageous fortune 
             </app:panel>
@@ -187,16 +361,16 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray">
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
                 Or to take arms against a sea of troubles  <br />
-                And by opposing end them. To die, to sleep--  <br />
-                No more--and by a sleep to say we end  <br />
+                And by opposing end them. To die, to sleep -   <br />
+                No more - and by a sleep to say we end  <br />
                 The heartache, and the thousand natural shocks <br /> 
                 That flesh is heir to. 'Tis a consummation  <br />
-                Devoutly to be wished. To die, to sleep--  <br />
-                To sleep--perchance to dream: ay, there's the rub,  <br />
+                Devoutly to be wished. To die, to sleep -   <br />
+                To sleep - perchance to dream: ay, there's the rub,  <br />
                 For in that sleep of death what dreams may come  <br />
                 When we have shuffled off this mortal coil,  <br />
                 Must give us pause. There's the respect  <br />
@@ -219,8 +393,8 @@
                 Is sicklied o'er with the pale cast of thought,  <br />
                 And enterprise of great pitch and moment  <br />
                 With this regard their currents turn awry  <br />
-                And lose the name of action. -- Soft you now,  <br />
-                The fair Ophelia! -- Nymph, in thy orisons  <br />
+                And lose the name of action.  -  Soft you now,  <br />
+                The fair Ophelia!  -  Nymph, in thy orisons  <br />
                 Be all my sins remembered. <br />
             </app:panel>
         </td>
@@ -231,16 +405,16 @@
         </td>
         <td class="result">
             <app:panel color="dark_gray" header_text="Hamlet By Shakespeare" color='dark_gray'>
-                To be, or not to be--that is the question: <br />
+                To be, or not to be - that is the question: <br />
                 Whether 'tis nobler in the mind to suffer  <br />
                 The slings and arrows of outrageous fortune  <br />
                 Or to take arms against a sea of troubles  <br />
-                And by opposing end them. To die, to sleep--  <br />
-                No more--and by a sleep to say we end  <br />
+                And by opposing end them. To die, to sleep -   <br />
+                No more - and by a sleep to say we end  <br />
                 The heartache, and the thousand natural shocks <br /> 
                 That flesh is heir to. 'Tis a consummation  <br />
-                Devoutly to be wished. To die, to sleep--  <br />
-                To sleep--perchance to dream: ay, there's the rub,  <br />
+                Devoutly to be wished. To die, to sleep -   <br />
+                To sleep - perchance to dream: ay, there's the rub,  <br />
                 For in that sleep of death what dreams may come  <br />
                 When we have shuffled off this mortal coil,  <br />
                 Must give us pause. There's the respect  <br />
@@ -263,15 +437,13 @@
                 Is sicklied o'er with the pale cast of thought,  <br />
                 And enterprise of great pitch and moment  <br />
                 With this regard their currents turn awry  <br />
-                And lose the name of action. -- Soft you now,  <br />
-                The fair Ophelia! -- Nymph, in thy orisons  <br />
+                And lose the name of action.  -  Soft you now,  <br />
+                The fair Ophelia!  -  Nymph, in thy orisons  <br />
                 Be all my sins remembered. <br />
             </app:panel>
         </td>
-    </tr>    
+    </tr>  
 </table>
-
-
 </body>
 
 </html>

@@ -112,14 +112,33 @@ Appcelerator.Module.Panel =
         var unshadeButton = $(id + "_unshade"); 
         var closeButton = $(id + "_close"); 
         
+        var setDimensions = false;
         if(typeof params['height'] != "undefined")
         {
-            $(id ).style.height = params['height'];   
+            $(id).style.height = params['height'];   
+            setDimensions = true;
         }
         
         if(typeof params['width'] != "undefined")
         {
             $(id).style.width = params['width'];
+            setDimensions = true;
+        }
+        
+        if(typeof params['userClass'] != "undefined")
+        {
+            setDimensions = true;
+        }
+        
+        
+        if(Appcelerator.Browser.isIE6 && !setDimensions)
+        {
+            $(id+"_content").style.marginRight = "1px";
+        }
+        
+        if(Appcelerator.Browser.isIE7 && setDimensions && typeof params['tail'] != "undefined")
+        {
+            $(id).style.marginBottom = "50px";
         }
         
         if(null != closeButton) 
@@ -245,8 +264,9 @@ Appcelerator.Module.Panel =
         html.push('<h3>' + headerText + '</h3>');
         html.push('</div>');
         html.push('</div> </div>');
-        html.push('<div id="' + element.id + '_content" class="ap_body"> ');
-        html.push('<div class="panel_content_container" >');
+        html.push('<div class="ap_body"> ');
+        html.push('<div id="' + element.id + '_content" class="panel_content_container ' + extraPadding + '">');
+
         html.push('<div class="panel_cl"></div>');
         html.push('<div class="panel_cr"></div>');
         html.push('<div class="panel_cc">');
@@ -266,7 +286,6 @@ Appcelerator.Module.Panel =
         html.push('</div>');
         html.push('</div>');
         html.push('</div>');
-        Logger.info(html.join('\n'));
 		return {
             'presentation': html.join(' '),
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
@@ -278,3 +297,7 @@ Appcelerator.Module.Panel =
 
 Appcelerator.Core.registerModule('app:panel',Appcelerator.Module.Panel);
 Appcelerator.Core.loadModuleCSS('app:panel','panel.css');
+if(Appcelerator.Browser.isIE7)
+{
+    Appcelerator.Core.loadModuleCSS('app:panel','panel_ie7.css');
+}

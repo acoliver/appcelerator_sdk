@@ -9,7 +9,7 @@
 .app_panel .panel_hc {margin-left: 6px; margin-right: 6px; height: 36px; background-repeat: repeat-x; padding: 0px;}
 .app_panel .panel_hr {position: absolute; top: 0px; right: 0px; height: 36px; width: 6px; padding-right: 6px; background-repeat: no-repeat; background-position: top right; }
 .app_panel .panel_header {padding: 7px 0px; height: 22px; overflow: hidden;}
-.app_panel .panel_header_container {position: relative; border: }
+.app_panel .panel_header_container {position: relative;  }
 
 .app_panel h3 
 {
@@ -24,6 +24,7 @@
 /* styles for collapsed headers */
 .app_panel .collapsed .panel_hl, .app_panel .collapsed .panel_hc, .app_panel .collapsed .panel_hr
 {
+    padding-bottom: 0px;
     height: 6px;
 }
 
@@ -35,7 +36,7 @@
 .app_panel .panel_cc { background-repeat: repeat; padding: 0px; height: inherit;}
 .app_panel .panel_cr { position: absolute; position: relative; float: right; right: 0px; height: 100%; padding-right: 6px; background-repeat: repeat-y; background-position: bottom right;}
 .app_panel .panel_content_container {height: 100%}
-.app_panel .panel_body { padding-left: 6px; padding-right: 6px; height: 100%}
+.app_panel .panel_body { padding: 6px 15px 6px 15px; height: 100%}
 
 * html .app_panel .panel_body {padding-left: 7px; padding-right: 7px;}
 
@@ -61,7 +62,7 @@
 .app_panel .tail_left { float: left; left: 25px;}
 .app_panel .tail_right { float: right; right: 25px;}
 
-* html .app_panel .tail_left, * html .app_panel .tail_right { top: -10px;}
+* html .app_panel .tail_left, * html .app_panel .tail_right { top: -5px;}
 
 /* random button styles */
 .app_panel .button_panel 
@@ -94,6 +95,7 @@
 .app_panel .unshade_button_onclick { background: url(../images/down_onclick.png); }
 
 .app_panel .shade .ap_body { display:none}
+.app_panel .extra_padding {padding-top: 23px}
 
 /* Styles for dark gray theme, with squared corners */
 .AP_DGSP .collapsed .panel_hl {background-image: url(../images/collapsed_headers_12.png)}
@@ -106,7 +108,7 @@
 .AP_DGSP .panel_hr {background-image: url(../images/expanded_headers_15.png)}
 
 
-.AP_DGSP .panel_content_container { border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
+.AP_DGSP .panel_content_container { background: rgb(233, 233, 233); border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
 .AP_DGSP .panel_cl {background: rgb(233, 233, 233);}
 .AP_DGSP .panel_cc {background: rgb(233, 233, 233)}
 .AP_DGSP .panel_cr {background: rgb(233, 233, 233)}
@@ -126,7 +128,7 @@
 .AP_DGRP .panel_hc {background-image: url(../images/expanded_headers_13.gif)}
 .AP_DGRP .panel_hr {background-image: url(../images/expanded_headers_19.png)}
 
-.AP_DGRP .panel_content_container { border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
+.AP_DGRP .panel_content_container { background: rgb(233, 233, 233); border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
 .AP_DGRP .panel_cl {background: rgb(233, 233, 233);}
 .AP_DGRP .panel_cc {background: rgb(233, 233, 233)}
 .AP_DGRP .panel_cr {background: rgb(233, 233, 233);}
@@ -148,11 +150,11 @@
 .AP_LGSP .collapsed .panel_hr {background-image: url(../images/collapsed_headers_65.png)}
 .AP_LGSP .collapsed .panel_header {display: none;}
 
-.AP_LGSP .panel_hl {background-image: url(../images/expanded_headers_55.png)}
+.AP_LGSP .panel_hl {background-image: url(../images/expanded_headers_52.png)}
 .AP_LGSP .panel_hc {background-image: url(../images/expanded_headers_53.gif)}
-.AP_LGSP .panel_hr {background-image: url(../images/expanded_headers_59.png)}
+.AP_LGSP .panel_hr {background-image: url(../images/expanded_headers_55.png)}
 
-.AP_LGSP .panel_content_container { border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
+.AP_LGSP .panel_content_container { background: white; border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
 .AP_LGSP .panel_cl {background: white;}
 .AP_LGSP .panel_cc {background: white}
 .AP_LGSP .panel_cr {background: white}
@@ -171,7 +173,7 @@
 .AP_LGRP .panel_hc {background-image: url(../images/expanded_headers_53.gif)}
 .AP_LGRP .panel_hr {background-image: url(../images/expanded_headers_59.png)}
 
-.AP_LGRP .panel_content_container { border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
+.AP_LGRP .panel_content_container { background: white; border-left: 1px solid #cdcdcd; border-right: 1px solid #cdcdcd; }
 .AP_LGRP .panel_cl {background: white; }
 .AP_LGRP .panel_cc {background: white}
 .AP_LGRP .panel_cr {background: white}
