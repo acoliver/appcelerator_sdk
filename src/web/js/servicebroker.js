@@ -333,40 +333,13 @@ Appcelerator.Util.ServiceBroker =
         }
 		this.localMessageQueue.push([name,data,dest,scope,version]);
     },
-/*
-    processIncoming: function (xml)
-    {
-        if (xml)
-        {
-            var children = xml.documentElement.childNodes;
-            if (children && children.length > 0)
-            {
-                for (var c = 0; c < children.length; c++)
-                {
-                    var child = children.item(c);
-                    if (child.nodeType == Appcelerator.Util.Dom.ELEMENT_NODE)
-                    {
-                        var requestid = child.getAttribute("requestid");
-                        try
-                        {
-                            this.dispatch(requestid, child);
-                        }
-                        catch (e)
-                        {
-                            $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
-                        }
-                    }
-                }
-            }
-        }
-    },
-  */  
     dispatch: function (msg)
     {
 		var requestid = msg.requestid;
         var type = msg.type;
         var datatype = msg.datatype;
         var scope = msg.scope;
+        var data = msg.data;
 
         // let the interceptors have at it
         if (this.interceptors.length > 0)
@@ -1038,7 +1011,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 			            var data, text;
 			            try
 			            {
-			                text = Appcelerator.Util.Dom.getText(msg);
+			                text = Appcelerator.Util.Dom.getText(child);
 			                data = text.evalJSON();
 			                data.toString = function () { return Object.toJSON(this); };
 			            }
