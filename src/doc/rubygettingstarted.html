@@ -46,6 +46,19 @@
 			</ul>
 		</ul>
 		</p>
+		<h3>A Note For Windows Users</h3>
+		<p>
+		As mentioned above, it's easiest to use the json_pure gem instead of json if you're on a Windows-based machine.  If the performance penalty of using json_pure (over the json gem) is unacceptable, then install <a href="http://www.microsoft.com/express/">Microsoft Visual Studio Express</a> and you will be able to use the json gem instead.
+		</p>
+		<p>
+		If you receive the error:
+		<pre class="command">
+c:\ruby\lib\ruby\1.8\i386-mswin32\config.h(2) : fatal error C1189:
+#error : MSC version unmatch
+		</pre>
+		while trying to install the json gem (or any other gem requiring the use of the Visual Studio compiler upon installation) then open the file referenced above (config.h) and comment out the first three lines.  You can then install the json gem normally.
+		</p>
+
 		<h3>Reference</h3>
 		<p>
 		In the documentation below, the following symbols will be used in lieu of concrete examples
