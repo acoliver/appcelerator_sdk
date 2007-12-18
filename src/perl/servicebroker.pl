@@ -51,7 +51,7 @@ if ($init eq "1") {
     $response .= "Invalid request\n";
 
 } elsif ($method eq "GET") {
-    $header{'-type'} = "text/plain";
+    $header{'-type'} = "text/xml; charset=utf-8";
     $response .= "<?xml version='1.0'?>\n";
     $response .= "<messages version='1.0' sessionid='$sessionid'/>\n";
 
@@ -61,7 +61,7 @@ if ($init eq "1") {
     $response .= "Invalid method\n";
 
 } else {
-    $header{'-type'} = "text/xml";
+    $header{'-type'} = "text/xml; charset=utf-8";
     $header{'-Pragma'} = "no-cache";
     $header{'-Expires'} = "now";
     $header{'-Cache-control'} = "no-cache, no-store, private, must-revalidate";
@@ -144,9 +144,11 @@ sub start_session {
 
     my $id = $query->cookie("app_session_id");
     
-    tie %session, 'Apache::Session::File', $id, {
-        Directory => $tmpdir,
-        LockDirectory => $lockdir,
+    eval {
+        tie %session, 'Apache::Session::File', $id, {
+            Directory => $tmpdir,
+            LockDirectory => $lockdir,
+        };
     };
 
     if ($@ and $@ =~ m#^Object does not exist in the data store#) {
