@@ -71,7 +71,7 @@ Appcelerator.Module.Http =
 		}
 		
 		var compiled = eval(uri['uri'] + '; init_'+params['id']);
-		var uriLink = compiled(data);
+		var uriLink = compiled(data).trim();
 		
 		if (uriLink.startsWith('http://'))
 		{

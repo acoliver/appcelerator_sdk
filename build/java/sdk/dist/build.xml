@@ -56,7 +56,7 @@
 		<copy todir="stage/setupfiles_extracted/WEB-INF/lib">
 			<fileset dir="${stage.dir}/assemble/lib" includes="*.jar"/>
 		</copy>
-		<copy todir="stage/setupfiles_extracted/WEB-INF/lib">
+		<copy todir="stage/setupfiles_extracted/WEB-INF/lib" overwrite="true">
 			<fileset dir="lib/appcelerator" includes="*.jar"/>
 		</copy>
 			<!--<copy todir="stage/setupfiles_extracted">

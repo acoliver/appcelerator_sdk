@@ -132,8 +132,8 @@ Appcelerator.Module.Iterator =
 	getAttributes: function()
 	{
 		return [{name: 'on', optional: true, description: "Used to execute the iterator"},
+		        {name: 'items', optional: true, description: "Literal (or template-replaced) JSON array to iterate over"},
 				{name: 'property', optional: true},
-				{name: 'items', optional: true},
 				
 				{name: 'rowEvenClassName', optional: true},
                 {name: 'rowOddClassName', optional: true},

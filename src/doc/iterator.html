@@ -133,9 +133,9 @@ input[type="text"]
 	<div on="l:iterator[show=example] then show else hide">
 		<p>
 			The Iterator allows you to build fully customizable data rows for an array of message data.
-			Within the Iterator defintion, you create the row template using standard HTML.  Within the row
-			template you can reference array data properties using the following syntax <tt>#{property_name}</tt>.
-			For example, if you had a data property in row named "first_name", you could place that in each
+			Within the Iterator tag, you create a per-row template using standard HTML.  Within the row
+			template you can reference array data properties using the standard template syntax <tt>#{property_name}</tt>.
+			For example, if each item of your message data has a property named "first_name", you could output that in each
 			row of the iterator using the following syntax: <tt>#{first_name}</tt>		
 		</p>
 		<p>
@@ -272,7 +272,7 @@ input[type="text"]
 	<!-- USAGE -->
 	<div on="l:iterator[show=usage] then show else hide" style="display:none">
 		<p>
-			 Required Options:
+			 Required Options (choose one):
 				<table cellspacing="5px">
 					<tr>
 					  <td class="term">on</td>
@@ -281,15 +281,24 @@ input[type="text"]
 					</td>
 					</tr>
 					<tr>
-					  <td class="term">property</td>
-					  <td class="def">the property name of the array for the iterator.  In our example, this
-						values was "rows" because "rows" was the name of the array in JSON-based response message </td>
-					</tr>
+                      <td class="term">items</td>
+                      <td class="def">a JSON array or object literal, if an object is provided,
+					  the <tt>property</tt> attribute should also be provided to fetch an array from the object.
+					  <tt>items</tt> may also be template-replaced with the <tt>#{some_array}</tt> syntax.
+                    </td>
+                    </tr>
 				</table>
 		</p>
 		<p>
 			 Optional Options:
 				<table cellspacing="5px">
+					<tr>
+                      <td class="term">property</td>
+                      <td class="def">the name of a property to iterate over.  In our example, this
+                        values was "rows" because "rows" was the name of the array in JSON-based response message.
+						If property is not provided, we treat the message payload or <tt>items</tt> property as an array and iterate over it. 
+					  </td>
+                    </tr>
 					<tr>
 					  <td class="term">selectable</td>
 					  <td class="def">determines if iterator rows are "selectable".  The correct syntax is :

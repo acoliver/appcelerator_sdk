@@ -39,6 +39,7 @@ setup(name='Appcelerator',
       entry_points="""
       [paste.app_factory]
       service_broker = appcelerator.core:service_broker_factory
+      cross_domain_proxy = appcelerator.core:cross_domain_proxy_factory
  
       [paste.paster_create_template]
       appcelerator = appcelerator.commands:AppceleratorTemplate

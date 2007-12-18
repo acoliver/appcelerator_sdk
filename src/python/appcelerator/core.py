@@ -15,12 +15,14 @@ look at ServiceBroker.listeners
 
 
 """
-__all__ = ['service_broker_factory', 'ServiceBroker', 'Service']
+__all__ = ['service_broker_factory', 'cross_domain_proxy_factory', 'ServiceBroker', 'Service']
 
 
 import traceback
 import logging
-from beaker.middleware import SessionMiddleware
+import cgi
+import urllib2 as urllib
+
 
 import simplejson as json
 try:
@@ -31,7 +33,7 @@ except ImportError:
 log = logging.getLogger(__name__)
 
 class ServiceDispatcher(object):
-    
+    " wsgi app that handles all appcelerator messages "
     def __init__(self):
         self.services_loaded = False
         
@@ -39,10 +41,10 @@ class ServiceDispatcher(object):
         if not self.services_loaded:
             self.load_services()
             self.services_loaded = True
-        " wsgi app that handles all appcelerator messages "
-        # TODO: support other session middleware
+        
         session = environ['beaker.session']
-        session.save()
+        # there are docs that claim i can do this, but...
+        #session = environ['paste.session.factory']()
         
         start_response('200 OK', [
             ('Content-Type', 'text/xml; charset=utf-8'),
@@ -52,8 +54,7 @@ class ServiceDispatcher(object):
         ])
         yield "<?xml version=\"1.0\"?><messages version='1.0' sessionid='%s'>"%session.id
         
-        content_len = int(environ.get('CONTENT_LENGTH', '0')) # http://trac.edgewall.org/ticket/5697#comment:1
-        input = environ['wsgi.input'].read(content_len)
+        input = get_input(environ)
         
         if input:
             req = ElementTree.fromstring(input)
@@ -69,7 +70,6 @@ class ServiceDispatcher(object):
             reqid = msg.get('requestid')
             payload = json.loads(msg.text)
             
-            # TODO: match args with ruby/java
             responses = ServiceBroker.send(msgtype, payload, session)
             for responsetype,result in responses:
                 yield responsetype,result,reqid
@@ -106,11 +106,44 @@ class ServiceDispatcher(object):
             exec import_stmt in {}
 
 
+class CrossDomainProxy(object):
+    
+    def __init__(self, suppressed_headers):
+        self.suppressed_headers = suppressed_headers
+    
+    def __call__(self, environ, start_response):
+        fields = cgi.parse_qs(environ['QUERY_STRING'])
+        url = fields.get('url', None)
+        if not url:
+            start_response('400 Bad Request', [])
+            return []
+        else:
+            url = url[0]
+            if '://' not in url:
+                url = urllib.unquote(url)
+            proxied_request = urllib.urlopen(url)
+            
+            headers = [header for header in proxied_request.headers.items()
+                       if header[0].lower() not in self.suppressed_headers]
+            
+            start_response('200 OK', headers)
+            return [proxied_request.read()]
+
 
 def service_broker_factory(global_config, **local_conf):
     " factory for building a new service broker that implements the Appcelerator protocol"
-    secret = local_conf.get('beaker.session_secret', 'vzabgjrnevatnalcnagf')
-    return SessionMiddleware(ServiceDispatcher(), key='app_session_id', secret=secret)
+    return ServiceDispatcher()
+
+SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')
+def cross_domain_proxy_factory(global_config, **local_conf):
+    " factory for building a new proxy to bounce requests to non-local domains "
+    return CrossDomainProxy(SUPPRESSED_HEADERS)
+
+
+def get_input(environ):
+    # http://trac.edgewall.org/ticket/5697#comment:1
+    content_len = int(environ.get('CONTENT_LENGTH', '0'))
+    return environ['wsgi.input'].read(content_len)
 
 
 class InMemoryServiceBroker(object):

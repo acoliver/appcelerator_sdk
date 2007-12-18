@@ -105,7 +105,7 @@ ruby script/server</pre>
 	<div on="l:rubygettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Web Implementation</h3>
-			Once you have created the java project, your web source will exist in:
+			Once you have created the ruby project, your web source will exist in:
 			<ul>
 				<li><b>public</b>: directory where all your html exists
 				<li><b>public/appcelerator.xml</b>: defines the location and behaviour of the service broker
@@ -129,18 +129,92 @@ ruby script/server</pre>
 	<div on="l:rubygettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>
 			<h3>Ruby Service</h3>
-			To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
+			To add a new service, just add a method to a class in the <tt>app/services/</tt> directory.<br/>
+			For the service broker to find your method, it must be defined in:
 			<ul>
-				<li>the file ends with <tt>_service.rb</tt>
-				<li>the class ends with <tt>Service</tt> and extends <tt>Appcelerator::Service</tt>
-				<li>you put the proper method signature <tt>method_name(message,request)</tt>
-				<li>you make the appropriate call to <tt>Service</tt>
+				<li>a file ending with <tt>_service.rb</tt>
+				<li>a class ending with <tt>Service</tt> and extending <tt>Appcelerator::Service</tt>
 			</ul>
+			For each service method you create, you also need to add a <tt>Service</tt> annotation to define
+			the request and response message types that the method responds to. Annotation look like this:
+			
+			<textarea name="code" class="ruby:nocontrols">Service "myapp.users.find.request", :find_users, "myapp.users.find.response" </textarea>
+			
+			This tells the service broker to send all messages of type <tt>"myapp.users.find.request"</tt> to the method named <tt>find_users</tt> on the current class,
+			and to respond to the client with a message of type <tt>"myapp.users.find.response"</tt> and a payload consisting of the return value from your
+			<tt>find_users</tt> function.
+			
+			 
 			<h3>app/services/contact_manager_service.rb</h3>
-			You could create a new class ContactManagerService with the following source
-			<textarea name="code" class="xml:nocontrols">
+			For example, you could create a new class ContactManagerService with the following source
+			<textarea name="code" class="ruby:nocontrols">
 @contact_manager_service.rb@
 			</textarea>
+			
+			
+			<h3>Accessing Request Values</h3>
+			All methods define in a subclass of <tt>Appcelerator::Service</tt> have access to the following values
+			<ul>
+				<li>  
+			         <tt>params</tt>:<br/>
+	 a hash containing the arguments passed with the message
+				</li>
+				<li>
+                    <tt>message_type</tt>:<br/>
+    the name of the message sent from the client, like "kittyapp.cats.adopt.request",
+    this will not contain the "r:" prefix that the client code uses because everything on the server is remote.
+                </li>
+				<li>
+                    <tt>session</tt>:<br/>
+    contains per-user data that persists between requests, identical to the rails session object
+				</li>
+                <li>
+                	<tt>request</tt>:<br/>
+    the original request that triggered the service handler, identical to the rails request object
+                </li>
+            </ul>
+			
+			<h3>Before and After Filters</h3>
+			
+			If you want to execute code before (or after) every service request,
+			you can add a <tt>before_filter</tt> (or an <tt>after_filter</tt>) to your services class.
+			This is useful for doing things like authentication or logging. An example:
+			
+<textarea name="code" class="ruby:nocontrols">
+  before_filter :do_authentication
+  def do_authentication  
+    if not session[:user_id]
+      respond_with({'success' => false, 'message' => 'Not Logged In'})
+    else
+      @current_user = User.find_by_id(session[:user_id])
+      if not @current_user
+        respond_with({'success' => false, 'message' => 'Invalid User'})
+      end
+    end
+  end
+</textarea>
+  
+            The "respond_with" method takes a response object (in this example an authentication failure)
+			and optional response type (such as <tt>"myapp.logout.response"</tt>) and then prevents the service method from running,
+			instead sending the given response object after the <tt>before_filter</tt> returns.
+
+            <tt>after_filters</tt> are declared in the same way,
+			and have access to the service method's return value (as the <tt>response</tt> attribute).
+
+<textarea name="code" class="ruby:nocontrols">
+  after_filter :add_user_name
+  def add_user_name
+    response['user_first_name'] = current_user.profile.firstname
+  end
+</textarea>
+
+            This filter will add a <tt>user_first_name</tt> value to every response from the service class where this is defined.<br/>
+
+            If you want multiple service classes to share a filter, you can add the filtering method to a super-class
+			of those services and then add the one-line <tt>before_filter :do_authentication</tt> declaration to each of those subclasses.
+			We don't support implicitly calling the <tt>before_filter</tt>s of super-classes because it would
+			make reordering or removing the filters rather convoluted.
+			
 			
 			<h3>Next Steps</h3>
 			You may want to kill and restart rails

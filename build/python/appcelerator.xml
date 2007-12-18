@@ -4,5 +4,6 @@
     <servicebroker poll="false">@{rootPath}servicebroker</servicebroker>
     <upload>@{rootPath}upload</upload>
     <download>@{rootPath}download</download>
+    <proxy>@{rootPath}proxy</proxy>
     <sessionid>SESSIONID</sessionid>
 </appcelerator>

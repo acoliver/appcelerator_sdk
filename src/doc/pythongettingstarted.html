@@ -93,18 +93,16 @@ paster serve --reload development.ini</pre>
         make sure that you:
         <ul>
             <li>place service functions in the <tt>services</tt> directory</li>
-            <li>use method signature <tt>method_name(message)</tt></li>
-			<li>you put the proper annotations directly above the method <tt>@Service(request=xxx,response=xxx) </tt></li>
+            <li>use method signature <tt>def method_name(params, session, msgtype)</tt> (trailing arguments are optional)</li>
+			<li>put the proper annotations directly above the method: <tt>@Service(request=xxx,response=xxx) </tt></li>
 		</ul>
 
 		<h3>$PROJECT/services/contact_manager_service.py</h3>
-		You can check out the existing contact_manager_service.py with the following source
-        <textarea name="code" class="xml:nocontrols">
+		Here is another bite-sized example:
+        <textarea name="code" class="ruby:nocontrols">
 @contact_manager_service.py@
 		</textarea>
-
-		<h3>Next Steps</h3>
-		You are now ready to proceed to restarting/re-invoking your python service
+		
     </div>
 	<div on="l:pythongettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
 		<p>

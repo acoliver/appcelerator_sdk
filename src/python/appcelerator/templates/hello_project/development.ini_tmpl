@@ -15,20 +15,28 @@ use = egg:Paste#http
 host = 0.0.0.0
 port = 5000
 
-[composite:main]
+[filter-app:main]
+use = egg:Beaker#beaker_session
+next = sessioned
+beaker.session.key = ${project}_key
+beaker.session.secret = sdfmkwefmsksmdfsidfsldf
+
+[composite:sessioned]
 use = egg:Paste#urlmap
 / = home
 /servicebroker = servicebroker
+/proxy = cross_domain_proxy
 
 [app:servicebroker]
 use = egg:Appcelerator#service_broker
+
+[app:cross_domain_proxy]
+use = egg:Appcelerator#cross_domain_proxy
 
 [app:home]
 use = egg:${project}
 full_stack = true
 cache_dir = %(here)s/data
-beaker.session.key = ${package}
-beaker.session.secret = somesecret
 
 # If you'd like to fine-tune the individual locations of the cache data dirs
 # for the Cache data, or the Session saves, un-comment the desired settings
