@@ -4,8 +4,13 @@ require 'md5'
 require 'socket'
 require 'fileutils'
 
-app_path = ARGV.first
-system('rails ' + app_path + ' >> rails.log')
+args = ''
+ARGV.each do |arg|
+  args = args + "#{arg} "
+end
+
+app_path = ARGV.last
+system('rails ' + args + ' >> rails.log')
 FileUtils.rm_r 'rails.log'
 p = Pathname.new(app_path)
 
