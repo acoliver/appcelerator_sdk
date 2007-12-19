@@ -7,6 +7,7 @@ mkdir %IIS_APPROOT%\%PROJECT%\bin\deploy
 cd bin\Release
 copy TestService.dll %IIS_APPROOT%\%PROJECT%\bin\deploy /Y
 copy Appcelerator.dll %IIS_APPROOT%\%PROJECT%\bin /Y
+xcopy *-config.xml %IIS_APPROOT%\%PROJECT%\bin /Y
 
 
 
