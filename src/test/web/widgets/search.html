@@ -17,7 +17,7 @@
 		<td class="test" width="50%" valign="middle">
 			Search and Select a Result
 		</td>
-		<td class="result">
+		<td class="result" height="100" valign="top">
 			<app:search request="l:search.test1.request" response="l:search.test1.response" selected="l:search.test1.selected" key="search" property="result">
 			</app:search>
 			<app:script on="l:search.test1.request then execute">
@@ -32,7 +32,7 @@
 		<td class="test" width="50%" valign="middle">
 			Search With A Complex Template
 		</td>
-		<td class="result">
+		<td class="result" height="100" valign="top">
 			<app:search request="l:search.test2.request" response="l:search.test2.response" selected="l:search.test2.selected" key="search" property="result">
 				<html:div>
 					#{name}
@@ -53,7 +53,7 @@
 		<td class="test" width="50%" valign="middle">
 			Search With An Indicator
 		</td>
-		<td class="result">
+		<td class="result" height="100" valign="top">
 			<table>
 				<tr>
 					<td>
@@ -79,7 +79,7 @@
 		<td class="test" width="50%" valign="middle">
 			Search With A 5s Delay Between Keystrokes
 		</td>
-		<td class="result">
+		<td class="result" height="100" valign="top">
 			<table>
 				<tr>
 					<td>

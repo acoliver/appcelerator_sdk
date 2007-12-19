@@ -53,7 +53,10 @@ if (Appcelerator.Browser.isIE6)
 	
 	Appcelerator.Browser.fixBackgroundPNG = function(obj) 
 	{
-		obj.style.backgroundImage = '';
+		if (obj.style.backgroundImage.indexOf('blank_1x1.gif') > 0)
+		{
+			obj.style.backgroundImage = '';
+		}
 		obj.style.filter = '';
 		var bg	= obj.currentStyle.backgroundImage;
 		var src = bg.substring(5,bg.length-2);
