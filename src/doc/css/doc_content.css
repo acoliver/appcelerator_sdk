@@ -61,6 +61,15 @@ pre.command {
  overflow: auto;
 }
 
+pre.command_output {
+ background: #fafafa;
+ border: 1px solid #eee;
+ margin: 1em 2.5em;
+ padding: .25em;
+ overflow: auto;
+}
+
+
 .bold_value
 {
 	color:#0f3c71;
@@ -187,4 +196,12 @@ textarea
 img
 {
 	border:0;
+}
+
+.optional_text
+{
+    padding: 1em 2em;
+    border-left: 1em solid #f6f6f6;
+    padding: 1em 2em;
+    margin: 0.5em 0em;
 }

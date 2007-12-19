@@ -36,8 +36,8 @@
 		<p>
 		It is assumed that you already have the following installed:
 		<ul>
-			<li>python 2.5 <a href="http://www.python.org" target="_blank">http://www.python.org/</a>
-			<li>setuptools <a href="http://peak.telecommunity.com/DevCenter/setuptools" target="_blank">http://peak.telecommunity.com/DevCenter/setuptools</a>
+			<li>python 2.5 from <a href="http://www.python.org" target="_blank">http://www.python.org/</a> (2.4 will work, but is unsupported and confuses easy_install on windows)</li>
+			<li>setuptools from <a href="http://peak.telecommunity.com/DevCenter/setuptools" target="_blank">http://peak.telecommunity.com/DevCenter/setuptools</a></li>
 		</ul>
 		</p>
 
@@ -53,6 +53,32 @@
 		<p>
 			Let's install Appcelerator
 			<pre class="command">easy_install Appcelerator</pre>
+			
+			(<a on="click then l:toggle_painful_windows_install_instructions">More instructions for installing on Windows</a>)
+			<div on="l:toggle_painful_windows_install_instructions then toggle[display]" class="optional_text" style="display: none;">
+			     If you are trying to install on Windows and get the following error:
+			     <pre class="command_output">
+error: Setup script exited with error: Python was built with Visual Studio 2003;
+extensions must be built with a compiler than can generate compatible binaries.
+Visual Studio 2003 was not found on this system. If you have Cygwin installed,
+you can try compiling with MingW32, by passing "-c mingw32" to setup.py.</pre>
+                You will want to run the following commands to install a version of simplejson that does not require a C compiler:
+                <pre class="command">
+easy_install --editable --build-directory . simplejson
+cd simplejson
+python setup.py --without-speedups install 
+python setup.py --without-speedups install</pre>
+                Yes, run the setup.py twice.<br/><br/>
+                If simplejson is installed successful, you will see output like the following: 
+                <pre class="command_output">
+Installed c:\python25\lib\site-packages\simplejson-1.7.3-py2.5.egg
+Processing dependencies for simplejson==1.7.3
+Finished processing dependencies for simplejson==1.7.3</pre>
+                Now rerun:
+    			<pre class="command">easy_install Appcelerator</pre>
+    			Phew! Thank. You. Redmond.
+			</div>
+			<br/><br/>
 			
 			Now let's install Pylons (which will be used later for creating the project)
 			<pre class="command">easy_install Pylons</pre>
