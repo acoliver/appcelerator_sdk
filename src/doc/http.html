@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Http</h2>
+		
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:http[show=example] and add[class=active] or l:http[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:http[show=usage] and add[class=active] or l:http[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+		The http widget provides a way to do HTTP POSTs and GETs to any URL that returns a well-formed XML or a JSON result. This is very useful for doing REST operations to a 3rd party website. When you run inside an Appcelerator SDK project, we provide a backend proxy for cross-domain requests (currently implemented for Java, Ruby/Rails, and Python projects).
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:http[show=example] then show else hide">
+		<p>
+			Here's an example of how to display photos from Flickr (using JSON).
+		</p>
+		<textarea name="code" class="xml:nocontrols">
+			<app:http on="l:get.pictures then get"> 
+			       <uri method="get" responseRegex="jsonFlickrApi\((.*)\)" uri="http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&amp;format=json&amp;api_key=adfc38a29c02d72e21d6f71ffcae264d" response="l:get.pictures.response"></uri>
+			</app:http>
+			
+			<app:iterator on="l:get.pictures.response then execute" property="photos.photo">
+				<html:div style="float:left"><html:img src="http://farm#{farm}.static.flickr.com/#{server}/#{id}_#{secret}.jpg"></html:img></html:div>
+			</app:iterator>
+			<app:message name="l:get.pictures"></app:message>			
+		</textarea>
+		<p>
+			Here's an example of how to get RSS articles from Techcrunch (using XML).
+		</p>
+		<textarea name="code" class="xml:nocontrols">
+		    <app:http on="l:get.techcrunch then get">
+		      <uri method="get" uri=" http://feeds.feedburner.com/Techcrunch" response="l:get.techcrunch.response"></uri>
+		    </app:http>
+
+		    <app:iterator on="l: get.techcrunch.response then execute" property="rss.channel.item">
+		       <html:div><html:a href="#{link}">#{title}</html:a></html:div>
+		       <html:div>#{content:encoded}</html:div> 
+		    </app:iterator>
+
+		    <app:message name="l:get.techcrunch"></app:message>		
+		</textarea>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:http[show=usage] then show else hide" style="display:none">
+		<p>
+			<textarea name="code" class="xml:nocontrols">
+				<app:http on="l:foo.request then post or l:bar.request then get">
+					<uri method="post" uri="http://www.google.com/somexml" args="{mydata: 'test'}" response="l:foo.response" error="l:foo.error"></uri>
+					<uri method="get" uri="http://www.flickr.com/somejson" property="myvars" responseRegex="someRegexFunc" response="l:bar.response" error="l:bar.error"></uri>
+				</app:http>
+			</textarea>
+		</p>
+		<p>
+			 Required Attributes:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">An on expression to do post or get actions.</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Attributes:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">response</td>
+					  <td class="def">Response message (on success) to send that has the results from the URI request.</td>
+					</tr>
+					<tr>
+					  <td class="term">error</td>
+					  <td class="def">Error message to send when the URI request generates an error (e.g. HTTP 404, 500 errors)</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Required Elements:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">uri</td>
+					  <td class="def">A uri element represents the post or get actions. Only one of each type may be specified.</tt>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Attributes on URI Element
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">uri</td>
+					  <td class="def">The actual uri for the request (e.g. '/getdata' or 'http://www.appcelerant.com/rss')</tt>
+					</tr>
+					<tr>
+					  <td class="term">response</td>
+					  <td class="def">The response message to send for this action (overrides the 'response' attribute on the app:http element). The response message carries the payload (as JSON object) that came back from the HTTP request.</tt>
+					</tr>
+					<tr>
+					  <td class="term">error</td>
+					  <td class="def">The error message to send for this action (overrides the 'error' attribute on the app:http element)</tt>
+					</tr>
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">A JSON string to send as payload in the HTTP request. Defining args will override the property attribute.</tt>
+					</tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">The name of the property in the original condition message that triggered this action. Used to send payload in the HTTP request.</tt>
+					</tr>
+					<tr>
+					  <td class="term">responseRegex</td>
+					  <td class="def">A regex expression to perform on the result from the HTTP request before sending the response message.</tt>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+  	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>
