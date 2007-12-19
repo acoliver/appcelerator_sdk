@@ -191,6 +191,13 @@
 			<fileset dir="dist/lib/appcelerator" includes="commons-logging-1.0.4.jar"/>
 		</copy>
 	</target>
+	<target name="copy_script_jars17" description="** copies the required script jars to ${ant.home}/lib for ant 1.7.0 on leapard">
+		<copy todir="${ant.home}/lib">
+			<fileset dir="dist/antlib" includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar"/>
+			<fileset dir="dist/lib/appcelerator" includes="commons-logging-1.0.4.jar"/>
+			<fileset dir="./dist/antlib/apache-ant-1.7.0" includes="*.jar"/>
+		</copy>
+	</target>
 	<target name="remove_script_jars">
 		<delete>
 			<fileset dir="${ant.home}/lib" 
