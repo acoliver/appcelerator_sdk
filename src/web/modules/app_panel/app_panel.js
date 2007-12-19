@@ -87,11 +87,6 @@ Appcelerator.Module.Panel =
             $(id + '_unshade').style.display = 'block';
             $(id).firstDescendant().addClassName("shade");
             $MQ('l:' + id + '.shaded');
-            if(Appcelerator.Browser.isIE)
-            {
-                var header = $(id).getElementsByClassName('panel_hc')[0];
-                header.style.width = $(id).getWidth() - 8 + 'px';
-            }
         }
     },
     unshade: function(id,parameters,data,scope,version)
