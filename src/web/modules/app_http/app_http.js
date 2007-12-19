@@ -105,7 +105,7 @@ Appcelerator.Module.Http =
 					{
 						json_encode_xml(result.responseXML.documentElement, json_result);
 					}
-					else if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0)
+					else if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0 || contentType.indexOf('/javascript') > 0)
 					{
 					    var text = result.responseText.trim();
 					    if (responseRegex)
