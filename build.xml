@@ -472,6 +472,7 @@
 			<fileset dir="src/dotnet/bin/Release" includes="Appcelerator.dll"/>
 			<fileset dir="build/dotnet" includes="**/**"/>
 			<fileset dir="stage" includes="doc/**"/>
+			<fileset dir="src/dotnet" includes="*-config.xml"/>
 		</copy>
 		<copy tofile="stage/sdk/dotnet/Appcelerator-debug.dll" file="src/dotnet/bin/Debug/Appcelerator.dll"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_dotnet_${VERSION}.zip" comment="Appcelerator Platform SDK for .NET">

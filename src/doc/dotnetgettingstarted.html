@@ -99,9 +99,10 @@ set PROJECT=sb</pre>
 cd bin\Release
 copy TestService.dll %IIS_APPROOT%\%PROJECT%\bin\deploy /Y
 copy Appcelerator.dll %IIS_APPROOT%\%PROJECT%\bin /Y
+cd ..\..
 xcopy *-config.xml %IIS_APPROOT%\%PROJECT%\bin /Y</pre>
 		Now lets copy the html files on over
-		<pre class="command">cd ..\..\src\web
+		<pre class="command">cd src\web
 xcopy * %IIS_APPROOT%\%PROJECT% /S</pre>
 		</ul>
 
