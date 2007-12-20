@@ -207,8 +207,12 @@ Appcelerator.Module.Button =
 			disabled = '_disabled';
 		}
 		
-		var html = '<button class="button_widget'+disabled+'" id="'+element.id+'" style="width:'+parameters['width']+'px" on="'+parameters['on']+'"';
-		if (parameters['fieldset'])
+		var html = '<button class="button_widget'+disabled+'" id="'+element.id+'" style="width:'+parameters['width']+'px"';
+        if(typeof parameters['on'] != 'undefined') 
+        {
+            html += ' on="'+parameters['on']+'"';
+        } 
+       	if (parameters['fieldset'])
 		{
 			html += ' fieldset="'+parameters['fieldset']+'"';
 		}
@@ -216,7 +220,8 @@ Appcelerator.Module.Button =
 		{
 			html += ' activators="'+parameters['activators']+'"';
 		}
-		html += '>';
+        html += '>';
+        
 		html += '<table class="button_table" border="0" cellpadding="0" cellspacing="0" width="100%">';
 		html += '<tr>';
 		html += '<td class="button_'+color+'_'+corner+'_left'+disabled+'" id="'+element.id+'_left">';
