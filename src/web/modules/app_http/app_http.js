@@ -78,7 +78,7 @@ Appcelerator.Module.Http =
 			var uriStrip = uriLink.match('http://[^/]*');
 			var currentStrip = window.location.href.match('http://[^/]*');
 			
-			if (uriStrip[0].toLowerCase() != currentStrip[0].toLowerCase())
+			if (currentStrip && uriStrip && (uriStrip[0].toLowerCase() != currentStrip[0].toLowerCase()))
 			{
 				var proxy = Appcelerator.ServerConfig['proxy'];
 				if (proxy)

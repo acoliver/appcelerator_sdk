@@ -44,7 +44,9 @@ Appcelerator.Module.Button =
 				{name: 'disabled', optional: true, defaultValue: 'false'},
 				{name: 'corner', optional: true, defaultValue: 'round'},
 				{name: 'color', optional: true, defaultValue: 'dark'},
-				{name: 'icon', optional: true, defaultValue: ''}];
+				{name: 'icon', optional: true, defaultValue: ''},
+				{name: 'fieldset', optional: true},
+				{name: 'activators', optional: true}];
 	},
 	dontParseOnAttributes: function()
 	{
@@ -130,6 +132,17 @@ Appcelerator.Module.Button =
 			}
 		};		
 
+		if (parameters['activators'])
+		{
+			button.onActivatorsDisable = function()
+			{
+				Appcelerator.Module.Button.disable(id, parameters);
+			};
+			button.onActivatorsEnable = function()
+			{
+				Appcelerator.Module.Button.enable(id, parameters);
+			};
+		}
 	},
 	enable: function(id,parameters,data,scope,version)
 	{
@@ -175,7 +188,7 @@ Appcelerator.Module.Button =
 			Appcelerator.Browser.fixBackgroundPNG(middle);
 			Appcelerator.Browser.fixBackgroundPNG(right);
 		}
-		$(id).disabled = true;			
+		$(id).disabled = true;
 	},
 	buildWidget: function(element,parameters)
 	{
@@ -194,7 +207,16 @@ Appcelerator.Module.Button =
 			disabled = '_disabled';
 		}
 		
-		var html = '<button class="button_widget'+disabled+'" id="'+element.id+'" style="width:'+parameters['width']+'px" on="'+parameters['on']+'">';
+		var html = '<button class="button_widget'+disabled+'" id="'+element.id+'" style="width:'+parameters['width']+'px" on="'+parameters['on']+'"';
+		if (parameters['fieldset'])
+		{
+			html += ' fieldset="'+parameters['fieldset']+'"';
+		}
+		if (parameters['activators'])
+		{
+			html += ' activators="'+parameters['activators']+'"';
+		}
+		html += '>';
 		html += '<table class="button_table" border="0" cellpadding="0" cellspacing="0" width="100%">';
 		html += '<tr>';
 		html += '<td class="button_'+color+'_'+corner+'_left'+disabled+'" id="'+element.id+'_left">';

@@ -2,11 +2,11 @@
 // register our input button listener for handling
 // activators
 // 
-Appcelerator.Compiler.registerAttributeProcessor(['div','input'],'activators',
+Appcelerator.Compiler.registerAttributeProcessor(['div','input','button'],'activators',
 {
 	handle: function(element,attribute,value)
 	{
-		if (value && (element.nodeName == 'DIV' || element.getAttribute('type') == 'button'))
+		if (value && (element.nodeName == 'DIV' || element.getAttribute('type') == 'button' || element.nodeName == 'BUTTON'))
 		{
 			// see if we're part of a field set and if so, add
 			// our reference
@@ -27,9 +27,18 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','input'],'activators',
 							valid = false;
 							break;
 						}
-					}  
+					}
 					element.setAttribute('disabled',!valid);
 					element.disabled = !valid;
+					
+					if (element.disabled && element.onActivatorsDisable)
+					{
+						element.onActivatorsDisable();
+					}
+					if (!element.disabled && element.onActivatorsEnable)
+					{
+						element.onActivatorsEnable();
+					}
 				};
 				for (var c=0,len=fields.length;c<len;c++)
 				{

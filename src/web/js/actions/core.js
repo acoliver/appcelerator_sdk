@@ -812,7 +812,6 @@ for (var c=0,len=Appcelerator.Compiler.GenericFunctions.length;c<len;c++)
 
 Appcelerator.Compiler.buildCustomAction = function (name)
 {
-	$D('building ' + name);
 	var action = Appcelerator.Compiler.customActions[name];
 	
 	if (!action)

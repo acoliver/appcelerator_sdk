@@ -92,6 +92,35 @@ input[type=text]
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
+			Activators
+		</td>
+		<td class="result" >
+			<input type="text" name="firstname" id="firstname" validator="required"/>
+			<div>
+				<app:button on="click then javascript[alert('test passed')]" activators="firstname">
+					Click me
+				</app:button>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Fieldset
+		</td>
+		<td class="result" >
+			<input type="text" name="lastname" id="lastname" fieldset="myform" value="test value"/>
+			<div>
+				<app:button on="click then l:button.fieldset" fieldset="myform">
+					Click me
+				</app:button>
+				<app:script on="l:button.fieldset then execute">
+					alert("test passed with value of input " + this.data['lastname']);
+				</app:script>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
 			Add Icon
 		</td>
 		<td class="result" >
