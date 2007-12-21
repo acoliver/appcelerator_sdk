@@ -706,72 +706,34 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 		Event.stopObserving(element,event,functionWrapper);
 	});
 }
-
+    
 // 
 // called to install a change listener
 //
 Appcelerator.Compiler.installChangeListener = function (element, action)
 {
-    setTimeout(function()
+    (function()
     {
-	    var type = element.getAttribute('type') || 'text';
-	    var tag = Appcelerator.Compiler.getTagname(element);
-	    if (tag == 'select' || tag == 'textarea')
+	    Event.observe(element,'focus',function()
 	    {
-	        type = tag;
-	    }
-	    
-	    switch(type)
+	        element._validatorObserver = new Form.Element.Observer(
+	          element,
+	          .5,  
+	          function(el, value)
+	          {
+	            action(el,value);
+	          }
+	        );
+	    });
+	    Event.observe(element,'blur',function()
 	    {
-	        case 'radio':
-	        case 'checkbox':
-	        { 
-	            Appcelerator.Compiler.addEventListener(element,'click',action);
-	            break;
-	        }
-	        case 'select':
+	        if (element._validatorObserver)
 	        {
-	            Appcelerator.Compiler.addEventListener(element,'change',action);
-	            break;
+	            element._validatorObserver.stop();
+	            delete element._validatorObserver;
 	        }
-	        case 'input':
-	        case 'textarea':
-	        default:
-	        {
-	            if (Appcelerator.Browser.isIE)
-	            {
-	                Appcelerator.Compiler.addEventListener(element,'keyup',action);
-	                // as usual, for IE, you have to wait a bit before
-	                // you can determine if there's a value
-	                var delayedListener = function()
-	                {
-	                    return Appcelerator.Compiler.executeAfter(action,100);
-	                };
-	                Appcelerator.Compiler.addEventListener(element,'paste',delayedListener);
-	            }
-	            else
-	            {
-	                if (type == 'file')
-	                {
-	                    Appcelerator.Compiler.addEventListener(element,'change',action);
-	                }
-	                else
-	                {
-	                    if (Appcelerator.Browser.isSafari && type == 'textarea')
-	                    {
-	                        Appcelerator.Compiler.addEventListener(element,'keyup',action);
-	                    }
-	                    else
-	                    {
-	                        // changed from 'input' 
-	                        Appcelerator.Compiler.addEventListener(element,'keyup',action);
-	                    }
-	                }
-	            }
-	            break;
-	        }
-	    }
-    },0);
+	    });
+    }).defer();
 };
 
 Appcelerator.Compiler.ElementFunctions = {};
