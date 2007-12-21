@@ -30,7 +30,7 @@ FileUtils.mkdir "#{p}/app/services"
 
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/appcelerator.xml", "#{p}/public"
 rails_gem = Gem.cache.search('rails').last
-if rails_gem.version.to_s.to_f >= 2
+if rails_gem.version.to_s.to_f > 1.2
   FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/application.rb", "#{p}/app/controllers"
 end
 f = File.open("#{p}/config/environment.rb", 'a')
