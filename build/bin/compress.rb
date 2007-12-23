@@ -17,6 +17,17 @@ outfile = File.new(ARGV[1],"w")
 
 js = infile.read
 
+#
+# we're going to redefine the use of $ so that it doesn't conflict
+# with other libraries such as jQuery. This means internally what's compiled
+# is the $el and not $.  If you use $ outside of appcelerator you should use
+# $el for maximum compatability with other libraries.
+#
+js.gsub!(/function \$\(\)/,'function $el()')
+js.gsub!(/\$\((.*)?\)/) do |m|
+  m.gsub '$(', '$el('
+end
+
 # replace this globally scoped variables
 js.gsub!(/window\./,'$$w.')
 js.gsub!(/document\./,'$$d.')
@@ -61,5 +72,13 @@ outfile.print "$$n=navigator;"
 outfile.print js[0,idx]
 outfile.print declare.gsub("\n",'')
 outfile.print post
+
+# define our $ if jQuery isn't defined
+# we want to be able to support both jQuery and Prototype being loaded at the same time w/o conflict
+epilog=<<END
+  ; if (typeof(jQuery)=='undefined'){window.$ = $el;}
+END
+
+outfile.print epilog
 
 exit 0
