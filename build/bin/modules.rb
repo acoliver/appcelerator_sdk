@@ -34,11 +34,12 @@ def minimize(ext)
     newfile = File.join(newdir,filename)
     puts "Minimizing #{file} -> #{newfile}"
     system "java -jar #{JARFILE.path} --type #{ext} #{file} -o #{newfile}.tmp"
-	next unless ext == 'js'
 	f = File.new "#{newfile}.tmp", "r"
 	js = f.read
-	js.gsub!(/\$\((.*)?\)/) do |m|
-      m.gsub '$(', '$el('
+    if ext == 'js'
+	   js.gsub!(/\$\((.*)?\)/) do |m|
+         m.gsub '$(', '$el('
+       end
     end
 	of = File.new "#{newfile}", "w"
 	of.puts js
