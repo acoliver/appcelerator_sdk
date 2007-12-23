@@ -152,3 +152,11 @@ Object.getExceptionDetail = function (e,format)
         return 'message: ' + (e.message || e) + ', location: ' + line + ', stack: ' + (format?'<code>':'') +(e.stack || 'not specified') + (format?'</code>':'');
     }
 };
+
+/**
+ * returns true if object passed in as a boolean
+ */
+Object.isBoolean = function(object)
+{
+    return typeof(object)=='boolean';
+};

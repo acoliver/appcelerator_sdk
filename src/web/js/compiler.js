@@ -232,19 +232,32 @@ Appcelerator.Compiler.checkLoadState = function (state)
 		}
 	}	
 };
+
 //
 // call this to dynamically compile a widget on-the-fly and evaluate
 // any widget JS code as compiled
 //
-Appcelerator.Compiler.dynamicCompile = function(element)
+Appcelerator.Compiler.dynamicCompile = function(element,notimeout)
 {
-    setTimeout(function()
-    {    
-	    var state = Appcelerator.Compiler.createCompilerState();
-	    Appcelerator.Compiler.compileElement(element,state);
-	    state.scanned = true;
-	    Appcelerator.Compiler.checkLoadState(state);
-    },0);
+    if (notimeout)
+    {
+        Appcelerator.Compiler.doCompile(element);   
+    }
+    else
+    {
+        (function()
+        {
+            Appcelerator.Compiler.doCompile(element);
+        }).defer();
+    }
+};
+
+Appcelerator.Compiler.doCompile = function(element)
+{    
+    var state = Appcelerator.Compiler.createCompilerState();
+    Appcelerator.Compiler.compileElement(element,state);
+    state.scanned = true;
+    Appcelerator.Compiler.checkLoadState(state);
 };
 
 Appcelerator.Compiler.createCompilerState = function ()
@@ -295,7 +308,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     state.scanned = true;
     state.onafterfinish = function(code)
     {
-        setTimeout(function()
+        (function()
         {
 		    if (typeof(onFinishCompiled)=='function') onFinishCompiled();
 		    if (originalVisibility!=container.style.visibility)
@@ -303,7 +316,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 		       container.style.visibility = originalVisibility;
 		    }
 			Appcelerator.Compiler.compileDocumentOnFinish();
-        },0);
+        }).defer();
     };
     Appcelerator.Compiler.checkLoadState(state);
 };
@@ -1316,7 +1329,8 @@ Appcelerator.Compiler.parseExpression = function(value)
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	var clauses = Appcelerator.Compiler.parseExpression(value);
-	for(var i = 0; i < clauses.length; i++) {
+	for(var i = 0; i < clauses.length; i++) 
+	{
 		var clause = clauses[i];
         $D('compiling condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
         
@@ -2472,3 +2486,61 @@ Appcelerator.Compiler.setHTML = function(element,html)
 	if (Appcelerator.Browser.isIE6) setTimeout(Appcelerator.Browser.fixImageIssues,0);
 };
 
+
+/**
+ * attach a method which can dynamically compile an expression passed in
+ * for a given element. this allows a more unobstrutive or standards based
+ * approach for purists such as 
+ *
+ * $('myelement').on('click then l:foo')
+ */
+Element.__extend = Element.extend;
+Element.extend = function(e)
+{
+    return (function()
+    {
+	    var re = Element.__extend(e);
+	    if (typeof re.on != 'function')
+	    {
+	       re.on = function(webexpr,parameters)
+	       {
+	            if (parameters)
+	            {
+	               for (var key in parameters)
+	               {
+	                   if (Object.isString(key))
+	                   {
+	                       var value = parameters[key];
+	                       if (Object.isString(value) || Object.isNumber(value) || Object.isBoolean(value))
+	                       {
+	                           re.setAttribute(key,value);
+	                       }
+	                   }
+	               }
+	               Appcelerator.Compiler.delegateToAttributeListeners(re);
+	            }
+			    Appcelerator.Compiler.compileExpression(re,webexpr,false);
+			    return re;
+	       };
+	    }
+	    return re;
+	})();
+};
+
+/**
+ * extend an array to support passing multiple elements with a single expression
+ *
+ * for example: $$('.myclass').on('click then l:foo')
+ */ 
+Object.extend(Array.prototype,
+{
+    on:function(webexpr,parameters)
+    {
+        for (var c=0;c<this.length;c++)
+        {
+           var e = this[c];
+           if (e && Object.isElement(e) && Object.isFunction(e.on)) e.on(webexpr,parameters);
+        }
+        return this;
+    }
+});
