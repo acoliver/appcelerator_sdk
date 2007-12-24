@@ -162,7 +162,8 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isWebkit = Appcelerator.Browser.isMozilla && Appcelerator.Browser.isGecko && ua.indexOf('applewebkit') > 0;
 	Appcelerator.Browser.isSeamonkey = Appcelerator.Browser.isMozilla && ua.indexOf('seamonkey') > -1;
 	Appcelerator.Browser.isPrism = Appcelerator.Browser.isMozilla && ua.indexOf('prism/') > 0;
-
+    Appcelerator.Browser.isIceweasel = Appcelerator.Browser.isMozilla && ua.indexOf('iceweasel') > 0;
+    
 	Appcelerator.Browser.isWindows = false;
 	Appcelerator.Browser.isMac = false;
 	Appcelerator.Browser.isLinux = false;
@@ -241,7 +242,7 @@ Appcelerator.Parameters = $H({});
 		}
 	}
 	Appcelerator.Browser.isBrowserSupported = false;
-	['Firefox','IE6','IE7','Safari','Camino','Opera','Webkit','Seamonkey','Prism'].each(function(name)
+	$w('Firefox IE6 IE7 Safari Camino Opera Webkit Seamonkey Prism Iceweasel').each(function(name)
 	{
         if (Appcelerator.Browser['is'+name]===true)
         {
