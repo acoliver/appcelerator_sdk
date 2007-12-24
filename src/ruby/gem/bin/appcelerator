@@ -25,6 +25,8 @@ require 'erb'
 require 'md5'
 require 'socket'
 require 'fileutils'
+require 'activesupport'
+require 'appcelerator'
 
 app_path = ARGV.last
 
@@ -73,6 +75,10 @@ f.close
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_helper.rb", "#{p}/app/helpers"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/servicetester.html", "#{p}/public"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/test_service.rb", "#{p}/app/services"
+
+# write out our version file
+version = {"site"=>"http://updatesite.appcelerator.org","version"=>"#{Appcelerator::VERSION}"}
+File.open("#{p}/config/version.yml",'w').puts version.to_yaml
 
 # replace the XML with the correct sessionid
 projectname = File.basename(p)

@@ -61,5 +61,9 @@ if defined?(RAILS_ROOT)
         puts Appcelerator::ServiceBroker.diagnostics
         puts
     end
+    
+    # start the update monitor
+    Appcelerator::Update.monitor
+    at_exit { Appcelerator::Update.unmonitor }
 end
 
