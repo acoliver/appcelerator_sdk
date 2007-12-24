@@ -1,3 +1,23 @@
+#
+# Appcelerator SDK
+#
+# Copyright (C) 2006-2007 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
 
 
 module Appcelerator  
@@ -29,8 +49,6 @@ module Appcelerator
         @response_type = response_type
       end
     end
-
-
 
     # internal
     attr_accessor :before_filters, :after_filters
@@ -104,142 +122,6 @@ module Appcelerator
 	  
 	end
   
-  # TODO: spin this into another file when we can resolve dependecy issues
-  class CrudService < Service
-    
-    # registration point for crud services
-    def Service.service_scaffold(model)
-      servicename = model_name(model)
-      self.instance.model_class = eval(model.to_s.camelize)
-      %w(create retrieve update delete list assembly search).each do |operation|
-          messagetype = "app."+ servicename +"."+ operation
-          request = messagetype + ".request"
-          response = messagetype + ".response"
-          self.instance.register(request,operation,response)
-          APP_SERVICES << {'name'=>name, 'model'=>servicename}
-      end
-    end
-    
-    attr_accessor :model_class
-    
-    def assembly(request,message)
-      if self.respond_to?(:before_assembly)
-        request,message = send(:before_assembly,request,message)
-      end
-      data = Array.new
-      @model_class.columns.each do |column|
-          data << {'name'=>column.name,'type'=>column.type, 'limit'=>column.limit, 
-                 'nullable'=>column.null, 'primary'=>column.primary, 
-                 'default'=>column.default}
-      end
-      response = {'success'=>true,'columns'=>data}
-      if self.respond_to?(:after_assembly)
-        response = send(:after_assembly,response)
-      end
-      response
-    end
-    
-    def create(request,message)
-      if self.respond_to?(:before_create)
-        request,message = send(:before_create,request,message)
-      end
-      o = @model_class.new(message)
-      o.save
-      response = {'success'=>true,'id'=>o.id}
-      if self.respond_to?(:after_create)
-        response = send(:after_create,response)
-      end
-      response
-    end
-    
-    def retrieve(request,message)
-      if self.respond_to?(:before_retrieve)
-      request,message = send(:before_retrieve,request,message)
-      end
-      o = @model_class.find(message['id'])
-      response = {'success'=>true}
-      o.attributes.each do |key,val|
-        response[key]=val
-      end
-      response
-      if self.respond_to?(:after_retrieve)
-        response = send(:after_retrieve,response)
-      end
-      response
-    end
-    
-    def update(request,message)
-      if self.respond_to?(:before_update)
-      request,message = send(:before_update,request,message)
-      end
-      o = @model_class.find(message['id'])
-      return {'success'=>false,'message'=>'record does not exist'} unless o
-      message.each do |key,value|
-      if o.attributes.has_key?(key)
-        o[key]=true if value=='true'
-        o[key]=false if value=='false'
-        o[key]=value if o[key]!=true && o[key]!=false
-      end
-      end
-      o.save!
-      response = {'success'=>true,'id'=>o.id}
-      if self.respond_to?(:after_update)
-        response = send(:after_update,response)
-      end
-      response
-    end
-    
-    def delete(request,message)
-      if self.respond_to?(:before_delete)
-      request,message = send(:before_delete,request,message)
-      end
-      @model_class.delete(message['id'])
-      response = {'success'=>true,'id'=>message['id']}
-      if self.respond_to?(:after_delete)
-        response = send(:after_delete,response)
-      end
-      response
-    end
-    
-    def search(request,message)
-        if self.respond_to?(:before_search)
-        request,message = send(:before_search,request,message)
-        end
-        query = '%%' + message['query'] + '%%'
-        conditions_str = Array.new
-        @model_class.content_columns.each do |col|
-          name = col.name + ' like ?'
-          conditions_str << name if col.type == :string
-        end
-        
-        conditions = Array.new
-        conditions << conditions_str.join(' OR ')
-        conditions_str.length.times {|e| conditions<<query}
-                  
-        results = @model_class.find(:all,:conditions=>conditions)
-        response = {'success'=>true, 'rows'=>results, 'total'=>@model_class.count, 'count'=>results.length}
-        
-        if self.respond_to?(:after_search)
-          response = send(:after_search,response)
-        end
-        response
-    end
-    
-    def list(request,message)
-      pk = message['id']
-      limit = message['limit'] || 100
-      if pk
-          objs = [@model_class.find_by_id(pk)]
-        else
-          objs = @model_class.find(:all,:limit=>limit)
-          end
-      response = {'success'=>true,'rows'=>objs, 'total'=>@model_class.count}
-      if self.respond_to?(:after_list)
-        response = send(:after_list,response)
-      end
-      response
-    end 
-  end
     
   #
   # Class to allow inspection and equality checking (for adding to sets)

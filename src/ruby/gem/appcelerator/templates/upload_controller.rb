@@ -49,7 +49,8 @@ class UploadController < ApplicationController
 
     request_id = Time.now
     message_type = params['type']
-    Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, msg, request_id)
+    scope = params['scope'] || 'appcelerator'
+    Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, msg, request_id, scope)
 
   end
 end

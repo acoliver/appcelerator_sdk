@@ -432,7 +432,6 @@
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
             <fileset dir="${src.ruby.dir}/gem" includes="**/*"/>
-            <fileset dir="${build.ruby.dir}" includes="**/*"/>
             <filterchain>
                 <expandproperties/>
             </filterchain>
@@ -452,11 +451,17 @@
 		<replaceregexp match="src=&quot;js" replace="src=&quot;javascripts" flags="g" byline="true">
 		    <fileset dir="${stage.dir}/ruby/appcelerator/templates" includes="**/*.html"/>
 		</replaceregexp>
-		<antcall target="gem"/>
+        <replaceregexp match="0.0.0" replace="${APP_VERSION}" flags="g" byline="true">
+            <fileset dir="${stage.dir}/ruby/lib" includes="appcelerator.rb"/>
+        </replaceregexp>
+        <exec dir="${stage.dir}/ruby" executable="rake">
+            <arg line="update_manifest"/>
+        </exec>
+        <antcall target="gem"/>
 	</target>
 	<target name="gem" depends="init">
 		<exec dir="${stage.dir}/ruby" executable="rake">
-			<arg line="version=${APP_VERSION}"/>
+			<arg line="clean gem"/>
 		</exec>
 		<copy todir="${stage.dir}">
 			<fileset dir="${stage.dir}/ruby/pkg" includes="*.gem"/>

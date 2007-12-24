@@ -1,0 +1,61 @@
+# -*- ruby -*-
+
+require 'rubygems'
+require 'hoe'
+require './lib/appcelerator.rb'
+
+
+task :update_manifest do
+    def recursive_dirs(dir)
+      a = []
+      Dir[dir + '/*'].each do |f|
+         if File.file?(f)
+            a << f
+         elsif File.directory?(f)
+            a.concat recursive_dirs(f)
+         end    
+      end
+      a 
+    end
+    
+    files = recursive_dirs(File.dirname(__FILE__))
+    
+    files = files.delete_if do |item|
+        base = File.basename(File.dirname(item))
+        result = false
+        case base
+            when 'pkg'
+                result = true
+            when '.svn'
+                result = true
+        end
+        if not result
+            result = File.basename(item)=='Manifest.txt'
+        end
+        result
+    end
+    
+    files.map! do |item|
+        item.gsub(File.dirname(__FILE__)+'/','')
+    end
+    
+    File.open('Manifest.txt','w').puts files
+
+    puts "Added #{files.length} files to Manifest.txt"
+end
+
+
+Hoe.new('appcelerator', Appcelerator::VERSION) do |p|
+  p.name = 'appcelerator'
+  p.rubyforge_name = 'appcelerator'
+  p.author = 'Appcelerator and contributors'
+  p.email = 'info@appcelerator.org'
+  p.summary = 'Appcelerator is an RIA framework for use with Ruby on Rails'
+  p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
+  p.url = "http://www.appcelerator.org" 
+  p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
+  p.remote_rdoc_dir = '' # Release to root
+  p.rsync_args << ' --exclude=statsvn/'
+end
+
+# vim: syntax=Ruby
