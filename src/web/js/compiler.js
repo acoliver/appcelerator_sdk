@@ -91,7 +91,7 @@ function $(element)
 		}
 	}
 	
-	return Element.extend(element);
+	return element ? Element.extend(element) : null;
 }
 
 Appcelerator.Compiler.generateId = function()
