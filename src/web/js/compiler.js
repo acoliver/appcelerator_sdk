@@ -1215,7 +1215,7 @@ Appcelerator.Compiler.determineScope = function(element)
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
 	var on = element.getAttribute('on');
-	if (on)
+	if (on && Object.isString(on))
 	{
 		Appcelerator.Compiler.compileExpression(element,on,false);
 		return true;
@@ -1225,6 +1225,10 @@ Appcelerator.Compiler.parseOnAttribute = function(element)
 
 Appcelerator.Compiler.parseExpression = function(value)
 {
+    if (!Object.isString(value))
+    {
+        throw "value: "+value+" is not a string!";
+    }
     value = value.gsub('\n',' ');
     value = value.gsub('\r',' ');
     value = value.gsub('\t',' ');
@@ -2502,44 +2506,36 @@ Appcelerator.Compiler.setHTML = function(element,html)
  *
  * $('myelement').on('click then l:foo')
  */
-Element.__extend = Element.extend;
-Element.extend = function(e)
+var AppceleratorCompilerMethods = 
 {
-    return (function()
+    on: function(re,webexpr,parameters)
     {
-	    var re = Element.__extend(e);
-	    if (typeof re.on != 'function')
-	    {
-	       re.on = function(webexpr,parameters)
-	       {
-	            if (parameters)
-	            {
-	               for (var key in parameters)
-	               {
-	                   if (Object.isString(key))
-	                   {
-	                       var value = parameters[key];
-	                       if (Object.isString(value) || Object.isNumber(value) || Object.isBoolean(value))
-	                       {
-	                           re.setAttribute(key,value);
-	                       }
-	                   }
-	               }
-	               Appcelerator.Compiler.delegateToAttributeListeners(re);
-	            }
-			    Appcelerator.Compiler.compileExpression(re,webexpr,false);
-			    return re;
-	       };
-	    }
-	    return re;
-	})();
+        if (parameters)
+        {
+            for (var key in parameters)
+            {
+                if (Object.isString(key))
+                {
+                    var value = parameters[key];
+                    if (Object.isString(value) || Object.isNumber(value) || Object.isBoolean(value))
+                    {
+                        re.setAttribute(key,value);
+                    }
+                }
+            }
+            Appcelerator.Compiler.delegateToAttributeListeners(re);
+        }
+        Appcelerator.Compiler.compileExpression(re,webexpr,false);
+        return re;
+    }
 };
+Element.addMethods(AppceleratorCompilerMethods);
 
 /**
  * extend an array to support passing multiple elements with a single expression
  *
  * for example: $$('.myclass').on('click then l:foo')
- */ 
+ */
 Object.extend(Array.prototype,
 {
     on:function(webexpr,parameters)
@@ -2552,3 +2548,4 @@ Object.extend(Array.prototype,
         return this;
     }
 });
+
