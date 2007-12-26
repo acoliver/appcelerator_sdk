@@ -184,7 +184,7 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 //
 // Modules must call this to register themselves with the framework
 //
-Appcelerator.Core.registerModule = function (moduleName,module)
+Appcelerator.Core.registerModule = function (moduleName,module,dynamic)
 {
 	moduleName = moduleName.replace(':','_');
 	Appcelerator.Core.modules[moduleName] = module;
@@ -203,6 +203,17 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 		Appcelerator.Core.widgets[widgetName] = module;
 	}
 	
+    //
+    //setup unload handler if found in the module
+    //
+    if (module.onUnload)
+    {
+        window.observe(window,'unload',module.onUnload);
+    }
+
+    // generated modules won't have a path or be fetched
+    if (dynamic) return;
+	
 	//
 	// give the module back his path
 	// 
@@ -212,14 +223,6 @@ Appcelerator.Core.registerModule = function (moduleName,module)
 		module.setPath(path);
 	}
 	
-	//
-	//setup unload handler if found in the module
-	//
-	if (module.onUnload)
-	{
-		window.observe(window,'unload',module.onUnload);
-	}
-
 	var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';	
 	var listeners = Appcelerator.Core.fetching[path];
 	if (listeners)

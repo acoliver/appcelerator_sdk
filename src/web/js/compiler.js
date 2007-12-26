@@ -1592,9 +1592,17 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 			}
 		}
 		
-		if (local && data['id']==null)
+		if (local)
 		{
-			data['id'] = id;
+			if (data['id'] == null)
+			{
+                data['id'] = id;
+			}
+		    
+		    if (data['element'] == null)
+            {
+                data['element'] = $(data['id']);
+            }
 		}
 		
 		if (!scope || scope == '*')
