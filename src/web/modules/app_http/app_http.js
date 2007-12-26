@@ -41,8 +41,20 @@ Appcelerator.Module.Http =
 	},
 	getActions: function()
 	{
-		return ['post', 'get'];
+		return ['post', 'get', 'options', 'put', 'delete'];
 	},
+    options: function(id,params,data,scope,version)
+    {
+        Appcelerator.Module.Http.performFetch(params, data, 'options');
+    },
+    put: function(id,params,data,scope,version)
+    {
+        Appcelerator.Module.Http.performFetch(params, data, 'put');
+    },
+    'delete': function(id,params,data,scope,version)
+    {
+        Appcelerator.Module.Http.performFetch(params, data, 'delete');
+    },
 	post: function(id,params,data,scope,version)
 	{
 		Appcelerator.Module.Http.performFetch(params, data, 'post');
@@ -54,6 +66,11 @@ Appcelerator.Module.Http =
 	performFetch: function(params, data, method)
 	{
 		var uri = params['uri'][method];
+		if (!uri)
+		{
+		  $E('no method mapped for '+method);
+		  return;
+		}
 		var response = uri['response'] || params['response'];
 		var error = uri['error'] || params['error'];
 
@@ -73,6 +90,7 @@ Appcelerator.Module.Http =
 		var compiled = eval(uri['uri'] + '; init_'+params['id']);
 		var uriLink = compiled(data).trim();
 		
+		//TODO: support https
 		if (uriLink.startsWith('http://'))
 		{
 			var uriStrip = uriLink.match('http://[^/]*');
@@ -98,35 +116,38 @@ Appcelerator.Module.Http =
 				contentType = result.getResponseHeader('Content-Type');
 				if (result.status == 200)
                 {
-					var json_result = {};
                     $D('app:http onSuccess doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', contentType = ' + contentType + ', text = '+ result.responseText);
-
-					if (contentType.indexOf('/xml') > 0)
-					{
-						json_encode_xml(result.responseXML.documentElement, json_result);
-					}
-					else if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0 || contentType.indexOf('/javascript') > 0)
-					{
-					    var text = result.responseText.trim();
-					    if (responseRegex)
-					    {
-					       var re = new RegExp(responseRegex);
-					       var match = re.exec(text);
-					       if (match && match.length > 1)
-					       {
-					          text = match[1];
-					       }
-					    }
-						json_result = text.evalJSON();
-					}
-					else
-					{
-						$E('app: http onSuccess received invalid content type = ' + contentType);
-						return;
-					}
-					if (response)
-					{
-						$MQ(response, json_result);
+                    if (response)
+                    {
+	                    var json_result = {};
+	
+	                    if (contentType.indexOf('/xml') > 0)
+	                    {
+	                        json_encode_xml(result.responseXML.documentElement, json_result);
+	                    }
+	                    else if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0 || contentType.indexOf('/javascript') > 0)
+	                    {
+	                        var text = result.responseText.trim();
+	                        if (responseRegex)
+	                        {
+	                           var re = new RegExp(responseRegex);
+	                           var match = re.exec(text);
+	                           if (match && match.length > 1)
+	                           {
+	                              text = match[1];
+	                           }
+	                        }
+	                        json_result = text.evalJSON();
+	                    }
+	                    else
+	                    {
+	                        $E('app: http onSuccess received invalid content type = ' + contentType);
+	                        return;
+	                    }
+	                    (function()
+                        {
+                            $MQ(response, json_result);
+                        }).defer();   
 					}
 				}
 			},

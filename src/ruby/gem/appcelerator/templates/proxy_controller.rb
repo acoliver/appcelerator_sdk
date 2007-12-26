@@ -1,3 +1,24 @@
+#
+# Appcelerator SDK
+#
+# Copyright (C) 2006-2007 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+
 require 'base64'
 
 class ProxyController < ApplicationController
@@ -8,18 +29,35 @@ class ProxyController < ApplicationController
       if url.index('://') == -1
         url = Base64.decode64(url)
       end
-      if request.post?
-       uri = URI.parse(url)
-       req = Net::HTTP::Post.new(uri.to_s)
-       req.body = request.raw_post
-       res = Net::HTTP.new(uri.host, uri.port).start {|http| http.request(req) }
-      else
-       res = Net::HTTP.get_response(URI.parse(url))
+      uri = URI.parse(url)
+      
+      req = nil
+      
+      case request.request_method.to_s
+        when 'post'
+           req = Net::HTTP::Post.new(uri.to_s)
+           req.body = request.raw_post
+        when 'get'
+           req = Net::HTTP::Get.new(uri.to_s)
+        when 'options'
+           req = Net::HTTP::Options.new(uri.to_s)
+        when 'put'
+           req = Net::HTTP::Put.new(uri.to_s)
+           req.body = request.raw_post
+        when 'delete'
+           req = Net::HTTP::Delete.new(uri.to_s)
       end
+
+      res = Net::HTTP.new(uri.host, uri.port).start do |http| 
+        http.request(req)
+      end
+
+      
       res.each_header do |key,value|
         response.headers[key]=value unless key =~ /(transfer-encoding|set-cookie)/
       end
-      render :inline => res.body
+      render :inline=> res.body, :status=> res.code
+
     end
   end
 end
