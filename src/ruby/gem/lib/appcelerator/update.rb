@@ -56,6 +56,11 @@ module Appcelerator
 
         filepath = RAILS_ROOT + '/config/version.yml'
         
+        if !File.exists?(filepath)
+            c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION}
+            File.new(filepath,'w+').puts c.to_yaml
+        end
+        
         y = YAML::load_stream(File.open(filepath)) 
         doc = y.documents.first
 
