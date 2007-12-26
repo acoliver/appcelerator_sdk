@@ -229,7 +229,6 @@
 	<target name="build_doc.min" depends="min,build_doc"/>
 	<target name="build_doc" depends="init,build_web,build_java" description="* Builds the documentation">
 		<mkdir dir="${stage.dir}/doc"/>
-		<loadfile property="ruby_appcelerator.xml" srcFile="build/ruby/appcelerator.xml"/>
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="appcelerator-dotnet.xml" srcFile="build/dotnet/src/web/appcelerator.xml"/>
