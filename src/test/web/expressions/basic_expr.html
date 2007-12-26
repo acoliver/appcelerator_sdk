@@ -641,6 +641,19 @@
 	</tr>	
 	<tr>
 		<td class="test" valign="middle">
+			<a on="click then l:message.condition_w_input[value='testing 1 2 3']">Run Test</a>
+			Message Condition (compare with input field value)
+		</td>
+		<td class="result">	
+			<div  on="l:message.condition_w_input[value=$my_hidden_value] then script[alert('it worked')]">
+				should see see alert
+			</div>
+			<input type="hidden" id="my_hidden_value" value="testing 1 2 3"/>
+		</td>
+	</tr>	
+
+	<tr>
+		<td class="test" valign="middle">
 			<a on="click then l:test33">Run Test</a>
 			State Machine Condition
 		</td>

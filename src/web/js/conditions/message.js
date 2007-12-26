@@ -35,15 +35,18 @@ Appcelerator.Compiler.MessageAction.onMessage = function(type,data,datatype,dire
 			var not_cond = p.key.charAt(p.key.length-1) == '!';
 			var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
 			var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
+			
+			// added x to eval $args
+			var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
 			if (not_cond)
 			{
-				if (v == p.value)
+				if (v == x)
 				{
 					ok = false;
 					break;
 				}
 			}
-			else if (null == v || v != p.value)
+			else if (null == v || v != x)
 			{
 				ok = false;
 				break;
