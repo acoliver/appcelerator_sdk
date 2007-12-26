@@ -27,6 +27,28 @@ require 'socket'
 require 'fileutils'
 require 'activesupport'
 require 'appcelerator'
+require 'optparse'
+
+if ARGV.length == 0
+   ARGV.push << '-h' 
+end
+
+OPTIONS = {
+    :version => nil
+}
+
+ARGV.options do |o|
+    script_name = File.basename($0)
+    o.set_summary_indent '  '
+    o.banner = "Usage: #{script_name} [OPTIONS]"
+    o.define_head "\nAppcelerator Platform SDK for Ruby on Rails"
+    o.separator ' '
+
+    o.on('-v','--version',"Show installed Appcelerator version") { puts Appcelerator::VERSION; exit; }
+    
+    o.on_tail("-h", "--help", "Show this help message.") { puts o; exit }
+    o.parse!
+end
 
 app_path = ARGV.last
 
