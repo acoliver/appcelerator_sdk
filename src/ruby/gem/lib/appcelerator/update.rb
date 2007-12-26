@@ -47,27 +47,31 @@ module Appcelerator
     # check the appcelerator public update website to 
     # determine if we're running the latest version or not
     #
-    def Update.up2date?
+    def Update.up2date?(force_version=false)
       systemid = ''
       props = Hash.new
       new_version = false
+      version = Appcelerator::VERSION
+      site = 'http://updatesite.appcelerator.org'
+      lastcheck = nil
 
       begin
 
         filepath = RAILS_ROOT + '/config/version.yml'
         
-        if !File.exists?(filepath)
-            c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION}
-            File.new(filepath,'w+').puts c.to_yaml
+        if not force_version
+            if !File.exists?(filepath)
+                c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION}
+                File.new(filepath,'w+').puts c.to_yaml
+            end
+            
+            y = YAML::load_stream(File.open(filepath)) 
+            doc = y.documents.first
+            systemid = doc['systemid']
+            site = doc['site']
+            version = doc['version']
+            lastcheck = doc['last']
         end
-        
-        y = YAML::load_stream(File.open(filepath)) 
-        doc = y.documents.first
-
-        systemid = doc['systemid']
-        site = doc['site']
-        version = doc['version']
-        lastcheck = doc['last']
         
         #
         # we don't want to check more than once per day during 
@@ -100,9 +104,11 @@ module Appcelerator
           puts "A new version of Appcelerator is available: #{props['version']}, released on: #{props['date']}"
           new_version = true
         end
-
-        config = {'systemid'=>props['systemid'], 'last'=> Time.now, 'version'=> version, 'site'=>site}
-        File.new(filepath,'w+').puts config.to_yaml
+        
+        if not force_version
+            config = {'systemid'=>props['systemid'], 'last'=> Time.now, 'version'=> version, 'site'=>site}
+            File.new(filepath,'w+').puts config.to_yaml
+        end
       rescue => e
         # oops, we have an error - don't do anything in this case
       end

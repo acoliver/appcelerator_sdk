@@ -33,9 +33,7 @@ if ARGV.length == 0
    ARGV.push << '-h' 
 end
 
-OPTIONS = {
-    :version => nil
-}
+OPTIONS = {}
 
 ARGV.options do |o|
     script_name = File.basename($0)
@@ -44,7 +42,16 @@ ARGV.options do |o|
     o.define_head "\nAppcelerator Platform SDK for Ruby on Rails"
     o.separator ' '
 
-    o.on('-v','--version',"Show installed Appcelerator version") { puts Appcelerator::VERSION; exit; }
+    o.on('-v','--version','Show installed Appcelerator version') { puts Appcelerator::VERSION; exit; }
+
+    o.on('-u','--update','Check for any updates to Appcelerator') do
+        require 'appcelerator/update'
+        version, params = Appcelerator::Update.up2date? true
+        if not version
+            puts 'No updates found'
+        end
+        exit
+    end
     
     o.on_tail("-h", "--help", "Show this help message.") { puts o; exit }
     o.parse!
