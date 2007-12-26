@@ -499,7 +499,7 @@ Appcelerator.Util.ServiceBroker =
 		var postBody = instructions.postBody;
 		var contentType = instructions.contentType;
 
-		this.sendRequest(url,method,postBody,contentType,marshaller,0);
+		this.sendRequest(url,method,postBody,contentType,marshaller);
 		
 		if (!this.multiplex && this.messageQueue.length > 0)
 		{
@@ -508,16 +508,15 @@ Appcelerator.Util.ServiceBroker =
 	},
 	sendRequest: function(url,method,body,contentType,marshaller,count)
 	{
-		count = count+1;
-
+	    count = (count || 0) + 1;
+	    
 		if (count > 3)
 		{
-			self.fetching = false;
-			$E('too many attempts sending a re-authorization request.');
-			return;
+		  $E('failed to send request too many times to '+url);
+		  return;
 		}
 		
-		var self = this;
+        var self = this;
 		
         new Ajax.Request(url,
         {
@@ -572,8 +571,7 @@ Appcelerator.Util.ServiceBroker =
                     var cl = transport.getResponseHeader("X-Failed-Retry");
                     if (!cl)
                     {
-                    	Logger.warn("Failed authentication, will retry 1 more time");
-			  			self.sendRequest(url,method,body,contentType,marshaller,count);
+                        Logger.warn("Failed authentication");
 			  			return;
                     }
             	}
@@ -1278,6 +1276,29 @@ else
 		Appcelerator.Util.ServiceBroker.multiplex = config.multiplex ? (config.multiplex == 'true') : true;
 		Appcelerator.Util.ServiceBroker.transport = config.transport || Appcelerator.Util.ServiceBroker.transport;
 		Appcelerator.Util.ServiceBroker.marshaller = config.marshaller || Appcelerator.Util.ServiceBroker.marshaller;
+		
+		var cookieName = Appcelerator.ServerConfig['sessionid'].value || 'unknown_cookie_name';
+        var cookieValue = Appcelerator.Util.Cookie.GetCookie(cookieName);
+        
+        if (!cookieValue)
+        {
+	        new Ajax.Request(Appcelerator.Util.ServiceBroker.serverPath+'?initial=1',
+	        {
+	            asynchronous: true,
+	            method: 'get',
+	            evalJSON:false,
+	            evalJS:false,
+	            onSuccess:function(r)
+	            {
+			        Appcelerator.Util.ServiceBroker.triggerConfig();
+			        Appcelerator.Util.ServiceBroker.startTimer();
+			        Logger.info('ServiceBroker ready');
+	            }
+	        });
+            return;
+        }
+		
+		
         Appcelerator.Util.ServiceBroker.triggerConfig();
         Appcelerator.Util.ServiceBroker.startTimer();
         Logger.info('ServiceBroker ready');

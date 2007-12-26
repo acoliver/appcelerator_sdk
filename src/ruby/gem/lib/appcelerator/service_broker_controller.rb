@@ -44,15 +44,20 @@ module ServiceBroker
         #
   	    if not request.xml_http_request? and not request.xhr?
           logger.error("client error = not XHR request")
-          session.delete
   	      render :nothing => true, :status => 400
   	      return
+        end
+        
+        # check to see if we're doing an initial request to cause the 
+        # cookie to get set
+        if request.parameters[:initial]
+          render :nothing => true, :status => 202
+          return
         end
       
         authtoken = request.parameters[:auth]
         if authtoken.nil?
           logger.error("client error = missing auth token")
-          session.delete
           render :nothing => true, :status => 400
           return
         end
@@ -60,7 +65,6 @@ module ServiceBroker
         ts = request.parameters[:ts]
         if ts.nil?
           logger.error("client error = missing timestamp")
-          session.delete
           render :nothing => true, :status => 400
           return
         end
@@ -68,7 +72,6 @@ module ServiceBroker
         instanceid = request.parameters[:instanceid]
         if instanceid.nil?
           logger.error("client error = missing instanceid")
-          session.delete
           render :nothing => true, :status => 400
           return
         end
@@ -80,7 +83,6 @@ module ServiceBroker
         
         if authcheck != authtoken
           logger.error("client error = authtoken didn't not properly compute")
-          session.delete
           render :nothing => true, :status => 400
           return
         end
