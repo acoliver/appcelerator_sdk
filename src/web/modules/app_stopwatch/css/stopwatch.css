@@ -1,0 +1,12 @@
+.stopwatch h3
+{
+    color: #222222;
+    margin: 0px;
+}
+.stopwatch h3 span {font-size: 90%;}
+.app_stopwatch_started td.stopwatch_start {display: none}
+.app_stopwatch_started td.stopwatch_stop {display: inherit}
+.stopwatch .stopwatch_stop {display: none}
+.stopwatch .stopwatch_start {display: inherit}
+
+.stopwatch table td { text-align: center; }

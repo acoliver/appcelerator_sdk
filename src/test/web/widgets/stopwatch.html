@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <script type="text/javascript" src="../js/appcelerator-debug.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+
+</style>
+
+<script type="text/javascript">
+</script>
+</head>
+<body>
+
+<h3> Stopwatch Widget </h3> 
+
+<p>
+    These tests exercise the stopwatch widget
+</p>
+
+<table width="90%">
+    <tr>
+        <td class="test" valign="middle">
+            Stopwatch
+        </td>
+        <td class="result" >
+            <app:stopwatch></app:stopwatch>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            This should not start when you start the one above
+        </td>
+        <td class="result" >
+            <app:stopwatch></app:stopwatch>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Responding to events: <a on="click then l:stopwatch_toggle">Toggle</a> 
+        </td>
+        <td class="result" >
+            <app:stopwatch on="l:stopwatch_toggle then start_stop" show_button="false"></app:stopwatch>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
