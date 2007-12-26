@@ -5,6 +5,11 @@ require 'appcelerator'
 class ServiceBrokerController < ApplicationController
   include ServiceBroker
 
+  if RAILS_GEM_VERSION.to_f >= 2.0
+      skip_before_filter :verify_authenticity_token
+  end
+  
+  
   #
   # this is generated automatically when the project was created
   # and contains a random, globally unique id which serves as a 
