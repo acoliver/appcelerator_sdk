@@ -227,7 +227,12 @@ Appcelerator.Module.Button =
 		html += '<td class="button_'+color+'_'+corner+'_left'+disabled+'" id="'+element.id+'_left">';
 		html += '</td>';
 		html += '<td class="button_'+color+'_'+corner+'_middle'+disabled+' button_'+color+'_text'+disabled+'" id="'+element.id+'_middle" align="middle">';
-		html += '<div align="center"><table cellpadding="0" cellspacing="0" border="0"><tr><td><div style="margin-right: 10px">'+elementText+'</div></td>';
+		html += '<div align="center"><table cellpadding="0" cellspacing="0" border="0"><tr><td><div'; 
+        if(icon != '')
+        {
+            html += ' style="margin-right: 10px"';
+        }
+        html += '>'+elementText+'</div></td>';
 		html += '<td class="'+icon+'"/></td></tr></table></div></td>';
 		html += '<td class="button_'+color+'_'+corner+'_right'+disabled+'" id="'+element.id+'_right">';
 		html += '</td>';
