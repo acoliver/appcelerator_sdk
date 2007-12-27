@@ -72,7 +72,10 @@ public class CookieTrackerFilter implements Filter
                     auid = GUID.asGUID();
                 }                
                 Cookie newCookie = Util.addCookie(resp, cookieName, auid, domain, duration);
-                LOG.info("created new AUID cookie = "+newCookie+", auid="+auid+", duration="+duration);
+                if (LOG.isDebugEnabled())
+                {
+                    LOG.debug("created new AUID cookie = "+newCookie+", auid="+auid+", duration="+duration);
+                }
             }
             HttpSession httpSession = req.getSession();
             httpSession.setAttribute("AUID", auid);
