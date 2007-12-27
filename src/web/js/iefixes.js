@@ -73,8 +73,7 @@ Appcelerator.Browser.fixImage = function(element,value)
 	if (Appcelerator.Browser.isIE6 && value)
 	{
      	var imgName = value.toUpperCase();
-     	// make sure it's a PNG and hasn't been compiled with on attribute
-      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG" && element.getAttribute('on')==null)
+      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG")
       	{
       		var height = element.height, width = element.width;
 		 	if (!height || !width)
