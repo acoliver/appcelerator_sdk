@@ -96,6 +96,8 @@ Appcelerator.Module.Http =
 			var uriStrip = uriLink.match('http://[^/]*');
 			var currentStrip = window.location.href.match('http://[^/]*');
 			
+			$D('uriStrip='+uriStrip+', currentStrip='+currentStrip+', uriLink='+uriLink+', current location='+window.location.href);
+			
 			if (currentStrip && uriStrip && (uriStrip[0].toLowerCase() != currentStrip[0].toLowerCase()))
 			{
 				var proxy = Appcelerator.ServerConfig['proxy'];
@@ -154,10 +156,10 @@ Appcelerator.Module.Http =
 			onException: function (resp, ex)
 			{
 				var msg = new String(ex);
-				$E('app:http onException doing ' + method + ' to ' + msg);
+				$E('app:http onException doing ' + method + ' to ' + uriLink + ', exception was: '+msg);
 				if (error)
 				{
-					$MQ(error, {msg: msg});
+					$MQ(error, {msg: msg, uri:uriLink});
 				}
 			},
             onFailure: function (result, json)
@@ -165,7 +167,7 @@ Appcelerator.Module.Http =
 				$E('app:http onFailure doing ' + method + ' to ' + uriLink + ', status = ' + result.status + ', text = ' + result.statusText);
 				if (error)
 				{
-					$MQ(error, {msg: result.statusText});
+					$MQ(error, {msg: result.statusText, uri: uriLink});
 				}
 			}
 		});

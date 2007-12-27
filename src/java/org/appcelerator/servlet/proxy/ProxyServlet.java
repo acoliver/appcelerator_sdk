@@ -22,6 +22,7 @@ package org.appcelerator.servlet.proxy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +33,12 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.OptionsMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.log4j.Logger;
 import org.appcelerator.servlet.dispatcher.DispatchServlet;
 import org.appcelerator.util.Util;
 
@@ -45,6 +50,7 @@ import org.appcelerator.util.Util;
 public class ProxyServlet extends DispatchServlet
 {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOG = Logger.getLogger(ProxyServlet.class);
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -56,6 +62,8 @@ public class ProxyServlet extends DispatchServlet
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+        
+        url = URLDecoder.decode(url,"UTF-8");
         
         if (url.indexOf("://")==-1)
         {
@@ -76,9 +84,32 @@ public class ProxyServlet extends DispatchServlet
         else if (method.equalsIgnoreCase("GET"))
         {
             methodBase = new GetMethod(url);
+            methodBase.setFollowRedirects(true);      
         }
-        methodBase.setFollowRedirects(true);      
+        else if (method.equalsIgnoreCase("PUT"))
+        {
+            methodBase = new PutMethod(url);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Util.copy(request.getInputStream(), out);
+            ByteArrayRequestEntity req = new ByteArrayRequestEntity(out.toByteArray());
+            ((PutMethod)methodBase).setRequestEntity(req);
+        }
+        else if (method.equalsIgnoreCase("DELETE"))
+        {
+            methodBase = new DeleteMethod(url);
+        }
+        else if (method.equalsIgnoreCase("OPTIONS"))
+        {
+            methodBase = new OptionsMethod(url);
+        }
+        
         methodBase.setRequestHeader("User-Agent",request.getHeader("user-agent"));
+        
+
+        if (LOG.isDebugEnabled())
+        {
+            LOG.debug("Proxying url: "+url+", method: "+method);
+        }
         
         int status = client.executeMethod(methodBase);
         

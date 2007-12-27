@@ -5,7 +5,7 @@
       xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
       version="2.5">
 
-    <display-name>Appcelerator Server</display-name>
+    <display-name>Appcelerator Platform</display-name>
 
     <context-param>
       <param-name>contextConfigLocation</param-name>
@@ -28,15 +28,9 @@
     </context-param>
    
     <filter>
-      <filter-name>Compress</filter-name>
-      <filter-class>org.appcelerator.servlet.filter.GZIPFilter</filter-class>
-      <description>Filter for applying GZIP compression if requested by client</description>
-    </filter>
-
-    <filter>
-      <filter-name>Tracker</filter-name>
-      <filter-class>org.appcelerator.servlet.filter.CookieTrackerFilter</filter-class>
-      <description>Filter for adding a unique, lifetime tracking cookie for new visitors</description>
+      <filter-name>Appcelerator</filter-name>
+      <filter-class>org.appcelerator.servlet.filter.AppceleratorFilter</filter-class>
+      <description>Filter required for all Appcelerator servlets</description>
       <init-param>
         <param-name>cookieName</param-name>
         <param-value>AUID</param-value>
@@ -52,17 +46,12 @@
     </filter>
 
     <filter-mapping>
-      <filter-name>Compress</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Tracker</filter-name>
+      <filter-name>Appcelerator</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <listener>
-    	<listener-class>org.appcelerator.spring.LogConfigPreProcessor</listener-class>
+      <listener-class>org.appcelerator.servlet.listener.AppceleratorListener</listener-class>
     </listener>
 
     <listener>
@@ -70,17 +59,9 @@
     </listener>
     
     <listener>
-    	<listener-class>org.appcelerator.spring.ContextLoaderPreProcessor</listener-class>
-    </listener>
-
-    <listener>
       <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
     
-    <listener>
-      <listener-class>org.appcelerator.servlet.listener.SessionListener</listener-class>
-    </listener>
-   
     <listener>
       <listener-class>org.springframework.web.util.HttpSessionMutexListener</listener-class>
     </listener>
