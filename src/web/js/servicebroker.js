@@ -1187,7 +1187,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] =
 			$E(this+', invalid content type: '+contentType+', excepted json mimetype');
 			return null;
 		}
-		return [response.responseText.evalJSON(true)];
+		return response.responseText.evalJSON(true);
 	}
 };
 

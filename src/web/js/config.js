@@ -15,10 +15,31 @@ Appcelerator.Util.ServerConfig.addConfigListener = function(listener)
 	}
 };
 
+/**
+ * if this value is set, we will not auto fetch the appcelerator.xml
+ * and you will need to call Appcelerator.Util.ServerConfig.set 
+ * programatically
+ */
+Appcelerator.Util.ServerConfig.disableRemoteConfig = false;
+
+/**
+ * call this function when you want to manually configure the server
+ * config from javascript vs. fetching automatically from AJAX request
+ */
+Appcelerator.Util.ServerConfig.set = function(config)
+{
+    Appcelerator.ServerConfig = config;
+    Appcelerator.Util.ServerConfig.loadComplete();
+};
+
 Appcelerator.Util.ServerConfig.load = function()
 {
 	if (window.location.href.indexOf('file:/')==-1)
 	{
+	    if (Appcelerator.Util.ServerConfig.disableRemoteConfig)
+	    {
+	       return;
+	    }
 		var xmlPath = Appcelerator.DocumentPath + 'appcelerator.xml';
 			
 		new Ajax.Request(xmlPath,
