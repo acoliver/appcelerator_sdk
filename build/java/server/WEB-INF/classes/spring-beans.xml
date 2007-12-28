@@ -95,6 +95,7 @@
     </bean>
     
     <bean id="serverStatsService" class="org.appcelerator.server.ServerStatsService"></bean>
+    <bean id="updateService" class="org.appcelerator.update.UpdateService"></bean>
 
 
 </beans>
