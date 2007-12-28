@@ -51,6 +51,8 @@
 		}
 	}
 
+	require_once("json.php");
+	$json = new Services_JSON();
 
 	define('START_DOC', '/**');
 	define('END_DOC', '*/');
