@@ -32,12 +32,35 @@ end
 
 module ServiceBroker
   
-    def log_processing
-      # turn off logging since we get a lot of these requests
-    end
+      def log_processing
+        # turn off logging since we get a lot of these requests
+      end
 
 	  def dispatch	    
   		session = request.session
+  		
+  		#
+  		# set the lifetime tracking cookie
+  		#
+  		auid = cookies['AUID']
+  		if not auid or auid == ''
+  		    domain = request.domain
+  		    dots = domain.scan(/[\.]/).length
+  		    case dots
+  		        when 0
+  		            domain = nil
+  		        when 2..10
+          		    idx = domain.index('.')
+          		    domain = domain[idx,domain.length]
+      		end
+      		auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
+      		opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
+      		if domain
+      		    opts['domain']=domain
+      		end
+  		    cookies['AUID']=opts
+  		end
+  		
   		
         # we check to make sure we're coming from an XHR request
         # this is easy to forge but a simple check
