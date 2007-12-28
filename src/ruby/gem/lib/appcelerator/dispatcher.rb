@@ -35,12 +35,12 @@ module Appcelerator
     
     # dispatch a message that was generated in some other way, like the upload_controller
     #
-    def self.dispatch_message(request, response, session, message_type, params, request_id, scope)
+    def self.dispatch_message(request, response, session, message_type, params, request_id, scope, js = false)
       msg = Message.new(request, session, message_type, params, request_id, scope)
       
       message_queue = ServiceBroker.send(msg)
       
-      serialize(message_queue, session.session_id, response.body)
+      serialize(message_queue, session.session_id, response.body, js)
     end
     
     def self.extract_messages(request, session)
@@ -59,20 +59,29 @@ module Appcelerator
       end
     end
     
-    def self.serialize(message_queue, session_id, output)
-      output << '<?xml version="1.0"?>'
-      output << "<messages version='1.0' sessionid='#{session_id}'>"
-      
-      message_queue.compact!
-      message_queue.each do |msg|
-        if msg.response_type
-          output << "<message requestid='#{msg.request_id}' direction='OUTGOING' datatype='JSON' type='#{msg.response_type}' scope='#{msg.scope}'><![CDATA["
-          output << msg.response.to_json
-          output << ']]></message>'
+    def self.serialize(message_queue, session_id, output, js = false)
+      if js
+        message_queue.compact!
+        message_queue.each do |msg|
+          if msg.response_type
+            output << "window.parent.$MQ('#{msg.response_type}', #{msg.response.to_json}, '#{msg.scope}');"
+          end
         end
-      end
+        output
+      else
+        output << '<?xml version="1.0"?>'
+        output << "<messages version='1.0' sessionid='#{session_id}'>"
       
-      output << '</messages>'
+        message_queue.compact!
+        message_queue.each do |msg|
+          if msg.response_type
+            output << "<message requestid='#{msg.request_id}' direction='OUTGOING' datatype='JSON' type='#{msg.response_type}' scope='#{msg.scope}'><![CDATA["
+            output << msg.response.to_json
+            output << ']]></message>'
+          end
+        end
+        output << '</messages>'
+      end
     end
     
     class Message

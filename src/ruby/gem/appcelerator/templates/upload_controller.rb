@@ -34,23 +34,11 @@ class UploadController < ApplicationController
           msg[key] = make_temp_file value
       end
     end
-
-    cb = params['callback']
     
-    if cb
-      if cb =~ /^(r:|remote:|l:|local:)/
-        @callback = "window.parent.$MQ('#{cb}');"
-      else
-        @callback = cb
-      end
-    else
-      @callback = ''
-    end
-
     request_id = Time.now
     message_type = params['type']
     scope = params['scope'] || 'appcelerator'
-    Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, msg, request_id, scope)
+    @callback = Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, msg, request_id, scope, true)
 
   end
 end
