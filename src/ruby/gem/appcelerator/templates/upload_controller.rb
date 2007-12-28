@@ -28,6 +28,8 @@ class UploadController < ApplicationController
       case value.class.to_s
         when 'String'
           msg[key] = value
+        when 'ActionController::UploadedStringIO'
+          msg[key] = make_temp_file value
         when 'StringIO'
           msg[key] = make_temp_file value
         when 'Tempfile'
