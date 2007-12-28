@@ -47,6 +47,7 @@ Appcelerator.Module.Pagination =
 				{name: 'totalsString', optional: true, defaultValue: '#{total} records found'},
 				{name: 'resultsLangId', optional: true},
 				{name: 'totalsLangId', optional: true},
+                {name: 'fieldset', optional: true, description: "Fieldset to be associated with the iterator for filtering"},
 				{name: 'showTotals', optional: true}];
 	},
 	compileWidget: function(parameters)
@@ -136,30 +137,33 @@ Appcelerator.Module.Pagination =
 		var resultsLangId = parameters['resultsLangId'];
 		var totalsLangId = parameters['totalsLangId'];
 		var showTotals = parameters['showTotals'];
+        var fieldset = parameters['fieldset'];
 		var id = parameters['id'];
 				
 		// build html
 		var html = '<span style="display:none" on="'+response+'['+totalProperty+'!=0] then show else hide">';
 		html += '<span id="app_pagination_showing_'+id + '"></span>';
-		if (prevLangId)
-		{
-			html += '<a style="padding-left:5px" id="app_prev_'+id +'">'+Appcelerator.Localization.get(prevLangId)+'</a>';			
-		}
-		else
-		{
-			html += '<a style="padding-left:5px" id="app_prev_'+id+'">'+prevText+'</a>';						
-		}
+        
+        html += '<a style="padding-left:5px" id="app_prev_'+id +'"';
+        if(fieldset)
+        {
+            html += ' fieldset="' + fieldset + '"';
+        }
+        html += '>';
+        html += (prevLangId) ? Appcelerator.Localization.get(prevLangId) : prevText;
+        html += "</a>";
+        
 		html += '<span style="padding-left:3px;padding-right:3px" id="app_sep_'+id+'">|</span>';
-		
-		if (nextLangId)
-		{
-			html += '<a style="padding-left:3px" id="app_next_'+id+'">'+Appcelerator.Localization.get(nextLangId)+'</a>';						
-		}
-		else
-		{
-			html += '<a style="padding-left:3px" id="app_next_'+id+'">'+nextText+'</a>';			
-		}
-		
+
+		html += '<a style="padding-left:3px" id="app_next_'+id+'"';
+        if(fieldset)
+        {
+            html += ' fieldset="' + fieldset + '"';
+        }
+        html += '>';
+        html += (nextLangId) ? Appcelerator.Localization.get(nextLangId) : nextText;
+        html += "</a>";
+        
 		html += '<span style="padding-left:10px" id="app_pagination_totals_'+id+'"></span>';
 		html += '</span>';
 		

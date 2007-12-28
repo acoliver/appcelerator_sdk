@@ -28,6 +28,8 @@ input[type=text]
 	These tests exercise the pagination widget
 </p>
 
+
+
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
@@ -43,43 +45,7 @@ input[type=text]
 				resultsLangId="pagination.searchresults" totalsLangId="pagination.totals" nextLangId="pagination.next"
 				prevLangId="pagination.prev" showTotals="false" startProperty="start" endProperty="end" totalProperty="total">
 			</app:pagination>
-			<app:script>
-				var start = 1;
-				var end = 4;
-				var total = 20;
-				var rows = new Array();
-				for (var i=start;i&lt;=end;i++)
-				{
-					var name = 'app '+i;
-					rows.push ({'name':name,'idx':i});
-				}
-				var result = {'end':end,'start':start,'total':total,'rows':rows};
-				$MQ('l:paginationexample.response',result);
-			</app:script>
-			<app:script on="l:paginationexample.request then execute">
-				var start = 0;
-				var end = 0;
-				if (this.data.dir == 'next')
-				{
-					start = this.data.end + 1;
-					end = this.data.end + 4;
-				}
-				else
-				{
-					start = this.data.start - 4;
-					end = this.data.end - 4;
-				}
-				var dir = this.data.dir;
-				var total = this.data.total;
-				var rows = new Array();
-				for (var i=start;i&lt;=end;i++)
-				{
-					var name = 'app '+i;
-					rows.push ({'name':name,'idx':i});
-				}
-				var result = {'end':end,'start':start,'total':total,'rows':rows};
-				$MQ('l:paginationexample.response',result);
-			</app:script>
+
 			
 		</td>
 	</tr>
@@ -131,6 +97,70 @@ input[type=text]
 			</app:pagination>
 		</td>
 	</tr>
+    <tr>
+        <td class="test" valign="middle">
+            Pagination with a fieldset
+        </td>
+        <td class="result" >
+            <app:iterator on="l:paginationexample.response then execute" property="rows">
+                <html:div style="margin-bottom:15px">
+                    #{idx}:#{name}
+                </html:div>
+            </app:iterator>
+            <app:pagination id="example_pagination5" request="l:pagination.example5.request" response="l:paginationexample.response"
+                resultsString="ding dongs #{start}::#{end}" totalsString="outta #{total}" nextText="forward"
+                prevText="b4" showTotals="true" fieldset="page_fieldsets">
+            </app:pagination>
+            <input type="text" value="test1" />
+            <input type="text" name="passed" value="testing" fieldset="page_fieldsets"/>
+            
+            <app:script on="l:pagination.example5.request then execute">
+                if(this.data.passed = "testing")
+                {
+                    alert("Test Passed");
+                }
+            </app:script>
+        </td>
+    </tr>
+
 </table>
+
+<app:script>
+    var start = 1;
+    var end = 4;
+    var total = 20;
+    var rows = new Array();
+    for (var i=start;i&lt;=end;i++)
+    {
+        var name = 'app '+i;
+        rows.push ({'name':name,'idx':i});
+    }
+    var result = {'end':end,'start':start,'total':total,'rows':rows};
+    $MQ('l:paginationexample.response',result);
+</app:script>
+<app:script on="l:paginationexample.request then execute">
+    var start = 0;
+    var end = 0;
+    if (this.data.dir == 'next')
+    {
+        start = this.data.end + 1;
+        end = this.data.end + 4;
+    }
+    else
+    {
+        start = this.data.start - 4;
+        end = this.data.end - 4;
+    }
+    var dir = this.data.dir;
+    var total = this.data.total;
+    var rows = new Array();
+    for (var i=start;i&lt;=end;i++)
+    {
+        var name = 'app '+i;
+        rows.push ({'name':name,'idx':i});
+    }
+    var result = {'end':end,'start':start,'total':total,'rows':rows};
+    $MQ('l:paginationexample.response',result);
+</app:script>
 </body>
 </html>
