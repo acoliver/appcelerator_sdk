@@ -40,11 +40,7 @@ import org.appcelerator.servlet.filter.MonitoredHttpServletRequest;
 import org.appcelerator.servlet.filter.MonitoredHttpServletResponse;
 import org.appcelerator.servlet.filter.MonitoredHttpSession;
 import org.appcelerator.servlet.listener.SessionManager;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.util.WebUtils;
 
 /**
@@ -59,7 +55,6 @@ public class DispatcherServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = Logger.getLogger(DispatcherServlet.class);
     private final Set<Route> routes = new HashSet<Route>();
-    private SessionFactory sessionFactory;
 
     /**
      * override of HttpServlet service method
@@ -240,23 +235,6 @@ public class DispatcherServlet extends HttpServlet
                     // pending will re-create same session even though outgoing is invalidated
                     SessionManager.getInstance().sessionDestroyed(new HttpSessionEvent(session));
                 }
-
-                // since we can have multiple session threads coming through here, we need to make sure
-                // and synchronize all of them against the session mutex
-                if (sessionFactory!=null)
-                {
-                    synchronized (mutex)
-                    {
-                        if (TransactionSynchronizationManager.hasResource(sessionFactory))
-                        {
-                            SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource(sessionFactory);
-                            if (sessionHolder != null)
-                            {
-                                SessionFactoryUtils.closeSession(sessionHolder.getSession());
-                            }
-                        }
-                    }
-                }
             }
             finally
             {
@@ -349,10 +327,6 @@ public class DispatcherServlet extends HttpServlet
     {
         super.init(config);
         ListableBeanFactory factory = (ListableBeanFactory) config.getServletContext().getAttribute(Constants.BEAN_FACTORY);
-        if (factory.containsBean("sessionFactory"))
-        {
-            sessionFactory = (SessionFactory) factory.getBean("sessionFactory", SessionFactory.class);
-        }
         Map<String, DispatchServlet> servlets = factory.getBeansOfType(DispatchServlet.class);
         for (String name : servlets.keySet())
         {

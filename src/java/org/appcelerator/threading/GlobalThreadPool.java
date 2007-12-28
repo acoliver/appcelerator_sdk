@@ -19,38 +19,33 @@
  */
 package org.appcelerator.threading;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
- *
+ * global thread pool implementation
  */
 public class GlobalThreadPool
 {
-    /**
-     * minimum thread size
-     */
-    private static final int minThreadSize = Integer.valueOf(System.getProperty("app.threading.minthreads", "10"));
-    /**
-     * max thread size for the pool
-     */
-    private static final int maxThreadSize = Integer.valueOf(System.getProperty("app.threading.maxthreads", String.valueOf(minThreadSize * 3)));
-    /**
-     * the backing global thread pool
-     */
-    private static final ThreadPool threadPool = ThreadPoolFactory.createPool(new LinkedBlockingQueue<Runnable>(), "GlobalThreadPool", minThreadSize, maxThreadSize);
-
-    static
+    private static final ExecutorService pool = Executors.newCachedThreadPool(new ThreadFactory()
     {
-        threadPool.setIdleThreadTimeout(Long.valueOf(System.getProperty("app.threading.idletimeout", String.valueOf(ThreadPool.DEFAULT_KEEPALIVE))));
-    }
+        private int count = 0;
 
+        public Thread newThread(Runnable r)
+        {
+            return new Thread(AppceleratorThreadGroup.getInstance(),r,"GlobalThreadPoolThread-"+(count++));
+        }
+    });
+    
     /**
      * return a global thread pool reference
      *
      * @return global thread pool
      */
-    public static ThreadPool get()
+    public static Executor get()
     {
-        return threadPool;
+        return pool;
     }
 }

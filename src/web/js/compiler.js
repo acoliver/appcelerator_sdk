@@ -71,13 +71,13 @@ Appcelerator.Compiler.removeElementId = function(id)
 
 function $(element) 
 {
-	if (arguments.length > 1) 
+    var args = $A(arguments);
+	if (args.length > 1) 
 	{
-    	for (var i = 0, elements = [], length = arguments.length; i < length; i++)
+    	return args.collect(function(a)
 		{
-			elements.push($(arguments[i]));
-		}
-    	return elements;
+			return $(a);
+		});
  	}
 
 	if (Object.isString(element))
@@ -1190,7 +1190,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 
 Appcelerator.Compiler.determineScope = function(element)
 {
-	var scope = element.getAttribute('scope');
+	var scope = element.readAttribute('scope');
 	
 	if (!scope)
 	{
@@ -1214,8 +1214,8 @@ Appcelerator.Compiler.determineScope = function(element)
 
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
-	var on = element.getAttribute('on');
-	if (on && Object.isString(on))
+	var on = element.readAttribute('on');
+	if (on)
 	{
 		Appcelerator.Compiler.compileExpression(element,on,false);
 		return true;

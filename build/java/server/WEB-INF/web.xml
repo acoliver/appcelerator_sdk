@@ -28,9 +28,9 @@
     </context-param>
    
     <filter>
+      <description>Filter required for all Appcelerator servlets</description>
       <filter-name>Appcelerator</filter-name>
       <filter-class>org.appcelerator.servlet.filter.AppceleratorFilter</filter-class>
-      <description>Filter required for all Appcelerator servlets</description>
       <init-param>
         <param-name>cookieName</param-name>
         <param-value>AUID</param-value>
@@ -54,38 +54,15 @@
       <listener-class>org.appcelerator.servlet.listener.AppceleratorListener</listener-class>
     </listener>
 
-    <listener>
-      <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-    </listener>
-    
-    <listener>
-      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    
-    <listener>
-      <listener-class>org.springframework.web.util.HttpSessionMutexListener</listener-class>
-    </listener>
-
     <servlet>
     	<servlet-name>dispatcherServlet</servlet-name>
     	<servlet-class>org.appcelerator.servlet.dispatcher.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <servlet>
-    	<servlet-name>applicationServlet</servlet-name>
-    	<servlet-class>org.appcelerator.servlet.application.ApplicationServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
     <servlet-mapping>
       <servlet-name>dispatcherServlet</servlet-name>
       <url-pattern>/-/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>applicationServlet</servlet-name>
-      <url-pattern>/app/*</url-pattern>
     </servlet-mapping>
 
 </web-app>

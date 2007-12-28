@@ -28,19 +28,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.core.BridgeMethodResolver;
 
 /**
  * AnnotationUtil is a collection of handy utils for dealing with annotations.
  *
- * @author <a href="mailto:jhaynie@hakano.com">Jeff Haynie</a>
- * @author <a href="mailto:jkashimba@hakano.com">Jared Kashimba</a>
+ * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
 public class AnnotationUtil
 {
-    private static final Logger LOG = Logger.getLogger(AnnotationUtil.class);
-
     /**
      * interface for visitation of fields
      */

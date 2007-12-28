@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-
 /**
  * HttpUtil
  *
@@ -170,7 +168,7 @@ public class HttpUtil
             if (connection instanceof HttpURLConnection)
             {
                 InputStream inputStream = connection.getInputStream();
-                IOUtils.copy(inputStream, (OutputStream) null);
+                Util.copy(inputStream, (OutputStream) null);
             }
 
             return visitor == null || visitor.visit(url, connection);
@@ -230,7 +228,7 @@ public class HttpUtil
         {
             InputStream inputStream = connection.getInputStream();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream(8192);
-            IOUtils.copy(inputStream, outputStream);
+            Util.copy(inputStream, outputStream);
 
             Map<String, List<String>> headers = null;
             if (connection instanceof HttpURLConnection)

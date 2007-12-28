@@ -101,7 +101,7 @@ public class ServiceRegisterer
         if (null!=routers && !routers.isEmpty())
         {
             final Message request = createServicesMessage(ServiceConstants.SERVICE_ROUTER_REGISTER);
-            GlobalThreadPool.get().addTask(new Runnable()
+            GlobalThreadPool.get().execute(new Runnable()
             {
                 public void run ()
                 {
@@ -131,7 +131,7 @@ public class ServiceRegisterer
         {
             // send de-registration to each router for all our services
             final Message request = createServicesMessage(ServiceConstants.SERVICE_ROUTER_UNREGISTER);
-            GlobalThreadPool.get().addTask(new Runnable()
+            GlobalThreadPool.get().execute(new Runnable()
             {
                 public void run ()
                 {

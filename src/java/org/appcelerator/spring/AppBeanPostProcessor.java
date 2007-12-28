@@ -20,54 +20,27 @@
 package org.appcelerator.spring;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
-import org.aopalliance.intercept.MethodInvocation;
 import org.apache.log4j.Logger;
 import org.appcelerator.annotation.Downloadable;
-import org.appcelerator.annotation.HibernateSession;
 import org.appcelerator.annotation.InjectBean;
 import org.appcelerator.annotation.InjectBeans;
 import org.appcelerator.annotation.LifecycleDestructionAware;
 import org.appcelerator.annotation.LifecycleInitializationAware;
 import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceAuthenticator;
-import org.appcelerator.annotation.SessionThreaded;
-import org.appcelerator.session.ExecutableSessionManager;
-import org.appcelerator.session.SessionThreadedMethodInterceptor;
-import org.hibernate.FlushMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.RollbackRuleAttribute;
-import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 /**
@@ -88,107 +61,107 @@ public class AppBeanPostProcessor implements InstantiationAwareBeanPostProcessor
     private LifecycleAwareVisitor lifecycleAwareVisitor;
     private DownloadVisitor downloadVisitor;
     private ServiceAuthenticatorVisitor serviceAuthVisitor;
-    private SessionFactory sessionFactory;
+//    private SessionFactory sessionFactory;
 
-    /**
-     * this is a simple wrapper for determining if we
-     * need to create a hibernate session and when we need to
-     * flush it
-     */
-    private final class HibernateSessionTransaction
-    {
-        private final String name;
-        private Session session;
-        private boolean participating;
-
-        /**
-         * constructs a new hibernate session transaction
-         *
-         * @param name transaction name
-         */
-        HibernateSessionTransaction(String name)
-        {
-            this.name = name;
-            if (sessionFactory == null)
-            {
-                sessionFactory = (SessionFactory) beanFactory.getBean(beanFactory.getBeanNamesForType(SessionFactory.class)[0]);
-            }
-        }
-
-        /**
-         * begins a session transaction
-         */
-        void begin()
-        {
-            // first check to see if we have a session factory but don't allow
-            // it to create one - this will tell us if we're participating or not
-            if (TransactionSynchronizationManager.hasResource(sessionFactory))
-            {
-                participating = true;
-            }
-            else
-            {
-                participating = false;
-                session = SessionFactoryUtils.getSession(sessionFactory, true);
-                session.setFlushMode(FlushMode.MANUAL);
-                try
-                {
-                    TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
-                }
-                catch (IllegalStateException e)
-                {
-                    // this happens during concurrency with TransactionSynchronizationManager
-                    participating = true;
-                    try
-                    {
-                        session.close();
-                    }
-                    catch (Exception ex)
-                    {
-                        LOG.warn("problem closing hibernate session " + session, ex);
-                    }
-                }
-            }
-            if (LOG.isDebugEnabled())
-            {
-                if (participating)
-                {
-                    LOG.debug("continuing @HibernateSession method: " + name);
-                }
-                else
-                {
-                    LOG.debug(">>> begin @HibernateSession method: " + name);
-                }
-            }
-        }
-
-        /**
-         * commits a session transaction
-         */
-        void commit()
-        {
-            // if we start the transaction and we're the first (mean's we're not participating) then
-            // when we commit, we need to release the session - otherwise, we'll let the let the 
-            // creating session deal with it - this prevents us from getting the lazy load problems
-            // when multiple transactions span across many methos
-            if (!participating)
-            {
-                TransactionSynchronizationManager.unbindResource(sessionFactory);
-                SessionFactoryUtils.closeSession(session);
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("<<< commit @HibernateSession ended transaction - method: " + name);
-                }
-            }
-            else
-            {
-                if (LOG.isDebugEnabled())
-                {
-                    LOG.debug("continuing @HibernateSession for commit - method: " + name);
-                }
-            }
-        }
-    }
+//    /**
+//     * this is a simple wrapper for determining if we
+//     * need to create a hibernate session and when we need to
+//     * flush it
+//     */
+//    private final class HibernateSessionTransaction
+//    {
+//        private final String name;
+//        private Session session;
+//        private boolean participating;
+//
+//        /**
+//         * constructs a new hibernate session transaction
+//         *
+//         * @param name transaction name
+//         */
+//        HibernateSessionTransaction(String name)
+//        {
+//            this.name = name;
+//            if (sessionFactory == null)
+//            {
+//                sessionFactory = (SessionFactory) beanFactory.getBean(beanFactory.getBeanNamesForType(SessionFactory.class)[0]);
+//            }
+//        }
+//
+//        /**
+//         * begins a session transaction
+//         */
+//        void begin()
+//        {
+//            // first check to see if we have a session factory but don't allow
+//            // it to create one - this will tell us if we're participating or not
+//            if (TransactionSynchronizationManager.hasResource(sessionFactory))
+//            {
+//                participating = true;
+//            }
+//            else
+//            {
+//                participating = false;
+//                session = SessionFactoryUtils.getSession(sessionFactory, true);
+//                session.setFlushMode(FlushMode.MANUAL);
+//                try
+//                {
+//                    TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
+//                }
+//                catch (IllegalStateException e)
+//                {
+//                    // this happens during concurrency with TransactionSynchronizationManager
+//                    participating = true;
+//                    try
+//                    {
+//                        session.close();
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        LOG.warn("problem closing hibernate session " + session, ex);
+//                    }
+//                }
+//            }
+//            if (LOG.isDebugEnabled())
+//            {
+//                if (participating)
+//                {
+//                    LOG.debug("continuing @HibernateSession method: " + name);
+//                }
+//                else
+//                {
+//                    LOG.debug(">>> begin @HibernateSession method: " + name);
+//                }
+//            }
+//        }
+//
+//        /**
+//         * commits a session transaction
+//         */
+//        void commit()
+//        {
+//            // if we start the transaction and we're the first (mean's we're not participating) then
+//            // when we commit, we need to release the session - otherwise, we'll let the let the 
+//            // creating session deal with it - this prevents us from getting the lazy load problems
+//            // when multiple transactions span across many methos
+//            if (!participating)
+//            {
+//                TransactionSynchronizationManager.unbindResource(sessionFactory);
+//                SessionFactoryUtils.closeSession(session);
+//                if (LOG.isDebugEnabled())
+//                {
+//                    LOG.debug("<<< commit @HibernateSession ended transaction - method: " + name);
+//                }
+//            }
+//            else
+//            {
+//                if (LOG.isDebugEnabled())
+//                {
+//                    LOG.debug("continuing @HibernateSession for commit - method: " + name);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Apply this BeanPostProcessor <i>before the target bean gets instantiated</i>.
@@ -214,6 +187,7 @@ public class AppBeanPostProcessor implements InstantiationAwareBeanPostProcessor
     public Object postProcessBeforeInstantiation(Class clazz, final String name) throws BeansException
     {
         if (LOG.isDebugEnabled()) LOG.debug(name + ": " + clazz);
+        /*
         if (clazz.isAnnotationPresent(Transactional.class) || AnnotationUtil.hasMethodAnnotation(clazz, Transactional.class))
         {
             final BeanDefinition beanDef = beanFactory.getBeanDefinition(name);
@@ -295,6 +269,7 @@ public class AppBeanPostProcessor implements InstantiationAwareBeanPostProcessor
                 throw new BeanInstantiationException(clazz, "Error creating bean: " + name, ex);
             }
         }
+        */
         
         return null;
     }
@@ -350,76 +325,76 @@ public class AppBeanPostProcessor implements InstantiationAwareBeanPostProcessor
         return pvs;
     }
 
-    /**
-     * this class is responsible for finding methods that are @Transactional and return its
-     * TransactionAttribute
-     */
-    private static final class TransactionalPropertyResolver extends AnnotationTransactionAttributeSource
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected Collection findAllAttributes(Class clazz)
-        {
-            HashSet<Method> methods = new HashSet<Method>();
-            AnnotationUtil.collectMethods(clazz, methods, Transactional.class);
-            return methods;
-        }
-
-        @Override
-        protected boolean allowPublicMethodsOnly()
-        {
-            return false;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected TransactionAttribute findTransactionAttribute(Collection atts)
-        {
-            // override to force a rollback rule default (which is to rollback on any exception) - the default
-            // is to not rollback
-            RuleBasedTransactionAttribute attr = (RuleBasedTransactionAttribute) super.findTransactionAttribute(atts);
-            List rollbackRules = attr != null ? attr.getRollbackRules() : new ArrayList(1);
-            if (rollbackRules.isEmpty())
-            {
-                RollbackRuleAttribute rule = new RollbackRuleAttribute(Throwable.class);
-                rollbackRules.add(rule);
-            }
-            return attr;
-        }
-    }
-
-    /**
-     * cgilib method interceptor that will delegate to the spring TransactionInterceptor
-     */
-    private final class TransactionMethodInterceptor implements MethodInterceptor
-    {
-        private TransactionInterceptor interceptor;
-        private ConfigurableListableBeanFactory factory;
-
-        private TransactionMethodInterceptor(ConfigurableListableBeanFactory f)
-        {
-            this.factory = f;
-        }
-
-        private void create(PlatformTransactionManager tm)
-        {
-            interceptor = new TransactionInterceptor(tm, new TransactionalPropertyResolver());
-            interceptor.afterPropertiesSet();
-        }
-
-        public Object intercept(Object arg0, Method arg1, Object[] arg2, MethodProxy arg3) throws Throwable
-        {
-            // create the interceptor the first use
-            if (interceptor == null)
-            {
-                // we need to get the TransactionManager
-                create((PlatformTransactionManager) factory.getBean(factory.getBeanNamesForType(PlatformTransactionManager.class)[0]));
-            }
-            MethodInvocation m = new CgiLibMethodInvocation(arg0, arg1, arg2, arg3);
-            return interceptor.invoke(m);
-        }
-    }
+//    /**
+//     * this class is responsible for finding methods that are @Transactional and return its
+//     * TransactionAttribute
+//     */
+//    private static final class TransactionalPropertyResolver extends AnnotationTransactionAttributeSource
+//    {
+//        private static final long serialVersionUID = 1L;
+//
+//        @Override
+//        protected Collection findAllAttributes(Class clazz)
+//        {
+//            HashSet<Method> methods = new HashSet<Method>();
+//            AnnotationUtil.collectMethods(clazz, methods, Transactional.class);
+//            return methods;
+//        }
+//
+//        @Override
+//        protected boolean allowPublicMethodsOnly()
+//        {
+//            return false;
+//        }
+//
+//        @SuppressWarnings("unchecked")
+//        @Override
+//        protected TransactionAttribute findTransactionAttribute(Collection atts)
+//        {
+//            // override to force a rollback rule default (which is to rollback on any exception) - the default
+//            // is to not rollback
+//            RuleBasedTransactionAttribute attr = (RuleBasedTransactionAttribute) super.findTransactionAttribute(atts);
+//            List rollbackRules = attr != null ? attr.getRollbackRules() : new ArrayList(1);
+//            if (rollbackRules.isEmpty())
+//            {
+//                RollbackRuleAttribute rule = new RollbackRuleAttribute(Throwable.class);
+//                rollbackRules.add(rule);
+//            }
+//            return attr;
+//        }
+//    }
+//
+//    /**
+//     * cgilib method interceptor that will delegate to the spring TransactionInterceptor
+//     */
+//    private final class TransactionMethodInterceptor implements MethodInterceptor
+//    {
+//        private TransactionInterceptor interceptor;
+//        private ConfigurableListableBeanFactory factory;
+//
+//        private TransactionMethodInterceptor(ConfigurableListableBeanFactory f)
+//        {
+//            this.factory = f;
+//        }
+//
+//        private void create(PlatformTransactionManager tm)
+//        {
+//            interceptor = new TransactionInterceptor(tm, new TransactionalPropertyResolver());
+//            interceptor.afterPropertiesSet();
+//        }
+//
+//        public Object intercept(Object arg0, Method arg1, Object[] arg2, MethodProxy arg3) throws Throwable
+//        {
+//            // create the interceptor the first use
+//            if (interceptor == null)
+//            {
+//                // we need to get the TransactionManager
+//                create((PlatformTransactionManager) factory.getBean(factory.getBeanNamesForType(PlatformTransactionManager.class)[0]));
+//            }
+//            MethodInvocation m = new CgiLibMethodInvocation(arg0, arg1, arg2, arg3);
+//            return interceptor.invoke(m);
+//        }
+//    }
 
     /**
      * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean

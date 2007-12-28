@@ -89,7 +89,7 @@ public class ServiceClient implements Comparable<ServiceClient>
     {
         FutureTask<List<Message>> future = new FutureTask<List<Message>>(new Request(request));
         
-        GlobalThreadPool.get().addTask(future);
+        GlobalThreadPool.get().execute(future);
         
         //
         // update stats

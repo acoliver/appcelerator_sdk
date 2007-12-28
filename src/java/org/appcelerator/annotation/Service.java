@@ -47,7 +47,7 @@ public @interface Service
      * Message response type represented as String, for example app.user in response to a app.user.request.
      * Defaults to "" (empty string) which designates no response.
      *
-     * @return message response type
+     * @return message response type 
      */
     String response() default "";
 
@@ -55,8 +55,9 @@ public @interface Service
      * Indicates whether authentication (logged in user) is required for the message.
      *
      * @return <code>true</code> if authentication required, <code>false</code> otherwise
+     * @deprecated this method is no longer supported and will be removed in the 2.2 release
      */
-    boolean authenticationRequired() default true;
+    boolean authenticationRequired() default false;
 
     /**
      * Direction for request message, defaults to <code>MessageDirection.INCOMING</code>.

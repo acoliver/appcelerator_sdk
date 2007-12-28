@@ -21,6 +21,7 @@ package org.appcelerator.threading;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
@@ -33,7 +34,7 @@ public abstract class AbstractSingleThreadedDispatcher
     private static final Logger LOG = Logger.getLogger(AbstractSingleThreadedDispatcher.class);
     private static final int DEFAULT_MAX_EVENTS = Integer.parseInt(System.getProperty("app.thread.maxevents", "30"));
 
-    protected ThreadPool threadPool;
+    protected Executor threadPool;
     private final ConcurrentLinkedQueue<Object> events = new ConcurrentLinkedQueue<Object>();
     private Object source;
     private int maxNumberOfEventsToHandle = DEFAULT_MAX_EVENTS;
@@ -41,7 +42,7 @@ public abstract class AbstractSingleThreadedDispatcher
     private volatile boolean destroyed = false;
     private final Handler handler = new Handler();
 
-    protected AbstractSingleThreadedDispatcher(Object source, ThreadPool threadPool)
+    protected AbstractSingleThreadedDispatcher(Object source, Executor threadPool)
     {
         this.source = source;
         this.threadPool = threadPool;
@@ -220,7 +221,7 @@ public abstract class AbstractSingleThreadedDispatcher
                 {
                     if (handling.compareAndSet(false, true))
                     {
-                        threadPool.addTask(handler);
+                        threadPool.execute(handler);
                     }
                 }
             }
@@ -252,7 +253,7 @@ public abstract class AbstractSingleThreadedDispatcher
         //
         if (handling.compareAndSet(false, true))
         {
-            threadPool.addTask(handler);
+            threadPool.execute(handler);
         }
 
         return true;
@@ -274,7 +275,7 @@ public abstract class AbstractSingleThreadedDispatcher
      *
      * @return thread pool
      */
-    public ThreadPool getThreadPool()
+    public Executor getThreadPool()
     {
         return threadPool;
     }
@@ -284,7 +285,7 @@ public abstract class AbstractSingleThreadedDispatcher
      *
      * @param threadPool thread pool
      */
-    public void setThreadPool(ThreadPool threadPool)
+    public void setThreadPool(Executor threadPool)
     {
         this.threadPool = threadPool;
     }

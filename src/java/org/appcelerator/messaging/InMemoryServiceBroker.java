@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.appcelerator.annotation.InjectBean;
 import org.appcelerator.session.ExecutableSessionManager;
 import org.appcelerator.threading.GlobalThreadPool;
-import org.appcelerator.threading.ThreadPool;
 
 /**
  * InMemoryServiceBroker is an implementation of the IServiceBroker
@@ -213,15 +212,8 @@ public class InMemoryServiceBroker implements IServiceBroker
         }
         else
         {
-            ThreadPool threadPool = GlobalThreadPool.get();
-            try
-            {
-                threadPool.execute((future==null ? runner : future));
-            }
-            catch (InterruptedException e)
-            {
-                LOG.warn("problem executing " + message + " on " + threadPool, e);
-            }
+            Executor threadPool = GlobalThreadPool.get();
+            threadPool.execute((future==null ? runner : future));
         }
         if (future!=null)
         {

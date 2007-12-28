@@ -50,7 +50,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -366,12 +365,48 @@ public class Util
             }
             for (FileOutputStream fo : fos)
             {
-                IOUtils.closeQuietly(fo);
+                closeQuietly(fo);
             }
         }
         finally
         {
-            IOUtils.closeQuietly(in);
+            closeQuietly(in);
+        }
+    }
+    
+    /**
+     * close quietly the InputStream without throwing any exceptions
+     * 
+     * @param in
+     */
+    public static void closeQuietly (InputStream in)
+    {
+        try
+        {
+            if (in!=null) in.close();
+            in = null;
+        }
+        catch (Exception ex)
+        {
+            
+        }
+    }
+    
+    /**
+     * close quietly the OutputStream without throwing any exceptions
+     * 
+     * @param out
+     */
+    public static void closeQuietly (OutputStream out)
+    {
+        try
+        {
+            if (out!=null) out.close();
+            out = null;
+        }
+        catch (Exception ex)
+        {
+            
         }
     }
     

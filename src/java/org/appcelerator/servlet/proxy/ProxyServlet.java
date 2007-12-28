@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -40,6 +39,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.log4j.Logger;
 import org.appcelerator.servlet.dispatcher.DispatchServlet;
+import org.appcelerator.util.Base64;
 import org.appcelerator.util.Util;
 
 /**
@@ -67,7 +67,7 @@ public class ProxyServlet extends DispatchServlet
         
         if (url.indexOf("://")==-1)
         {
-            url = new String(Base64.decodeBase64(url.getBytes()));
+            url = new String(Base64.decode(url));
         }
 
         HttpClient client = new HttpClient();

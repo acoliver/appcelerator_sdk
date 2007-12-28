@@ -28,7 +28,6 @@ import javax.security.auth.Subject;
 
 import org.appcelerator.json.JSONException;
 import org.appcelerator.json.JSONObject;
-import org.appcelerator.util.DOM4JUtil;
 import org.appcelerator.util.DateUtil;
 import org.appcelerator.util.TimeFormat;
 import org.appcelerator.util.Util;
@@ -141,27 +140,6 @@ public class MessageUtils
         Message responseMessage = new Message(message);
         responseMessage.setDirection(MessageDirection.OUTGOING);
         return responseMessage;
-    }
-
-    /**
-     * gets message data as a DOM4J document
-     *
-     * @param message message to pull data from
-     * @return DOM4J document holding message data
-     */
-    public static org.dom4j.Document toDOM4J(Message message)
-    {
-        Object obj = message.getData();
-        if (obj instanceof Element)
-        {
-            Element elem = (Element) obj;
-            return DOM4JUtil.convert(elem.getOwnerDocument());
-        }
-        else if (obj instanceof String)
-        {
-            return DOM4JUtil.createDocumentFromString((String) obj);
-        }
-        throw new IllegalArgumentException("unknown data type: " + obj.getClass().getName());
     }
 
     /**

@@ -36,7 +36,6 @@ import org.appcelerator.util.Util;
  */
 public class LogConfigPreProcessor implements ServletContextListener
 {
-
     public void contextDestroyed(ServletContextEvent arg0)
     {
     }
@@ -69,6 +68,7 @@ public class LogConfigPreProcessor implements ServletContextListener
         }
         catch (Exception ex)
         {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
         }
     }

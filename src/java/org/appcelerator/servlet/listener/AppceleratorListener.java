@@ -28,6 +28,9 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.appcelerator.spring.ContextLoaderPreProcessor;
 import org.appcelerator.spring.LogConfigPreProcessor;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.util.HttpSessionMutexListener;
+import org.springframework.web.util.Log4jConfigListener;
 
 /**
  * This is a composite listener that wraps in a nice little package all
@@ -40,8 +43,9 @@ public class AppceleratorListener implements HttpSessionListener,
         HttpSessionBindingListener, ServletContextListener
 {
     private final HttpSessionListener listeners [] = new HttpSessionListener[]
-    {                                                                       
-         new SessionListener()
+    {                         
+         new SessionListener(),
+         new HttpSessionMutexListener()
     };
     private final HttpSessionBindingListener bindings [] = new HttpSessionBindingListener[]
     {                                                                       
@@ -50,7 +54,9 @@ public class AppceleratorListener implements HttpSessionListener,
     private final ServletContextListener contexts [] = new ServletContextListener[]
     {
          new LogConfigPreProcessor(),
-         new ContextLoaderPreProcessor()
+         new Log4jConfigListener(),
+         new ContextLoaderPreProcessor(),
+         new ContextLoaderListener()
     };
 
     /* (non-Javadoc)
