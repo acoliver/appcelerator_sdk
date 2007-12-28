@@ -49,6 +49,8 @@ module ServiceBroker
   		    case dots
   		        when 0
   		            domain = nil
+  		        when 1
+  		            domain = ".#{domain}"
   		        when 2..10
           		    idx = domain.index('.')
           		    domain = domain[idx,domain.length]
