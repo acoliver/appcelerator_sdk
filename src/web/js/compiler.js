@@ -1190,7 +1190,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 
 Appcelerator.Compiler.determineScope = function(element)
 {
-	var scope = element.readAttribute('scope');
+	var scope = element.getAttribute('scope');
 	
 	if (!scope)
 	{
@@ -1214,8 +1214,8 @@ Appcelerator.Compiler.determineScope = function(element)
 
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
-	var on = element.readAttribute('on');
-	if (on)
+	var on = element.getAttribute('on');
+	if (on && Object.isString(on))
 	{
 		Appcelerator.Compiler.compileExpression(element,on,false);
 		return true;
