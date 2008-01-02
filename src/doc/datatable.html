@@ -182,6 +182,28 @@
 					  <td class="term">align</td>
 					  <td class="def">Specifies the alignment of the text in each cell of a given column </td>
 					</tr>
+					<tr>
+					  <td class="term">sorter</td>
+					  <td class="def">Specifies the compare function used to sort the data in this column.  The function must accept the parameters a and b (strings representing the data in two cells to be compared) and return -1, 0, or 1.  This is a standard compare function.  For example:
+					 	<textarea name="code" class="xml:nocontrols">
+						// compare a and b by returning a-b, which translates to
+						// a = b , return 0
+						// a < b, return -1
+						// a > b, return 1
+	
+						var myDateSort = function(a,b)
+						{
+							var adate = new Date(a);
+							var bdate = new Date(b);
+							
+							var acomp = bdate.getTime() < adate.getTime() == true ? 1 : 0;
+							var bcomp = adate.getTime() < bdate.getTime() == true ? 1 : 0;
+								
+							return acomp - bcomp;
+						};
+						</textarea>	
+					  </td>
+					</tr>
 				</table>
 		</p>
 		<p>

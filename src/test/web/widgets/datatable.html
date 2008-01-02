@@ -2,6 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
+	<script type="text/javascript" src="../js/examples.js"></script> 
 	<script type="text/javascript" src="../js/appcelerator.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 <style>
@@ -141,6 +142,22 @@
 			</app:script>
 
 			<app:message name="l:datatable5.request"></app:message>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Datatable (custom client sort on number column)
+		</td>
+		<td class="result" >
+			<app:datatable on="l:datatable6.response then execute" property="rows" sort="client">
+				<header property="name" align="left">Name</header>
+				<header property="number" sorter="numberSorter" align="center">Number</header>
+			</app:datatable>
+			<app:script on="l:datatable6.request then execute">
+			$MQ('l:datatable6.response',{'rows':[{'name':'Joe','number':1},{'name':'Fred','number':9},{'name':'Larry','number':5}]});
+			</app:script>
+			<app:message name="l:datatable6.request"></app:message>
 
 		</td>
 	</tr>

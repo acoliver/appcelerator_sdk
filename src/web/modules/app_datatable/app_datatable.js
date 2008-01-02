@@ -287,15 +287,20 @@ Appcelerator.Module.Datatable =
 		$(id).position = 0;
 		$(id).initialLoad = true;
 
+		var sortFunction = eval(header_array[index]['sorter']);
+		
 		//Are we sorting numbers or strings? Check only the column we're sorting by..
-		var num_sort = true;
-		for (var x = 0, len = array.length; x < len; x++)
-		{
-			var cell_value = (array[x][column_property_name]||'');
-			
-			if ( isNaN(parseFloat(cell_value)) )
-			{
-				num_sort = false;
+		var num_sort = false;
+		
+		if (!sortFunction) {
+			num_sort = true;
+			for (var x = 0, len = array.length; x < len; x++) {
+				var cell_value = (array[x][column_property_name] || '');
+				
+				if (isNaN(parseFloat(cell_value))) {
+					num_sort = false;
+					break;
+				}
 			}
 		}
 	
@@ -309,8 +314,17 @@ Appcelerator.Module.Datatable =
 		//Flip the per column sort state for this column
 		parameterMap['sortBy'][column_property_name] = !parameterMap['sortBy'][column_property_name];
 		
-		//Perform the sort itself
-		if(num_sort)
+		//Perform the sort itself		
+		if (sortFunction)
+		{	var customSort = function (a,b)
+			{
+				var aval = a[column_property_name];
+				var bval = b[column_property_name];
+				return sortFunction(aval, bval);
+			}
+			array.sort(customSort);
+			if (parameterMap['sortBy'][column_property_name] == false) array.reverse();
+		} else if(num_sort)
 		{
 			var compareNum = function compare(a, b){
 				var anum = a[column_property_name];
@@ -447,9 +461,12 @@ Appcelerator.Module.Datatable =
 				header_object['class'] = element_children[i].className||''; 
 				//Header property to let us know what data to get from the array	
 				header_object['property'] = element_children[i].getAttribute('property')||''; 
-				//Heather's 'align' property to go on all TD's making up this column
+				//Header's 'align' property to go on all TD's making up this column
 				header_object['align'] = element_children[i].getAttribute('align')||''; 
 
+				//Header's sort function
+				header_object['sorter'] = element_children[i].getAttribute('sorter')||''; 
+				
 				header_array.push(header_object);
 			}
 		}
