@@ -15,6 +15,7 @@
 	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
 	<property name="dist.dir" value="${stage.dir}"/>
 	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
 		<fileset dir="${lib.dir}/appcelerator" includes="**/*.jar"/>
 	</path>
 	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
@@ -59,6 +60,9 @@
 		<copy todir="stage/setupfiles_extracted/WEB-INF/lib" overwrite="true">
 			<fileset dir="lib/appcelerator" includes="*.jar"/>
 		</copy>
+        <copy todir="stage/setupfiles_extracted/WEB-INF/lib" overwrite="true">
+            <fileset dir="lib/" includes="*.jar"/>
+        </copy>
 			<!--<copy todir="stage/setupfiles_extracted">
 				<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
 			</copy>
