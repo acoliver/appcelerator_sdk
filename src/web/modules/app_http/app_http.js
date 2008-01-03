@@ -78,14 +78,25 @@ Appcelerator.Module.Http =
         var methodParams = uri['args'];
         var responseRegex = uri['responseRegex'];
         
+		if (methodParams)
+		{
+			methodParams = methodParams.evalJSON();
+		}
+		
         if (!methodParams && property)
         {
             var array = Object.getNestedProperty(data,property);
             if (array)
             {
-                methodParams = Object.toJSON(array[0]);
+                methodParams = array[0];
             }
         }
+
+		if (!methodParams)
+		{
+			// use data as default, remove toString method
+            methodParams = Object.toJSON(data).evalJSON();
+		}
         
         var compiled = eval(uri['uri'] + '; init_'+params['id']);
         var uriLink = compiled(data).trim();
