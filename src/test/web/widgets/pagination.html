@@ -111,13 +111,19 @@ input[type=text]
                 resultsString="ding dongs #{start}::#{end}" totalsString="outta #{total}" nextText="forward"
                 prevText="b4" showTotals="true" fieldset="page_fieldsets">
             </app:pagination>
-            <input type="text" value="test1" />
-            <input type="text" name="passed" value="testing" fieldset="page_fieldsets"/>
-            
+            <div><input type="text" value="test1" /></div>
+            <div><input type="text" name="passed" value="testing" fieldset="page_fieldsets"/></div>
+            <div><input id="sunday" on="click then l:pagination.example5.request" fieldset='page_fieldsets' type="checkbox" name="sunday" />Check Me to Verify Pass</div>
             <app:script on="l:pagination.example5.request then execute">
-                if(this.data.passed = "testing")
+                var passed = this.data.passed == "testing" &&
+                    this.data.start && this.data.end && this.data.sunday;
+                if(passed)
                 {
                     alert("Test Passed");
+                }
+                else 
+                {
+                    alert("Test Failed");
                 }
             </app:script>
         </td>
@@ -143,16 +149,16 @@ input[type=text]
     var end = 0;
     if (this.data.dir == 'next')
     {
-        start = this.data.end + 1;
-        end = this.data.end + 4;
+        start = parseInt(this.data.end) + 1;
+        end = parseInt(this.data.end) + 4;
     }
     else
     {
-        start = this.data.start - 4;
-        end = this.data.end - 4;
+        start = parseInt(this.data.start) - 4;
+        end = parseInt(this.data.end) - 4;
     }
     var dir = this.data.dir;
-    var total = this.data.total;
+    var total = 20;
     var rows = new Array();
     for (var i=start;i&lt;=end;i++)
     {

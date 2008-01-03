@@ -74,9 +74,9 @@ Appcelerator.Module.Pagination =
 			},
 			onMessage: function(t, data, datatype, direction)
 			{
-				Element[(data[startProperty]>1) ? 'show' : 'hide']('app_prev_'+id);
-				Element[(data[totalProperty]>data[endProperty]) ? 'show' : 'hide']('app_next_'+id);
-				Element[(data[startProperty]>1 && data[endProperty]<data[totalProperty]) ? 'show' : 'hide']('app_sep_'+id);
+				Element[ (data[startProperty]>1) ? 'show' : 'hide' ]('app_prev_'+id);
+				Element[ (data[totalProperty]>data[endProperty]) ? 'show' : 'hide' ]('app_next_'+id);
+				Element[ (data[startProperty]>1 && data[endProperty]<data[totalProperty]) ? 'show' : 'hide' ]('app_sep_'+id);
 				var nextAnchor = $('app_next_'+id);
 				var prevAnchor = $('app_prev_'+id);
 				Appcelerator.Compiler.destroy(nextAnchor);
@@ -85,6 +85,9 @@ Appcelerator.Module.Pagination =
 				var end = data[endProperty];
 				var start = data[startProperty];
 				
+                $(id + "_start").value = start;
+                $(id + "_end").value = end;
+                
 				if (resultsLangId)
 				{
 					var compiled = Appcelerator.Localization.getWithFormat(resultsLangId,resultsString,null,data);
@@ -112,8 +115,8 @@ Appcelerator.Module.Pagination =
 					}
 				}
 				
-				nextAnchor.setAttribute('on','click then '+request+'[dir=next,end='+end+',total='+total+',start='+start+']');
-				prevAnchor.setAttribute('on','click then '+request+'[dir=previous,end='+end+',total='+total+',start='+start+']');
+    			nextAnchor.setAttribute('on','click then '+request+'[dir=next]');
+                prevAnchor.setAttribute('on','click then '+request+'[dir=previous]');
 				Appcelerator.Compiler.dynamicCompile(nextAnchor);
 				Appcelerator.Compiler.dynamicCompile(prevAnchor);
 			}
@@ -139,34 +142,34 @@ Appcelerator.Module.Pagination =
 		var showTotals = parameters['showTotals'];
         var fieldset = parameters['fieldset'];
 		var id = parameters['id'];
-				
+        
+        //Assign a default fieldset of the element's ID
+        if(typeof fieldset == "undefined")
+        {
+            fieldset = element.id;
+        }	
+        			
 		// build html
 		var html = '<span style="display:none" on="'+response+'['+totalProperty+'!=0] then show else hide">';
 		html += '<span id="app_pagination_showing_'+id + '"></span>';
         
-        html += '<a style="padding-left:5px" id="app_prev_'+id +'"';
-        if(fieldset)
-        {
-            html += ' fieldset="' + fieldset + '"';
-        }
-        html += '>';
+        html += '<a style="padding-left:5px" id="app_prev_'+id +'"' + ' fieldset="' + fieldset + '">';
+
         html += (prevLangId) ? Appcelerator.Localization.get(prevLangId) : prevText;
         html += "</a>";
         
 		html += '<span style="padding-left:3px;padding-right:3px" id="app_sep_'+id+'">|</span>';
 
-		html += '<a style="padding-left:3px" id="app_next_'+id+'"';
-        if(fieldset)
-        {
-            html += ' fieldset="' + fieldset + '"';
-        }
-        html += '>';
+		html += '<a style="padding-left:3px" id="app_next_'+id+'"' + ' fieldset="' + fieldset + '">';
+
         html += (nextLangId) ? Appcelerator.Localization.get(nextLangId) : nextText;
         html += "</a>";
         
 		html += '<span style="padding-left:10px" id="app_pagination_totals_'+id+'"></span>';
 		html += '</span>';
-		
+		html += '<input id="' + element.id + '_start" type="hidden" name="start" fieldset="' + fieldset + '" />';
+		html += '<input id="' + element.id + '_end" type="hidden" name="end" fieldset="' + fieldset + '" />';
+        
 		return {
 			'presentation' : html,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
