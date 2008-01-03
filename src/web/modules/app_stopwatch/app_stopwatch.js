@@ -55,13 +55,15 @@ Appcelerator.Module.Stopwatch =
         html.push('<td><h3 id="' + element.id + '_clock">00:00 <span>00</span></h3></td>');
         if(parameters["show_button"] != "false") 
         {
-            html.push('<td class="stopwatch_start">')
+            html.push('<td>');
+            html.push('<div class="stopwatch_start">');
             html.push('<app:button width="100" on="click then script[Appcelerator.Module.Stopwatch.start_stop(\'' 
                     + element.id + '\')]">Start</app:button>');
-            html.push('</td>');
-            html.push('<td class="stopwatch_stop">');
+            html.push('</div>');
+            html.push('<div class="stopwatch_stop">');
             html.push('<app:button width="100" on="click then script[Appcelerator.Module.Stopwatch.start_stop(\'' 
                     + element.id + '\')] and l:' + element.id + '_reset">Stop</app:button>');
+            html.push('</div>');
             html.push('</td>');
             html.push('<td class="stopwatch_reset">');
             html.push('<app:button disabled="true" width="100" on="click then script[Appcelerator.Module.Stopwatch.clear_time(\''

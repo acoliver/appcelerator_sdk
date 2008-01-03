@@ -5,10 +5,10 @@
     font-size: 24px;
 }
 .stopwatch h3 span {font-size: 90%;}
-.app_stopwatch_started td.stopwatch_start {display: none}
-.app_stopwatch_started td.stopwatch_stop {display: inherit}
-.stopwatch .stopwatch_stop {display: none}
-.stopwatch .stopwatch_start {display: inherit}
+.stopwatch div.stopwatch_stop {display: none}
+.stopwatch div.stopwatch_start {float: left; display: block}
+div.app_stopwatch_started div.stopwatch_start {display: none}
+div.app_stopwatch_started div.stopwatch_stop {float: left; display: block}
 .button_widget {padding: 0px}
 
 .stopwatch table td { text-align: center; }
