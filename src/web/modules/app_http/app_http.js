@@ -61,45 +61,46 @@ Appcelerator.Module.Http =
     },
     get: function(id,params,data,scope,version)
     {
-        Appcelerator.Module.Http.performFetch(params, data, 'get');
+		Appcelerator.Module.Http.performFetch(params, data, 'get');
     },
     performFetch: function(params, data, method)
     {
         var uri = params['uri'][method];
         if (!uri)
         {
-          $E('no method mapped for '+method);
-          return;
+			$E('no method mapped for '+method);
+			return;
         }
+
         var response = uri['response'] || params['response'];
         var error = uri['error'] || params['error'];
-
         var property = uri['property'];
-        var methodParams = uri['args'];
         var responseRegex = uri['responseRegex'];
-        
-		if (methodParams)
+		var contentType = uri['contentType'] || 'application/x-www-form-urlencoded';
+
+		var array = null;
+		if (property)
 		{
-			methodParams = methodParams.evalJSON();
+			array = Object.getNestedProperty(data,property) || [];
+		}
+		else
+		{
+			// removing the toString property on data
+			array = Object.toJSON(data).evalJSON();
+		}
+		var methodParams = array;
+
+		var body = uri['body'];
+		if (body != '')
+		{
+	        var bodycompiled = eval(Appcelerator.Compiler.compileTemplate(body, true, 'body_init_'+params['id']) + '; body_init_'+params['id']);
+	        body = bodycompiled(array).trim();
+			contentType = 'text/plain';
+			methodParams = null;
 		}
 		
-        if (!methodParams && property)
-        {
-            var array = Object.getNestedProperty(data,property);
-            if (array)
-            {
-                methodParams = array[0];
-            }
-        }
-
-		if (!methodParams)
-		{
-			// use data as default, remove toString method
-            methodParams = Object.toJSON(data).evalJSON();
-		}
-        
         var compiled = eval(uri['uri'] + '; init_'+params['id']);
-        var uriLink = compiled(data).trim();
+        var uriLink = compiled(array).trim();
         
         //TODO: support https
         if (uriLink.startsWith('http://'))
@@ -124,8 +125,10 @@ Appcelerator.Module.Http =
         {
             method: method,
             parameters: methodParams,
-            evalJSON:false,
-            evalJS:false,
+            evalJSON: false,
+            evalJS: false,
+			postBody: body,
+			contentType: contentType,
             onSuccess: function (result)
             {
                 contentType = result.getResponseHeader('Content-Type');
@@ -196,7 +199,7 @@ Appcelerator.Module.Http =
             newhtml = newhtml.replace(/<URI/g,'<APP:URI').replace(/\/URI>/g,'/APP:URI>');
             element.innerHTML = newhtml;
         }
-        
+
         for (var c=0; c<element.childNodes.length; c++)
         {
             (function()
@@ -205,12 +208,12 @@ Appcelerator.Module.Http =
                 if (node.nodeType == 1 && node.nodeName == 'URI')
                 {
                     uriLink = Appcelerator.Compiler.compileTemplate(node.getAttribute('uri'),true,'init_'+element.id);
-                    var uri = {uri: uriLink, response: node.getAttribute('response'), args: node.getAttribute('args'), property: node.getAttribute('property'), error: node.getAttribute('error'), responseRegex: node.getAttribute('responseRegex')};
+                    var uri = {uri: uriLink, response: node.getAttribute('response'), args: node.getAttribute('args'), property: node.getAttribute('property'), error: node.getAttribute('error'), responseRegex: node.getAttribute('responseRegex'), body: node.innerHTML};
                     uris[node.getAttribute('method')] = uri;
                 }
             })();
         }
-        
+
         parameters['uri'] = uris;
 
         return {
