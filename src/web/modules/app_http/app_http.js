@@ -95,7 +95,10 @@ Appcelerator.Module.Http =
 		{
 	        var bodycompiled = eval(Appcelerator.Compiler.compileTemplate(body, true, 'body_init_'+params['id']) + '; body_init_'+params['id']);
 	        body = bodycompiled(array).trim();
-			contentType = 'text/plain';
+			if (!uri['contentType'])
+			{
+				contentType = 'text/plain';
+			}
 			methodParams = null;
 		}
 		
