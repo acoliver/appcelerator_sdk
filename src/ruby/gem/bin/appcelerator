@@ -114,7 +114,11 @@ File.open("#{p}/config/version.yml",'w').puts version.to_yaml
 # replace the XML with the correct sessionid
 projectname = File.basename(p)
 xml = File.read("#{p}/public/appcelerator.xml")
-xml.gsub!(/SESSIONID/,"_#{projectname}_session")
+if rails_gem.version.to_s.to_f > 1.2
+  xml.gsub!(/SESSIONID/,"_#{projectname}_session")
+else
+  xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
+end
 File.open("#{p}/public/appcelerator.xml",'w').puts xml
 
 puts "Successfully created new Appcelerator project in '#{app_path}'"
