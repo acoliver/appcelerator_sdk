@@ -21,7 +21,7 @@ Object.extend(Appcelerator.Validator,
         return value.trim().length > 0;
     },
 
-    EMAIL_REGEXP: /^([a-zA-Z0-9_.+-])+@[a-zA-Z0-9-]+[\.]([a-zA-Z0-9]{2,6})([\.][a-zA-Z0-9]{2,6}){0,1}$/,
+ 	EMAIL_REGEXP: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
 
 	email_optional: function(value)
 	{

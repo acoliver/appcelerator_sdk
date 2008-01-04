@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -77,17 +76,11 @@ public class ProxyServlet extends DispatchServlet
         if (method.equalsIgnoreCase("POST"))
         {
             methodBase = new PostMethod(url);
-            Enumeration e = request.getParameterNames();
-            
-            while(e.hasMoreElements())
-            {
-            	String name= (String)e.nextElement();
-            	if (!name.equals("url"))
-            	{
-            		((PostMethod)methodBase).addParameter(name, request.getParameter(name));
-            	}
-            	
-            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Util.copy(request.getInputStream(), out);
+            ByteArrayRequestEntity req = new ByteArrayRequestEntity(out.toByteArray());
+            LOG.info("output array = "  + out.size());
+            ((PostMethod)methodBase).setRequestEntity(req);
         }
         else if (method.equalsIgnoreCase("GET"))
         {
