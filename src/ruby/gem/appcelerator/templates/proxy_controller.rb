@@ -30,34 +30,33 @@ class ProxyController < ApplicationController
         url = Base64.decode64(url)
       end
       uri = URI.parse(url)
+      relative = '/' + uri.to_s[/http:\/\/[^\/]*\/(.*)$/, 1]
       
       req = nil
-      
       case request.request_method.to_s
         when 'post'
-           req = Net::HTTP::Post.new(uri.to_s)
-           req.body = request.raw_post
+          req = Net::HTTP::Post.new(relative)
+          req.body = request.raw_post
         when 'get'
-           req = Net::HTTP::Get.new(uri.to_s)
+          req = Net::HTTP::Get.new(relative)
         when 'options'
-           req = Net::HTTP::Options.new(uri.to_s)
+          req = Net::HTTP::Options.new(relative)
         when 'put'
-           req = Net::HTTP::Put.new(uri.to_s)
-           req.body = request.raw_post
+          req = Net::HTTP::Put.new(relative)
+          req.body = request.raw_post
         when 'delete'
-           req = Net::HTTP::Delete.new(uri.to_s)
+          req = Net::HTTP::Delete.new(relative)
       end
 
-      res = Net::HTTP.new(uri.host, uri.port).start do |http| 
+      res = Net::HTTP.start(uri.host, uri.port) do |http| 
         http.request(req)
       end
 
-      
       res.each_header do |key,value|
         response.headers[key]=value unless key =~ /(transfer-encoding|set-cookie)/
       end
+      
       render :inline=> res.body, :status=> res.code
-
     end
   end
 end

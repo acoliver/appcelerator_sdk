@@ -118,7 +118,24 @@ Appcelerator.Module.Http =
                 var proxy = Appcelerator.ServerConfig['proxy'];
                 if (proxy)
                 {
+					if (methodParams && method != 'post' && method != 'put') 
+					{
+						if (uriLink.indexOf('?') < 0)
+						{
+							uriLink += '?';
+						}
+						else
+						{
+							uriLink += '&';
+						}
+						
+						for (var k in methodParams)
+						{
+							uriLink += k + '=' + methodParams[k] + '&';
+						}
+					}
                     uriLink = proxy.value + '?url='+ encodeURIComponent(uriLink);
+					methodParams = null;
                 }
             }
         }
