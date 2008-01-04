@@ -32,9 +32,9 @@ end
 
 module ServiceBroker
   
-      def log_processing
-        # turn off logging since we get a lot of these requests
-      end
+    def log_processing
+      # turn off logging since we get a lot of these requests
+    end
 
 	  def dispatch	    
   		session = request.session
@@ -44,81 +44,84 @@ module ServiceBroker
   		#
   		auid = cookies['AUID']
   		if not auid or auid == ''
-  		    domain = request.domain
-  		    dots = domain.scan(/[\.]/).length
-  		    case dots
-  		        when 0
-  		            domain = nil
-  		        when 1
-  		            domain = ".#{domain}"
-  		        when 2..10
+        domain = request.domain
+        if domain
+          dots = domain.scan(/[\.]/).length
+          case dots
+              when 0
+                  domain = nil
+              when 1
+                  domain = ".#{domain}"
+              when 2..10
           		    idx = domain.index('.')
           		    domain = domain[idx,domain.length]
-      		end
-      		auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
-      		opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
-      		if domain
-      		    opts['domain']=domain
-      		end
-  		    cookies['AUID']=opts
+        	end
+        end
+        auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
+        opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
+        if domain
+          opts['domain'] = domain
+        else
+          opts['domain'] = request.host
+        end
+        cookies['AUID'] = opts
   		end
   		
-  		
-        # we check to make sure we're coming from an XHR request
-        # this is easy to forge but a simple check
-        #
-  	    if not request.xml_http_request? and not request.xhr?
-          logger.error("client error = not XHR request")
-  	      render :nothing => true, :status => 400
-  	      return
-        end
-        
-        # check to see if we're doing an initial request to cause the 
-        # cookie to get set
-        if request.parameters[:initial]
-          render :nothing => true, :status => 202
-          return
-        end
-      
-        authtoken = request.parameters[:auth]
-        if authtoken.nil?
-          logger.error("client error = missing auth token")
-          render :nothing => true, :status => 400
-          return
-        end
-        
-        ts = request.parameters[:ts]
-        if ts.nil?
-          logger.error("client error = missing timestamp")
-          render :nothing => true, :status => 400
-          return
-        end
-        
-        instanceid = request.parameters[:instanceid]
-        if instanceid.nil?
-          logger.error("client error = missing instanceid")
-          render :nothing => true, :status => 400
-          return
-        end
-        
-        #
-        # security check - make sure our hash is correct 
-        #
-        authcheck = Digest::MD5.hexdigest(session.session_id + instanceid)
-        
-        if authcheck != authtoken
-          logger.error("client error = authtoken didn't not properly compute")
-          render :nothing => true, :status => 400
-          return
-        end
-        
-  		response.headers['Content-Type'] = 'text/xml' 
-  		response.headers['Pragma'] = 'no-cache'
-  		response.headers['Cache-Control'] = 'no-cache, no-store, private, must-revalidate'
-  		response.headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT'
+      # we check to make sure we're coming from an XHR request
+      # this is easy to forge but a simple check
+      #
+      if not request.xml_http_request? and not request.xhr?
+        logger.error("client error = not XHR request")
+        render :nothing => true, :status => 400
+        return
+      end
+  
+      # check to see if we're doing an initial request to cause the 
+      # cookie to get set
+      if request.parameters[:initial]
+        render :nothing => true, :status => 202
+        return
+      end
 
-  		Appcelerator::Dispatcher.dispatch_request(request,response,session)
+      authtoken = request.parameters[:auth]
+      if authtoken.nil?
+        logger.error("client error = missing auth token")
+        render :nothing => true, :status => 400
+        return
+      end
+  
+      ts = request.parameters[:ts]
+      if ts.nil?
+        logger.error("client error = missing timestamp")
+        render :nothing => true, :status => 400
+        return
+      end
+  
+      instanceid = request.parameters[:instanceid]
+      if instanceid.nil?
+        logger.error("client error = missing instanceid")
+        render :nothing => true, :status => 400
+        return
+      end
+  
+      #
+      # security check - make sure our hash is correct 
+      #
+      authcheck = Digest::MD5.hexdigest(session.session_id + instanceid)
+  
+      if authcheck != authtoken
+        logger.error("client error = authtoken didn't not properly compute")
+        render :nothing => true, :status => 400
+        return
+      end
+  
+    response.headers['Content-Type'] = 'text/xml' 
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Cache-Control'] = 'no-cache, no-store, private, must-revalidate'
+    response.headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT'
 
-        @performed_render = true
+    Appcelerator::Dispatcher.dispatch_request(request,response,session)
+
+    @performed_render = true
 	end
 end
