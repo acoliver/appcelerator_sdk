@@ -44,25 +44,24 @@ module ServiceBroker
   		#
   		auid = cookies['AUID']
   		if not auid or auid == ''
+        auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
+        opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
+
         domain = request.domain
         if domain
           dots = domain.scan(/[\.]/).length
           case dots
               when 0
-                  domain = nil
+                domain = nil
               when 1
-                  domain = ".#{domain}"
+                domain = ".#{domain}"
               when 2..10
-          		    idx = domain.index('.')
-          		    domain = domain[idx,domain.length]
+        		    idx = domain.index('.')
+        		    domain = domain[idx,domain.length]
         	end
-        end
-        auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
-        opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
-        if domain
-          opts['domain'] = domain
-        else
-          opts['domain'] = request.host
+          if domain
+            opts['domain'] = domain
+          end
         end
         cookies['AUID'] = opts
   		end
