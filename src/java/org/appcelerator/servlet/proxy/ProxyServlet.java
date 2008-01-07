@@ -79,7 +79,6 @@ public class ProxyServlet extends DispatchServlet
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Util.copy(request.getInputStream(), out);
             ByteArrayRequestEntity req = new ByteArrayRequestEntity(out.toByteArray());
-            LOG.info("output array = "  + out.size());
             ((PostMethod)methodBase).setRequestEntity(req);
         }
         else if (method.equalsIgnoreCase("GET"))
