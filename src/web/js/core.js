@@ -358,6 +358,13 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
     }
 };
 
+
+Appcelerator.Core.getLoadedModulesAndAttributes = function() {
+	$H(Appcelerator.Module).map(function(kv){
+		return [kv[1].getWidgetName(), kv[1].getAttributes().pluck('name')];
+	});
+};
+
 //
 // handlers for when document is loaded or unloaded
 //
