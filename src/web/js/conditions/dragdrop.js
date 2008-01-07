@@ -1,4 +1,8 @@
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionNames: ['dragstart', 'drag', 'dragend', 'dragover', 'drop']
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	var eventName = null;
 	

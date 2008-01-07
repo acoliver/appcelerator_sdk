@@ -788,27 +788,7 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	var f = Appcelerator.Compiler.ElementFunctions[key];
 	if (f)
 	{
-		switch(args.length)
-		{
-			case 0:
-				return f();
-			case 1:
-				return f(args[0]);
-			case 2:
-				return f(args[0],args[1]);
-			case 3:
-				return f(args[0],args[1],args[2]);
-			case 4:
-				return f(args[0],args[1],args[2],args[3]);
-			case 5:
-				return f(args[0],args[1],args[2],args[3],args[4]);
-			case 6:
-				return f(args[0],args[1],args[2],args[3],args[4],args[5]);
-			case 7:
-				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
-			default:
-				throw "too many arguments - only 8 supported currently for method: "+name+", you invoked with "+args.length+", args was: "+Object.toJSON(args);
-		}
+		f.apply(this, args);
 	}
 	if (element)
 	{
@@ -960,9 +940,13 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				{
 					// rename the real ID
 					Appcelerator.Compiler.setElementId(element, id+'_widget');
-					//TODO: look to see how we can deal with this without adding DIV so we 
-					//can support things like TR inside an iterator
-					html = '<div id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</div>';
+					
+					// widgets can define the tag in which they should be wrapped
+					if(instructions.parent_tag != 'none' && instructions.parent_tag != '')
+					{
+					   var parent_tag = instructions.parent_tag || 'div';
+					   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</'+parent_tag+'>';
+					}
 					
 					if (Appcelerator.Browser.isIE)
 					{
@@ -1348,10 +1332,22 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	}
 };
 
+/*
+ * Conditions trigger the execution of on expressions,
+ * customConditions is a list of parsers that take the left-hand-side
+ * of an on expression (before the 'then') and registers event listeners
+ * to be called when the condition is true.
+ * 
+ * Parsers registered with registerCustomCondition are called in order
+ * until one of them successfully parses the condition and returns true.
+ * 
+ * Successful parses result in calls to either Event.observe or to $MQL
+ */
 Appcelerator.Compiler.customConditions = [];
 
-Appcelerator.Compiler.registerCustomCondition = function(condition)
+Appcelerator.Compiler.registerCustomCondition = function(metadata, condition)
 {
+	condition.metadata = metadata;
 	Appcelerator.Compiler.customConditions.push(condition);
 };
 
@@ -1368,6 +1364,13 @@ Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAc
  	}
  	return false;
 };
+
+Appcelerator.Compiler.getConditionsMetadata = function() {
+	return Appcelerator.Compile.customConditions.pluck('metadata');
+}
+
+// TODO: Appcelerator.Compiler.getConditionsRegex
+
 
 Appcelerator.Compiler.parameterRE = /(.*?)\[(.*)?\]/i;
 Appcelerator.Compiler.expressionRE = /^expr\((.*?)\)$/;

@@ -3,7 +3,11 @@
 //
 // this is a custom condition for handling executing actions based on a message condition
 //
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:'],
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	if (condition.startsWith('local:') ||
 	       condition.startsWith('l:') || 

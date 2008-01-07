@@ -7,7 +7,7 @@ Appcelerator.Module.Widget =
     },
     getDescription: function()
     {
-		/* Optional parameters that aren't set by the user, get set to '' */
+        /* Optional parameters that aren't set by the user get set to '' */
         return 'A widget that allows you to define other widgets. It\'s a MetaWidget!';
     },
     getVersion: function()
@@ -59,7 +59,7 @@ Appcelerator.Module.Widget =
         
         var attributes = [];
         if (requiredParams) {
-			requiredParams = requiredParams.split(',');
+            requiredParams = requiredParams.split(',');
             for (var i = 0; i < requiredParams.length; i++) {
                 var name = requiredParams[i];
                 attributes.push({
@@ -70,7 +70,7 @@ Appcelerator.Module.Widget =
             }
         }
         if(optionalParams) {
-			optionalParams = optionalParams.split(',');
+            optionalParams = optionalParams.split(',');
             for(var i = 0; i < optionalParams.length; i++) {
                 var name = optionalParams[i];
                 attributes.push({
@@ -94,26 +94,26 @@ Appcelerator.Module.Widget =
             getAttributes: function() {
                 return attributes;
             },
-			compileWidget: function() {
-			},
+            compileWidget: function() {
+            },
             buildWidget: function(element,parameters) {
                 // ignoring element body, maybe want a jsp-esque <insertBody/> tag
-				for (var i = 0; i < optionalParams.length; i++) {
-					var name = optionalParams[i];
-					if (!parameters[name]) {
-						parameters[name] = '';
-					}
-				}
+                for (var i = 0; i < optionalParams.length; i++) {
+                    var name = optionalParams[i];
+                    if (!parameters[name]) {
+                        parameters[name] = '';
+                    }
+                }
                 return {
                     'presentation' : widgetTemplate(parameters),
                     'position' : Appcelerator.Compiler.POSITION_REPLACE,
                     'wire' : true,
-					'compile' : true,
-					'wrapper_tag' : 'none' 
+                    'compile' : true,
+                    'parent_tag' : 'none' 
                 }
             }
         };
-		
+        
         Appcelerator.Core.registerModule(widgetName, widget, true);
         return {
             'position' : Appcelerator.Compiler.POSITION_REMOVE

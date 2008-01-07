@@ -25,7 +25,6 @@ require 'erb'
 require 'md5'
 require 'socket'
 require 'fileutils'
-require 'activesupport'
 require 'appcelerator'
 require 'optparse'
 
@@ -59,9 +58,13 @@ end
 
 app_path = ARGV.last
 
-system("rails  #{ARGV.join(' ')}>> rails.log")
-
-FileUtils.rm_r 'rails.log'
+if ARGV.include? '--verbose'
+  ARGV.delete '--verbose'
+  system("rails  #{ARGV.join(' ')}")
+else
+  system("rails  #{ARGV.join(' ')}>> rails.log")
+  FileUtils.rm_r 'rails.log'
+end
 
 p = Pathname.new(app_path)
 

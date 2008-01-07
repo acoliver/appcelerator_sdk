@@ -136,6 +136,10 @@ module Appcelerator
         eval(name.to_s, self.binding)
     end
     
+    def respond_to?(symbol, include_private = false)
+      vars.includes?(symbol)
+    end
+    
     def to_s
         service = Object.const_get(service_name).instance
         "#{message_type} -> #{service.before_filters} #{service_name}.#{method_name} #{service.after_filters} -> #{response_type}"

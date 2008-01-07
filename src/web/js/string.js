@@ -72,37 +72,14 @@ Object.extend(String.prototype,
  */
 String.escapeXML = function(value)
 {
-    var str = "";
-    for (var c = 0; c < value.length; c++)
-    {
-        var ch = value.charAt(c);
-        if (ch == '"')
-        {
-            str += "&quot;";
-        }
-        else if (ch == '&')
-        {
-            str += "&amp;";
-        }
-        else if (ch == '>')
-        {
-            str += "&gt;";
-        }
-        else if (ch == '<')
-        {
-            str += "&lt;";
-        }
-        else if (ch == '\'')
-        {
-            str += "&apos;";
-        }
-        else
-        {
-            str += ch;
-        }
-    }
-    return str;
-};
+	if (!value) return null;
+    return value.replace(
+    /&/g, "&amp;").replace(
+    /</g, "&lt;").replace(
+    />/g, "&gt;").replace(
+    /"/g, "&quot;").replace(
+    /'/g, "&apos;");
+}
 
 /**
  * unescape XML entities back into their normal values
@@ -110,12 +87,12 @@ String.escapeXML = function(value)
 String.unescapeXML = function(value)
 {
     if (!value) return null;
-    var v = value.replace(/&lt;/g, "<");
-    v = v.replace(/&gt;/g, ">");
-    v = v.replace(/&apos;/g, "'");
-    v = v.replace(/&amp;/g, "&");
-    v = v.replace(/&quot;/g, "\"");
-    return v;
+    return value.replace(
+	/&lt;/g,   "<").replace(
+	/&gt;/g,   ">").replace(
+	/&apos;/g, "'").replace(
+	/&amp;/g,  "&").replace(
+	/&quot;/g, "\"");
 };
 
 

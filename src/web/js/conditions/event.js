@@ -19,6 +19,25 @@ Appcelerator.Compiler.Events =
 	'paste'
 ];
 
+Appcelerator.Compiler.EventTargets =
+[
+    'this',
+	'parent',
+    'down',
+    'after',
+    'next',
+    'sibling',
+    'next-sibling',
+    'before',
+    'up',
+    'prev-sibling',
+    'previous-sibling',
+    'child',
+    'children',
+    'window',
+    'body'
+];
+
 Appcelerator.Compiler.actionId = 0;
 
 Appcelerator.Compiler.isEventSelector = function (token)
@@ -42,7 +61,13 @@ Appcelerator.Compiler.isEventSelector = function (token)
 	return false;
 };
 
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionPrefixes: Appcelerator.Compiler.EventTargets.map(function(targetName){ return targetName+'.'}),
+	conditionSuffixes: Appcelerator.Compiler.Events,
+	prefixOptional: true
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	if (!Appcelerator.Compiler.isEventSelector(condition))
 	{

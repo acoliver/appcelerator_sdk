@@ -18,7 +18,13 @@ Appcelerator.Compiler.Selected.makeSelectedListener = function(element,condition
 	});
 };
 
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionPrefixes: ['parent.', 'child.', 'children.'],
+	conditionSuffixes: ['selected'],
+	prefixOptional: true
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	switch (condition)
 	{

@@ -1,4 +1,8 @@
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionNames: ['resize']
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	if (condition == 'resize')
 	{

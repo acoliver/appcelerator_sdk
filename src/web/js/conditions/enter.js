@@ -1,5 +1,9 @@
 
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionNames: ['enter','enter!']
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	switch(condition)
 	{

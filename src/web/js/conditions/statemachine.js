@@ -8,7 +8,11 @@ Appcelerator.Compiler.StateMachine.isStateCondition = function (token)
 	return Appcelerator.Compiler.parameterRE.test(token);
 };
 
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	pattern: /([^\[]*)\[([^\]]*)\]/
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	if (!Appcelerator.Compiler.StateMachine.isStateCondition(condition))
 	{

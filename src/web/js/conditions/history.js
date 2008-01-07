@@ -1,7 +1,12 @@
 //
 // this is a custom condition for handling executing actions based on a message condition
 //
-Appcelerator.Compiler.registerCustomCondition(function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+	conditionPrefixes: ['history:==', 'history:!='],
+	suffixOptional: true
+},
+function(element,condition,action,elseAction,delay,ifCond)
 {
 	if (condition.startsWith('history:'))
 	{
