@@ -40,10 +40,14 @@ Appcelerator.Module.Modalbox =
 
     getAttributes: function()
     {
-        return [{name: 'on', optional: true, description: "Used to show dialog"},
+		var T = Appcelerator.Types;
+        return [{name: 'on', optional: true, type: T.onExpr,
+		         description: "Used to show dialog"},
                 {name: 'title', optional: true, description: "title on the modal dialog"},
-                {name: 'height', optional: true, defaultValue:'90', description: "height of the modal dialog"},
-                {name: 'width', optional: true, defaultValue:'500', description: "width of the modal dialog"}];
+                {name: 'height', optional: true, defaultValue:'90', type: T.cssDimension,
+				 description: "height of the modal dialog"},
+                {name: 'width', optional: true, defaultValue:'500', type: T.cssDimension, 
+				 description: "width of the modal dialog"}];
     },
 
 

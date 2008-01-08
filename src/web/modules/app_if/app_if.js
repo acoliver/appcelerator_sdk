@@ -35,7 +35,8 @@ Appcelerator.Module.If =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'expr', optional: false, description: "The javascript expression to execute"}];
+		return [{name: 'expr', optional: false, type: Appcelerator.Types.javascriptExpr,
+		         description: "The javascript expression to execute"}];
 	},
 	compileWidget: function(params)
 	{

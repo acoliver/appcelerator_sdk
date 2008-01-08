@@ -41,10 +41,11 @@ Appcelerator.Module.Calendar =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to execute the calendar."},
-				{name: 'inputId', optional: true },
-				{name: 'elementId', optional: true },
-				{name: 'minDate', optional: true },
+		var T = Appcelerator.Types;
+		return [{name: 'on', optional: true, description: "May be used to execute the calendar.", type: T.onExpr},
+				{name: 'inputId', optional: true, type: T.identifier},
+				{name: 'elementId', optional: true, type: T.identifier},
+				{name: 'minDate', optional: true, type: T.pattern(/[0-9]{1,2}\/[0-9]{1,2}(\/[0-9]{4})/)},
 				{name: 'title', optional: true, defaultValue: ''}];
 	},
 	execute: function(id,parameterMap,data,scope,version)

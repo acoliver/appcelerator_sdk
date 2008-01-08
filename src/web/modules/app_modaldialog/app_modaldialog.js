@@ -37,6 +37,14 @@ Appcelerator.Module.Modaldialog =
 	{
 		return ['execute'];
 	},	
+    getAttributes: function()
+    {
+        return [{name: 'on', optional: false, type: T.onExpr,
+		         description: "Used to show the modal dialog"},
+                {name: 'property', optional: true, type: T.identifier},
+                {name: 'top', optional: true, type: T.number}];
+    },  
+
 	execute: function(id,parameterMap,data,scope)
 	{
 		var compiled = parameterMap['compiled'];
@@ -91,12 +99,6 @@ Appcelerator.Module.Modaldialog =
 		overlaydata.style.top = dataTop + 'px';
 		Element.show(overlaydata);
 	},
-	getAttributes: function()
-	{
-		return [{name: 'on', optional: false, description: "Used to show the modal dialog"},
-				{name: 'property', optional: true},
-				{name: 'top', optional: true}];
-	},	
 	buildWidget: function(element,parameters,state)
 	{
 		var hidemessage = 'l:appcelerator.modaldialog.hide';

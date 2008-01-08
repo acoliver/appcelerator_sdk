@@ -34,8 +34,9 @@ Appcelerator.Module.Pagination =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'request', optional: true},
-				{name: 'response', optional: true},
+		var T = Appcelerator.Types;
+		return [{name: 'request', optional: true, type: T.messageSend},
+				{name: 'response', optional: true, type: T.messageReceive},
 				{name: 'startProperty', optional: true, defaultValue: 'start'},
 				{name: 'endProperty', optional: true, defaultValue: 'end'},
 				{name: 'totalProperty', optional: true, defaultValue: 'total'},

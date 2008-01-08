@@ -39,10 +39,17 @@ Appcelerator.Module.Datacache =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'request', optional: false, description: "The message request to cache."},
-				{name: 'response', optional: false, description: "The message response to cache."},		
-				{name: 'keepAlive', optional: true, defaultValue: 1800000, description: "Keep alive"},		
-				{name: 'autoRefresh', optional: true, defaultValue: false, description: "Auto refresh"}];
+		var T = Appcelerator.Types;
+		return [{name: 'request', optional: false, type: T.messageReceive,
+		         description: "The message request to cache."},
+				{name: 'response', optional: false, type: T.messageSend,
+				 description: "The message response to cache."},
+				{name: 'keepAlive', optional: true, defaultValue: 1800000,
+				 description: "Keep alive",
+				 type: T.number},
+				{name: 'autoRefresh', optional: true, defaultValue: false,
+				 description: "Auto refresh",
+				 type: T.bool}];
 	},	
 	buildWidget: function(element, parameters)
 	{

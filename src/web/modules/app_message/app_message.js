@@ -43,11 +43,16 @@ Appcelerator.Module.Message =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to express when the message should be fired (executed)."},
-				{name: 'name', optional: false, description: "The name of the message to be fired."},
-				{name: 'args', optional: true, description: "The arguement payload of the message."},
+		var T = Appcelerator.Types;
+		return [{name: 'on', optional: true, type: T.onExpr,
+		         description: "May be used to express when the message should be fired (executed)."},
+				{name: 'name', optional: false, type: T.messageSend,
+				 description: "The name of the message to be fired."},
+				{name: 'args', optional: true, type: T.json,
+				 description: "The argument payload of the message."},
 				{name: 'version', optional: true, description: "The version attached to the message."},
-				{name: 'interval', optional: true, description: "Indicates that an interval (in milliseconds) that the message will continously be fired."}]
+				{name: 'interval', optional: true, type: T.time,
+				 description: "Indicates that an time interval that the message will continously be fired."}]
 	},
 	buildWidget: function(element, attributes)
 	{
@@ -94,7 +99,7 @@ Appcelerator.Module.Message =
 		
 		if (interval!=null)
 	    {
-	    	var time = parseInt(interval);
+	    	var time = Appcelerator.Util.DateTime.timeFormat(interval);
 	    	if (time > 0)
 	    	{
 		    	var timer = setInterval(function()

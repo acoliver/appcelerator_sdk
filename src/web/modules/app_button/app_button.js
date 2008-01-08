@@ -39,13 +39,14 @@ Appcelerator.Module.Button =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true},
-				{name: 'width', optional: true, defaultValue: 200},
-				{name: 'disabled', optional: true, defaultValue: 'false'},
-				{name: 'corner', optional: true, defaultValue: 'round'},
-				{name: 'color', optional: true, defaultValue: 'dark'},
-				{name: 'icon', optional: true, defaultValue: ''},
-				{name: 'fieldset', optional: true},
+		var T = Appcelerator.Types;
+		return [{name: 'on', optional: true, type: T.onExpr},
+				{name: 'width', optional: true, defaultValue: 200, type: T.cssDimension},
+				{name: 'disabled', optional: true, defaultValue: 'false', type: T.bool},
+				{name: 'corner', optional: true, defaultValue: 'round', type: T.enumeration('round','square')},
+				{name: 'color', optional: true, defaultValue: 'dark', type: T.enumeration('dark','light')},
+				{name: 'icon', optional: true, defaultValue: '', type: T.enumeration('add','delete','edit','save','')},
+				{name: 'fieldset', optional: true, type: T.fieldset},
 				{name: 'activators', optional: true}];
 	},
 	dontParseOnAttributes: function()

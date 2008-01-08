@@ -41,7 +41,29 @@ Appcelerator.Module.Datatable =
 	getActions: function()
 	{
 		return ['execute'];
-	},	
+	},
+	getAttributes: function()
+    {
+		var T = Appcelerator.Types;
+        return [{name: 'on', optional: true,
+		         description: "Used to populate the data table.",
+				 type: T.onExpr},
+                {name: 'sort', optional: true, defaultValue: 'client',
+				 description: "Where the responsibility for sorting items in the table rests"+
+				              "Valid values are 'client', 'server', and 'off.'",
+				 type: T.enumeration('client','server','off')},
+                {name: 'sortRequest', optional: true, defaultValue: '',
+				 description: "Message to be sent when the sort mode is 'server' and a column header is clicked.",
+				 type: T.messageSend},
+                {name: 'rowEvenClass', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'rowOddClass', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'width', optional: true, defaultValue: '100%',
+				 description: "Width of entire table.",
+				 type: T.cssDimension},
+                {name: 'property', optional: true, defaultValue: '', type: T.identifier},
+                {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
+                {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber}];
+    },
 	createDataTable: function (id, pagination_direction)
 	{		
 		//list of on attributes to be parsed and evaluated at the end of create
@@ -50,7 +72,6 @@ Appcelerator.Module.Datatable =
 		var parameterMap = $(id).parameterMap;
 		
 		var scope = parameterMap['scope'];
-		var wire = parameterMap['wire'];
 		
 		//Valid values are 'client', 'server', and 'off'
 		var sort = parameterMap['sort'];
@@ -418,19 +439,6 @@ Appcelerator.Module.Datatable =
 
 		Appcelerator.Module.Datatable.createDataTable(id);
 	},
-	getAttributes: function()
-	{
-		return [{name: 'on', optional: true, description: "Used to populate the data table."},
-				{name: 'wire', optional: true, defaultValue: ''},
-				{name: 'sort', optional: true, defaultValue: 'client', description: "Valid values are 'client', 'server', and 'off.'"},
-				{name: 'sortRequest', optional: true, defaultValue: '', description: "Message to be sent when the sort mode is 'server' and a column header is clicked."},
-				{name: 'rowEvenClass', optional: true, defaultValue: ''},
-				{name: 'rowOddClass', optional: true, defaultValue: ''},
-				{name: 'width', optional: true, defaultValue: '100%', description: "Width % of entire table."},
-				{name: 'property', optional: true, defaultValue: ''},
-				{name: 'pagination', optional: true, defaultValue: 'false'},
-				{name: 'maxRows', optional: true, defaultValue: 0}];
-	},	
 	buildWidget: function(element, parameters)
 	{
 		//Header array		

@@ -35,9 +35,15 @@ Appcelerator.Module.Http =
     },
     getAttributes: function()
     {
-        return [{name: 'on', optional: false, description: "Used to execute posts/gets"},
-                {name: 'response', optional: true, description: "Response message when success"},
-                {name: 'error', optional: true, description: "Message to fire when errors received"}];
+		var T = Appcelerator.Types;
+        return [{name: 'on', optional: false, type: T.onExpr,
+		         description: "Used to execute posts/gets"},
+                {name: 'response', optional: true, type: T.messageSend,
+				 description: "Message to fire when successful. Will contain JSONified payload"},
+                {name: 'error', optional: true, type: T.messageSend,
+				 description: "Message to fire when errors received"}];
+	    // TODO: find a way to document the attributes of the child <uri/> tag,
+		// (will be combined with some scheme for annotating child elements in general 
     },
     getActions: function()
     {

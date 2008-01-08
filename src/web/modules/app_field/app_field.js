@@ -43,6 +43,33 @@ Appcelerator.Module.Field =
 	{
 		return 'app:field';
 	},
+    getAttributes: function()
+    {
+        var T = Appcelerator.Types;
+        return [{name: 'type', optional: true, defaultValue: 'text',
+		         type: T.enumeration('text','password','autocomplete','select','dropdown')},
+                {name: 'validator', optional: true},
+                {name: 'fieldset', optional: true, type: T.fieldset},
+                {name: 'fieldClassName', optional: true, defaultValue: 'field', type: T.cssClass},
+                {name: 'activeClassName', optional: true, defaultValue: 'selected', type: T.cssClass},
+                {name: 'inactiveClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'fieldActiveClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'fieldInactiveClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'fieldDefaultClassName', optional: true, defaultValue: '', type: T.cssClass},
+				{name: 'fieldDefaultLangId', optional: true},
+                {name: 'parameters', optional: true},
+                {name: 'inline', optional: true, },
+                {name: 'name', optional: true},
+                {name: 'hash', optional: true},
+                {name: 'langid', optional: true},
+                {name: 'delay', optional: true, type: T.time},
+                {name: 'autocomplete', optional: true, type: T.messageSend},
+                {name: 'indicator', optional: true, type: T.elementId},
+                {name: 'message', optional: true, type: T.messageReceive},
+                {name: 'property', optional: true, type: T.identifier},
+                {name: 'value', optional: true},
+                {name: 'text', optional: true}];
+    },
 	compileWidget: function(params)
 	{
 		var id = params['id'];
@@ -370,32 +397,6 @@ Appcelerator.Module.Field =
 		
 		forceDecoration();
 	},
-	getAttributes: function()
-	{
-		return [{name: 'type', optional: true, defaultValue: 'text'},
-				{name: 'validator', optional: true},
-				{name: 'fieldset', optional: true},
-				{name: 'fieldClassName', optional: true, defaultValue: 'field'},
-				{name: 'activeClassName', optional: true, defaultValue: 'selected'},
-				{name: 'inactiveClassName', optional: true, defaultValue: ''},
-				{name: 'fieldActiveClassName', optional: true, defaultValue: ''},
-				{name: 'fieldInactiveClassName', optional: true, defaultValue: ''},
-				{name: 'fieldDefaultClassName', optional: true, defaultValue: ''},
-				{name: 'fieldDefaultLangId', optional: true},
-				{name: 'parameters', optional: true},
-				{name: 'inline', optional: true},
-				{name: 'fieldDefaultClassName', optional: true, defaultValue: ''},
-				{name: 'name', optional: true},
-				{name: 'hash', optional: true},
-				{name: 'langid', optional: true},
-				{name: 'delay', optional: true},
-				{name: 'autocomplete', optional: true},
-				{name: 'indicator', optional: true},
-				{name: 'message', optional: true},
-				{name: 'property', optional: true},
-				{name: 'value', optional: true},
-				{name: 'text', optional: true}];
-	},	
 	buildWidget: function(element, parameters)
 	{
 		var type = parameters['type'];
@@ -419,7 +420,7 @@ Appcelerator.Module.Field =
 		var fieldDefaultLangId = parameters['fieldDefaultLangId'];
 		var defaultFieldValue = '';
 		var footerOn = null, headerOn = null;
-		var inline = parameters['inline'];
+		var inline = parameters['inline'] == 'true';
 		parameters['parameters'] = String.unescapeXML(parameters['parameters']);
 		parameters['scope'] = element.scope;
 		parameters['id'] = id;

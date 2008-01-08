@@ -37,6 +37,25 @@ Appcelerator.Module.EditinPlace =
 	{
 		return 'app:editinplace';
 	},
+    getAttributes: function()
+    {
+        var T = Appcelerator.Types;
+        return [{name: 'type', optional: true, defaultValue: 'text', type: T.enumeration('text', 'textarea')},
+                {name: 'defaultClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'editClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'buttonClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'saveOn', optional: true, type: T.onExpr},
+                {name: 'cancelOn', optional: true, type: T.onExpr},
+                {name: 'validator', optional: true, defaultValue: 'required'},
+                {name: 'position', optional: true, defaultValue: 'right',
+                 type: T.enumeration('top','right','bottom','left')},
+                {name: 'errorPosition', optional: true, defaultValue: 'top',
+                 type: T.enumeration('top','bottom')},
+                {name: 'defaultValue', optional: true, defaultValue: ''},
+                {name: 'errorMessage', optional: true, defaultValue: 'Required'},
+                {name: 'message', optional: true, type: T.messageReceive},
+                {name: 'property', optional: true, type: T.identifier}];
+    },
 	execute: function(id,parameterMap,data,scope)
 	{
 
@@ -162,22 +181,6 @@ Appcelerator.Module.EditinPlace =
 			Appcelerator.Util.ServiceBroker.addListener(listener);
 		}		
 	},
-	getAttributes: function()
-	{
-		return [{name: 'type', optional: true, defaultValue: 'text'},
-				{name: 'defaultClassName', optional: true, defaultValue: ''},
-				{name: 'editClassName', optional: true, defaultValue: ''},
-				{name: 'buttonClassName', optional: true, defaultValue: ''},
-				{name: 'saveOn', optional: true},
-				{name: 'cancelOn', optional: true},
-				{name: 'validator', optional: true, defaultValue: 'required'},
-				{name: 'position', optional: true, defaultValue: 'right'},
-				{name: 'errorPosition', optional: true, defaultValue: 'top'},
-				{name: 'defaultValue', optional: true, defaultValue: ''},
-				{name: 'errorMessage', optional: true, defaultValue: 'Required'},
-				{name: 'message', optional: true},
-				{name: 'property', optional: true}];
-	},	
 	buildWidget: function(element, parameters)
 	{
 		var type = parameters['type'];	

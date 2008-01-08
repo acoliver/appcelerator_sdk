@@ -39,14 +39,22 @@ Appcelerator.Module.Content =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to execute/load the content."},
-				{name: 'src', optional: false, description: "The source for the content file to load."},
-				{name: 'args', optional: true, description: "Used to replace text in the content file."},
-				{name: 'lazy', optional: true, defaultValue: 'false', description: "Indicates whether the content file should be lazy loaded."},
-				{name: 'reload', optional: true, defaultValue: 'false', description: "Indicates whether the content file should be refetched and reloaded on every execute. If false, execute will do nothing if already executed."},
-				{name: 'onload', optional: true, description: "Fire this message when content file is loaded."},
-				{name: 'onfetch', optional: true, description: "Fire this message when content file is fetched but before being loaded."}];
-	},	
+		var T = Appcelerator.Types;
+		return [{name: 'on', optional: true, type: T.onExpr,
+		         description: "May be used to execute/load the content."},
+				{name: 'src', optional: false, type: T.pathOrUrl,
+				 description: "The source for the content file to load."},
+				{name: 'args', optional: true, type: T.json,
+				 description: "Used to replace text in the content file."},
+				{name: 'lazy', optional: true, defaultValue: 'false', type: T.bool,
+				 description: "Indicates whether the content file should be lazy loaded."},
+				{name: 'reload', optional: true, defaultValue: 'false', type: T.bool,
+				 description: "Indicates whether the content file should be refetched and reloaded on every execute. If false, execute will do nothing if already executed."},
+				{name: 'onload', optional: true, type: T.messageSend,
+				 description: "Fire this message when content file is loaded."},
+				{name: 'onfetch', optional: true, type: T.messageSend,
+				 description: "Fire this message when content file is fetched but before being loaded."}];
+	},
 	execute: function(id,parameterMap,data,scope)
 	{
 		if (!parameterMap['reload'])

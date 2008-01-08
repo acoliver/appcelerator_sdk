@@ -35,10 +35,18 @@ Appcelerator.Module.Box =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'mode', optional: false, description: "Vertical or horizontal alignment"},
-				{name: 'width', optional: true, defaultValue: '100%'},
-				{name: 'verticalAlign', optional: true, defaultValue: 'top'},
-				{name: 'cellpadding', optional: true, defaultValue: '0'}];
+		var T = Appcelerator.Types;
+		return [{name: 'mode', optional: false, description: "Vertical or horizontal alignment",
+		         type: T.enumeration('vertical', 'horizontal')},
+				
+				{name: 'width', optional: true, defaultValue: '100%',
+				 type: T.cssDimension},
+				 
+				{name: 'verticalAlign', optional: true, defaultValue: 'top',
+				 type: T.enumeration('top','bottom','center','middle','baseline')},
+				
+				{name: 'cellpadding', optional: true, defaultValue: '0',
+				type: T.cssDimension}];
 	},
 	buildWidget: function(element,parameters)
 	{

@@ -42,32 +42,38 @@ Appcelerator.Module.Chart =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "Used to display the chart."},
-				{name: 'type', optional: true, defaultValue: ''},
+		var T = Appcelerator.Types;
+		return [{name: 'on', optional: true, description: "Used to display the chart.",
+		         type: T.onExpr},
+				{name: 'type', optional: true, defaultValue: '',
+				 description: "enumerated value, or property on payload to find value",
+				 type: T.openEnumeration('bar', 'pie', 'line')},
 				{name: 'title', optional: true, defaultValue: ''},
 				{name: 'color', optional: true, defaultValue: '#477398'},
-				{name: 'angle', optional: true, defaultValue: '15'},
-				{name: 'thickness', optional: true, defaultValue: '15'},
-				{name: 'width', optional: true, defaultValue: '400'},
-				{name: 'height', optional: true, defaultValue: '360'},
-				{name: 'chartMode', optional: true, defaultValue: 'clustered'},
-				{name: 'barOrientation', optional: true, defaultValue: '400'},
+				{name: 'angle', optional: true, defaultValue: '15', type: T.number},
+				{name: 'thickness', optional: true, defaultValue: '15', type: T.number},
+				{name: 'width', optional: true, defaultValue: '400', type: T.number},
+				{name: 'height', optional: true, defaultValue: '360', type: T.number},
+				{name: 'chartMode', optional: true, defaultValue: 'clustered',
+				 description: "enumerated value, or property on payload to find value",
+				 type: T.openEnumeration('clustered', 'stacked', '100% stacked')},
+				{name: 'barOrientation', optional: true, defaultValue: '400', type: T.number},
 				{name: 'rotateXAxisLabel', optional: true, defaultValue: 'vertical'},
 				{name: 'rotateYAxisLabel', optional: true, defaultValue: 'false'},
-				{name: 'legend', optional: true, defaultValue: 'false'},
-				{name: 'brightness_step', optional: true, defaultValue: '15'},
-				{name: 'textSize', optional: true, defaultValue: '11'},
+				{name: 'legend', optional: true, defaultValue: 'false', type: T.bool},
+				{name: 'brightness_step', optional: true, defaultValue: '15', type: T.number},
+				{name: 'textSize', optional: true, defaultValue: '11', type: T.number},
 				{name: 'property', optional: true, defaultValue: ''},
 				{name: 'chartTitles', optional: true, defaultValue: ''},
-				{name: 'fillAlpha', optional: true, defaultValue: '30'},
-				{name: 'indicator', optional: true, defaultValue: 'false'},
-				{name: 'marginTop', optional: true, defaultValue: '50'},
-				{name: 'marginLeft', optional: true, defaultValue: '50'},
-				{name: 'marginRight', optional: true, defaultValue: '50'},
-				{name: 'marginBottom', optional: true, defaultValue: '50'},
-				{name: 'legendHighlight', optional: true, defaultValue: 'true'},
+				{name: 'fillAlpha', optional: true, defaultValue: '30', type: T.number},
+				{name: 'indicator', optional: true, defaultValue: 'false', type: T.bool},
+				{name: 'marginTop', optional: true, defaultValue: '50', type: T.number},
+				{name: 'marginLeft', optional: true, defaultValue: '50', type: T.number},
+				{name: 'marginRight', optional: true, defaultValue: '50', type: T.number},
+				{name: 'marginBottom', optional: true, defaultValue: '50', type: T.number},
+				{name: 'legendHighlight', optional: true, defaultValue: 'true', type: T.bool},
 				{name: 'backgroundColor', optional: true, defaultValue: '#FFFFFF'},
-				{name: 'innerRadius', optional: true, defaultValue: '30'}];
+				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number}];
 	},
 	buildWidget: function(element, parameters)
 	{
@@ -170,22 +176,22 @@ Appcelerator.Module.Chart =
 		
 		if (type.toLowerCase() != "bar" && type.toLowerCase() != "pie" && type.toLowerCase() != "line" && type.toLowerCase() != "")
 		{
-			type = Object.getNestedProperty(data,type) || '';
+			type = Object.getNestedProperty(data,type,'');
 		}
 		
 		if (type.toLowerCase() == "bar" && (chartMode.toLowerCase() != "clustered" && chartMode.toLowerCase() != "stacked" && chartMode.toLowerCase() != "100% stacked"))
 		{
-				chartMode = Object.getNestedProperty(data,chartMode) || 'clustered';
+			chartMode = Object.getNestedProperty(data,chartMode,'clustered');
 		}
 
 		if (type.toLowerCase() == "line" && (chartMode.toLowerCase() != "line" && chartMode.toLowerCase() != "stacked" && chartMode.toLowerCase() != "100% stacked"))
 		{
-				chartMode = Object.getNestedProperty(data,chartMode) || 'line';
+			chartMode = Object.getNestedProperty(data,chartMode,'line');
 		}
 	
 		if (legend_enabled.toLowerCase() != "true" && legend_enabled.toLowerCase() != "false")
 		{
-			legend_enabled = Object.getNestedProperty(data,legend_enabled) || 'false';				
+			legend_enabled = Object.getNestedProperty(data,legend_enabled,'false');				
 		}
 			
 		var color_list = color.split(',');

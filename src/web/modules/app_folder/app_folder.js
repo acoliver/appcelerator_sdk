@@ -39,6 +39,10 @@ Appcelerator.Module.Folder =
 	{
 		return 'app:folder';
 	},
+	getAttributes: function()
+    {
+        return [];
+    },
 	compileWidget: function (params)
 	{
 		var itemCloser = function(exclude)
@@ -197,10 +201,6 @@ Appcelerator.Module.Folder =
 			})();
 		}
 	},
-	getAttributes: function()
-	{
-		return [];
-	},	
 	buildWidget: function(element, parameters)
 	{
 		var html = '';

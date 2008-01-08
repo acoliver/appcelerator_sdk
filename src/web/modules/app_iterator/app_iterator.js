@@ -33,6 +33,24 @@ Appcelerator.Module.Iterator =
 	{
 		return 'app:iterator';
 	},
+	getAttributes: function()
+    {
+		var T = Appcelerator.Types;
+        return [{name: 'on', optional: true, type: T.onExpr,
+		         description: "Used to execute the iterator"},
+                {name: 'items', optional: true, type: T.json,
+				 description: "Literal (or template-replaced) JSON array to iterate over"},
+                {name: 'property', optional: true, type: T.identifier},
+                
+                {name: 'rowEvenClassName', optional: true, type: T.cssClass},
+                {name: 'rowOddClassName', optional: true, type: T.cssClass},
+                {name: 'table', optional: true, defaultValue: 'false', type: T.bool},
+                {name: 'width', optional: true, defaultValue: '100%', type: T.cssDimension},
+                {name: 'headers', optional: true, defaultValue: ',', type: T.commaSeparated},
+                {name: 'cellspacing', optional: true, defaultValue: '0', type: T.cssDimension},
+                {name: 'selectable', optional: true, type: T.bool}];
+    },
+
 	getActions: function()
 	{
 		return ['execute'];
@@ -128,20 +146,6 @@ Appcelerator.Module.Iterator =
 		}
 		element.innerHTML = html;
 		Appcelerator.Compiler.dynamicCompile(element);
-	},
-	getAttributes: function()
-	{
-		return [{name: 'on', optional: true, description: "Used to execute the iterator"},
-		        {name: 'items', optional: true, description: "Literal (or template-replaced) JSON array to iterate over"},
-				{name: 'property', optional: true},
-				
-				{name: 'rowEvenClassName', optional: true},
-                {name: 'rowOddClassName', optional: true},
-				{name: 'table', optional: true, defaultValue: 'false'},
-				{name: 'width', optional: true, defaultValue: '100%'},
-				{name: 'headers', optional: true, defaultValue: ','},
-				{name: 'cellspacing', optional: true, defaultValue: '0'},
-				{name: 'selectable', optional: true}];
 	},
 	compileWidget: function(params) {
 		// no message payload to pass for data,

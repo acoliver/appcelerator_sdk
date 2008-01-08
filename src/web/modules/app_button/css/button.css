@@ -1,6 +1,6 @@
 .button_table { padding: 0pt; margin: 0pt; }
 .button_widget { border: none; background: none; cursor: pointer;}
-.button_widget_disabled { border: none; background: none; cursor: normal;}
+.button_widget_disabled { border: none; background: none; cursor: default;}
 
 .button_dark_text { font-family: Tahoma; color: #f7f7f7; font-weight: bold; font-size: 12px; padding-left: 7px; padding-right: 7px; padding-bottom: 2px; }
 .button_dark_text_disabled { font-family: Tahoma; color: #efefef; font-weight: bold; font-size: 12px; padding-left: 7px; padding-right: 7px; padding-bottom: 2px; }

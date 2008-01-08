@@ -1,6 +1,17 @@
 /**
- * Appcelerator Compiler
- *
+ * ________________ Appcelerator Compiler ________________
+ * 
+ * Traverses the document, starting at the body node.
+ * 
+ * As it encounters widget tags, it fires off async requests for
+ * the modules' code. As modules finish fetching they callback
+ * listeners which call Appcelerator.Compiler.compileWidget
+ * to construct the widget in HTML.
+ * 
+ * A.C.compileWidget dispatches widget construction to each module,
+ * and then uses flags (called 'instructions') returned by the module
+ * to complete the widget building/compiling process.
+ * 
  */
 
 //
@@ -495,8 +506,9 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 	element.trashcan.push(trash);
 };
 
-Appcelerator.Compiler.getJsonTemplateVar = function(values,var_name,template_var) {
-	var o = Object.getNestedProperty(values,var_name,template_var);
+Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var) {
+	//TODO: allow getter calls in property chain
+	var o = Object.getNestedProperty(namespace,var_expr,template_var);
 	if (typeof(o) == 'object')
 	{
 		o = Object.toJSON(o);

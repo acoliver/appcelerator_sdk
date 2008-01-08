@@ -39,12 +39,21 @@ Appcelerator.Module.ComboBox =
 	},	
 	getAttributes: function()
 	{
+		var T = Appcelerator.Types;
 		return [
-			{name: 'on', optional: true},
-			{name: 'property', optional: true, defaultValue: 'rows', description: 'The property to use in the data array when setting data using the execute action'},
-			{name: 'label', optional: true, defaultValue: 'label', description: 'The property to use in each item of the array to get the label to use for the item'},
-			{name: 'value', optional: true, defaultValue: 'value', description: 'The property to use in each item of the array to get the value to use for the item'},
-			{name: 'onchange', optional: true, description: 'The message to fire when an item is selected'}
+			{name: 'on', optional: true, type: T.onExpr},
+			{name: 'property', optional: true, defaultValue: 'rows',
+			 description: 'The property to use in the data array when setting data using the execute action',
+			 type: T.identifier},
+			{name: 'label', optional: true, defaultValue: 'label',
+			 description: 'The property to use in each item of the array to get the label to use for the item',
+			 type: T.identifier},
+			{name: 'value', optional: true, defaultValue: 'value',
+			 description: 'The property to use in each item of the array to get the value to use for the item',
+			 type: T.identifier},
+			{name: 'onchange', optional: true,
+			 description: 'The message to fire when an item is selected',
+			 type: T.messageSend}
 		];
 	},
 	compileWidget: function(parameters)
