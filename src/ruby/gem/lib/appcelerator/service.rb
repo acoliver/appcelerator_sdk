@@ -19,6 +19,16 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+class Array
+  def all? &pred
+    each do |e|
+      if not pred.call(e)
+        return false
+      end
+    end
+    return true
+  end
+end  
 
 module Appcelerator  
   class Service
@@ -163,14 +173,4 @@ module Appcelerator
   end
 
   # helper method
-  class Array
-    def all? &pred
-      each do |e|
-        if not pred.call(e)
-          return false
-        end
-      end
-      return true
-    end
-  end  
 end

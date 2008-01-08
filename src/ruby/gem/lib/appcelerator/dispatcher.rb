@@ -35,12 +35,12 @@ module Appcelerator
     
     # dispatch a message that was generated in some other way, like the upload_controller
     #
-    def self.dispatch_message(request, response, session, message_type, params, request_id, scope, js = false)
+    def self.dispatch_message(request, response, session, message_type, params, request_id, scope, type = 'xml')
       msg = Message.new(request, session, message_type, params, request_id, scope)
       
       message_queue = ServiceBroker.send(msg)
       
-      serialize(message_queue, session.session_id, response.body, js)
+      serialize(message_queue, session.session_id, response.body, type)
     end
     
     def self.extract_messages(request, session)
@@ -59,12 +59,21 @@ module Appcelerator
       end
     end
     
-    def self.serialize(message_queue, session_id, output, js = false)
-      if js
+    def self.serialize(message_queue, session_id, output, type = 'xml')
+      if type == 'js'
         message_queue.compact!
         message_queue.each do |msg|
           if msg.response_type
             output << "window.parent.$MQ('#{msg.response_type}', #{msg.response.to_json}, '#{msg.scope}');"
+          end
+        end
+        output
+      elsif type == 'array'
+        output = Array.new
+        message_queue.compact!
+        message_queue.each do |msg|
+          if msg.response_type
+            output.push({'type' => msg.response_type, 'response' => msg.response})
           end
         end
         output

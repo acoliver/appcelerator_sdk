@@ -102,6 +102,8 @@ FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_controller.rb",
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/upload_controller.rb", "#{p}/app/controllers"
 FileUtils.mkdir "#{p}/app/views/upload"
 FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/upload_index.rhtml", "#{p}/app/views/upload/index.rhtml"
+FileUtils.mkdir "#{p}/app/views/download"
+FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/download_index.rhtml", "#{p}/app/views/download/index.rhtml"
 result = ERB.new(File.read("#{p}/app/controllers/service_broker_controller.rb")).result(binding)
 f = File.new("#{p}/app/controllers/service_broker_controller.rb",'w')
 f.write(result)
