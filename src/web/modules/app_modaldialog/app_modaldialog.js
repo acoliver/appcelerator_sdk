@@ -39,10 +39,24 @@ Appcelerator.Module.Modaldialog =
 	},	
     getAttributes: function()
     {
-        return [{name: 'on', optional: false, type: T.onExpr,
-		         description: "Used to show the modal dialog"},
-                {name: 'property', optional: true, type: T.identifier},
-                {name: 'top', optional: true, type: T.number}];
+        var T = Appcelerator.Types;
+        return [{
+            name: 'on',
+            optional: false,
+            type: T.onExpr,
+            description: "Used to show the modal dialog"
+        }, {
+            name: 'property',
+            optional: true,
+            type: T.identifier,
+			description: 'Property of triggering message to use as namespace when'+
+	         ' template-replacing body on exxecute'
+        }, {
+            name: 'top',
+            optional: true,
+            type: T.number,
+			description: 'Something related to distance from the top of the page'
+        }];
     },  
 
 	execute: function(id,parameterMap,data,scope)

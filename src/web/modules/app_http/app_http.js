@@ -36,14 +36,68 @@ Appcelerator.Module.Http =
     getAttributes: function()
     {
 		var T = Appcelerator.Types;
-        return [{name: 'on', optional: false, type: T.onExpr,
-		         description: "Used to execute posts/gets"},
-                {name: 'response', optional: true, type: T.messageSend,
-				 description: "Message to fire when successful. Will contain JSONified payload"},
-                {name: 'error', optional: true, type: T.messageSend,
-				 description: "Message to fire when errors received"}];
-	    // TODO: find a way to document the attributes of the child <uri/> tag,
-		// (will be combined with some scheme for annotating child elements in general 
+        return [{
+            name: 'on',
+            optional: false,
+            type: T.onExpr,
+            description: "Used to execute requests"
+        }, {
+            name: 'response',
+            optional: true,
+            type: T.messageSend,
+            description: 'Message to fire when successful. Will contain JSONified payload'
+        }, {
+            name: 'error',
+            optional: true,
+            type: T.messageSend,
+            description: 'Message to fire when errors are received from server'
+        }];
+    },
+	getChildNodes: function()
+    {
+		// response and error attributes are optional if the parent widget has them
+		var T = Appcelerator.Types;         
+        return [{
+            name: 'uri',
+            attributes: [{
+				name: 'method',
+				optional: false,
+				type: T.enumeration('get', 'post', 'put', 'delete')
+			}, {
+				name: 'uri',
+				optional: false,
+				type: T.pathOrUrl,
+				description: 'Where to send the HTTP request, '+
+				    'may contain template variables pulled from the triggering message'
+			}, {
+                name: 'response',
+                optional: true,
+                type: T.messageSend,
+				description: 'Message to fire when successful. Will contain JSONified payload'
+            }, {
+                name: 'error',
+                optional: true,
+                type: T.messageSend,
+				description: 'Message to fire when errors are received from server'
+            }, {
+                name: 'property',
+                optional: false,
+                type: T.identifier,
+				description: ''
+            }, {
+                name: 'responseRegex',
+                optional: true,
+                type: T.regex,
+				description: 'Regular expression used to capture a section of text from the HTTP Response. '+
+				    'The first group of the match will be used.'
+            }, {
+                name: 'contentType',
+                optional: true,
+                defaultValue: 'application/x-www-form-urlencoded',
+                type: T.openEnumeration('application/x-www-form-urlencoded',
+				        'text/plain', 'text/xml', 'text/json', 'text/javascript')
+            }]
+        }];
     },
     getActions: function()
     {

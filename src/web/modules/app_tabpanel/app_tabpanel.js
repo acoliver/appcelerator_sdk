@@ -35,11 +35,36 @@ Appcelerator.Module.Tabpanel =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to add an expression to the entire tab panel."},
-				{name: 'initial', optional: true, description: "Indicates which tab panel will initially be active."},
-				{name: 'activeClassName', defaultValue: 'tab_active', optional: true, description: "The CSS class name to use for an active tab. Defaults to 'tab_active.'"},
-				{name: 'inactiveClassName', defaultValue: 'tab_inactive', optional: true, description: "The CSS class name to use for an inactive tab. Defaults to 'tab_inactive.'"},
-				{name: 'class', defaultValue: 'tabpanel', optional: true, description: "The class name to use for the entire tab panel. Defaults to 'tabpanel.'"}];
+        var T = Appcelerator.Types;
+        return [{
+            name: 'on',
+            optional: true,
+			type: T.onExpr,
+            description: "May be used to add an expression to the entire tab panel."
+        }, {
+            name: 'initial',
+            optional: true,
+			
+            description: "Indicates which tab panel will initially be active."
+        }, {
+            name: 'activeClassName',
+            defaultValue: 'tab_active',
+            optional: true,
+			type: T.cssClass,
+            description: "The CSS class name to use for an active tab. Defaults to 'tab_active.'"
+        }, {
+            name: 'inactiveClassName',
+            defaultValue: 'tab_inactive',
+            optional: true,
+			type: T.cssClass,
+            description: "The CSS class name to use for an inactive tab. Defaults to 'tab_inactive.'"
+        }, {
+            name: 'class',
+            defaultValue: 'tabpanel',
+            optional: true,
+			type: T.cssClass,
+            description: "The class name to use for the entire tab panel. Defaults to 'tabpanel.'"
+        }];
 	},
 	compileWidget: function(params)
 	{

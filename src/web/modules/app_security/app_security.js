@@ -46,7 +46,12 @@ Appcelerator.Module.Security =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to execute the widget"}];
+        return [{
+            name: 'on',
+            optional: true,
+			type: Appcelerator.Types.onExpr,
+            description: "May be used to execute the widget"
+        }];
 	},
 	executeSecurity:function()
 	{

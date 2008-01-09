@@ -35,13 +35,42 @@ Appcelerator.Module.Tooltip =
     },
     getAttributes: function()
     {
-        return [
-                {name: 'element', optional: false, description: "element for tooltip"},
-                {name: 'backgroundColor', optional: true, defaultValue:'#FC9', description: "background color of tooltip"},
-               	{name: 'borderColor', optional: true, defaultValue:'#c96', description: "border color of tooltip"},
-               	{name: 'mouseFollow', optional: true, defaultValue:true, description: "should tip follow mouse"},
-               	{name: 'opacity', optional: true, defaultValue:'.99', description: "tooltip opacity"},
-                {name: 'textColor', optional: true, defaultValue:'#111', description: "text color of tooltip"}];
+		var T = Appcelerator.Types;        
+        return [{
+            name: 'element',
+            optional: false,
+            description: "element for tooltip"
+        }, {
+            name: 'backgroundColor',
+            optional: true,
+            defaultValue: '#FC9',
+			type: T.color,
+            description: "background color of tooltip"
+        }, {
+            name: 'borderColor',
+            optional: true,
+            defaultValue: '#c96',
+			type: T.color,
+            description: "border color of tooltip"
+        }, {
+            name: 'mouseFollow',
+            optional: true,
+            defaultValue: true,
+			type: T.bool,
+            description: "should tip follow mouse"
+        }, {
+            name: 'opacity',
+            optional: true,
+            defaultValue: '.99',
+			type: T.number,
+            description: "tooltip opacity"
+        }, {
+            name: 'textColor',
+            optional: true,
+            defaultValue: '#111',
+			type: T.color,
+            description: "text color of tooltip"
+        }];
     },
 
 	compileWidget: function(parameters)

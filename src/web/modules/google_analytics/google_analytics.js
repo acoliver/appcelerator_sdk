@@ -35,6 +35,26 @@ Appcelerator.Module.GoogleAnalytics =
 	{
 		return 'google:analytics';
 	},
+	getAttributes: function()
+	{
+        var T = Appcelerator.Types;
+        return [{
+            name: 'account',
+            optional: true,
+			description: 'Your Google Analytics account id'
+        }, {
+            name: 'domain',
+            optional: true,
+			type: T.pathOrUrl,
+			description: 'The URL of the domain to track'
+        }, {
+            name: 'trackoutboundlinks',
+            optional: true,
+			type: T.bool,
+			description: 'Should GA also track links from your page to other sites'
+        }];
+	},
+
 	install:function()
 	{
 		if (Appcelerator.Browser.isIE)
@@ -88,12 +108,6 @@ Appcelerator.Module.GoogleAnalytics =
 			window.googleTracker();
 		}
 	},
-	getAttributes: function()
-	{
-		return [{name: 'account', optional: true},
-				{name: 'domain', optional: true},
-				{name: 'trackoutboundlinks', optional: true}];
-	},	
 	buildWidget: function(element,parameters)
 	{
 		var account = parameters['account'];

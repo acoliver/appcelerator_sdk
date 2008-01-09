@@ -33,6 +33,26 @@ Appcelerator.Module.Upload =
 	{
 		return 'app:upload';
 	},
+	getAttributes: function()
+	{
+        var T = Appcelerator.Types;        
+        return [{
+            name: 'on',
+            optional: true,
+			type: T.onExpr
+        }, {
+            name: 'maxsize',
+            optional: true,
+			type: T.naturalNumber,
+			description: 'Maximum file size (in bytes?) that can be uploaded'
+        }, {
+            name: 'service',
+            optional: true,
+			type: T.messageSend,
+			description: 'Name of the service that should be notified when the upload is complete'
+        }];
+    },  
+
 	execute: function(id,parameterMap,data,scope)
 	{
 		Appcelerator.Module.Template.fetch(id,parameterMap['src'],parameterMap['args']);
@@ -60,12 +80,6 @@ Appcelerator.Module.Upload =
 		var upload = Appcelerator.ServerConfig['upload'];
 		$(id+'_form').action = upload.value;
 	},
-	getAttributes: function()
-	{
-		return [{name: 'on', optional: true},
-				{name: 'maxsize', optional: true},
-				{name: 'service', optional: true}];
-	},	
 	buildWidget: function(element,parameters,state)
 	{
 		var data = Appcelerator.Compiler.getHtml(element,true);

@@ -34,9 +34,29 @@ Appcelerator.Module.If =
 		return 'app:if';
 	},
 	getAttributes: function()
-	{
-		return [{name: 'expr', optional: false, type: Appcelerator.Types.javascriptExpr,
-		         description: "The javascript expression to execute"}];
+	{        
+        return [{
+            name: 'expr',
+            optional: false,
+            type: Appcelerator.Types.javascriptExpr,
+            description: "The javascript expression to execute"
+        }];
+	},
+	getChildNodes: function()
+	{        
+        return [{
+            name: 'else',
+			optional: true,
+			maxNumber: 1
+        }, {
+			name: 'elseif',
+			optional: true,
+			attributes: [{
+				name: 'expr',
+				optional: false,
+				type: Appcelerator.Types.javascriptExpr
+			}]
+		}];
 	},
 	compileWidget: function(params)
 	{

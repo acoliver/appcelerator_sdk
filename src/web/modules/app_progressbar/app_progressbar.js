@@ -37,14 +37,21 @@ Appcelerator.Module.ProgressBar =
 	{
 		return 'app:progressbar';
 	},
-	execute: function(id,parameterMap,data,scope)
-	{
-
-	},
+    getAttributes: function()
+    {
+		var T = Appcelerator.Types;
+        return [{name: 'borderClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'fillClassName', optional: true, defaultValue: '', type: T.cssClass},
+                {name: 'width', optional: true, defaultValue: '500px', type: T.cssDimension},
+                {name: 'height', optional: true, defaultValue: '30px', type: T.cssDimension},
+                {name: 'message', optional: true, type: T.messageReceive},
+                {name: 'property', optional: true, type: T.identifier},
+                {name: 'animate', optional: true, defaultValue: 'true', type: T.bool}];
+    },
 	compileWidget: function(params)
 	{
 		var id = params['id'];
-		var animate = params['animate'];
+		var animate = params['animate'] == 'true';
 		var element = $(id);
 		
 		var progressbar_border = $(id+'_progressbar_border');
@@ -60,51 +67,24 @@ Appcelerator.Module.ProgressBar =
 			message = Appcelerator.Compiler.convertMessageType(message);
 
 			var property = params['property'];
-			var listener = 
+			
+			$MQL(message,
+			function (type, data, datatype, direction)
 			{
-				accept: function()
-				{
-					return [message];
-				},
-				acceptScope: function(scope)
-				{
-					return element.scope=='*' || element.scope==scope;
-				},
-				onMessage: function (t, data, datatype, direction)
-				{
-					try
-					{
-						$D('received message = '+direction+':'+t+',data='+Object.toJSON(data));
-						var value = property ? Object.getNestedProperty(data,property) : data;
-                        value = Math.max(0, value);
-                        value = Math.min(100, value);
+				$D('received message = '+direction+':'+type+',data='+Object.toJSON(data));
+				var value = property ? Object.getNestedProperty(data,property) : data;
+                value = Math.max(0, value);
+                value = Math.min(100, value);
 
-                        if (animate == 'true') {
-                            $(id+'_progressbar_fill').morph('width: ' + value + '%');
-                        } else {
-						    progressbar_fill.style.width = value + "%";
-                        }
-					}
-					catch(e)
-					{
-						Appcelerator.Compiler.handleElementException(element,e);
-					}
-				}
-			};
-
-			Appcelerator.Util.ServiceBroker.addListener(listener);
+                if (animate) {
+                    $(id+'_progressbar_fill').morph('width: ' + value + '%');
+                } else {
+				    progressbar_fill.style.width = value + "%";
+                }
+			},
+			element.scope, element);
 		}		
 	},
-	getAttributes: function()
-	{
-		return [{name: 'borderClassName', optional: true, defaultValue: ''},
-				{name: 'fillClassName', optional: true, defaultValue: ''},
-				{name: 'width', optional: true, defaultValue: '500px'},
-				{name: 'height', optional: true, defaultValue: '30px'},
-				{name: 'message', optional: true},
-				{name: 'property', optional: true},
-				{name: 'animate', optional: true, defaultValue: 'true'}];
-	},	
 	buildWidget: function(element, parameters)
 	{
 		var borderClassName = parameters['borderClassName'];

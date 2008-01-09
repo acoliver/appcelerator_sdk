@@ -34,22 +34,77 @@ Appcelerator.Module.Pagination =
 	},
 	getAttributes: function()
 	{
-		var T = Appcelerator.Types;
-		return [{name: 'request', optional: true, type: T.messageSend},
-				{name: 'response', optional: true, type: T.messageReceive},
-				{name: 'startProperty', optional: true, defaultValue: 'start'},
-				{name: 'endProperty', optional: true, defaultValue: 'end'},
-				{name: 'totalProperty', optional: true, defaultValue: 'total'},
-				{name: 'nextText', optional: true, defaultValue: 'nextText'},
-				{name: 'prevText', optional: true, defaultValue: 'prevTex'},
-				{name: 'nextLangId', optional: true},
-				{name: 'prevLangId', optional: true},
-				{name: 'resultsString', optional: true, defaultValue: 'Showing #{start} of #{end}'},
-				{name: 'totalsString', optional: true, defaultValue: '#{total} records found'},
-				{name: 'resultsLangId', optional: true},
-				{name: 'totalsLangId', optional: true},
-                {name: 'fieldset', optional: true, description: "Fieldset to be associated with the iterator for filtering"},
-				{name: 'showTotals', optional: true}];
+		var T = Appcelerator.Types;        
+        return [{
+            name: 'request',
+            optional: true,
+            type: T.messageSend
+        }, {
+            name: 'response',
+            optional: true,
+            type: T.messageReceive
+        }, {
+            name: 'startProperty',
+            optional: true,
+            defaultValue: 'start',
+			type: T.identifier,
+			description: 'Property on the response message that contains the index of the first item returned'
+        }, {
+            name: 'endProperty',
+            optional: true,
+            defaultValue: 'end',
+			type: T.identifier,
+			description: 'Property on the response message that contains the index of the last item returned'
+        }, {
+            name: 'totalProperty',
+            optional: true,
+            defaultValue: 'total',
+            description: 'Property on the response message that contains the total number of items found'
+        }, {
+            name: 'nextText',
+            optional: true,
+            defaultValue: 'nextText',
+			description: 'Text to show on the "Next Page" button, '+
+			'in the absense of a localized string given by nextLangId'
+        }, {
+            name: 'prevText',
+            optional: true,
+            defaultValue: 'prevTex',
+			description: 'Text to show on the "Previous Page" button, '+
+            'in the absense of a localized string given by prevLangId'
+        }, {
+            name: 'nextLangId',
+            optional: true,
+			type: T.langId
+        }, {
+            name: 'prevLangId',
+            optional: true,
+			type: T.langId
+        }, {
+            name: 'resultsString',
+            optional: true,
+            defaultValue: 'Showing #{start} of #{end}'
+        }, {
+            name: 'totalsString',
+            optional: true,
+            defaultValue: '#{total} records found'
+        }, {
+            name: 'resultsLangId',
+            optional: true,
+			type: T.langId
+        }, {
+            name: 'totalsLangId',
+            optional: true,
+			type: T.langId
+        }, {
+            name: 'fieldset',
+            optional: true,
+            description: "Fieldset to be associated with the iterator for filtering"
+        }, {
+            name: 'showTotals',
+            optional: true,
+			type: T.bool
+        }];
 	},
 	compileWidget: function(parameters)
 	{
@@ -64,66 +119,59 @@ Appcelerator.Module.Pagination =
 		var totalsString = parameters['totalsString'];
 		var resultsLangId = parameters['resultsLangId'];
 		var totalsLangId = parameters['totalsLangId'];
-		var showTotals = parameters['showTotals'];
+		var showTotals = parameters['showTotals'] == 'true';
 		var id = parameters['id'];
 		
-		var listener = 
+		$MQL(message,
+	    function(t, data, datatype, direction)
 		{
-			accept: function()
+			// Oh, Nolan is so clever!
+			Element[ (data[startProperty]>1) ? 'show' : 'hide' ]('app_prev_'+id);
+			Element[ (data[totalProperty]>data[endProperty]) ? 'show' : 'hide' ]('app_next_'+id);
+			Element[ (data[startProperty]>1 && data[endProperty]<data[totalProperty]) ? 'show' : 'hide' ]('app_sep_'+id);
+			var nextAnchor = $('app_next_'+id);
+			var prevAnchor = $('app_prev_'+id);
+			Appcelerator.Compiler.destroy(nextAnchor);
+			Appcelerator.Compiler.destroy(prevAnchor);
+			var total = data[totalProperty];
+			var end = data[endProperty];
+			var start = data[startProperty];
+			
+            $(id + "_start").value = start;
+            $(id + "_end").value = end;
+            
+			if (resultsLangId)
 			{
-				return [message];
-			},
-			onMessage: function(t, data, datatype, direction)
+				var compiled = Appcelerator.Localization.getWithFormat(resultsLangId,resultsString,null,data);
+				$('app_pagination_showing_'+id).innerHTML = compiled;
+			}
+			else
 			{
-				Element[ (data[startProperty]>1) ? 'show' : 'hide' ]('app_prev_'+id);
-				Element[ (data[totalProperty]>data[endProperty]) ? 'show' : 'hide' ]('app_next_'+id);
-				Element[ (data[startProperty]>1 && data[endProperty]<data[totalProperty]) ? 'show' : 'hide' ]('app_sep_'+id);
-				var nextAnchor = $('app_next_'+id);
-				var prevAnchor = $('app_prev_'+id);
-				Appcelerator.Compiler.destroy(nextAnchor);
-				Appcelerator.Compiler.destroy(prevAnchor);
-				var total = data[totalProperty];
-				var end = data[endProperty];
-				var start = data[startProperty];
-				
-                $(id + "_start").value = start;
-                $(id + "_end").value = end;
-                
-				if (resultsLangId)
+				var resultsTemplate = Appcelerator.Compiler.compileTemplate(resultsString,true,'app_results_'+id);
+				var compiled = eval(resultsTemplate + '; app_results_' + id + ';');
+				$('app_pagination_showing_'+id).innerHTML = compiled(data);
+			}
+			
+			if (showTotals)
+			{
+				if (totalsLangId)
 				{
-					var compiled = Appcelerator.Localization.getWithFormat(resultsLangId,resultsString,null,data);
-					$('app_pagination_showing_'+id).innerHTML = compiled;
+					var compiledTotals = Appcelerator.Localization.getWithFormat(totalsLangId,totalsString,null,data);
+					$('app_pagination_totals_'+id).innerHTML = compiledTotals;
 				}
 				else
 				{
-					var resultsTemplate = Appcelerator.Compiler.compileTemplate(resultsString,true,'app_results_'+id);
-					var compiled = eval(resultsTemplate + '; app_results_' + id + ';');
-					$('app_pagination_showing_'+id).innerHTML = compiled(data);
+					var totalsTemplate = Appcelerator.Compiler.compileTemplate(totalsString,true,'app_totals_'+id);
+					var compiledTotals = eval(totalsTemplate + '; app_totals_' + id + ';');
+					$('app_pagination_totals_'+id).innerHTML = compiledTotals(data);
 				}
-				
-				if (showTotals == 'true')
-				{
-					if (totalsLangId)
-					{
-						var compiledTotals = Appcelerator.Localization.getWithFormat(totalsLangId,totalsString,null,data);
-						$('app_pagination_totals_'+id).innerHTML = compiledTotals;
-					}
-					else
-					{
-						var totalsTemplate = Appcelerator.Compiler.compileTemplate(totalsString,true,'app_totals_'+id);
-						var compiledTotals = eval(totalsTemplate + '; app_totals_' + id + ';');
-						$('app_pagination_totals_'+id).innerHTML = compiledTotals(data);
-					}
-				}
-				
-    			nextAnchor.setAttribute('on','click then '+request+'[dir=next]');
-                prevAnchor.setAttribute('on','click then '+request+'[dir=previous]');
-				Appcelerator.Compiler.dynamicCompile(nextAnchor);
-				Appcelerator.Compiler.dynamicCompile(prevAnchor);
 			}
-		};
-		
-		Appcelerator.Util.ServiceBroker.addListener(listener);
+			
+			nextAnchor.setAttribute('on','click then '+request+'[dir=next]');
+            prevAnchor.setAttribute('on','click then '+request+'[dir=previous]');
+			Appcelerator.Compiler.dynamicCompile(nextAnchor);
+			Appcelerator.Compiler.dynamicCompile(prevAnchor);
+		}); // TODO: what should scope be?
 	},
 	buildWidget: function(element,parameters)
 	{

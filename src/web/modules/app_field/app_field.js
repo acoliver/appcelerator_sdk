@@ -333,66 +333,49 @@ Appcelerator.Module.Field =
 					textProperty = valueProperty;
 			}
 			
-			var listener = 
-			{
-				accept: function()
+			$MQL(message,
+				function(type, data, datatype, direction)
 				{
-					return [message];
-				},
-				acceptScope: function(scope)
-				{
-					return elementScope == '*' || scope == elementScope;
-				},
-				onMessage: function(t, data, datatype, direction)
-				{
-					try
+					$D('received message = '+direction+':'+type+',data='+Object.toJSON(data));
+					var value = property ? Object.getNestedProperty(data, property) : data;
+					
+					switch (type)
 					{
-						$D('received message = '+direction+':'+t+',data='+Object.toJSON(data));
-						var value = property ? Object.getNestedProperty(data, property) : data;
-						
-						switch (type)
+						case 'text':
+						case 'password':
+						case 'autocomplete':
 						{
-							case 'text':
-							case 'password':
-							case 'autocomplete':
+							field.value = value;
+							break;
+						}
+						case 'select':
+						case 'dropdown':
+						{
+							if (typeof value == 'array' || (typeof value == 'object' && value.length))
 							{
-								field.value = value;
-								break;
-							}
-							case 'select':
-							case 'dropdown':
-							{
-								if (typeof value == 'array' || (typeof value == 'object' && value.length))
+								field.options.length = 0;
+								for (var c=0, len=value.length; c<len; c++)
 								{
-									field.options.length = 0;
-									for (var c=0, len=value.length; c<len; c++)
-									{
-										var curRow = value[c];
-										var newText = Object.getNestedProperty(curRow, textProperty);
-										var newValue = Object.getNestedProperty(curRow, valueProperty);
-										field.options[field.options.length] = new Option(newText, newValue);
-									}
-								}
-								else
-								{
-									field.options.length = 0;
-									field.options[0] = new Option(value, value);
+									var curRow = value[c];
+									var newText = Object.getNestedProperty(curRow, textProperty);
+									var newValue = Object.getNestedProperty(curRow, valueProperty);
+									field.options[field.options.length] = new Option(newText, newValue);
 								}
 							}
-						}
-						
-						if (field.revalidate)
-						{
-							field.revalidate();
+							else
+							{
+								field.options.length = 0;
+								field.options[0] = new Option(value, value);
+							}
 						}
 					}
-					catch (e)
+					
+					if (field.revalidate)
 					{
-						Appcelerator.Compiler.handleElementException(field, e);
+						field.revalidate();
 					}
-				}
-			};
-			Appcelerator.Util.ServiceBroker.addListener(listener);			
+				},
+				elementScope);		
 		}
 		
 		forceDecoration();

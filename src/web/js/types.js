@@ -33,7 +33,7 @@ Appcelerator.Types.naturalNumber = Appcelerator.Types.pattern(/[0-9]+/, 'Natural
 Appcelerator.Types.cssDimension = Appcelerator.Types.pattern(
     /^-?[0-9]+(\.[0-9]+)(%|(em)|(en)|(px)|(pc)|(pt))?$/, 'CSS Dimension');
 	
-Appcelerator.Types.id = Appcelerator.Types.pattern(
+Appcelerator.Types.identifier = Appcelerator.Types.pattern(
     /^[a-zA-Z_][a-zA-Z0-9_.]*$/, 'Identifier');
 
 /*
@@ -44,19 +44,21 @@ Appcelerator.Types.id = Appcelerator.Types.pattern(
  * (probably indicating a typo).
  */
 Appcelerator.Types.messageSend = Appcelerator.Types.pattern(
-    /^((l:)|(r:)|(local:)|(remote:))[a-zA-Z0-9_.]+$/, 'Appcelerator Message Send');
+    /^((l:)|(r:)|(local:)|(remote:))[a-zA-Z0-9_.]+/, 'Appcelerator Message Send');
 Appcelerator.Types.messageReceive = Appcelerator.Types.pattern(
-    /^((l:)|(r:)|(local:)|(remote:))((~.+$)|([a-zA-Z0-9_.]+$))/, 'Appcelerator Message Reception');
+    /^((l:)|(r:)|(local:)|(remote:))((~.+)|([a-zA-Z0-9_.]+))/, 'Appcelerator Message Reception');
 
-Appcelerator.Types.onExpr       = {name: 'On Expression'};
-Appcelerator.Types.fieldset     = {name: 'Fieldset'};
-Appcelerator.Types.json         = {name: 'JSON Object'};
-Appcelerator.Types.javascriptExpr = {name: 'Javascript Expression'}
-Appcelerator.Types.pathOrUrl    = {name: 'Path or url to resource'};
-Appcelerator.Types.cssClass     = {name: 'CSS Class name'}; 
-Appcelerator.Types.time         = {name: 'Time value'};
-Appcelerator.Types.elementId    = {name: 'Element Id'};
-Appcelerator.Types.commaSeparated = {name: "Comma Separated Values"};
+Appcelerator.Types.onExpr          = {name: 'On Expression'};
+Appcelerator.Types.fieldset        = {name: 'Fieldset'};
+Appcelerator.Types.json            = {name: 'JSON Object'};
+Appcelerator.Types.javascriptExpr  = {name: 'Javascript Expression'}
+Appcelerator.Types.pathOrUrl       = {name: 'Path or url to resource'};
+Appcelerator.Types.cssClass        = {name: 'CSS Class name'}; 
+Appcelerator.Types.color           = {name: 'Color value'};
+Appcelerator.Types.time            = {name: 'Time value'};
+Appcelerator.Types.elementId       = {name: 'Element Id'};
+Appcelerator.Types.commaSeparated  = {name: "Comma Separated Values"};
+Appcelerator.Types.languageId      = {name: "Localization String Id"};
 
 /**
  * Checks if a value conforms to some type specification.

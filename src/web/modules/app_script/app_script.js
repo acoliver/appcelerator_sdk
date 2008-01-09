@@ -39,7 +39,12 @@ Appcelerator.Module.Script =
 	},	
 	getAttributes: function()
 	{
-		return [{name: 'on', optional: true, description: "May be used to execute the script's content."}];
+        return [{
+            name: 'on',
+            optional: true,
+			type: Appcelerator.Types.onExpr,
+            description: "May be used to execute the script's content."
+        }];
 	},
 	execute: function(id,parameterMap,data,scope,version)
 	{

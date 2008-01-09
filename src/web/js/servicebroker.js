@@ -910,7 +910,14 @@ function $MQL (type,f,myscope,element)
 		},
 		onMessage: function (type,msg,datatype,from,scope)
 		{
-			f.apply(f,[type,msg,datatype,from,scope]);
+			try
+			{
+				f.apply(f,[type,msg,datatype,from,scope]);
+			}
+            catch(e)
+            {
+                Appcelerator.Compiler.handleElementException(element,e);
+            }
 		}
 	};
 	

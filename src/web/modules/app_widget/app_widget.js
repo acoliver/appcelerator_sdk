@@ -40,11 +40,24 @@ Appcelerator.Module.Widget =
     },  
     getAttributes: function()
     {
-        return [
-          {name: 'name', optional: false, description: "Full name of the widget."},
-          {name: 'required_params', optional: true, description: "List of attribute names that must be added to the widget, comma-separated"},
-          {name: 'optional_params', optional: true, description: "List of attribute names that may be added to the widget, comma-separated"}
-        ];
+        var T = Appcelerator.Types;
+        return [{
+            name: 'name',
+            optional: false,
+			type: T.pattern(/^[a-zA-Z_]+:[a-zA-Z_]+$/, 'Tag Name'),
+            description: 'Full name of the widget.'+
+			'Any tag in the current document with this name will be template-replaced with the body of this tag.'
+        }, {
+            name: 'required_params',
+            optional: true,
+			type: T.commaSeparated,
+            description: 'List of attribute names that must be added to the widget, comma-separated'
+        }, {
+            name: 'optional_params',
+            optional: true,
+			type: T.commaSeparated,
+            description: 'List of attribute names that may be added to the widget, comma-separated'
+        }];
     },
     compileWidget: function(params)
     {

@@ -39,8 +39,18 @@ Appcelerator.Module.Template =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'src', optional: false, description: "The source for the template file to load."},
-				{name: 'args', optional: true, description: "Used to replace text in the template file."}];
+		var T = Appcelerator.Types;        
+        return [{
+            name: 'src',
+            optional: false,
+			type: T.pathOrUrl,
+            description: "The source for the template file to load."
+        }, {
+            name: 'args',
+            optional: true,
+			type: T.json,
+            description: "Used to replace text in the template file."
+        }];
 	},	
 	buildWidget: function(element,parameters,state)
 	{

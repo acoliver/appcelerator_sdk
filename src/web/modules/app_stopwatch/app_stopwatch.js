@@ -35,8 +35,13 @@ Appcelerator.Module.Stopwatch =
         return 'app:stopwatch';
     },
     getAttributes: function()
-    {
-        return [{name: 'show_button', optional: true, description: "Set to false to hide button"}];
+    {        
+        return [{
+            name: 'show_button',
+            optional: true,
+			type: Appcelerator.Types.bool,
+            description: "Set to false to hide button"
+        }];
     },  
     compileWidget: function(params)
     {

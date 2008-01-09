@@ -6,62 +6,112 @@ Appcelerator.Module.Panel =
     {
         this.modulePath = p;   
     },
-	getName: function()
-	{
-		return 'appcelerator panel';
-	},
-	getDescription: function()
-	{
-		return 'script panel';
-	},
-	getVersion: function()
-	{
-		return 1.0;
-	},
-	getSpecVersion: function()
-	{
-		return 1.0;
-	},
-	getAuthor: function()
-	{
-		return 'Tejus Parikh';
-	},
-	getModuleURL: function ()
-	{
-		return 'http://www.appcelerator.org';
-	},
-	isWidget: function ()
-	{
-		return true;
-	},
-	getWidgetName: function()
-	{
-		return 'app:panel';
-	},
+    getName: function()
+    {
+        return 'appcelerator panel';
+    },
+    getDescription: function()
+    {
+        return 'script panel';
+    },
+    getVersion: function()
+    {
+        return 1.0;
+    },
+    getSpecVersion: function()
+    {
+        return 1.0;
+    },
+    getAuthor: function()
+    {
+        return 'Tejus Parikh';
+    },
+    getModuleURL: function ()
+    {
+        return 'http://www.appcelerator.org';
+    },
+    isWidget: function ()
+    {
+        return true;
+    },
+    getWidgetName: function()
+    {
+        return 'app:panel';
+    },
     dontParseOnAttributes: function()
     {
         return true;
     },
-	getActions: function()
-	{
-		return ['toggle', 'shade', 'unshade', 'close'];
-	},	
-	getAttributes: function()
-	{
-        return [{name: 'header_text', optional: true, description: 'The text that should be displayed in the header.  Setting a value implies a header will be shown'},
-            {name: 'color', optional: true, description: 'The color scheme of the widget.  Supported schemes: light_gray, dark_gray'},
-            {name: 'rounded', optional: true, description: 'Set to true for rounded corners'},
-            {name: 'close', optional: true, description: 'Set to true to display a close button'},
-            {name: 'shade', optional: true, description: 'Set to true to enable shade/unshade.  Setting this implies the header will be shown'},
-            {name: 'on', optional: true, description: 'Set to enable the widget to listen to events'},
-            {name: 'draggable', optional: true, description: 'Set to enable draging'},
-            {name: 'resizable', optional: true, description: 'Set to enable the widget to be resized'},
-            {name: 'tail', optional: true, description: 'Set to right or left to show a tail under the box (speech bubble)'},
-            {name: 'width', optional: true, description: 'Width of the dialog box'},
-            {name: 'height', optional: true, description: 'Height for the dialog box'},
-            {name: 'userClass', optional: true, description: 'Additional classes for the dialog'}
-        ];
-	},
+    getActions: function()
+    {
+        return ['toggle', 'shade', 'unshade', 'close'];
+    },    
+    getAttributes: function()
+    {
+        var T = Appcelerator.Types;        
+        return [{
+            name: 'header_text',
+            optional: true,
+            description: 'The text that should be displayed in the header. ' +
+            'Setting a value implies a header will be shown'
+        }, {
+            name: 'color',
+            optional: true,
+            type: T.enumeration('light_gray', 'dark_gray'),
+            description: 'The color scheme of the widget.  Supported schemes: light_gray, dark_gray'
+        }, {
+            name: 'rounded',
+            optional: true,
+            type: T.bool,
+            description: 'Set to true for rounded corners'
+        }, {
+            name: 'close',
+            optional: true,
+            type: T.bool,
+            description: 'Set to true to display a close button'
+        }, {
+            name: 'shade',
+            optional: true,
+            type: T.bool,
+            description: 'Set to true to enable shade/unshade. ' +
+            'Setting this implies the header will be shown'
+        }, {
+            name: 'on',
+            optional: true,
+            type: T.onExpr,
+            description: 'Set to enable the widget to listen to events'
+        }, {
+            name: 'draggable',
+            optional: true,
+            type: T.bool,
+            description: 'Set to enable draging'
+        }, {
+            name: 'resizable',
+            optional: true,
+            type: T.bool,
+            description: 'Set to enable the widget to be resized'
+        }, {
+            name: 'tail',
+            optional: true,
+            type: T.enumeration('right', 'left'),
+            description: 'Set to right or left to show a tail under the box (speech bubble)'
+        }, {
+            name: 'width',
+            optional: true,
+            type: T.cssDimension,
+            description: 'Width of the dialog box'
+        }, {
+            name: 'height',
+            optional: true,
+            type: T.cssDimension,
+            description: 'Height for the dialog box'
+        }, {
+            name: 'userClass',
+            optional: true,
+            type: T.cssClass,
+            description: 'Additional classes for the dialog'
+        }];
+    },
     toggle: function(id,parameters,data,scope,version) 
     {
         if($(id).hasClassName("shade"))
@@ -100,8 +150,8 @@ Appcelerator.Module.Panel =
             $MQ('l:' + id + '.unshaded');
         }
     },
-	compileWidget: function(params)
-	{
+    compileWidget: function(params)
+    {
         var id = params['id'];
         var shadeButton = $(id + "_shade"); 
         var unshadeButton = $(id + "_unshade"); 
@@ -138,35 +188,41 @@ Appcelerator.Module.Panel =
         
         if(null != closeButton) 
         {
-            Event.observe(closeButton, "mouseover", function() {closeButton.className = 'app_panel_button close_button_hover'; });
-            Event.observe(closeButton, "mouseout", function() { closeButton.className = 'app_panel_button close_button'; });
-            Event.observe(closeButton, "mousedown", function() { closeButton.className = 'app_panel_button close_button_onclick'; });
-            Event.observe(closeButton, "mouseup", function() { closeButton.className = 'app_panel_button close_button'; });
+            Appcelerator.Module.Panel.setClassOnEvents(closeButton, {
+                mouseover: 'app_panel_button close_button_hover',
+                mouseout:  'app_panel_button close_button',
+                mousedown: 'app_panel_button close_button_onclick',
+                mouseup:   'app_panel_button close_button'
+            });
             Event.observe(closeButton, "click", function(event) { Appcelerator.Module.Panel.close(id)});
         }
         
         if(null != shadeButton) 
         {
-            Event.observe(shadeButton, "mouseover", function() {shadeButton.className = 'app_panel_button shade_button_hover'; });
-            Event.observe(shadeButton, "mouseout", function() { shadeButton.className = 'app_panel_button shade_button'; });
-            Event.observe(shadeButton, "mousedown", function() { shadeButton.className = 'app_panel_button shade_button_onclick'; });
-            Event.observe(shadeButton, "mouseup", function() { shadeButton.className = 'app_panel_button shade_button'; });
+            Appcelerator.Module.Panel.setClassOnEvents(shadeButton, {
+                mouseover: 'app_panel_button shade_button_hover',
+                mouseout:  'app_panel_button shade_button',
+                mousedown: 'app_panel_button shade_button_onclick',
+                mouseup:   'app_panel_button shade_button'
+            });
             Event.observe(shadeButton, "click", function(event){ Appcelerator.Module.Panel.shade(id)});
         }
         
         
         if(null != unshadeButton) 
         {
-            Event.observe(unshadeButton, "mouseover", function() {unshadeButton.className = 'app_panel_button unshade_button_hover'; });
-            Event.observe(unshadeButton, "mouseout", function() { unshadeButton.className = 'app_panel_button unshade_button'; });
-            Event.observe(unshadeButton, "mousedown", function() { unshadeButton.className = 'app_panel_button unshade_button_onclick'; });
-            Event.observe(unshadeButton, "mouseup", function() { unshadeButton.className = 'app_panel_button unshade_button'; });
+            Appcelerator.Module.Panel.setClassOnEvents(unshadeButton, {
+                mouseover: 'app_panel_button unshade_button_hover',
+                mouseout:  'app_panel_button unshade_button',
+                mousedown: 'app_panel_button unshade_button_onclick',
+                mouseup:   'app_panel_button unshade_button'
+            });
             Event.observe(unshadeButton, "click", function(event){ Appcelerator.Module.Panel.unshade(id)});
         }
         
-	},
-	buildWidget: function(element,parameters)
-	{
+    },
+    buildWidget: function(element,parameters)
+    {
         var panelStyle = 'AP_DGRP';
         var headerText = parameters['header_text'];
         var shadeButton = parameters['shade'] == 'true';
@@ -236,7 +292,7 @@ Appcelerator.Module.Panel =
         
         var html = [];
         
-		html.push(divTop.join(' '));
+        html.push(divTop.join(' '));
         html.push('<div class="app_panel_container ' + collapsed + '">');
         
         html.push('<div class="panel_header_container"> <div class="panel_hl"> </div> <div class="panel_hr"> </div>');
@@ -281,13 +337,23 @@ Appcelerator.Module.Panel =
         html.push('</div>');
         html.push('</div>');
         html.push('</div>');
-		return {
+        return {
             'presentation': html.join(' '),
-			'position' : Appcelerator.Compiler.POSITION_REPLACE,
+            'position' : Appcelerator.Compiler.POSITION_REPLACE,
             'compile': true,
             'wire': true
-		};
-	}
+        };
+    },
+    
+    setClassOnEvents: function(element, eventToClassNameMapping)
+    {
+        $H(eventToClassNameMapping).each(function(eventAndClass)
+        {
+            var event = eventAndClass[0];
+            var className = eventAndClass[1];
+            Event.observe(element, event, function() {element.className = className;});
+        });
+    }
 };
 
 Appcelerator.Core.registerModule('app:panel',Appcelerator.Module.Panel);

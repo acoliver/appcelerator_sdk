@@ -144,41 +144,24 @@ Appcelerator.Module.EditinPlace =
 		{
 			message = Appcelerator.Compiler.convertMessageType(message);
 			var property = params['property'];
-			var listener = 
+			$MQL(message,
+			function (type, data, datatype, direction)
 			{
-				accept: function()
+				
+				$D('received message = '+direction+':'+type+',data='+Object.toJSON(data));
+				var value = property ? Object.getNestedProperty(data,property) : data;
+				switch (params['type'])
 				{
-					return [message];
-				},
-				acceptScope: function(scope)
-				{
-					return element.scope=='*' || element.scope==scope;
-				},
-				onMessage: function (t, data, datatype, direction)
-				{
-					try
+					case 'text':
 					{
-						$D('received message = '+direction+':'+t+',data='+Object.toJSON(data));
-						var value = property ? Object.getNestedProperty(data,property) : data;
-						switch (params['type'])
-						{
-							case 'text':
-							{
-								editinplace_text.innerHTML = value;
-								editinplace_input.value = value;
-								break;
-							}
-						}
-						if (editinplace_input.revalidate) editinplace_input.revalidate();
-					}
-					catch(e)
-					{
-						Appcelerator.Compiler.handleElementException(element,e);
+						editinplace_text.innerHTML = value;
+						editinplace_input.value = value;
+						break;
 					}
 				}
-			};
-
-			Appcelerator.Util.ServiceBroker.addListener(listener);
+				if (editinplace_input.revalidate) editinplace_input.revalidate();
+			},
+			element.scope, element);
 		}		
 	},
 	buildWidget: function(element, parameters)

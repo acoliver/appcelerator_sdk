@@ -34,20 +34,85 @@ Appcelerator.Module.Search =
 	},
 	getAttributes: function()
 	{
-		return [{name: 'request', optional: false, description: "Request message being sent to search"},
-				{name: 'response', optional: false, description: "Response message for search results"},
-				{name: 'selected', optional: false, description: "Message sent when the user has selected an option"},				
-				{name: 'key', optional: true, defaultValue: 'key', description: "Parameter name used in the request for the query"},
-				{name: 'property', optional: true, defaultValue: 'result', description: "Property in the response used for the results"},
-				{name: 'resultId', optional: true, defaultValue: 'id', description: "Property to use from the result to send selected message when using complex results"},
-				{name: 'inputWidth', optional: true, defaultValue: '200', description: "Width of the input field"},
-				{name: 'resultWidth', optional: true, defaultValue: '220', description: "Width of the results"},
-				{name: 'delay', optional: true, defaultValue: 200, description: "Delay before firing request message"},
-				{name: 'indicator', optional: true, description: "Indicator id to show or hide"},
-				{name: 'activeClass', optional: true, defaultValue: 'search_result_active', description: "Active class for selecting search results"},
-				{name: 'inactiveClass', optional: true, defaultValue: 'search_result_inactive', description: "Inactive class for selecting search results"},
-				{name: 'fieldset', optional: true, description: "Fieldset applied to the input element"},
-				{name: 'name', optional: true, description: "Name applied to the input element"}];
+        var T = Appcelerator.Types;        
+        return [{
+            name: 'request',
+            optional: false,
+			type: T.messageSend,
+            description: "Request message being sent to search"
+        }, {
+            name: 'response',
+            optional: false,
+			type: T.messageSend,
+            description: "Response message for search results"
+        }, {
+            name: 'selected',
+            optional: false,
+			type: T.messageSend,
+            description: "Message sent when the user has selected an option"
+        }, {
+            name: 'key',
+            optional: true,
+            defaultValue: 'key',
+			type: T.identifier,
+            description: "Parameter name used in the request for the query"
+        }, {
+            name: 'property',
+            optional: true,
+            defaultValue: 'result',
+			type: T.identifier,
+            description: "Property in the response used for the results"
+        }, {
+            name: 'resultId',
+            optional: true,
+            defaultValue: 'id',
+			type: T.identifier,
+            description: "Property to use from the result to send selected message when using complex results"
+        }, {
+            name: 'inputWidth',
+            optional: true,
+            defaultValue: '200',
+			type: T.cssDimension,
+            description: "Width of the input field"
+        }, {
+            name: 'resultWidth',
+            optional: true,
+            defaultValue: '220',
+			type: T.cssDimension,
+            description: "Width of the results"
+        }, {
+            name: 'delay',
+            optional: true,
+            defaultValue: 200,
+			type: T.time,
+            description: "Delay before firing request message"
+        }, {
+            name: 'indicator',
+            optional: true,
+			type: T.elementId,
+            description: "Indicator id to show or hide"
+        }, {
+            name: 'activeClass',
+            optional: true,
+            defaultValue: 'search_result_active',
+			type: T.cssClass,
+            description: "Active class for selecting search results"
+        }, {
+            name: 'inactiveClass',
+            optional: true,
+            defaultValue: 'search_result_inactive',
+			type: T.cssClass,
+            description: "Inactive class for selecting search results"
+        }, {
+            name: 'fieldset',
+            optional: true,
+			type: T.fieldset,
+            description: "Fieldset applied to the input element"
+        }, {
+            name: 'name',
+            optional: true,
+            description: "Name applied to the input element"
+        }];
 	},
 	compileWidget: function(params)
 	{
@@ -73,100 +138,90 @@ Appcelerator.Module.Search =
 			compiled = eval(params['template'] + '; init_'+id);
 		}
 
-		var listener = 
+        $MQL(response,
+		function(t, data, datatype, direction)
 		{
-			accept: function()
+			if (indicator)
 			{
-				return [response];
-			},
-			acceptScope: function(scope)
+				Element.hide(indicator);
+			}
+			var value = property ? Object.getNestedProperty(data, property) : data;
+			
+			Appcelerator.Compiler.destroy(select);		
+			
+			while (select.hasChildNodes())
 			{
-				return elementScope == '*' || scope == elementScope;
-			},
-			onMessage: function(t, data, datatype, direction)
+				select.removeChild(select.firstChild);
+			}
+			
+			var selectableData = [];
+			
+			for (var i = 0; i < value.length; i++)
 			{
-				if (indicator)
-				{
-					Element.hide(indicator);
-				}
-				var value = property ? Object.getNestedProperty(data, property) : data;
-				
-				Appcelerator.Compiler.destroy(select);		
-				
-				while (select.hasChildNodes())
-				{
-					select.removeChild(select.firstChild);
-				}
-				
-				var selectableData = [];
-				
-				for (var i = 0; i < value.length; i++)
-				{
-					(function(){
-						var optionId = Appcelerator.Compiler.generateId();
-						var optionValue = value[i];
-						var optionCode = '<div id="'+optionId+'" style="width: 100%" class="search_result_inactive">';
+				(function(){
+					var optionId = Appcelerator.Compiler.generateId();
+					var optionValue = value[i];
+					var optionCode = '<div id="'+optionId+'" style="width: 100%" class="search_result_inactive">';
+					if (compiled)
+					{
+						for (idx in optionValue)
+						{
+							if (typeof optionValue[idx] == 'string')
+							{
+								optionValue[idx] = optionValue[idx].replace(/'/,'\u2019');
+							}
+						}
+						optionCode += compiled(optionValue);							
+					}
+					else
+					{
+						optionCode += optionValue;
+					}
+					optionCode += '</div>';
+					new Insertion.Bottom(select, optionCode);
+					var option = $(optionId);
+					option.onclick = function(event)
+					{
 						if (compiled)
 						{
-							for (idx in optionValue)
-							{
-								if (typeof optionValue[idx] == 'string')
-								{
-									optionValue[idx] = optionValue[idx].replace(/'/,'\u2019');
-								}
-							}
-							optionCode += compiled(optionValue);							
+							$MQ(selected, {value: optionValue[resultId]});
 						}
 						else
 						{
-							optionCode += optionValue;
+							$MQ(selected, {value: optionValue});
+							input.value = optionValue;
 						}
-						optionCode += '</div>';
-						new Insertion.Bottom(select, optionCode);
-						var option = $(optionId);
-						option.onclick = function(event)
+					}
+					option.onmouseover = function()
+					{
+						for (var i = 0; i < select.selectableData.length; i++)
 						{
-							if (compiled)
-							{
-								$MQ(selected, {value: optionValue[resultId]});
-							}
-							else
-							{
-								$MQ(selected, {value: optionValue});
-								input.value = optionValue;
-							}
+							Element.addClassName($(select.selectableData[i].id), inactiveClass);
+							Element.removeClassName($(select.selectableData[i].id), activeClass);							
 						}
-						option.onmouseover = function()
-						{
-							for (var i = 0; i < select.selectableData.length; i++)
-							{
-								Element.addClassName($(select.selectableData[i].id), inactiveClass);
-								Element.removeClassName($(select.selectableData[i].id), activeClass);							
-							}
-							Element.removeClassName(this, inactiveClass);
-							Element.addClassName(this, activeClass);
-						};
-						option.onmouseout = function()
-						{
-							Element.addClassName(this, inactiveClass);
-							Element.removeClassName(this, activeClass);							
-						};
-						selectableData.push({id: optionId, value: optionValue});
-					})();
-				}
-				
-				select.selectedIndex = -1;
-				select.selectableData = selectableData;
-				
-				Appcelerator.Compiler.dynamicCompile(select);
-				
-				if (select.selectableData.length > 0)
-				{
-					Effect.Appear(id+'_results', {duration: 0.5});
-				}
+						Element.removeClassName(this, inactiveClass);
+						Element.addClassName(this, activeClass);
+					};
+					option.onmouseout = function()
+					{
+						Element.addClassName(this, inactiveClass);
+						Element.removeClassName(this, activeClass);							
+					};
+					selectableData.push({id: optionId, value: optionValue});
+				})();
 			}
-		};
-		Appcelerator.Util.ServiceBroker.addListener(listener);
+			
+			select.selectedIndex = -1;
+			select.selectableData = selectableData;
+			
+			Appcelerator.Compiler.dynamicCompile(select);
+			
+			if (select.selectableData.length > 0)
+			{
+				Effect.Appear(id+'_results', {duration: 0.5});
+			}
+		},
+		elementScope);
 		
 		var selectFunction = function()
 		{
@@ -323,8 +378,9 @@ Appcelerator.Module.Search =
 			parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);		
 		}
 		
+		var inputType = Appcelerator.Browser.isSafari? 'search' : 'text';
 		var html = '<div style="position: relative">';
-		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="text" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
+		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
 		if (parameters['fieldset'])
 		{
 			html += ' fieldset="'+parameters['fieldset']+'" ';

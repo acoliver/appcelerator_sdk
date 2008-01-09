@@ -43,6 +43,39 @@ Appcelerator.Module.Folder =
     {
         return [];
     },
+	getChildNodes: function() {
+		var T = Appcelerator.Types;
+		
+		var folderItemAttributes = [{
+            name: 'open',
+            description: 'A condition which will trigger the item to be opened'
+        }, {
+            name: 'onopen',
+            type: T.messageSend,
+            description: ''
+        }, {
+            name: 'onclose',
+            type: T.messageSend,
+            description: ''
+        }, {
+            name: 'opened_icon',
+            optional: true,
+            type: T.pathOrUrl
+        }, {
+            name: 'closed_icon',
+            optional: true,
+            type: T.pathOrUrl
+        }];
+		
+		return [{
+			name: 'folder',
+			attributes: folderItemAttributes,
+			childNodes: [{
+				name: 'item',
+				attributes: folderItemAttributes
+			}]
+		}];
+	},
 	compileWidget: function (params)
 	{
 		var itemCloser = function(exclude)
