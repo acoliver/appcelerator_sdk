@@ -73,7 +73,29 @@
 		</td>
 	</tr>
 
-
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            Begin and end a recurring message (should stop counting after 5 seconds, counting up to 10 or 11)
+        </td>
+        <td class="result">
+            <span id="datamodel5">
+                Data will be here
+            </span>
+            <app:message
+			     name="l:datamodel5"
+				 interval="500ms"
+			     on="l:app.compiled then execute or l:datamodel5.stop then stop"></app:message>
+            <app:script>
+                datamodel_test5 = 0;
+            </app:script>
+            <app:script on="l:datamodel5 then execute">
+            	datamodel_test5++; 
+                $('datamodel5').innerHTML = datamodel_test5;
+            </app:script>
+			<div on="l:app.compiled then l:datamodel5.stop after 5s"></div>
+        </td>
+    </tr>
+	
 </table>
 
 </body>
