@@ -105,3 +105,17 @@ Appcelerator.Types.isInstance = function(value,type)
 	}
 	
 };
+
+/*
+ * Not the name, but what the symbolic identifier used to reference the type from this namespace.
+ */
+Appcelerator.Types.getTypeId = function(type) {
+	try {
+	   return $H(Appcelerator.Types).find(function(kv) {
+		  return kv[1] == type;
+	   })[0];
+	} catch(e) {
+		// the given type was not defined in the Appcelerator.Types namespace
+		return null;
+	}
+};
