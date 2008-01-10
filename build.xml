@@ -234,12 +234,14 @@
 		<loadfile property="appcelerator-dotnet.xml" srcFile="build/dotnet/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-php.xml" srcFile="build/php/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-python.xml" srcFile="build/python/appcelerator.xml"/>
+		<loadfile property="appcelerator-perl.xml" srcFile="build/perl/appcelerator.xml"/>
 		<loadfile property="TestService.cs" srcFile="build/dotnet/TestService.cs"/>
 		<loadfile property="ContactManager.java" srcFile="build/examples/simple/src/java/ContactManager.java"/>
 		<loadfile property="contact_manager_service.php" srcFile="build/examples/simple/src/php/services/contact_manager_service.php"/>
 		<loadfile property="contact_manager_service.rb" srcFile="build/examples/simple/src/ruby/services/contact_manager_service.rb"/>
 		<loadfile property="ContactManagerService.cs" srcFile="build/examples/simple/src/dotnet/ContactManagerService.cs"/>
 		<loadfile property="contact_manager_service.py" srcFile="build/examples/simple/src/python/services/contact_manager_service.py"/>
+		<loadfile property="ContactManagerService.pm" srcFile="build/examples/simple/src/perl/services/ContactManagerService.pm"/>
 		<loadfile property="index.html" srcFile="build/examples/simple/src/web/index.html"/>
 		<copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
 			<fileset dir="${stage.dir}/web" includes="**/*" excludes="images/**"/>
@@ -253,11 +255,13 @@
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 				<filter token="contact_manager_service.py" value="${contact_manager_service.py}"/>
 				<filter token="ContactManagerService.cs" value="${ContactManagerService.cs}"/>
+				<filter token="ContactManagerService.pm" value="${ContactManagerService.pm}"/>
 				<filter token="index.html" value="${index.html}"/>
 				<filter token="TestService.cs" value="${TestService.cs}"/>
 				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
 				<filter token="appcelerator-php.xml" value="${appcelerator-php.xml}"/>
 				<filter token="appcelerator-python.xml" value="${appcelerator-python.xml}"/>
+				<filter token="appcelerator-perl.xml" value="${appcelerator-perl.xml}"/>
 			</filterset>
 		</copy>
         <copy todir="${stage.dir}/doc" filtering="true" overwrite="true">
@@ -272,11 +276,13 @@
 				<filter token="contact_manager_service.rb" value="${contact_manager_service.rb}"/>
 				<filter token="contact_manager_service.py" value="${contact_manager_service.py}"/>
 				<filter token="ContactManagerService.cs" value="${ContactManagerService.cs}"/>
+				<filter token="ContactManagerService.pm" value="${ContactManagerService.pm}"/>
 				<filter token="index.html" value="${index.html}"/>
 				<filter token="TestService.cs" value="${TestService.cs}"/>
 				<filter token="appcelerator-dotnet.xml" value="${appcelerator-dotnet.xml}"/>
 				<filter token="appcelerator-php.xml" value="${appcelerator-php.xml}"/>
 				<filter token="appcelerator-python.xml" value="${appcelerator-python.xml}"/>
+				<filter token="appcelerator-perl.xml" value="${appcelerator-perl.xml}"/>
             </filterset>
         </copy>
 		<copy todir="${stage.dir}/doc" filtering="false" overwrite="true">
@@ -401,6 +407,24 @@
 		</copy>
 	-->
 	</target>
+
+	<target name="build_perl_sdk" depends="build_web,build_web_unit,build_doc,build_examples" description="* Builds the SDK for PHP">
+		<mkdir dir="${stage.dir}/sdk/perl"/>
+		<mkdir dir="${stage.dir}/sdk/perl/doc"/>
+		<mkdir dir="${stage.dir}/sdk/perl/test"/>
+		<copy todir="${stage.dir}/sdk/perl" filtering="true"> 
+			<fileset dir="." includes="LICENSE"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/perl/src" filtering="false"> 
+			<fileset dir="${stage.dir}/web" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/perl/src" filtering="false"> 
+			<fileset dir="${src.perl.dir}" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/sdk/perl/src" filtering="false" overwrite="true"> 
+			<fileset dir="${build.perl.dir}" includes="**"/>
+		</copy>
+	</target>
 	
 	<target name="sdk_java_dist" depends="min,build_java_sdk" description="* Builds the Java SDK distribution">
 		<mkdir dir="stage"/>
@@ -418,6 +442,18 @@
 		<mkdir dir="stage"/>
 		<zip destfile="${stage.dir}/appcelerator_sdk_php_${VERSION}.zip" comment="Appcelerator Platform SDK for PHP">
 			<zipfileset dir="stage/sdk/php" prefix="">
+				<include name="**/*"/>
+				<exclude name="stage/**"/>
+				<exclude name="output/**"/>
+				<exclude name=".server.id"/>
+			</zipfileset>
+		</zip>
+	</target>
+
+	<target name="sdk_perl_dist" depends="min,build_perl_sdk" description="* Builds the Perl SDK distribution">
+		<mkdir dir="stage"/>
+		<zip destfile="${stage.dir}/appcelerator_sdk_perl_${VERSION}.zip" comment="Appcelerator Platform SDK for Perl">
+			<zipfileset dir="stage/sdk/perl" prefix="">
 				<include name="**/*"/>
 				<exclude name="stage/**"/>
 				<exclude name="output/**"/>
@@ -488,7 +524,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	<target name="sdk_all_dist" depends="min,sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_dotnet_dist" description="* Builds the distributions for all the platforms"/>
+	<target name="sdk_all_dist" depends="min,sdk_ruby_dist,sdk_java_dist,sdk_php_dist,sdk_python_dist,sdk_perl_dist,sdk_dotnet_dist" description="* Builds the distributions for all the platforms"/>
 	<target name="install_all" depends="install_java,install_ruby,install_php,install_python,install_dotnet"/>
 	<target name="install_java" depends="sdk_java_dist">
 		<delete dir="${stage.dir}/appcelerator_sdk_java_${VERSION}" failonerror="false"/>
