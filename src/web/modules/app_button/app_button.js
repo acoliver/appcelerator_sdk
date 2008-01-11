@@ -234,7 +234,7 @@ Appcelerator.Module.Button =
             html += ' style="margin-right: 10px"';
         }
         html += '>'+elementText+'</div></td>';
-		html += '<td class="'+icon+'"/></td></tr></table></div></td>';
+		html += '<td class="'+icon+'"></td></tr></table></div></td>';
 		html += '<td class="button_'+color+'_'+corner+'_right'+disabled+'" id="'+element.id+'_right">';
 		html += '</td>';
 		html += '</tr>';
