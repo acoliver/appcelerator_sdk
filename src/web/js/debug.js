@@ -115,14 +115,14 @@ function $E()
 if(typeof err == 'undefined') {
     var err = {
         println: function(msg) {
-            console.log(msg); // TODO: switch to Logger
+            $E(msg);
         }
     };
 }
 if(typeof out == 'undefined') {
     var out = {
         println: function(msg) {
-            console.log(msg); // TODO: switch to Logger
+            $D(msg);
         }
     };
 }

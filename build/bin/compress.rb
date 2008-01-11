@@ -24,9 +24,15 @@ js = infile.read
 # $el for maximum compatability with other libraries.
 #
 js.gsub!(/function \$\(\)/,'function $el()')
-js.gsub!(/\$\((.*)?\)/) do |m|
+js.gsub!(/function \$\$\(\)/,'function $sl()')
+ 
+js.gsub!(/[^\$]\$\((.*?)\)/) do |m|
   m.gsub '$(', '$el('
 end
+js.gsub!(/\$\$\((.*?)\)/) do |m|
+  m.gsub '$$(', '$sl('
+end
+
 
 # replace this globally scoped variables
 js.gsub!(/window\./,'$$w.')
@@ -76,7 +82,7 @@ outfile.print post
 # define our $ if jQuery isn't defined
 # we want to be able to support both jQuery and Prototype being loaded at the same time w/o conflict
 epilog=<<END
-  ; if (typeof(jQuery)=='undefined'){window.$ = $el;}
+  ; if (typeof(jQuery)=='undefined'){window.$ = $el; window.$$ = $sl;}
 END
 
 outfile.print epilog

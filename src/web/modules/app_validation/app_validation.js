@@ -1,5 +1,9 @@
 
-Appcelerator.Compiler.registerCustomCondition(function (element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.registerCustomCondition(
+{
+    conditionNames: ['valid', 'invalid']
+},
+function (element,condition,action,elseAction,delay,ifCond)
 {
 	switch (condition)
 	{

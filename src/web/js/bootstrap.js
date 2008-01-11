@@ -1,7 +1,42 @@
-
 /**
  * Appcelerator bootstrap loader
  */
+
+/** THESE CHECKS ARE NEEDED IN CASE THE NON-BUNDLED VERSION OF PROTOTYPE/SCRIPTACULOUS IS USED **/
+ 
+if (typeof Prototype=='undefined')
+{
+    var msg = 'Required javascript library "Prototype" not found';
+    alert(msg);
+    throw msg;
+}
+
+if (typeof Effect=='undefined')
+{
+    var msg = 'Required javascript library "Scriptaculous" not found';
+    alert(msg);
+    throw msg;
+}
+        
+
+if (Object.isUndefined(window['$sl']))
+{
+	/**
+	 * create a non-conflicting alias to $$
+	 */
+	window.$sl = function()
+	{
+	    return Selector.findChildElements(document, $A(arguments));
+	}
+}
+if (Object.isUndefined(window['$el']))
+{
+	/**
+	 * create a non-conflicting alias to $
+	 */
+	window.$el = eval('window["$"]');
+}
+
 var Appcelerator = {};
 Appcelerator.Util={};
 Appcelerator.Browser={};
@@ -26,7 +61,7 @@ Appcelerator.Version =
 };
 
 Appcelerator.LicenseType = 'GNU Public License, version 2.0 (GPL)';
-Appcelerator.Copyright = 'Copyright (c) 2006-2007 by Appcelerator, Inc. All Rights Reserved.';
+Appcelerator.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
 Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
 Appcelerator.Parameters = $H({});
 
@@ -99,7 +134,7 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.ScriptNotFound = true;
 	}
 	
-    Appcelerator.SciptPath = Appcelerator.DocumentPath + 'js/';
+    Appcelerator.ScriptPath = Appcelerator.DocumentPath + 'js/';
     Appcelerator.ImagePath = Appcelerator.DocumentPath + 'images/';
     Appcelerator.StylePath = Appcelerator.DocumentPath + 'css/';
     Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
@@ -116,18 +151,6 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.instanceid = Math.round(9999*Math.random()) + '-' + Math.round(999*Math.random());
 	}
 	
-	Appcelerator.TEMPLATE_VARS =
-	{
-     	rootPath: Appcelerator.DocumentPath,
-     	scriptPath: Appcelerator.ScriptPath,
-     	imagePath: Appcelerator.ImagePath,
-     	cssPath: Appcelerator.StylePath,
-     	contentPath: Appcelerator.DocumentPath + 'content',
-     	modulePath: Appcelerator.DocumentPath + 'modules',
-     	instanceid: Appcelerator.instanceid
-	};
-
-
 	var ua = navigator.userAgent.toLowerCase();
 	Appcelerator.Browser.isPreCompiler = (ua.indexOf('Appcelerator Compiler') > -1);
 	Appcelerator.Browser.isOpera = (ua.indexOf('opera') > -1);

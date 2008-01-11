@@ -108,6 +108,7 @@ Appcelerator.Module.Statemachine =
 	{
 	    var id = parameters['id'];
 	    var element = $(id);
+	    var initial = parameters['initial'];
 		element.value = initial || '';
 		var states = parameters['states'];
 		var conditions = [];

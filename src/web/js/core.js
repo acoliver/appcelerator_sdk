@@ -5,6 +5,9 @@
 Appcelerator.Core.usedModules = {};
 Appcelerator.Core.modules = [];
 Appcelerator.Core.fetching = {};
+Appcelerator.Core.widgets = {};
+Appcelerator.Core.widgets_css = {};
+Appcelerator.Core.widgets_js = {};
 
 Appcelerator.Core.HeadElement = document.getElementsByTagName('head')[0];
 
@@ -17,7 +20,8 @@ Appcelerator.Core.require = function (moduleName,onload)
 	moduleName = moduleName.replace(':','_');
 	Appcelerator.Core.usedModules[moduleName]=true;
 	var module = Appcelerator.Core.modules[moduleName];
-	if (!module)
+	
+    if (!module)
 	{
 		var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';
 		Appcelerator.Core.loadJS(path,onload);
@@ -58,16 +62,21 @@ Appcelerator.Core.loadJS = function (path, onload)
 	Appcelerator.Core.HeadElement.appendChild(script);
 };
 
-Appcelerator.Core.widgets = {};
-Appcelerator.Core.widgets_css = {};
-
 //
 // called to load a css file relative to the module css directory
 //
 Appcelerator.Core.loadModuleCSS = function(moduleName,css)
 {
 	moduleName = moduleName.replace(':','_');
+	
+	var loaded = Appcelerator.Core.modules[moduleName];
+	if (loaded)
+	{
+	   throw 'module already loaded when loadModuleCSS is called. Call loadModuleCSS *before* you call registerModule for '+moduleName+' and css: '+css;
+	}
+	
 	var path = Appcelerator.ModulePath + moduleName + '/css/' + css;
+
 	var loaded = Appcelerator.Core.widgets_css[path];
 	if (!loaded)
 	{
@@ -231,7 +240,7 @@ Appcelerator.Core.registerModule = function (moduleName,module,dynamic)
 			listeners[c]();
 		}
 	}
-    delete Appcelerator.Core.fetching[path];
+    if (Appcelerator.Core.fetching[path]) delete Appcelerator.Core.fetching[path];
 };
 
 if (Appcelerator.Browser.isIE)
@@ -290,6 +299,8 @@ if (Appcelerator.Browser.isIE)
 
 Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
 {
+    moduleName = moduleName.replace(':','_');
+    
     if (Appcelerator.Browser.isIE)
     {
         Appcelerator.Core.registerModuleWithJSInIE(moduleName,module,js,0);
@@ -313,7 +324,6 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
     for (var i=0; i < js.length; i++)
     {
         var file = js[i];
-        moduleName = moduleName.replace(':','_');
         var path = Appcelerator.ModulePath + moduleName + '/js/' + file;
 
         var script = document.createElement('script');
@@ -359,7 +369,8 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js)
 };
 
 
-Appcelerator.Core.getLoadedModulesAndAttributes = function() {
+Appcelerator.Core.getLoadedModulesAndAttributes = function() 
+{
     return $H(Appcelerator.Module).map(function(kv){
 		return [kv[1].getWidgetName(), kv[1].getAttributes().pluck('name')];
 	});
@@ -394,7 +405,7 @@ Appcelerator.Core.onloadInvoker = function()
 	for (var c=0;c<Appcelerator.Core.onloaders.length;c++)
 	{
 		Appcelerator.Core.onloaders[c]();
-	}
+	} 
 	Appcelerator.Core.onloaders = null;
 	
 	Logger.info('Appcelerator v'+Appcelerator.Version+' ... loaded in '+(new Date().getTime()-ts)+' ms');
@@ -419,6 +430,18 @@ Event.observe(window,'unload',Appcelerator.Core.onunloadInvoker);
  */
 Appcelerator.Core.onload(function()
 {
+    Appcelerator.TEMPLATE_VARS =
+    {
+        rootPath: Appcelerator.DocumentPath,
+        scriptPath: Appcelerator.ScriptPath,
+        imagePath: Appcelerator.ImagePath,
+        cssPath: Appcelerator.StylePath,
+        contentPath: Appcelerator.ContentPath,
+        modulePath: Appcelerator.ModulePath,
+        instanceid: Appcelerator.instanceid
+    };
+
+
 	if (Appcelerator.Browser.autocheckBrowserSupport && !Appcelerator.Browser.isBrowserSupported && Appcelerator.Config['browser_check'])
 	{
 		document.body.style.display = 'none';

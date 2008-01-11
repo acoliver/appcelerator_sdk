@@ -64,71 +64,75 @@ if (Appcelerator.Browser.isIE6)
 		obj.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + src + "', sizingMethod='"+scale+"')";
 		obj.style.backgroundImage = "url("+Appcelerator.ImagePath+"blank_1x1.gif)";
 	};
-}
 
-Appcelerator.Browser.fixImage = function(element,value)
-{
-	element = $(element);
-	value = value || element.src;
-	if (Appcelerator.Browser.isIE6 && value)
+	Appcelerator.Browser.fixImage = function(element,value)
 	{
-     	var imgName = value.toUpperCase();
-      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG")
-      	{
-      		var height = element.height, width = element.width;
-		 	if (!height || !width)
-		 	{
-				// in this case, we're not visible so IE won't load the image in some cases
-				// so we are going to force a pre-load of the image to calculate the size and then
-				// replace it once the image is loaded instead
-	      		var tempImage = new Image();
-	      		tempImage.onload = function()
-	      		{
-	      			element.outerHTML = Appcelerator.Browser.buildIEImage(element,tempImage.width,tempImage.height,value.trim());
-	      		};
-	      		tempImage.src = value;
-		 	}
-		 	else
-		 	{
-	      		element.outerHTML = Appcelerator.Browser.buildIEImage(element,width,height,value.trim());
-		 	}
-      	}
-	}
-};
-
-Appcelerator.Browser.fixImageIssues = function()
-{
-	if (Appcelerator.Browser.isIE6)
-	{
-		/*
-		function fnPropertyChanged() 
+		element = $(element);
+		value = value || element.src;
+		if (Appcelerator.Browser.isIE6 && value)
 		{
-			if (window.event.propertyName == "style.backgroundImage") 
+	     	var imgName = value.toUpperCase();
+	      	if (imgName.substring(imgName.length-3, imgName.length) == "PNG")
+	      	{
+	      		var height = element.height, width = element.width;
+			 	if (!height || !width)
+			 	{
+					// in this case, we're not visible so IE won't load the image in some cases
+					// so we are going to force a pre-load of the image to calculate the size and then
+					// replace it once the image is loaded instead
+		      		var tempImage = new Image();
+		      		tempImage.onload = function()
+		      		{
+		      			element.outerHTML = Appcelerator.Browser.buildIEImage(element,tempImage.width,tempImage.height,value.trim());
+		      		};
+		      		tempImage.src = value;
+			 	}
+			 	else
+			 	{
+		      		element.outerHTML = Appcelerator.Browser.buildIEImage(element,width,height,value.trim());
+			 	}
+	      	}
+		}
+	};
+	
+	Appcelerator.Browser.fixImageIssues = function()
+	{
+		if (Appcelerator.Browser.isIE6)
+		{
+			/*
+			function fnPropertyChanged() 
 			{
-				var el = window.event.srcElement;
-				if (!el.currentStyle.backgroundImage.match(/blank_1x1\.gif/i)) 
+				if (window.event.propertyName == "style.backgroundImage") 
 				{
-					var bg	= el.currentStyle.backgroundImage;
-					var src = bg.substring(5,bg.length-2);
-					el.filters.item(0).src = src;
-					el.style.backgroundImage = "url("+Appcelerator.ImagePath+"blank_1x1.gif)";
+					var el = window.event.srcElement;
+					if (!el.currentStyle.backgroundImage.match(/blank_1x1\.gif/i)) 
+					{
+						var bg	= el.currentStyle.backgroundImage;
+						var src = bg.substring(5,bg.length-2);
+						el.filters.item(0).src = src;
+						el.style.backgroundImage = "url("+Appcelerator.ImagePath+"blank_1x1.gif)";
+					}
+				}
+			}*/
+	
+			for (var i = document.all.length - 1, obj = null; (obj = document.all[i]); i--) 
+			{
+				if (obj.currentStyle.backgroundImage.match(/(\.png)|(blank_1x1\.gif)/i) != null) 
+				{
+					Appcelerator.Browser.fixBackgroundPNG(obj);
+					//obj.attachEvent("onpropertychange", fnPropertyChanged);
+				}
+				else if (obj.nodeName == 'IMG')
+				{
+					Appcelerator.Browser.fixImage(obj);
 				}
 			}
-		}*/
-
-		for (var i = document.all.length - 1, obj = null; (obj = document.all[i]); i--) 
-		{
-			if (obj.currentStyle.backgroundImage.match(/(\.png)|(blank_1x1\.gif)/i) != null) 
-			{
-				Appcelerator.Browser.fixBackgroundPNG(obj);
-				//obj.attachEvent("onpropertychange", fnPropertyChanged);
-			}
-			else if (obj.nodeName == 'IMG')
-			{
-				Appcelerator.Browser.fixImage(obj);
-			}
 		}
-	}
-};
+	};
 
-Appcelerator.Core.onload(Appcelerator.Browser.fixImageIssues);
+    Appcelerator.Core.onload(Appcelerator.Browser.fixImageIssues);
+}
+else
+{
+    Appcelerator.Browser.fixImageIssues = Prototype.K;
+}

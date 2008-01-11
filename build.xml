@@ -40,17 +40,60 @@
         <property name="VERSION" value="${APP_VERSION}"/>		
 	</target>
 
-	<target name="build_core_javascript" depends="build_core_javascript_js,copy_web_files,jscompress,nojscompress" description="* Builds the core JS framework">
+	<target name="build_core_javascript" depends="build_core_javascript_js,copy_web_files,maybe_compress" description="* Builds the core JS framework">
+	</target>
+
+	<target name="build_appcelerator_js" depends="init">
+        <delete file="${stage.dir}/web/js/appcelerator-lite.js" failonerror="no"/>
+        <concat destfile="${stage.dir}/web/js/appcelerator-lite.js" append="no">
+            <fileset file="${build.dir}/license_header.txt"/>
+        </concat>
+        <concat destfile="${stage.dir}/web/js/appcelerator-lite.js" append="yes">
+            <fileset file="${src.web.dir}/js/bootstrap.js"/>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </concat>
+        <concat destfile="${stage.dir}/web/js/appcelerator-lite.js" append="yes">
+            <fileset file="${src.web.dir}/js/core.js"/>
+            <fileset file="${src.web.dir}/js/debug.js"/>
+            <fileset file="${src.web.dir}/js/string.js"/>
+            <fileset file="${src.web.dir}/js/object.js"/>
+            <fileset file="${src.web.dir}/js/datetime.js"/>
+            <fileset file="${src.web.dir}/js/config.js" />
+            <fileset file="${src.web.dir}/js/compiler.js"/>
+            <fileset file="${src.web.dir}/js/dom.js"/>
+            <fileset file="${src.web.dir}/js/cookie.js"/>
+            <fileset file="${src.web.dir}/js/servicebroker.js"/>
+            <fileset dir="${src.web.dir}/js">
+                <include name="**/*.js"/>
+                <exclude name="bootstrap.js"/>
+                <exclude name="core.js"/>
+                <exclude name="compiler.js"/>
+                <exclude name="dom.js"/>
+                <exclude name="debug.js"/>
+                <exclude name="string.js"/>
+                <exclude name="cookie.js"/>
+                <exclude name="config.js"/>
+                <exclude name="datetime.js"/>
+                <exclude name="object.js"/>
+                <exclude name="servicebroker.js"/>
+                <exclude name="prolog.js"/>
+                <exclude name="epilog.js"/>
+            </fileset>
+            <fileset file="${src.web.dir}/js/epilog.js"/>
+        </concat>
 	</target>
 	
 	<target name="build_core_javascript_js" depends="init" description="* Builds the core JS framework">
 		<delete file="${stage.dir}/web/js/appcelerator.js" failonerror="no"/>
 		<delete file="${stage.dir}/web/js/appcelerator-temp.js" failonerror="no"/>
-		<delete file="${stage.dir}/web/js/appcelerator-debug.js" failonerror="no"/>
-		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="no">
-			<fileset file="${build.dir}/license_header.txt"/>
-		</concat>
-		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes" fixlastline="yes">
+        <delete file="${stage.dir}/web/js/appcelerator-debug.js" failonerror="no"/>
+        <delete file="${stage.dir}/web/js/appcelerator-lite.js" failonerror="no"/>
+		
+	    <antcall target="build_appcelerator_js"/>        	
+		
+ 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="no" fixlastline="yes">
 /* The following files are subject to license agreements by their respective license owners */
 		</concat>
 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
@@ -64,71 +107,62 @@
 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes" fixlastline="yes">
 /* END THIRD PARTY SOURCE */
 		</concat>
-		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
-			<fileset file="${src.web.dir}/js/bootstrap.js"/>
-			<filterchain>
-				<expandproperties/>
-			</filterchain>
-		</concat>
-		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
-			<fileset file="${src.web.dir}/js/core.js"/>
-			<fileset file="${src.web.dir}/js/debug.js"/>
-			<fileset file="${src.web.dir}/js/string.js"/>
-			<fileset file="${src.web.dir}/js/object.js"/>
-			<fileset file="${src.web.dir}/js/datetime.js"/>
-			<fileset file="${src.web.dir}/js/config.js" />
-			<fileset file="${src.web.dir}/js/compiler.js"/>
-			<fileset file="${src.web.dir}/js/dom.js"/>
-			<fileset file="${src.web.dir}/js/cookie.js"/>
-			<fileset file="${src.web.dir}/js/servicebroker.js"/>
-			<fileset dir="${src.web.dir}/js">
-				<include name="**/*.js"/>
-				<exclude name="bootstrap.js"/>
-				<exclude name="core.js"/>
-				<exclude name="compiler.js"/>
-				<exclude name="dom.js"/>
-				<exclude name="debug.js"/>
-				<exclude name="string.js"/>
-				<exclude name="cookie.js"/>
-				<exclude name="config.js"/>
-				<exclude name="datetime.js"/>
-				<exclude name="object.js"/>
-				<exclude name="servicebroker.js"/>
-				<exclude name="prolog.js"/>
-			</fileset>
-		</concat>
+        <concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
+            <fileset file="${stage.dir}/web/js/appcelerator-lite.js"/>
+        </concat>
+
 	</target>
+	
 	<target name="nomin">
 		<property name="dont.jscompress" value="anything"/>
 	</target>
 	<target name="min" unless="dont.jscompress">
 		<property name="do.jscompress" value="anything"/>
 	</target>
+	
+	<target name="minimize">
+        <fail unless="in" message="in parameter required"/>
+		<fail unless="out" message="out parameter required"/>
+		<exec executable="java" failonerror="true" failifexecutionfails="true">
+            <arg line="-jar ${build.bin.dir}/yuicompressor-2.2.5.jar"/>
+            <arg line="${in}"/>
+            <arg line="-o ${stage.dir}/web/js/appcelerator-temp.js"/>
+        </exec>
+        <exec executable="ruby" failonerror="true" failifexecutionfails="true">
+            <arg line="${build.bin.dir}/compress.rb"/>
+            <arg line="${stage.dir}/web/js/appcelerator-temp.js"/>
+            <arg line="${stage.dir}/web/js/appcelerator-temp2.js"/>
+        </exec>
+        <concat destfile="${out}" append="no">
+            <fileset file="${build.dir}/license_header.txt"/>
+            <fileset file="${stage.dir}/web/js/appcelerator-temp2.js"/>
+        </concat>
+        <delete file="${stage.dir}/web/js/appcelerator-temp.js"/>
+        <delete file="${stage.dir}/web/js/appcelerator-temp2.js"/>
+	</target>
+	
+	<target name="maybe_compress">
+	   <antcall target="jscompress"/>
+	   <antcall target="nojscompress"/>
+	</target>
+	
 	<target name="jscompress" depends="copy_web_files" if="do.jscompress">
-    	<exec executable="java" failonerror="true" failifexecutionfails="true">
-    		<arg line="-jar ${build.bin.dir}/yuicompressor-2.2.5.jar"/>
-    		<arg line="${stage.dir}/web/js/appcelerator-debug.js"/>
-    		<arg line="-o ${stage.dir}/web/js/appcelerator-temp.js"/>
-    	</exec>
-    	<exec executable="ruby" failonerror="true" failifexecutionfails="true">
-    		<arg line="${build.bin.dir}/compress.rb"/>
-    		<arg line="${stage.dir}/web/js/appcelerator-temp.js"/>
-    		<arg line="${stage.dir}/web/js/appcelerator-temp2.js"/>
-    	</exec>
-		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">
-			<fileset file="${build.dir}/license_header.txt"/>
-    		<fileset file="${stage.dir}/web/js/appcelerator-temp2.js"/>
-    	</concat>
-		<delete file="${stage.dir}/web/js/appcelerator-temp.js"/>
-		<delete file="${stage.dir}/web/js/appcelerator-temp2.js"/>
-		<echo>Minimizing JS Modules</echo>
-    	<exec executable="ruby" failonerror="true" failifexecutionfails="true">
-    		<arg line="${build.bin.dir}/modules.rb"/>
-    		<arg line="${stage.dir}/web/modules"/>
-    		<arg line="${stage.dir}/web/modules"/>
-    		<arg line="${build.bin.dir}/yuicompressor-2.2.5.jar"/>
-    	</exec>
-		<echo message="minimized"/>
+		<antcall target="minimize">
+		  <param name="in" value="${stage.dir}/web/js/appcelerator-debug.js"/>
+	      <param name="out" value="${stage.dir}/web/js/appcelerator.js"/>
+		</antcall>
+        <antcall target="minimize">
+          <param name="in" value="${stage.dir}/web/js/appcelerator-lite.js"/>
+          <param name="out" value="${stage.dir}/web/js/appcelerator-lite.js"/>
+        </antcall>
+        <echo>Minimizing JS Modules</echo>
+        <exec executable="ruby" failonerror="true" failifexecutionfails="true">
+            <arg line="${build.bin.dir}/modules.rb"/>
+            <arg line="${stage.dir}/web/modules"/>
+            <arg line="${stage.dir}/web/modules"/>
+            <arg line="${build.bin.dir}/yuicompressor-2.2.5.jar"/>
+        </exec>
+        <echo message="minimized"/>
 	</target>
 	<target name="nojscompress" unless="do.jscompress" depends="copy_web_files" >
 		<concat destfile="${stage.dir}/web/js/appcelerator.js" append="no">

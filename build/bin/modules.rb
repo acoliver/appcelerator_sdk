@@ -37,13 +37,26 @@ def minimize(ext)
 	f = File.new "#{newfile}.tmp", "r"
 	js = f.read
     if ext == 'js'
-	   js.gsub!(/\$\((.*)?\)/) do |m|
+	   js.gsub!(/[^\$]\$\((.*)?\)/) do |m|
          m.gsub '$(', '$el('
+       end
+       js.gsub!(/\$\$\((.*)?\)/) do |m|
+         m.gsub '$$(', '$sl('
        end
     end
 	of = File.new "#{newfile}", "w"
+    # replace long variables after marker
+    js.gsub!(/Appcelerator\.Util\./,'$$AU.') 
+    js.gsub!(/Appcelerator\.Compiler\./,'$$AC.')
+    js.gsub!(/Appcelerator\.Validator\./,'$$AV.')
+    js.gsub!(/Appcelerator\.Decorator\./,'$$AD.')
+    js.gsub!(/Appcelerator\.Core\./,'$$AR.')
+    js.gsub!(/Appcelerator\.Module\./,'$$AM.')
+    js.gsub!(/Appcelerator\.Localization\./,'$$AL.')
+    js.gsub!(/Appcelerator\.Config\./,'$$AF.')
+    js.gsub!(/Appcelerator\.Browser\./,'$$AB.')
 	of.puts js
-	File.delete "#{newfile}.tmp"
+	File.delete "#{newfile}.tmp" 
   end
 end
 

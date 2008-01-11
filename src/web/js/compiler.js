@@ -62,22 +62,34 @@ Appcelerator.Compiler.getAndEnsureId = function(element)
 	{
 		element.id = Appcelerator.Compiler.generateId();
 	}
-	
-	appCompilerIdCache[element.id] = element;
-	
+	if (!element._added_to_cache)
+	{
+	    Appcelerator.Compiler.setElementId(element,element.id);
+    }	
 	return element.id;
 };
 
-Appcelerator.Compiler.setElementId = function(element, id)
+Appcelerator.Compiler.setElementId = function(element, id, dontdelete)
 {
-	delete appCompilerIdCache[id];	
-	element.id = id;
-	appCompilerIdCache[element.id] = element;	
+    if (!dontdelete)
+    {
+	   element.id = id;
+	}
+    element._added_to_cache = true;
+    // set a global variable to a reference to the element
+    // which now allows you to do something like $myid in javascript
+    // to reference the element
+    window['$'+id]=element;
 }
 
 Appcelerator.Compiler.removeElementId = function(id)
 {
-	delete appCompilerIdCache[id];	
+    var element_var = window['$'+id]; 
+    if (element_var)
+    {
+        delete window['$'+id];
+        if (element_var._added_to_cache) delete element_var._added_to_cache;
+    }
 }
 
 function $(element) 
@@ -94,8 +106,7 @@ function $(element)
 	if (Object.isString(element))
 	{
 		var id = element;
-	 	element = appCompilerIdCache[id];
-		
+		element = window['$'+id];
 		if (!element)
 		{
 			element = document.getElementById(id);
@@ -158,14 +169,7 @@ Appcelerator.Compiler.forwardToAttributeListener = function(element,array,tagnam
 		var value = element.getAttribute(attributeName);
         if (value) // optimization to avoid adding listeners if the attribute isn't present
         {
-            if (Appcelerator.Compiler.isCompiledMode)
-            {
-                Appcelerator.Compiler.compiledAttributeListeners.push([element.id,attributeName,tagname,i]);
-            }
-            else
-            {
-                listener.handle(element,attributeName,value);
-            }
+            listener.handle(element,attributeName,value);
         }
     }
 };
@@ -392,10 +396,6 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	var doCompile = element.getAttribute('compile') || 'true';
 	if (doCompile == 'false')
 	{
-		if (Appcelerator.Compiler.isCompiledMode)
-		{
-			element.removeAttribute('compile');
-		}
 		return;
 	}
 	
@@ -403,45 +403,35 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	if (name.indexOf(':')>0)
 	{
 		element.style.originalDisplay = element.style.display || 'block';
-		if (Appcelerator.Compiler.isCompiledMode)
+		
+        state.pending+=1;
+		(function()
 		{
-			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
-			var code = '(function()';
-			code += '{';
-			code += 'Appcelerator.Core.require("'+name+'",function()'
-			code += '{' + widgetJS + '});';
-			code += '})();';
-			Appcelerator.Compiler.compiledCode += code;
-		}
-		else
-		{
-    		element.style.display='none';
-			state.pending+=1;
-			setTimeout(function()
-			{
-	            Appcelerator.Core.require(name,function()
-	            {
-	                Appcelerator.Compiler.compileWidget(element,state);
-	                state.pending-=1;
-	                Appcelerator.Compiler.checkLoadState(state);
-	            });
-			},0);
-		}
+	        Appcelerator.Core.require(name,function()
+	        {
+                  var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+	              state.pending-=1;
+	              Appcelerator.Compiler.checkLoadState(state);
+	        });
+		}).defer();
 	}	
 	else
 	{
 		Appcelerator.Compiler.delegateToAttributeListeners(element);
 		
-		var elementChildren = [];
-		for (var i = 0, length = element.childNodes.length; i < length; i++)
+		if (element.nodeName.toLowerCase() != 'textarea')
 		{
-	    	elementChildren.push(element.childNodes[i]);
-		}
-		for (var i=0,len=elementChildren.length;i<len;i++)
-		{
-			if (elementChildren[i] && elementChildren[i].nodeType == 1)
+			var elementChildren = [];
+			for (var i = 0, length = element.childNodes.length; i < length; i++)
 			{
-				Appcelerator.Compiler.compileElement(elementChildren[i],state);
+			    if (element.childNodes[i].nodeType == 1)
+			    {
+		    	     elementChildren.push(element.childNodes[i]);
+		    	}
+			}
+			for (var i=0,len=elementChildren.length;i<len;i++)
+			{
+                Appcelerator.Compiler.compileElement(elementChildren[i],state);
 			}
 		}
 	}
@@ -506,7 +496,8 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 	element.trashcan.push(trash);
 };
 
-Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var) {
+Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var) 
+{
 	//TODO: allow getter calls in property chain
 	var o = Object.getNestedProperty(namespace,var_expr,template_var);
 	if (typeof(o) == 'object')
@@ -800,7 +791,27 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	var f = Appcelerator.Compiler.ElementFunctions[key];
 	if (f)
 	{
-		f.apply(this, args);
+		switch(args.length)
+		{
+			case 0:
+				return f();
+			case 1:
+				return f(args[0]);
+			case 2:
+				return f(args[0],args[1]);
+			case 3:
+				return f(args[0],args[1],args[2]);
+			case 4:
+				return f(args[0],args[1],args[2],args[3]);
+			case 5:
+				return f(args[0],args[1],args[2],args[3],args[4]);
+			case 6:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5]);
+			case 7:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			default:
+				throw "too many arguments - only 8 supported currently for method: "+name+", you invoked with "+args.length+", args was: "+Object.toJSON(args);
+		}
 	}
 	if (element)
 	{
@@ -826,9 +837,9 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 //
 // called to compile a widget
 //
-Appcelerator.Compiler.compileWidget = function(element,state)
+Appcelerator.Compiler.compileWidget = function(element,state,name)
 {
-	var name = Appcelerator.Compiler.getTagname(element);
+	name = name || Appcelerator.Compiler.getTagname(element);
 	var module = Appcelerator.Core.widgets[name];
 	var compiledCode = '';
 	
@@ -881,7 +892,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			}
 		}
 		widgetParameters['id'] = id;
-
+		
 		//
 		// building custom functions
 		//
@@ -898,20 +909,17 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		//
 		// parse on attribute
 		//
-		if (!Appcelerator.Compiler.isCompiledMode)
-		{
-			if (module.dontParseOnAttributes)
-			{
-				if (!module.dontParseOnAttributes())
-				{
-					Appcelerator.Compiler.parseOnAttribute(element);
-				}
-			}
-			else
-			{
-				Appcelerator.Compiler.parseOnAttribute(element);
-			}
-		}
+        if (module.dontParseOnAttributes)
+        {
+            if (!module.dontParseOnAttributes())
+            {
+                Appcelerator.Compiler.parseOnAttribute(element);
+            }
+        }
+        else
+        {
+            Appcelerator.Compiler.parseOnAttribute(element);
+        }
 		
 		//
 		// hande off widget for building
@@ -934,6 +942,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		{
 			Appcelerator.Compiler.removeElementId(id);
 			id = element.id;
+			Appcelerator.Compiler.getAndEnsureId(element);
 		}
 		
 		var added = false;
@@ -941,7 +950,7 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		{
 			var position = instructions.position || Appcelerator.Compiler.POSITION_REPLACE;
 			var removeElement = position == Appcelerator.Compiler.POSITION_REMOVE;
-
+			
 			if (!removeElement)
 			{
 				//
@@ -952,7 +961,6 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 				{
 					// rename the real ID
 					Appcelerator.Compiler.setElementId(element, id+'_widget');
-					
 					// widgets can define the tag in which they should be wrapped
 					if(instructions.parent_tag != 'none' && instructions.parent_tag != '')
 					{
@@ -1026,23 +1034,32 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 					// in case we're in a content file or regular unattached DOM
 					outer = element.ownerDocument.getElementById(id+'_temp');
 				}
+				
+                // need to check and see if the widget used the ID itself
+                var found = $(id);
+                if (!found)
+                {
+	                // set it back to the original ID name 
+	                Appcelerator.Compiler.removeElementId(id);
+	                Appcelerator.Compiler.setElementId(outer, id);
+	            }
+	            else
+	            {
+	                // don't set it back but come up with a more sensible name for the parent
+                    Appcelerator.Compiler.removeElementId(id);
+                    Appcelerator.Compiler.setElementId(outer, id);
+	            }
 				Appcelerator.Compiler.delegateToContainerProcessors(element, outer);
 			}
-
+            
+			var compileId = id;
+			
 			//
 			// remove element
 			//
-			var removeId = id;
+			var removeId = element.id;
 			if (removeElement)
 			{
-				if (Appcelerator.Compiler.isCompiledMode)
-				{
-					// add an empty div to handle attribute processors
-					removeId = Appcelerator.Compiler.generateId();
-					var replaceHtml = '<div id="'+removeId+'" '+Appcelerator.Util.Dom.getAttributesString(element,['style','id'])+' style="margin:0;padding:0;display:none"/>';
-					new Insertion.Before(element,replaceHtml);
-					compiledCode += 'Appcelerator.Compiler.parseOnAttribute($("'+removeId+'"));';
-				}
 				Appcelerator.Compiler.removeElementId(id);
 				Element.remove(element);
 			}
@@ -1051,38 +1068,20 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 			{
 				// set outer div only if widget id was not used in presentation
 				Appcelerator.Compiler.setElementId(outer, id);
+				compileId = id;
+				widgetParameters['id']=id;
 			}
 			
 			// 
 			// attach any special widget functions
 			//
 			if (functions)
-			{
+			{ 
 				for (var c=0;c<functions.length;c++)
 				{
 					var methodname = functions[c];
 					var method = module[methodname];
 					if (!method) throw "couldn't find method named: "+methodname+" for module = "+module;
-					
-					if (Appcelerator.Compiler.isCompiledMode)
-					{
-						var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-						compiledCode += '(function(){ var f = function(id,m,data,scope)';
-						compiledCode += '{';
-						compiledCode += 'try';
-						compiledCode += '{';
-						compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
-						compiledCode += 'var method = module["'+methodname+'"];';
-						compiledCode += 'method("'+id+'",\''+paramsJSON+'\'.evalJSON(),data,scope);';
-						compiledCode += '}';
-						compiledCode += 'catch (e) {';
-						compiledCode += '$E("Error executing '+methodname+' in module '+module.toString()+'. Error "+Object.getExceptionDetail(e)+", stack="+e.stack);';
-						compiledCode += '}';
-						compiledCode += '};';
-						compiledCode += 'Appcelerator.Compiler.attachFunction("'+removeId+'","'+methodname+'",f);})();';
-					}
-					else
-					{
 						(function()
 						{
 							var attachMethodName = functions[c];
@@ -1095,12 +1094,11 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 								}
 								catch (e)
 								{
-									$E('Error executing '+attachMethodName+' in module '+module.toString()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+									$E('Error executing '+attachMethodName+' in module '+module.getWidgetName()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
 								}
 							};
 							Appcelerator.Compiler.attachFunction(id,attachMethodName,f);
 						})();
-					}
 				}
 			}
 			
@@ -1109,28 +1107,6 @@ Appcelerator.Compiler.compileWidget = function(element,state)
             //
             if (instructions.compile)
             {
-				if (Appcelerator.Compiler.isCompiledMode)
-				{
-					var paramsJSON = Object.toJSON(widgetParameters).gsub('\\\\\\\"','\\\\\\\"').gsub('\\\'','\\\'');
-					compiledCode += '(function(){try';
-					compiledCode += '{';
-					compiledCode += 'var module = Appcelerator.Core.widgets["'+name+'"];';
-					if (outer)
-					{
-						compiledCode += 'module.compileWidget(\''+paramsJSON+'\'.evalJSON(),$("'+outer.id+'"));';
-					}
-					else
-					{
-						compiledCode += 'module.compileWidget(\''+paramsJSON+'\'.evalJSON(),null);';
-					}
-					compiledCode += '}';
-					compiledCode += 'catch (exxx) {';
-					compiledCode += 'Appcelerator.Compiler.handleElementException($("'+id+'"), exxx, "compiling widget '+id+', type '+element.nodeName+'");';
-					compiledCode += 'return;';
-					compiledCode += '}})();';
-				}
-				else
-				{
 					try
 					{
 						module.compileWidget(widgetParameters,outer);
@@ -1140,30 +1116,12 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id + ', type ' + element.nodeName);
 						return;
 					}
-				}
             }
             
             if (added && instructions.wire && outer)
             {
-				if (Appcelerator.Compiler.isCompiledMode)
-				{
-					compiledCode += 'Appcelerator.Compiler.dynamicCompile($("'+outer+'"));'; // is dynamic ok?
-				}
-				else
-				{
                 	Appcelerator.Compiler.compileElement(outer, state);
-				}
             }
-
-            // fix any issues from the new HTML (only matters in IE6 otherwise no-op)
-			if (Appcelerator.Compiler.isCompiledMode)
-			{
-            	compiledCode += 'Appcelerator.Browser.fixImageIssues();';
-			}
-			else
-			{
-            	Appcelerator.Browser.fixImageIssues();
-			}
 
             // reset the display for the widget
 			if (outer)
@@ -1180,7 +1138,6 @@ Appcelerator.Compiler.compileWidget = function(element,state)
 		  element.style.display = element.style.originalDisplay;
 		}
 	}
-	
 	return compiledCode;
 };
 
@@ -1200,10 +1157,6 @@ Appcelerator.Compiler.determineScope = function(element)
 		{
 			scope = 'appcelerator';
 		}
-	}
-	if (Appcelerator.Compiler.isCompiledMode)
-	{
-		Appcelerator.Compiler.scopeMap[element.id]=scope;
 	}
 	element.scope = scope;
 };
@@ -1333,7 +1286,7 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	{
 		var clause = clauses[i];
         $D('compiling condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
-        
+
         clause[0] = element;
         var handled = Appcelerator.Compiler.handleCondition.apply(this, clause);
 		
@@ -2370,141 +2323,10 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 			delete Object.prototype[name];
 		}
 		
-        var outputHandler;
-        if(Appcelerator.Compiler.isCompiledMode)
-        {
-            outputHandler = Appcelerator.Util.ServerConfig.outputCompiledDocument;
-        }
-        else
-        {
-            outputHandler = Prototype.K;
-        }
+        var outputHandler = Prototype.K;
         Appcelerator.Compiler.compileDocument(outputHandler);
 	}
 });
-
-Appcelerator.Util.ServerConfig.outputCompiledDocument = function()
-{
-    if (Appcelerator.Compiler.isCompiledMode)
-    {
-        var html='';
-
-        // add the version metadata
-        var meta=window.document.createElement('meta');
-        meta.setAttribute('name','generator');
-        meta.setAttribute('content','Appcelerator '+Appcelerator.Version);
-        Appcelerator.Core.HeadElement.appendChild(meta);
-
-        // add the license metadata
-        meta=window.document.createElement('meta');
-        meta.setAttribute('name','license');
-        meta.setAttribute('content',Appcelerator.LicenseMessage);
-        Appcelerator.Core.HeadElement.appendChild(meta);
-
-        var script=window.document.createElement('script');
-        script.setAttribute('src','js/'+appcelerator_app_js);
-        script.setAttribute('type','text/javascript');
-        Appcelerator.Core.HeadElement.appendChild(script);
-
-        var code = null;
-
-        // set scopes for all our elements
-        var codeArray = [
-            'Appcelerator.Compiler.compileOnLoad=false;',
-            'Appcelerator.Core.onload(function(){',
-            'function setScope(id,scope){var e = $(id); if (e) e.scope = scope;}'
-        ];
-
-        for (var i in Appcelerator.Compiler.scopeMap)
-        {
-            var scope = Appcelerator.Compiler.scopeMap[i];
-            if (typeof(scope)=='string')
-            {
-                codeArray.push('setScope("'+i+'","'+scope+'");');
-            }
-        }
-
-        if (Appcelerator.Compiler.compiledCode)
-        {
-            codeArray.push(Appcelerator.Compiler.compiledCode);
-        }
-
-        codeArray.push("var attributeProcessors = Appcelerator.Compiler.attributeProcessors;");
-        codeArray.push("function handleListener(elementId, attributeName, tagname, handlerIndex) {");
-        codeArray.push("var element = $(elementId); var value = element.getAttribute(attributeName);");
-        codeArray.push("attributeProcessors[tagname][handlerIndex][1].handle(element,attributeName,value);}");
-
-        var listeners = Appcelerator.Compiler.compiledAttributeListeners;
-        for(i = 0; i < listeners.length; i++) {
-            codeArray.push('handleListener("'+listeners[i].join('","')+'");');
-        }
-
-		codeArray.push('Appcelerator.Compiler.compileDocumentOnFinish();');
-        // close the entire onload handler
-        codeArray.push('});');
-
-        code = codeArray.join('');
-
-        if (Appcelerator.Compiler.compressor)
-        {
-            // run the JS compressor (a java class)
-            code = Appcelerator.Compiler.compressor.compress(code);
-        }
-
-        // remove unnecessary ids from <head>
-        Appcelerator.Core.HeadElement.getElementsByTagName('*').each(function(n)
-        {
-            if (n.nodeType == 1 && Appcelerator.Compiler.automatedIDRegex.test(n.id))
-            {
-                n.removeAttribute('id');
-            }
-        });
-        if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.id))
-        {
-            Appcelerator.Core.HeadElement.removeAttribute('id');
-        }
-        if (Appcelerator.Compiler.automatedIDRegex.test(Appcelerator.Core.HeadElement.parentNode.id))
-        {
-            Appcelerator.Core.HeadElement.parentNode.removeAttribute('id');
-        }
-
-        //
-        // sweep through and figure out which CSS links are not really
-        // used by the app (since we import all on compile)
-        //
-        var css = {};
-        document.getElementsByTagName('link').each(function(link)
-        {
-            if (link.id)
-            {
-                css[link.id] = link;
-            }
-        });
-
-        for (var path in Appcelerator.Core.widgets_css)
-        {
-            var module = Appcelerator.Core.widgets_css[path];
-            if (typeof module == 'string' && Appcelerator.Core.usedModules[module])
-            {
-                delete css['css_'+module];
-            }
-        }
-
-        for (var name in css)
-        {
-            if (name && typeof(name)=='string' && name.indexOf('css_')!=-1)
-            {
-                var link = css[name];
-                link.parentNode.removeChild(link);
-            }
-        }
-
-        html+=Appcelerator.Util.Dom.getText(window.document.documentElement,false,null,true,true);
-
-        Appcelerator.Compiler.compiledJS = code;
-        Appcelerator.Compiler.compiledDocument = html;
-    }
-};
 
 
 Appcelerator.Compiler.setHTML = function(element,html)
@@ -2542,6 +2364,10 @@ var AppceleratorCompilerMethods =
         }
         Appcelerator.Compiler.compileExpression(re,webexpr,false);
         return re;
+    },
+    get: function(e)
+    {
+        return $el(e);
     }
 };
 Element.addMethods(AppceleratorCompilerMethods);

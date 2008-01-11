@@ -20,7 +20,7 @@ Appcelerator.Module.Datacache =
 	},
 	getAuthor: function()
 	{
-		return 'Jeff Haynie';
+		return 'Nolan Wright';
 	},
 	getModuleURL: function ()
 	{
@@ -126,5 +126,12 @@ Appcelerator.Module.Datacache =
 };
 
 Appcelerator.Module.Datacache = {};
-setInterval(Appcelerator.Module.Datacache.dataCacheTimer,30000);
 Appcelerator.Core.registerModule('app:datacache',Appcelerator.Module.Datacache);
+
+
+(function(){
+    setInterval(function()
+        {
+            Appcelerator.Module.Datacache.dataCacheTimer();
+        },30000)
+}).defer();
