@@ -356,9 +356,9 @@ Appcelerator.Module.Panel =
     }
 };
 
-Appcelerator.Core.registerModule('app:panel',Appcelerator.Module.Panel);
 Appcelerator.Core.loadModuleCSS('app:panel','panel.css');
 if(Appcelerator.Browser.isIE7)
 {
     Appcelerator.Core.loadModuleCSS('app:panel','panel_ie7.css');
 }
+Appcelerator.Core.registerModule('app:panel',Appcelerator.Module.Panel);

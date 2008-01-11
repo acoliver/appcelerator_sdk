@@ -228,8 +228,8 @@ Appcelerator.Module.EditinPlace =
 		}
 		
 		button_html = '<div id="' + id + '_editinplace_buttons" style="display:none;">';
-		button_html += '<input activators="'+id+'_editinplace_input" class="'+buttonClassName+'" id="' + id + '_editinplace_savebutton" on="' + saveOn + '" type="button" value="Save">';
-		button_html += '<input class="'+buttonClassName+'" id="' + id + '_editinplace_cancelbutton" on="' + cancelOn + '" type="button" value="Cancel">';
+		button_html += '<input activators="'+id+'_editinplace_input" class="'+buttonClassName+'" id="' + id + '_editinplace_savebutton" on="' + saveOn + '" type="button" value="Save" />';
+		button_html += '<input class="'+buttonClassName+'" id="' + id + '_editinplace_cancelbutton" on="' + cancelOn + '" type="button" value="Cancel" />';
 		button_html += '</div>';
 		
 		switch (position)
@@ -274,5 +274,5 @@ Appcelerator.Module.EditinPlace =
 };
 
 
-Appcelerator.Core.registerModule('app:editinplace',Appcelerator.Module.EditinPlace);
 Appcelerator.Core.loadModuleCSS('app:editinplace','editinplace.css');
+Appcelerator.Core.registerModule('app:editinplace',Appcelerator.Module.EditinPlace);

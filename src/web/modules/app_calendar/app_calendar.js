@@ -123,5 +123,5 @@ Appcelerator.Module.Calendar =
 	}
 };
 
-Appcelerator.Core.registerModuleWithJS('app:calendar',Appcelerator.Module.Calendar,['yahoo.js', 'event.js', 'dom.js', 'calendar.js']);
 Appcelerator.Core.loadModuleCSS('app:calendar','calendar.css');
+Appcelerator.Core.registerModuleWithJS('app:calendar',Appcelerator.Module.Calendar,['yahoo.js', 'event.js', 'dom.js', 'calendar.js']);

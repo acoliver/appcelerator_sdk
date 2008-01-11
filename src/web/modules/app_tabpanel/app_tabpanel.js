@@ -110,6 +110,7 @@ Appcelerator.Module.Tabpanel =
 		for (var c=0,len=tabs.length;c<len;c++)
 		{
 			var tab = $(tabs[c][1]);
+            Appcelerator.Compiler.StateMachine.addState(id,tabs[c][0],null);
 			tab.state = tabs[c][0];
 			tab.onclick = function(e)
 			{
@@ -214,7 +215,6 @@ Appcelerator.Module.Tabpanel =
 					initialNode = tabId;
 					initial = name;
 				}
-				Appcelerator.Compiler.StateMachine.addState(id,name,null);
 				tabs.push([name,tabId,node]);
 			}
 		}
@@ -243,5 +243,5 @@ Appcelerator.Module.Tabpanel =
 };
 
 
-Appcelerator.Core.registerModule('app:tabpanel',Appcelerator.Module.Tabpanel);
 Appcelerator.Core.loadModuleCSS('app:tabpanel','tabpanel.css');
+Appcelerator.Core.registerModule('app:tabpanel',Appcelerator.Module.Tabpanel);

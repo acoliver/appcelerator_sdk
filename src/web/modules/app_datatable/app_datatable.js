@@ -490,5 +490,5 @@ Appcelerator.Module.Datatable =
 	}
 };
 
-Appcelerator.Core.registerModule('app:datatable',Appcelerator.Module.Datatable);
 Appcelerator.Core.loadModuleCSS('app:datatable','datatable.css');
+Appcelerator.Core.registerModule('app:datatable',Appcelerator.Module.Datatable);

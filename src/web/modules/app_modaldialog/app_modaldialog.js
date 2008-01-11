@@ -157,5 +157,5 @@ Appcelerator.Module.Modaldialog =
 	}
 };
 
-Appcelerator.Core.registerModule('app:modaldialog',Appcelerator.Module.Modaldialog);
 Appcelerator.Core.loadModuleCSS('app:modaldialog','modaldialog.css');
+Appcelerator.Core.registerModule('app:modaldialog',Appcelerator.Module.Modaldialog);

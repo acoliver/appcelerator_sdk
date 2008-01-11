@@ -307,6 +307,6 @@ Appcelerator.Module.Folder =
 };
 
 
-Appcelerator.Core.registerModule('app:folder',Appcelerator.Module.Folder);
 Appcelerator.Core.loadModuleCSS('app:folder','folder.css');
+Appcelerator.Core.registerModule('app:folder',Appcelerator.Module.Folder);
 

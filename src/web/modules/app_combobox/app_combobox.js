@@ -157,5 +157,5 @@ Appcelerator.Module.ComboBox =
 	}
 };
 
-Appcelerator.Core.registerModuleWithJS("app:combobox",Appcelerator.Module.ComboBox,["combobox.js"]);
 Appcelerator.Core.loadModuleCSS('app:combobox','combobox.css');
+Appcelerator.Core.registerModuleWithJS("app:combobox",Appcelerator.Module.ComboBox,["combobox.js"]);

@@ -129,5 +129,5 @@ Appcelerator.Module.ProgressBar =
 };
 
 
-Appcelerator.Core.registerModule('app:progressbar',Appcelerator.Module.ProgressBar);
 Appcelerator.Core.loadModuleCSS('app:progressbar','progressbar.css');
+Appcelerator.Core.registerModule('app:progressbar',Appcelerator.Module.ProgressBar);

@@ -532,6 +532,6 @@ Appcelerator.Module.Field =
 	}
 };
 
-Appcelerator.Core.registerModule('app:field',Appcelerator.Module.Field);
 Appcelerator.Core.loadModuleCSS('app:field','field.css');
+Appcelerator.Core.registerModule('app:field',Appcelerator.Module.Field);
 

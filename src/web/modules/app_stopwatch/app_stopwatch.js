@@ -131,5 +131,5 @@ Appcelerator.Module.Stopwatch =
     
 };
 
-Appcelerator.Core.registerModule('app:stopwatch', Appcelerator.Module.Stopwatch);
 Appcelerator.Core.loadModuleCSS('app:stopwatch', 'stopwatch.css');
+Appcelerator.Core.registerModule('app:stopwatch', Appcelerator.Module.Stopwatch);

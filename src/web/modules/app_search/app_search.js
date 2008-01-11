@@ -403,5 +403,5 @@ Appcelerator.Module.Search =
 	}
 };
 
-Appcelerator.Core.registerModule('app:search',Appcelerator.Module.Search);
 Appcelerator.Core.loadModuleCSS('app:search','search.css');
+Appcelerator.Core.registerModule('app:search',Appcelerator.Module.Search);
