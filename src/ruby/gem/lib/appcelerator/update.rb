@@ -57,12 +57,14 @@ module Appcelerator
 
       begin
 
-        filepath = RAILS_ROOT + '/config/version.yml'
+        # place in tmp
+        filepath = RAILS_ROOT + '/tmp/version.yml'
         
         if not force_version
             if !File.exists?(filepath)
                 c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION}
                 File.new(filepath,'w+').puts c.to_yaml
+                system("svn propset svn:ignore version.yml tmp") rescue nil
             end
             
             y = YAML::load_stream(File.open(filepath)) 
