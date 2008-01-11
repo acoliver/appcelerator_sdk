@@ -791,6 +791,12 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	var f = Appcelerator.Compiler.ElementFunctions[key];
 	if (f)
 	{
+        //
+        // NOTE: you must call the function as below since
+        // natively wrapped methods like focus won't work if you
+        // try and use the normal javascript prototype call/apply
+        // methods on them
+        //
 		switch(args.length)
 		{
 			case 0:
@@ -815,12 +821,6 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	}
 	if (element)
 	{
-		//
-	    // NOTE: you must call the function as below since
-		// natively wrapped methods like focus won't work if you
-		// try and use the normal javascript prototype call/apply
-		// methods on them
-		//
 		var f = element[name];
 		var tf = typeof(f);
 		if (f && (tf == 'function' || (Appcelerator.Browser.isIE && tf == 'object')))
