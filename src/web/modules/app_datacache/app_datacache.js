@@ -1,6 +1,3 @@
-Appcelerator.Module.Datacache = {};
-
-
 Appcelerator.Module.Datacache =
 {
 	cache:[],
@@ -67,42 +64,43 @@ Appcelerator.Module.Datacache =
 		{
 	        throw "syntax error: required 'response' attribute for "+element.id;			
 		}
-		request = Appcelerator.Util.ServiceBroker.convertType(request);
-		response = Appcelerator.Util.ServiceBroker.convertType(response);
-		var entry = {req:request,resp:response,ttl:parseInt(keepAlive),data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
-		Appcelerator.Module.Datacache.cache.push(entry);
 
-		var interceptor = 
-		{
-		  	interceptQueue: function(msg,callback,messageType,scope)
-		  	{ 		
-				if (messageType == request)
-				{
-					if (entry.data)
+        if (!Appcelerator.Compiler.isCompiledMode)
+        {
+            var entry = {req:request,resp:response,ttl:parseInt(keepAlive),data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
+            Appcelerator.Module.Datacache.cache.push(entry);
+			var interceptor = 
+			{
+			  	interceptQueue: function(msg,callback,messageType,scope)
+			  	{ 		
+					if (messageType == request)
 					{
-						entry.data.app_datacache_message = true;
-						$MQ(response, entry.data, scope);
-						return false;
+						if (entry.data)
+						{
+							entry.data.app_datacache_message = true;
+							$MQ(response, entry.data, scope);
+							return false;
+						}
+						else
+						{
+							return true;
+						}
 					}
-					else
+					if (messageType == response)
 					{
+						if (msg['data'].app_datacache_message)
+						{
+							return true;
+						}
+						entry.data = msg['data']; 
+						entry.timestamp = new Date().getTime();
 						return true;
 					}
-				}
-				if (messageType == response)
-				{
-					if (msg['data'].app_datacache_message)
-					{
-						return true;
-					}
-					entry.data = msg['data'];
-					entry.timestamp = new Date().getTime();
-					return true;
-				}
-			} 
-		};
-		Appcelerator.Util.ServiceBroker.addInterceptor(interceptor);
-		
+				} 
+			};
+			Appcelerator.Util.ServiceBroker.addInterceptor(interceptor);
+        }
+        		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REMOVE
 		};
@@ -126,6 +124,7 @@ Appcelerator.Module.Datacache =
 		}
 	}
 };
-setInterval(Appcelerator.Module.Datacache.dataCacheTimer,30000);
 
+Appcelerator.Module.Datacache = {};
+setInterval(Appcelerator.Module.Datacache.dataCacheTimer,30000);
 Appcelerator.Core.registerModule('app:datacache',Appcelerator.Module.Datacache);
