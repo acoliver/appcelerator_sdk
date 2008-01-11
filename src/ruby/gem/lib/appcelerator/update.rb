@@ -127,7 +127,7 @@ module Appcelerator
   end
   
   def Update.generate_aid
-       OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, $$.to_s)
+    OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, rand(256))
   end
 
   def Update.user_home
