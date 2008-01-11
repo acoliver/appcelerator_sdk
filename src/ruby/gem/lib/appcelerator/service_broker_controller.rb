@@ -119,7 +119,7 @@ module ServiceBroker
     response.headers['Cache-Control'] = 'no-cache, no-store, private, must-revalidate'
     response.headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT'
 
-    Appcelerator::Dispatcher.dispatch_request(request,response,session)
+    Appcelerator::Dispatcher.dispatch_request(request,response,session,self)
 
     @performed_render = true
 	end

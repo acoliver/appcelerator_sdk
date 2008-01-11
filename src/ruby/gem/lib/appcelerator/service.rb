@@ -50,7 +50,7 @@ module Appcelerator
     end
 
     # for use by message handlers    
-    attr_accessor :request,:params,:session,:message_type,:response,:response_type
+    attr_accessor :request,:params,:session,:message_type,:response,:response_type,:controller
 
      # call this method from a before filter to prevent the remain handlers from running
     def respond_with(response,response_type=nil)
@@ -97,6 +97,7 @@ module Appcelerator
       @session = msg.session
       @message_type = msg.message_type
       @params = msg.params
+      @controller = msg.controller
       @response = nil # this is the handler's response, not the request/response pair
       @response_type = response_type
       

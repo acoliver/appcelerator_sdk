@@ -30,3 +30,9 @@ class ActiveRecord::Base
       result.to_json(*a)
     end
 end
+
+class ActionController::Base
+  def proxy_reset_session
+    reset_session 
+  end
+end

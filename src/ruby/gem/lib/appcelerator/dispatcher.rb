@@ -24,9 +24,10 @@ module Appcelerator
 	  
     # dispatch a standard request, called by the service_broker_controller
     #
-    def self.dispatch_request(request, response, session)
+    def self.dispatch_request(request, response, session, controller)
       message_queue = []
       extract_messages(request, session) do |in_message|
+        in_message.controller = controller
         out_messages = ServiceBroker.send(in_message)
         message_queue.concat(out_messages)
       end
@@ -94,7 +95,7 @@ module Appcelerator
     end
     
     class Message
-      attr_accessor :request, :session, :message_type, :params, :request_id, :response_type, :response, :scope
+      attr_accessor :request, :session, :message_type, :params, :request_id, :response_type, :response, :scope, :controller
       def initialize(request, session, message_type, params, request_id, scope)
         @request = request
         @session = session
