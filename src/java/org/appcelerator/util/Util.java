@@ -31,10 +31,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -524,35 +522,38 @@ public class Util
         }
     }
 
-    private static final Map<String, String> DECODE_XML_ENTITY_TABLE = new HashMap<String, String>(9);
-    private static final Map<String, String> ENCODE_XML_ENTITY_TABLE = new HashMap<String, String>(9);
-
-    static
+    /**
+     * unescape any HTML entities found in value
+     * 
+     * @param value
+     * @return
+     */
+    public static String unescapeHTML (String value)
     {
-        DECODE_XML_ENTITY_TABLE.put("amp", "&");
-        DECODE_XML_ENTITY_TABLE.put("quot", "\"");
-        DECODE_XML_ENTITY_TABLE.put("lt", "<");
-        DECODE_XML_ENTITY_TABLE.put("gt", ">");
-        DECODE_XML_ENTITY_TABLE.put("apos", "'");
-        DECODE_XML_ENTITY_TABLE.put("rsquo", "`");
-        DECODE_XML_ENTITY_TABLE.put("#40", "(");
-        DECODE_XML_ENTITY_TABLE.put("#41", ")");
-        DECODE_XML_ENTITY_TABLE.put("#58", ":");
-
-        ENCODE_XML_ENTITY_TABLE.put("&", "amp");
-        ENCODE_XML_ENTITY_TABLE.put("\"", "quot");
-        ENCODE_XML_ENTITY_TABLE.put("<", "lt");
-        ENCODE_XML_ENTITY_TABLE.put(">", "gt");
-        ENCODE_XML_ENTITY_TABLE.put("'", "apos");
-        ENCODE_XML_ENTITY_TABLE.put("`", "rsquo");
-        ENCODE_XML_ENTITY_TABLE.put("(", "#40");
-        ENCODE_XML_ENTITY_TABLE.put(")", "#41");
-        ENCODE_XML_ENTITY_TABLE.put(":", "58");
+        if (value == null || value.trim().length() == 0)
+        {
+            return "";
+        }
+        
+        return Entities.HTML40.unescape(value);
     }
-
-    private static final Pattern XML_PATTERN = Pattern.compile("([&\"<>'`\\(\\):])", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-    private static final Pattern UN_XML_PATTERN = Pattern.compile("&([#]?[a-z0-9]+);", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-
+    
+    /**
+     * unescape any HTML entities found in value
+     * 
+     * @param value
+     * @return
+     */
+    public static String escapeHTML (String value)
+    {
+        if (value == null || value.trim().length() == 0)
+        {
+            return "";
+        }
+        
+        return Entities.HTML40.escape(value);
+    }
+    
     /**
      * unescape any XML entities found in value
      *
@@ -565,33 +566,7 @@ public class Util
         {
             return "";
         }
-        Matcher matcher = UN_XML_PATTERN.matcher(value);
-        StringBuilder builder = new StringBuilder();
-        int offset = 0;
-        while (matcher.find())
-        {
-            String group = matcher.group(1);
-            String symbol = DECODE_XML_ENTITY_TABLE.get(group);
-            if (symbol != null)
-            {
-                builder.append(value.substring(offset, matcher.start()));
-                builder.append(symbol);
-            }
-            else
-            {
-                builder.append(matcher.group());
-            }
-            offset = matcher.end();
-        }
-        if (offset == 0)
-        {
-            return value;
-        }
-        if (offset < value.length())
-        {
-            builder.append(value.substring(offset));
-        }
-        return builder.toString();
+        return Entities.XML.unescape(value);
     }
 
     /**
@@ -606,35 +581,7 @@ public class Util
         {
             return "";
         }
-        Matcher matcher = XML_PATTERN.matcher(value);
-        StringBuilder builder = new StringBuilder();
-        int offset = 0;
-        while (matcher.find())
-        {
-            String group = matcher.group(1);
-            String symbol = ENCODE_XML_ENTITY_TABLE.get(group);
-            if (symbol != null)
-            {
-                builder.append(value.substring(offset, matcher.start()));
-                builder.append("&");
-                builder.append(symbol);
-                builder.append(";");
-            }
-            else
-            {
-                builder.append(matcher.group());
-            }
-            offset = matcher.end();
-        }
-        if (offset == 0)
-        {
-            return value;
-        }
-        if (offset < value.length())
-        {
-            builder.append(value.substring(offset));
-        }
-        return builder.toString();
+        return Entities.XML.escape(value);
     }
 
     /**
