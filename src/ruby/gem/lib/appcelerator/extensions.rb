@@ -35,4 +35,14 @@ class ActionController::Base
   def proxy_reset_session
     reset_session 
   end
+  
+  def proxy_delete_cookie(cookie)
+    cookies.delete cookie.to_sym
+  end
+  
+  def proxy_set_cookie_value(cookie, value)
+    if not cookies[cookie].empty?
+      cookies[cookie] = value
+    end
+  end
 end
