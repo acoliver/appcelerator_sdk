@@ -57,14 +57,18 @@ module Appcelerator
 
       begin
 
-        # place in tmp
-        filepath = RAILS_ROOT + '/tmp/version.yml'
+        # place in users directory
+        filepath = File.join(user_home,'.appcelerator')
+        
+        aid = nil
         
         if not force_version
-            if !File.exists?(filepath)
-                c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION}
-                File.new(filepath,'w+').puts c.to_yaml
-                system("svn propset svn:ignore version.yml tmp") rescue nil
+            if not File.exists?(filepath)
+                c = {'site'=>'http://updatesite.appcelerator.org','version'=>Appcelerator::VERSION,'aid'=>generate_aid}
+                f = File.new(filepath,'w+')
+                f.puts c.to_yaml
+                f.flush
+                f.close
             end
             
             y = YAML::load_stream(File.open(filepath)) 
@@ -73,6 +77,7 @@ module Appcelerator
             site = doc['site']
             version = doc['version']
             lastcheck = doc['last']
+            aid = doc['aid']
         end
         
         #
@@ -86,7 +91,7 @@ module Appcelerator
            end
         end
         
-        uri = "#{site}?pkg=sdk_ruby&systemid=#{systemid}&version=#{version}"
+        uri = "#{site}?v=1&pkg=sdk_ruby&systemid=#{systemid}&version=#{version}&aid=#{aid}"
         
         #
         # this is the URI we're going to hit to see if we have a new version of appcelerator
@@ -108,13 +113,32 @@ module Appcelerator
         end
         
         if not force_version
-            config = {'systemid'=>props['systemid'], 'last'=> Time.now, 'version'=> version, 'site'=>site}
-            File.new(filepath,'w+').puts config.to_yaml
+            config = {'systemid'=>props['systemid'], 'last'=> Time.now, 'version'=> version, 'site'=>site, 'aid'=>aid}
+            f = File.new(filepath,'w+')
+            f.puts config.to_yaml
+            f.flush
+            f.close
         end
       rescue => e
         # oops, we have an error - don't do anything in this case
       end
       return new_version, {'version'=>props['version'],'date'=>props['date'],'filename'=>props['filename']}
+    end
+  end
+  
+  def Update.generate_aid
+       OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, $$.to_s)
+  end
+
+  def Update.user_home
+    if ENV['HOME']
+        ENV['HOME']
+    elsif ENV['USERPROFILE']
+        ENV['USERPROFILE']
+    elsif ENV['HOMEDRIVE'] and ENV['HOMEPATH']
+        "#{ENV['HOMEDRIVE']}:#{ENV['HOMEPATH']}"
+    else
+        File.expand_path '~'
     end
   end
 end
