@@ -41,8 +41,6 @@ class ActionController::Base
   end
   
   def proxy_set_cookie_value(cookie, value)
-    if not cookies[cookie].empty?
-      cookies[cookie] = value
-    end
+    cookies[cookie] = value
   end
 end
