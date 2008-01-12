@@ -297,27 +297,30 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 	}
 });
 
-var scriptBuilderAction = 
+(function()
 {
-	//
-	// define a custom parsing routine for parameters
-	// that will just take in as-is everything inside
-	// [ ] as the code to execute
-	//
-	parseParameters: function (id,action,params)
+	var scriptBuilderAction = 
 	{
-		return params;
-	},
-	build: function (id,action,params)
-	{
-		return params;
-	}
-};
-
-
-Appcelerator.Compiler.registerCustomAction('javascript',scriptBuilderAction);
-Appcelerator.Compiler.registerCustomAction('function',scriptBuilderAction);
-Appcelerator.Compiler.registerCustomAction('script',scriptBuilderAction);
+	    //
+	    // define a custom parsing routine for parameters
+	    // that will just take in as-is everything inside
+	    // [ ] as the code to execute
+	    //
+	    parseParameters: function (id,action,params)
+	    {
+	        return params;
+	    },
+	    build: function (id,action,params)
+	    {
+	        return params;
+	    }
+	};
+	
+	
+	Appcelerator.Compiler.registerCustomAction('javascript',scriptBuilderAction);
+	Appcelerator.Compiler.registerCustomAction('function',scriptBuilderAction);
+	Appcelerator.Compiler.registerCustomAction('script',scriptBuilderAction);
+})();
 
 
 Appcelerator.Compiler.findParameter = function(params,key)
@@ -445,11 +448,15 @@ var ResetAction =
 			default:
 			{
 				variable='innerHTML';
+				code = elementHtml+".update(" + value + ")";
 				break;
 			}
 		}
 		
-		code = elementHtml + '.' + variable + '=' + value;
+		if (!code)
+		{
+		    code = elementHtml + '.' + variable + '=' + value;
+		}
 		
 		if (revalidate)
 		{

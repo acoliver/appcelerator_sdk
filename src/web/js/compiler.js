@@ -31,11 +31,6 @@ Appcelerator.Compiler.isInterpretiveMode = true;
 // compilation is done at deployment time
 //
 Appcelerator.Compiler.isCompiledMode = false;
-Appcelerator.Compiler.compiledCode = '';
-Appcelerator.Compiler.compiledDocument = null;
-Appcelerator.Compiler.compiledJS = null;
-// list of strings of code that forwards to attribute listeners handlers (in compiled mode)
-Appcelerator.Compiler.compiledAttributeListeners = [];
 
 //
 // delay before showing loading message in number of milliseconds
@@ -84,12 +79,20 @@ Appcelerator.Compiler.setElementId = function(element, id, dontdelete)
 
 Appcelerator.Compiler.removeElementId = function(id)
 {
-    var element_var = window['$'+id]; 
-    if (element_var)
+    if (id)
     {
-        delete window['$'+id];
-        if (element_var._added_to_cache) delete element_var._added_to_cache;
-    }
+	    var element_var = window['$'+id]; 
+	    if (element_var)
+	    {
+	        delete window['$'+id];
+	        if (element_var._added_to_cache) delete element_var._added_to_cache;
+	    }
+	}
+}
+
+if (Object.isFunction(window['$']))
+{
+    delete window['$'];
 }
 
 function $(element) 
@@ -161,6 +164,7 @@ Appcelerator.Compiler.registerAttributeProcessor = function(name,attribute,liste
 
 Appcelerator.Compiler.forwardToAttributeListener = function(element,array,tagname)
 {
+    $D('forwardToAttributeListener=> '+element.id+', tagname='+tagname);
     for (var i=0;i<array.length;i++)
 	{
 		var entry = array[i];
@@ -252,25 +256,27 @@ Appcelerator.Compiler.checkLoadState = function (state)
 // call this to dynamically compile a widget on-the-fly and evaluate
 // any widget JS code as compiled
 //
-Appcelerator.Compiler.dynamicCompile = function(element,notimeout)
+Appcelerator.Compiler.dynamicCompile = function(element,notimeout,recursive)
 {
+    $D('dynamic compile called for '+element+' - id='+element.id);
+    
     if (notimeout)
     {
-        Appcelerator.Compiler.doCompile(element);   
+        Appcelerator.Compiler.doCompile(element,recursive);   
     }
     else
     {
         (function()
         {
-            Appcelerator.Compiler.doCompile(element);
+            Appcelerator.Compiler.doCompile(element,recursive);
         }).defer();
     }
 };
 
-Appcelerator.Compiler.doCompile = function(element)
+Appcelerator.Compiler.doCompile = function(element,recursive)
 {    
     var state = Appcelerator.Compiler.createCompilerState();
-    Appcelerator.Compiler.compileElement(element,state);
+    Appcelerator.Compiler.compileElement(element,state,recursive);
     state.scanned = true;
     Appcelerator.Compiler.checkLoadState(state);
 };
@@ -292,6 +298,8 @@ Appcelerator.Compiler.afterDocumentCompile = function(l)
 };
 Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 {
+    $D('compiled document called');
+    
     if (Appcelerator.Compiler.onbeforecompileListeners)
     {
        for (var c=0;c<Appcelerator.Compiler.onbeforecompileListeners.length;c++)
@@ -372,10 +380,14 @@ Appcelerator.Compiler.onPrecompile = function (element)
 	return true;
 };
 
-Appcelerator.Compiler.compileElement = function(element,state)
+Appcelerator.Compiler.compileElement = function(element,state,recursive)
 {
+    recursive = recursive==null ? true : recursive;
+
 	Appcelerator.Compiler.getAndEnsureId(element);
 	Appcelerator.Compiler.determineScope(element);
+
+    $D('compiling element => '+element.id);
 	
 	if (typeof(state)=='undefined')
 	{
@@ -384,20 +396,22 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	
 	Appcelerator.Compiler.onPrecompile(element);
 
-	//TODO: check to see if we're already compiled and destroy
-	//TODO: add compile on for security
-	
-	if (Appcelerator.Compiler.isInterpretiveMode)
-	{
-		element.compiled = 1;
-	}
-
 	// check to see if we should compile	
 	var doCompile = element.getAttribute('compile') || 'true';
 	if (doCompile == 'false')
 	{
 		return;
 	}
+
+    if (Appcelerator.Compiler.isInterpretiveMode)
+    {
+        if (element.compiled)
+        {
+           Appcelerator.Compiler.destroy(element);
+        }
+        element.compiled = 1;
+    }
+
 	
 	var name = Appcelerator.Compiler.getTagname(element);
 	if (name.indexOf(':')>0)
@@ -409,7 +423,7 @@ Appcelerator.Compiler.compileElement = function(element,state)
 		{
 	        Appcelerator.Core.require(name,function()
 	        {
-                  var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+                  var widgetJS = Appcelerator.Compiler.compileWidget(element,state,recursive);
 	              state.pending-=1;
 	              Appcelerator.Compiler.checkLoadState(state);
 	        });
@@ -419,19 +433,22 @@ Appcelerator.Compiler.compileElement = function(element,state)
 	{
 		Appcelerator.Compiler.delegateToAttributeListeners(element);
 		
-		if (element.nodeName.toLowerCase() != 'textarea')
-		{
-			var elementChildren = [];
-			for (var i = 0, length = element.childNodes.length; i < length; i++)
+		if (recursive)
+        {		
+			if (element.nodeName.toLowerCase() != 'textarea')
 			{
-			    if (element.childNodes[i].nodeType == 1)
-			    {
-		    	     elementChildren.push(element.childNodes[i]);
-		    	}
-			}
-			for (var i=0,len=elementChildren.length;i<len;i++)
-			{
-                Appcelerator.Compiler.compileElement(elementChildren[i],state);
+				var elementChildren = [];
+				for (var i = 0, length = element.childNodes.length; i < length; i++)
+				{
+				    if (element.childNodes[i].nodeType == 1)
+				    {
+			    	     elementChildren.push(element.childNodes[i]);
+			    	}
+				}
+				for (var i=0,len=elementChildren.length;i<len;i++)
+				{
+	                Appcelerator.Compiler.compileElement(elementChildren[i],state);
+				}
 			}
 		}
 	}
@@ -441,7 +458,14 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 {
 	recursive = recursive==null ? true : recursive;
 	
-	if (element.trashcan && element.trashcan.length > 0)
+	if (element.compiled)
+	{
+	   delete element.compiled;
+	}
+	
+	Appcelerator.Compiler.removeElementId(element.id);
+	
+	if (Object.isArray(element.trashcan))
 	{
 		for (var c=0,len=element.trashcan.length;c<len;c++)
 		{
@@ -457,7 +481,6 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 		try
 		{
 			delete element.trashcan;
-			element.trashcan = null;
 		}
 		catch(e)
 		{
@@ -467,7 +490,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 	
 	if (recursive)
 	{
-		if (element.childNodes && element.childNodes.length > 0)
+		if (element.nodeType == 1 && element.childNodes && element.childNodes.length > 0)
 		{
 			for (var c=0,len=element.childNodes.length;c<len;c++)
 			{
@@ -843,6 +866,8 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	var module = Appcelerator.Core.widgets[name];
 	var compiledCode = '';
 	
+    $D('compiled widget '+element+', id='+element.id+', tag='+name);
+
 	if (module)
 	{
 		if (Appcelerator.Compiler.isInterpretiveMode && module.flashRequired)
@@ -906,10 +931,10 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			}
 		}
 
-		//
-		// parse on attribute
-		//
-        if (module.dontParseOnAttributes)
+        //
+        // parse on attribute
+        //
+        if (Object.isFunction(module.dontParseOnAttributes))
         {
             if (!module.dontParseOnAttributes())
             {
@@ -920,9 +945,9 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
         {
             Appcelerator.Compiler.parseOnAttribute(element);
         }
-		
+
 		//
-		// hande off widget for building
+		// hand off widget for building
 		//
 		var instructions = null;
 		try
@@ -1045,7 +1070,6 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	            }
 	            else
 	            {
-	                // don't set it back but come up with a more sensible name for the parent
                     Appcelerator.Compiler.removeElementId(id);
                     Appcelerator.Compiler.setElementId(outer, id);
 	            }
@@ -1060,7 +1084,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			var removeId = element.id;
 			if (removeElement)
 			{
-				Appcelerator.Compiler.removeElementId(id);
+			    Appcelerator.Compiler.removeElementId(removeId);
 				Element.remove(element);
 			}
 			
@@ -1163,6 +1187,7 @@ Appcelerator.Compiler.determineScope = function(element)
 
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
+    $D('parseOnAttribute '+element.id);
 	var on = element.getAttribute('on');
 	if (on && Object.isString(on))
 	{
@@ -1282,10 +1307,11 @@ Appcelerator.Compiler.parseExpression = function(value)
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	var clauses = Appcelerator.Compiler.parseExpression(value);
+	$D('expression has '+clauses.length+' expression for '+element.id);
 	for(var i = 0; i < clauses.length; i++) 
 	{
 		var clause = clauses[i];
-        $D('compiling condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
+        $D('compiling expression for '+element.id+' => condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
 
         clause[0] = element;
         var handled = Appcelerator.Compiler.handleCondition.apply(this, clause);
@@ -1318,10 +1344,12 @@ Appcelerator.Compiler.registerCustomCondition = function(metadata, condition)
 
 Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAction,delay,ifCond)
 {
+    $D('handleCondition called for '+element.id);
 	for (var f=0;f<Appcelerator.Compiler.customConditions.length;f++)
 	{
 		var condFunction = Appcelerator.Compiler.customConditions[f];
 		var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
+        $D(element.id+' processed='+processed);
  		if (processed)
  		{
  			return true;
@@ -1354,7 +1382,6 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 			var code = 'try {';
 			code+=callback.build(id,action,params);
 			code+='; ';
-			code+='Appcelerator.Compiler.publishEvent("'+id+'","'+action+'");'; // TODO: is this needed?
 			code+='}';
 			code+='catch(exxx){';
 			code+='Appcelerator.Compiler.handleElementException($("'+id+'"),exxx,"Executing:'+action+'");';
@@ -2099,10 +2126,6 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	return data;
 };
 
-Appcelerator.Compiler.publishEvent = function (element,event)
-{
-};
-
 //
 // delayed execution (if specified)
 //
@@ -2130,14 +2153,14 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 	if (!element)
 	{
 		var id = Appcelerator.Compiler.generateId();
-		new Insertion.Bottom(document.body,'<div  id="'+id+'"></div>');
+		new Insertion.Bottom(document.body,'<div id="'+id+'"></div>');
 		makeDiv = true;
 		element = $(id);
 	}
 	
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 
-	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ('+tag+') with ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <code>'+(context||'unknown')+'</code></div></div>';
+	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] ith ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <code>'+(context||'unknown')+'</code></div></div>';
 	$E(msg);
 
 	switch (tag)
@@ -2182,13 +2205,12 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 
 	if (makeDiv)
 	{
-		Appcelerator.Compiler.removeElementId(id);
 		Element.remove(element);
-		
 		var id = Appcelerator.Compiler.generateId();
-		new Insertion.Bottom(document.body,'<div style="2px dotted #900"><img src="'+Appcelerator.ImagePath+'warning.png"/> <span id="'+id+'"></span></div>');
+		new Insertion.Top(document.body,'<div style="2px dotted #900"><img src="'+Appcelerator.ImagePath+'warning.png"/> <span id="'+id+'"></span></div>');
 		element = $(id);
 		var p = element.parentNode;
+        p.style.font='auto';
 		p.style.display='block';
 		p.style.visibility='visible';
 		p.style.color='black';
@@ -2331,7 +2353,7 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 
 Appcelerator.Compiler.setHTML = function(element,html)
 {
-	$(element).innerHTML = html;
+	$(element).update(html);
 	if (Appcelerator.Browser.isIE6) setTimeout(Appcelerator.Browser.fixImageIssues,0);
 };
 
@@ -2347,6 +2369,7 @@ var AppceleratorCompilerMethods =
 {
     on: function(re,webexpr,parameters)
     {
+        Appcelerator.Compiler.destroy(re);
         if (parameters)
         {
             for (var key in parameters)

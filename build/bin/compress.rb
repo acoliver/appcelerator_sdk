@@ -33,11 +33,16 @@ js.gsub!(/\$\$\((.*?)\)/) do |m|
   m.gsub '$$(', '$sl('
 end
 
+js.gsub!(/\$D\([^\)]/) do |m|
+  "if (Logger.debugEnabled) #{m}"
+end
 
 # replace this globally scoped variables
 js.gsub!(/window\./,'$$w.')
 js.gsub!(/document\./,'$$d.')
 js.gsub!(/navigator\./,'$$n.')
+js.gsub!(/Object\./,'$$o.')
+js.gsub!(/Logger\./,'$$l.')
 
 # make our shortcuts JS
 declare=<<EOF
@@ -73,6 +78,7 @@ post.gsub!(/Appcelerator\.Browser\./,'$$AB.')
 outfile.print "$$w=window;"
 outfile.print "$$d=document;"
 outfile.print "$$n=navigator;"
+outfile.print "$$o=Object;"
 
 # now chain it all together
 outfile.print js[0,idx]
@@ -82,9 +88,11 @@ outfile.print post
 # define our $ if jQuery isn't defined
 # we want to be able to support both jQuery and Prototype being loaded at the same time w/o conflict
 epilog=<<END
-  ; if (typeof(jQuery)=='undefined'){window.$ = $el; window.$$ = $sl;}
+  ; if (typeof(jQuery)=='undefined'){$ = $el; $$w.$ = $el; $$ = $sl; $$w.$$ = $sl;}
 END
 
 outfile.print epilog
+
+puts "compressed #{infile.path} => #{outfile.path}"
 
 exit 0

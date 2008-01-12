@@ -55,13 +55,13 @@ Appcelerator.Module.Script =
 	},
 	compileWidget: function(params)
 	{
-		window.eval(params['code']);
+		eval(params['code']);
 	},
 	buildWidget: function(element,parameters)
 	{
 		var code = Appcelerator.Compiler.getHtml(element);
 		code = code.replace(/\/\*.*\*\//g,'');
-
+		
 		if (code && code.trim().length > 0)
 		{
 			parameters['code'] = String.unescapeXML(code);
