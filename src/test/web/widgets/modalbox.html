@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <script type="text/javascript" src="../js/appcelerator.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Modal Box Widget </h3> 
+<p>
+    These tests exercise the modalbox widget
+</p>
+
+<table width="90%">
+    <tr>
+        <td class="test" valign="middle">
+            Modalbox (basic)
+        </td>
+        <td class="result" >
+            <input type="button" on="click then l:test1" value="Run Test"/>
+            <app:modalbox on="l:test1 then execute" title="Modalbox title goes here">
+                If you see this modal box drop down from the top, the test passed.
+            </app:modalbox>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

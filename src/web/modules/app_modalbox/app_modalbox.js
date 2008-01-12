@@ -69,20 +69,22 @@ Appcelerator.Module.Modalbox =
 	execute: function(id,params,data,scope)
 	{
 		Modalbox.show(params['html'], {'title':params['title'],'width':params['width'],'height':params['height']});
-		setTimeout(function()
+		(function()
 		{
-			Appcelerator.Compiler.dynamicCompile($('MB_content'));
-		},1000);
-		
+            Appcelerator.Compiler.dynamicCompile($('MB_content'));
+		}).defer(.2);
 	},
+	
     buildWidget: function(element,parameters)
     {
- 		parameters['html'] = Appcelerator.Compiler.getHtml(element);
+        // wrap in container in case you just specify a message, you'll get an ajax error
+ 		parameters['html'] = '<div>'+Appcelerator.Compiler.getHtml(element)+'</div>';
+ 		
 		return {
 			'presentation' :'' ,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters,
-			'wire' : true,
+			'wire' : false,
 			'compile':false
 		};
     }

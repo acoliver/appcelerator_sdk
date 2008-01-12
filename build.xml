@@ -97,7 +97,7 @@
 /* The following files are subject to license agreements by their respective license owners */
 		</concat>
 		<concat destfile="${stage.dir}/web/js/appcelerator-debug.js" append="yes">
-            <fileset file="${src.web.dir}/js/prolog.js"/>
+         <fileset file="${src.web.dir}/js/prolog.js"/>
 			<fileset file="${build.web.dir}/prototype/prototype.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/scriptaculous.js"/>
 			<fileset file="${build.web.dir}/scriptaculous/effects.js"/>
@@ -160,6 +160,12 @@
             <arg line="${build.bin.dir}/modules.rb"/>
             <arg line="${stage.dir}/web/modules"/>
             <arg line="${stage.dir}/web/modules"/>
+            <arg line="${build.bin.dir}/yuicompressor-2.2.5.jar"/>
+        </exec>
+        <exec executable="ruby" failonerror="true" failifexecutionfails="true">
+            <arg line="${build.bin.dir}/modules.rb"/>
+            <arg line="${stage.dir}/web/modules/common"/>
+            <arg line="${stage.dir}/web/modules/common"/>
             <arg line="${build.bin.dir}/yuicompressor-2.2.5.jar"/>
         </exec>
         <echo message="minimized"/>

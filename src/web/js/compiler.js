@@ -423,7 +423,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 		{
 	        Appcelerator.Core.require(name,function()
 	        {
-                  var widgetJS = Appcelerator.Compiler.compileWidget(element,state,recursive);
+                  var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
 	              state.pending-=1;
 	              Appcelerator.Compiler.checkLoadState(state);
 	        });
@@ -866,7 +866,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	var module = Appcelerator.Core.widgets[name];
 	var compiledCode = '';
 	
-    $D('compiled widget '+element+', id='+element.id+', tag='+name);
+    $D('compiled widget '+element+', id='+element.id+', tag='+name+', module='+module);
 
 	if (module)
 	{

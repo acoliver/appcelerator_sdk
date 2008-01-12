@@ -99,5 +99,9 @@ Appcelerator.Module.Tooltip =
     }
 };
 
-Appcelerator.Core.loadModuleCSS("app:tooltip","tooltips.css")
-Appcelerator.Core.registerModuleWithJS('app:tooltip',Appcelerator.Module.Tooltip,['builder.js','tooltips.js']);
+Appcelerator.Core.loadModuleCSS("app:tooltip","tooltips.css");
+Appcelerator.Core.requireCommonJS('scriptaculous/builder.js',function()
+{
+    Appcelerator.Core.registerModuleWithJS('app:tooltip',Appcelerator.Module.Tooltip,['tooltips.js']);
+});
+
