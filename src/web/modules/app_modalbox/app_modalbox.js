@@ -90,8 +90,6 @@ Appcelerator.Module.Modalbox =
         parameters['contentid'] = element.id+'_content';
  		parameters['html'] = '<div id="'+parameters['contentid']+'">'+Appcelerator.Compiler.getHtml(element)+'</div>';
  		
- 		alert(parameters['html']);
- 		
 		return {
 			'presentation' :'' ,
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
