@@ -38,7 +38,7 @@ if (typeof YAHOO == "undefined") {
      * @class YAHOO
      * @static
      */
-    var YAHOO = {};
+    YAHOO = {};
 }
 
 /**
