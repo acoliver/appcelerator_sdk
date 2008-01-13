@@ -463,7 +463,7 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
         {
             //this is a hack because we can't determine in safari 2
             //when the script has finished loading
-            checkState.delay(1);
+            checkState.delay(2);
         }
         else
         {
