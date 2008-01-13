@@ -123,7 +123,7 @@ Appcelerator.Module.Content =
 	                $MQ(onload,{'src':src,'args':args});
 	             }
 			};
-			Appcelerator.Compiler.compileElement(target.firstChild,state,false);
+			Appcelerator.Compiler.compileElement(target.firstChild,state);
 			state.scanned=true;
 			Appcelerator.Compiler.checkLoadState(state);
 		},true,true);
