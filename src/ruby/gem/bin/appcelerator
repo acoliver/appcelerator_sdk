@@ -27,6 +27,7 @@ require 'socket'
 require 'fileutils'
 require 'appcelerator'
 require 'optparse'
+require 'yaml'
 
 if ARGV.length == 0
    ARGV.push << '-h' 
