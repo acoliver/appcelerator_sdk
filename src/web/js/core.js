@@ -451,7 +451,6 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
     {
         var file = js[i];
         var path = !Object.isUndefined(jspath) ? (jspath + '/' + file) : Appcelerator.ModulePath + moduleName + '/js/' + file;
-        Logger.info(path);
 
         var script = document.createElement('script');
         script.setAttribute('type','text/javascript');
@@ -464,10 +463,7 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
         {
             //this is a hack because we can't determine in safari 2
             //when the script has finished loading
-            setTimeout(function()
-            {
-                checkState();
-            }, 1000);
+            checkState.delay(1);
         }
         else
         {
@@ -488,7 +484,7 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
 	            
 	            // prevent memory leak
 	            this.onreadystatechange = null;
-	            checkState();
+	            checkState.defer();
             }	
         }
         Appcelerator.Core.HeadElement.appendChild(script);

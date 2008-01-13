@@ -55,13 +55,13 @@ Appcelerator.Module.Tooltip =
         }, {
             name: 'mouseFollow',
             optional: true,
-            defaultValue: true,
+            defaultValue: false,
 			type: T.bool,
             description: "should tip follow mouse"
         }, {
             name: 'opacity',
             optional: true,
-            defaultValue: '.99',
+            defaultValue: '.75',
 			type: T.number,
             description: "tooltip opacity"
         }, {
@@ -75,14 +75,13 @@ Appcelerator.Module.Tooltip =
 
 	compileWidget: function(parameters)
 	{
-		var mouseFollow = (parameters['mouseFollow']=="true")?true:false;
+		var mouseFollow = (parameters['mouseFollow']||'true')=="true";
 		var tip = new Tooltip($(parameters['element']), 
 			{ backgroundColor:parameters['backgroundColor'],
 			  borderColor:parameters['borderColor'],
 			  textColor:parameters['textColor'],
 			  mouseFollow:mouseFollow,
 			  opacity:parameters['opacity']
-			
 			});
 		tip.content = parameters['html'];
 	},

@@ -1,10 +1,14 @@
 // Tooltip Object
 var Tooltip = Class.create();
+Tooltip.id = 1;
+
 Tooltip.prototype = {
 	initialize: function(el, options) {
 		this.el = $(el);
 		this.initialized = false;
 		this.setOptions(options);
+		
+		this.tooltipid = Tooltip.id++;
 		
 		// Event handlers
 		this.showEvent = this.show.bindAsEventListener(this);
@@ -50,7 +54,13 @@ Tooltip.prototype = {
 			this.appearingFX.cancel();
 			if(this.options.mouseFollow)
 				Event.stopObserving(this.el, "mousemove", this.updateEvent);
-			new Effect.Fade(this.tooltip, {duration: this.options.hideDuration, afterFinish: function() { Element.remove(this.tooltip) }.bind(this) });
+			new Effect.Fade(this.tooltip, {duration: this.options.hideDuration, afterFinish: function() { 
+			     try
+			     {
+			         Element.remove(this.tooltip); 
+			     }
+			     catch(e) {}
+			}.bind(this) });
 		}
 		this._clearTimeout(this.timeout);
 		
@@ -63,6 +73,8 @@ Tooltip.prototype = {
 	},
 	appear: function() {
 		// Building tooltip container
+		var contentid = "tt_content_" + this.tooltipid;
+		
 		this.tooltip = Builder.node("div", {className: "tooltip", style: "display: none;" }, [
 			Builder.node("div", {className:"xtop"}, [
 				Builder.node("div", {className:"xb1", style:"background-color:" + this.options.borderColor + ";"}),
@@ -70,10 +82,10 @@ Tooltip.prototype = {
 				Builder.node("div", {className:"xb3", style: "background-color:" + this.options.backgroundColor + "; border-color:" + this.options.borderColor + ";"}),
 				Builder.node("div", {className:"xb4", style: "background-color:" + this.options.backgroundColor + "; border-color:" + this.options.borderColor + ";"})
 			]),
-			Builder.node("div", {className: "xboxcontent", style: "background-color:" + this.options.backgroundColor + 
+			Builder.node("div", {id:contentid, className: "xboxcontent", style: "background-color:" + this.options.backgroundColor + 
 				"; border-color:" + this.options.borderColor + 
 				((this.options.textColor != '') ? "; color:" + this.options.textColor : "") + 
-				((this.options.textShadowColor != '') ? "; text-shadow:2px 2px 0" + this.options.textShadowColor + ";" : "")}, this.content), 
+				((this.options.textShadowColor != '') ? "; text-shadow:2px 2px 0" + this.options.textShadowColor + ";" : "")}, ''), 
 			Builder.node("div", {className:"xbottom"}, [
 				Builder.node("div", {className:"xb4", style: "background-color:" + this.options.backgroundColor + "; border-color:" + this.options.borderColor + ";"}),
 				Builder.node("div", {className:"xb3", style: "background-color:" + this.options.backgroundColor + "; border-color:" + this.options.borderColor + ";"}),
@@ -83,11 +95,14 @@ Tooltip.prototype = {
 		]);
 		document.body.insertBefore(this.tooltip, document.body.childNodes[0]);
 		
+        $(contentid).innerHTML = this.content;
+		
 		Element.extend(this.tooltip); // IE needs element to be manually extended
 		this.options.width = this.tooltip.getWidth();
 		this.tooltip.style.width = this.options.width + 'px'; // IE7 needs width to be defined
 		
 		this.setup();
+		
 		
 		if(this.options.mouseFollow)
 			Event.observe(this.el, "mousemove", this.updateEvent);
