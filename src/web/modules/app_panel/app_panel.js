@@ -56,11 +56,13 @@ Appcelerator.Module.Panel =
             'Setting a value implies a header will be shown'
         }, {
             name: 'color',
+            defaultValue: 'dark_gray',
             optional: true,
             type: T.enumeration('light_gray', 'dark_gray'),
             description: 'The color scheme of the widget.  Supported schemes: light_gray, dark_gray'
         }, {
             name: 'rounded',
+            defaultValue: false,
             optional: true,
             type: T.bool,
             description: 'Set to true for rounded corners'
@@ -71,6 +73,7 @@ Appcelerator.Module.Panel =
             description: 'Set to true to display a close button'
         }, {
             name: 'shade',
+            defaultValue: false,
             optional: true,
             type: T.bool,
             description: 'Set to true to enable shade/unshade. ' +
@@ -82,11 +85,13 @@ Appcelerator.Module.Panel =
             description: 'Set to enable the widget to listen to events'
         }, {
             name: 'draggable',
+            defaultValue: false,
             optional: true,
             type: T.bool,
             description: 'Set to enable draging'
         }, {
             name: 'resizable',
+            defaultValue: false,
             optional: true,
             type: T.bool,
             description: 'Set to enable the widget to be resized'
