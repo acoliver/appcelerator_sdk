@@ -5,7 +5,7 @@
 //
 Appcelerator.Compiler.registerCustomCondition(
 {
-	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:'],
+	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:']
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {
