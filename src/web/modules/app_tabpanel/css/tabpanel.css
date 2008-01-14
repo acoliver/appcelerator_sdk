@@ -6,37 +6,61 @@
 
 .tabpanel a 
 {
-	display: block;
-	width: 10em;
-	text-decoration:none;
-	font-size:12px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:bold;
+    width:100%;
+    position:absolute;
+    left:-2px;
+    bottom:5px;
 }
 
-.tabpanel_tab 
+.tabpanel .tabpanel_tab 
 {
-	width: 10em;
-	padding:4px 7px 6px;
-	margin-right:15px;
-	border-style:solid;
-	border-width:1px;
 	text-align:center;
 	margin-bottom:0;
 	cursor:pointer;
+    border: none;
+    position: relative;
+    bottom: 0px;
+    width: 10em;
+    height: 25px;
 }
 
-.tab_inactive
+.tabpanel .tabpanel_inactive
 {
-	border-color:#999;
-	border-bottom:1px solid #999; /* make this the same as the outer border */
-	background-color:#aaa;
-	color:#111;
+    background: #555555;
 }
 
-.tab_active
+.tabpanel .tabpanel_active
 {
-	border-color:#999;
-	border-bottom:1px solid #fff; /* make this the same as the background */
-	background-color:#fff;
-	color:#111;
-	font-weight:bold;
+    background: #cccccc;
+    bottom: 0px;
 }
+
+.tabpanel .tabpanel_hover
+{
+    background: #cccccc;
+    bottom: 0px;
+}
+
+.tabpanel a {color: #dddddd}
+.tabpanel .tabpanel_active a {color: #444444}
+/* Color theme Styles */
+
+/*Dark gray and squared corners */
+.AP_DGSP .table {height: 45px;}
+.AP_DGSP .tabpanel_tab {color: white}
+.AP_DGSP .tabpanel a {color: white}
+.AP_DGSP .tabpanel_inactive {background: #828282}
+.AP_DGSP .tabpanel_active {background: #696969 url(../images/gradients_10.gif) repeat-x; height: 33px; bottom: 4px;}
+.AP_DGSP .tabpanel_hover {height: 33px; bottom: 4px}
+
+/*Light gray and squared corners */
+.AP_LGSP .table {height: 45px;}
+.AP_LGSP .tabpanel_tab {color: #767676}
+.AP_LGSP .tabpanel a {color: #767676}
+.AP_LGSP .tabpanel_inactive {background: #e4e4e4}
+.AP_LGSP .tabpanel_active {background: white url(../images/gradients_07.gif) repeat-x; height: 33px; bottom: 4px;}
+.AP_LGSP .tabpanel_hover {height: 33px; bottom: 4px}
+

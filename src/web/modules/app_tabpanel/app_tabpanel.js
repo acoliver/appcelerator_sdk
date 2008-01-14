@@ -47,23 +47,24 @@ Appcelerator.Module.Tabpanel =
 			
             description: "Indicates which tab panel will initially be active."
         }, {
-            name: 'activeClassName',
-            defaultValue: 'tab_active',
+            name: 'color',
+            defaultValue: '',
             optional: true,
-			type: T.cssClass,
-            description: "The CSS class name to use for an active tab. Defaults to 'tab_active.'"
+            type: T.enumeration('light_gray', 'dark_gray'),
+            description: 'The color scheme of the widget. Default is to apply no colors.  Supported schemes: light_gray, dark_gray'
         }, {
-            name: 'inactiveClassName',
-            defaultValue: 'tab_inactive',
+            name: 'tab_spacing',
+            defaultValue: '3px',
             optional: true,
-			type: T.cssClass,
-            description: "The CSS class name to use for an inactive tab. Defaults to 'tab_inactive.'"
+            type: T.cssDimension,
+            description: "Describes how much space to put between tabs"
         }, {
             name: 'class',
             defaultValue: 'tabpanel',
             optional: true,
 			type: T.cssClass,
-            description: "The class name to use for the entire tab panel. Defaults to 'tabpanel.'"
+            description: "The class name to use for the entire tab panel. Defaults to 'tabpanel.'" +
+                "Note, setting this will disable built-in styling."
         }];
 	},
 	compileWidget: function(params)
@@ -74,8 +75,9 @@ Appcelerator.Module.Tabpanel =
 		var initialNode = params['initialNode'];
 		var selectedTab = null;
 		var tabs = params['tabs'];
-		var activeClassName = params['activeClassName'];
-		var inactiveClassName = params['inactiveClassName'];
+		var activeClassName = 'tabpanel_active';
+		var inactiveClassName = 'tabpanel_inactive';
+        var hoverClassName ="tabpanel_hover"
 		
 		if (initial)
 		{
@@ -104,6 +106,16 @@ Appcelerator.Module.Tabpanel =
 			Appcelerator.Compiler.StateMachine.disableStateMachine(id);
 		});
 
+        //
+        // set the tab spacing
+        //
+        var tabSpacing = params['tab_spacing'];
+        var renderedTabs = Element.getElementsByClassName(id, 'tabpanel_tab');
+        renderedTabs.each(function(myTab) 
+        {
+           myTab.style.marginRight = tabSpacing;
+        });
+        
 		//
 		// wire up our listeners
 		//
@@ -122,6 +134,7 @@ Appcelerator.Module.Tabpanel =
 				}
 				
 				Element.removeClassName(this, inactiveClassName);
+				Element.removeClassName(this, hoverClassName);
 				Element.addClassName(this, activeClassName);
 				
 				selectedTab = this;
@@ -131,7 +144,7 @@ Appcelerator.Module.Tabpanel =
 			{
 				if (selectedTab != this)
 				{
-					this.className += ' ' + activeClassName;
+                    Element.addClassName(this, hoverClassName);
 				}
 			};
 			
@@ -139,7 +152,7 @@ Appcelerator.Module.Tabpanel =
 			{
 				if (selectedTab != this)
 				{
-					this.className = this.className.gsub(' ' + activeClassName,'');
+                    Element.removeClassName(this, hoverClassName);
 				}
 			};
 
@@ -159,8 +172,8 @@ Appcelerator.Module.Tabpanel =
 		var tabs = [];
 		var on = parameters['on'];
 		var initial = parameters['initial'];
-		var activeClassName = parameters['activeClassName'];
-		var inactiveClassName = parameters['inactiveClassName'];
+        var activeClassName = 'tab_active';
+        var inactiveClassName = 'tab_inactive';
 		var className = parameters['class'];
 		var id = element.id;
 		var initialFound = false;
@@ -168,7 +181,17 @@ Appcelerator.Module.Tabpanel =
 		var selectedTab = null;
 		var code = '';
 
-		var html = '<div id="parent_'+id+'">';
+        var color = '';
+        if(parameters['color'] == 'dark_gray')
+        {
+            color = "AP_DGSP";
+        }
+        else if(parameters['color'] == 'light_gray')
+        {
+            color = "AP_LGSP";
+        }
+        
+		var html = '<div id="parent_'+id+'" class="' + color + '">';
 		html += '<div id="' + id + '" ' + (className ? 'class="' + className + '"' : '')+' ' + (on ? 'on="' + on + '"' : '') + '><table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr>\n';
 
 		if (Appcelerator.Browser.isIE)
@@ -202,7 +225,7 @@ Appcelerator.Module.Tabpanel =
 					tabHtml = Appcelerator.Compiler.getHtml(node);
 				}
 				var tabId = id + '_' + name;
-				html+='<td><div id="' + tabId + '" ' + (inactiveClassName?'class="tabpanel_tab '+inactiveClassName+'" ':'tabpanel_tab')+' '+Appcelerator.Util.Dom.getAttributesString(element)+'><a>' + tabHtml + '</a></div></td>\n';
+				html+='<td><div id="' + tabId + '" class="tabpanel_tab tabpanel_inactive"'+Appcelerator.Util.Dom.getAttributesString(element)+'><a>' + tabHtml + '</a></div></td>\n';
 				
 				if (!initialFound && initial && initial == name)
 				{

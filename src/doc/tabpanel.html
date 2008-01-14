@@ -33,7 +33,7 @@
 	opacity:0.99;
 }
 
-#styled .tab_inactive
+#styled .tabpanel_inactive
 {
 	border-bottom:none; 
 	background-color:#fff;
@@ -42,7 +42,7 @@
 	opacity:0.4;
 }
 
-#styled .tab_active
+#styled .tabpanel_active
 {
 	border-bottom:2px solid #3B5998; 
 	background-color:#3B5998;
@@ -104,6 +104,19 @@
 			</app:tabpanel>
 			<div id="my_tab_divider"></div>	
 		</div>
+        
+        <div style="padding:5px;"></div>
+        <p>
+             Here's another example of a tab panel with our light-gray styling
+        </p>
+        <div id="styled">
+            <app:tabpanel id="styled_tab" initial="tab1" color="light_gray">
+                <tab name="tab1">Look</tab>
+                <tab name="tab2">at Me</tab>
+                <tab name="tab3">I'm so gray</tab>
+            </app:tabpanel>
+            <div id="my_tab_divider"></div> 
+        </div>
 	</div>
 
 	<!-- CODE -->
@@ -121,7 +134,7 @@
 					opacity:0.99;
 				}
 
-				#styled .tab_inactive
+				#styled .tabpanel_inactive
 				{
 					border-bottom:none; 
 					background-color:#fff;
@@ -130,7 +143,7 @@
 					opacity:0.4;
 				}
 
-				#styled .tab_active
+				#styled .tabpanel_active
 				{
 					border-bottom:2px solid #3B5998; 
 					background-color:#3B5998;
@@ -171,6 +184,19 @@
 					</app:tabpanel>
 					<div id="my_tab_divider"></div>	
 				</div>
+                
+                <div style="padding:5px;"></div>
+                <p>
+                     Here's another example of a tab panel with our light-gray styling
+                </p>
+                <div id="styled">
+                    <app:tabpanel id="styled_tab" initial="tab1" color="light_gray">
+                        <tab name="tab1">Look</tab>
+                        <tab name="tab2">at Me</tab>
+                        <tab name="tab3">I'm so gray</tab>
+                    </app:tabpanel>
+                    <div id="my_tab_divider"></div> 
+                </div>
 			</textarea>	
 		</p>
 	</div>
@@ -190,6 +216,27 @@
 					</tr>
 				</table>
 		</p>
+        <p>
+            Optional Tabpanel Options:
+                <table cellspacing="5px">
+                    <tr>
+                      <td class="term">initial</td>
+                      <td class="def">The name of the initial active tab</td>
+                    </tr>
+                    <tr>
+                      <td class="term">color</td>
+                      <td class="def">Set to light_gray or dark_gray to use one of the default themes</td>
+                    </tr>
+                    <tr>
+                      <td class="term">class</td>
+                      <td class="def">Class selectors, used to override all default styling</td>
+                    </tr>
+                    <tr>
+                      <td class="term">tab_spacing</td>
+                      <td class="def">The distance between tabs (default: 3px)</td>
+                    </tr>
+                </table>
+        </p>
 		<p>
 			 Required Tab Options (for each tab definition within a Tab Panel):
 				<table cellspacing="5px">

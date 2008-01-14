@@ -1,16 +1,19 @@
-#styled_tab .tab_inactive
+#styled_tab .tabpanel_active
 {
-	border-color:#999;
-	border-bottom:1px solid #999; /* make this the same as the outer border */
+
 	background-color:#ff9900;
 	color:#111;
 }
 
-#styled_tab .tab_active
+#styled_tab .tabpanel_inactive
 {
-	border-color:#999;
-	border-bottom:1px solid #fff; /* make this the same as the background */
+
 	background-color:#fff;
 	color:#111;
 	font-weight:bold;
+}
+
+#styled_tab .tabpanel_hover
+{
+    background-color: #ccc;
 }
