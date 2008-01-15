@@ -6,7 +6,7 @@ class DownloadController < ApplicationController
     message_type = params['type'] || 'group.list.request'
     scope = params['scope'] || 'appcelerator'
     @callback = params['error'] || 'appcelerator.download.error'
-    result = Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, params, request_id, scope, 'array')
+    result = Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, params, request_id, scope, self, 'array')
 
     if result and result.size > 0
       response = result[0]['response']

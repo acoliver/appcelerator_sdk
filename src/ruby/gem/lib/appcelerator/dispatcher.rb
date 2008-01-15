@@ -36,9 +36,9 @@ module Appcelerator
     
     # dispatch a message that was generated in some other way, like the upload_controller
     #
-    def self.dispatch_message(request, response, session, message_type, params, request_id, scope, type = 'xml')
+    def self.dispatch_message(request, response, session, message_type, params, request_id, scope, controller, type = 'xml')
       msg = Message.new(request, session, message_type, params, request_id, scope)
-      
+      msg.controller = controller
       message_queue = ServiceBroker.send(msg)
       
       serialize(message_queue, session.session_id, response.body, type)
