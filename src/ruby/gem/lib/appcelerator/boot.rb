@@ -55,15 +55,17 @@ if defined?(RAILS_ROOT)
     end
     
     puts "=> Appcelerator on Rails #{Appcelerator::VERSION}"
-    
-    if ENV['RAILS_ENV'] != 'production'
-        puts '=> Registered services.... '
-        puts Appcelerator::ServiceBroker.diagnostics
-        puts
+
+    if $0 =~ /server/
+        if ENV['RAILS_ENV'] != 'production'
+            puts '=> Registered services.... '
+            puts Appcelerator::ServiceBroker.diagnostics
+            puts
+        end
+        
+        # start the update monitor
+        Appcelerator::Update.monitor
+        at_exit { Appcelerator::Update.unmonitor }
     end
-    
-    # start the update monitor
-    Appcelerator::Update.monitor
-    at_exit { Appcelerator::Update.unmonitor }
 end
 
