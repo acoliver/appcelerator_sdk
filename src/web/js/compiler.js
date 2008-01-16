@@ -519,7 +519,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
         state.pending+=1;
 		(function()
 		{
-	        Appcelerator.Core.require(name,function()
+	        Appcelerator.Core.requireModule(name,function()
 	        {
                   var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
 	              state.pending-=1;

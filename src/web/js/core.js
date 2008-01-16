@@ -9,34 +9,17 @@ Appcelerator.Core.fetching = {};
 Appcelerator.Core.widgets = {};
 Appcelerator.Core.widgets_css = {};
 Appcelerator.Core.widgets_js = {};
+Appcelerator.Core.moduleLoaderCallbacks = {};
 
 Appcelerator.Core.HeadElement = document.getElementsByTagName('head')[0];
 
-//
-// load a module and invoke the onload function (if provided) 
-// when loaded
-//
-Appcelerator.Core.require = function (moduleName,onload)
-{
-	moduleName = moduleName.replace(':','_');
-	Appcelerator.Core.usedModules[moduleName]=true;
-	var module = Appcelerator.Core.modules[moduleName];
-	
-    if (!module)
-	{
-		var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';
-		Appcelerator.Core.loadJS(path,onload);
-	}
-	else
-	{
-		if (Object.isFunction(onload)) onload();
-	}
-};
-
-//
-// dynamically load CSS from common CSS path and call onload once 
-// loaded (or immediately if already loaded)
-//
+/**
+ * dynamically load CSS from common CSS path and call onload once 
+ * loaded (or immediately if already loaded)
+ *
+ * @param {string} name of the common file
+ * @param {function} onload function to invoke
+ */
 Appcelerator.Core.requireCommonCSS = function(name,onload)
 {
     var srcpath = Appcelerator.Core.getModuleCommonDirectory()+'/css/'
@@ -48,10 +31,13 @@ Appcelerator.Core.requireCommonCSS = function(name,onload)
 };
 
 
-//
-// dynamically load JS from common JS path and call onload once 
-// loaded (or immediately if already loaded)
-//
+/**
+ * dynamically load JS from common JS path and call onload once 
+ * loaded (or immediately if already loaded)
+ *
+ * @param {string} name of the common js
+ * @param {function} onload function to callback upon load
+ */
 Appcelerator.Core.requireCommonJS = function(name,onload)
 {
     var srcpath = Appcelerator.Core.getModuleCommonDirectory()+'/js/'
@@ -62,6 +48,9 @@ Appcelerator.Core.requireCommonJS = function(name,onload)
     },srcpath,name);
 };
 
+/**
+ * internal method for loading multiple files
+ */
 Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
 {
     if (Object.isUndefined(name))
@@ -106,20 +95,37 @@ Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
     }
 };
 
+/**
+ * dynamically load a javascript file
+ *
+ * @param {string} path to resource
+ * @param {function} onload function to execute once loaded
+ */
 Appcelerator.Core.remoteLoadScript = function(path,onload)
 {
     Appcelerator.Core.remoteLoad('script','text/javascript',path,onload);  
 };
 
+/**
+ * dynamically load a css file
+ *
+ * @param {string} path to resource
+ * @param {function} onload function to execute once loaded
+ */
 Appcelerator.Core.remoteLoadCSS = function(path,onload)
 {
     Appcelerator.Core.remoteLoad('link','text/css',path,onload);  
 };
 
 
-//
-// dynamically load a remote file
-//
+/**
+ * dynamically load a remote file
+ *
+ * @param {string} name of the tag to insert into the DOM
+ * @param {string} type as in content type
+ * @param {string} full path to the resource
+ * @param {function} onload to invoke upon load
+ */
 Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
 {
     var array = Appcelerator.Core.fetching[path];
@@ -158,8 +164,7 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
            }
            delete Appcelerator.Core.fetching[path];
        }
-    };
-    
+    };    
     if (tag == 'script')
     {
 	    if (Appcelerator.Browser.isSafari2)
@@ -231,7 +236,7 @@ Appcelerator.Core.loadModuleCommonCSS = function(moduleName,css)
 //
 Appcelerator.Core.loadModuleCSS = function(moduleName,css,csspath)
 {
-	moduleName = moduleName.replace(':','_');
+	moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
 	
 	var loaded = Appcelerator.Core.modules[moduleName];
 	if (loaded)
@@ -355,12 +360,59 @@ Appcelerator.Core.loadModuleCSS = function(moduleName,css,csspath)
 	}
 };
 
-//
-// Modules must call this to register themselves with the framework
-//
+
+Appcelerator.Core.getModuleNameFromTag=function(moduleName)
+{
+	return moduleName.replace(':','_');
+};
+
+/**
+ * require a module and call onload when it is loaded and registered
+ * 
+ * @param {string} name of the module (for example, app:script)
+ * @param {function} function to call upon loading *and* registering the module
+ */
+Appcelerator.Core.requireModule = function(moduleName,onload)
+{
+	var moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
+	var module = Appcelerator.Core.modules[moduleName];
+	
+	// already loaded
+	if (module)
+	{
+		onload();
+		return;
+	}
+	
+	// already in the process of loading
+	var callbacks = Appcelerator.Core.moduleLoaderCallbacks[moduleName];
+	if (!callbacks)
+	{
+		callbacks=[];
+		Appcelerator.Core.moduleLoaderCallbacks[moduleName]=callbacks;
+		callbacks.push(onload);
+	}
+	else
+	{
+		callbacks.push(onload);
+		return;
+	}
+	
+	// module needs to be loaded
+	var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';
+	Appcelerator.Core.loadJS(path);
+};
+/**
+ * Modules must call this to register themselves with the framework
+ *
+ * @param {string} modulename
+ * @param {object} module object
+ * @param {boolean} dynamic
+ */
 Appcelerator.Core.registerModule = function (moduleName,module,dynamic)
 {
-	moduleName = moduleName.replace(':','_');
+	moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
+	
 	Appcelerator.Core.modules[moduleName] = module;
 	
 	//
@@ -395,7 +447,9 @@ Appcelerator.Core.registerModule = function (moduleName,module,dynamic)
 	}
 	
 	var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';	
-	var listeners = Appcelerator.Core.fetching[path];
+	
+	var listeners = (Appcelerator.Core.fetching[path] || [] ).concat(Appcelerator.Core.moduleLoaderCallbacks[moduleName]||[]);
+	
 	if (listeners)
 	{
 		// notify any pending listeners
@@ -404,7 +458,9 @@ Appcelerator.Core.registerModule = function (moduleName,module,dynamic)
 			listeners[c]();
 		}
 	}
-    if (Appcelerator.Core.fetching[path]) delete Appcelerator.Core.fetching[path];
+
+	delete Appcelerator.Core.moduleLoaderCallbacks[moduleName];
+    delete Appcelerator.Core.fetching[path];
 };
 
 if (Appcelerator.Browser.isIE)
@@ -417,7 +473,7 @@ if (Appcelerator.Browser.isIE)
 	Appcelerator.Core.registerModuleWithJSInIE = function(moduleName,module,js,idx,jspath)
 	{
 	    var file = js[idx];
-	    moduleName = moduleName.replace(':','_');
+	    moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
 	    var path = jspath ? jspath + '/' + file : Appcelerator.ModulePath + moduleName + '/js/' + file;
 
 	    var script = document.createElement('script');
@@ -461,20 +517,29 @@ if (Appcelerator.Browser.isIE)
 	};
 }
 
-//
-// called to load a js file relative to the modules/common/js directory
-//
+/**
+ * called to load a js file relative to the modules/common/js directory
+ *
+ * @param {string} moduleName
+ * @param {object} module object
+ * @param {string} js file(s)
+ */
 Appcelerator.Core.registerModuleWithCommonJS = function (moduleName,module,js)
 {
     Appcelerator.Core.registerModuleWithJS(moduleName,module,js,Appcelerator.Core.getModuleCommonDirectory()+'/js');
 };
 
-//
-// called to load a js file relative to the module js directory
-//
+/**
+ * called to load a js file relative to the module js directory
+ *
+ * @param {string} moduleName
+ * @param {object} module object
+ * @param {string} js files(s)
+ * @param {string} js path
+ */
 Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
 {
-    moduleName = moduleName.replace(':','_');
+    moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
     
     if (Appcelerator.Browser.isIE)
     {
@@ -553,6 +618,13 @@ Appcelerator.Core.getLoadedModulesAndAttributes = function()
 //
 Appcelerator.Core.onloaders = [];
 Appcelerator.Core.onunloaders = [];
+
+/**
+ * function for adding f as listener for when the document is loaded
+ *
+ * @param {function} function to call onload
+ * @param {boolean} add to the head or at the end of the stack
+ */
 Appcelerator.Core.onload = function(f,first)
 {
 	if (first)
@@ -565,6 +637,11 @@ Appcelerator.Core.onload = function(f,first)
 	}
 };
 
+/**
+ * function for adding f as unload listener when the document is unloaded
+ *
+ * @param {function} function to call on unload
+ */
 Appcelerator.Core.onunload = function(f)
 {
 	Appcelerator.Core.onunloaders.push(f);
