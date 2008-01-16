@@ -17,7 +17,12 @@ Appcelerator.Util.IFrame =
 	        {
 	            frame.setAttribute('name', frameid);
 	        }
-	        frame.setAttribute('src',Appcelerator.DocumentPath+src);
+            if(src.indexOf('/') == 0)
+            {
+                frame.setAttribute('src', src);
+            } else {
+                frame.setAttribute('src',Appcelerator.DocumentPath+src);
+            }
 	        frame.style.position = 'absolute';
 	        frame.style.width = frame.style.height = frame.borderWidth = '1px';
 	        // in Opera and Safari you'll need to actually show it or the frame won't load
