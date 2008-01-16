@@ -488,6 +488,11 @@ public class AppBeanPostProcessor implements InstantiationAwareBeanPostProcessor
                 try
                 {
                     Object configuredBean = getBean(instance);
+                    if (configuredBean==null) 
+                    {
+                        if (LOG.isDebugEnabled()) LOG.debug("skipping proxy for unset reference ");
+                    	continue;
+                    }
                     if (LOG.isDebugEnabled()) LOG.debug("visiting " + configuredBean + " for injection...");
                     AnnotationUtil.fieldVisitor(configuredBean, injectBeanVisitor, InjectBeans.class, InjectBean.class);
                     AnnotationUtil.methodVisitor(configuredBean, injectBeanVisitor, InjectBeans.class, InjectBean.class);
