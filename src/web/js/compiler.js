@@ -563,10 +563,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 {
 	recursive = recursive==null ? true : recursive;
 	
-	if (element.compiled)
-	{
-	   delete element.compiled;
-	}
+	element.compiled = 0;
 	
 	Appcelerator.Compiler.removeElementId(element.id);
 	
