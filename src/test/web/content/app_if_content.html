@@ -1,0 +1,14 @@
+<html>
+<body>
+            <app:iterator on="l:iterate_if then execute" items="[1,2,3,4,5]">
+                <html:div>
+                    <app:if expr="false">
+                        <html:p>Should not be shown (test failed)</html:p>
+                    <else>
+                        <html:p>    Test Passed</html:p>
+                    </else>         
+                    </app:if>
+                </html:div>
+            </app:iterator>
+</body>
+</html>

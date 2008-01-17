@@ -45,7 +45,7 @@ input[type=text]
 		<td class="result" >
 			<app:if expr="false">
 				Should not be shown (test failed)
-			<else expr="true">
+			<else>
 				Test Passed
 			</else>
 			</app:if>
@@ -61,12 +61,41 @@ input[type=text]
 			<elseif expr="true">
 				Test Passed
 			</elseif>
-			<else expr="true">
+			<else>
 				Should not be shown (test failed)
 			</else>			
 			</app:if>
 		</td>
 	</tr>
+    <tr>
+        <td class="test" valign="middle">
+            Inside of an iterator
+        </td>
+        <td class="result" >
+            <app:iterator on="l:test_iterator_if then execute" property="rows">
+                <html:div>
+                    <app:if expr="false">
+                        <html:p>Should not be shown (test failed)</html:p>
+                    <else>
+                        <html:p>    Test Passed</html:p>
+                    </else>         
+                    </app:if>
+                </html:div>
+            </app:iterator>
+            <app:script on="l:app.compiled then execute">
+                $MQ('l:test_iterator_if',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+            </app:script>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            If inside of an iterator inside of a content file
+        </td>
+        <td class="result" >
+            <app:content src="content/app_if_content.html" onload="l:iterate_if"></app:content>
+
+        </td>
+    </tr>
 </table>
 </body>
 </html>
