@@ -166,7 +166,8 @@ Appcelerator.Module.Button =
 			Appcelerator.Browser.fixBackgroundPNG(middle);
 			Appcelerator.Browser.fixBackgroundPNG(right);
 		}
-		$(id).disabled = false;		
+		$(id).parentNode.disabled = false;	
+       	
 	},
 	disable: function(id,parameters,data,scope,version)
 	{
@@ -189,7 +190,7 @@ Appcelerator.Module.Button =
 			Appcelerator.Browser.fixBackgroundPNG(middle);
 			Appcelerator.Browser.fixBackgroundPNG(right);
 		}
-		$(id).disabled = true;
+		$(id).parentNode.disabled = true;
 	},
 	buildWidget: function(element,parameters)
 	{
