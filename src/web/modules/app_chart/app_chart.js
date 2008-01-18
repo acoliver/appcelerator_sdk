@@ -146,6 +146,7 @@ Appcelerator.Module.Chart =
 		
 		if (animation && type.toLowerCase() == 'pie') animation = 2;
 		else if (animation && type.toLowerCase() == 'bar') animation = 1;
+		else animation = 0;
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
 		{
