@@ -63,7 +63,7 @@ Appcelerator.Module.Datatable =
                 {name: 'property', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
                 {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber},
-				{name: 'stickySort', optional: true, defaultValue: false, type: T.bool}];
+				{name: 'stickySort', optional: true, defaultValue: true, type: T.bool}];
     },
 	createDataTable: function (id, pagination_direction)
 	{		
@@ -444,11 +444,9 @@ Appcelerator.Module.Datatable =
 		$(id).parameterMap = parameterMap;	
 		
 		if (stickySort && lastSortIndex) {
-			Logger.info('hell ya');
 			Appcelerator.Module.Datatable.sortDataTableClient(lastSortIndex, id, true);
 			
 		} else {
-			Logger.info('hell no');
 			Appcelerator.Module.Datatable.createDataTable(id);
 		}
 	},
