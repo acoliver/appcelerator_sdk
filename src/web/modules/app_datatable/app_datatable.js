@@ -62,7 +62,8 @@ Appcelerator.Module.Datatable =
 				 type: T.cssDimension},
                 {name: 'property', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
-                {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber}];
+                {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber},
+				{name: 'stickySort', optional: true, defaultValue: false, type: T.bool}];
     },
 	createDataTable: function (id, pagination_direction)
 	{		
@@ -298,16 +299,17 @@ Appcelerator.Module.Datatable =
 	{
 		clearInterval($(id).paginationInterval);
 	},
-	sortDataTableClient: function (index, id)
+	sortDataTableClient: function (index, id, maintainSortOrder)
 	{
 		var parameterMap = $(id).parameterMap;
 		var header_array = parameterMap['header_array'];
 		var array = parameterMap['array'];
 		var column_property_name = header_array[index]['property'];
-
+		parameterMap['lastSortIndex'] = index;
+		
 		$(id).position = 0;
 		$(id).initialLoad = true;
-
+		
 		var sortFunction = eval(header_array[index]['sorter']);
 		
 		//Are we sorting numbers or strings? Check only the column we're sorting by..
@@ -333,7 +335,7 @@ Appcelerator.Module.Datatable =
 		}
 	
 		//Flip the per column sort state for this column
-		parameterMap['sortBy'][column_property_name] = !parameterMap['sortBy'][column_property_name];
+		parameterMap['sortBy'][column_property_name] = !maintainSortOrder ? !parameterMap['sortBy'][column_property_name] : parameterMap['sortBy'][column_property_name];
 		
 		//Perform the sort itself		
 		if (sortFunction)
@@ -423,7 +425,11 @@ Appcelerator.Module.Datatable =
 	execute: function(id,parameterMap,data,scope)
 	{	
 		//Data property
+		var params = $(id).parameterMap||parameterMap;
 		var propertyName = parameterMap['property'];
+		var stickySort = parameterMap['stickySort'];
+		var lastSortIndex = params['lastSortIndex'];
+		
 		var array;
 		$(id).position = 0;
 		$(id).initialLoad = true;
@@ -436,8 +442,15 @@ Appcelerator.Module.Datatable =
 		parameterMap['scope'] = scope;
 
 		$(id).parameterMap = parameterMap;	
-
-		Appcelerator.Module.Datatable.createDataTable(id);
+		
+		if (stickySort && lastSortIndex) {
+			Logger.info('hell ya');
+			Appcelerator.Module.Datatable.sortDataTableClient(lastSortIndex, id, true);
+			
+		} else {
+			Logger.info('hell no');
+			Appcelerator.Module.Datatable.createDataTable(id);
+		}
 	},
 	buildWidget: function(element, parameters)
 	{

@@ -38,7 +38,7 @@ Appcelerator.Module.Chart =
 	},
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute','update'];
 	},	
 	getAttributes: function()
 	{
@@ -73,7 +73,8 @@ Appcelerator.Module.Chart =
 				{name: 'marginBottom', optional: true, defaultValue: '50', type: T.number},
 				{name: 'legendHighlight', optional: true, defaultValue: 'true', type: T.bool},
 				{name: 'backgroundColor', optional: true, defaultValue: '#FFFFFF'},
-				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number}];
+				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number},
+				{name: 'oneBalloon', optional: true, defaultValue: 'false', type: T.bool}];
 	},
 	buildWidget: function(element, parameters)
 	{
@@ -84,6 +85,26 @@ Appcelerator.Module.Chart =
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'parameters': parameters
 		};
+	},
+	getDataAsCSV: function (array_of_data)
+	{
+		var data_as_csv = '';
+		for (var i = 0, len = array_of_data.length; i < len; i++)
+		{
+			data_as_csv += array_of_data[i]['name'] + ',' + array_of_data[i]['value'] + '\n';
+		}
+		return data_as_csv;
+	},
+	update: function(id, parameterMap, data)
+	{
+		var propertyName = parameterMap['property'];
+		if (propertyName)
+		{
+			var array = Object.getNestedProperty(data,propertyName) || [];
+			parameterMap['data'] = array;
+			var update_data_as_csv = Appcelerator.Module.Chart.getDataAsCSV(array);
+			try {$(id).childNodes[0].setData(update_data_as_csv);} catch (e00) {Logger.info('Unable to set chart data for id: ' + id)}
+		}
 	},
 	execute: function(id,parameterMap,data)
 	{
@@ -167,12 +188,8 @@ Appcelerator.Module.Chart =
 				title = t_title;
 			}
 		}
-	
-		var data_as_csv = '';
-		for (var i = 0, len = array.length; i < len; i++)
-		{
-			data_as_csv += array[i]['name'] + ',' + array[i]['value'] + '\n';
-		}
+
+		var data_as_csv = Appcelerator.Module.Chart.getDataAsCSV(array);
 		
 		if (type.toLowerCase() != "bar" && type.toLowerCase() != "pie" && type.toLowerCase() != "line" && type.toLowerCase() != "")
 		{
@@ -225,6 +242,7 @@ Appcelerator.Module.Chart =
 				column_titles_template = '<graph><axis>left</axis><title>{COL_TITLE}</title><color>{COL_COLOR}</color><color_hover>FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[{COL_TITLE} {value}]]></balloon_text></graph>';				
 			}
 			var chartTitlesTemp = '';
+			var chartTitles = '';
 			for (var i = 0, len = titleArray.length; i < len; i++)
 			{
 				chartTitlesTemp += column_titles_template.gsub('{COL_NUM}', i.toString()).gsub('{COL_TITLE}', titleArray[i]['title']).gsub('{COL_COLOR}', color_list[i]||'');
@@ -235,9 +253,15 @@ Appcelerator.Module.Chart =
 				if (type.toLowerCase() == "bar")
 				{
 					chartTitles = '<graph gid="0"><type>column</type><title></title><color>' + color + '</color><alpha></alpha><data_labels><![CDATA[]]></data_labels><fill_alpha>' + fillAlpha + '</fill_alpha><width></width><bullet></bullet><bullet_size></bullet_size><bullet_color></bullet_color><gradient_fill_colors></gradient_fill_colors></graph>';
-				} else (type.toLowerCase() == "line")
+				} else if (type.toLowerCase() == "line")
 				{
-					chartTitles = '<graph><axis>left</axis><title></title><color>' + color + '</color><color_hover>#FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[]]></balloon_text></graph>';
+					for (var i = 0; i < color_list.length; i++)
+					{
+						 chartTitles += '<graph><axis>left</axis><title></title><color>' + color_list[i] + '</color><color_hover>#FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[]]></balloon_text></graph>';
+					}
+				} else
+				{
+					chartTitles = '<graph><axis>left</axis><title></title><color>' + color + '</color><color_hover>#FF0000</color_hover><fill_alpha>' + fillAlpha + '</fill_alpha><balloon_text><![CDATA[]]></balloon_text></graph>';					
 				}
 			} else
 			{
