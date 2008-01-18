@@ -74,7 +74,7 @@ Appcelerator.Module.Chart =
 				{name: 'legendHighlight', optional: true, defaultValue: 'true', type: T.bool},
 				{name: 'backgroundColor', optional: true, defaultValue: '#FFFFFF'},
 				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number},
-				{name: 'animation', optional: true, defaultValue: true, type: T.bool},
+				{name: 'animation', optional: true, defaultValue: 'true', type: T.bool},
 				{name: 'oneBalloon', optional: true, defaultValue: 'false', type: T.bool}];
 	},
 	buildWidget: function(element, parameters)
@@ -144,8 +144,8 @@ Appcelerator.Module.Chart =
 		var innerRadius = parameterMap['innerRadius'];
 		var animation = parameterMap['animation'];
 		
-		if (animation == 'true' && type.toLowerCase() == 'pie') animation = 2;
-		else if (animation == 'true' && type.toLowerCase() == 'bar') animation = 1;
+		if (animation != 'false' && type.toLowerCase() == 'pie') animation = 2;
+		else if (animation != 'false' && type.toLowerCase() == 'bar') animation = 1;
 		else animation = 0;
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
