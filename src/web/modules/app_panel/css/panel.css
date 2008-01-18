@@ -188,3 +188,8 @@
 
 .AP_LGRP .tail_left {background-image: url(../images/white_right_tail.png)}
 .AP_LGSP .tail_left {background-image: url(../images/white_right_tail.png)}
+
+.full_body .panel_body {padding: 0px 0px;}
+.gray_bottom .panel_fl { background-image:url(../images/alt/footer_77.png);}
+.gray_bottom .panel_fc { background-image:url(../images/alt/footer_93.png);}
+.gray_bottom .panel_fr { background-image:url(../images/alt/footer_79.png);}

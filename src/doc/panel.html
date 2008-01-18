@@ -19,7 +19,35 @@
 <script type="text/javascript" src="js/sh/shBrushJava.js"></script>
 <script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
 </head>
-
+<style>
+.table_cell_header2
+{
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
+	background-color: #999;
+	color:white;
+	border: 1px solid #555;
+	cursor: pointer;
+}
+.table_row_even2
+{
+	padding: 3px;
+	border-right: 1px solid #999;
+	border-left: 1px solid #999;
+	border-bottom:1px solid #999;
+	background-color: #fff;
+}
+.table_row_odd2
+{
+	padding: 3px;
+	border-right: 1px solid #999;
+	border-left: 1px solid #999;
+	border-bottom:1px solid #999;
+	background-color: #ddd;		
+}
+</style>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<h2>Panel</h2>
 
@@ -40,7 +68,24 @@
             <html:img src="images/macallan.gif"></html:img>                
             <html:h4>While supplies last!</html:h4>
         </app:panel>
-			
+		<div style="margin-top:10px;width:500px;font-family:Arial, Helvetica, sans-serif;font-size:0.8em;">
+			<app:panel header_text="Passengers stuck in security" color="light_gray" rounded="true" close="true" shade="true" draggable="true" userClass="gray_bottom full_body">  
+				<app:datatable on="l:passengersstuckinsecurity.response then execute" width="100%" property="rows" sort="client" rowEvenClass="table_row_even2" rowOddClass="table_row_odd2">  
+					<header class="table_cell_header2" property="SecurityTimestamp" align="left">Security Timestamp</header>  
+					<header class="table_cell_header2" property="SecurityLocation" align="left">Location</header>  
+					<header class="table_cell_header2" property="Locator" align="left">Locator</header>  
+					<header class="table_cell_header2" property="Flight" align="left">Flight</header>  
+					<header class="table_cell_header2" property="Passenger" align="left">Passenger</header>  
+					<header class="table_cell_header2" property="Timestamp" align="left">Timestamp</header>  
+				</app:datatable>
+			</app:panel>
+		</div>
+		<app:script>
+			$MQ('l:passengersstuckinsecurity.response',{'rows':[
+			{'SecurityTimestamp':'01/17 03:22;44 PM','SecurityLocation':'TSA123','Locator':'RSV1109','Flight':102,'Passenger':'Joe Black','Timestamp':'01/17 03:22;44 PM'},
+			{'SecurityTimestamp':'01/17 03:25;44 PM','SecurityLocation':'TSA121','Locator':'RSV1109','Flight':101,'Passenger':'John Doe','Timestamp':'01/17 03:22;44 PM'},
+			{'SecurityTimestamp':'01/17 03:28;44 PM','SecurityLocation':'TSA120','Locator':'RSV1122','Flight':104,'Passenger':'Betty Blue','Timestamp':'01/17 03:22;44 PM'}]});
+		</app:script>
 	</div>
 
 	<!-- CODE -->
@@ -53,6 +98,26 @@
                     <html:img src="images/macallan.gif"></html:img>            
                     <html:div>While supplies last!</html:div>
                 </app:panel>
+				<div style="margin-top:10px;width:500px;font-family:Arial, Helvetica, sans-serif;font-size:0.8em;">
+					<app:panel header_text="Passengers stuck in security" color="light_gray" rounded="true" 
+						close="true" shade="true" draggable="true" userClass="gray_bottom full_body">  
+						<app:datatable on="l:passengersstuckinsecurity.response then execute" width="100%" 
+							property="rows" sort="client" rowEvenClass="table_row_even2" rowOddClass="table_row_odd2">  
+							<header class="table_cell_header2" property="SecurityTimestamp" align="left">Security Timestamp</header>  
+							<header class="table_cell_header2" property="SecurityLocation" align="left">Location</header>  
+							<header class="table_cell_header2" property="Locator" align="left">Locator</header>  
+							<header class="table_cell_header2" property="Flight" align="left">Flight</header>  
+							<header class="table_cell_header2" property="Passenger" align="left">Passenger</header>  
+							<header class="table_cell_header2" property="Timestamp" align="left">Timestamp</header>  
+						</app:datatable>
+					</app:panel>
+				</div>
+				<app:script>
+					$MQ('l:passengersstuckinsecurity.response',{'rows':[
+					{'SecurityTimestamp':'01/17 03:22;44 PM','SecurityLocation':'TSA123','Locator':'RSV1109','Flight':102,'Passenger':'Joe Black','Timestamp':'01/17 03:22;44 PM'},
+					{'SecurityTimestamp':'01/17 03:25;44 PM','SecurityLocation':'TSA121','Locator':'RSV1109','Flight':101,'Passenger':'John Doe','Timestamp':'01/17 03:22;44 PM'},
+					{'SecurityTimestamp':'01/17 03:28;44 PM','SecurityLocation':'TSA120','Locator':'RSV1122','Flight':104,'Passenger':'Betty Blue','Timestamp':'01/17 03:22;44 PM'}]});
+				</app:script>
     	     </textarea>	
 	</div>
 
