@@ -144,8 +144,8 @@ Appcelerator.Module.Chart =
 		var innerRadius = parameterMap['innerRadius'];
 		var animation = parameterMap['animation'];
 		
-		if (animation && type.toLowerCase() == 'pie') animation = 2;
-		else if (animation && type.toLowerCase() == 'bar') animation = 1;
+		if (animation == 'true' && type.toLowerCase() == 'pie') animation = 2;
+		else if (animation == 'true' && type.toLowerCase() == 'bar') animation = 1;
 		else animation = 0;
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
