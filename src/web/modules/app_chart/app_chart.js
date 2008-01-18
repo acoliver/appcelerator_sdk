@@ -74,7 +74,7 @@ Appcelerator.Module.Chart =
 				{name: 'legendHighlight', optional: true, defaultValue: 'true', type: T.bool},
 				{name: 'backgroundColor', optional: true, defaultValue: '#FFFFFF'},
 				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number},
-				{name: 'animation', optional: true, defaultValue: false, type: T.bool},
+				{name: 'animation', optional: true, defaultValue: true, type: T.bool},
 				{name: 'oneBalloon', optional: true, defaultValue: 'false', type: T.bool}];
 	},
 	buildWidget: function(element, parameters)
