@@ -357,7 +357,7 @@ Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabl
 	
 	if (checkenabled)
 	{
-		prefix='try{ var e=$("'+target+'"); if (e && !e.disabled && Element.showing(e)) '
+		prefix='try{ var e=$("'+target+'"); if (e && !e.disabled && Element.showing(e)) ';
 		suffix='}catch(xxx_){}';
 	}
 

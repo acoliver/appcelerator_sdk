@@ -51,8 +51,11 @@ Appcelerator.Module.Upload =
 			type: T.messageSend,
 			description: 'Name of the service that should be notified when the upload is complete'
         }];
-    },  
-
+    },
+	dontParseOnAttributes: function()
+	{
+		return true;
+	},
 	execute: function(id,parameterMap,data,scope)
 	{
 		Appcelerator.Module.Template.fetch(id,parameterMap['src'],parameterMap['args']);
