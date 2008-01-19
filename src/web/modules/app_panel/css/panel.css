@@ -195,3 +195,6 @@
 .gray_bottom .panel_fr { background-image:url(../images/gray/footer_79.png);}
 .dont_shade_tail .shade .ap_body { display:block}
 .dont_shade_tail .shade .panel_content_container {display:none;}
+.gray_bottom_onshade .shade .panel_fl { background-image:url(../images/gray/footer_77.png);}
+.gray_bottom_onshade .shade .panel_fc { background-image:url(../images/gray/footer_93.png);}
+.gray_bottom_onshade .shade .panel_fr { background-image:url(../images/gray/footer_79.png);}

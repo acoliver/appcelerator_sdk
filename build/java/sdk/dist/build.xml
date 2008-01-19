@@ -273,4 +273,27 @@
             <property name="overwrite.plat" value="true" />
         </ant>
     </target>
+	<target name="pullweb" description="pulls the modified web files in the deploy dir to your local workspace">
+		<copy todir="src/web">
+			<fileset dir="${deploy.dir}/${app.name}" includes="content/**,js/**,*.html,images/**,css/**,modules/**"/>
+		</copy>
+	</target>
+    <target name="update_sdk" description="updates the platform based on the sdk directory (not the dist)">
+		<fail unless="sdk.dir" message="you need to define sdk.dir ex: ../SDK"/>
+        <ant dir="${sdk.dir}" target="clean" inheritAll="false">
+			<property name="dont.jscompress" value="anything"/>
+		</ant>
+        <ant dir="${sdk.dir}" target="sdk_java_dist" inheritAll="false">
+			<property name="dont.jscompress" value="anything"/>
+		</ant>
+		<property file="${sdk.dir}/build.properties" prefix="sdk"/>
+		<delete dir="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}" failonerror="false"/>
+		<unzip src="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}.zip" dest="${sdk.dir}/stage/"/>
+        <property name="java.sdk.update.dir" value="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}"/>
+		<echo>${java.sdk.update.dir}</echo>
+        <antcall target="update_platform">
+            <param name="java.sdk.update.dir" value="${java.sdk.update.dir}"/>
+        </antcall>
+    </target>
+
 </project>
