@@ -443,7 +443,11 @@ Appcelerator.Module.Datatable =
 
 		$(id).parameterMap = parameterMap;	
 		
-		if (stickySort && lastSortIndex) {
+		if (stickySort=="false")
+			stickySort = false;
+		if (stickySort=="true")
+			stickySort=true;
+		if (stickySort && (typeof lastSortIndex != 'undefined')) {
 			Appcelerator.Module.Datatable.sortDataTableClient(lastSortIndex, id, true);
 			
 		} else {
