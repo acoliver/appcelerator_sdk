@@ -125,7 +125,6 @@ Appcelerator.Module.Datacache =
 	}
 };
 
-Appcelerator.Module.Datacache = {};
 Appcelerator.Core.registerModule('app:datacache',Appcelerator.Module.Datacache);
 
 
