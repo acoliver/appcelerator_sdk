@@ -63,6 +63,7 @@ Appcelerator.Module.Datatable =
                 {name: 'property', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
                 {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber},
+                {name: 'sortIndex', optional: true, defaultValue: -1, type: T.naturalNumber},
 				{name: 'stickySort', optional: true, defaultValue: true, type: T.bool}];
     },
 	createDataTable: function (id, pagination_direction)
@@ -428,8 +429,8 @@ Appcelerator.Module.Datatable =
 		var params = $(id).parameterMap||parameterMap;
 		var propertyName = parameterMap['property'];
 		var stickySort = parameterMap['stickySort'];
-		var lastSortIndex = params['lastSortIndex'];
-		
+		var lastSortIndex = params['lastSortIndex'] || parameterMap['sortIndex'];
+		lastSortIndex = parseInt(lastSortIndex);
 		var array;
 		$(id).position = 0;
 		$(id).initialLoad = true;
@@ -447,7 +448,7 @@ Appcelerator.Module.Datatable =
 			stickySort = false;
 		if (stickySort=="true")
 			stickySort=true;
-		if (stickySort && (typeof lastSortIndex != 'undefined')) {
+		if (stickySort && (typeof lastSortIndex != 'undefined' && lastSortIndex != -1)) {
 			Appcelerator.Module.Datatable.sortDataTableClient(lastSortIndex, id, true);
 			
 		} else {
