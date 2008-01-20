@@ -338,7 +338,7 @@ module Appcelerator
             case type
                 when 'module'
                     require 'appcelerator/docgen/docgen'
-                    json=Appcelerator::Module.loadMetaData(path)
+                    json=Appcelerator::Module.loadMetaData(path,@options[:verbose])
                     if json
                         if json['invalid']
                             json['errors'].each do |msg|

@@ -506,14 +506,18 @@
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
-            <fileset dir="${src.ruby.dir}/gem" includes="**/*" excludes="**/*.jar"/>
+            <fileset dir="${src.ruby.dir}/gem" includes="**/*" excludes="**/*.jar,**/*.js"/>
             <filterchain>
                 <expandproperties/>
             </filterchain>
         </copy>
+        <copy todir="${stage.dir}/ruby/lib/appcelerator/docgen" filtering="false">
+             <fileset dir="${src.web.dir}/js" includes="types.js"/>
+             <fileset dir="${build.web.dir}/prototype" includes="prototype.js"/>
+        </copy>
         <copy todir="${stage.dir}/ruby" filtering="false">
-				<fileset dir="stage" includes="examples/**"/>
-         	<fileset dir="${src.ruby.dir}/gem"  includes="**/*.jar"/>
+		    <fileset dir="stage" includes="examples/**"/>
+         	<fileset dir="${src.ruby.dir}/gem"  includes="**/*.jar,**/*.js"/>
 		  </copy>
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator*.js"/>
