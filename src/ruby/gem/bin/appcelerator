@@ -2,7 +2,7 @@
 #
 # Appcelerator SDK
 #
-# Copyright (C) 2006-2007 by Appcelerator, Inc. All Rights Reserved.
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
 #
 # This program is free software; you can redistribute it and/or modify
@@ -20,111 +20,532 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-require 'pathname'
+require 'rubygems'
 require 'erb'
 require 'md5'
 require 'socket'
 require 'fileutils'
 require 'appcelerator'
-require 'optparse'
 require 'yaml'
-
-if ARGV.length == 0
-   ARGV.push << '-h' 
-end
+require 'activesupport'
+require 'ftools'
 
 OPTIONS = {}
+ARGS = []
+action = nil
+SCRIPTNAME = File.basename($0)
 
-ARGV.options do |o|
-    script_name = File.basename($0)
-    o.set_summary_indent '  '
-    o.banner = "Usage: #{script_name} [OPTIONS]"
-    o.define_head "\nAppcelerator Platform SDK for Ruby on Rails"
-    o.separator ' '
-
-    o.on('-v','--version','Show installed Appcelerator version') { puts Appcelerator::VERSION; exit; }
-
-    o.on('-u','--update','Check for any updates to Appcelerator') do
-        require 'appcelerator/update'
-        version, params = Appcelerator::Update.up2date? true
-        if not version
-            puts 'No updates found'
-        end
-        exit
+ARGV.each do |arg|
+    case arg
+        when /^--/
+           OPTIONS[arg[2..-1].to_sym]=true
+        when /^-/
+           OPTIONS[arg[1..-1].to_sym]=true
+    else
+        ARGS << arg if action
+        action = arg unless action        
     end
-    
-    o.on_tail("-h", "--help", "Show this help message.") { puts o; exit }
-    o.parse!
 end
 
-app_path = ARGV.last
+module Appcelerator
 
-if ARGV.include? '--verbose'
-  ARGV.delete '--verbose'
-  system("rails  #{ARGV.join(' ')}")
-else
-  system("rails  #{ARGV.join(' ')}>> rails.log")
-  FileUtils.rm_r 'rails.log'
+    class Generator
+        
+        @@USAGE = 
+        {
+            :help => { 
+                :help=> 'Prints this message' ,
+                :args=> [
+                    {:name=>'command',:help=>'optional command to print help'}
+                ]
+            },
+            
+            :compile => {
+                :help => 'Compile and optimize an HTML file',
+                :args => [
+                    {:name=>'path',:help=>'input path (directory or file)'},
+                    {:name=>'output',:help=>'output directory'}
+                ],
+                :opts => [
+                    {:name=>'--recursive',:help=>'recursively collect files from input directory'},
+                    {:name=>'--copy',:help=>'copy files that aren\'t compiled'},
+                    {:name=>'--verbose',:help=>'be verbose when performing compile'}
+                ],
+                :examples => [
+                    "#{SCRIPTNAME} compile ~/myfolder ~/myoutput/foo",
+                    "#{SCRIPTNAME} --recursive test.html output",
+                    "#{SCRIPTNAME} compile ~/myfolder stage --recursive --copy --verbose"
+                ]
+            },
+            
+            :verify => {
+                :help => 'Verify an Appcelerator module file',
+                :args => [
+                    {:name=>'type',:help=>'one of: module'},
+                    {:name=>'path',:help=>'path to the file to verify'}
+                ],
+                :examples => [
+                    "#{SCRIPTNAME} verify module app_example.js"
+                ]
+            },
+            
+            :generate => {
+                :help => 'Generate a file',
+                :args => [
+                    {:name=>'type',:help=>'one of: html,service,module'},
+                    {:name=>'name',:help=>'name of the file to generate'},
+                    {:name=>'output',:help=>'output directory'}
+                ],
+                :opts => [
+                    {:name=>'--jsdir',:help=>'sets the javascript directory name. Defaults to javascripts'}
+                ],
+                :examples => [
+                    "#{SCRIPTNAME} generate html test.html ~/mypath",
+                    "#{SCRIPTNAME} generate service my_service app/services",
+                    "#{SCRIPTNAME} generate module app:foo public/modules"
+                ]
+            },
+            
+            :create => {
+                :help => 'Create a new Appcelerator-based RoR project',
+                :args => [
+                    {:name=>'path',:help=>'directory to create new project'}
+                ],
+                :examples => [
+                    "#{SCRIPTNAME} create ~/mypath"
+                ]
+            },
+            
+            :update => {
+                :help => 'Update an existing RoR project with Appcelerator or update to latest version',
+                :args => [
+                    {:name=>'path',:help=>'directory to project'}
+                ],
+                :examples => [
+                    "#{SCRIPTNAME} update ~/mypath"
+                ]
+            },
+            
+            :version => {
+                :help => 'Prints out the version or checks for the latest version from Appcelerator',
+                :args => [
+                    {:name=>'check',:help=>'check remotely for latest version'}
+                ]
+            }
+        }
+        
+        def initialize(action,options,args)
+            @options=options
+            @args=args
+            if not action and (options[:version] or options[:v])
+                action = 'version'
+            end
+            if not action or options[:help] or options[:h]
+                action = 'help'
+            end
+            @app_gem = Gem.cache.search('appcelerator').last.full_gem_path
+            if self.respond_to?(action)
+                begin
+                    m = self.method(action)
+                    m.call(*args) if args.length > 0
+                    m.call() unless args.length > 0
+                    exit 0
+                rescue ArgumentError => e
+                    help(action)
+                    exit 1
+                end
+            else
+                if args.length == 0
+                    # make it backwards compatible
+                    args << ARGV[0]
+                    m = self.method('create')
+                    m.call(*args)
+                    exit 0
+                else
+                    STDERR.puts "Unsupported command: #{ARGV[0]}"
+                    exit 1
+                end
+            end
+        end
+        
+        def version(check=false)
+            if not check
+                puts Appcelerator::VERSION
+            else
+                require 'appcelerator/update'
+                version, params = Appcelerator::Update.up2date? true
+                if not version
+                    puts 'No updates found'
+                end
+            end
+            exit 0
+        end
+        
+        def help(action=nil,code=0)
+            puts 
+            puts " Appcelerator Platform SDK #{Appcelerator::VERSION}"
+            puts 
+            
+            if action
+                args = @@USAGE[action.to_sym]
+                if not args
+                    action=nil
+                else
+                    astr = args[:args].map {|a| "[#{a[:name]}]" }.join(' ')
+                    astr = "[options...] #{astr}" if args[:opts]
+                    puts "    Usage for #{action}:"
+                    puts "      #{SCRIPTNAME} #{action} #{astr}"
+                    puts
+                    puts "    Supported arguments:"
+                    args[:args].each do |a|
+                        n = a[:name]
+                        msg = a[:help]
+                        puts "      #{n}" + (" "*(15-n.length)) + "#{msg}"
+                    end
+                    if args[:opts]
+                        puts
+                        puts "    Supported options:"
+                        args[:opts].each do |a|
+                            n = a[:name]
+                            msg = a[:help]
+                            puts "      #{n}" + (" "*(15-n.length)) + "#{msg}"
+                        end
+                    end
+                    if args[:examples]
+                        puts 
+                        puts "    Examples:"
+                        args[:examples].each do |example|
+                            puts "      #{example}"
+                        end
+                    end
+                end
+            end
+            if not action
+                puts "    Usage:"
+                puts "      #{SCRIPTNAME} -h/--help"
+                puts "      #{SCRIPTNAME} -v/--version"
+                puts "      #{SCRIPTNAME} command [arguments...] [options...]"
+                puts
+                puts "    Examples:"
+                puts "      #{SCRIPTNAME} install mypath"
+                puts "      #{SCRIPTNAME} compile myfile.html output --recursive"
+                puts "      #{SCRIPTNAME} verify module mymodule.js"
+                puts
+                puts "    Supported commands:"
+                @@USAGE.sort {|a,b| a[0].to_s<=>b[0].to_s}.each do |entry|
+                    k = entry[0]
+                    v = entry[1]
+                    help = v[:help]
+                    puts "      #{k.to_s}" + (" "*(15-k.to_s.length)) + "#{help}"
+                end
+            end
+            
+            puts
+            exit(code)
+        end
+        
+        def compile(path,output_dir)
+
+            FileUtils.mkdir output_dir unless File.exists?(output_dir)
+            
+            files=[]
+            
+            path = path[0,path.length-2] if path =~ /\/\/$/
+            path = path[0,path.length-1] if path =~ /\/$/
+            
+            if File.directory?(path)
+                ext = @options[:copy] ? '*' : '*.html'
+                dirpath = @options[:recursive] ? "#{path}/**/#{ext}" : "#{path}/#{ext}"
+                Dir[dirpath].each do |file|
+                    files << file
+                end    
+            elsif File.file?(path)
+                files << path                
+            else
+                STDERR.puts "What is? #{path}"
+                exit 1
+            end
+           
+            require 'appcelerator/compiler/compiler'
+            
+            compiledcount = copycount = 0
+            if @options[:verbose]
+              puts "*" * 80
+              puts "  Compiler Configuration:"
+              puts 
+              puts "     > Compiler input: #{path}"
+              puts "     > Compiler output: #{output_dir}"
+              puts
+              puts "*" * 80
+              puts
+            end
+            
+            files.each do |file|
+                
+                filename = File.basename(file)
+                dirpath = file[path.length+1..-1]
+                dirpath = dirpath[0,dirpath.length-filename.length]
+                
+                outdir = File.join(output_dir,dirpath)
+                
+                if not File.exists?(outdir)
+                  FileUtils.mkdir outdir
+                  puts " + creating directory: #{outdir}" if @options[:verbose]
+                end
+              
+                if not File.directory?(file)
+                  outfile = File.join(outdir,filename)
+                  outfile = File.new(outfile,'w+')
+                  if filename =~ /\.html$/
+                    puts " + compiling file: #{file}" if @options[:verbose]
+                    output,cachable,i = Appcelerator::Compiler.compile(File.read(file))
+                    outfile.puts output
+                    outfile.flush
+                    compiledcount+=1
+                  else
+                    puts " + copying file: #{outfile.path}" if @options[:verbose]
+                    File.copy(file,outfile.path)
+                    copycount+=1
+                  end
+                  outfile.close
+                end
+            end
+            
+            if @options[:verbose]
+              puts
+              puts "*" * 80
+              puts "  Compiler Statistics:"
+              puts 
+              puts "     > Compiled  #{compiledcount}" + (" "*(5-compiledcount.to_s.length)) + 'file' + (compiledcount == 1 ? '':'s')
+              puts "     > Copied    #{copycount}" + (" "*(5-copycount.to_s.length)) + 'file' + (copycount == 1 ? '':'s')
+              puts
+              puts "*" * 80
+            end
+        end
+        
+        def install(type,name,path=nil)
+            case type
+                when 'module'
+                    puts "Not implemented just yet!"
+                    exit 1
+                when 'sdk'
+                    puts "Not implemented just yet!"
+                    exit 1
+            end
+        end
+        
+        def verify(type,path)
+            case type
+                when 'module'
+                    require 'appcelerator/docgen/docgen'
+                    json=Appcelerator::Module.loadMetaData(path)
+                    if json
+                        if json['invalid']
+                            json['errors'].each do |msg|
+                                STDERR.puts msg
+                            end
+                        else
+                            puts "OK"
+                            exit 0
+                        end
+                    else
+                        die "Couldn't generate module metadata for #{path}"
+                    end
+                    exit 1
+            end
+        end
+        
+        #
+        # generate a template file
+        #
+        def generate(type,name,location)
+
+            path = File.expand_path(location)
+
+            template_dir = "#{@app_gem}/appcelerator/templates/"
+            parameters = {}
+            
+            camel  = name.gsub(/\s/,'_').camelize
+            under  = camel.underscore
+            output_dir = path
+
+            case type
+                when 'html'
+                    template_name = 'html_template.txt'
+                    under.gsub!(/\.html$/,'')
+                    output = "#{path}/#{under.downcase}.html"
+                    title = name.camelize.gsub(/\s+[a-z]/) { |m| "#{m.upcase}"}
+                    jsdir = @options[:jsdir] || 'javascripts'
+                    if File.exists?("#{output_dir}/js/appcelerator.js")
+                        jsdir = 'js' 
+                    end
+                    parameters[:title]=title
+                    parameters[:jsdir]=jsdir
+                when 'service'
+                    template_name = 'service_template.txt'
+                    output = "#{path}/#{under.downcase}_service.rb"
+                    parameters[:name]="#{camel}Service"
+                when 'module'
+                    template_name = 'module_template.txt'
+                    die ("Module must be in format namespace:name") unless name.index(':')
+                    under=under.gsub(/\.js$/,'').gsub(/[:]/,'_')
+                    camel=camel.gsub(/(:[a-z]+)/) { |m| m[1,1].upcase + m[2,m.length] }.camelize
+                    output_dir = "#{path}/#{under.downcase}"
+                    output = "#{output_dir}/#{under.downcase}.js"
+                    parameters[:name]="#{name}"
+                    parameters[:modulename]="#{camel}"
+            end 
+
+            if File.exists?(output)
+                confirm("A file already exists at: #{output}, Are you sure you want to continue and overwrite? [y]")
+            end
+
+            FileUtils.mkdir output_dir unless File.exists?(output_dir)
+
+            rhtml = ERB.new(File.read("#{template_dir}/#{template_name}"))
+        
+            b = Proc.new { binding }.call
+            parameters.each do |key, value|
+                eval "@#{key} = parameters[:#{key}]", b
+            end
+
+            file = File.open(output,'w+')
+            file.puts rhtml.result(b)
+            file.flush
+            file.close
+                
+        end 
+        
+        #
+        # update an existing rails or appcelerator project to the latest
+        #
+        def update(path)
+            create(path,true)
+        end
+
+        #
+        # create a new appcelerator project
+        #
+        def create(app_path,updateonly=false)
+
+            path = File.expand_path(app_path)
+            
+            #
+            # make sure we check before we override
+            #
+            if not updateonly and File.exists?(app_path)
+                     confirm("A directory already exists at: #{path}, Are you sure you want to continue and overwrite? [y]")
+            end
+
+            #
+            # run the system rails command
+            #
+            if not updateonly
+                system("rails --skip #{app_path} &>appcelerator.log")
+                FileUtils.rm_r 'appcelerator.log' unless @options[:verbose] rescue nil
+                
+                secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)   
+            end    
+            
+            FileUtils.mkdir "#{path}/public/javascripts" unless File.exists?("#{path}/public/javascripts")
+            FileUtils.mkdir "#{path}/app/services" unless File.exists?("#{path}/app/services")
+            
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/appcelerator.xml", "#{path}/public"
+            rails_gem = Gem.cache.search('rails').last
+            if rails_gem.version.to_s.to_f > 1.2
+              FileUtils.cp_r "#{@app_gem}/appcelerator/templates/application.rb", "#{path}/app/controllers"
+            end
+            f = File.open("#{path}/config/environment.rb", 'a+')
+            if not f.read =~ /require 'appcelerator'/
+                f.write("\n\nrequire 'appcelerator'")
+            end
+            f.close
+            
+            %w( index.html 
+                images 
+                javascripts 
+                modules 
+            ).each do |file|
+                FileUtils.cp_r "#{@app_gem}/appcelerator/templates/#{file}", "#{path}/public"
+            end
+
+            %w( README ).each do |file|
+                FileUtils.cp_r "#{@app_gem}/appcelerator/templates/#{file}", "#{path}"
+            end
+
+            %w( routes.rb ).each do |file|
+                FileUtils.cp_r "#{@app_gem}/appcelerator/templates/#{file}", "#{path}/config"
+            end
+
+            %w( proxy_controller.rb
+                service_broker_controller.rb
+                upload_controller.rb
+            ).each do |file|
+                FileUtils.cp_r "#{@app_gem}/appcelerator/templates/#{file}", "#{path}/app/controllers"
+            end
+            
+            %w(upload download).each do |dir|
+                FileUtils.mkdir "#{path}/app/views/#{dir}" unless File.exists?("#{path}/app/views/#{dir}")
+            end
+
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/upload_index.rhtml", "#{path}/app/views/upload/index.rhtml"
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/download_index.rhtml", "#{path}/app/views/download/index.rhtml"
+
+            result = ERB.new(File.read("#{path}/app/controllers/service_broker_controller.rb")).result(binding)
+            f = File.new("#{path}/app/controllers/service_broker_controller.rb",'w')
+            f.puts result
+            f.flush
+            f.close
+            
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/service_broker_helper.rb", "#{path}/app/helpers"
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/servicetester.html", "#{path}/public"
+            FileUtils.cp_r "#{@app_gem}/appcelerator/templates/test_service.rb", "#{path}/app/services"
+            
+            # write out our version file
+            version = {"site"=>"http://updatesite.appcelerator.org","version"=>"#{Appcelerator::VERSION}"}
+            if not updateonly
+                File.open("#{path}/config/version.yml",'w').puts version.to_yaml
+            end
+                        
+            # replace the XML with the correct sessionid
+            projectname = File.basename(path)
+            xml = File.read("#{path}/public/appcelerator.xml")
+            if rails_gem.version.to_s.to_f > 1.2
+              xml.gsub!(/SESSIONID/,"_#{projectname}_session")
+            else
+              xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
+            end
+            
+            if not updateonly
+                f=File.open("#{path}/public/appcelerator.xml",'w')
+                f.puts xml
+                f.flush
+                f.close
+            end            
+            
+            STDOUT.puts "Successfully created new Appcelerator project in '#{path}'" unless updateonly
+            STDOUT.puts "Successfully updated #{path} to Appcelerator #{Appcelerator::VERSION}" if updateonly
+        end
+
+        private 
+        
+        def die(msg)
+            STDERR.puts msg
+            exit 1
+        end
+
+        def ask(q)
+            STDOUT.print "#{q} "
+            STDOUT.flush
+            answer = STDIN.getc
+        end
+          
+        def confirm(q)
+            answer = ask(q)
+            die('Cancelled!') unless [121,10,89].index(answer)
+        end
+    end
 end
 
-p = Pathname.new(app_path)
 
-secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)   
-
-# 
-# remove rails files
-#
-FileUtils.rm_r "#{p}/public/javascripts"
-
-#
-# add appcelerator files
-#
-APP_GEM = Gem.cache.search('appcelerator').last.full_gem_path
-FileUtils.mkdir "#{p}/public/javascripts"
-FileUtils.mkdir "#{p}/app/services"
-
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/appcelerator.xml", "#{p}/public"
-rails_gem = Gem.cache.search('rails').last
-if rails_gem.version.to_s.to_f > 1.2
-  FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/application.rb", "#{p}/app/controllers"
-end
-f = File.open("#{p}/config/environment.rb", 'a')
-f.write("\n\nrequire 'appcelerator'")
-f.close
-
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/index.html", "#{p}/public"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/images", "#{p}/public"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/javascripts", "#{p}/public"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/modules", "#{p}/public"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/README", "#{p}"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/routes.rb", "#{p}/config"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/proxy_controller.rb", "#{p}/app/controllers"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_controller.rb", "#{p}/app/controllers"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/upload_controller.rb", "#{p}/app/controllers"
-FileUtils.mkdir "#{p}/app/views/upload"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/upload_index.rhtml", "#{p}/app/views/upload/index.rhtml"
-FileUtils.mkdir "#{p}/app/views/download"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/download_index.rhtml", "#{p}/app/views/download/index.rhtml"
-result = ERB.new(File.read("#{p}/app/controllers/service_broker_controller.rb")).result(binding)
-f = File.new("#{p}/app/controllers/service_broker_controller.rb",'w')
-f.write(result)
-f.close
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/service_broker_helper.rb", "#{p}/app/helpers"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/servicetester.html", "#{p}/public"
-FileUtils.cp_r "#{APP_GEM}/appcelerator/templates/test_service.rb", "#{p}/app/services"
-
-# write out our version file
-version = {"site"=>"http://updatesite.appcelerator.org","version"=>"#{Appcelerator::VERSION}"}
-File.open("#{p}/config/version.yml",'w').puts version.to_yaml
-
-# replace the XML with the correct sessionid
-projectname = File.basename(p)
-xml = File.read("#{p}/public/appcelerator.xml")
-if rails_gem.version.to_s.to_f > 1.2
-  xml.gsub!(/SESSIONID/,"_#{projectname}_session")
-else
-  xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
-end
-File.open("#{p}/public/appcelerator.xml",'w').puts xml
-
-puts "Successfully created new Appcelerator project in '#{app_path}'"
+Appcelerator::Generator.new(action,OPTIONS,ARGS)

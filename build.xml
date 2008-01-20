@@ -506,19 +506,20 @@
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
-            <fileset dir="${src.ruby.dir}/gem" includes="**/*"/>
+            <fileset dir="${src.ruby.dir}/gem" includes="**/*" excludes="**/*.jar"/>
             <filterchain>
                 <expandproperties/>
             </filterchain>
         </copy>
-        <copy todir="${stage.dir}/ruby">
-			<fileset dir="stage" includes="examples/**"/>
-		</copy>
+        <copy todir="${stage.dir}/ruby" filtering="false">
+				<fileset dir="stage" includes="examples/**"/>
+         	<fileset dir="${src.ruby.dir}/gem"  includes="**/*.jar"/>
+		  </copy>
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator*.js"/>
              <fileset dir="${stage.dir}/web" includes="modules/**/**"/>
              <fileset dir="${src.web.dir}" includes="css/**,images/**,index.html,servicetester.html"/>
-        	 <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
+        	    <fileset dir="${build.ruby.dir}" includes="appcelerator.xml,dist/README"/>
              <fileset dir="${build.ruby.dir}/dist/src/web" includes="**/**"/>
         </copy>
 		<move file="${stage.dir}/ruby/appcelerator/templates/js" tofile="${stage.dir}/ruby/appcelerator/templates/javascripts"/>
