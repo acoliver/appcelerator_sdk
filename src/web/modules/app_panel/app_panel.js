@@ -44,7 +44,7 @@ Appcelerator.Module.Panel =
     },
     getActions: function()
     {
-        return ['toggle', 'shade', 'unshade', 'close'];
+        return ['toggle', 'shade', 'unshade', 'close', 'open'];
     },    
     getAttributes: function()
     {
@@ -127,6 +127,11 @@ Appcelerator.Module.Panel =
         {
             shade(id);
         }
+    },
+    open: function(id,parameters,data,scope,version)
+    {
+        $(id).style.display = "block";
+        $MQ('l:' + id + '.opened');
     },
     close: function(id,parameters,data,scope,version)
     {
