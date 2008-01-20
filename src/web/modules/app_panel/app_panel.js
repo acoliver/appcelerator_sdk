@@ -130,11 +130,13 @@ Appcelerator.Module.Panel =
     },
     open: function(id,parameters,data,scope,version)
     {
+		$(id).open=true;
         $(id).style.display = "block";
         $MQ('l:' + id + '.opened');
     },
     close: function(id,parameters,data,scope,version)
     {
+		$(id).open=false;
         $(id).style.display = "none";
         $MQ('l:' + id + '.closed');
     },
@@ -143,6 +145,7 @@ Appcelerator.Module.Panel =
         var shadeButton = $(id + "_shade");
         if(shadeButton)
         {
+			$(id).shaded=true;
             shadeButton.style.display = 'none';
             $(id + '_unshade').style.display = 'block';
             $(id).firstDescendant().addClassName("shade");
@@ -154,6 +157,7 @@ Appcelerator.Module.Panel =
         var shadeButton = $(id + "_shade");
         if (shadeButton) 
         {
+			$(id).shaded=false;
             $(id + '_unshade').style.display = 'none';
             $(id + '_shade').style.display = 'block';
             $(id).firstDescendant().removeClassName("shade");

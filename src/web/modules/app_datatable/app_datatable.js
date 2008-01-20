@@ -40,7 +40,7 @@ Appcelerator.Module.Datatable =
 	},
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute', 'stop', 'start'];
 	},
 	getAttributes: function()
     {
@@ -435,8 +435,21 @@ Appcelerator.Module.Datatable =
 		//Queue the sort msg on the message broker
 		$MQ(parameterMap['sortRequest'],{'property': column_property_name, 'direction': sort_direction},parameterMap['scope']);
 	},
+	stop: function(id,parameters,data,scope,version)
+    {
+		$(id).stopped=true;
+    },
+	start: function(id,parameters,data,scope,version)
+    {
+		$(id).stopped=false;
+    },
 	execute: function(id,parameterMap,data,scope)
-	{	
+	{
+		if ($(id).stopped) {
+			Logger.info('not executing datatable for '+id);
+			return;
+		}
+		Logger.info('excuting datatable for '+id);
 		//Data property
 		var params = $(id).parameterMap||parameterMap;
 		var propertyName = parameterMap['property'];
