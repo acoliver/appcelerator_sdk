@@ -247,8 +247,10 @@ Appcelerator.Module.Datatable =
 				var cell_value = (array[xrun][column_property_name]||'');
 				if (formatterFunction) {
 					cell_value = formatterFunction(cell_value,column_property_name, array[xrun]);
+				} else {
+					cell_value.toString().escapeHTML();
 				}
-				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value.toString().escapeHTML() +'</span></td>';
+				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value +'</span></td>';
 				table_data_content += td;
 			}
 			table_data_content += '</tr>';
