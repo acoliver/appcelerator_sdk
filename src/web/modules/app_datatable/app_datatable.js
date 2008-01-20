@@ -138,6 +138,11 @@ Appcelerator.Module.Datatable =
 		for (var x = 0, len = header_array.length; x < len; x++)
 		{
 			var header_info = header_array[x];
+			var formatterFunction = eval(header_array[x]['formatter']);
+			if (formatterFunction) {
+				header_info.formatterFunction = formatterFunction;
+			}
+			
 			var hclass = header_info['class'];
 			if (hclass == '' || hclass == null)
 			{
@@ -237,7 +242,12 @@ Appcelerator.Module.Datatable =
 				
 				//Get the column property needed to figure out what column from the current array item we need
 				var column_property_name = header_array[h]['property'];
+				var formatterFunction = header_array[h]['formatterFunction'];
+				
 				var cell_value = (array[xrun][column_property_name]||'');
+				if (formatterFunction) {
+					cell_value = formatterFunction(cell_value,column_property_name, array[xrun]);
+				}
 				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value.toString().escapeHTML() +'</span></td>';
 				table_data_content += td;
 			}
@@ -490,6 +500,9 @@ Appcelerator.Module.Datatable =
 
 				//Header's sort function
 				header_object['sorter'] = element_children[i].getAttribute('sorter')||''; 
+				
+				//Header's formatter function
+				header_object['formatter'] = element_children[i].getAttribute('formatter')||''; 
 				
 				header_array.push(header_object);
 			}
