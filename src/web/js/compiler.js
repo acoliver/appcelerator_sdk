@@ -1225,7 +1225,6 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	            else
 	            {
                     Appcelerator.Compiler.removeElementId(id);
-                    Appcelerator.Compiler.setElementId(outer, id);
 	            }
 				Appcelerator.Compiler.delegateToContainerProcessors(element, outer);
 			}
