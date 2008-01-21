@@ -282,6 +282,7 @@ module Appcelerator
             
             files.each do |file|
                 
+                filedir = File.dirname(file)
                 filename = File.basename(file)
                 dirpath = file[path.length+1..-1]
                 dirpath = dirpath[0,dirpath.length-filename.length]
@@ -298,7 +299,7 @@ module Appcelerator
                   outfile = File.new(outfile,'w+')
                   if filename =~ /\.html$/
                     puts " + compiling file: #{file}" if @options[:verbose]
-                    output,cachable,i = Appcelerator::Compiler.compile(File.read(file))
+                    output,cachable,i = Appcelerator::Compiler.compile(File.read(file),nil,nil,filedir)
                     outfile.puts output
                     outfile.flush
                     compiledcount+=1

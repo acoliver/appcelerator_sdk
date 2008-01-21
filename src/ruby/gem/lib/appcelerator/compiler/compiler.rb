@@ -15,8 +15,8 @@ module Appcelerator
       
       appjs = nil
       found_widgets = []
-      
       debug = false
+      appjsdir = nil
       
       #
       # find any widgets and also make sure we find an appcelerator.js file
@@ -26,6 +26,9 @@ module Appcelerator
         if src =~ /appcelerator(-debug|-lite)?\.js/
           appjs = element
           debug = src.index('-debug')
+          idx = src.index('appcelerator')
+          appjsdir = idx > 0 ? src[0,idx] : ''
+          appjsdir = appjsdir + '../'
         elsif match = /modules\/([\w\d]+_[\w\d]+)\/[\w\d]+_[\w\d]+\.js/.match(src)
           widget = match[1]
           widgetname = widget.gsub(/_/,':')
@@ -83,7 +86,7 @@ module Appcelerator
         if not found_widgets.index(widget)
           name = widget.gsub(/:/,'_')
           src = URI.join(root_uri,"modules/#{name}/#{name}.js") if root_uri
-          src = "modules/#{name}/#{name}.js" unless src
+          src = "#{appjsdir}modules/#{name}/#{name}.js" unless src
           newjs << "<script src=\"#{src}\" type=\"text/javascript\"></script>\n"
         end
       end
@@ -193,10 +196,26 @@ module Appcelerator
       return true
     end
     
+    def Compiler.find_file(state,src)
+        f = File.join(state[:uis_path],src)
+        return f if File.exists?(f)
+        f = File.join(File.dirname(state[:uis_path]),src)
+        return f if File.exists?(f)
+        return src if File.exists?(src)
+        nil
+    end
+    
     def Compiler.compile_optimized_app_content_widget(element,state)
+
+      # TODO: better optimize these
+      return false if element.attributes['on']
+      return false if element.attributes['onload']
+      return false if element.attributes['onfetch']
+      
       if (element.attributes['lazy'] || 'false') == 'false'
-          f = File.join(state[:uis_path],element.attributes['src'])
-          if File.exists?(f)
+          f = Compiler.find_file(state,element.attributes['src'])
+          puts "attempting to load content file from: #{f}" if f
+          if f
             content_file = File.read(f)
             doc = Hpricot.parse(content_file)
             html = doc.search('/html/body').inner_html
