@@ -1180,7 +1180,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] =
         }
 		return {
 			'postBody': xml,
-			'contentType':'application/x-www-form-urlencoded'
+			'contentType':'application/x-www-form-urlencoded;charset=UTF-8'
 		};
 	},
 	deserialize: function(response,length,contentType)

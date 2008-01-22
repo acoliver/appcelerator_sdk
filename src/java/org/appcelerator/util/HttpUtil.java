@@ -77,7 +77,7 @@ public class HttpUtil
     }
     public static String getContentTypeDetermined(HttpUtil.FetchedUrlConnection connection)
     {
-    	return getContentTypeDetermined(connection,"UTF=8");
+    	return getContentTypeDetermined(connection,"UTF-8");
     }
     public static String getContentTypeDetermined(HttpUtil.FetchedUrlConnection connection, String encoding)
     {
