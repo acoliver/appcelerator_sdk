@@ -69,7 +69,7 @@ module Appcelerator
                 :opts => [
                     {:name=>'--recursive',:help=>'recursively collect files from input directory'},
                     {:name=>'--copy',:help=>'copy files that aren\'t compiled'},
-                    {:name=>'--verbose',:help=>'be verbose when performing compile'}
+                    {:name=>'--verbose',:help=>'print additional info while performing compile'}
                 ],
                 :examples => [
                     "#{SCRIPTNAME} compile ~/myfolder ~/myoutput/foo",
@@ -110,6 +110,10 @@ module Appcelerator
                 :help => 'Create a new Appcelerator-based RoR project',
                 :args => [
                     {:name=>'path',:help=>'directory to create new project'}
+                ],
+                :opts => [
+                    {:name=>'--verbose',:help=>'print additional info while creating project'},
+                    {:name=>'--overwrite',:help=>'don\'t require confirmation to overwrite existing directory'}
                 ],
                 :examples => [
                     "#{SCRIPTNAME} create ~/mypath"
@@ -159,6 +163,7 @@ module Appcelerator
                     # make it backwards compatible
                     args << ARGV[0]
                     m = self.method('create')
+                    puts '\n*** Deprecated usage, please run "appcelerator create project_name" instead ***\n'
                     m.call(*args)
                     exit 0
                 else
@@ -434,7 +439,7 @@ module Appcelerator
             #
             # make sure we check before we override
             #
-            if not updateonly and File.exists?(app_path)
+            if not updateonly and File.exists?(app_path) and not @options[:overwrite]
                      confirm("A directory already exists at: #{path}, Are you sure you want to continue and overwrite? [y]")
             end
 
@@ -442,8 +447,12 @@ module Appcelerator
             # run the system rails command
             #
             if not updateonly
-                system("rails --skip #{app_path} &>appcelerator.log")
-                FileUtils.rm_r 'appcelerator.log' unless @options[:verbose] rescue nil
+                if @options[:verbose]
+                    system("rails --skip #{app_path}")
+                else
+                    system("rails --skip #{app_path} &>appcelerator.log")
+                    FileUtils.rm_r 'appcelerator.log' rescue nil
+                end
                 
                 secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)   
             end    

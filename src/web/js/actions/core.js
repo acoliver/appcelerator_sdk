@@ -824,9 +824,10 @@ Appcelerator.Compiler.registerCustomAction('value',
 var GenericActionFunction = Class.create();
 Object.extend(GenericActionFunction.prototype,
 {
-	initialize: function(check)
+	initialize: function(check, widgetAction)
 	{
 		this.checkenabled = check;
+		this.widgetAction = !!widgetAction;
 	},
 	build: function(id,action,params)
 	{
@@ -861,7 +862,7 @@ Appcelerator.Compiler.buildCustomAction = function (name)
 	
 	if (!action)
 	{
-		var f = new GenericActionFunction(false);
+		var f = new GenericActionFunction(false, true);
 		Appcelerator.Compiler.registerCustomAction(name,f);
 	}
 };
