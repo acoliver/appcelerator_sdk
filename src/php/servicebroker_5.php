@@ -171,7 +171,7 @@
 	//
 	if ($count > 0)
 	{
-		header('Content-type: text/xml');
+		header('Content-type: text/xml;charset=UTF-8');
 		print $responseDom->saveXML();
 	}
 	else

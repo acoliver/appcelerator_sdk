@@ -52,7 +52,7 @@ class ServiceDispatcher(object):
             ('Cache-Control', 'no-cache, no-store, private, must-revalidate'),
             ('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
         ])
-        yield "<?xml version=\"1.0\"?><messages version='1.0' sessionid='%s'>"%session.id
+        yield "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messages version='1.0' sessionid='%s'>"%session.id
         
         input = get_input(environ)
         

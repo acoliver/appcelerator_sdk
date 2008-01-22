@@ -157,7 +157,7 @@ Appcelerator.Module.Http =
 	        body = bodycompiled(array).trim();
 			if (!uri['contentType'])
 			{
-				contentType = 'text/plain';
+				contentType = 'text/plain;charset=UTF-8';
 			}
 			methodParams = null;
 		}

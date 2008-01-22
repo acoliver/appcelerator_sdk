@@ -263,7 +263,7 @@
 	xml_set_character_data_handler($xml_parser, "characterData");
 	xml_parse($xml_parser, $post);
 	
-	$response = '<?xml version="1.0"?>';
+	$response = '<?xml version="1.0" encoding="UTF-8"?>';
 	$response = $response . '<messages version="$version" sessionid="$sessionid">';
 	
 	foreach ($responses as $r)
@@ -278,7 +278,7 @@
 	//
 	if (count($responses) > 0)
 	{
-		header('Content-type: text/xml');
+		header('Content-type: text/xml;charset=UTF-8');
 		print $response;
 	}
 	else

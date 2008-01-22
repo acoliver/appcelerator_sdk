@@ -79,7 +79,7 @@ module Appcelerator
         end
         output
       else
-        output << '<?xml version="1.0"?>'
+        output << '<?xml version="1.0" encoding="UTF-8"?>'
         output << "<messages version='1.0' sessionid='#{session_id}'>"
       
         message_queue.compact!

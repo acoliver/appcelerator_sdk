@@ -60,7 +60,7 @@ namespace Appcelerator
 
             if (id_queue[session_id].Count > 0)
             {
-                outgoing_messages += "<?xml version=\"1.0\"?>";
+                outgoing_messages += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
                 outgoing_messages += "<messages version='1.0' sessionid='" + session_id + "'>";
 
                 while (id_queue[session_id].Count > 0)

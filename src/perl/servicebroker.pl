@@ -52,7 +52,7 @@ if ($init eq "1") {
 
 } elsif ($method eq "GET") {
     $header{'-type'} = "text/xml; charset=utf-8";
-    $response .= "<?xml version='1.0'?>\n";
+    $response .= "<?xml version='1.0' encoding='UTF-8'?>\n";
     $response .= "<messages version='1.0' sessionid='$sessionid'/>\n";
 
 } elsif ($method ne "POST") {

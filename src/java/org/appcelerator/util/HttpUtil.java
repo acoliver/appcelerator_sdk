@@ -75,8 +75,11 @@ public class HttpUtil
     {
         return connection.getHeaderField(CONTENT_TYPE);
     }
-
     public static String getContentTypeDetermined(HttpUtil.FetchedUrlConnection connection)
+    {
+    	return getContentTypeDetermined(connection,"UTF=8");
+    }
+    public static String getContentTypeDetermined(HttpUtil.FetchedUrlConnection connection, String encoding)
     {
         String contentType = getContentTypeSpecified(connection.getConnection());
 
@@ -85,7 +88,7 @@ public class HttpUtil
             String output = connection.getOutput();
             if (output.startsWith("<?xml "))
             {
-                contentType = contentType.replace("text/plain", "text/xml");
+                contentType = contentType.replace("text/plain", "text/xml;charset="+encoding);
             }
         }
 

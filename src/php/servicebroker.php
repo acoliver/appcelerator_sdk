@@ -84,8 +84,8 @@ if ($method == 'GET')
 	 * NOTE: this function doesn't do anything since PHP doesn't really support asynchronous
 	 * behaviour (at least not cross-platform)
 	 */
-	header('Content-type: text/xml');
-	print "<?xml version='1.0'?>\n";
+	header('Content-type: text/xml;charset=UTF-8');
+	print "<?xml version='1.0' encoding='UTF-8'?>\n";
 	print "<messages version='1.0' sessionid='$sessionid'/>\n";
 	return;
 }

@@ -114,7 +114,7 @@ module ServiceBroker
         return
       end
   
-    response.headers['Content-Type'] = 'text/xml' 
+    response.headers['Content-Type'] = 'text/xml;charset=UTF-8' 
     response.headers['Pragma'] = 'no-cache'
     response.headers['Cache-Control'] = 'no-cache, no-store, private, must-revalidate'
     response.headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT'

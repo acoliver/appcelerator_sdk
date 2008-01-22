@@ -32,7 +32,7 @@ namespace Appcelerator
             HttpResponse response = context.Response;
             HttpRequest request = context.Request;
 
-            response.ContentType = "text/xml";
+            response.ContentType = "text/xml;charset=UTF-8";
             response.Expires = 0;
             response.CacheControl = "Private"; //no-cache, no-store, private, must-revalidate
 

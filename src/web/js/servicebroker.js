@@ -959,7 +959,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 			xml = '';
 	        var time = new Date();
 	        var timestamp = time.getTime();
-            xml = "<?xml version='1.0'?>\n";
+            xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
 			var tz = time.getTimezoneOffset()/60;
             var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
             xml += "<request version='1.0' idle='" + idleMs + "' timestamp='"+timestamp+"' tz='"+tz+"'>\n";
@@ -978,7 +978,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
         }
 		return {
 			'postBody': xml,
-			'contentType':'text/xml'
+			'contentType':'text/xml;charset=UTF-8'
 		};
 	},
 	deserialize: function(response,length,contentType)
