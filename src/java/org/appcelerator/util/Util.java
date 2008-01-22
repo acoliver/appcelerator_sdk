@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
@@ -228,7 +229,7 @@ public class Util
     public static String serialize(Document xml) throws IOException
     {
         StringWriter writer = new StringWriter();
-        serialize(xml, writer);
+        serialize(xml, writer, "UTF-8");
         return writer.toString();
     }
 
@@ -239,9 +240,9 @@ public class Util
      * @param writer writer to use
      * @throws IOException upoon serialization error
      */
-    public static void serialize(Document xml, Writer writer) throws IOException
+    public static void serialize(Document xml, Writer writer, String encoding) throws IOException
     {
-        OutputFormat format = new OutputFormat(xml);
+        OutputFormat format = new OutputFormat(xml,encoding, false);
         XMLSerializer serializer = new XMLSerializer(writer, format);
         format.setOmitXMLDeclaration(false);
         serializer.asDOMSerializer().serialize(xml);
@@ -274,7 +275,7 @@ public class Util
      */
     public static Document toXML(InputStream in) throws Exception
     {
-        return xmlFactory.newDocumentBuilder().parse(in);
+        return toXML(in,"UTF-8");
     }
 
     /**
@@ -287,6 +288,15 @@ public class Util
     public static Document toXML(String blob) throws Exception
     {
         return toXML(new ByteArrayInputStream(blob.getBytes()));
+    }
+    public static Document toXML(String blob, String encoding) throws Exception {
+        return toXML(new StringBufferInputStream(blob),encoding);
+    }
+    public static Document toXML(InputStream stream, String encoding) throws Exception {
+        org.xml.sax.InputSource is=new org.xml.sax.InputSource(stream);
+        is.setEncoding(encoding); // or Cp1251 or i try to comment this line
+        Document document=xmlFactory.newDocumentBuilder().parse(is);
+        return document;
     }
 
     /**

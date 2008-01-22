@@ -61,8 +61,12 @@ public class MessageUtils
     
     public static Document createMessageXML (String sessionId, String instanceId) throws Exception
     {
+    	return createMessageXML(sessionId, instanceId,"UTF-8");
+    }
+    public static Document createMessageXML (String sessionId, String instanceId, String encoding) throws Exception
+    {
         long timestamp = System.currentTimeMillis();
-        return Util.toXML("<?xml version='1.0'?><messages timestamp='"+timestamp+"' tz='"+timezoneOffset+"' version='1.0' sessionid='" + sessionId + "' instanceid='"+instanceId+"' />");
+        return Util.toXML("<?xml version='1.0' encoding=\""+encoding+"\"?><messages timestamp='"+timestamp+"' tz='"+timezoneOffset+"' version='1.0' sessionid='" + sessionId + "' instanceid='"+instanceId+"' />",encoding);
     }
     /**
      * given a message, append it to root and return it

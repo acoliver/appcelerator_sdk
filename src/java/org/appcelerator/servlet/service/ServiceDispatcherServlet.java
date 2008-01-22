@@ -267,7 +267,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
             {
                 LOG.warn("Request was invalid, invalid auth token match - sessionid =" + id +", instanceid = "+instanceid + ", auth = "+auth+" from " + request.getRemoteAddr() + "/" + request.getRemoteHost());
                 response.setHeader("Content-Length", "0");
-                response.setContentType("text/plain");
+                response.setContentType("text/xml;charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
@@ -318,7 +318,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
     {
         // indicate we have no content for them
         response.setHeader("Content-Length", "0");
-        response.setContentType("text/plain");
+        response.setContentType("text/xml;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_ACCEPTED);
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Cache-control", "no-cache, no-store, private, must-revalidate");
@@ -334,7 +334,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
             {
                 LOG.warn("Request was invalid, improper content type request: " + request.getContentType() + " from " + request.getRemoteAddr() + "/" + request.getRemoteHost());
                 response.setHeader("Content-Length", "0");
-                response.setContentType("text/plain");
+                response.setContentType("text/plain;charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
@@ -357,7 +357,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
             {
                 LOG.warn("Request was invalid, invalid auth token match - sessionid =" + id +", instanceid = "+instanceid + ", auth = "+auth+" from " + request.getRemoteAddr() + "/" + request.getRemoteHost());
                 response.setHeader("Content-Length", "0");
-                response.setContentType("text/plain");
+                response.setContentType("text/plain;charset=UTF-8");
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 
                 String retryCount = request.getParameter("retry");
@@ -372,7 +372,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
             if (request.getContentLength() > 0)
             {
                 // post should have content
-                Document xml = Util.toXML(request.getInputStream());
+                Document xml = Util.toXML(request.getInputStream(),"UTF-8");
 
                 Subject user = (Subject) session.getAttribute(Constants.USER);
 
@@ -444,7 +444,7 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
         }
         if (count > 0)
         {
-            response.setContentType("text/xml");
+            response.setContentType("text/xml;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_OK);
             response.setHeader("Connection", "Keep-Alive");
 
@@ -454,13 +454,13 @@ public class ServiceDispatcherServlet extends DispatchServlet implements IServic
             }
 
             // now serialize the XML to the servlet's output stream
-            Util.serialize(xml, response.getWriter());
+            Util.serialize(xml, response.getWriter(),"UTF-8");
         }
         else
         {
             // indicate we have no content for them
             response.setHeader("Content-Length", "0");
-            response.setContentType("text/plain");
+            response.setContentType("text/plain;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
         }
         

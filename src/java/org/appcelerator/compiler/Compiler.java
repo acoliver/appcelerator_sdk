@@ -154,6 +154,7 @@ public class Compiler
             ScriptableObject.putProperty(scope, "err", Context.toObject(System.err, scope));
             DOMParser parser = new DOMParser();
             parser.setFeature("http://cyberneko.org/html/features/scanner/notify-builtin-refs", true);
+            parser.setProperty("http://cyberneko.org/html/properties/default-encoding", "UTF-8");
             ScriptableObject.putProperty(scope, "DOMParser", Context.toObject(parser, scope));
 
             HtmlTempFile tmp = makeTempHTML(infile);
