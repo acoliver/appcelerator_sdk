@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.appcelerator.util.OSUtil;
 import org.appcelerator.util.Util;
 
 /**
@@ -50,10 +51,10 @@ public class LogConfigPreProcessor implements ServletContextListener
             String content = Util.copyToString(in);
             in.close();
             
-            arg0.getServletContext().setAttribute("webapp.root", path.getParentFile().getAbsolutePath());
+        	arg0.getServletContext().setAttribute("webapp.root", OSUtil.getPath(path.getParentFile()));
             arg0.getServletContext().setAttribute("webapp.name", path.getParentFile().getName());
-            
-            content = content.replaceAll("\\$\\{webapp\\.root\\}", path.getParentFile().getAbsolutePath());
+
+            content = content.replaceAll("\\$\\{webapp\\.root\\}", OSUtil.getPath(path.getParentFile()));
             content = content.replaceAll("\\$\\{webapp\\.name\\}", path.getParentFile().getName());
             
             File outfile = new File(logconfig.getParentFile(),"log4j.properties");
