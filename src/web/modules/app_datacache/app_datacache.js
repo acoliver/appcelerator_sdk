@@ -65,6 +65,9 @@ Appcelerator.Module.Datacache =
 	        throw "syntax error: required 'response' attribute for "+element.id;			
 		}
 
+        request = Appcelerator.Util.ServiceBroker.convertType(request);
+        response= Appcelerator.Util.ServiceBroker.convertType(response);
+
         if (!Appcelerator.Compiler.isCompiledMode)
         {
             var entry = {req:request,resp:response,ttl:parseInt(keepAlive),data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
