@@ -187,10 +187,24 @@ th
 				</app:script>
 		</td>
 	</tr>
-
-
-
-
+    <tr>
+        <td class="test" valign="middle">
+           	items attribute
+        </td>
+        <td class="result" >
+            <app:iterator items="[1,2,3]">
+				tested passed with #{iterator_value} item
+            </app:iterator>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+           	items attribute inside content file
+        </td>
+        <td class="result" >
+            <app:content src="content/iterator_items.html"></app:content>
+        </td>
+    </tr>
 </table>
 
 

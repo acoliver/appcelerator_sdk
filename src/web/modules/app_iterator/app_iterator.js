@@ -73,7 +73,8 @@ Appcelerator.Module.Iterator =
 			parameterMap['compiled'] = compiled;
 		}
 		
-		if (items) {
+		if (items) 
+		{
 			data = items.evalJSON() || [];
 		}
 		
@@ -147,7 +148,8 @@ Appcelerator.Module.Iterator =
 		element.innerHTML = html;
 		Appcelerator.Compiler.dynamicCompile(element);
 	},
-	compileWidget: function(params) {
+	compileWidget: function(params) 
+	{
 		// no message payload to pass for data,
 		// maybe we should plumb the triggering message of a dynamic compile through?
         this.execute(params['id'], params, null, '');

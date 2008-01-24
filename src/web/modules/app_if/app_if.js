@@ -114,7 +114,7 @@ Appcelerator.Module.If =
 			newhtml = newhtml.replace(/<ELSE/g,'<APP:ELSE').replace(/\/ELSE>/g,'/APP:ELSE>');
 			element.innerHTML = newhtml;
 		}
-        
+		
         if (Appcelerator.Browser.isOpera)
         {
             // NOTE: opera returns case-sensitive tag names, causing the conditions to fail
