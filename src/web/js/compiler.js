@@ -83,6 +83,7 @@ Appcelerator.Compiler.getAndEnsureId = function(element)
  */
 Appcelerator.Compiler.setElementId = function(element, id)
 {
+	Appcelerator.Compiler.removeElementId(element.id);
     element.id = id;
     element._added_to_cache = true;
     // set a global variable to a reference to the element
@@ -101,30 +102,32 @@ Appcelerator.Compiler.setElementId = function(element, id)
  */
 Appcelerator.Compiler.removeElementId = function(id)
 {
-    if (id)
-    {
-	    var element_var = window['$'+id]; 
-	    if (element_var)
-	    {
-	        try
-	        {
-	           delete window['$'+id];
-	        }
-	        catch(e)
-	        {
-	        }
-	        if (element_var._added_to_cache)
-	        {
-	           try
-	           {
-	               delete element_var._added_to_cache;
-	           }
-	           catch (e)
-	           {
-	           }
-	        }
-	        return true;
-	    }
+	if (id)
+	{
+		var element_var = window['$'+id]; 
+		if (element_var)
+		{
+			try
+			{
+				delete window['$'+id];
+			}
+			catch(e)
+			{
+				window['$'+id] = 0;
+			}
+			if (element_var._added_to_cache)
+			{
+				try
+				{
+				    delete element_var._added_to_cache;
+				}
+				catch (e)
+				{
+					element_var._added_to_cache = 0;
+				}
+			}
+			return true;
+		}
 	}
 	return false;
 };
@@ -510,7 +513,6 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
         element.compiled = 1;
     }
 
-	
 	var name = Appcelerator.Compiler.getTagname(element);
 	if (name.indexOf(':')>0)
 	{
@@ -1151,6 +1153,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					{
 						html = '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
 					}
+
 					added = true;
 					switch(position)
 					{
@@ -1214,18 +1217,6 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					outer = element.ownerDocument.getElementById(id+'_temp');
 				}
 				
-                // need to check and see if the widget used the ID itself
-                var found = $(id);
-                if (!found)
-                {
-	                // set it back to the original ID name 
-	                Appcelerator.Compiler.removeElementId(id);
-	                Appcelerator.Compiler.setElementId(outer, id);
-	            }
-	            else
-	            {
-                    Appcelerator.Compiler.removeElementId(id);
-	            }
 				Appcelerator.Compiler.delegateToContainerProcessors(element, outer);
 			}
             
@@ -1297,7 +1288,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
             
             if (added && instructions.wire && outer)
             {
-                	Appcelerator.Compiler.compileElement(outer, state);
+				Appcelerator.Compiler.compileElement(outer, state);
             }
 
             // reset the display for the widget
