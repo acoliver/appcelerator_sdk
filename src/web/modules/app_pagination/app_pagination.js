@@ -63,13 +63,13 @@ Appcelerator.Module.Pagination =
         }, {
             name: 'nextText',
             optional: true,
-            defaultValue: 'nextText',
+            defaultValue: 'next',
 			description: 'Text to show on the "Next Page" button, '+
 			'in the absense of a localized string given by nextLangId'
         }, {
             name: 'prevText',
             optional: true,
-            defaultValue: 'prevTex',
+            defaultValue: 'prev',
 			description: 'Text to show on the "Previous Page" button, '+
             'in the absense of a localized string given by prevLangId'
         }, {
