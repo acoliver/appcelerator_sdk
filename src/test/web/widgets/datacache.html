@@ -65,19 +65,19 @@ var count3= 0;
 	count++;
 	$MQ('l:datacache1.response',{'result':count})
 </app:script>
-<app message name="l:datacache1.request"></app:message>
+<app:message name="l:datacache1.request"></app:message>
 
 <app:script on="l:datacache2.request then execute">
 	count2++;
 	$MQ('l:datacache2.response',{'result':count2})
 </app:script>
-<app message name="l:datacache2.request"></app:message>
+<app:message name="l:datacache2.request"></app:message>
 
 <app:script on="l:datacache3.request then execute">
 	count3++;
 	$MQ('l:datacache3.response',{'result':count3})
 </app:script>
-<app message name="l:datacache3.request"></app:message>
+<app:message name="l:datacache3.request"></app:message>
 
 </body>
 
