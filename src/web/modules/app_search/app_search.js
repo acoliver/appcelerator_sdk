@@ -109,6 +109,11 @@ Appcelerator.Module.Search =
 			type: T.fieldset,
             description: "Fieldset applied to the input element"
         }, {
+            name: 'class',
+            optional: true,
+			type: T.cssClass,
+            description: "Class applied to the input element"
+        }, {
             name: 'name',
             optional: true,
             description: "Name applied to the input element"
@@ -384,6 +389,10 @@ Appcelerator.Module.Search =
 		if (parameters['fieldset'])
 		{
 			html += ' fieldset="'+parameters['fieldset']+'" ';
+		}
+		if (parameters['class'])
+		{
+			html += ' class="'+parameters['class']+'" ';
 		}
 		if (parameters['name'])
 		{
