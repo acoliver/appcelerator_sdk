@@ -129,24 +129,24 @@ Appcelerator.Module.Message =
             var data = Object.evalWithinScope(args, window);
         }
 
-		$MQ(name, data, scope, version);
-		
-		if (interval != null)
-	    {
-	    	var time = Appcelerator.Util.DateTime.timeFormat(interval);
-	    	if (time > 0)
-	    	{
-		    	params['timer'] = setInterval(function()
-		    	{
-		    		if (args && args != 'null')
-		    		{
-		    			// re-evaluate each time so you can dynamically change data each interval
-				        data = Object.evalWithinScope(args, window);
-		    		}
-					$MQ(name, data, scope, version);
-		    	}, time);
-	    	}
-	    }
+        if (interval == null || !params['timer']) $MQ(name, data, scope, version);      
+        if (interval != null)
+        {
+            var time = Appcelerator.Util.DateTime.timeFormat(interval);
+
+            if (time > 0 && !params['timer'])
+            {
+                params['timer'] = setInterval(function()
+                {
+                    if (args && args != 'null')
+                    {
+                    // re-evaluate each time so you can dynamically change data each interval
+                    data = Object.evalWithinScope(args, window);
+                    }
+                    $MQ(name, data, scope, version);
+                }, time);
+            }
+        }
 	}
 };
 
