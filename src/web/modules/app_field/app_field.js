@@ -2,7 +2,10 @@
 Appcelerator.Decorator['field_decorator'] = function(element, valid, decId)
 {
 	var field = $(decId);
-	field.style.visibility = (valid) ? 'hidden' : 'visible';
+	if (field) 
+	{
+		field.style.visibility = (valid) ? 'hidden' : 'visible';
+	}
 };
 
 Appcelerator.Module.Field =
@@ -192,7 +195,7 @@ Appcelerator.Module.Field =
 					fieldDefaultSetter(defaultFieldValue);
 					// do it on a timeout to allow the main blur listener in
 					// appcelerator to do its work and then come back in and force it
-					setTimeout(forceDecoration, 100);
+					forceDecoration.delay(100);
 				}
 			}
 			else
@@ -521,7 +524,8 @@ Appcelerator.Module.Field =
         {
           html += ' <span class="'+errorClass+'" id="'+errorId+'" style="visibility:hidden">'+error+'</span>';
         }		
-		element.id = element.id+'_field';
+		
+		//element.id = element.id+'_field';
 		
 		return {
 			'presentation' : '<div class="field" id="'+ element.id + '_container">'+html+ '</div>',
