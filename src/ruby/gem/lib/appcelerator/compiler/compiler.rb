@@ -1,7 +1,29 @@
+#
+# Appcelerator SDK
+#
+# Copyright (C) 2006-2007 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+
 require 'rubygems'
 require 'hpricot'
 require 'md5'
 require 'zlib'
+require 'base64'
 
 #
 # Appcelerator Just-in-time Compiler
@@ -10,12 +32,11 @@ require 'zlib'
 module Appcelerator
   class Compiler
     
-    def Compiler.compile(input,root_uri=nil,assets_path=nil,uis_path=nil,replacements={})
+    def Compiler.compile(input,root_uri=nil,assets_path=nil,uis_path=nil,replacements={},debug=false)
       doc = Hpricot.parse(input)
       
       appjs = nil
       found_widgets = []
-      debug = false
       appjsdir = nil
       
       #
@@ -25,7 +46,11 @@ module Appcelerator
         src = element.attributes['src']
         if src =~ /appcelerator(-debug|-lite)?\.js/
           appjs = element
-          debug = src.index('-debug')
+          debugon = src.index('-debug')
+          if not debugon and debug
+            element.raw_attributes['src']=src.gsub('appcelerator.','appcelerator-debug.')
+          end
+          debug = debugon unless debug
           idx = src.index('appcelerator')
           appjsdir = idx > 0 ? src[0,idx] : ''
           appjsdir = appjsdir + '../'
@@ -60,19 +85,22 @@ module Appcelerator
           :replacements=>replacements, 
           :messages=>[],
           :cacheable=>true,
-          :erb=>false
+          :erb=>false,
+          :debug=>debug
       }
       
-      state[:script] << "$$AC.compileOnLoad=false;"
+      state[:script] << '$$AC.compileOnLoad=false;'
       if root_uri
-          state[:script] << "Appcelerator.ScriptPath='" + URI.join(root_uri,"/javascripts/").to_s + "';"
-          state[:script] << "Appcelerator.ImagePath='" + URI.join(root_uri,"/images/").to_s + "';"
-          state[:script] << "Appcelerator.StylePath='" + URI.join(root_uri,"/stylesheets/").to_s + "';"
-          state[:script] << "Appcelerator.ContentPath='" + URI.join(root_uri,"/content/").to_s + "';"
-          state[:script] << "Appcelerator.ModulePath='" + URI.join(root_uri,"/modules/").to_s + "';"
+          state[:script] << 'Appcelerator.ScriptPath=\'' + URI.join(root_uri,'/javascripts/').to_s + '\';'
+          state[:script] << 'Appcelerator.ImagePath=\'' + URI.join(root_uri,'/images/').to_s + '\';'
+          state[:script] << 'Appcelerator.StylePath=\'' + URI.join(root_uri,'/stylesheets/').to_s + '\';'
+          state[:script] << 'Appcelerator.ContentPath=\'' + URI.join(root_uri,'/content/').to_s + '\';'
+          state[:script] << 'Appcelerator.ModulePath=\'' + URI.join(root_uri,'/modules/').to_s + '\';'
       end
-      state[:script] << "$$AU.ServerConfig.addConfigListener(function(){"
-      state[:script] << "function setScope(id,scope){var e = $el(id); if (e) e.scope = scope;}"
+      state[:script] << '$$AU.ServerConfig.addConfigListener(function(){'
+      state[:script] << 'var compilerState = $$AC.createCompilerState();'
+      state[:script] << 'var W = window; var A = "appcelerator"; var D = document;'
+      state[:script] << 'function S(e,scope){if(e)e.scope = scope};'
       
       # process each element
       (doc/:html).each do |element|
@@ -85,27 +113,34 @@ module Appcelerator
       state[:widgets].uniq.each do |widget|
         if not found_widgets.index(widget)
           name = widget.gsub(/:/,'_')
-          src = URI.join(root_uri,"modules/#{name}/#{name}.js") if root_uri
-          src = "#{appjsdir}modules/#{name}/#{name}.js" unless src
+          md = debug ? '-debug' : ''
+          src = URI.join(root_uri,"modules/#{name}/#{name}#{md}.js") if root_uri
+          src = "#{appjsdir}modules/#{name}/#{name}#{md}.js" unless src
           newjs << "<script src=\"#{src}\" type=\"text/javascript\"></script>\n"
         end
       end
       
       appjs.after "\n#{newjs}" if newjs != ''
       
-      state[:script] << "$$AC.compileDocumentOnFinish();"
       if state[:messages].length > 0
-        state[:script] << "(function(){"
+        state[:script] << '(function(){'
         if debug
           state[:script] << state[:messages].join(";\n")
         else
-          state[:script] << state[:messages].join(";")
+          state[:script] << state[:messages].join(';')
         end
-        state[:script] << "}).defer();"
+        state[:script] << '})();'
       end
 
-      state[:script] << "if ($$AB.isIE6) $$AB.fixImageIssues();"
-      state[:script] << "});"
+      state[:script] << 'compilerState.scanned = true;'
+      state[:script] << 'compilerState.onafterfinish=function(){'
+      state[:script] << '$$AC.compileDocumentOnFinish();'
+      state[:script] << 'var TE = new Date().getTime() - T;'
+      state[:script] << 'Logger.info("Compile took "+TE+" ms");'
+      state[:script] << '};'
+      state[:script] << '$$AC.checkLoadState(compilerState);'
+      state[:script] << 'if ($$AB.isIE6) $$AB.fixImageIssues();'
+      state[:script] << '});'
     
       head = (doc/:html/:head)
       body = (doc/:html/:body)
@@ -138,12 +173,12 @@ module Appcelerator
       head.prepend(meta)
       
       if debug
-        str = "\t<script type=\"text/javascript\">\n$$AC.nextId=#{state[:counter]+1};\n"
+        str = "\t<script type=\"text/javascript\">\n(function(){var T = new Date().getTime();$$AC.nextId=#{state[:counter]+1};\n"
         str << state[:script].join("\n")
-        str << "</script>\n"
+        str << "})();</script>\n"
         head.append(str)
       else
-        head.append("\t<script type=\"text/javascript\">$$AC.nextId=#{state[:counter]+1};#{state[:script].join('')}</script>\n")
+        head.append("\t<script type=\"text/javascript\">(function(){var T = new Date().getTime();$$AC.nextId=#{state[:counter]+1};#{state[:script].join('')}})();</script>\n")
       end
       
       html = doc.to_s
@@ -159,7 +194,7 @@ module Appcelerator
 
     private
 
-    COMPILER_ATTRIBUTES = %w(on activators decorator decoratorId validator fieldset sortable multiselect supressAutoStyles selectable draggable droppable resizable srcexpr langid scope)
+    COMPILER_ATTRIBUTES = %w(on activators decorator decoratorId validator fieldset sortable multiselect supressAutoStyles selectable draggable droppable resizable srcexpr langid scope onloaded)
 
     def Compiler.compile_optimized_app_message_widget(element,state)
       name = element.attributes['name']
@@ -184,14 +219,24 @@ module Appcelerator
       end
       false
     end
+    
+    def Compiler.unescape_xml(code)
+        code.gsub!('&lt;','<')
+        code.gsub!('&gt;','>')
+        code.gsub!('&quot;','"')
+        code.gsub!('&apos;','\'')
+        code.gsub!('&amp;','&')
+        code
+    end
 
     def Compiler.compile_optimized_app_script_widget(element,state)
       # if there is an on expression, don't compile it
+      # TODO: optimize this
       return false if element.attributes['on']
       code = element.inner_html
       code = code.gsub(/\/\*(.*?)\*\//,'');
-      code = escape_string(code)
-      state[:script] << "eval(\"#{code}\");"
+      code = Compiler.unescape_xml(code)
+      state[:script] << "(function(){#{code}})();"
       element.swap("<div class=\"__deleted__\"></div>")
       return true
     end
@@ -214,7 +259,6 @@ module Appcelerator
       
       if (element.attributes['lazy'] || 'false') == 'false'
           f = Compiler.find_file(state,element.attributes['src'])
-          puts "attempting to load content file from: #{f}" if f
           if f
             content_file = File.read(f)
             doc = Hpricot.parse(content_file)
@@ -255,23 +299,32 @@ module Appcelerator
         return if result
       end
       
+      #TODO: optimize this
+      
       id = element.attributes['id']
-      html = escape_string(element.inner_html).gsub('html:','')
+      html = element.inner_html.gsub('html:','')
       script = []
       script << "(function(){"
-      elemtype = element.name=~/script/i ? 'script' : 'div'
-      script << "var e = document.createElement('#{elemtype}');"
-      script << "e.innerHTML = \"#{html}\";"
+      elemtype = element.name=~/script/i ? 'xmp' : 'div'
+      script << "var e = D.createElement('#{elemtype}');"
+      if html.strip.length > 0
+         if elemtype=='xmp'
+            # TODO: optimize this to create a function which is invoked and this
+            # content is placed in script directly
+            script << "e.innerHTML = \"#{escape_string(html)}\";"
+         else
+            script << "e.innerHTML = \"#{Compiler.escape_string(html)}\";";
+#            script << "e.innerHTML = \"#{Base64.encode64(html).gsub(/\s/,'')}\".decode64();"
+         end
+      end
+      script << "e._tagName = '#{element.name}';"
       script << "e.id = \"#{id}_compiler\";"
       script << "e.style.display='none';"
       element.attributes.each do |key,value|
         script << "e.setAttribute(\"#{key}\",\"#{value}\");" unless key=='id'
       end
       script << "$#{id}.appendChild(e);"
-      script << "var state = $$AC.createCompilerState();"
-      script << "$$AC.compileWidget($el('#{id}_compiler'),state,'#{element.name}');"
-      script << "state.scanned = true;"
-      script << "$$AC.checkLoadState(state);"
+      script << "$$AC.compileWidget($el('#{id}_compiler'),compilerState,'#{element.name}');"
       script << "})();"
       
       state[:script].concat(script)
@@ -284,9 +337,39 @@ module Appcelerator
       value.gsub(/[\n\r]/,"\\\\n").gsub(/[\t]/,"\\\\t").gsub(/["]/,"\\\\\"")
     end
     
+    def Compiler.pre_compile_body_element(element,state)
+        on = element.attributes['on'] || ''
+        if on != ''
+            on.gsub!('l:app.compiled then show','')
+            on.strip!
+        end 
+        if on!=''
+            if not on =~ /l:app\.compiled/
+                on = "l:app.compiled then visible or #{on}"
+            end
+        else
+            on = 'l:app.compiled then visible'
+        end
+        style = element.attributes['style'] || ''
+        styles = Hash.new
+        if style!=''
+            style.strip.split(';').each {|entry| t = entry.split(':'); styles[t[0].strip] = t[1].strip }
+        end
+        styles['visibility']='hidden'
+        styleattr = ''
+        styles.each do |k,v|
+            styleattr << "#{k}:#{v};"
+        end
+        element.raw_attributes['style'] = styleattr
+        element.raw_attributes['on'] = on
+    end
+    
     def Compiler.compile_element(element,state)
       compile = false
       found_attrs = {}
+      if element.name =~ /body/i
+        Compiler.pre_compile_body_element(element,state)
+      end
       element.attributes.each do |name,value|
         COMPILER_ATTRIBUTES.each do |attr|
           if attr==name
@@ -301,8 +384,8 @@ module Appcelerator
         found_attrs.each do |key,value|
           state[:script] << "$#{id}.setAttribute(\"#{key}\",\"#{escape_string(value)}\");" unless key=='id'
         end
-        recursive = element.name !=~ /body/i
-        state[:script] << "$$AC.dynamicCompile($#{id},true,#{recursive});"
+        recursive=false
+        state[:script] << "$$AC.compileElement($#{id},compilerState,#{recursive});"
       end
     end
     
@@ -327,8 +410,8 @@ module Appcelerator
     end
     
     def Compiler.get_scope(element)
-      return 'appcelerator' unless element and element.elem?
-      return element.attributes['scope'] if element.attributes['scope']
+      return 'A' unless element and element.elem?
+      return "\'#{element.attributes['scope']}\'" if element.attributes['scope']
       return get_scope(element.parent)
     end
     
@@ -340,7 +423,7 @@ module Appcelerator
         id = element.raw_attributes['id'] = "app_#{state[:counter]}"
       end
       scope = get_scope(element)
-      state[:script] << "window['$#{id}']=$el('#{id}');setScope($#{id},\"#{scope}\");"
+      state[:script] << "W['$#{id}']=$el('#{id}');S($#{id},#{scope});"
       id
     end
 
@@ -381,7 +464,7 @@ if defined?(RAILS_ROOT)
   class ActionController::Base
     def proxy_process(request, response, method = :perform_action, *arguments) #:nodoc:
         
-        server = request.headers['SERVER_SOFTWARE']
+        server = request.headers['SERVER_SOFTWARE'] || 'Unknown'
         response.headers['Server'] = "#{server} (Powered by Appcelerator #{Appcelerator::VERSION})"
         
         path_info = request.path_info || '/index.html'
@@ -496,3 +579,12 @@ if defined?(RAILS_ROOT)
     puts "** Installed Appcelerator JIT Compiler"
   end
 end
+
+
+
+#
+# TODO:
+#
+# - optimize on attributes
+# - add if widget compile 
+#

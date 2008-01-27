@@ -812,6 +812,9 @@ Appcelerator.Compiler.getTagname = function(element)
 	if (!element) throw "element cannot be null";
 	if (element.nodeType!=1) throw "node: "+element.nodeName+" is not an element, was nodeType: "+element.nodeType+", type="+(typeof element);
 	
+	// used by the compiler to mask a tag
+	if (element._tagName) return element._tagName;
+	
 	if (Appcelerator.Browser.isIE)
 	{
 		if (element.scopeName && element.tagUrn)
@@ -879,9 +882,9 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
 	        element._validatorObserver = new Form.Element.Observer(
 	          element,
 	          .5,  
-	          function(el, value)
+	          function(element, value)
 	          {
-	            action(el,value);
+	            action(element,value);
 	          }
 	        );
 	    });
@@ -890,8 +893,8 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
 	        if (element._validatorObserver)
 	        {
 	            element._validatorObserver.stop();
-	            delete element._validatorObserver;
-                action(el,Field.getValue(el));
+	            try { delete element._validatorObserver; } catch (e) { element._validatorObserver = null; }
+                action(element,Field.getValue(element));
 	        }
 	    });
     }).defer();

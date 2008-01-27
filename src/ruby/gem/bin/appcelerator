@@ -69,7 +69,8 @@ module Appcelerator
                 :opts => [
                     {:name=>'--recursive',:help=>'recursively collect files from input directory'},
                     {:name=>'--copy',:help=>'copy files that aren\'t compiled'},
-                    {:name=>'--verbose',:help=>'print additional info while performing compile'}
+                    {:name=>'--verbose',:help=>'print additional info while performing compile'},
+                    {:name=>'--debug',:help=>'use the debug versions of the library'},
                 ],
                 :examples => [
                     "#{SCRIPTNAME} compile ~/myfolder ~/myoutput/foo",
@@ -280,6 +281,7 @@ module Appcelerator
               puts 
               puts "     > Compiler input: #{path}"
               puts "     > Compiler output: #{output_dir}"
+              puts "     > Debug: #{@options[:debug]}"
               puts
               puts "*" * 80
               puts
@@ -304,7 +306,7 @@ module Appcelerator
                   outfile = File.new(outfile,'w+')
                   if filename =~ /\.html$/
                     puts " + compiling file: #{file}" if @options[:verbose]
-                    output,cachable,i = Appcelerator::Compiler.compile(File.read(file),nil,nil,filedir)
+                    output,cachable,i = Appcelerator::Compiler.compile(File.read(file),nil,nil,filedir,{},@options[:debug])
                     outfile.puts output
                     outfile.flush
                     compiledcount+=1
@@ -440,7 +442,7 @@ module Appcelerator
             # make sure we check before we override
             #
             if not updateonly and File.exists?(app_path) and not @options[:overwrite]
-                     confirm("A directory already exists at: #{path}, Are you sure you want to continue and overwrite? [y]")
+               confirm("A directory already exists at: #{path}, Are you sure you want to continue and overwrite? [y]")
             end
 
             #

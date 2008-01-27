@@ -506,7 +506,7 @@
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
-            <fileset dir="${src.ruby.dir}/gem" includes="**/*" excludes="**/*.jar,**/*.js"/>
+            <fileset dir="${src.ruby.dir}/gem" includes="**/*" excludes="**/*.jar,**/*.js,**/compiler.rb"/>
             <filterchain>
                 <expandproperties/>
             </filterchain>
@@ -517,7 +517,7 @@
         </copy>
         <copy todir="${stage.dir}/ruby" filtering="false">
 		    <fileset dir="stage" includes="examples/**"/>
-         	<fileset dir="${src.ruby.dir}/gem"  includes="**/*.jar,**/*.js"/>
+         	<fileset dir="${src.ruby.dir}/gem"  includes="**/*.jar,**/*.js,**/compiler.rb"/>
 		  </copy>
         <copy todir="${stage.dir}/ruby/appcelerator/templates" filtering="false">
              <fileset dir="${stage.dir}/web" includes="js/appcelerator*.js"/>

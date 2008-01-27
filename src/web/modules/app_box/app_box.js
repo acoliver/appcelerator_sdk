@@ -7,7 +7,7 @@ Appcelerator.Module.Box =
 	},
 	getDescription: function()
 	{
-		return 'box widget';
+		return 'The box widget is a layout component used for laying out content either vertically or horizontally in a box region.';
 	},
 	getVersion: function()
 	{

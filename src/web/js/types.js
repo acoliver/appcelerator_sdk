@@ -11,13 +11,13 @@ Appcelerator.Types = {};
 Appcelerator.Types.enumeration = function()
 {
     var pattern = '^('+ $A(arguments).join(')|(') +')$';
-    return {name: 'enumeration', values: arguments, regex: RegExp(pattern)};
+    return {name: 'Enumeration', values: $A(arguments), regex: RegExp(pattern)};
 };
 Appcelerator.Types.openEnumeration = function()
 {
 	// accepts anything, suggests some things that it knows will work
     var pattern = '^('+ $A(arguments).join(')|(') +')|(.*)$';
-    return {name: 'enumeration', values: arguments, regex: RegExp(pattern)};
+    return {name: 'Enumeration', values: $A(arguments), regex: RegExp(pattern)};
 };
 Appcelerator.Types.pattern = function(regex, name)
 {
