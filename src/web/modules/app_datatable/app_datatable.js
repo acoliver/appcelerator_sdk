@@ -445,11 +445,12 @@ Appcelerator.Module.Datatable =
     },
 	execute: function(id,parameterMap,data,scope)
 	{
-		if ($(id).stopped) {
-			Logger.info('not executing datatable for '+id);
+		if ($(id).stopped) 
+		{
+			$D('not executing datatable for '+id);
 			return;
 		}
-		Logger.info('excuting datatable for '+id);
+		$D('excuting datatable for '+id);
 		//Data property
 		var params = $(id).parameterMap||parameterMap;
 		var propertyName = parameterMap['property'];
