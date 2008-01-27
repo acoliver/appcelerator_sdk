@@ -714,52 +714,62 @@ Appcelerator.Util.ServiceBroker =
 				var scope = message[3];
 				var version = message[4];
 				
-				var arraydirect = this.remoteDirectListeners[name];
-				var arraypattern = this.remotePatternListeners;
-				if (arraydirect)
+				switch (dest)
 				{
-				    for (var c = 0, len = arraydirect.length; c < len; c++)
-				    {
-				        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-				    }
+					case 'remote':
+					{
+						var arraydirect = this.remoteDirectListeners[name];
+						var arraypattern = this.remotePatternListeners;
+						if (arraydirect)
+						{
+						    for (var c = 0, len = arraydirect.length; c < len; c++)
+						    {
+						        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+						    }
+						}
+						if (arraypattern)
+						{
+						    for (var c = 0, len = arraypattern.length; c < len; c++)
+						    {
+						        var entry = arraypattern[c];
+						        var listener = entry[0];
+						        var pattern = entry[1];
+						        if (pattern.test(name))
+						        {
+						            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+						        }
+						    }
+						}
+						break;
+					}
+					case 'local':
+					{
+						arraydirect = this.localDirectListeners[name];
+						arraypattern = this.localPatternListeners;
+						if (arraydirect)
+						{
+						    for (var c = 0, len = arraydirect.length; c < len; c++)
+						    {
+						        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+						    }
+						}
+						if (arraypattern)
+						{
+						    for (var c = 0, len = arraypattern.length; c < len; c++)
+						    {
+						        var entry = arraypattern[c];
+						        var listener = entry[0];
+						        var pattern = entry[1];
+						        if (pattern.test(name))
+						        {
+						            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+						        }
+						    }
+						}
+						break;
+					}
 				}
-				if (arraypattern)
-				{
-				    for (var c = 0, len = arraypattern.length; c < len; c++)
-				    {
-				        var entry = arraypattern[c];
-				        var listener = entry[0];
-				        var pattern = entry[1];
-				        if (pattern.test(name))
-				        {
-				            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-				        }
-				    }
-				}
-
-				arraydirect = this.localDirectListeners[name];
-				arraypattern = this.localPatternListeners;
-				if (arraydirect)
-				{
-				    for (var c = 0, len = arraydirect.length; c < len; c++)
-				    {
-				        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-				    }
-				}
-				if (arraypattern)
-				{
-				    for (var c = 0, len = arraypattern.length; c < len; c++)
-				    {
-				        var entry = arraypattern[c];
-				        var listener = entry[0];
-				        var pattern = entry[1];
-				        if (pattern.test(name))
-				        {
-				            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-				        }
-				    }
-				}
-
+				
 				queue.remove(message);
 			}
         }.bind(this), this.localTimerPoll);

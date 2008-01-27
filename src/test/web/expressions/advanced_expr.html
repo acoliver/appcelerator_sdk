@@ -252,6 +252,20 @@
 			</app:script>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-339 Local/Remote Messages Not Being Respected -->
+            Local message listeners should not match remote messages
+        </td>
+        <td class="result">
+			<a on="click then l:appsdk339.one">Click to run</a>
+
+			<app:script on="l:appsdk339.one then execute">
+				alert('you should see this only once, test passed');
+				$MQ('r:appsdk339.one');
+			</app:script>
+        </td>
+    </tr>
 
 </table>
 
