@@ -53,6 +53,7 @@ if (Appcelerator.Browser.isIE)
 	    iframe.style.top='-10px';
 	    iframe.style.width='1px';
 	    iframe.style.height='1px';
+		iframe.src='javascript:false';	
 	    document.body.appendChild(iframe);
 	
 	    var frame = $('app_hist_frame');
