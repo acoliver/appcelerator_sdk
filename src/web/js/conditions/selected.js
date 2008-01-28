@@ -22,7 +22,11 @@ Appcelerator.Compiler.registerCustomCondition(
 {
 	conditionPrefixes: ['parent.', 'child.', 'children.'],
 	conditionSuffixes: ['selected'],
-	prefixOptional: true
+	prefixOptional: true,
+	description:
+	("Respond to selection of this element, "+
+	 "requires the <i>selectable</i> attribute be set"
+	)
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {

@@ -4,7 +4,8 @@
 Appcelerator.Compiler.registerCustomCondition(
 {
 	conditionPrefixes: ['history:==', 'history:!='],
-	suffixOptional: true
+	suffixOptional: true,
+	description: "Respond to back/forward navigation"
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {

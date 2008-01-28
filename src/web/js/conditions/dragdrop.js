@@ -1,6 +1,7 @@
 Appcelerator.Compiler.registerCustomCondition(
 {
-	conditionNames: ['dragstart', 'drag', 'dragend', 'dragover', 'drop']
+	conditionNames: ['dragstart', 'drag', 'dragend', 'dragover', 'drop'],
+	description: "Respond to drag-and-drop events on the element"
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {

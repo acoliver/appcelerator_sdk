@@ -1,6 +1,7 @@
 Appcelerator.Module.Datacache =
 {
 	cache:[],
+	timerStarted: false,
 	
 	getName: function()
 	{
@@ -70,6 +71,15 @@ Appcelerator.Module.Datacache =
 
         if (!Appcelerator.Compiler.isCompiledMode)
         {
+			if (!Appcelerator.Module.Datacache.timerStarted)
+			{
+				Appcelerator.Module.Datacache.timerStarted = true;
+				setInterval(function()
+				{
+					Appcelerator.Module.Datacache.dataCacheTimer();
+				}, 30000);
+			}
+			
             var entry = {req:request,resp:response,ttl:parseInt(keepAlive),data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
             Appcelerator.Module.Datacache.cache.push(entry);
 			var interceptor = 
@@ -129,11 +139,3 @@ Appcelerator.Module.Datacache =
 };
 
 Appcelerator.Core.registerModule('app:datacache',Appcelerator.Module.Datacache);
-
-
-(function(){
-    setInterval(function()
-        {
-            Appcelerator.Module.Datacache.dataCacheTimer();
-        },30000)
-}).defer();

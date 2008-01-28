@@ -5,7 +5,9 @@
 //
 Appcelerator.Compiler.registerCustomCondition(
 {
-	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:']
+	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:'],
+	freeformSuffix: true,
+	description: "Respond to a local or remote message"
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {

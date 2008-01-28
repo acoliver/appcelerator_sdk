@@ -160,3 +160,28 @@ Object.isBoolean = function(object)
 {
     return typeof(object)=='boolean';
 };
+
+/**
+ * Create an object with the given parameter as its prototype.
+ * 
+ * @param {Object} obj	object to mirror
+ */
+Object.clone = function(obj) {
+    var cloner = (function() {});
+    cloner.prototype = obj;
+    return new cloner();
+}
+
+/**
+ * Clone an object and hide all the fields shared with the given namespace.
+ * 
+ * @param {Object} obj		object to clone		
+ * @param {Object} without	fields to hide
+ */
+Object.cloneWithout = function(obj, without) {
+	var clone = Object.clone(obj);
+	for(var name in without) {
+		clone[name] = undefined;
+	}
+	return clone;
+}

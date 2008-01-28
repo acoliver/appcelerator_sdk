@@ -65,7 +65,8 @@ Appcelerator.Compiler.registerCustomCondition(
 {
 	conditionPrefixes: Appcelerator.Compiler.EventTargets.map(function(targetName){ return targetName+'.'}),
 	conditionSuffixes: Appcelerator.Compiler.Events,
-	prefixOptional: true
+	prefixOptional: true,
+	description: "Respond to standard DOM event"
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {

@@ -68,6 +68,18 @@ Appcelerator.Compiler.registerCustomAction('hidden',
 
 Appcelerator.Compiler.registerCustomAction('effect',
 {
+	metadata:
+	{
+		requiresParameters: true,
+		shorthandParameters: true,
+		// Effect.Methods has some utility methods that aren't effects,
+		// but we do want this to be dynamic, so that effects are extensible  
+		parameterValues: Object.cloneWithout(Effect.Methods,
+			$w('visualEffect setContentZoom collectTextNodes collectTextNodesIgnoreClass getStyles')
+		),
+	   description: "Invokes a Scriptaculous visual effect on this element"
+	},
+	
 	build: function(id,action,params)
 	{
 		if (params && params.length > 0)
@@ -134,6 +146,11 @@ Appcelerator.Compiler.registerCustomAction('effect',
 
 Appcelerator.Compiler.registerCustomAction('toggle',
 {
+	metadata:
+	{
+		requiresParameters: true,
+		description: "Toggles a CSS property, or boolean attribute on this element"
+	},
 	build: function(id,action,params)
 	{
 		if (params && params.length > 0)
@@ -200,9 +217,9 @@ Appcelerator.Compiler.generateSetter = function(value)
 	return 'Appcelerator.Compiler.getEvaluatedValue("'+value+'",this.data||{})';
 };
 
-var addsetBuilder = 
+(function()
 {
-	build: function(id,action,params)
+	var addsetBuildFunction = function(id,action,params)
 	{
 		if (params.length == 0)
 		{
@@ -257,9 +274,24 @@ var addsetBuilder =
 			return code;
 		}		
 	}
-};
-Appcelerator.Compiler.registerCustomAction('add',addsetBuilder);
-Appcelerator.Compiler.registerCustomAction('set',addsetBuilder);
+	
+    Appcelerator.Compiler.registerCustomAction('add',
+	{
+		metadata:
+		{
+			description: "Add a CSS property or attribute on this element"
+		},
+		build: addsetBuildFunction
+	});
+    Appcelerator.Compiler.registerCustomAction('set',
+    {
+        metadata:
+        {
+            description: "Set a CSS property or attribute on this element"
+        },
+        build: addsetBuildFunction
+    });
+})();
 
 Appcelerator.Compiler.registerCustomAction('remove',
 {
@@ -284,16 +316,24 @@ Appcelerator.Compiler.registerCustomAction('remove',
 
 Appcelerator.Compiler.registerCustomAction('statechange',
 {
+	metadata:
+	{
+		requiresParameters: true
+	},
 	build: function(id,action,params)
 	{
 		if (params.length == 0)
 		{
-			throw "syntax error: expected parameter key:value for action: "+action;
+			throw "syntax error: expected parameters in format 'statechange[statemachine=state]'";
 		}
-		var obj = params[0];
-		var statemachine = obj.key;
-		var state = obj.value;
-		return 'Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+statemachine+'","'+state+'",true,true,false)';
+		
+		var changes = params.map(function(obj)
+		{
+			var statemachine = obj.key;
+			var state = obj.value;
+			return 'Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+statemachine+'","'+state+'",true,true,false)';
+		});
+		return changes.join(';');
 	}
 });
 
@@ -301,6 +341,11 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 {
 	var scriptBuilderAction = 
 	{
+		metadata:
+        {
+            requiresParameters: true,
+			description: "Executes a line of javascript"
+        },
 	    //
 	    // define a custom parsing routine for parameters
 	    // that will just take in as-is everything inside
@@ -589,6 +634,13 @@ Appcelerator.Compiler.registerCustomAction('popup',
 
 Appcelerator.Compiler.registerCustomAction('value',
 {
+	metadata:
+    {
+        requiresParameters: true,
+		requiredParameters: ['value'],
+		optionalParameters: ['text','append','id','property'],
+		description: "Sets the value of the current element with data from the message payload"
+    },
 	parseParameters: function (id,action,params)
 	{
 		return params;

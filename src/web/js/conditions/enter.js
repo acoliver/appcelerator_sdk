@@ -1,7 +1,8 @@
 
 Appcelerator.Compiler.registerCustomCondition(
 {
-	conditionNames: ['enter','enter!']
+	conditionNames: ['enter','enter!'],
+	description: "Respond to 'enter' keypress on a form"
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {
