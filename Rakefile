@@ -131,7 +131,6 @@ task :ruby => [:stage] do
   ruby_dir = "#{STAGE_DIR}/ruby"
   gem_dir = "#{ruby_dir}/gem"
   ruby_source = 'src/ruby/gem-new'
-  js_source = 'src/web/js'
 
   if Pathname.new(ruby_dir).exist?
     FileUtils.rm_r ruby_dir
@@ -172,6 +171,33 @@ task :ruby => [:stage] do
   end
   FileUtils.chdir(gem_dir)
   system('rake clean gem')
+end
+
+desc 'build php package'
+task :php => [:stage] do
+  php_dir = "#{STAGE_DIR}/php"
+  php_source = 'src/php'
+
+  if Pathname.new(php_dir).exist?
+    FileUtils.rm_r php_dir
+  end
+  FileUtils.mkdir_p php_dir
+  
+  if VERBOSE
+    puts "Archiving PHP files..."
+  end
+  Zip::ZipFile.open(php_dir+'/php.zip', Zip::ZipFile::CREATE) do |zipfile|
+    Find.find(php_source) do |path|
+      pathname = Pathname.new(path)
+      if not path.include? '.svn' and pathname.file?
+        filename = pathname.relative_path_from(Pathname.new(php_source)).to_s
+        zipfile.add(filename,php_source+'/'+filename)
+      end
+    end
+    zipfile.add('services/sample_service.php',BUILD_DIR+'/php/sample_service.php')
+    zipfile.add('README',BUILD_DIR+'/php/README')
+    zipfile.add('appcelerator.xml',BUILD_DIR+'/php/appcelerator.xml')
+  end
 end
 
 def copy_dir(src, dest)
