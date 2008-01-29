@@ -126,6 +126,65 @@ task :web => [:stage] do
   end
 end
 
+desc 'build ruby package'
+task :ruby => [:stage] do
+  ruby_dir = "#{STAGE_DIR}/ruby"
+  gem_dir = "#{ruby_dir}/gem"
+  ruby_source = 'src/ruby/gem-new'
+  js_source = 'src/web/js'
+
+  if Pathname.new(ruby_dir).exist?
+    FileUtils.rm_r ruby_dir
+  end
+  FileUtils.mkdir_p gem_dir
+
+  if VERBOSE
+    puts "Copying Ruby files..."
+  end
+  copy_dir(ruby_source, gem_dir)
+  
+  rubyfiles = Array.new
+  Find.find(gem_dir) do |path|
+    pathname = Pathname.new(path)
+    if not path.include? '.svn' and pathname.file?
+      filename = pathname.relative_path_from(Pathname.new(gem_dir)).to_s
+      rubyfiles.push(filename)
+    end
+  end
+
+  manifest = File.open(gem_dir+'/Manifest.txt', 'w')
+  rubyfiles.each do |f|
+    manifest.write(f+"\n")
+  end
+  manifest.close
+
+  if VERBOSE
+    puts "Archiving Ruby files..."
+  end
+  Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
+    rubyfiles.each do |f|
+      zipfile.add(f,gem_dir+'/'+f)
+    end
+  end
+  
+  if VERBOSE
+    puts "Making gem file for development..."
+  end
+  FileUtils.chdir(gem_dir)
+  system('rake clean gem')
+end
+
+def copy_dir(src, dest)
+  Find.find(src) do |path|
+    pathname = Pathname.new(path)
+    if not path.include? '.svn' and pathname.file?
+      dirname = pathname.relative_path_from(Pathname.new(src)).dirname 
+      FileUtils.mkdir_p(dest+'/'+dirname)
+      FileUtils.copy(path, dest+'/'+dirname)
+    end
+  end
+end
+
 def append_file(from, to, string_input = false)
   if not string_input
     content = File.read(from)
