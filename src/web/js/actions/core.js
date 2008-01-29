@@ -66,18 +66,25 @@ Appcelerator.Compiler.registerCustomAction('hidden',
 	}
 });
 
+/** TODO: for effect extensibility, we need to provide a method like
+ 		 Appcelerator.Compiler.addEffect(function(element,options) {
+ 		 	// your code here
+ 		 });
+ 		 that also adds to this list and to the 'Effect' and 'Effect.Methods' objects
+*/
+Appcelerator.Compiler.effects = $w(
+	'fade appear grow shrink fold blindUp blindDown slideUp slideDown '+
+	'pulsate shake puff squish switchOff dropOut morph highlight'
+);
+
 Appcelerator.Compiler.registerCustomAction('effect',
 {
 	metadata:
 	{
 		requiresParameters: true,
 		shorthandParameters: true,
-		// Effect.Methods has some utility methods that aren't effects,
-		// but we do want this to be dynamic, so that effects are extensible  
-		parameterValues: Object.cloneWithout(Effect.Methods,
-			$w('visualEffect setContentZoom collectTextNodes collectTextNodesIgnoreClass getStyles')
-		),
-	   description: "Invokes a Scriptaculous visual effect on this element"
+		optionalParameterKeys: Appcelerator.Compiler.effects,
+	    description: "Invokes a Scriptaculous visual effect on this element"
 	},
 	
 	build: function(id,action,params)
@@ -637,8 +644,8 @@ Appcelerator.Compiler.registerCustomAction('value',
 	metadata:
     {
         requiresParameters: true,
-		requiredParameters: ['value'],
-		optionalParameters: ['text','append','id','property'],
+		requiredParameterKeys: ['value'],
+		optionalParameterKeys: ['text','append','id','property'],
 		description: "Sets the value of the current element with data from the message payload"
     },
 	parseParameters: function (id,action,params)

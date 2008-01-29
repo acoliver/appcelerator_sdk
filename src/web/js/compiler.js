@@ -1523,20 +1523,18 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 	// create a wrapper that will auto-publish events for each
 	// action that can be subscribed to
 	// 
-	var action = 
+	var action = Object.clone(callback);
+	action.build = function(id,action,params)	
 	{
-		build: function(id,action,params)	
-		{
-			var code = 'try {';
-			code+=callback.build(id,action,params);
-			code+='; ';
-			code+='}';
-			code+='catch(exxx){';
-			code+='Appcelerator.Compiler.handleElementException($("'+id+'"),exxx,"Executing:'+action+'");';
-			code+='}';
-			return code;
-		}
+		return [
+			'try {',
+			callback.build(id,action,params),
+			'; }catch(exxx){Appcelerator.Compiler.handleElementException',
+			'($("',id,'"),exxx,"Executing:',action,'");}'
+		].join('');
+		
 	};
+	
 	if (callback.parseParameters)
 	{
 		action.parseParameters = callback.parseParameters;
@@ -2589,6 +2587,11 @@ Object.extend(Array.prototype,
            if (e && Object.isElement(e) && Object.isFunction(e.on)) e.on(webexpr,parameters);
         }
         return this;
-    }
+    },
+	
+	withoutAll:function(vals)
+	{
+		return this.without.apply(this, vals);
+	}
 });
 
