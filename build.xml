@@ -67,17 +67,17 @@
             <fileset file="${src.web.dir}/js/servicebroker.js"/>
             <fileset dir="${src.web.dir}/js">
                 <include name="**/*.js"/>
-                <exclude name="bootstrap.js"/>
                 <exclude name="core.js"/>
-                <exclude name="compiler.js"/>
-                <exclude name="dom.js"/>
                 <exclude name="debug.js"/>
                 <exclude name="string.js"/>
-                <exclude name="cookie.js"/>
-                <exclude name="config.js"/>
-                <exclude name="datetime.js"/>
                 <exclude name="object.js"/>
+                <exclude name="datetime.js"/>
+                <exclude name="config.js"/>
+                <exclude name="compiler.js"/>
+                <exclude name="dom.js"/>
+                <exclude name="cookie.js"/>
                 <exclude name="servicebroker.js"/>
+                <exclude name="bootstrap.js"/>
                 <exclude name="prolog.js"/>
                 <exclude name="epilog.js"/>
             </fileset>

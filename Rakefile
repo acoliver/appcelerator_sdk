@@ -64,14 +64,18 @@ task :web => [:stage] do
   jslite_prefiles.each do |file|
     append_file(js_source+'/'+file, jslite)
   end
+  
+  excluded_files = jslite_prefiles + %w(bootstrap.js prolog.js epilog.js)
   Find.find(js_source) do |path|
     if File.extname(path) == '.js'
-      result = jslite_prefiles.find_all{ |i| path.include? i }.first
-      if not result and not path.include? 'prolog.js'
+      result = excluded_files.find{ |filename| path.include? filename }
+      if not result or path.include? 'actions/core.js'
+        p path
         append_file(path, jslite)
       end
     end
   end
+  append_file("#{js_source}/epilog.js", jslite)
 
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
   jsdebug = js_dir+'/appcelerator-debug.js'
