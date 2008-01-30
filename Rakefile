@@ -73,7 +73,6 @@ task :web => [:stage] do
     end
   end
 
-
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
   jsdebug = js_dir+'/appcelerator-debug.js'
   append_file(BUILD_DIR+'/license_header.txt', jsdebug)
@@ -162,7 +161,6 @@ task :ruby => [:stage] do
   end
   manifest.close
 
-
   # fix the release information in the file
   rb = File.read "#{gem_dir}/lib/appcelerator.rb"
   rb.gsub!('0.0.0',RELEASE)
@@ -215,13 +213,22 @@ task :java => [:stage] do
   FileUtils.mkdir_p java_classes
   FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
   FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
+  FileUtils.mkdir_p File.join(java_dir,'dist','src','web','WEB-INF','classes') rescue nil
+  FileUtils.mkdir_p File.join(java_dir,'dist','src','java') rescue nil
 
   copy_dir "#{BUILD_DIR}/java/lib", File.join(java_dir,'dist','lib')
 
   #TODO: move this
-  FileUtils.copy("#{BUILD_DIR}/java/sdk/dist/src/web/appcelerator.xml",File.join(java_dir,'dist'))
+  FileUtils.copy("#{BUILD_DIR}/java/build.xml",File.join(java_dir,'dist'))
+  FileUtils.copy("#{BUILD_DIR}/java/build.properties",File.join(java_dir,'dist'))
+  FileUtils.copy("#{BUILD_DIR}/java/appcelerator.xml",File.join(java_dir,'dist','src','web'))
+  FileUtils.copy("#{BUILD_DIR}/java/web.xml",File.join(java_dir,'dist','src','web','WEB-INF'))
+  FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  FileUtils.copy("#{BUILD_DIR}/java/appcelerator.properties",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  FileUtils.copy("#{BUILD_DIR}/java/appcelerator.log4j.properties",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  FileUtils.copy("#{BUILD_DIR}/java/SampleService.java",File.join(java_dir,'dist','src','java'))
 
-  
   puts "Compiling Java files..." if VERBOSE
   
   params = {
