@@ -18,7 +18,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 require 'yaml'
-require "#{File.dirname(__FILE__)}/servicebroker"
 
 module Appcelerator
   class Installer
