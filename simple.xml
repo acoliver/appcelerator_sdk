@@ -10,12 +10,14 @@
 		<fileset dir="${lib}" includes="*.jar"/>
 	</path>
 	
-	<target name="java_compile" description="Compiles the Java code">
+   <target name="dist" description="Builds entire distribution" depends="compile,jar,zip"></target>
+
+	<target name="compile" description="Compiles the Java code">
 		<javac debug="true" srcdir="${source}" destdir="${dest}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>
 
-	<target name="java_jar" description="Jars Java code">
-		<jar destfile="${jar}">
+	<target name="jar" description="Jars Java code">
+		<jar destfile="${dist}/lib/${jar}">
 			<fileset dir="${classes}">
 				<include name="**/*"/>
 			</fileset>
@@ -24,5 +26,13 @@
 			</fileset>
 		</jar>
 	</target>
+
+   <target name="zip" description="Zip Java distribution">
+		<zip destfile="${zip}">
+			<fileset dir="${dist}">
+				<include name="**/*"/>
+			</fileset>
+		</zip>
+   </target>
 	
 </project>

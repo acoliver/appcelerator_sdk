@@ -3,17 +3,33 @@ require 'fileutils'
 require 'pathname'
 require 'find'
 require 'zip/zip'
+require 'yaml'
+
+
+# pull in the build config
+build_config = YAML::load_file 'build.yml'
+release = build_config['release']
+
+# determine our build
+RELEASE_MAJOR = release['major']
+RELEASE_MINOR = release['minor']
+RELEASE_PATCH = release['patch']
+RELEASE = "#{RELEASE_MAJOR}.#{RELEASE_MINOR}.#{RELEASE_PATCH}"
+
 
 VERBOSE = ENV['v'] || ENV['verbose']
-COMPRESS = ENV['min']
-STAGE_DIR = 'stage'
-BUILD_DIR = 'build'
+COMPRESS = ENV['nomin'] ? false : true 
+STAGE_DIR = File.expand_path 'stage'
+BUILD_DIR = File.expand_path 'build'
+
+desc 'default build which builds the kitchen sink'
+task :default => [:clean,:web,:java,:ruby,:php] do
+	puts "Complete!"
+end
 
 desc 'prepare stage dir'
 task :stage do
-  if not Pathname.new(STAGE_DIR).exist?
-    FileUtils.mkdir STAGE_DIR
-  end
+  FileUtils.mkdir STAGE_DIR unless File.exists?(STAGE_DIR)
 end
 
 desc 'cleans stage dir'
@@ -28,17 +44,23 @@ task :web => [:stage] do
   web_dir = "#{STAGE_DIR}/web"
   js_dir = "#{web_dir}/js"
   js_source = 'src/web/js'
-  if Pathname.new(web_dir).exist?
-    FileUtils.rm_r web_dir
-  end
+
+  FileUtils.rm_r web_dir if File.exists?(web_dir)
   FileUtils.mkdir_p js_dir
   
-  if VERBOSE
-    puts 'Compiling appcelerator-lite.js...'
-  end
-  jslite_prefiles = ['bootstrap.js', 'core.js', 'debug.js', 'string.js', 'object.js', 'datetime.js', 'config.js', 'compiler.js', 'dom.js', 'cookie.js', 'servicebroker.js']
+  puts 'Compiling appcelerator-lite.js...' if VERBOSE
+  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js)
   jslite = js_dir+'/appcelerator-lite.js'
   append_file(BUILD_DIR+'/license_header.txt', jslite)
+
+
+  # fix the release information in the file
+  bf = File.read(js_source+'/bootstrap.js')
+  bf.gsub!('${version.major}',RELEASE_MAJOR.to_s)
+  bf.gsub!('${version.minor}',RELEASE_MINOR.to_s)
+  bf.gsub!('${version.rev}',RELEASE_PATCH.to_s)
+  append_file(bf,jslite,true)
+
   jslite_prefiles.each do |file|
     append_file(js_source+'/'+file, jslite)
   end
@@ -50,24 +72,21 @@ task :web => [:stage] do
       end
     end
   end
-  
-  if VERBOSE
-    puts 'Compiling appcelerator-debug.js...'
-  end
+
+
+  puts 'Compiling appcelerator-debug.js...' if VERBOSE
   jsdebug = js_dir+'/appcelerator-debug.js'
   append_file(BUILD_DIR+'/license_header.txt', jsdebug)
   append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
   append_file(js_source+'/prolog.js', jsdebug)
-  thirdparty = ['prototype/prototype.js', 'scriptaculous/scriptaculous.js', 'scriptaculous/effects.js', 'scriptaculous/dragdrop.js', 'scriptaculous/resizable.js']
+  thirdparty = %w(prototype/prototype.js scriptaculous/scriptaculous.js scriptaculous/effects.js scriptaculous/dragdrop.js scriptaculous/resizable.js)
   thirdparty.each do |file|
     append_file(BUILD_DIR+'/web/'+file, jsdebug)
   end
   append_file("\n/* END THIRD PARTY SOURCE */\n", jsdebug, true)
   append_file(jslite, jsdebug)
 
-  if VERBOSE
-    puts 'Compiling appcelerator.js...'
-  end
+  puts 'Compiling appcelerator.js...' if VERBOSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
   if not COMPRESS
@@ -90,18 +109,14 @@ task :web => [:stage] do
     FileUtils.rm jstemp
   end
   
-  if VERBOSE
-    puts "Archiving JS files..."
-  end
+  puts "Archiving JS files..." if VERBOSE
   Zip::ZipFile.open(web_dir+'/js.zip', Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add('appcelerator-lite.js',jslite)
     zipfile.add('appcelerator-debug.js',jsdebug)
     zipfile.add('appcelerator.js',jsout)
   end
 
-  if VERBOSE
-    puts "Archiving Images..."
-  end
+  puts "Archiving Images..." if VERBOSE
   Zip::ZipFile.open(web_dir+'/images.zip', Zip::ZipFile::CREATE) do |zipfile|
     zipfile.mkdir('images')
     Find.find('src/web/images') do |path|
@@ -112,9 +127,7 @@ task :web => [:stage] do
     end
   end
 
-  if VERBOSE
-    puts "Archiving SWF..."
-  end
+  puts "Archiving SWF..." if VERBOSE
   Zip::ZipFile.open(web_dir+'/swf.zip', Zip::ZipFile::CREATE) do |zipfile|
     zipfile.mkdir('swf')
     Find.find('src/web/swf') do |path|
@@ -132,14 +145,10 @@ task :ruby => [:stage] do
   gem_dir = "#{ruby_dir}/gem"
   ruby_source = 'src/ruby/gem-new'
 
-  if Pathname.new(ruby_dir).exist?
-    FileUtils.rm_r ruby_dir
-  end
+  FileUtils.rm_r ruby_dir if File.exists?(ruby_dir)
   FileUtils.mkdir_p gem_dir
 
-  if VERBOSE
-    puts "Copying Ruby files..."
-  end
+  puts "Copying Ruby files..." if VERBOSE
   copy_dir(ruby_source, gem_dir)
   
   rubyfiles = Array.new
@@ -149,22 +158,26 @@ task :ruby => [:stage] do
 
   manifest = File.open(gem_dir+'/Manifest.txt', 'w')
   rubyfiles.each do |f|
-    manifest.write(f+"\n")
+    manifest.puts f 
   end
   manifest.close
 
-  if VERBOSE
-    puts "Archiving Ruby files..."
-  end
+
+  # fix the release information in the file
+  rb = File.read "#{gem_dir}/lib/appcelerator.rb"
+  rb.gsub!('0.0.0',RELEASE)
+  rbf = File.open "#{gem_dir}/lib/appcelerator.rb","w+"
+  rbf.write rb
+  rbf.close
+
+  puts "Archiving Ruby files..." if VERBOSE
   Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
     rubyfiles.each do |f|
       zipfile.add(f,gem_dir+'/'+f)
     end
   end
   
-  if VERBOSE
-    puts "Making gem file for development..."
-  end
+  puts "Making gem file for development..." if VERBOSE
   FileUtils.chdir(gem_dir)
   system('rake clean gem')
 end
@@ -174,14 +187,10 @@ task :php => [:stage] do
   php_dir = "#{STAGE_DIR}/php"
   php_source = 'src/php'
 
-  if Pathname.new(php_dir).exist?
-    FileUtils.rm_r php_dir
-  end
+  FileUtils.rm_r php_dir if File.exists?(php_dir)
   FileUtils.mkdir_p php_dir
   
-  if VERBOSE
-    puts "Archiving PHP files..."
-  end
+  puts "Archiving PHP files..." if VERBOSE
   Zip::ZipFile.open(php_dir+'/php.zip', Zip::ZipFile::CREATE) do |zipfile|
     Find.find(php_source) do |path|
       pathname = Pathname.new(path)
@@ -202,17 +211,30 @@ task :java => [:stage] do
   java_classes = "#{java_dir}/classes"
   java_source = 'src/java'
 
-  if Pathname.new(java_dir).exist?
-    FileUtils.rm_r java_dir
-  end
+  FileUtils.rm_r java_dir if File.exists?(java_dir)
   FileUtils.mkdir_p java_classes
+  FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
+  FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
+
+  copy_dir "#{BUILD_DIR}/java/lib", File.join(java_dir,'dist','lib')
+
+  #TODO: move this
+  FileUtils.copy("#{BUILD_DIR}/java/sdk/dist/src/web/appcelerator.xml",File.join(java_dir,'dist'))
+
   
-  if VERBOSE
-    puts "Compiling Java files..."
-  end
+  puts "Compiling Java files..." if VERBOSE
   
-  system "ant -f simple.xml java_compile -Dlib=#{BUILD_DIR}/java/lib -Dsource=#{java_source} -Ddest=#{java_classes}"
-  system "ant -f simple.xml java_jar -Djar=#{java_dir}/appcelerator.jar -Dsource=#{java_source} -Dclasses=#{java_classes}"
+  params = {
+   'source'=>java_source,
+   'dest'=>java_classes,
+   'classes'=>java_classes,
+   'jar'=>"appcelerator.jar",
+   'lib'=>"#{BUILD_DIR}/java/lib",
+   'zip'=>"#{java_dir}/java.zip",
+   'dist'=>"#{java_dir}/dist"
+  }.inject([]) {|a,e| a << "-D#{e[0]}=#{e[1]}" }
+ 
+  system "ant -f simple.xml #{params.join(' ')}"
 end
 
 def copy_dir(src, dest)
@@ -226,14 +248,9 @@ def copy_dir(src, dest)
   end
 end
 
-def append_file(from, to, string_input = false)
-  if not string_input
-    content = File.read(from)
-  else
-    content = from
-  end
+def append_file(from, to, is_string=false)
   file = File.open(to, 'a')
-  file.write(content)
+  file.write(is_string ? from : File.read(from))
   file.close
 end
 
