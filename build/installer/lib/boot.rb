@@ -59,7 +59,7 @@ module Appcelerator
         puts '*' * 80
         puts
         puts 'Before we can continue, you will need your Appcelerator Developer Network login'
-        puts 'credentials.  If you have not yet created a FREE developer account, you can '
+        puts 'credentials.  If you have not yet created a (free) developer account, you can '
         puts 'either visit http://www.appcelerator.org to create one and return.  Or, you can'
         puts 'create an account now.'
         puts 

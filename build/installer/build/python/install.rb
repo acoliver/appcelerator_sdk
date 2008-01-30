@@ -21,7 +21,24 @@
 module Appcelerator
   class Python
     def create_project(version,from_path,to_path)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
+      
+      if not system('python --version')
+        puts 'A python interpreter must be installed to use the appcelerator python sdk,'
+        puts 'see http://www.python.org/download/ to download for your platform'
+        raise
+      end
+      
+      Appcelerator::Installer.install_easy_install_if_needed
+      Appcelerator::Installer.install_pylons_if_needed
+      Appcelerator::Installer.install_appcelerator_egg_if_needed
+      
+      system "paster create -t pylons #{to_path}"
+      
+      # copy service directory
+      # copy development.ini (where do we put that? it's tied to the server SDK, probably in a directory there)
+      # need to copy web files now
+
+      #Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])      
     end
   end
 end

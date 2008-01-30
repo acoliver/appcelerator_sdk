@@ -20,24 +20,25 @@
 module Appcelerator
   class Installer
     
-    def Installer.install_appcelerator_gem_if_needed
-      begin
-        #TODO: check to see if we have the current version in RELEASE variable installed
-        require 'appcelerator'
-      rescue => e
-        require_admin_user
-        gem = File.join(RELEASE_DIR,'services/ruby/appcelerator.gem')
-        cmd = "gem install #{gem}"
-        system cmd
+    def Installer.install_easy_install_if_needed
+      if not system('easy_install --help')
+        confirm("Appcelerator requires easy_install to be installed before continuing. Install now? (Y)es, (N)o [Y]")
+        
+        require 'open-uri'
+        require 'tempfile'
+        ez_setup_src = open('http://peak.telecommunity.com/dist/ez_setup.py').read
+        ez_file = Tempfile.new('ez_setup.py')
+        ez_file.write(ez_setup_src)
+        ez_file.close
+        system("python #{ez_file.path}")
       end
     end
-    
-    def Installer.install_appcelerator_egg_if_needed
-      
-      if not system('python -c "import appcelerator"')
-        # in reality this probably includes a version number
-        egg = File.join(RELEASE_DIR,'services/python/appcelerator.egg')
-        system('easy_install #{egg}')
+
+    def Installer.install_pylons_if_needed
+      if not system('python -c "import pylons"')
+        confirm("Appcelerator requires pylons to be installed before continuing. Install now? (Y)es, (N)o [Y]")
+        
+        system('easy_install pylons')
       end
     end
   end
