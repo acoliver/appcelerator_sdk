@@ -32,7 +32,12 @@ module Appcelerator
       Appcelerator::Installer.install_pylons_if_needed
       Appcelerator::Installer.install_appcelerator_egg_if_needed
       
-      system "paster create -t pylons #{to_path}"
+      project_dir = File.dirname to_path
+      project_name = File.basename to_path
+      
+      FileUtils.cd project_dir do
+        system("paster create -t pylons #{project_name}")
+      end
       
       # copy service directory
       # copy development.ini (where do we put that? it's tied to the server SDK, probably in a directory there)

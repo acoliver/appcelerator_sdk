@@ -172,9 +172,9 @@ task :ruby => [:stage] do
   end
   
   puts "Making gem file for development..." if VERBOSE
-  FileUtils.chdir(gem_dir)
-  system('rake clean gem')
-  FileUtils.chdir('../..')
+  FileUtils.cd(gem_dir) do
+    system('rake clean gem')
+  end
 end
 
 desc 'build php package'
@@ -211,9 +211,9 @@ task :python => [:stage] do
   
   insert_version_number("#{python_dir}/setup.py")
   
-  FileUtils.chdir(python_dir)
-  system "python setup.py bdist_egg"
-  FileUtils.chdir('../..') # TODO, go to root dir
+  FileUtils.cd(python_dir) do
+    system "python setup.py bdist_egg"
+  end
 end
 
 desc 'build perl package'
