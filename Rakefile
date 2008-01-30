@@ -143,12 +143,8 @@ task :ruby => [:stage] do
   copy_dir(ruby_source, gem_dir)
   
   rubyfiles = Array.new
-  Find.find(gem_dir) do |path|
-    pathname = Pathname.new(path)
-    if not path.include? '.svn' and pathname.file?
-      filename = pathname.relative_path_from(Pathname.new(gem_dir)).to_s
-      rubyfiles.push(filename)
-    end
+  dofiles(gem_dir) do |f|
+    rubyfiles.push(f.to_s)
   end
 
   manifest = File.open(gem_dir+'/Manifest.txt', 'w')
@@ -200,6 +196,25 @@ task :php => [:stage] do
   end
 end
 
+desc 'build java package'
+task :java => [:stage] do
+  java_dir = "#{STAGE_DIR}/java"
+  java_classes = "#{java_dir}/classes"
+  java_source = 'src/java'
+
+  if Pathname.new(java_dir).exist?
+    FileUtils.rm_r java_dir
+  end
+  FileUtils.mkdir_p java_classes
+  
+  if VERBOSE
+    puts "Compiling Java files..."
+  end
+  
+  system "ant -f simple.xml java_compile -Dlib=#{BUILD_DIR}/java/lib -Dsource=#{java_source} -Ddest=#{java_classes}"
+  system "ant -f simple.xml java_jar -Djar=#{java_dir}/appcelerator.jar -Dsource=#{java_source} -Dclasses=#{java_classes}"
+end
+
 def copy_dir(src, dest)
   Find.find(src) do |path|
     pathname = Pathname.new(path)
@@ -220,4 +235,14 @@ def append_file(from, to, string_input = false)
   file = File.open(to, 'a')
   file.write(content)
   file.close
+end
+
+def dofiles(dir)
+  Find.find(dir) do |path|
+    pathname = Pathname.new(path)
+    if not path.include? '.svn' and pathname.file?
+      filename = pathname.relative_path_from(Pathname.new(dir))
+      yield filename
+    end
+  end
 end
