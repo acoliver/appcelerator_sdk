@@ -23,7 +23,7 @@ STAGE_DIR = File.expand_path 'stage'
 BUILD_DIR = File.expand_path 'build'
 
 desc 'default build which builds the kitchen sink'
-task :default => [:clean,:web,:java,:ruby,:php] do
+task :default => [:clean,:web,:java,:ruby,:php,:python,:perl] do
 	puts "Complete!"
 end
 
@@ -144,7 +144,7 @@ task :ruby => [:stage] do
   gem_dir = "#{ruby_dir}/gem"
   ruby_source = 'src/ruby/gem-new'
 
-  FileUtils.rm_r ruby_dir if File.exists?(ruby_dir)
+  clean_dir(ruby_dir)
   FileUtils.mkdir_p gem_dir
 
   puts "Copying Ruby files..." if VERBOSE
@@ -162,11 +162,7 @@ task :ruby => [:stage] do
   manifest.close
 
   # fix the release information in the file
-  rb = File.read "#{gem_dir}/lib/appcelerator.rb"
-  rb.gsub!('0.0.0',RELEASE)
-  rbf = File.open "#{gem_dir}/lib/appcelerator.rb","w+"
-  rbf.write rb
-  rbf.close
+  insert_version_number("#{gem_dir}/lib/appcelerator.rb")
 
   puts "Archiving Ruby files..." if VERBOSE
   Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
@@ -178,6 +174,7 @@ task :ruby => [:stage] do
   puts "Making gem file for development..." if VERBOSE
   FileUtils.chdir(gem_dir)
   system('rake clean gem')
+  FileUtils.chdir('../..')
 end
 
 desc 'build php package'
@@ -185,8 +182,7 @@ task :php => [:stage] do
   php_dir = "#{STAGE_DIR}/php"
   php_source = 'src/php'
 
-  FileUtils.rm_r php_dir if File.exists?(php_dir)
-  FileUtils.mkdir_p php_dir
+  clean_dir(php_dir)
   
   puts "Archiving PHP files..." if VERBOSE
   Zip::ZipFile.open(php_dir+'/php.zip', Zip::ZipFile::CREATE) do |zipfile|
@@ -203,13 +199,36 @@ task :php => [:stage] do
   end
 end
 
+desc 'build python package'
+task :python => [:stage] do
+  python_dir = "#{STAGE_DIR}/python"
+  python_src = 'src/python'
+  
+  clean_dir(python_dir)
+  puts "Copying Python source files..." if VERBOSE
+  copy_dir(python_src, python_dir)
+  FileUtils.copy("#{BUILD_DIR}/python/README", python_dir)
+  
+  insert_version_number("#{python_dir}/setup.py")
+  
+  FileUtils.chdir(python_dir)
+  system "python setup.py bdist_egg"
+  FileUtils.chdir('../..') # TODO, go to root dir
+end
+
+desc 'build perl package'
+task :perl => [:stage] do
+  perl_dir = "#{STAGE_DIR}/perl"
+  perl_src = 'src/perl'
+end
+
 desc 'build java package'
 task :java => [:stage] do
   java_dir = "#{STAGE_DIR}/java"
   java_classes = "#{java_dir}/classes"
   java_source = 'src/java'
 
-  FileUtils.rm_r java_dir if File.exists?(java_dir)
+  clean_dir(java_dir)
   FileUtils.mkdir_p java_classes
   FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
   FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
@@ -244,6 +263,11 @@ task :java => [:stage] do
   system "ant -f simple.xml #{params.join(' ')}"
 end
 
+def clean_dir(dir)
+  FileUtils.rm_r dir if File.exists?(dir)
+  FileUtils.mkdir_p dir
+end
+
 def copy_dir(src, dest)
   Find.find(src) do |path|
     pathname = Pathname.new(path)
@@ -253,6 +277,14 @@ def copy_dir(src, dest)
       FileUtils.copy(path, dest+'/'+dirname)
     end
   end
+end
+
+def insert_version_number(file)
+  src = File.read file
+  src.gsub!('0.0.0',RELEASE)
+  src_out = File.open file,"w+"
+  src_out.write src
+  src_out.close
 end
 
 def append_file(from, to, is_string=false)
