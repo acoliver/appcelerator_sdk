@@ -14,8 +14,7 @@ release = build_config['release']
 RELEASE_MAJOR = release['major']
 RELEASE_MINOR = release['minor']
 RELEASE_PATCH = release['patch']
-RELEASE = "#{RELEASE_MAJOR}.#{RELEASE_MINOR}.#{RELEASE_PATCH}"
-
+RELEASE = ENV['release_version'] || "#{RELEASE_MAJOR}.#{RELEASE_MINOR}.#{RELEASE_PATCH}"
 
 VERBOSE = ENV['v'] || ENV['verbose']
 COMPRESS = ENV['nomin'] ? false : true 
@@ -112,15 +111,11 @@ task :web => [:stage] do
     FileUtils.rm jstemp
   end
   
-  puts "Archiving JS files..." if VERBOSE
-  Zip::ZipFile.open(web_dir+'/js.zip', Zip::ZipFile::CREATE) do |zipfile|
-    zipfile.add('appcelerator-lite.js',jslite)
-    zipfile.add('appcelerator-debug.js',jsdebug)
-    zipfile.add('appcelerator.js',jsout)
-  end
-
-  puts "Archiving Images..." if VERBOSE
-  Zip::ZipFile.open(web_dir+'/images.zip', Zip::ZipFile::CREATE) do |zipfile|
+  puts "Archiving JS/Web files..." if VERBOSE
+  Zip::ZipFile.open(web_dir+'/web.zip', Zip::ZipFile::CREATE) do |zipfile|
+    zipfile.add('js/appcelerator-lite.js',jslite)
+    zipfile.add('js/appcelerator-debug.js',jsdebug)
+    zipfile.add('js/appcelerator.js',jsout)
     zipfile.mkdir('images')
     Find.find('src/web/images') do |path|
       pathname = Pathname.new(path)
@@ -128,10 +123,6 @@ task :web => [:stage] do
         zipfile.add('images/'+pathname.basename,path)
       end
     end
-  end
-
-  puts "Archiving SWF..." if VERBOSE
-  Zip::ZipFile.open(web_dir+'/swf.zip', Zip::ZipFile::CREATE) do |zipfile|
     zipfile.mkdir('swf')
     Find.find('src/web/swf') do |path|
       pathname = Pathname.new(path)
@@ -168,16 +159,14 @@ task :ruby => [:stage] do
   # fix the release information in the file
   insert_version_number("#{gem_dir}/lib/appcelerator.rb")
 
+  puts "Making Ruby gem file..." if VERBOSE
+  FileUtils.cd(gem_dir) do
+  	system('rake clean gem')
+  end  
+  
   puts "Archiving Ruby files..." if VERBOSE
   Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
-    rubyfiles.each do |f|
-      zipfile.add(f,gem_dir+'/'+f)
-    end
-  end
-  
-  puts "Making gem file for development..." if VERBOSE
-  FileUtils.cd(gem_dir) do
-    system('rake clean gem')
+    zipfile.add('appcelerator-'+RELEASE+'.gem',gem_dir+'/pkg/appcelerator-'+RELEASE+'.gem')
   end
 end
 
