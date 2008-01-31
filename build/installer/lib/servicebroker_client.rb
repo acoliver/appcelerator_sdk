@@ -21,6 +21,7 @@ require 'net/http'
 require 'uri'
 require 'md5'
 require 'yaml'
+require 'cgi'
 
 #
 # Simple ServiceBroker client implementation
@@ -50,6 +51,7 @@ module Appcelerator
       @auth = nil
       @sessionid = nil
       @cookies = Hash.new
+      @cookies_string = nil
       bootstrap
     end
     
@@ -70,7 +72,13 @@ module Appcelerator
       #
       # loosely encode data
       #
-      json_data = simple_json_encode(data)
+      begin
+        require 'rubygems'
+        require 'json'
+        json_data = data.to_json
+      rescue
+        json_data = simple_json_encode(data)
+      end
       
       #
       # build XML/JSON payload
@@ -84,14 +92,14 @@ module Appcelerator
       #
       # build the path to the server
       #
-      path = "#{@servicebroker}?maxwait=0&instanceid=#{@instanceid}&auth=#{@auth}&ts=#{Time.now.to_i}"
+      path = "/#{@servicebroker}?maxwait=0&instanceid=#{@instanceid}&auth=#{@auth}&ts=#{Time.now.to_i}"
       req  = Net::HTTP::Post.new(path)
       req.body = xml
       # attempt to simulate browser
       req.set_content_type('text/xml')
-      req['X-Requested-With']='XMLHttpRequest'
+      req['X-Requested-With'] = 'XMLHttpRequest'
       # send of session cookie
-      req['Cookie']="#{@sessionname}=#{@sessionid}"
+      req['Cookie'] = @cookies_string
 
       #
       # send the POST
@@ -210,30 +218,22 @@ module Appcelerator
       sn = xml.match(/<sessionid>(.*?)<\/sessionid>/)
       @sessionname = sn[1]
 
-      res = Net::HTTP.start(@url.host, @url.port) do |http|
-        http.get("#{@servicebroker}?init=1")
+      req = Net::HTTP::Get.new("/#{@servicebroker}?init=1")
+      req.body = xml
+      req.set_content_type('text/xml')
+      req['X-Requested-With'] = 'XMLHttpRequest'
+
+      response = Net::HTTP.start(@url.host,@url.port) do |http|
+        http.request(req)
       end
 
-      set_cookie = res['set-cookie']
-      set_cookie.split(',').each do |line|
-        line.split(';').each do |token|
-            t = token.split('=')
-            k=t[0].strip
-            v=t[1].strip
-            if not k =~ /(domain|expires|path|secure)/i
-              @cookies[k]=v
-            end
-        end
-      end
+      @cookies_string = response['set-cookie']
+      @cookies = CGI::Cookie::parse(response['set-cookie'])
       
-      @sessionid = @cookies[@sessionname]
-      @auid = @cookies['AUID']
+      @sessionid = @cookies[@sessionname].value[0]
+
       @instanceid = Time.now.to_i.to_s + "-" + (rand(1000)).to_s
       @auth = MD5::hexdigest "#{@sessionid}#{@instanceid}"
     end
-    
-  end
-  
+  end  
 end
-
-
