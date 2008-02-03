@@ -69,7 +69,7 @@ module Appcelerator
         
         puts 
         puts '*' * 80
-        puts ' ' * 20 + 'Welcome to the Appcelerator Platform SDK'
+        puts ' ' * 20 + 'Welcome to the Appcelerator RIA Platform'
         puts '*' * 80
         puts
         puts 'Before we can continue, you will need your Appcelerator Developer Network login'

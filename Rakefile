@@ -255,6 +255,24 @@ task :linux => [:stage] do
    puts "Linux Installer is now ready"
 end
 
+
+desc 'build installer update patch'
+task :installer_update => [:stage] do
+	patch_dir = File.expand_path "#{STAGE_DIR}/update"
+	clean_dir(patch_dir)
+   FileUtils.mkdir_p patch_dir
+   copy_dir "#{BUILD_DIR}/installer", patch_dir
+   FileUtils.rm_r "#{patch_dir}/build"
+   FileUtils.rm_r "#{patch_dir}/appcelerator"
+   FileUtils.rm_r "#{patch_dir}/releases" if File.exists? "#{patch_dir}/releases"
+   Zip::ZipFile.open(patch_dir+'/update.zip', Zip::ZipFile::CREATE) do |zipfile|
+		dofiles(patch_dir) do |pathname|
+			filename = pathname.to_s
+         zipfile.add(filename,patch_dir+'/'+filename)
+		end
+	end
+end
+
 desc 'build java package'
 task :java => [:stage] do
   java_dir = "#{STAGE_DIR}/java"
