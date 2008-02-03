@@ -237,6 +237,24 @@ task :win32 => [:stage] do
   puts "Win32 Installer is now ready to be built"
 end
 
+desc 'build linux installer'
+task :linux => [:stage] do
+	linux_dir = "#{STAGE_DIR}/linux"
+   clean_dir(linux_dir)
+	FileUtils.mkdir_p linux_dir 
+   copy_dir "#{BUILD_DIR}/installer", linux_dir
+   copy_dir "#{BUILD_DIR}/installer/build/linux/.", linux_dir
+   FileUtils.rm_r "#{linux_dir}/build"
+   FileUtils.rm_r "#{linux_dir}/maker"
+   FileUtils.rm_r "#{linux_dir}/appcelerator.lsm"
+   FileUtils.rm_r "#{linux_dir}/releases" if File.exists? "#{linux_dir}/releases"
+   FileUtils.cp_r "LICENSE", linux_dir
+   FileUtils.chmod 0755, "#{linux_dir}/setup.sh"
+   system "#{BUILD_DIR}/installer/build/linux/maker/makeself.sh --nomd5 --lsm \"#{BUILD_DIR}/installer/build/linux/appcelerator.lsm\" #{linux_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
+   FileUtils.mv "installer.run",linux_dir
+   puts "Linux Installer is now ready"
+end
+
 desc 'build java package'
 task :java => [:stage] do
   java_dir = "#{STAGE_DIR}/java"
