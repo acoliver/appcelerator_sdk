@@ -237,22 +237,22 @@ task :win32 => [:stage] do
   puts "Win32 Installer is now ready to be built"
 end
 
-desc 'build linux installer'
-task :linux => [:stage] do
-	linux_dir = "#{STAGE_DIR}/linux"
-   clean_dir(linux_dir)
-	FileUtils.mkdir_p linux_dir 
-   copy_dir "#{BUILD_DIR}/installer", linux_dir
-   copy_dir "#{BUILD_DIR}/installer/build/linux/.", linux_dir
-   FileUtils.rm_r "#{linux_dir}/build"
-   FileUtils.rm_r "#{linux_dir}/maker"
-   FileUtils.rm_r "#{linux_dir}/appcelerator.lsm"
-   FileUtils.rm_r "#{linux_dir}/releases" if File.exists? "#{linux_dir}/releases"
-   FileUtils.cp_r "LICENSE", linux_dir
-   FileUtils.chmod 0755, "#{linux_dir}/setup.sh"
-   system "#{BUILD_DIR}/installer/build/linux/maker/makeself.sh --nomd5 --lsm \"#{BUILD_DIR}/installer/build/linux/appcelerator.lsm\" #{linux_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
-   FileUtils.mv "installer.run",linux_dir
-   puts "Linux Installer is now ready"
+desc 'build unix installer'
+task :unix=> [:stage] do
+	unix_dir = "#{STAGE_DIR}/unix"
+   clean_dir(unix_dir)
+	FileUtils.mkdir_p unix_dir 
+   copy_dir "#{BUILD_DIR}/installer",unix_dir 
+   copy_dir "#{BUILD_DIR}/installer/build/unix/.",unix_dir 
+   FileUtils.rm_r "#{unix_dir}/build"
+   FileUtils.rm_r "#{unix_dir}/maker"
+   FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
+   FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
+   FileUtils.cp_r "LICENSE", unix_dir
+   FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
+   system "#{BUILD_DIR}/installer/build/unix/maker/makeself.sh --copy --nomd5 --lsm \"#{BUILD_DIR}/installer/build/unix/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
+   FileUtils.mv "installer.run",unix_dir
+   puts "Unix is now ready"
 end
 
 
