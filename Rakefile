@@ -1,10 +1,29 @@
+# Appcelerator SDK
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+
 require 'rake'
 require 'fileutils'
 require 'pathname'
 require 'find'
 require 'zip/zip'
 require 'yaml'
-
 
 # determine our build
 RELEASE = ENV['release_version'] || '0.0.0'
@@ -66,7 +85,6 @@ task :web => [:stage] do
     if File.extname(path) == '.js'
       result = excluded_files.find{ |filename| path.include? filename }
       if not result or path.include? 'actions/core.js'
-        p path
         append_file(path, jslite)
       end
     end
@@ -91,15 +109,15 @@ task :web => [:stage] do
   if not COMPRESS
     FileUtils.copy(jsdebug,jsout)
   else
-    system("java -jar #{BUILD_DIR}/bin/yuicompressor-2.2.5.jar #{jsdebug} -o #{jsout}")
-    system("ruby #{BUILD_DIR}/bin/compress.rb #{jsout} #{jstemp}")
+    system("java -jar #{BUILD_DIR}/bin/yuicompressor-2.2.5.jar #{jsdebug} -o #{jsout} >/dev/null 2>&1")
+    system("ruby #{BUILD_DIR}/bin/compress.rb #{jsout} #{jstemp} >/dev/null 2>&1")
     FileUtils.rm jsout
     append_file(BUILD_DIR+'/license_header.txt', jsout)
     append_file(jstemp, jsout)
     FileUtils.rm jstemp
 
-    system("java -jar #{BUILD_DIR}/bin/yuicompressor-2.2.5.jar #{jslite} -o #{jstemp}")
-    system("ruby #{BUILD_DIR}/bin/compress.rb #{jstemp} #{jslite}")
+    system("java -jar #{BUILD_DIR}/bin/yuicompressor-2.2.5.jar #{jslite} -o #{jstemp} >/dev/null 2>&1")
+    system("ruby #{BUILD_DIR}/bin/compress.rb #{jstemp} #{jslite} >/dev/null 2>&1")
     FileUtils.rm jstemp
     append_file(BUILD_DIR+'/license_header.txt', jstemp)
     append_file(jslite, jstemp)
@@ -113,18 +131,11 @@ task :web => [:stage] do
     zipfile.add('js/appcelerator-lite.js',jslite)
     zipfile.add('js/appcelerator-debug.js',jsdebug)
     zipfile.add('js/appcelerator.js',jsout)
-    zipfile.mkdir('images')
-    Find.find('src/web/images') do |path|
+    Find.find('src/web') do |path|
       pathname = Pathname.new(path)
-      if not path.include? '.svn' and pathname.file?
-        zipfile.add('images/'+pathname.basename,path)
-      end
-    end
-    zipfile.mkdir('swf')
-    Find.find('src/web/swf') do |path|
-      pathname = Pathname.new(path)
-      if not path.include? '.svn' and pathname.file?
-        zipfile.add('swf/'+pathname.basename,path)
+      if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
+        filename = pathname.relative_path_from(Pathname.new('src/web')).to_s
+        zipfile.add(filename,'src/web/'+filename) if not filename =~ /^js(.*)\.js$/
       end
     end
   end
@@ -354,3 +365,4 @@ def dofiles(dir)
     end
   end
 end
+
