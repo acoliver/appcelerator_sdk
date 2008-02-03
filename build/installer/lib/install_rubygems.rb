@@ -20,11 +20,10 @@
 module Appcelerator
   class Installer
 
-    def install_ruby_gems_if_needed
+    def Installer.install_ruby_gems_if_needed
       
       begin
         require 'rubygems'
-        raise 'a'
       rescue => e
         
         # not installed - we need to attempt to install it before continuing

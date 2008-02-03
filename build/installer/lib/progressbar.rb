@@ -16,14 +16,14 @@ class ProgressBar
     @title = title
     @total = total
     @out = out
-    @terminal_width = 80
+    @terminal_width = 120
     @bar_mark = "o"
     @current = 0
     @previous = 0
     @finished_p = false
     @start_time = Time.now
     @previous_time = @start_time
-    @title_width = 14
+    @title_width = 25
     @format = "%-#{@title_width}s %3d%% %s %s"
     @format_arguments = [:title, :percentage, :bar, :stat]
     clear
@@ -121,7 +121,7 @@ class ProgressBar
 
   def get_width
     # FIXME: I don't know how portable it is.
-    default_width = 80
+    default_width = 120
     begin
       tiocgwinsz = 0x5413
       data = [0, 0, 0, 0].pack("SSSS")

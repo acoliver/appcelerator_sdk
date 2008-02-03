@@ -22,6 +22,15 @@ require 'uri'
 require 'md5'
 require 'yaml'
 require 'cgi'
+require File.join(File.dirname(__FILE__),'cookie')
+
+begin
+    require 'rubygems'
+    require 'json'
+    SBC_HAS_JSON = true
+rescue
+    SBC_HAS_JSON = false
+end  
 
 #
 # Simple ServiceBroker client implementation
@@ -36,8 +45,8 @@ require 'cgi'
 # will return the following Hash:
 #
 #   {
-#     "message"=>"app.test.message.response",
-#     "data"=>{"message"=>"I recieved from you: hello world","success"=>true}
+#     :message=>"app.test.message.response",
+#     :data=>{"message"=>"I recieved from you: hello world","success"=>true}
 #   }
 #
 #
@@ -45,16 +54,18 @@ module Appcelerator
 
   class ServiceBrokerClient
     
-    def initialize(url)
+	attr_reader :cookies
+	
+    def initialize(url,debug=false)
       @url = URI.parse(url)
       @instanceid = nil
       @auth = nil
       @sessionid = nil
-      @cookies = Hash.new
-      @cookies_string = nil
+      @debug = debug
+      @cookies = CookieJar.new
       bootstrap
     end
-    
+	
     #
     # send a service broker request denoted by type
     # and data (optional) as a hash which will be loosely
@@ -69,16 +80,7 @@ module Appcelerator
       type.gsub!(/^r:/,'')
       type.gsub!(/^remote:/,'')
       
-      #
-      # loosely encode data
-      #
-      begin
-        require 'rubygems'
-        require 'json'
-        json_data = data.to_json
-      rescue
-        json_data = simple_json_encode(data)
-      end
+      json_data = json_encode(data)
       
       #
       # build XML/JSON payload
@@ -88,7 +90,7 @@ module Appcelerator
       xml<< "<message requestid=\"1\" type=\"#{type}\" datatype=\"JSON\" scope=\"appcelerator\" version=\"1.0\"><![CDATA[#{json_data}]]></message>"
       xml<< '</request>'  
       xml.strip!
-
+      
       #
       # build the path to the server
       #
@@ -99,8 +101,8 @@ module Appcelerator
       req.set_content_type('text/xml')
       req['X-Requested-With'] = 'XMLHttpRequest'
       # send of session cookie
-      req['Cookie'] = @cookies_string
-
+      req['Cookie'] = @cookies.to_s if @cookies
+      
       #
       # send the POST
       #
@@ -108,9 +110,12 @@ module Appcelerator
          http.request(req)
       end
       
+      # make sure we reset cookies if necessary
+      get_cookies(res)
+      
       response = Hash.new
-      yaml = Hash.new
-
+      json_response = Hash.new
+      
       #
       # if we get 200, we have data
       #
@@ -118,7 +123,6 @@ module Appcelerator
 
         body = res.body
         
-        #
         # currently we only support one response message in the data payload
         # extract it using simple regex
         #
@@ -131,33 +135,18 @@ module Appcelerator
             t = item.split('=')
             k = t[0]
             v = t[1]
-            if k=~ /^".*"$/
+            if k=~ /^["'].*["']$/
               k = k[1..-2]
             end
-            if v=~ /^".*"$/
+            if v=~ /^["'].*["']$/
               v = v[1..-2]
             end
             response[k]=v
         end
-        
-        # this is a hack to make the JSON response string parse into YAML
-        json_str = m[2]
-        yaml = YAML::load_stream m[2].gsub(/:"/,': "').gsub(/,"/,', "')
-        
-        begin
-          # get the first doc since we only have one doc in this struct
-          yaml = yaml[0]
-        rescue
-          yaml = Hash.new
-        end
-        
+        json_response = json_decode(m[2])
       end
 
-      {
-        'message'=>response['type'],
-        'data'=>yaml
-      }
-
+	  {:message=>response['type'],:data=>json_response}
     end
 
     private
@@ -166,7 +155,9 @@ module Appcelerator
     # this is an absolutely minimal hack for encoding a ruby object
     # into JSON - it's not foolproof at all - be warned
     #
-    def simple_json_encode(obj)
+    def json_encode(obj)
+      
+      return obj.to_json if SBC_HAS_JSON
       
       case obj.class.to_s
         when 'String'
@@ -180,7 +171,7 @@ module Appcelerator
         when 'Array'
           str = '['
           obj.each_with_index do |e,index|
-            str << simple_json_encode(e)
+            str << json_encode(e)
             str << ',' if index < obj.length
           end
           str << ']'
@@ -188,17 +179,48 @@ module Appcelerator
       end
       
       str = '{'
+      values = []
       obj.each do |k,v|
-        str << "\"#{k}\":"
-        str << simple_json_encode(v)
+        values << "\"#{k}\":#{json_encode(v)}"
       end
+      str << values.join(',')
       str << '}'
       str
 
     end
+    
+    def json_decode(json_str)
+        
+      return JSON.parse(json_str) if SBC_HAS_JSON
+      
+      json_str_post = json_str.gsub(/":/,'": ').gsub(/,"/,', "')
+
+      puts "response (in)=> #{json_str}" if @debug
+      puts "response (out)=> #{json_str_post}" if @debug
+        
+      yaml = YAML::load_stream(json_str_post)
+        
+      begin
+          # get the first doc since we only have one doc in this struct
+          yaml = yaml[0]
+      rescue
+          yaml = Hash.new
+      end
+    end
+    
+    def get_cookies(response)
+      return unless response['set-cookie']
+      @cookies.parse response['set-cookie']
+      @sessionid = @cookies[@sessionname]
+      reset_auth_token
+    end
+    
+    def reset_auth_token
+      @auth = MD5::hexdigest "#{@sessionid}#{@instanceid}"
+    end
 
     def bootstrap
-      
+    
       #
       # get the appcelerator.xml file
       #
@@ -217,23 +239,17 @@ module Appcelerator
       
       sn = xml.match(/<sessionid>(.*?)<\/sessionid>/)
       @sessionname = sn[1]
-
-      req = Net::HTTP::Get.new("/#{@servicebroker}?init=1")
-      req.body = xml
+      
+      req = Net::HTTP::Get.new("/#{@servicebroker}?initial=1")
       req.set_content_type('text/xml')
       req['X-Requested-With'] = 'XMLHttpRequest'
 
       response = Net::HTTP.start(@url.host,@url.port) do |http|
         http.request(req)
       end
-
-      @cookies_string = response['set-cookie']
-      @cookies = CGI::Cookie::parse(response['set-cookie'])
       
-      @sessionid = @cookies[@sessionname].value[0]
-
       @instanceid = Time.now.to_i.to_s + "-" + (rand(1000)).to_s
-      @auth = MD5::hexdigest "#{@sessionid}#{@instanceid}"
+      get_cookies(response)
     end
   end  
 end

@@ -6,5 +6,5 @@
     <download>@{rootPath}download</download>
     <proxy>@{rootPath}proxy</proxy>
     <sessionid>SESSIONID</sessionid>
-    <language>python</language>
+    <language>ruby</language>
 </appcelerator>

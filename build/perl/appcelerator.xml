@@ -5,4 +5,5 @@
     <upload>@{rootPath}upload</upload>
     <download>@{rootPath}download</download>
     <sessionid>SESSIONID</sessionid>
+    <language>perl</language>
 </appcelerator>

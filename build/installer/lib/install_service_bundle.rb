@@ -20,19 +20,46 @@
 module Appcelerator
   class Installer
     
-    def Installer.install_service_if_required(language,release,release_dir)
+    def Installer.install_service_if_required(language,release_dir)
+      puts "install service integration point for language = #{language} into #{release_dir}" if OPTIONS[:debug]
 
-      # check to see if it exists first
-      dest = File.join(release_dir,'services',language)
+      config_file = File.join(release_dir,'config.yml')
+      config = YAML::load_file(config_file) if File.exists?(config_file)
+      config||={}
+
+      # get the latest
+      details = Installer.get_latest_service language
       
-      if not File.exists?(dest)
+      if config['latest'] and not OPTIONS[:force_update]
+        f = File.join(release_dir,config['latest'])
+        if File.exists?(f) and File.exists?(File.join(f,'install.rb'))
+          return f if details['version']==config['latest']
+          puts "A new version #{details['version']} of the #{language} SOA integration point is available"
+          if not confirm "Install it or use the current version (#{config['latest']})? (Y)es install new, (N)o keep current [Y]",true,false
+            return f
+          end
+        end
       end
-        
-      # we need to fetch it
+
+      service_dir = File.join(release_dir,details['version'])
+      FileUtils.rm_r service_dir if File.exists?(service_dir)
+      FileUtils.mkdir_p service_dir
+
+      # now go fetch the version and install it
+      Installer.http_fetch_into "#{language[0,1].upcase+language[1..-1]} #{details['version']}", details['url'], service_dir
+
+      # attempt to load a pre_flight ruby script before doing loading the main installer
+      pre_flight = File.join(service_dir,'pre_flight.rb')
+      require pre_flight if File.exists?(pre_flight)
       
-      #TODO: pull from network
-      #TODO: copy from tempdirectory into our dest
+      # setup our config file
+      config['latest'] = details['version']
+      cf = File.open(config_file,'w+')
+      cf.puts config.to_yaml
+      cf.close
       
+      # return our reference directory where the latest lives
+      File.join(release_dir,details['version'])
     end
   
   end

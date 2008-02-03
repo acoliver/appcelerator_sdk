@@ -39,15 +39,29 @@ module Appcelerator
       config_dir = File.join(user_home,'.appc')
       
       FileUtils.mkdir(config_dir) unless File.exists?(config_dir)
+      FileUtils.mkdir(RELEASE_DIR) unless File.exists?(RELEASE_DIR)
       
       # load our config
       config_file = File.join(config_dir,'appcelerator.yml')
       config = YAML::load_file(config_file) if File.exists?(config_file)
       config||={}
       
-      if config['username'] and config['auid']
+      username,password=nil
+      save=false
+      
+      if config['username'] and config['password']
 
-        #TODO: already got username - ping home
+        # have an account already -- attempt to login
+	      while true 
+    			break if Installer.login(config['username'],config['password'])
+  			  puts "Invalid credentials, please try again..."
+  			  username=prompt_username
+    			password=prompt_password
+        end
+        
+        if config['username']!=username or config['password']!=password
+          save=true
+        end
         
       else  
 
@@ -70,17 +84,17 @@ module Appcelerator
         if ['y','Y',''].index(yn)
 
           # have an account already
-          username=prompt_username
-          password=prompt_password
-          
-          puts
-          puts "Validating your credentials ... one moment..."
-          
-          #
-          # TODO: login and validate username/password and save auid
-          #
+		      while true 
+    			  username=prompt_username
+      			password=prompt_password
+      			puts
+      			puts "Validating your credentials ... one moment..."
+      			break if Installer.login(username,password)
+    			  puts "Invalid credentials, please try again..."
+          end
+		  
           config['username']=username
-          config['auid'] = 'FIXME'          
+          config['password']=password     
           
           puts "Welcome back ...."
           puts
@@ -109,7 +123,6 @@ module Appcelerator
           puts
           
           code = MD5.hexdigest(username).to_s[0..3]
-          #puts code
           
           while true
             verification = ask_with_validation 'Verification Code:', 'Invalid verification code. Must be 4 characters', /[a-zA-Z0-9]{4}/
@@ -126,15 +139,23 @@ module Appcelerator
           puts
           
           config['username'] = username
-          config['auid'] = 'FIXME'
-          
+          config['password'] = password
+
+    			Installer.login(username,password)
+    			
         end
 
+        # install the latest after login/signup
+        Installer.install_web_sdk
+        
+        save = true
+      end
+
+      if save
         f = File.open(config_file,'w+')
         f.puts config.to_yaml
         f.flush
         f.close
-        
       end
       
     end

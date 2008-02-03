@@ -6,15 +6,12 @@ require 'zip/zip'
 require 'yaml'
 
 
-# pull in the build config
-build_config = YAML::load_file 'build.yml'
-release = build_config['release']
-
 # determine our build
-RELEASE_MAJOR = release['major']
-RELEASE_MINOR = release['minor']
-RELEASE_PATCH = release['patch']
-RELEASE = ENV['release_version'] || "#{RELEASE_MAJOR}.#{RELEASE_MINOR}.#{RELEASE_PATCH}"
+RELEASE = ENV['release_version'] || '0.0.0'
+tokens = RELEASE.split('.')
+RELEASE_MAJOR = tokens[0]
+RELEASE_MINOR = tokens[1]
+RELEASE_PATCH = tokens.length > 2 ? tokens[2] : 0
 
 VERBOSE = ENV['v'] || ENV['verbose']
 COMPRESS = ENV['nomin'] ? false : true 
@@ -144,6 +141,8 @@ task :ruby => [:stage] do
 
   puts "Copying Ruby files..." if VERBOSE
   copy_dir(ruby_source, gem_dir)
+
+  FileUtils.cp_r "build/installer/build/ruby/.", ruby_dir
   
   rubyfiles = Array.new
   dofiles(gem_dir) do |f|
@@ -166,7 +165,11 @@ task :ruby => [:stage] do
   
   puts "Archiving Ruby files..." if VERBOSE
   Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
-    zipfile.add('appcelerator-'+RELEASE+'.gem',gem_dir+'/pkg/appcelerator-'+RELEASE+'.gem')
+    zipfile.add('appcelerator.gem',gem_dir+'/pkg/appcelerator-'+RELEASE+'.gem')
+	 Dir["#{ruby_dir}/**/**"].delete_if {|f| f=~/\.gem$/ or f=~/gem/ }.each do |file|
+      fn = file.gsub("#{ruby_dir}/",'')
+		zipfile.add(fn,file) unless File.directory?(file)
+    end
   end
 end
 
@@ -189,6 +192,7 @@ task :php => [:stage] do
     zipfile.add('services/sample_service.php',BUILD_DIR+'/php/sample_service.php')
     zipfile.add('README',BUILD_DIR+'/php/README')
     zipfile.add('appcelerator.xml',BUILD_DIR+'/php/appcelerator.xml')
+    zipfile.add('install.rb',BUILD_DIR+'/installer/build/php/install.rb')
   end
 end
 
@@ -206,6 +210,11 @@ task :python => [:stage] do
   
   FileUtils.cd(python_dir) do
     system "python setup.py bdist_egg"
+  end
+  puts "Archiving Python files..." if VERBOSE
+  Zip::ZipFile.open(python_dir+'/python.zip', Zip::ZipFile::CREATE) do |zipfile|
+    zipfile.add('install.rb',BUILD_DIR+'/installer/build/python/install.rb')
+    zipfile.add('appcelerator.egg',"#{STAGE_DIR}/python/dist/Appcelerator-#{RELEASE}-py2.5.egg")
   end
 end
 
@@ -240,6 +249,7 @@ task :java => [:stage] do
   FileUtils.copy("#{BUILD_DIR}/java/appcelerator.log4j.properties",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
   FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
   FileUtils.copy("#{BUILD_DIR}/java/SampleService.java",File.join(java_dir,'dist','src','java'))
+  FileUtils.copy("#{BUILD_DIR}/installer/build/java/install.rb",File.join(java_dir,'dist'))
 
   puts "Compiling Java files..." if VERBOSE
   

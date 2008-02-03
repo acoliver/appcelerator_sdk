@@ -17,7 +17,10 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-languages = RELEASE_CONFIG['languages']
+
+#FIXME
+#languages = RELEASE_CONFIG['languages']
+languages = ['java','ruby']
 
 Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerator project',[
   {
@@ -46,24 +49,24 @@ Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerato
   lang_dir = File.join(RELEASE_DIR,'services',args[:language])
 
   # install the actual service bundle if needed
-  Appcelerator::Installer.install_service_if_required(args[:language],RELEASE,lang_dir)
+  service_dir = Appcelerator::Installer.install_service_if_required(args[:language],lang_dir)
   
   # find the installer script
-  script = File.join(lang_dir,'install.rb')
+  script = File.join(service_dir,'install.rb')
 
   # load the create script for the version+language
   require script
   
   # from and to directories
-  from = lang_dir
+  from = service_dir
   to = File.expand_path(args[:path].path)
   lang = "#{args[:language][0,1].upcase}#{args[:language][1..-1]}"
 
-  puts "Creating #{lang} project for version #{RELEASE}, from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{lang} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
   # now execute the install script
-  if eval "Appcelerator::#{lang}.new.create_project('#{RELEASE}','#{from}','#{to}')"
-    puts "Appcelerator #{RELEASE} #{lang} project created ... !"
+  if eval "Appcelerator::#{lang}.new.create_project('#{from}','#{to}')"
+    puts "Appcelerator #{lang} project created ... !"
     true
   end
 end

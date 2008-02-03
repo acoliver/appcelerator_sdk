@@ -20,7 +20,7 @@
 
 module Appcelerator
   class Dotnet
-    def create_project(version,from_path,to_path)
+    def create_project(from_path,to_path)
       Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
     end
   end

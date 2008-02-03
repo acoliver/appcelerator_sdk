@@ -98,3 +98,7 @@ end
 
 
 
+
+
+
+Appcelerator::Installer.install_ruby_gems_if_needed

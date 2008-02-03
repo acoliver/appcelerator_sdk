@@ -1,3 +1,4 @@
+#!/usr/bin/ruby
 # Appcelerator SDK
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
@@ -28,6 +29,10 @@ action = nil
 SCRIPTNAME = File.basename($0)
 SCRIPTDIR = File.dirname($0)
 
+ET_PHONE_HOME = 'http://localhost:3000'
+RELEASE_DIR = File.join(SCRIPTDIR,'releases')
+
+
 #
 # load all our core libraries in alpha order
 #
@@ -42,12 +47,12 @@ ARGV.each do |arg|
            t = arg[2..-1].to_s.split('=')
            k = t[0]
            v = t[1] || true
-           OPTIONS[k.to_sym]=v
+           OPTIONS[k.gsub('-','_').to_sym]=v
         when /^-/
            t = arg[1..-1].to_s.split('=')
            k = t[0]
            v = t[1] || true
-           OPTIONS[k.to_sym]=v
+           OPTIONS[k.gsub('-','_').to_sym]=v
     else
         ARGS << arg if action
         action = arg unless action        
@@ -84,28 +89,58 @@ def ask(q,mask=false)
   answer
 end
 
-def confirm(q,canforce=true)
+def confirm(q,canforce=true,die_if_fails=true)
     return if OPTIONS[:force]
     answer = ask(q)
     OPTIONS[:force]=true if canforce and ['A','a'].index(answer)
-    die('Cancelled!') unless ['','y','Y'].index(answer)
+    if not ['','y','Y','a','A'].index(answer)
+      die('Cancelled!') if die_if_fails
+      return false
+    end
+    true
 end
 
 #
 # set up temp directory and delete it on exit
 #
-APP_TEMP_DIR=FileUtils.mkdir(File.join(ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP'] || '.',"appcelerator.#{rand($$)}"))
+APP_TEMP_DIR=FileUtils.mkdir_p(File.join(ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP'] || '.',"appcelerator.#{rand($$)}"))
 at_exit { FileUtils.rm_rf APP_TEMP_DIR }
-
-#
-# boot'r up
-#
-Appcelerator::Installer.boot
-
 
 module Appcelerator
 
     class Installer
+      
+      @@client = nil
+      @@package_config = nil
+      
+      def Installer.login(email,password)
+        @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
+        result = @@client.send 'account.login.request', {'email'=>email,'password'=>password}
+        result[:data]['success']
+      end
+      
+      def Installer.get_latest(name)
+        if not @@package_config
+          result = @@client.send 'releases.latest.request'
+          return nil unless result[:data]['success']
+          @@package_config = result[:data]['pkgs']
+          puts @@package_config.to_yaml if OPTIONS[:debug]
+        end
+        @@package_config.each do |pkg|
+          if pkg['name'] == name
+            return pkg
+          end
+        end
+        nil
+      end
+      
+      def Installer.get_latest_sdk
+        get_latest 'web'
+      end
+      
+      def Installer.get_latest_service(lang)
+        get_latest lang
+      end
       
       def Installer.current_user
         #TODO: windows?
@@ -135,15 +170,31 @@ module Appcelerator
         end
       end
       
+      def Installer.http_fetch_into(name,url,target)
+        temp_dir = http_fetch(name,url)
+        if temp_dir
+          puts "extracting #{temp_dir} to #{target}" if OPTIONS[:debug]
+          FileUtils.cp_r "#{temp_dir}/.", target
+          true
+        end
+        false
+      end
+      
       def Installer.http_fetch(name,url)
-        puts "Attempting to fetch #{name} from #{url}" unless OPTIONS[:quiet]
+        puts "Attempting to fetch #{name} from #{url}" if OPTIONS[:debug]
         pbar=nil
         dirname=nil
-        open(url,:content_length_proc => lambda {|t|
+        uri = URI.parse(url)
+        home_uri = URI.parse(ET_PHONE_HOME)
+        cookies = ''
+        if uri.host == home_uri.host and uri.port == home_uri.port
+          cookies = @@client.cookies.to_s
+        end
+        open(url,'Cookie'=>cookies,:content_length_proc => lambda {|t|
               if t && 0 < t
                 if not OPTIONS[:quiet]
                   require "#{LIB_DIR}/progressbar"
-                  pbar = ProgressBar.new("...", t)
+                  pbar = ProgressBar.new(name, t)
                   pbar.file_transfer_mode
                 end
               end
@@ -165,10 +216,12 @@ module Appcelerator
               zf.each do |e|
                 fpath = File.join(dirname, e.name)
                 FileUtils.mkdir_p(File.dirname(fpath))
+                puts "extracting ... #{fpath}" if OPTIONS[:debug]
                 zf.extract(e, fpath) 
               end
               zf.close
             end
+            FileUtils.rm_r t.path
           end
         end
         puts if pbar
@@ -378,6 +431,7 @@ module Appcelerator
         end
         
         if not error
+          Appcelerator::Installer.boot unless name=='help'
           info[:invoker].call(argHash,opts)
         else
           execute('help',[name])
@@ -395,27 +449,25 @@ module Appcelerator
     end
 end
 
-RELEASES = []
-
 #
 # determine all the releases we have installed
 #
-Dir["#{SCRIPTDIR}/releases/*"].each do |reldir|
-  if File.directory?(reldir) and File.basename(reldir) =~ /[0-9]\.[0-9](\.[0.9])?/
-    RELEASES << {
-      :version=>File.basename(reldir),
-      :directory=>File.expand_path(reldir),
-      :config=>YAML.load_file("#{reldir}/config.yml")
-    }
-  end
-end
+#Dir["#{SCRIPTDIR}/releases/*"].each do |reldir|
+#  if File.directory?(reldir) and File.basename(reldir) =~ /[0-9]\.[0-9](\.[0.9])?/
+#    RELEASES << {
+#      :version=>File.basename(reldir),
+#     :directory=>File.expand_path(reldir),
+#      :config=>YAML.load_file("#{reldir}/config.yml")
+#    }
+#  end
+#end
 
 #
 # sort in order for newest release to oldest release
 #
-RELEASES.sort! do |a,b|
-  b[:version]<=>a[:version]
-end
+#RELEASES.sort! do |a,b|
+#  b[:version]<=>a[:version]
+#end
 
 
 if OPTIONS[:version]
@@ -423,25 +475,25 @@ if OPTIONS[:version]
     STDERR.puts "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
     exit 1
   end
-  if not RELEASES.include?(OPTIONS[:version])
-    require "#{LIB_DIR}/install_version"
-    Appcelerator::Installer.install_version(OPTIONS[:version],"#{File.dirname($0)}/releases/#{OPTIONS[:version]}")
-  end
-  RELEASE = OPTIONS[:version]
-  RELEASES.each do |e| 
-    if e[:version] == OPTIONS[:version]
-      RELEASE_DIR = e[:directory]
-      RELEASE_CONFIG = e[:config]
-    end
-  end
-  if not defined?(RELEASE_CONFIG)
-    STDERR.puts "couldn't find release file config.yml for #{RELEASE}"
-    exit 1
-  end
-else
-  RELEASE = RELEASES.first[:version]
-  RELEASE_DIR = RELEASES.first[:directory]
-  RELEASE_CONFIG = RELEASES.first[:config]
+#  if not RELEASES.include?(OPTIONS[:version])
+#    require "#{LIB_DIR}/install_version"
+#    Appcelerator::Installer.install_version(OPTIONS[:version],"#{File.dirname($0)}/releases/#{OPTIONS[:version]}")
+#  end
+#  RELEASE = OPTIONS[:version]
+#  RELEASES.each do |e| 
+#    if e[:version] == OPTIONS[:version]
+#      RELEASE_DIR = e[:directory]
+#      RELEASE_CONFIG = e[:config]
+#    end
+#  end
+#  if not defined?(RELEASE_CONFIG)
+#    STDERR.puts "couldn't find release file config.yml for #{RELEASE}"
+#    exit 1
+#  end
+#else
+#  RELEASE = RELEASES.first[:version]
+#  RELEASE_DIR = RELEASES.first[:directory]
+#  RELEASE_CONFIG = RELEASES.first[:config]
 end
 
 
@@ -461,3 +513,4 @@ if Appcelerator::CommandRegistry.execute(action,ARGS,OPTIONS)
 else
   exit 1
 end
+
