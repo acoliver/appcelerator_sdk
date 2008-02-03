@@ -25,7 +25,7 @@ require 'fileutils'
 # patch file that we need to apply
 #
 
-target_dir = File.dirname(__FILE__)
+target_dir = File.expand_path File.dirname(File.readlink(__FILE__))
 update_dir = File.join(target_dir,'updates')
 
 if File.exists?(update_dir) and File.directory?(update_dir)

@@ -22,12 +22,12 @@ require 'fileutils'
 require 'yaml'
 require 'open-uri'
 
-LIB_DIR = "#{File.dirname($0)}/lib"
 OPTIONS = {}
 ARGS = []
 action = nil
 SCRIPTNAME = File.basename($0)
-SCRIPTDIR = File.dirname($0)
+SCRIPTDIR = File.dirname(__FILE__)
+LIB_DIR = "#{SCRIPTDIR}/lib"
 
 ET_PHONE_HOME = 'http://localhost:3000'
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
