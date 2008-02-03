@@ -224,6 +224,19 @@ task :perl => [:stage] do
   perl_src = 'src/perl'
 end
 
+desc 'prepare for win32 installer'
+task :win32 => [:stage] do
+  win32_dir = "#{STAGE_DIR}/win32"
+  clean_dir(win32_dir)
+  FileUtils.mkdir_p win32_dir 
+  copy_dir "#{BUILD_DIR}/installer", win32_dir
+  copy_dir "#{BUILD_DIR}/installer/build/win32", win32_dir
+  FileUtils.rm_r "#{win32_dir}/build"
+  FileUtils.rm_r "#{win32_dir}/releases" if File.exists? "#{win32_dir}/releases"
+  FileUtils.cp_r "LICENSE", win32_dir
+  puts "Win32 Installer is now ready to be built"
+end
+
 desc 'build java package'
 task :java => [:stage] do
   java_dir = "#{STAGE_DIR}/java"

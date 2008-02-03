@@ -26,8 +26,13 @@ require File.join(File.dirname(__FILE__),'cookie')
 
 begin
     require 'rubygems'
-    require 'json'
-    SBC_HAS_JSON = true
+    json = Gem.cache.search('json')
+    if json and json.first
+      require 'json'
+      SBC_HAS_JSON = true
+    else
+      SBC_HAS_JSON = false
+    end
 rescue
     SBC_HAS_JSON = false
 end  
