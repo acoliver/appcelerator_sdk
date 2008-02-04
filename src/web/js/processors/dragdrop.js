@@ -15,6 +15,12 @@ Appcelerator.Compiler.registerAttributeProcessor('div','draggable',
 				d.destroy();
 			});
 		}
+	},
+	metadata:
+	{
+		description: (
+		"Make this element draggable. Dragged elements can be dropped on a droppable."
+		)
 	}
 });
 
@@ -61,5 +67,11 @@ Appcelerator.Compiler.registerAttributeProcessor('div','droppable',
 				Droppables.remove(element);
 			});
 		}
+	},
+	metadata:
+	{
+		description: (
+		"Make this element a possible drop target."
+		)
 	}
 });

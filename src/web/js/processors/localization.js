@@ -52,15 +52,13 @@ Appcelerator.Localization.AttributeProcessor =
 				}
 			}
 		}
+	},
+	metadata:
+	{
+		description: (
+		"Specify a language bundle key that will be used to lookup localized text for this element."
+		)
 	}
 };
-//
-// do this on doc load instead of JS load so that the 
-// application can change this in their own JS file
-// as long as its before document is fulled loaded and 
-// the compiler kicks in
-//
-Appcelerator.Core.onload(function()
-{
-	Appcelerator.Compiler.registerAttributeProcessor(Appcelerator.Localization.supportedTags,'langid',Appcelerator.Localization.AttributeProcessor);
-},true);
+
+Appcelerator.Compiler.registerAttributeProcessor(Appcelerator.Localization.supportedTags,'langid',Appcelerator.Localization.AttributeProcessor);

@@ -220,6 +220,7 @@ task :python => [:stage] do
   insert_version_number("#{python_dir}/setup.py")
   
   FileUtils.cd(python_dir) do
+    puts "Building python egg..." if VERBOSE
     system "python setup.py bdist_egg"
   end
   puts "Archiving Python files..." if VERBOSE

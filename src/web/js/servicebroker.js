@@ -999,7 +999,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 		}
 		if (contentType.indexOf('text/xml')==-1)
 		{
-			$E(this+', invalid content type: '+contentType+', excepted: text/xml');
+			$E(this+', invalid content type: '+contentType+', expected: text/xml');
 			return null;
 		}
 		var xml = response.responseXML;
@@ -1201,7 +1201,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] =
 		}
 		if (contentType.indexOf('/json')==-1)
 		{
-			$E(this+', invalid content type: '+contentType+', excepted json mimetype');
+			$E(this+', invalid content type: '+contentType+', expected json mimetype');
 			return null;
 		}
 		return response.responseText.evalJSON(true);

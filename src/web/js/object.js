@@ -166,10 +166,10 @@ Object.isBoolean = function(object)
  * 
  * @param {Object} obj	object to mirror
  */
-Object.clone = function(obj) {
-    var cloner = (function() {});
-    cloner.prototype = obj;
-    return new cloner();
+Object.mirror = function(obj) {
+    var mirrorer = (function() {});
+    mirrorer.prototype = obj;
+    return new mirrorer();
 }
 
 /**

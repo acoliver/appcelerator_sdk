@@ -16,14 +16,14 @@ class ScriptOrFnScope {
 
     private int braceNesting;
     private ScriptOrFnScope parentScope;
-    private ArrayList subScopes;
-    private Hashtable identifiers = new Hashtable();
+    private ArrayList<ScriptOrFnScope> subScopes;
+    private Hashtable<String, JavaScriptIdentifier> identifiers = new Hashtable<String, JavaScriptIdentifier>();
     private boolean markedForMunging = true;
 
     ScriptOrFnScope(int braceNesting, ScriptOrFnScope parentScope) {
         this.braceNesting = braceNesting;
         this.parentScope = parentScope;
-        this.subScopes = new ArrayList();
+        this.subScopes = new ArrayList<ScriptOrFnScope>();
         if (parentScope != null) {
             parentScope.subScopes.add(this);
         }
@@ -38,7 +38,7 @@ class ScriptOrFnScope {
     }
 
     JavaScriptIdentifier declareIdentifier(String symbol) {
-        JavaScriptIdentifier javaScriptIdentifier = (JavaScriptIdentifier) identifiers.get(symbol);
+        JavaScriptIdentifier javaScriptIdentifier = identifiers.get(symbol);
         if (javaScriptIdentifier == null) {
             javaScriptIdentifier = new JavaScriptIdentifier(symbol, this);
             identifiers.put(symbol, javaScriptIdentifier);
@@ -47,7 +47,7 @@ class ScriptOrFnScope {
     }
 
     JavaScriptIdentifier getIdentifier(String symbol) {
-        return (JavaScriptIdentifier) identifiers.get(symbol);
+        return identifiers.get(symbol);
     }
 
     void preventMunging() {
@@ -58,11 +58,11 @@ class ScriptOrFnScope {
         }
     }
 
-    private ArrayList getUsedSymbols() {
-        ArrayList result = new ArrayList();
-        Enumeration elements = identifiers.elements();
+    private ArrayList<String> getUsedSymbols() {
+        ArrayList<String> result = new ArrayList<String>();
+        Enumeration<JavaScriptIdentifier> elements = identifiers.elements();
         while (elements.hasMoreElements()) {
-            JavaScriptIdentifier javaScriptIdentifier = (JavaScriptIdentifier) elements.nextElement();
+            JavaScriptIdentifier javaScriptIdentifier = elements.nextElement();
             String mungedValue = javaScriptIdentifier.getMungedValue();
             if (mungedValue == null) {
                 mungedValue = javaScriptIdentifier.getValue();
@@ -72,8 +72,8 @@ class ScriptOrFnScope {
         return result;
     }
 
-    private ArrayList getAllUsedSymbols() {
-        ArrayList result = new ArrayList();
+    private ArrayList<String> getAllUsedSymbols() {
+        ArrayList<String> result = new ArrayList<String>();
         ScriptOrFnScope scope = this;
         while (scope != null) {
             result.addAll(scope.getUsedSymbols());
@@ -94,7 +94,7 @@ class ScriptOrFnScope {
         // Do not munge symbols in the global scope!
         if (parentScope != null) {
 
-            ArrayList freeSymbols = new ArrayList();
+            ArrayList<String> freeSymbols = new ArrayList<String>();
 
             freeSymbols.addAll(JavaScriptCompressor.ones);
             freeSymbols.removeAll(getAllUsedSymbols());
@@ -113,7 +113,7 @@ class ScriptOrFnScope {
                 System.exit(1);
             }
 
-            Enumeration elements = identifiers.elements();
+            Enumeration<JavaScriptIdentifier> elements = identifiers.elements();
             while (elements.hasMoreElements()) {
                 if (freeSymbols.size() == 0) {
                     pickFromSet++;
@@ -131,14 +131,14 @@ class ScriptOrFnScope {
                     // lead to errors.
                     freeSymbols.removeAll(getAllUsedSymbols());
                 }
-                JavaScriptIdentifier javaScriptIdentifier = (JavaScriptIdentifier) elements.nextElement();
+                JavaScriptIdentifier javaScriptIdentifier = elements.nextElement();
                 String mungedValue = (String) freeSymbols.remove(0);
                 javaScriptIdentifier.setMungedValue(mungedValue);
             }
         }
 
         for (int i = 0; i < subScopes.size(); i++) {
-            ScriptOrFnScope scope = (ScriptOrFnScope) subScopes.get(i);
+            ScriptOrFnScope scope = subScopes.get(i);
             scope.munge();
         }
     }

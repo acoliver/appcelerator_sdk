@@ -201,9 +201,10 @@ Appcelerator.Compiler.generateId = function()
 Appcelerator.Compiler.attributeProcessors = {'*':[]};
 
 /**
- * register a function that has a method called handle that takes
- * an element, attribute and the attribute value of the processed element.
- * this method takes the name of the element (or optionally, null or * as
+ * Register an object that has a <b>handle</b> method which takes
+ * an element, attribute name, and attribute value of the processed element.
+ * 
+ * This method takes the name of the element (or optionally, null or * as
  * a wildcard) and an attribute (required) value to look for on the element
  * and a listener.  
  *
@@ -1751,6 +1752,8 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 		    
 		    if (data['element'] == null)
             {
+				// this might not be the element that triggered the message,
+				// but the element corresponding to an explicit id parameter
                 data['element'] = $(data['id']);
             }
 		}
@@ -2515,13 +2518,7 @@ Appcelerator.Compiler.convertCSSAttribute = function (css)
 Appcelerator.Util.ServerConfig.addConfigListener(function()
 {
     if (Appcelerator.Compiler.compileOnLoad)
-	{
-		// prototype/rhino problem
-		for (var name in Event.Methods) 
-		{
-			delete Object.prototype[name];
-		}
-		
+	{		
         var outputHandler = Prototype.K;
         Appcelerator.Compiler.compileDocument(outputHandler);
 	}

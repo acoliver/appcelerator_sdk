@@ -59,5 +59,11 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','input','button'],'activ
 				activator();
 			}
 		}
+	},
+	metadata:
+	{
+		description: (
+		""
+		)
 	}
 });

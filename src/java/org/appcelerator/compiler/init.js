@@ -242,14 +242,16 @@ var top = window;
 		},
 		
 		createEvent: function(){
-			return {
-				type: "",
-				initEvent: function(type){
-					this.type = type;
-				}
-			};
+			return new EventImpl();
 		}
 	};
+	
+	function EventImpl(){
+		this.type = "";
+		this.initEvent = function(type){
+			this.type = type;
+		}
+	}
 	
 	function getDocument(node){
 		return obj_nodes.get(node);

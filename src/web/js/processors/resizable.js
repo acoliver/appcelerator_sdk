@@ -28,5 +28,11 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','img', 'table'],'resizab
 				element.resizable.destroy();
 			});
 		}
+	},
+	metadata:
+	{
+		description: (
+		""
+		)
 	}
 });
