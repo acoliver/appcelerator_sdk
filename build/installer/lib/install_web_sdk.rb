@@ -46,6 +46,7 @@ module Appcelerator
       FileUtils.cp_r "#{source_dir}/js/.", options[:javascript]
       FileUtils.cp_r "#{source_dir}/images/.", options[:images]
       FileUtils.cp_r "#{source_dir}/swf/.", options[:web] + '/swf'
+      FileUtils.cp_r Dir.glob("#{source_dir}/*.html"), options[:web]
       
     end
   end

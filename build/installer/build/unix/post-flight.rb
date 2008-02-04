@@ -87,13 +87,18 @@ if File.exists?(bindir)
   FileUtils.ln_s "#{install_dir}/appcelerator", "#{bindir}/appcelerator", :force=>true
 end
 
+# make the directory cache where our files will go
+FileUtils.mkdir_p "#{install_dir}/releases" unless File.exists? "#{install_dir}/releases"
+
 # set permissions
 FileUtils.chown_R 'root', 'admin', "#{install_dir}"
 FileUtils.chown_R 'root', 'admin', "#{bindir}/appcelerator"
 
-# set execution bit
+# set execution bits
 FileUtils.chmod 0755, "#{install_dir}/appcelerator"
 FileUtils.chmod 0755, "#{bindir}/appcelerator"
+FileUtils.chmod_R 0777, "#{install_dir}/releases"
+FileUtils.chmod_R 0777, "#{install_dir}/updates"
 
 puts "Installation successful! Enjoy."
 

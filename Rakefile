@@ -266,6 +266,21 @@ task :unix=> [:stage] do
    puts "Unix is now ready"
 end
 
+desc 'build osx installer'
+task :osx=> [:stage] do
+	osx_dir = "#{STAGE_DIR}/osx"
+   clean_dir(osx_dir)
+	FileUtils.mkdir_p osx_dir 
+   system "pkgutil --expand #{BUILD_DIR}/installer/build/osx/installer.pkg #{osx_dir}/pkg"
+   sc = File.read "#{osx_dir}/pkg/appceleratorRiaPlatformPostflight.pkg/Scripts/postflight"
+   sc.gsub!('exit 0',"/usr/bin/appcelerator '--postflight--'\n\nexit 0\n")
+   f=File.open "#{osx_dir}/pkg/appceleratorRiaPlatformPostflight.pkg/Scripts/postflight", 'w+'
+   f.puts sc
+   f.flush
+   f.close
+   system "pkgutil --flatten #{osx_dir}/pkg #{osx_dir}/installer.pkg"
+end
+
 
 desc 'build installer update patch'
 task :installer_update => [:stage] do
