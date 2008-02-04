@@ -20,13 +20,14 @@
 
 module Appcelerator
   class Java
-    def create_project(from_path,to_path)
+    def create_project(from_path,to_path,config)
       Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
-      
       # re-write the application name to be the name of the directory
       name = File.basename(to_path)
       replace_app_name name,"#{to_path}/build.properties"
       replace_app_name name,"#{to_path}/build.xml"
+      FileUtils.cp_r "#{from_path}/src/web/appcelerator.xml","#{to_path}/public"
+      FileUtils.rm_r "#{to_path}/src/web/appcelerator.xml"
     end
     
     def replace_app_name(name,file)

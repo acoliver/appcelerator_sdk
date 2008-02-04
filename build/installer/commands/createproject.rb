@@ -36,6 +36,13 @@ Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerato
     :conversion=>Appcelerator::Types::DirectoryType
   },
   {
+    :name=>'name',
+    :help=>'name of the project to create (such as helloworld)',
+    :required=>true,
+    :default=>nil,
+    :type=>Appcelerator::Types::StringType
+  },
+  {
     :name=>'language',
     :help=>'language-specific project to create (such as java)',
     :required=>true,
@@ -50,6 +57,7 @@ Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerato
 
   # install the actual service bundle if needed
   service_dir = Appcelerator::Installer.install_service_if_required(args[:language],lang_dir)
+  version = File.basename(service_dir)
   
   # find the installer script
   script = File.join(service_dir,'install.rb')
@@ -59,13 +67,17 @@ Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerato
   
   # from and to directories
   from = service_dir
-  to = File.expand_path(args[:path].path)
+  to = File.expand_path(File.join(args[:path].path,args[:name]))
   lang = "#{args[:language][0,1].upcase}#{args[:language][1..-1]}"
 
-  puts "Creating #{lang} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{lang} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
+
+  # use our helper
+  config = Appcelerator::Installer.create_project(to,args[:name],args[:language],version)
   
   # now execute the install script
-  if eval "Appcelerator::#{lang}.new.create_project('#{from}','#{to}')"
+  installer = eval "Appcelerator::#{lang}.new"
+  if installer.create_project(from,to,config)
     puts "Appcelerator #{lang} project created ... !"
     true
   end

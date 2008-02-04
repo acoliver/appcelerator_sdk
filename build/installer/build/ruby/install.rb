@@ -23,7 +23,7 @@ require 'erb'
 
 module Appcelerator
   class Ruby 
-    def create_project(from_path,to_path)
+    def create_project(from_path,to_path,options)
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
 
       #FIXME: make sure and check for RoR
@@ -44,13 +44,13 @@ module Appcelerator
 
       FileUtils.mkdir "#{to_path}/app/services" unless File.exists?("#{to_path}/app/services")
       
-      options = Hash.new
-      options[:web]="#{to_path}/public"
-      options[:javascript]="#{to_path}/public/javascripts"
-      options[:images]="#{to_path}/public/images"
-      options[:widgets]="#{to_path}/public/widgets"
-      
-      Installer.install_web_project(options)
+      # options = Hash.new
+      # options[:web]="#{to_path}/public"
+      # options[:javascript]="#{to_path}/public/javascripts"
+      # options[:images]="#{to_path}/public/images"
+      # options[:widgets]="#{to_path}/public/widgets"
+      # 
+      # Installer.install_web_project(options)
       rails_gem = Gem.cache.search('rails').last
       
       template_dir = File.expand_path(File.join(from_path,'templates'))
@@ -69,7 +69,6 @@ module Appcelerator
       f.flush
       f.close
       
-      
       if rails_gem.version.to_s.to_f > 1.2
         FileUtils.cp_r "#{template_dir}/application.rb", "#{to_path}/app/controllers"
       end
@@ -78,10 +77,6 @@ module Appcelerator
           f.write("\n\nrequire 'appcelerator'")
       end
       f.close
-      
-      %w( README ).each do |file|
-          FileUtils.cp_r "#{template_dir}/#{file}", "#{to_path}"
-      end
       
       %w( routes.rb ).each do |file|
           FileUtils.cp_r "#{template_dir}/#{file}", "#{to_path}/config"

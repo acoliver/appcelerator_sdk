@@ -21,7 +21,7 @@
 	<target name="dist" depends="banner,clean,init,compile,buildwar" description="* Builds the service and application deployment archives"></target>
 
 	<target name="banner">
-		<echo>Appcelerator Platform SDK for Java</echo>
+		<echo>Appcelerator RIA Platform for Java</echo>
 		<echo>Licensed under the GNU GPL version 2</echo>
 		<echo>Please read LICENSE for more details on usage</echo>
 	</target>
@@ -46,13 +46,14 @@
 	<target name="buildwar" description="Builds the deployed war">
 		<mkdir dir="${stage.dir}/war"/>
 		<copy todir="${stage.dir}/war">
+			<fileset dir="${web.dir}" includes="**/*"/>
 			<fileset dir="${src.web.dir}" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/lib">
 			<fileset dir="${lib.dir}" includes="**/*"/>
 		</copy>
 		<war destfile="${stage.dir}/${app.name}.war" webxml="${stage.dir}/war/WEB-INF/web.xml">
-			<lib dir="${stage.dir}/lib" includes="*.jar"/>
+			<lib dir="${stage.dir}/lib" includes="*.jar" excludes="ant*.jar,js-*.jar,servletapi-*.jar,nekohtml*.jar"/>
 			<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
 		</war>
 	</target>

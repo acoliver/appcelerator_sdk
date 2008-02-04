@@ -20,7 +20,7 @@
 
 module Appcelerator
   class Python
-    def create_project(from_path,to_path)
+    def create_project(from_path,to_path,config)
       
       if not system('python --version')
         puts 'A python interpreter must be installed to use the appcelerator python sdk,'
@@ -36,7 +36,7 @@ module Appcelerator
       project_name = File.basename to_path
       
       FileUtils.cd project_dir do
-        system("paster create -t pylons #{project_name}")
+        system("paster create -t pylons #{config[:name]}")
       end
       
       # copy service directory

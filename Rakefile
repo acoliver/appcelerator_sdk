@@ -349,7 +349,7 @@ end
 def copy_dir(src, dest)
   Find.find(src) do |path|
     pathname = Pathname.new(path)
-    if not path.include? '.svn' and pathname.file?
+    if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
       dirname = pathname.relative_path_from(Pathname.new(src)).dirname 
       FileUtils.mkdir_p(dest+'/'+dirname)
       FileUtils.copy(path, dest+'/'+dirname)

@@ -231,8 +231,31 @@ module Appcelerator
       def Installer.tempfile
         File.new(File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(0)}")),"w+")
       end
-      
+
+      def Installer.put(path,content)
+        f = File.open(path,'w+')
+        f.puts content
+        f.flush
+        f.close
+      end
+
+      def Installer.mkdir(path)
+        case path.class.to_s
+          when 'String'
+            FileUtils.mkdir_p path unless File.exists?(path)
+          when 'Array'
+            path.each do |p|
+              mkdir p
+            end
+        end
+      end
       def Installer.copy(from_path,to_path,excludes=nil)
+        
+        if File.exists?(from_path) and File.file?(from_path)
+          FileUtils.cp from_path,to_path
+          return true
+        end
+        
         Dir["#{from_path}/**/*"].each do |file|
           if excludes
             found = false
@@ -252,7 +275,7 @@ module Appcelerator
           end
           if File.file?(file) 
             puts "Copying #{file} to #{target}" if OPTIONS[:verbose]
-            confirm("Overwrite [#{target}]? (Y)es,(N)o,(A)ll [Y]") if File.exists?(target) and not OPTIONS[:quiet]
+            confirm("Overwrite [#{target}]? (Y)es,(N)o,(A)ll [Y]") if File.exists?(target) and not OPTIONS[:quiet] and not OPTIONS[:force]
             FileUtils.copy(file,target)
           end
         end
@@ -405,6 +428,8 @@ module Appcelerator
                 match = false
                 case type.class.to_s
                   when 'String'
+                    match = isType?(type,value)
+                  when 'Class'
                     match = isType?(type,value)
                   when 'Array'
                     type.each do |t|

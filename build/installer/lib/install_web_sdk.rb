@@ -30,7 +30,7 @@ module Appcelerator
   			  FileUtils.mkdir_p target_dir unless File.exists?(target_dir)
   			  Installer.http_fetch_into "SDK #{version}", url, target_dir
   			end
-  			return target_dir
+  			return target_dir,version
   		end  
   		nil
     end
@@ -41,13 +41,15 @@ module Appcelerator
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
       # determine the source 
-      source_dir = Installer.install_web_sdk
+      source_dir,web_version = Installer.install_web_sdk
 
       FileUtils.cp_r "#{source_dir}/js/.", options[:javascript]
       FileUtils.cp_r "#{source_dir}/images/.", options[:images]
       FileUtils.cp_r "#{source_dir}/swf/.", options[:web] + '/swf'
       FileUtils.cp_r Dir.glob("#{source_dir}/*.html"), options[:web]
       
+      options[:web_version]=web_version
+      options
     end
   end
 end
