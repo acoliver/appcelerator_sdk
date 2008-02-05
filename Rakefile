@@ -141,6 +141,39 @@ task :web => [:stage] do
   end
 end
 
+desc 'build widget zip'
+task :widget => [:stage] do
+  widget_name = ENV['name']
+  widget_source = "src/web/modules/#{widget_name}"
+  widget_dir = "#{STAGE_DIR}/widgets/#{widget_name}"
+  if not File.exists?(widget_source)
+    puts "Could not find widget source files in #{widget_source}"
+    return
+  end
+
+  puts "Building widget #{widget_name}..." if VERBOSE
+  
+  puts "#{widget_dir}"
+  FileUtils.rm_r widget_dir if File.exists?(widget_dir)
+  FileUtils.mkdir_p widget_dir
+  FileUtils.cp_r "#{widget_source}", "#{STAGE_DIR}/widgets"
+  
+  if COMPRESS
+   system("ruby #{BUILD_DIR}/bin/modules.rb #{STAGE_DIR}/widgets #{STAGE_DIR}/widgets #{BUILD_DIR}/bin/yuicompressor-2.2.5.jar >/dev/null 2>&1")
+  end
+
+  puts "Archiving module files..." if VERBOSE
+  Zip::ZipFile.open("#{STAGE_DIR}/widgets/#{widget_name}.zip", Zip::ZipFile::CREATE) do |zipfile|
+    Find.find(widget_dir) do |path|
+      pathname = Pathname.new(path)
+      if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
+        filename = pathname.relative_path_from(Pathname.new(widget_dir)).to_s
+        zipfile.add(filename,"#{widget_dir}/#{filename}")
+      end
+    end
+  end
+end
+
 desc 'build ruby package'
 task :ruby => [:stage] do
   ruby_dir = "#{STAGE_DIR}/ruby"
