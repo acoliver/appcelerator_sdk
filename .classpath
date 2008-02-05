@@ -18,5 +18,10 @@
 	<classpathentry kind="lib" path="build/java/lib/xml-apis-2.7.1.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/nekohtml-0.9.5.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/spring-2.5.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/javassist-3.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/scannotation-1.0.1.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/jetty-6.1.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/jetty-util-6.1.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/jdt-core-3.1.1.jar"/>
 	<classpathentry kind="output" path="output/classes"/>
 </classpath>
