@@ -66,7 +66,7 @@ Appcelerator.Loader.loadModule=function(name,module)
 	for (var p in Appcelerator.Loader.Results)
 	{
 		var value = Appcelerator.Loader.Results[p];
-		if (Object.isString(value) || Object.isObject(value))
+		if (Object.isString(value) || Object.isObject(value) || Object.isNumber(value))
 		{
 			definition[p]=value;
 		}
