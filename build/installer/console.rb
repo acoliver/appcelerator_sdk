@@ -150,6 +150,10 @@ module Appcelerator
       end
       
       def Installer.admin_user?
+        # ignore for win32 system
+        return true if RUBY_PLATFORM =~ /mswin32$/
+        
+        # must be root user for unix
         un = current_user
         'root'==un
       end

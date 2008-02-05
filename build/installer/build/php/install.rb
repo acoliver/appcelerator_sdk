@@ -21,7 +21,11 @@
 module Appcelerator
   class Php
     def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
+      Appcelerator::Installer.copy(from_path,"#{to_path}/public",["#{__FILE__}"])
+      
+      # move our services into the right place
+      FileUtils.cp_r "#{to_path}/public/services/.", "#{to_path}/app/services"
+      FileUtils.rm_r "#{to_path}/public/services"
     end
   end
 end
