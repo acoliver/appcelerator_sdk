@@ -97,7 +97,13 @@ else if ($method != 'POST')
 	return;
 }
 
-$dir = dirname(__FILE__) . '/services';
+$dir = dirname(__FILE__) . '/../app/services';
+
+if (!is_dir($dir))
+{
+	/* support services in the same directory - prior to 2.1 */
+	$dir = dirname(__FILE__) . '/services';
+}
 
 if (!is_dir($dir)) 
 {
