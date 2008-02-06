@@ -6,22 +6,22 @@
 	<classpathentry kind="src" path="src/php"/>
 	<classpathentry kind="src" path="src/doc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="build/java/lib/ant-1.7.0.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/commons-fileupload-1.2.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/commons-httpclient-3.1.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/js-1.6RC7.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/log4j-1.2.11.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/servletapi-2.3.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/xerces-2.7.1.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/xml-apis-2.7.1.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/nekohtml-0.9.5.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/spring-2.5.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/javassist-3.7.jar"/>
 	<classpathentry kind="lib" path="build/java/lib/scannotation-1.0.1.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/jetty-6.1.7.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/jetty-util-6.1.7.jar"/>
-	<classpathentry kind="lib" path="build/java/lib/jdt-core-3.1.1.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/compiler/jdt-core-3.1.1.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/compiler/js-1.6RC7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/compiler/nekohtml-0.9.5.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/embedded/javassist-3.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/embedded/jetty-6.1.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/embedded/jetty-util-6.1.7.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/optional/ant-1.7.0.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/optional/cglib-2.1.3.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/optional/servletapi-2.3.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/optional/spring-2.5.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/compiler/xerces-2.7.1.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/compiler/xml-apis-2.7.1.jar"/>
+	<classpathentry kind="lib" path="build/java/lib/optional/log4j-1.2.11.jar"/>
 	<classpathentry kind="output" path="output/classes"/>
 </classpath>

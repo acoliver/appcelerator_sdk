@@ -28,7 +28,9 @@ module Appcelerator
   			target_dir = File.join(RELEASE_DIR,'web',version)
   			if not File.exists?(target_dir) or OPTIONS[:force_update]
   			  FileUtils.mkdir_p target_dir unless File.exists?(target_dir)
+          Appcelerator::PluginManager.dispatchEvent 'before_web_sdk_install',target_dir,version
   			  Installer.http_fetch_into "SDK #{version}", url, target_dir
+          Appcelerator::PluginManager.dispatchEvent 'after_web_sdk_install',target_dir,version
   			end
   			return target_dir,version
   		end  
@@ -42,6 +44,8 @@ module Appcelerator
 
       # determine the source 
       source_dir,web_version = Installer.install_web_sdk
+      
+      Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
 
       FileUtils.cp_r "#{source_dir}/js/.", options[:javascript]
       FileUtils.cp_r "#{source_dir}/images/.", options[:images]
@@ -49,6 +53,9 @@ module Appcelerator
       FileUtils.cp_r Dir.glob("#{source_dir}/*.html"), options[:web]
       
       options[:web_version]=web_version
+
+      Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version
+
       options
     end
   end

@@ -30,12 +30,12 @@ module Appcelerator
       # get the latest
       details = Installer.get_latest_service language
       
-      if config['latest'] and not OPTIONS[:force_update]
-        f = File.join(release_dir,config['latest'])
+      if config[:latest] and not OPTIONS[:force_update]
+        f = File.join(release_dir,config[:latest])
         if File.exists?(f) and File.exists?(File.join(f,'install.rb'))
-          return f if details['version']==config['latest']
+          return f if details['version']==config[:latest]
           puts "A new version #{details['version']} of the #{language} SOA integration point is available"
-          if not confirm "Install it or use the current version (#{config['latest']})? (Y)es install new, (N)o keep current [Y]",true,false
+          if not confirm "Install it or use the current version (#{config[:latest]})? (Y)es install new, (N)o keep current [Y]",true,false
             return f
           end
         end
@@ -44,6 +44,7 @@ module Appcelerator
       service_dir = File.join(release_dir,details['version'])
       FileUtils.rm_r service_dir if File.exists?(service_dir)
       FileUtils.mkdir_p service_dir
+      Appcelerator::PluginManager.dispatchEvent 'before_service_install',service_dir,language,details['version']
 
       # now go fetch the version and install it
       Installer.http_fetch_into "#{language[0,1].upcase+language[1..-1]} #{details['version']}", details['url'], service_dir
@@ -53,10 +54,12 @@ module Appcelerator
       require pre_flight if File.exists?(pre_flight)
       
       # setup our config file
-      config['latest'] = details['version']
+      config[:latest] = details['version']
       cf = File.open(config_file,'w+')
       cf.puts config.to_yaml
       cf.close
+
+      Appcelerator::PluginManager.dispatchEvent 'after_service_install',service_dir,language,details['version']
       
       # return our reference directory where the latest lives
       File.join(release_dir,details['version'])

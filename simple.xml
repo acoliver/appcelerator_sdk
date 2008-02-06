@@ -7,7 +7,7 @@
 <project name="Appcelerator Platform SDK" default="dist" basedir=".">
 	
 	<path id="classpath">
-		<fileset dir="${lib}" includes="*.jar"/>
+		<fileset dir="${lib}" includes="**/*.jar"/>
 	</path>
 	
    <target name="dist" description="Builds entire distribution" depends="compile,jar,zip"></target>

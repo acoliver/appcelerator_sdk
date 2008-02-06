@@ -22,7 +22,7 @@
 #languages = RELEASE_CONFIG['languages']
 languages = ['java','ruby']
 
-Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerator project',[
+Appcelerator::CommandRegistry.registerCommand('create:project','create a new Appcelerator project',[
   {
     :name=>'path',
     :help=>'path to directory where project should be created',
@@ -73,12 +73,14 @@ Appcelerator::CommandRegistry.registerCommand('create','create a new Appcelerato
   puts "Creating #{lang} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
 
   # use our helper
+  Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],args[:language],version
   config = Appcelerator::Installer.create_project(to,args[:name],args[:language],version)
   
   # now execute the install script
   installer = eval "Appcelerator::#{lang}.new"
   if installer.create_project(from,to,config)
     puts "Appcelerator #{lang} project created ... !"
+    Appcelerator::PluginManager.dispatchEvent 'after_create_project',config
     true
   end
 end

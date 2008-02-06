@@ -215,16 +215,7 @@ module Appcelerator
             #FIXME - deal with windows or bundle in windows or something - or figure out how to do in ruby
             system "tar xfz #{t.path} -C #{dirname}"
           elsif url =~ /\.zip$/
-            require 'zip/zip'
-            Zip::ZipFile::open(t.path) do |zf|
-              zf.each do |e|
-                fpath = File.join(dirname, e.name)
-                FileUtils.mkdir_p(File.dirname(fpath))
-                puts "extracting ... #{fpath}" if OPTIONS[:debug]
-                zf.extract(e, fpath) 
-              end
-              zf.close
-            end
+            Installer.unzip dirname,t.path
             FileUtils.rm_r t.path
           end
         end
@@ -232,8 +223,25 @@ module Appcelerator
         dirname
       end
       
+      def Installer.unzip(dirname,path)
+        require 'zip/zip'
+        Zip::ZipFile::open(path) do |zf|
+          zf.each do |e|
+            fpath = File.join(dirname, e.name)
+            FileUtils.mkdir_p(File.dirname(fpath))
+            puts "extracting ... #{fpath}" if OPTIONS[:debug]
+            zf.extract(e, fpath) 
+          end
+          zf.close
+        end
+      end
+      
+      def Installer.tempdir
+        FileUtils.mkdir_p File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(1000)}"))
+      end
+      
       def Installer.tempfile
-        File.new(File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(0)}")),"w+")
+        File.new(File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(1000)}")),"w+")
       end
 
       def Installer.put(path,content)
@@ -373,13 +381,14 @@ module Appcelerator
       @@registry=Hash.new
       
       def CommandRegistry.registerCommand(name,help,args,opts,examples,&callback)
+        puts "name=#{name},#{help}"
         @@registry[name] = {
           :args=>args,
           :opts=>opts,
           :examples=>examples,
           :invoker=>callback,
           :help=>help
-        }
+        } unless exists?(name)
       end
       
       def CommandRegistry.exists?(name)
@@ -399,7 +408,9 @@ module Appcelerator
       end
       
       def CommandRegistry.execute(name,args=nil,opts=nil)
+
         info = @@registry[name]
+
         if not info
           if name=='help'
             return false
@@ -461,7 +472,9 @@ module Appcelerator
         
         if not error
           Appcelerator::Installer.boot unless name=='help'
+          Appcelerator::PluginManager.dispatchEvent 'before_command',name,argHash,opts
           info[:invoker].call(argHash,opts)
+          Appcelerator::PluginManager.dispatchEvent 'after_command',name,argHash,opts
         else
           execute('help',[name])
           false

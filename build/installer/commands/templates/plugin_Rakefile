@@ -1,0 +1,46 @@
+#
+# Plugin Rakefile
+#
+
+require 'rake'
+require 'fileutils'
+require 'zip/zip'
+require 'yaml'
+require 'find'
+require 'pathname'
+
+NAME = 'PLUGIN'
+ZIPFILE = File.expand_path "#{NAME}.zip"
+
+desc 'default build which makes the plugin'
+task :default => [:zip] do
+
+end
+
+desc 'zip up the plugin'
+task :zip do
+  src_dir = File.expand_path "#{File.dirname(__FILE__)}/src"
+  FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
+  Zip::ZipFile.open(ZIPFILE, Zip::ZipFile::CREATE) do |zipfile|
+    Find.find(src_dir) do |path|
+        pathname = Pathname.new(path)
+        if not path.include? '.svn' and pathname.file?
+          filename = pathname.relative_path_from(Pathname.new(src_dir))
+          zipfile.add(filename,src_dir+'/'+filename)
+        end
+    end
+    zipfile.add('build.yml','build.yml')
+  end
+end
+
+desc 'install the plugin'
+task :install => [:zip] do
+  system "appcelerator install:plugin #{ZIPFILE}"
+end
+
+desc 'release the plugin'
+task :release => [:zip] do
+  system "appcelerator release:plugin #{ZIPFILE}"
+end
+
+

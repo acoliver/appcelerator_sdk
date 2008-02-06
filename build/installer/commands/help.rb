@@ -57,7 +57,7 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
     entry[:args].each do |a|
         n = a[:name]
         msg = a[:help]
-        puts "      #{n}" + (" "*(15-n.length)) + "#{msg}"
+        puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
     end
     if entry[:opts]
         puts
@@ -65,7 +65,7 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
         args[:opts].each do |a|
             n = a[:name]
             msg = a[:help]
-            puts "      #{n}" + (" "*(15-n.length)) + "#{msg}"
+            puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
         end
     end
     if entry[:examples]
@@ -81,15 +81,14 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
     puts "      #{SCRIPTNAME} -v/--version"
     puts "      #{SCRIPTNAME} command [arguments...] [options...]"
     puts
-#    puts "    Examples:"
-#    puts "      #{SCRIPTNAME} install mypath"
-#    puts "      #{SCRIPTNAME} compile myfile.html output --recursive"
-#    puts "      #{SCRIPTNAME} verify module mymodule.js"
-#    puts
+    puts "    Examples:"
+    puts "      #{SCRIPTNAME} create:project ~/myproject foobar java --verbose"
+    puts "      #{SCRIPTNAME} install:plugin foo:bar"
+    puts
     puts "    Supported commands:"
     Appcelerator::CommandRegistry.each do |name,entry|
       help = entry[:help]
-      puts "      #{name}" + (" "*(15-name.length)) + "#{help}"
+      puts "      #{name}" + (" "*(25-name.length)) + "#{help}"
     end
   end
   puts
