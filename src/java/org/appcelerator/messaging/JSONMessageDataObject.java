@@ -335,7 +335,7 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
     {
         try
         {
-            if (value instanceof Collection)
+            if (value instanceof Collection && !(value instanceof IMessageDataList))
             {
                 jsonObject.put(key, (Collection) value);
             }
