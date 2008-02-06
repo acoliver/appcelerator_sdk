@@ -31,7 +31,10 @@ import java.util.concurrent.FutureTask;
 import org.apache.log4j.Logger;
 import org.appcelerator.annotation.InjectBean;
 import org.appcelerator.session.ExecutableSessionManager;
+import org.appcelerator.stats.NullPerformanceManager;
+import org.appcelerator.stats.PerformanceManager;
 import org.appcelerator.threading.GlobalThreadPool;
+import org.appcelerator.stats.Statistic;
 
 /**
  * InMemoryServiceBroker is an implementation of the IServiceBroker
@@ -42,7 +45,7 @@ import org.appcelerator.threading.GlobalThreadPool;
 public class InMemoryServiceBroker implements IServiceBroker
 {
     private static final Logger LOG = Logger.getLogger(InMemoryServiceBroker.class);
-
+    private PerformanceManager performanceManager = new NullPerformanceManager();
     @InjectBean
     private ExecutableSessionManager executableSessionManager = null;
 
@@ -80,7 +83,10 @@ public class InMemoryServiceBroker implements IServiceBroker
                 {
                     if (listener.accept(message))
                     {
-                        listener.onMessage(message);
+                    	Statistic stat = performanceManager.createStat(message);
+                    	listener.onMessage(message);
+                        performanceManager.publish(stat);
+
                     }
                 }
                 
@@ -94,7 +100,9 @@ public class InMemoryServiceBroker implements IServiceBroker
             {
                 if (listener.accept(message))
                 {
-                    listener.onMessage(message);
+                	Statistic stat = performanceManager.createStat(message);
+                	listener.onMessage(message);
+                    performanceManager.publish(stat);
                 }
             }
         }
@@ -230,5 +238,13 @@ public class InMemoryServiceBroker implements IServiceBroker
             callback.run();
         }
     }
+
+	public PerformanceManager getPerformanceManager() {
+		return performanceManager;
+	}
+
+	public void setPerformanceManager(PerformanceManager performanceManager) {
+		this.performanceManager = performanceManager;
+	}
 
 }
