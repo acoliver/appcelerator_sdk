@@ -43,7 +43,9 @@ module Appcelerator
       # copy development.ini (where do we put that? it's tied to the server SDK, probably in a directory there)
       # need to copy web files now
 
-      #Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])      
+      #Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])     
+      
+      true 
     end
   end
 end

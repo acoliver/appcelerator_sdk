@@ -45,30 +45,37 @@ module Appcelerator
         p.send 'plugin_unregistered'
       end
     end
+    def PluginManager.loadPlugins
+      p = []
+      # scan and add all of our plugins
+      Object::constants.each do |c|
+        cl = eval c
+        if cl.class == Class and cl.superclass==Appcelerator::Plugin
+          p << cl.to_s
+          Appcelerator::PluginManager.addPlugin(cl.new) 
+        end
+      end
+      show = OPTIONS[:quiet]==false and p.length > 0
+      puts " --> Loading plugin#{p.length > 1 ?'s':''}: #{p.join(',')}" if show
+    end
   end
 end
 
 PLUGIN_DIR = "#{RELEASE_DIR}/plugins"
+PROJECT_PLUGIN_DIR = "#{Dir.pwd}/plugins"
 
 # load all the plugins
-if ARGV.length > 0 and File.exists?(PLUGIN_DIR) and File.directory?(PLUGIN_DIR)
-  Dir["#{PLUGIN_DIR}/*"].each do |dir|
+[PLUGIN_DIR,PROJECT_PLUGIN_DIR].each do |pdir|
+  next unless File.exists?(pdir)
+  Dir["#{pdir}/*"].each do |dir|
     if File.directory?(dir) and File.exists?("#{dir}/config.yml")
       config = YAML.load_file("#{dir}/config.yml")
       version = config[:version]
       path = "#{dir}/#{version}/#{File.basename(dir)}.rb"
       require path if File.exists?(path)
+    elsif File.file?(dir) and File.extname(dir)=='.rb'
+      require dir
     end
   end
-  p = []
-  # scan and add all of our plugins
-  Object::constants.each do |c|
-    cl = eval c
-    if cl.class == Class and cl.superclass==Appcelerator::Plugin
-      p << cl.to_s
-      Appcelerator::PluginManager.addPlugin(cl.new) 
-    end
-  end
-  puts " --> Loading plugin#{p.length > 1 ?'s':''}: #{p.join(',')}" unless OPTIONS[:quiet]
 end
 

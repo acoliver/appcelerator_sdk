@@ -26,6 +26,8 @@ module Appcelerator
       # move our services into the right place
       FileUtils.cp_r "#{to_path}/public/services/.", "#{to_path}/app/services"
       FileUtils.rm_r "#{to_path}/public/services"
+      
+      true
     end
   end
 end

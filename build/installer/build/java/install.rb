@@ -28,6 +28,55 @@ module Appcelerator
       replace_app_name name,"#{to_path}/build.xml"
       FileUtils.cp_r "#{from_path}/src/web/appcelerator.xml","#{to_path}/public"
       FileUtils.rm_r "#{to_path}/src/web/appcelerator.xml"
+
+      #
+      # create an Eclipse .project/.classpath file      
+      #
+      classpath=[]
+      classpath<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      classpath<<"<classpath>"
+      classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
+      classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
+      classpath<<"<classpathentry kind=\"src\" path=\"src/web\"/>"
+      classpath<<"<classpathentry kind=\"src\" path=\"public\"/>"
+      classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
+      classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
+      
+      Dir["#{to_path}/lib/**/*"].each do |dir|
+        classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
+      end
+      
+      classpath<<"</classpath>"
+      
+      Appcelerator::Installer.put "#{to_path}/.classpath",classpath.join("\n")
+      
+      project=<<STR
+<projectDescription>
+   <name>#{name}</name>
+   <comment>Appcelerator Java Project</comment>
+   <projects>
+   </projects>
+   <buildSpec>
+      <buildCommand>
+         <name>org.eclipse.jdt.core.javabuilder</name>
+         <arguments>
+         </arguments>
+      </buildCommand>
+   </buildSpec>
+   <natures>
+      <nature>org.eclipse.jdt.core.javanature</nature>
+   </natures>
+</projectDescription>
+STR
+     
+      project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
+      Appcelerator::Installer.put "#{to_path}/.project",project
+      
+      puts "#{from_path}/war.rb"
+      
+      FileUtils.cp_r "#{from_path}/war.rb","#{to_path}/plugins"
+      
+      true
     end
     
     def replace_app_name(name,file)

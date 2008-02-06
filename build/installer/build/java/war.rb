@@ -18,13 +18,12 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-module Appcelerator
-  class Dotnet
-    def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
-      true
+
+class WARPlugin < Appcelerator::Plugin
+    def plugin_registered
+      # called when this plugin is loaded
+      Appcelerator::CommandRegistry.registerCommand('war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
+        system "ant buildwar"
+      end
     end
-  end
 end
-
-

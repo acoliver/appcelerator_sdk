@@ -105,6 +105,7 @@ module Appcelerator
       FileUtils.cp_r "#{template_dir}/service_broker_helper.rb", "#{to_path}/app/helpers"
       FileUtils.cp_r "#{template_dir}/test_service.rb", "#{to_path}/app/services"
 
+      true
     end
   end
 end

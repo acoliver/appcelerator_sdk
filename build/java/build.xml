@@ -15,7 +15,7 @@
 	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
 	<property name="dist.dir" value="${stage.dir}"/>
 	<path id="classpath">
-		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
 	
 	<target name="dist" depends="banner,clean,init,compile,buildwar" description="* Builds the service and application deployment archives"></target>
@@ -26,7 +26,7 @@
 		<echo>Please read LICENSE for more details on usage</echo>
 	</target>
 
-	<target name="compile" description="Compiles the Java code">
+	<target name="compile" description="Compiles the Java code" depends="init">
 		<mkdir dir="${stage.dir}/java/classes"/>
 		<mkdir dir="${stage.dir}/lib"/>
 		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
@@ -43,17 +43,17 @@
 		</jar>
 	</target>
 
-	<target name="buildwar" description="Builds the deployed war">
+	<target name="buildwar" description="Builds the deployed war" depends="banner,compile">
 		<mkdir dir="${stage.dir}/war"/>
 		<copy todir="${stage.dir}/war">
 			<fileset dir="${web.dir}" includes="**/*"/>
 			<fileset dir="${src.web.dir}" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/lib">
-			<fileset dir="${lib.dir}" includes="**/*"/>
+			<fileset dir="${lib.dir}" includes="*.jar"/>
 		</copy>
 		<war destfile="${stage.dir}/${app.name}.war" webxml="${stage.dir}/war/WEB-INF/web.xml">
-			<lib dir="${stage.dir}/lib" includes="*.jar" excludes="ant*.jar,js-*.jar,servletapi-*.jar,nekohtml*.jar"/>
+			<lib dir="${stage.dir}/lib" includes="*.jar" />
 			<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
 		</war>
 	</target>

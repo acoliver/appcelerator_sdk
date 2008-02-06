@@ -12,7 +12,7 @@
     <property file="build.properties"/>
 
 	<path id="classpath">
-		<fileset dir="${build.java.dir}/lib" includes="*.jar"/>
+		<fileset dir="${build.java.dir}/lib" includes="**/*.jar"/>
 	</path>
 	
 	<path id="script.classpath">
@@ -33,6 +33,16 @@
 	</target>
 
 	<target name="init">
+<echo>
+
+**************************** WARNING ****************************
+
+This build has been deprecated and won't work like expected.
+This file is going to be removed soon
+
+*****************************************************************
+
+</echo>
 		<mkdir dir="${stage.dir}"/>
 		<tstamp/>
         <property name="APP_VERSION" value="${version.major}.${version.minor}.${version.rev}"/>
@@ -272,7 +282,7 @@
 		<loadfile property="appcelerator.xml" srcFile="build/java/sdk/dist/src/web/appcelerator.xml"/>
 		<loadfile property="appcelerator-services.xml" srcFile="build/examples/simple/appcelerator-services.xml"/>
 		<loadfile property="appcelerator-dotnet.xml" srcFile="build/dotnet/src/web/appcelerator.xml"/>
-		<loadfile property="appcelerator-php.xml" srcFile="build/php/sdk/dist/src/web/appcelerator.xml"/>
+		<!--<loadfile property="appcelerator-php.xml" srcFile="build/php/sdk/dist/src/web/appcelerator.xml"/>-->
 		<loadfile property="appcelerator-python.xml" srcFile="build/python/appcelerator.xml"/>
 		<loadfile property="appcelerator-perl.xml" srcFile="build/perl/appcelerator.xml"/>
 		<loadfile property="TestService.cs" srcFile="build/dotnet/TestService.cs"/>
@@ -421,10 +431,12 @@
 		<mkdir dir="${stage.dir}/sdk/php"/>
 		<mkdir dir="${stage.dir}/sdk/php/doc"/>
 		<mkdir dir="${stage.dir}/sdk/php/test"/>
+<!--
 		<copy todir="${stage.dir}/sdk/php" filtering="true"> 
 			<fileset dir="${build.php.dir}/sdk" includes="README,*.*"/>
 			<fileset dir="." includes="LICENSE"/>
-		</copy>
+		<</copy>
+
 		<copy todir="${stage.dir}/sdk/php/src" filtering="false"> 
 			<fileset dir="${stage.dir}/web" includes="**/*"/>
 		</copy>
@@ -435,6 +447,7 @@
 			<fileset dir="${build.php.dir}/sdk/dist/src/php" includes="**"/>
 			<fileset dir="${build.php.dir}/sdk/dist/src/web" includes="**"/>
 		</copy>
+-->
 		<!--
 		<copy todir="${stage.dir}/sdk/php/doc" filtering="false"> 
 			<fileset dir="${stage.dir}/doc" includes="**/*"/>
@@ -503,6 +516,7 @@
 	</target>
 
 	<target name="sdk_ruby_dist" depends="min,build_web" description="* Builds the Ruby on Rails SDK distribution">
+<!--
 		<mkdir dir="${stage.dir}/ruby"/>
         <property name="ruby_gem_version" value="${APP_VERSION}"/>
         <copy todir="${stage.dir}/ruby" filtering="true">
@@ -538,6 +552,7 @@
             <arg line="update_manifest"/>
         </exec>
         <antcall target="gem"/>
+-->
 	</target>
 	<target name="gem" depends="init">
 		<exec dir="${stage.dir}/ruby" executable="rake">

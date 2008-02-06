@@ -55,7 +55,9 @@ module Appcelerator
       install_web_project(config)
 
       # write out our main configuration file
-      put "#{path}/config/appcelerator.config","installed=#{Time.now}\nlanguage=#{language}\nlanguage-version=#{version}\nweb-version=#{config[:web_version]}\n"
+      props = {:installed=>Time.now,:language=>language,:language_version=>version,:web_version=>config[:web_version]}
+      
+      put "#{path}/config/appcelerator.config", props.to_yaml.to_s
             
       # return our config
       config

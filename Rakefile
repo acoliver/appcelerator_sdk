@@ -359,6 +359,7 @@ task :java => [:stage] do
   FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
   FileUtils.copy("#{BUILD_DIR}/java/SampleService.java",File.join(java_dir,'dist','src','java'))
   FileUtils.copy("#{BUILD_DIR}/installer/build/java/install.rb",File.join(java_dir,'dist'))
+  FileUtils.copy("#{BUILD_DIR}/installer/build/java/war.rb",File.join(java_dir,'dist'))
 
   puts "Compiling Java files..." if VERBOSE
   

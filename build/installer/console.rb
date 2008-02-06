@@ -381,7 +381,6 @@ module Appcelerator
       @@registry=Hash.new
       
       def CommandRegistry.registerCommand(name,help,args,opts,examples,&callback)
-        puts "name=#{name},#{help}"
         @@registry[name] = {
           :args=>args,
           :opts=>opts,
@@ -491,6 +490,7 @@ module Appcelerator
     end
 end
 
+
 #
 # determine all the releases we have installed
 #
@@ -545,6 +545,12 @@ end
 Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
   require File.expand_path(file)
 end
+
+#
+# load our plugins
+#
+Appcelerator::PluginManager.loadPlugins
+
 
 #
 # execute the command

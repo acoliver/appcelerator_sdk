@@ -140,9 +140,21 @@ public class HTTPEndpoint
      */
     public static void main(String[] args) throws Exception
     {
-        HTTPEndpoint endpoint = new HTTPEndpoint(4000,"/usr/local/tomcat/webapps/foo");
-        ServiceDirectoryScanner scanner = new ServiceDirectoryScanner(new File("/Users/jhaynie/tmp/"),5000);
-        scanner.start();
+        if (args.length!=4 && args.length!=2)
+        {
+            System.err.println("HTTPEndpoint <port> <webdir> <services_dir> <scan_period>");
+            System.exit(1);
+        }
+        int port = Integer.parseInt(args[0]);
+        String webdir = args[1];
+        String servicesdir = args.length > 2 ? args[2] : null;
+        long scanperiod = args.length > 3 ? Long.parseLong(args[3]) : 5000;
+        HTTPEndpoint endpoint = new HTTPEndpoint(port,webdir);
+        if (servicesdir!=null)
+        {
+            ServiceDirectoryScanner scanner = new ServiceDirectoryScanner(new File(servicesdir),scanperiod);
+            scanner.start();
+        }
         endpoint.start().join();
     }
 }
