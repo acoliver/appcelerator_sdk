@@ -64,7 +64,7 @@ task :web => [:stage] do
   FileUtils.mkdir_p js_dir
   
   puts 'Compiling appcelerator-lite.js...' if VERBOSE
-  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js)
+  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js localization.js)
   jslite = js_dir+'/appcelerator-lite.js'
   append_file(BUILD_DIR+'/license_header.txt', jslite)
 
