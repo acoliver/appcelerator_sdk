@@ -244,7 +244,7 @@ Appcelerator.Module.Datatable =
 				var column_property_name = header_array[h]['property'];
 				var formatterFunction = header_array[h]['formatterFunction'];
 				
-				var cell_value = (array[xrun][column_property_name]||'');
+				var cell_value = (Object.getNestedProperty(array[xrun],column_property_name)||'');
 				if (formatterFunction) {
 					cell_value = formatterFunction(cell_value,column_property_name, array[xrun]);
 				} else {
@@ -331,7 +331,7 @@ Appcelerator.Module.Datatable =
 		if (!sortFunction) {
 			num_sort = true;
 			for (var x = 0, len = array.length; x < len; x++) {
-				var cell_value = (array[x][column_property_name] || '');
+				var cell_value = (Object.getNestedProperty(array[x],column_property_name) || '');
 				
 				if (isNaN(parseFloat(cell_value))) {
 					num_sort = false;
@@ -354,8 +354,8 @@ Appcelerator.Module.Datatable =
 		if (sortFunction)
 		{	var customSort = function (a,b)
 			{
-				var aval = a[column_property_name];
-				var bval = b[column_property_name];
+				var aval = Object.getNestedProperty(a,column_property_name);
+				var bval = Object.getNestedProperty(b,column_property_name);
 				return sortFunction(aval, bval);
 			}
 			array.sort(customSort);
@@ -363,8 +363,8 @@ Appcelerator.Module.Datatable =
 		} else if(num_sort)
 		{
 			var compareNum = function compare(a, b){
-				var anum = a[column_property_name];
-				var bnum = b[column_property_name];
+				var anum = Object.getNestedProperty(a,column_property_name);
+				var bnum = Object.getNestedProperty(b,column_property_name);
 				return (parameterMap['sortBy'][column_property_name] == true) ? parseFloat(anum) - parseFloat(bnum) : parseFloat(bnum) - parseFloat(anum);
 			};
 			array.sort(compareNum);
@@ -373,8 +373,8 @@ Appcelerator.Module.Datatable =
 			var compareString = function compare(a, b)
 		  {
 				//compare all lower case strings so words starting with capital letters are not at the top/bottom of the list
-				var astr = a[column_property_name].toLowerCase();
-				var bstr = b[column_property_name].toLowerCase();
+				var astr = Object.getNestedProperty(a,column_property_name).toLowerCase();
+				var bstr = Object.getNestedProperty(b,column_property_name).toLowerCase();
 		    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
 		  };
 			array.sort(compareString);

@@ -162,6 +162,22 @@
 
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Complex Parameter Datatable (custom client sort on number column)
+		</td>
+		<td class="result" >
+			<app:datatable on="l:datatable7.response then execute" property="rows" sort="client">
+				<header property="sub.name" align="left">Name</header>
+				<header property="sub.number" sorter="numberSorter" align="center">Number</header>
+			</app:datatable>
+			<app:script on="l:datatable7.request then execute">
+			$MQ('l:datatable7.response',{'rows':[{'sub':{'name':'Joe','number':1}},{'sub':{'name':'Fred','number':9}},{'sub':{'name':'Larry','number':5}}]});
+			</app:script>
+			<app:message name="l:datatable7.request"></app:message>
+
+		</td>
+	</tr>
 
 
 </table>
