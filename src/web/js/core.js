@@ -402,6 +402,10 @@ Appcelerator.Core.requireModule = function(moduleName,onload)
 	var path = Appcelerator.ModulePath + moduleName + '/' + moduleName + '.js';
 	Appcelerator.Core.loadJS(path);
 };
+
+// map forward to widget
+Appcelerator.Core.requireWidget = Appcelerator.Core.requireModule;
+
 /**
  * Modules must call this to register themselves with the framework
  *
@@ -516,6 +520,8 @@ if (Appcelerator.Browser.isIE)
         Appcelerator.Core.HeadElement.appendChild(script);
 	};
 }
+// map forward
+Appcelerator.Core.registerWidget = Appcelerator.Core.registerModule; 
 
 /**
  * called to load a js file relative to the modules/common/js directory
@@ -528,6 +534,9 @@ Appcelerator.Core.registerModuleWithCommonJS = function (moduleName,module,js)
 {
     Appcelerator.Core.registerModuleWithJS(moduleName,module,js,Appcelerator.Core.getModuleCommonDirectory()+'/js');
 };
+
+// map forward
+Appcelerator.Core.registerWidgetWithCommonJS = Appcelerator.Core.registerModuleWithCommonJS;
 
 /**
  * called to load a js file relative to the module js directory
@@ -604,6 +613,8 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
         Appcelerator.Core.HeadElement.appendChild(script);
     }
 };
+
+Appcelerator.Core.registerWidgetWithJS = Appcelerator.Core.registerModuleWithJS;
 
 
 Appcelerator.Core.getLoadedModulesAndAttributes = function() 

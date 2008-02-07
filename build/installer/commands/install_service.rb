@@ -17,15 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class TestService < Appcelerator::Service
-  
-  Service 'app.test.message.request', :testMessage, 'app.test.message.response'
-  
-  def testMessage
-      p "received message: #{params.inspect}"
-      msg = params["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
-  end
-  
-end
 
+Appcelerator::CommandRegistry.registerCommand('install:service','install an SOA integration point',[
+  {
+    :name=>'location',
+    :help=>'path or URL to plugin file or name of a service integration from the network',
+    :required=>true,
+    :default=>nil,
+    :type=>Appcelerator::Types::StringType
+  }
+],nil,nil) do |args,options|
+
+  Appcelerator::Installer.install_component 'service','SOA Integration Point',args[:location],"#{RELEASE_DIR}/services"
+
+end

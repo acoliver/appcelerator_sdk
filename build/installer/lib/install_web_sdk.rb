@@ -1,21 +1,20 @@
-# Appcelerator SDK
+# This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
 #
-# This program is free software; you can redistribute it and/or modify
+# Appcelerator is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 module Appcelerator
   class Installer
@@ -30,9 +29,20 @@ module Appcelerator
   			  FileUtils.mkdir_p target_dir unless File.exists?(target_dir)
           Appcelerator::PluginManager.dispatchEvent 'before_web_sdk_install',target_dir,version
   			  Installer.http_fetch_into "SDK #{version}", url, target_dir
+  			  Installer.put "#{RELEASE_DIR}/web/config.yml", {:version=>version}.to_yaml.to_s
           Appcelerator::PluginManager.dispatchEvent 'after_web_sdk_install',target_dir,version
   			end
   			return target_dir,version
+  		else
+  		  config_file = File.join(RELEASE_DIR,'web','config.yml')
+  		  if File.exists?(config_file)
+  		    config = YAML.load_file(config_file)
+  		    return "#{RELEASE_DIR}/web/#{config[:version]}",config[:version]
+  	    else
+  	      STDERR.puts "Can't install required Web SDK. Failed to connect to the Appcelerator Network."
+  	      STDERR.puts "Are you connected to the Internet? Please check your connection and try again." 
+  	      exit 1
+		    end
   		end  
   		nil
     end

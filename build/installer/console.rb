@@ -1,22 +1,22 @@
 #!/usr/bin/ruby
-# Appcelerator SDK
+#
+# This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
 #
-# This program is free software; you can redistribute it and/or modify
+# Appcelerator is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 require 'fileutils'
 require 'yaml'
@@ -29,16 +29,7 @@ SCRIPTNAME = File.basename($0)
 SCRIPTDIR = File.dirname(__FILE__)
 LIB_DIR = "#{SCRIPTDIR}/lib"
 
-ET_PHONE_HOME = 'http://localhost:3000'
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
-
-
-#
-# load all our core libraries in alpha order
-#
-Dir["#{SCRIPTDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
-  require File.expand_path(file)
-end
 
 
 ARGV.each do |arg|
@@ -58,6 +49,18 @@ ARGV.each do |arg|
         action = arg unless action        
     end
 end
+
+ET_PHONE_HOME = OPTIONS[:server] || 'http://localhost:3000'
+
+#
+# load all our core libraries in alpha order
+#
+Dir["#{SCRIPTDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
+  puts "Loading library: #{file}" if OPTIONS[:debug]
+  require File.expand_path(file)
+end
+
+
 
 def die(msg)
   STDERR.puts msg
@@ -108,194 +111,13 @@ at_exit { FileUtils.rm_rf APP_TEMP_DIR }
 
 module Appcelerator
 
-    class Installer
+    module Types
       
-      @@client = nil
-      @@package_config = nil
-      
-      def Installer.login(email,password)
-        @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
-        result = @@client.send 'account.login.request', {'email'=>email,'password'=>password}
-        result[:data]['success']
-      end
-      
-      def Installer.get_latest(name)
-        if not @@package_config
-          result = @@client.send 'releases.latest.request'
-          return nil unless result[:data]['success']
-          @@package_config = result[:data]['pkgs']
-          puts @@package_config.to_yaml if OPTIONS[:debug]
-        end
-        @@package_config.each do |pkg|
-          if pkg['name'] == name
-            return pkg
-          end
-        end
-        nil
-      end
-      
-      def Installer.get_latest_sdk
-        get_latest 'web'
-      end
-      
-      def Installer.get_latest_service(lang)
-        get_latest lang
-      end
-      
-      def Installer.current_user
-        #TODO: windows?
-        require 'etc'
-        uid=File.stat(APP_TEMP_DIR.to_s).uid
-        Etc.getpwuid(uid).name
-      end
-      
-      def Installer.admin_user?
-        # ignore for win32 system
-        return true if RUBY_PLATFORM =~ /mswin32$/
-        
-        # must be root user for unix
-        un = current_user
-        'root'==un
-      end
-      
-      def Installer.require_admin_user
-        if not admin_user?
-          STDERR.puts
-          STDERR.puts "*" * 80
-          STDERR.puts
-          STDERR.puts "ERROR: Administrative Privileges Required"
-          STDERR.puts
-          STDERR.puts "This operation requires you to be logged in as root/administrator user."
-          STDERR.puts "Please login or sudo as root/administrator and re-run this command again."
-          STDERR.puts
-          STDERR.puts "*" * 80
-          STDERR.puts
-          exit 1
-        end
-      end
-      
-      def Installer.http_fetch_into(name,url,target)
-        temp_dir = http_fetch(name,url)
-        if temp_dir
-          puts "extracting #{temp_dir} to #{target}" if OPTIONS[:debug]
-          FileUtils.cp_r "#{temp_dir}/.", target
+      class AnyType
+        def is?(value)
           true
         end
-        false
       end
-      
-      def Installer.http_fetch(name,url)
-        puts "Attempting to fetch #{name} from #{url}" if OPTIONS[:debug]
-        pbar=nil
-        dirname=nil
-        uri = URI.parse(url)
-        home_uri = URI.parse(ET_PHONE_HOME)
-        cookies = ''
-        if uri.host == home_uri.host and uri.port == home_uri.port
-          cookies = @@client.cookies.to_s
-        end
-        open(url,'Cookie'=>cookies,:content_length_proc => lambda {|t|
-              if t && 0 < t
-                if not OPTIONS[:quiet]
-                  require "#{LIB_DIR}/progressbar"
-                  pbar = ProgressBar.new(name, t)
-                  pbar.file_transfer_mode
-                end
-              end
-            },
-            :progress_proc => lambda {|s|
-              pbar.set s if pbar
-            }) do |f|
-          t = tempfile
-          t.write f.read
-          t.flush
-          t.close
-          dirname = File.dirname(t.path)
-          if url =~ /\.tgz$/
-            #FIXME - deal with windows or bundle in windows or something - or figure out how to do in ruby
-            system "tar xfz #{t.path} -C #{dirname}"
-          elsif url =~ /\.zip$/
-            Installer.unzip dirname,t.path
-            FileUtils.rm_r t.path
-          end
-        end
-        puts if pbar
-        dirname
-      end
-      
-      def Installer.unzip(dirname,path)
-        require 'zip/zip'
-        Zip::ZipFile::open(path) do |zf|
-          zf.each do |e|
-            fpath = File.join(dirname, e.name)
-            FileUtils.mkdir_p(File.dirname(fpath))
-            puts "extracting ... #{fpath}" if OPTIONS[:debug]
-            zf.extract(e, fpath) 
-          end
-          zf.close
-        end
-      end
-      
-      def Installer.tempdir
-        FileUtils.mkdir_p File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(1000)}"))
-      end
-      
-      def Installer.tempfile
-        File.new(File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(1000)}")),"w+")
-      end
-
-      def Installer.put(path,content)
-        f = File.open(path,'w+')
-        f.puts content
-        f.flush
-        f.close
-      end
-
-      def Installer.mkdir(path)
-        case path.class.to_s
-          when 'String'
-            FileUtils.mkdir_p path unless File.exists?(path)
-          when 'Array'
-            path.each do |p|
-              mkdir p
-            end
-        end
-      end
-      def Installer.copy(from_path,to_path,excludes=nil)
-        
-        if File.exists?(from_path) and File.file?(from_path)
-          FileUtils.cp from_path,to_path
-          return true
-        end
-        
-        Dir["#{from_path}/**/*"].each do |file|
-          if excludes
-            found = false
-            excludes.each do |e|
-              if file =~ Regexp.new("#{e}$")
-                 found = true
-                 next
-              end
-            end
-            next if found
-          end
-          target_file = file.gsub(from_path,'')
-          target = File.join(to_path,target_file)
-          if File.directory?(file) and not File.exists?(target)
-            puts "Creating directory #{target}" if OPTIONS[:verbose]
-            FileUtils.mkdir(target)
-          end
-          if File.file?(file) 
-            puts "Copying #{file} to #{target}" if OPTIONS[:verbose]
-            confirm("Overwrite [#{target}]? (Y)es,(N)o,(A)ll [Y]") if File.exists?(target) and not OPTIONS[:quiet] and not OPTIONS[:force]
-            FileUtils.copy(file,target)
-          end
-        end
-        true
-      end
-    end
-
-    module Types
       
       class EnumerationType
         def initialize(types)
@@ -470,7 +292,7 @@ module Appcelerator
         end
         
         if not error
-          Appcelerator::Installer.boot unless name=='help'
+          Appcelerator::Boot.boot unless name=='help'
           Appcelerator::PluginManager.dispatchEvent 'before_command',name,argHash,opts
           info[:invoker].call(argHash,opts)
           Appcelerator::PluginManager.dispatchEvent 'after_command',name,argHash,opts

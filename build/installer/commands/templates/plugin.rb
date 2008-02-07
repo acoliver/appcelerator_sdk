@@ -1,4 +1,11 @@
 
+#
+# ExamplePlugin
+#
+# You can implement the methods below that you want. There is no reason
+# to implement them all and in fact, you can safely remove methods below
+# that you don't intend to implement.
+#
 class ExamplePlugin < Appcelerator::Plugin
     def plugin_registered
       # called when this plugin is loaded
@@ -44,5 +51,29 @@ class ExamplePlugin < Appcelerator::Plugin
     end
     def after_install_plugin(location,name,version,path)
       # called after a plugin is installed
+    end
+    def before_add_widget(widget_name,version,widget_dir,to_dir)
+      # called before a widget is added to a project directory
+    end
+    def after_add_widget(widget_name,version,widget_dir,to_dir)
+      # called after a widget is added to a project directory
+    end
+    def before_create_html(html,language)
+      # called before an HTML template is created in a project directory
+    end
+    def after_create_html(html,language)
+      # called after an HTML template is created in a project directory
+    end
+    def before_run_server(directory,language)
+      # called before the project specific server is run
+    end
+    def after_run_server(directory,language)
+      # called after the project specific server is run
+    end
+    def before_create_war(directory)
+      # called before a project war is created for java
+    end
+    def after_create_war(directory)
+      # called after a project war is created for java
     end
 end

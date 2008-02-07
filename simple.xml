@@ -14,6 +14,10 @@
 
 	<target name="compile" description="Compiles the Java code">
 		<javac debug="true" srcdir="${source}" destdir="${dest}" classpathref="classpath" includeAntRuntime="false"/>
+		<echo file="${dist}/build.yml">---
+:name: java 
+:version: ${VERSION}
+</echo>
 	</target>
 
 	<target name="jar" description="Jars Java code">

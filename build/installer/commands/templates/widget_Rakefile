@@ -18,7 +18,7 @@
 #
 
 #
-# Plugin Rakefile
+# Widget Rakefile
 #
 
 require 'rake'
@@ -28,15 +28,15 @@ require 'yaml'
 require 'find'
 require 'pathname'
 
-NAME = 'PLUGIN'
+NAME = 'WIDGET'
 ZIPFILE = File.expand_path "#{NAME}.zip"
 
-desc 'default build which makes the plugin'
+desc 'default build which makes the widget'
 task :default => [:zip] do
 
 end
 
-desc 'zip up the plugin'
+desc 'zip up the widget'
 task :zip do
   src_dir = File.expand_path "#{File.dirname(__FILE__)}/src"
   FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
@@ -52,14 +52,14 @@ task :zip do
   end
 end
 
-desc 'install the plugin'
+desc 'install the widget'
 task :install => [:zip] do
-  system "appcelerator install:plugin #{ZIPFILE}"
+  system "appcelerator install:widget #{ZIPFILE}"
 end
 
-desc 'release the plugin'
+desc 'release the widget'
 task :release => [:zip] do
-  system "appcelerator release:plugin #{ZIPFILE}"
+  system "appcelerator release:widget #{ZIPFILE}"
 end
 
 

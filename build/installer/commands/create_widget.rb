@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
+Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widget project',[
   {
     :name=>'path',
     :help=>'path to directory where project should be created',
@@ -32,7 +32,7 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   },
   {
     :name=>'name',
-    :help=>'name of the plugin to create (such as helloworld)',
+    :help=>'name of the widget to create (such as app:my_widget)',
     :required=>true,
     :default=>nil,
     :type=>Appcelerator::Types::StringType
@@ -40,29 +40,41 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
 ],nil,nil) do |args,options|
   
   class_name = args[:name].gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
-  plugin_name = args[:name].gsub ':', '_'
+  widget_name = args[:name].gsub ':', '_'
 
-  dir = File.join(args[:path].path,plugin_name)
-  Appcelerator::PluginManager.dispatchEvent 'before_create_plugin',dir,args[:name]
+  dir = File.join(args[:path].path,widget_name)
+  Appcelerator::PluginManager.dispatchEvent 'before_create_widget',dir,args[:name]
 
   FileUtils.mkdir_p(dir) unless File.exists?(dir)
   
   template_dir = "#{File.dirname(__FILE__)}/templates"
 
-  template = File.read "#{template_dir}/plugin.rb"
-  template.gsub! 'ExamplePlugin', class_name
+  template = File.read "#{template_dir}/widget.js"
+  template.gsub! 'WIDGET_CLASS_NAME', class_name
+  template.gsub! 'NAME', args[:name]
   
   src_dir = "#{dir}/src"
   FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
   
-  Appcelerator::Installer.put "#{src_dir}/#{plugin_name}.rb", template
+  Appcelerator::Installer.put "#{src_dir}/#{widget_name}.js", template
   
-  template = File.read "#{template_dir}/plugin_Rakefile"
-  template.gsub! 'PLUGIN', plugin_name
+  template = File.read "#{template_dir}/widget_Rakefile"
+  template.gsub! 'WIDGET', widget_name
   
   Appcelerator::Installer.put "#{dir}/Rakefile", template
-  Appcelerator::Installer.put "#{dir}/build.yml", {:name=>plugin_name,:version=>1.0,:type=>'plugin'}.to_yaml.to_s
+  Appcelerator::Installer.put "#{dir}/build.yml", {:name=>widget_name,:version=>1.0,:type=>'widget'}.to_yaml.to_s
   
-  Appcelerator::PluginManager.dispatchEvent 'after_create_plugin',dir,args[:name]
-  puts "Created Plugin: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]
+  %w(css images doc js).each do |d|
+    FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"
+  end
+  
+  widget_example = File.read "#{template_dir}/widget_doc_example.md"
+  widget_example.gsub! 'NAME', args[:name]
+  
+  Appcelerator::Installer.put "#{src_dir}/doc/example1.md", widget_example
+  
+  #TODO: add compression and symbol stuff here to rake file and path
+  
+  Appcelerator::PluginManager.dispatchEvent 'after_create_widget',dir,args[:name]
+  puts "Created Widget: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]
 end

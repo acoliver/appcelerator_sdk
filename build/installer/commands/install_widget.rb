@@ -17,15 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class TestService < Appcelerator::Service
-  
-  Service 'app.test.message.request', :testMessage, 'app.test.message.response'
-  
-  def testMessage
-      p "received message: #{params.inspect}"
-      msg = params["message"]
-      {"message"=>"I received from you: #{msg}","success"=>true}
-  end
-  
-end
 
+Appcelerator::CommandRegistry.registerCommand('install:widget','install a widget',[
+  {
+    :name=>'location',
+    :help=>'path or URL to widget file or name of the widget in the network',
+    :required=>true,
+    :default=>nil,
+    :type=>Appcelerator::Types::StringType
+  }
+],nil,nil) do |args,options|
+
+  Appcelerator::Installer.install_component 'widget','Widget',args[:location],"#{RELEASE_DIR}/widgets"
+
+end

@@ -1,21 +1,20 @@
-# Appcelerator SDK
+# This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
 #
-# This program is free software; you can redistribute it and/or modify
+# Appcelerator is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 module Appcelerator
   class Installer
@@ -30,8 +29,17 @@ module Appcelerator
       # get the latest
       details = Installer.get_latest_service language
       
+      if not details
+        if not config[:latest] or OPTIONS[:force_update]
+          STDERR.puts "Couldn't connect to Appcelerator Network to get the latest update."
+          STDERR.puts "Please try your network connection and again."
+          exit 1
+        end
+      end
+      
       if config[:latest] and not OPTIONS[:force_update]
         f = File.join(release_dir,config[:latest])
+        return f if not details
         if File.exists?(f) and File.exists?(File.join(f,'install.rb'))
           return f if details['version']==config[:latest]
           puts "A new version #{details['version']} of the #{language} SOA integration point is available"

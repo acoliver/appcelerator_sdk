@@ -22,13 +22,14 @@
 
 	<target name="banner">
 		<echo>Appcelerator RIA Platform for Java</echo>
-		<echo>Licensed under the GNU GPL version 2</echo>
-		<echo>Please read LICENSE for more details on usage</echo>
+		<echo>Licensed under the GNU GPL version 3</echo>
+		<echo>Please see COPYING for more details on license requirements</echo>
 	</target>
 
 	<target name="compile" description="Compiles the Java code" depends="init">
 		<mkdir dir="${stage.dir}/java/classes"/>
 		<mkdir dir="${stage.dir}/lib"/>
+		<javac debug="true" srcdir="app/services" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
 		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
 		<jar destfile="${stage.dir}/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
 			<fileset dir="${stage.dir}/java/classes">

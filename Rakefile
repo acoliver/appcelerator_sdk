@@ -1,23 +1,21 @@
-# Appcelerator SDK
+# This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
 #
-# This program is free software; you can redistribute it and/or modify
+# Appcelerator is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-#
+# 
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-
 require 'rake'
 require 'fileutils'
 require 'pathname'
@@ -26,11 +24,12 @@ require 'zip/zip'
 require 'yaml'
 
 # determine our build
-RELEASE = ENV['release_version'] || '0.0.0'
+RELEASE = ENV['release_version'] || '1.0.0'
 tokens = RELEASE.split('.')
 RELEASE_MAJOR = tokens[0]
 RELEASE_MINOR = tokens[1]
 RELEASE_PATCH = tokens.length > 2 ? tokens[2] : 0
+version_config = {:version=>RELEASE}
 
 VERBOSE = ENV['v'] || ENV['verbose']
 COMPRESS = ENV['nomin'] ? false : true 
@@ -131,6 +130,7 @@ task :web => [:stage] do
     zipfile.add('js/appcelerator-lite.js',jslite)
     zipfile.add('js/appcelerator-debug.js',jsdebug)
     zipfile.add('js/appcelerator.js',jsout)
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]='web'; f.puts version_config.to_yaml }
     Find.find('src/web') do |path|
       pathname = Pathname.new(path)
       if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
@@ -171,6 +171,7 @@ task :widget => [:stage] do
         zipfile.add(filename,"#{widget_dir}/#{filename}")
       end
     end
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]=widget_name; f.puts version_config.to_yaml }
   end
 end
 
@@ -204,7 +205,8 @@ task :ruby => [:stage] do
 
   puts "Making Ruby gem file..." if VERBOSE
   FileUtils.cd(gem_dir) do
-  	system('rake clean gem')
+  	system('rake clean gem >/dev/null') unless VERBOSE
+  	system('rake clean gem') if VERBOSE
   end  
   
   puts "Archiving Ruby files..." if VERBOSE
@@ -214,6 +216,7 @@ task :ruby => [:stage] do
       fn = file.gsub("#{ruby_dir}/",'')
 		zipfile.add(fn,file) unless File.directory?(file)
     end
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]='ruby'; f.puts version_config.to_yaml }
   end
 end
 
@@ -237,6 +240,7 @@ task :php => [:stage] do
     zipfile.add('README',BUILD_DIR+'/php/README')
     zipfile.add('appcelerator.xml',BUILD_DIR+'/php/appcelerator.xml')
     zipfile.add('install.rb',BUILD_DIR+'/installer/build/php/install.rb')
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]='php'; f.puts version_config.to_yaml }
   end
 end
 
@@ -254,12 +258,14 @@ task :python => [:stage] do
   
   FileUtils.cd(python_dir) do
     puts "Building python egg..." if VERBOSE
-    system "python setup.py bdist_egg"
+    system "python setup.py bdist_egg" if VERBOSE
+    system "python setup.py bdist_egg >/dev/null" unless VERBOSE
   end
   puts "Archiving Python files..." if VERBOSE
   Zip::ZipFile.open(python_dir+'/python.zip', Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add('install.rb',BUILD_DIR+'/installer/build/python/install.rb')
     zipfile.add('appcelerator.egg',"#{STAGE_DIR}/python/dist/Appcelerator-#{RELEASE}-py2.5.egg")
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]='python'; f.puts version_config.to_yaml }
   end
 end
 
@@ -330,6 +336,7 @@ task :installer_update => [:stage] do
 			filename = pathname.to_s
          zipfile.add(filename,patch_dir+'/'+filename)
 		end
+      zipfile.get_output_stream('build.yml') {|f| version_config[:name]='installer'; f.puts version_config.to_yaml }
 	end
 end
 
@@ -373,7 +380,8 @@ task :java => [:stage] do
    'dist'=>"#{java_dir}/dist"
   }.inject([]) {|a,e| a << "-D#{e[0]}=#{e[1]}" }
  
-  system "ant -f simple.xml #{params.join(' ')}"
+  system "ant -DVERSION=#{RELEASE} -f simple.xml #{params.join(' ')} >/dev/null" unless VERBOSE
+  system "ant -DVERSION=#{RELEASE} -f simple.xml #{params.join(' ')}" if VERBOSE
 end
 
 def clean_dir(dir)
