@@ -28,7 +28,7 @@
 		<delete dir="${src.python.dir}/dist"/>
 		<delete dir="${src.python.dir}/build"/>
 		<delete>
-			<fileset dir="${src.python.dir}/appcelerator/templates/hello_project/+package+/public" includes="**"/>
+			<fileset dir="${src.python.dir}" includes="/appcelerator/templates/hello_project/+package+/public/**"/>
 		</delete>
 	</target>
 
