@@ -312,17 +312,38 @@ end
 desc 'build osx installer'
 task :osx=> [:stage] do
 	osx_dir = "#{STAGE_DIR}/osx"
+	name = "Installer"
+
    clean_dir(osx_dir)
 	FileUtils.mkdir_p osx_dir 
-   system "pkgutil --expand #{BUILD_DIR}/installer/build/osx/installer.pkg #{osx_dir}/pkg"
-   sc = File.read "#{osx_dir}/pkg/appceleratorRiaPlatformPostflight.pkg/Scripts/postflight"
-   sc.gsub!('exit 0',"/usr/bin/appcelerator '--postflight--'\n\nexit 0\n")
-   f=File.open "#{osx_dir}/pkg/appceleratorRiaPlatformPostflight.pkg/Scripts/postflight", 'w+'
-   f.puts sc
-   f.flush
-   f.close
-   system "pkgutil --flatten #{osx_dir}/pkg #{osx_dir}/installer.mpkg"
-	system "hdiutil create -format UDZO -srcfolder #{osx_dir}/installer.mpkg #{osx_dir}/installer.dmg"
+
+	FileUtils.rm_r "#{osx_dir}/installer" if File.exists? "#{osx_dir}/installer"
+
+	copy_dir "#{BUILD_DIR}/installer", "#{osx_dir}/installer"
+
+	# dynamically make our list of files into the pmdoc before we build
+   make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
+   make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/06lib-contents.xml","#{osx_dir}/installer/lib"
+
+   index = File.read "#{osx_dir}/installer/build/osx/installer.pmdoc/index.xml"
+   
+	file = File.open "#{osx_dir}/installer/build/osx/installer.pmdoc/index.xml",'w+'
+   file.puts index.gsub(/<build>(.*?)<\/build>/,"<build>#{osx_dir}/installer/installer.mpkg</build>")
+	file.close
+	
+	# build the package structure
+   system "/Developer/usr/bin/packagemaker --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
+
+	# add in our postflight install script
+   postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight",'w+'
+	postflight.puts "#!/bin/sh"
+   postflight.puts "/usr/bin/appcelerator '--postflight--'"
+	postflight.puts "exit 0"
+	postflight.close
+	FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight"
+
+	# create our DMG file
+	system "hdiutil create -format UDZO -srcfolder #{osx_dir}/installer/#{name}.mpkg #{osx_dir}/installer.dmg"
 end
 
 
@@ -496,3 +517,32 @@ def dofiles(dir)
   end
 end
 
+#
+# make a package file xml based on listing of files in directory
+#
+def build_pkg_contents(dir,indent=0)
+  files = []
+  files << " " * indent + "<f n=\"#{File.basename(dir)}\" o=\"root\" g=\"admin\" p=\"33188\">"
+  Dir["#{dir}/*"].each do |path|
+    pathname = Pathname.new(path)
+    if not path.include? '.svn'
+      if pathname.file?
+        filename = pathname.relative_path_from(Pathname.new(dir))
+        files << " " * (indent + 3) + "<f n=\"#{filename}\" o=\"root\" g=\"admin\" p=\"33188\"/>"
+      elsif pathname.directory?
+        files.concat build_pkg_contents(pathname.to_s,indent+3)
+      end
+    end
+  end
+  files << " " * indent + "</f>"
+  files
+end
+
+def make_pkg_file(file,dir)
+   f = File.open file,'w+'
+	f.puts "<?xml version=\"1.0\"?>"
+	f.puts "<pkg-contents spec=\"1.12\">"
+	f.puts build_pkg_contents(dir) 
+	f.puts "</pkg-contents>"
+	f.close
+end
