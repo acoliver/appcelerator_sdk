@@ -21,7 +21,9 @@ require 'open-uri'
 module Appcelerator
   class Installer
     
-    @@package_config = nil
+    @@packages = nil
+    @@bundles = nil
+    @@widgets = nil
     @@client = nil
     @@username = nil
     @@password = nil
@@ -71,9 +73,10 @@ module Appcelerator
 
     def Installer.network_login(email,password)
       puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
+      puts "Checking update server ..." unless OPTIONS[:silent]
       @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
       result = @@client.send 'account.login.request', {'email'=>email,'password'=>password}
-      puts "result=>#{result}" if OPTIONS[:debug]
+      puts "result=>#{result.to_yaml}" if OPTIONS[:debug]
       return result[:data]['success'] if result
       false
     end
@@ -117,25 +120,26 @@ module Appcelerator
         Installer.login_if_required
       rescue => e
         puts "Failed to connect to network for login, exception => #{e}" if OPTIONS[:debug] or OPTIONS[:verbose]
-        return nil
+        return nil,nil,nil,nil
       end
       
       show_notice
       
-      if not @@package_config
+      if not @@packages
         result = @@client.send 'releases.latest.request'
-        return nil unless result[:data]['success']
-        @@package_config = result[:data]['pkgs']
-        puts @@package_config.to_yaml if OPTIONS[:debug]
+        return nil,nil unless result[:data]['success']
+        @@packages = result[:data]['pkgs']
+        @@bundles = result[:data]['bundles']
+        @@widgets = result[:data]['widgets']
       end
-      @@package_config.each do |pkg|
+      @@packages.each do |pkg|
         if pkg['name'] == name
-          return pkg
+          return pkg,@@packages,@@bundles,@@widgets
         end
       end
-      nil
+      return nil,nil,nil,nil
     end
-    
+        
     def Installer.get_latest_sdk
       get_latest 'web'
     end
@@ -295,7 +299,7 @@ module Appcelerator
     
     def Installer.copy(from_path,to_path,excludes=nil)
       
-      puts "Copy called from: #{from_path} => to: #{to}, excludes=> #{excludes}" if OPTIONS[:debug]
+      puts "Copy called from: #{from_path} => to: #{to_path}, excludes=> #{excludes}" if OPTIONS[:debug]
       
       if File.exists?(from_path) and File.file?(from_path)
         FileUtils.cp from_path,to_path
@@ -306,7 +310,6 @@ module Appcelerator
         if excludes
           found = false
           excludes.each do |e|
-            puts "matching #{file} to #{e}"
             if file =~ Regexp.new("#{e}$")
                found = true
                next

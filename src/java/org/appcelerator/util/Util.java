@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +35,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
@@ -338,6 +340,26 @@ public class Util
         copy(in, out);
         return out.toString();
     }
+    
+    /**
+     * copy a file into a string
+     * 
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    public static String copyToString(File file) throws Exception
+    {
+        FileInputStream fis = new FileInputStream(file);
+        try
+        {
+            return copyToString(fis);
+        }
+        finally
+        {
+            closeQuietly(fis);
+        }
+    }
 
     /**
      * more efficient multiple file copy which allows copying one input source
@@ -436,6 +458,48 @@ public class Util
         finally
         {
             try { fout.close(); } catch (Exception ignore) { }
+        }
+    }
+    
+    /**
+     * collect a set of files
+     * 
+     * @param root
+     * @param files
+     * @param filter
+     * @param recursive
+     */
+    public static void collectFiles (File root, List<File> files, FilenameFilter filter, boolean recursive)
+    {
+        File list [] = filter==null ? root.listFiles() : root.listFiles(filter);
+        
+        if (list!=null)
+        {
+            for (File f : list)
+            {
+                if (f.isDirectory())
+                {
+                    if (f.getName().equals(".svn") || f.getName().endsWith(".DS_Store"))
+                    {
+                        continue;
+                    }
+                    if (recursive)
+                    {
+                        collectFiles(f, files, filter, recursive);
+                    }
+                }
+                else
+                {
+                    files.add(f);
+                }
+            }
+        }        
+        if (root.isDirectory() && recursive)
+        {
+            for (File d : root.listFiles())
+            {
+                collectFiles(d, files, filter, recursive);
+            }
         }
     }
 

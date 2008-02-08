@@ -27,7 +27,7 @@ module Appcelerator
       config||={}
 
       # get the latest
-      details = Installer.get_latest_service language
+      details,packages = Installer.get_latest_service language
       
       if not details
         if not config[:latest] or OPTIONS[:force_update]

@@ -62,7 +62,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   template.gsub! 'WIDGET', widget_name
   
   Appcelerator::Installer.put "#{dir}/Rakefile", template
-  Appcelerator::Installer.put "#{dir}/build.yml", {:name=>widget_name,:version=>1.0,:type=>'widget'}.to_yaml.to_s
+  Appcelerator::Installer.put "#{dir}/build.yml", {:name=>args[:name],:version=>1.0,:type=>'widget'}.to_yaml.to_s
   
   %w(css images doc js).each do |d|
     FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"

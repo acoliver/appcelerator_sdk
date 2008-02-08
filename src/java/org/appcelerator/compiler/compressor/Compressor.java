@@ -21,9 +21,13 @@ package org.appcelerator.compiler.compressor;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
+import org.appcelerator.util.Util;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 
@@ -83,8 +87,51 @@ public class Compressor
     }
     public static void main (String args[]) throws Exception
     {
-        String js = "Appcelerator.Compiler.compileOnLoad=false;Appcelerator.Core.onload(function(){Appcelerator.Compiler.addFieldSet($(\"messagetype\"),false);Appcelerator.Compiler.wireValidator($(\"messagetype\"),\"required\");;;var ifCond = null;var action = \"l:send.test.message\";var target = $(\"app_12\");var actionFunc=eval(function(){Appcelerator.Compiler.fireMessageBrokerMessage(\"app_12\",\"l:send.test.message\",{\"id\": \"app_12\"})});var scope = {id:target.id};var cf = function(event){var me = $(\"app_12\");if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;var __method = actionFunc, args = $A(arguments);return __method.apply(scope, [event || window.event].concat(args));};var f = cf;if (false){f = function(e){cf(e);Event.stop(e);return false;};}Appcelerator.Compiler.addEventListener(target,\"click\",f,0);;;;$MQL(\"r:app.test.message\",\"appcelerator\",function(type,data,datatype,direction,scope){Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,null,function(){try {Element.visualEffect(\'messagebox\',\'Appear\'); Appcelerator.Compiler.publishEvent(\"messagebox\",\"effect\")}catch(exxx){ Appcelerator.Compiler.handleElementException($(\"messagebox\"),exxx,\"Executing:effect\")}},0);});;$MQL(\"r:app.test.message\",\"appcelerator\",function(type,data,datatype,direction,scope){Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,null,function(){try {Element.visualEffect(\'messagebox\',\'Fade\'); Appcelerator.Compiler.publishEvent(\"messagebox\",\"effect\")}catch(exxx){ Appcelerator.Compiler.handleElementException($(\"messagebox\"),exxx,\"Executing:effect\")}},5000);});$MQL(\"remote:app.test.message\",\"appcelerator\",function(type,data,datatype,direction,scope){Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,null,function(){try {$(\"app_15\").innerHTML=Object.getNestedProperty(data, \"message\",\"message\"); Appcelerator.Compiler.publishEvent(\"app_15\",\"value\")}catch(exxx){ Appcelerator.Compiler.handleElementException($(\"app_15\"),exxx,\"Executing:value\")}},0);});;;$MQL(\"r:~.*\",\"appcelerator\",function(type,data,datatype,direction,scope){Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,null,function(){try {$(\"trace\").value+=(function(){ return \'[\' + Appcelerator.Util.DateTime.get12HourTime() + \'] \' + this.direction+\':\' + this.type + \' =&gt; \' + this.data+\'\\n\' }).call(this);; Appcelerator.Compiler.executeFunction($(\"trace\"),\"revalidate\");; Appcelerator.Compiler.publishEvent(\"trace\",\"value\")}catch(exxx){ Appcelerator.Compiler.handleElementException($(\"trace\"),exxx,\"Executing:value\")}},0);});;;$MQL(\"local:send.test.message\",\"appcelerator\",function(type,data,datatype,direction,scope){Appcelerator.Compiler.MessageAction.onMessage(type,data,datatype,direction,scope,null,function(){try {Appcelerator.Compiler.executeFunction($(\"app_20\"),\"execute\",[\"app_20\",\"execute\",data,scope]); Appcelerator.Compiler.publishEvent(\"app_20\",\"execute\")}catch(exxx){ Appcelerator.Compiler.handleElementException($(\"app_20\"),exxx,\"Executing:execute\")}},0);});;;});";
-        String out = compress(js,true,true,false);
-        System.out.println(out);
+        if (args.length!=2 && args.length!=3)
+        {
+            System.err.println("Usage: java "+Compressor.class.getName()+" <dir|file> <outdir> <backup>");
+            System.exit(1);
+        }
+        
+        File indir = new File(args[0]);
+        File outdir = new File(args[1]);
+        boolean backup = args.length == 3 ? Boolean.valueOf(args[2]) : false;
+        
+        File infiles[] = null;
+        
+        if (indir.isDirectory())
+        {
+            ArrayList<File> files = new ArrayList<File>();
+            Util.collectFiles(indir, files, new FilenameFilter()
+            {
+                public boolean accept(File dir, String name)
+                {
+                    return name.endsWith(".js");
+                }
+            }, true);
+            infiles = files.toArray(new File[files.size()]);
+        }
+        else
+        {
+            infiles = new File[]{indir};
+        }
+        
+        for (File file : infiles)
+        {
+            String filename = file.getAbsolutePath();
+            String filepart = filename.replace(indir.getAbsolutePath(),"");
+            String jsin = Util.copyToString(file);
+            String jsout = Compressor.compress(jsin, true, false, false);
+            File outfile = new File(outdir,filepart);
+            outfile.getParentFile().mkdirs();
+            Util.copyToFile(jsout, outfile);
+            if (backup)
+            {
+                File outfile_debug = new File(outdir,filepart.replace(".js","-debug.js"));
+                Util.copyToFile(jsin, outfile_debug);
+            }
+        }
+        
+        System.exit(0);
     }
 }

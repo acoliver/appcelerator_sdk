@@ -50,7 +50,7 @@ ARGV.each do |arg|
     end
 end
 
-ET_PHONE_HOME = OPTIONS[:server] || 'http://localhost:3000'
+ET_PHONE_HOME = OPTIONS[:server] || 'http://updatesite.appcelerator.org'
 
 #
 # load all our core libraries in alpha order
@@ -312,52 +312,11 @@ module Appcelerator
     end
 end
 
-
-#
-# determine all the releases we have installed
-#
-#Dir["#{SCRIPTDIR}/releases/*"].each do |reldir|
-#  if File.directory?(reldir) and File.basename(reldir) =~ /[0-9]\.[0-9](\.[0.9])?/
-#    RELEASES << {
-#      :version=>File.basename(reldir),
-#     :directory=>File.expand_path(reldir),
-#      :config=>YAML.load_file("#{reldir}/config.yml")
-#    }
-#  end
-#end
-
-#
-# sort in order for newest release to oldest release
-#
-#RELEASES.sort! do |a,b|
-#  b[:version]<=>a[:version]
-#end
-
-
 if OPTIONS[:version]
   if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/
     STDERR.puts "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
     exit 1
   end
-#  if not RELEASES.include?(OPTIONS[:version])
-#    require "#{LIB_DIR}/install_version"
-#    Appcelerator::Installer.install_version(OPTIONS[:version],"#{File.dirname($0)}/releases/#{OPTIONS[:version]}")
-#  end
-#  RELEASE = OPTIONS[:version]
-#  RELEASES.each do |e| 
-#    if e[:version] == OPTIONS[:version]
-#      RELEASE_DIR = e[:directory]
-#      RELEASE_CONFIG = e[:config]
-#    end
-#  end
-#  if not defined?(RELEASE_CONFIG)
-#    STDERR.puts "couldn't find release file config.yml for #{RELEASE}"
-#    exit 1
-#  end
-#else
-#  RELEASE = RELEASES.first[:version]
-#  RELEASE_DIR = RELEASES.first[:directory]
-#  RELEASE_CONFIG = RELEASES.first[:config]
 end
 
 

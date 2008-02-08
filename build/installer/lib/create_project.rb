@@ -27,7 +27,7 @@ module Appcelerator
       public_path="#{path}/public"
 
       mkdir %W(#{path}/app/services #{path}/script #{path}/config #{path}/tmp #{path}/log #{path}/plugins)
-      mkdir %W(#{public_path}/javascripts #{public_path}/images #{public_path}/stylesheets #{public_path}/swf #{public_path}/widgets)
+      mkdir %W(#{public_path}/javascripts #{public_path}/images #{public_path}/stylesheets #{public_path}/swf #{public_path}/modules)
 
       template_dir = File.join(File.dirname(__FILE__),'templates')
       
@@ -41,7 +41,7 @@ module Appcelerator
       config[:javascript]="#{public_path}/javascripts"
       config[:images]="#{public_path}/images"
       config[:swf]="#{public_path}/swf"
-      config[:widgets]="#{public_path}/widgets"
+      config[:widgets]="#{public_path}/modules"
       config[:log]="#{path}/log"
       config[:tmp]="#{path}/tmp"
       config[:config]="#{path}/config"

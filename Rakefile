@@ -1,4 +1,4 @@
-# This file is part of Appcelerator.
+
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org
@@ -133,6 +133,7 @@ task :web => [:stage] do
     zipfile.get_output_stream('build.yml') {|f| version_config[:name]='web'; f.puts version_config.to_yaml }
     Find.find('src/web') do |path|
       pathname = Pathname.new(path)
+		next if path =~ /^src\/web\/modules/ and not path =~ /^src\/web\/modules\/common/
       if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
         filename = pathname.relative_path_from(Pathname.new('src/web')).to_s
         zipfile.add(filename,'src/web/'+filename) if not filename =~ /^js(.*)\.js$/
@@ -143,17 +144,18 @@ end
 
 desc 'build widget zip'
 task :widget => [:stage] do
-  widget_name = ENV['name']
+  widget_real_name = ENV['name']
+  widget_name = widget_real_name.gsub ':','_' 
   widget_source = "src/web/modules/#{widget_name}"
   widget_dir = "#{STAGE_DIR}/widgets/#{widget_name}"
+
   if not File.exists?(widget_source)
     puts "Could not find widget source files in #{widget_source}"
     return
   end
 
-  puts "Building widget #{widget_name}..." if VERBOSE
+  puts "Building widget #{widget_real_name}..." if VERBOSE
   
-  puts "#{widget_dir}"
   FileUtils.rm_r widget_dir if File.exists?(widget_dir)
   FileUtils.mkdir_p widget_dir
   FileUtils.cp_r "#{widget_source}", "#{STAGE_DIR}/widgets"
@@ -163,6 +165,7 @@ task :widget => [:stage] do
   end
 
   puts "Archiving module files..." if VERBOSE
+  FileUtils.rm_r "#{STAGE_DIR}/widgets/#{widget_name}.zip" if File.exists? "#{STAGE_DIR}/widgets/#{widget_name}.zip"
   Zip::ZipFile.open("#{STAGE_DIR}/widgets/#{widget_name}.zip", Zip::ZipFile::CREATE) do |zipfile|
     Find.find(widget_dir) do |path|
       pathname = Pathname.new(path)
@@ -171,7 +174,7 @@ task :widget => [:stage] do
         zipfile.add(filename,"#{widget_dir}/#{filename}")
       end
     end
-    zipfile.get_output_stream('build.yml') {|f| version_config[:name]=widget_name; f.puts version_config.to_yaml }
+    zipfile.get_output_stream('build.yml') {|f| version_config[:name]=widget_real_name; f.puts version_config.to_yaml }
   end
 end
 
@@ -387,6 +390,74 @@ end
 def clean_dir(dir)
   FileUtils.rm_r dir if File.exists?(dir)
   FileUtils.mkdir_p dir
+end
+
+#
+# monkey patch to be able to call a task
+# more than once
+#
+module Rake
+	class Task
+		def invokeAgain
+			@already_invoked = false
+			self.invoke
+		end
+	end
+end
+
+
+desc 'build all widgets into one zip'
+task :all_widgets do
+	Dir["src/web/modules/*"].each do |dir|
+		name = File.basename(dir)
+		next if name == 'common' or not File.directory?(dir)
+		ENV['name']=name.gsub(/^app_/,'app:')
+		Rake::Task["widget"].invokeAgain
+	end
+end
+
+desc 'build a combined set of widgets'
+task :widget_bundle => [:java]  do
+
+	srcdir = 'src/web/modules'
+	dest = "#{STAGE_DIR}/widgets"
+	sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
+
+	FileUtils.rm_r dest if File.exists?(dest)
+	FileUtils.mkdir_p dest
+	copy_dir srcdir,dest
+	cp = Dir["#{STAGE_DIR}/java/dist/lib/**/*.jar"].join(sep)
+
+	system "java -cp #{cp} org.appcelerator.compiler.compressor.Compressor src/web/modules #{STAGE_DIR}/widgets true"
+
+	zips = []
+
+	Dir["#{STAGE_DIR}/widgets/*"].each do |dir|
+		name = File.basename(dir)
+		next if name == 'common'
+		zipfile = "#{STAGE_DIR}/widgets/#{name}.zip"
+		zips << ["#{name}.zip",zipfile]
+      Zip::ZipFile.open("#{STAGE_DIR}/widgets/#{name}.zip", Zip::ZipFile::CREATE) do |zipfile|
+			dofiles("#{STAGE_DIR}/widgets/#{name}") do |f|
+				filename = f.to_s
+				if not filename == '.'
+					zipfile.add(filename,"#{STAGE_DIR}/widgets/#{name}/#{filename}")
+				end
+			end
+			zipfile.get_output_stream('build.yml') do |f|
+				config = {:version=>1.0,:name=>name.gsub('app_','app:')}
+				f.puts config.to_yaml
+			end
+		end
+	end
+
+	Zip::ZipFile.open("#{STAGE_DIR}/widgets/all_widgets.zip",Zip::ZipFile::CREATE) do |zipfile|
+		zips.each do |z|
+			zipfile.add(z[0],z[1])
+		end
+	end
+
+
 end
 
 def copy_dir(src, dest)
