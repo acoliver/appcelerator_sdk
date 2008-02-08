@@ -24,8 +24,24 @@ Appcelerator::CommandRegistry.registerCommand('add:widget','add widget to a proj
     :required=>true,
     :default=>nil,
     :type=>Appcelerator::Types::AnyType
+  },
+  {
+    :name=>'path',
+    :help=>'path of the project to add the widget to',
+    :required=>false,
+    :default=>nil,
+    :type=>[
+      Appcelerator::Types::FileType,
+      Appcelerator::Types::DirectoryType,
+      Appcelerator::Types::AlphanumericType
+    ],
+    :conversion=>Appcelerator::Types::DirectoryType
   }
 ],nil,nil) do |args,options|
+  
+  if args[:path]
+    FileUtils.cd args[:path]
+  end
   
   args[:name].split(',').each do |name|
     class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
