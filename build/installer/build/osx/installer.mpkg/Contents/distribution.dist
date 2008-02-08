@@ -1,8 +1,57 @@
-<pkmkdoc spec="1.12"><properties><title>Appcelerator RIA Platform</title><build>/Users/jhaynie/Documents/workspace/appcelerator_sdk/build/installer/build/osx/installer.mpkg</build><organization>org.appcelerator</organization><userSees ui="easy"/><min-target os="2"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><description>Welcome to the Appcelerator RIA Platform.
+<?xml version="1.0" encoding="utf-8"?>
+<installer-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.1" authoringToolBuild="172">
+    <title>Appcelerator RIA Platform</title>
+    <options customize="never" allow-external-scripts="no" rootVolumeOnly="true"/>
+    <installation-check script="pm_install_check();"/>
+    <script>function pm_install_check() {
+  if(!(system.files.fileExistsAtPath('/usr/bin/ruby') == true)) {
+    my.result.title = 'Ruby Framework not found';
+    my.result.message = 'Appcelerator requires the Ruby framework to be installed as a prerequisite.  You can download the Ruby framework from http://www.ruby-lang.org/en/downloads/.  You can also use Darwin ports to install ruby by running "port install ruby" in the console. ';
+    my.result.type = 'Fatal';
+    return false;
+  }
+  return true;
+}
+</script>
+    <background file="background" alignment="topleft" scaling="none"/>
+    <welcome language="en" mime-type="text/rtf"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf949
+{\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fnil\fcharset0 LucidaSans-TypewriterBold;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
 
-This installer will install the necessary components to run the Appcelerator platform on your computer.  Once the installation is complete, any remaining files that are required will be automatically downloaded and installed for you.
+\f0\b\fs28 \cf0 Appcelerator is a next-generation, open source web platform for developing rich Internet applications (RIA) on a service-oriented architecture (SOA).
+\b0\fs26 \
+\
+For more information, please visit the Appcelerator Developer Network at:\
+\
 
-For more information, please visit http://www.appcelerator.org</description><contents><choice title="appcelerator" id="choice15" description="Appcelerator SDK" starts_selected="true" starts_enabled="true" starts_hidden="true"><customLoc>/Library/Appcelerator</customLoc><pkgref id="org.appcelerator.pkg"/><pkgref id="org.appcelerator.bin.pkg"/><pkgref id="org.appcelerator.console.pkg"/><pkgref id="org.appcelerator.growlnotify.pkg"/><pkgref id="org.appcelerator.appceleratorRiaPlatform.commands.pkg"/><pkgref id="org.appcelerator.appceleratorRiaPlatform.lib.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource relative="true" mod="true" type="background">installer_background.tiff</resource><resource mime-type="text/rtf" kind="embedded" type="license"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf949
+\f1\b http://www.appcelerator.org
+\f0\b0 \
+\
+After running the installer, you can get more information on all the cool commands available in Appcelerator by typing the following in your console:\
+\
+
+\b > appcelerator help
+\b0 \
+\
+For example, to create a new Appcelerator-based Ruby on Rails project, execute the following in your console:\
+\
+
+\f1\b > appcelerator create ~/myproject ruby
+\f0\b0 \
+\
+You can also get command-specific help.  For example, to get help for the create command, you can enter the following in your console:\
+\
+
+\f1\b > appcelerator help create
+\f0\b0 \
+\
+\
+
+\fs20 Appcelerator is Copyright (c) 2008 by Appcelerator, Inc. All Rights Reserved.\
+Appcelerator is a trademark of Appcelerator, Inc. \
+}]]></welcome>
+    <license language="en" mime-type="text/rtf"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf949
 {\fonttbl\f0\fmodern\fcharset0 Courier-Bold;\f1\fnil\fcharset0 Webdings;\f2\fmodern\fcharset0 Courier;
 }
 {\colortbl;\red255\green255\blue255;\red0\green21\blue157;}
@@ -638,40 +687,27 @@ Program, unless a warranty or assumption of liability accompanies a\
 copy of the Program in return for a fee.\
 \
                      END OF TERMS AND CONDITIONS\
-}]]></resource><resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf949
-{\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fnil\fcharset0 LucidaSans-TypewriterBold;}
-{\colortbl;\red255\green255\blue255;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
-
-\f0\b\fs28 \cf0 Appcelerator is a next-generation, open source web platform for developing rich Internet applications (RIA) on a service-oriented architecture (SOA).
-\b0\fs26 \
-\
-For more information, please visit the Appcelerator Developer Network at:\
-\
-
-\f1\b http://www.appcelerator.org
-\f0\b0 \
-\
-After running the installer, you can get more information on all the cool commands available in Appcelerator by typing the following in your console:\
-\
-
-\b > appcelerator help
-\b0 \
-\
-For example, to create a new Appcelerator-based Ruby on Rails project, execute the following in your console:\
-\
-
-\f1\b > appcelerator create ~/myproject ruby
-\f0\b0 \
-\
-You can also get command-specific help.  For example, to get help for the create command, you can enter the following in your console:\
-\
-
-\f1\b > appcelerator help create
-\f0\b0 \
-\
-\
-
-\fs20 Appcelerator is Copyright (c) 2008 by Appcelerator, Inc. All Rights Reserved.\
-Appcelerator is a trademark of Appcelerator, Inc. \
-}]]></resource></locale></resources><requirements><requirement id="file" operator="eq" value="true"><file>/usr/bin/ruby</file><message-title>Ruby Framework not found</message-title><message>Appcelerator requires the Ruby framework to be installed as a prerequisite.  You can download the Ruby framework from http://www.ruby-lang.org/en/downloads/.  You can also use Darwin ports to install ruby by running "port install ruby" in the console. </message></requirement></requirements><flags/><postinstall><action id="com.apple.packagemaker.actions.openurl"><value>http://www.appcelerator.org</value></action></postinstall><extra-files/><item type="file">01appcelerator.xml</item><item type="file">02appcelerator.xml</item><item type="file">03console.xml</item><item type="file">04growlnotify.xml</item><item type="file">05commands.xml</item><item type="file">06lib.xml</item><mod>properties.userDomain</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod><mod>properties.customizeOption</mod><mod>extraFiles</mod><mod>properties.title</mod><mod>description</mod><mod>postinstallActions.actions</mod></pkmkdoc>
+}]]></license>
+    <choices-outline>
+        <line choice="choice15"/>
+        <line choice="choice16"/>
+    </choices-outline>
+    <choice id="choice15" title="appcelerator" description="Appcelerator SDK" customLocation="/Library/Appcelerator" start_visible="false">
+        <pkg-ref id="org.appcelerator.pkg"/>
+        <pkg-ref id="org.appcelerator.bin.pkg"/>
+        <pkg-ref id="org.appcelerator.console.pkg"/>
+        <pkg-ref id="org.appcelerator.growlnotify.pkg"/>
+        <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.commands.pkg"/>
+        <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.lib.pkg"/>
+    </choice>
+    <choice id="choice16" title="Appcelerator RIA Platform Postflight" start_visible="false">
+        <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.postflight.pkg"/>
+    </choice>
+    <pkg-ref id="org.appcelerator.pkg" installKBytes="8" version="1" auth="Root">file:./Contents/Packages/appcelerator.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.bin.pkg" installKBytes="4" version="1" auth="Root">file:./Contents/Packages/appcelerator-1.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.console.pkg" installKBytes="12" version="1" auth="Root">file:./Contents/Packages/console.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.growlnotify.pkg" installKBytes="128" version="1" auth="Root">file:./Contents/Packages/growlnotify.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.commands.pkg" installKBytes="112" version="1" auth="Root">file:./Contents/Packages/commands.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.lib.pkg" installKBytes="116" version="1" auth="Root">file:./Contents/Packages/lib.pkg</pkg-ref>
+    <pkg-ref id="org.appcelerator.appceleratorRiaPlatform.postflight.pkg" installKBytes="0" version="1.0" auth="Root">file:./Contents/Packages/appceleratorRiaPlatformPostflight.pkg</pkg-ref>
+</installer-script>

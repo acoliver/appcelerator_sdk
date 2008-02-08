@@ -321,7 +321,8 @@ task :osx=> [:stage] do
    f.puts sc
    f.flush
    f.close
-   system "pkgutil --flatten #{osx_dir}/pkg #{osx_dir}/installer.pkg"
+   system "pkgutil --flatten #{osx_dir}/pkg #{osx_dir}/installer.mpkg"
+	system "hdiutil create -format UDZO -srcfolder #{osx_dir}/installer.mpkg #{osx_dir}/installer.dmg"
 end
 
 

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+RESULT=`/usr/bin/open 'http://www.appcelerator.org'`
+
+exit 0
