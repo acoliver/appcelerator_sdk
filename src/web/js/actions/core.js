@@ -406,14 +406,14 @@ Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabl
 	var target = Appcelerator.Compiler.findParameter(params,'id') || id;
 	var prefix = '';
 	var suffix = '';
-	
+	var customActionParams = Object.toJSON(params);
 	if (checkenabled)
 	{
 		prefix='try{ var e=$("'+target+'"); if (e && !e.disabled && Element.showing(e)) ';
 		suffix='}catch(xxx_){}';
 	}
 
-	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope])' + suffix;
+	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope,"1.0",'+customActionParams+'])' + suffix;
 };
 
 Appcelerator.Compiler.registerCustomAction('selectOption',

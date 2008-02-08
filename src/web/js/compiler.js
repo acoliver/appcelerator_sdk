@@ -1258,11 +1258,11 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 						{
 							var attachMethodName = functions[c];
 							var attachMethod = module[methodname];
-							var f = function(id,m,data,scope)
+							var f = function(id,m,data,scope,version,customActionArguments)
 							{
 								try
 								{
-									attachMethod(id,widgetParameters,data,scope);
+									attachMethod(id,widgetParameters,data,scope,version,customActionArguments);
 								}
 								catch (e)
 								{

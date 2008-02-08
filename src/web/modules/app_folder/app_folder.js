@@ -43,11 +43,74 @@ Appcelerator.Module.Folder =
     {
         return [];
     },
+	getActions: function()
+	{
+		return ['openAll','closeAll', 'selectItem','open','close'];
+	},
+	openAll: function(id,parameterMap,data,scope,version)
+  {
+		var nodes = $(id).childNodes;
+		
+		for (var c=0;c<nodes.length;c++)
+		{
+			nodes[c]._onopened();
+		}
+  },
+	closeAll: function(id,parameterMap,data,scope,version)
+  {
+		var nodes = $(id).childNodes;
+		for (var c=0;c<nodes.length;c++)
+		{
+			nodes[c]._onclosed();
+		}
+  },
+	close: function(id,parameterMap,data,scope,version,customActionArguments)
+  {
+		var folderIdx = Object.getNestedProperty(customActionArguments[0],'value');
+		folderIdx = parseInt(folderIdx)*2;
+
+		var folderId = id + '_folder_' + folderIdx;
+		$(folderId)._onclosed();
+  },
+	open: function(id,parameterMap,data,scope,version,customActionArguments)
+  {
+		var folderIdx = Object.getNestedProperty(customActionArguments[0],'value');
+		folderIdx = parseInt(folderIdx)*2;
+
+		var folderId = id + '_folder_' + folderIdx;
+		$(folderId)._onopened();
+  },
+	selectItem: function(id,parameterMap,data,scope,version,customActionArguments)
+  {
+		// the args come in as an array of the form: [{key:..,value:...},{key:..,value:...}] so we iterate over the array to account for order differences
+		var folderIdx;
+		var nodeIdx;		
+		
+		for (var i = 0; i < customActionArguments.length; i++)
+		{
+			if (Object.getNestedProperty(customActionArguments[i],'key') == 'folder')
+			{
+				folderIdx = Object.getNestedProperty(customActionArguments[i],'value');
+			} else if (Object.getNestedProperty(customActionArguments[i],'key') == 'item')
+			{
+				nodeIdx = Object.getNestedProperty(customActionArguments[i],'value');				
+			}
+		}
+		
+		//Folder ids are even numbers for whatever reason so map the user's folder index to its folder number
+		folderIdx = parseInt(folderIdx)*2;
+
+		var folderId = id + '_folder_' + folderIdx;
+		var nodeId = id + '_folder_' + folderIdx + '_child_' + nodeIdx;
+		$(folderId)._onopened();
+		$(nodeId)._onopened();
+ 	},
 	getChildNodes: function() {
 		var T = Appcelerator.Types;
 		
 		var folderItemAttributes = [{
             name: 'open',
+            type: T.messageReceive,
             description: 'A condition which will trigger the item to be opened'
         }, {
             name: 'onopen',
