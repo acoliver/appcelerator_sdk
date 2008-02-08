@@ -115,7 +115,7 @@ module Appcelerator
       end
     end
 
-    def Installer.get_latest(name)
+    def Installer.get_latest(name=nil)
       begin
         Installer.login_if_required
       rescue => e
@@ -132,12 +132,14 @@ module Appcelerator
         @@bundles = result[:data]['bundles']
         @@widgets = result[:data]['widgets']
       end
-      @@packages.each do |pkg|
-        if pkg['name'] == name
-          return pkg,@@packages,@@bundles,@@widgets
+      if name
+        @@packages.each do |pkg|
+          if pkg['name'] == name
+            return pkg,@@packages,@@bundles,@@widgets
+          end
         end
       end
-      return nil,nil,nil,nil
+      return nil,@@packages,@@bundles,@@widgets
     end
         
     def Installer.get_latest_sdk
@@ -337,6 +339,7 @@ module Appcelerator
       temp_dir = nil
       name = nil
       version = nil
+      url = nil
 
       if File.exists? from
         if not File.exists?(from)
@@ -357,25 +360,50 @@ module Appcelerator
       else
         case from
           when /^http:\/\//
-            temp_dir = Appcelerator::Installer.tempdir
-            begin
-              Installer.http_fetch_into(description,from,temp_dir)
-            rescue OpenURI::HTTPError => e
-              if e.to_s =~ /^404/
-                STDERR.puts "Couldn't fetch #{description} from #{from}"
-                STDERR.puts "The server reported that a file doesn't exist at this location"
-              else
-                STDERR.puts "Network error fetching #{from}: #{e}"
-              end     
+            url = from
+          when /^\w+[:_]\w+$/
+
+            pkg,packages,bundles,widgets=Installer.get_latest
+            
+            if not widgets
+              STDERR.puts "Couldn't login to the network to install #{from}"
+              STDERR.puts "Check your network connection and try again."
               exit 1
             end
-          when /^\w+[:_]\w+$/
-            #
-            # TODO: LOAD FROM NETWORK
-            #
+            
+            array=nil
+            case type
+              when 'widget'
+                array = widgets
+            else
+              STDERR.puts "Type: #{type} not yet supported!"
+              exit 1
+            end
+            
+            array.each do |w|
+              if w['name'] == from
+                  url = w['url']
+                  break
+              end
+            end
         end
       end
 
+      if url
+        temp_dir = Appcelerator::Installer.tempdir
+        begin
+          Installer.http_fetch_into(description,url,temp_dir)
+        rescue OpenURI::HTTPError => e
+          if e.to_s =~ /^404/
+            STDERR.puts "Couldn't fetch #{description} from #{from}"
+            STDERR.puts "The server reported that a file doesn't exist at this location"
+          else
+            STDERR.puts "Network error fetching #{from}: #{e}"
+          end     
+          exit 1
+        end
+      end
+      
       if temp_dir
         puts "temp directory used by install component: #{temp_dir}" if OPTIONS[:debug]
         if not File.exists?("#{temp_dir}/build.yml")
@@ -386,17 +414,19 @@ module Appcelerator
         config = YAML.load_file("#{temp_dir}/build.yml")
         component_name = config[:name]
         version = config[:version]
+        same = name==component_name
+        name = component_name.gsub(':','_')
 
-        if name == component_name
+        if same
           path = "#{to}/#{version}"
           config_path = "#{to}"
         else
-          path = "#{to}/#{component_name}/#{version}"
-          config_path = "#{to}/#{component_name}"
+          path = "#{to}/#{name}/#{version}"
+          config_path = "#{to}/#{name}"
         end
+
         FileUtils.mkdir_p path unless File.exists?(path)
 
-        name = component_name
 
         Appcelerator::PluginManager.dispatchEvent 'before_install_#{type}',from,component_name,version,path
 
