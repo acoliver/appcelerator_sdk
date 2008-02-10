@@ -36,11 +36,23 @@
 	<target name="init">
 		<mkdir dir="${stage.dir}"/>
 	</target>
+	<target name="copy_simplewar" if="server_dist.exists">
+		<delete failonerror="false" dir="stage/setupfiles_extracted"/>
+		<copy todir="stage/setupfiles_extracted">
+			<fileset dir="server_dist" includes="**"/>
+		</copy>
+	</target>
+	<target name="extract_simplewar" unless="server_dist.exists">
+		<unwar src="server/setupfiles" dest="stage/setupfiles_extracted"/>
+	</target>
 	<target name="bundle_simplewar">
 		<delete failonerror="false">
 			<fileset dir="stage/transform" includes="*"/>
 		</delete>
-		<unwar src="server/setupfiles" dest="stage/setupfiles_extracted"/>
+		<available type="dir" file="server_dist" property="server_dist.exists"/>
+		<echo>${server_dist.exists}</echo>
+		<antcall target="extract_simplewar"/>
+		<antcall target="copy_simplewar"/>
 		<xslt in="stage/setupfiles_extracted/WEB-INF/classes/spring-beans.xml" out="stage/transform/spring-beans.xml" style="merge_spring.xslt">
 			<outputproperty name="indent" value="yes"/>
 			<outputproperty name="method" value="xml"/>

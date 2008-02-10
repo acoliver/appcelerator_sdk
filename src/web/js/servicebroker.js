@@ -25,6 +25,7 @@ Appcelerator.Util.ServiceBroker =
 	marshaller:'xml/json',
 	transport:'appcelerator',
 	multiplex:true,
+	logStats: (window.location.href.indexOf('logStats=1') > 0),
 
     toString: function ()
     {
@@ -368,6 +369,8 @@ Appcelerator.Util.ServiceBroker =
         }
 
         var array = this.remoteDirectListeners[type];
+		if (this.logStats)
+			var start = new Date();
         if (array && array.length > 0)
         {
             for (var c = 0, len = array.length; c < len; c++)
@@ -388,7 +391,14 @@ Appcelerator.Util.ServiceBroker =
                 }
             }
         }
+		if (this.logStats)
+			this.logDiff(start,type);
     },
+	logDiff: function(start,type)
+	{
+		var end = new Date();
+		Logger.info('stats '+type+': '+(end.getTime()-start.getTime())+'ms');
+	},
     sendToListener: function (listener, type, msg, datatype, from, scope)
     {
         // let the interceptors have at it
@@ -515,7 +525,6 @@ Appcelerator.Util.ServiceBroker =
 		  $E('failed to send request too many times to '+url);
 		  return;
 		}
-		
         var self = this;
 		
         new Ajax.Request(url,

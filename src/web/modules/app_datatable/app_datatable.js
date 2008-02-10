@@ -102,7 +102,7 @@ Appcelerator.Module.Datatable =
 
 		if (pagination == 'false')
 		{
-			maxRows = maxRows == 0 ? array.length : maxRows;
+			maxRows = array.length;
 		}
 		parameterMap['maxRows'] = maxRows;
 
@@ -365,7 +365,17 @@ Appcelerator.Module.Datatable =
 			var compareNum = function compare(a, b){
 				var anum = Object.getNestedProperty(a,column_property_name);
 				var bnum = Object.getNestedProperty(b,column_property_name);
-				return (parameterMap['sortBy'][column_property_name] == true) ? parseFloat(anum) - parseFloat(bnum) : parseFloat(bnum) - parseFloat(anum);
+				if (parameterMap['sortBy'][column_property_name] == true) {
+					if (isNaN(parseFloat(anum)))
+						return 1;
+					else
+						return parseFloat(anum) - parseFloat(bnum);
+				} else {
+					if (isNaN(parseFloat(bnum)))
+						return 1;
+					else
+						return parseFloat(bnum) - parseFloat(anum);
+				}
 			};
 			array.sort(compareNum);
 		} else
@@ -373,9 +383,28 @@ Appcelerator.Module.Datatable =
 			var compareString = function compare(a, b)
 		  {
 				//compare all lower case strings so words starting with capital letters are not at the top/bottom of the list
-				var astr = Object.getNestedProperty(a,column_property_name).toLowerCase();
-				var bstr = Object.getNestedProperty(b,column_property_name).toLowerCase();
-		    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
+				var astr = Object.getNestedProperty(a,column_property_name);
+				var bstr = Object.getNestedProperty(b,column_property_name);
+				if (!isNaN(astr) || "NaN" == astr && !isNaN(bstr) || "NaN" == bstr) {
+					if (parameterMap['sortBy'][column_property_name] == true)
+						if (astr == "NaN")
+							return -1;
+						else if (bstr == "NaN")
+						 	return 1;
+						else 
+							return parseFloat(astr) - parseFloat(bstr);
+					else
+						if (bstr == "NaN")
+							return -1;
+						else if (astr == "NaN")
+						 	return 1;
+						else 
+							return parseFloat(bstr) - parseFloat(astr);
+				} else {
+					bstr = bstr.toLowerCase();
+					astr = astr.toLowerCase();
+				    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
+				}
 		  };
 			array.sort(compareString);
 		}	
