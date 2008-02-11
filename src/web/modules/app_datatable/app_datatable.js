@@ -401,8 +401,10 @@ Appcelerator.Module.Datatable =
 						else 
 							return parseFloat(bstr) - parseFloat(astr);
 				} else {
-					bstr = bstr.toLowerCase();
-					astr = astr.toLowerCase();
+					if (bstr)
+						bstr = bstr.toLowerCase();
+					if (astr)
+						astr = astr.toLowerCase();
 				    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
 				}
 		  };
