@@ -1387,15 +1387,16 @@ Appcelerator.Util.Performance =
         	var diff = (end.getTime() - start.getTime());
 			if (!stat)
 			{
-				var stat = {'type':type,'hits':0,'mean':0,'min':diff,'max':diff};
+				var stat = {'type':type,'hits':0,'mean':0,'min':diff,'max':diff,'total':0};
 				this.stats.set(type,stat);
 			}
-			stat.mean = ((stat.mean * stat.hits) + diff)/(stat.hits + 1);
 			stat.hits++;
 			stat.last = diff;
 			stat.max = (stat.last > stat.max ? stat.last : stat.max); 
 			stat.min = (stat.last < stat.min ? stat.last : stat.min); 
-			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + 'ms min:'+stat.min+'ms max:'+stat.max+'ms');
+			stat.total +=diff;
+			stat.mean = stat.total/stat.hits;
+			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + 'ms min:'+stat.min+'ms max:'+stat.max+'ms total:'+stat.total);
 		}
 	},
 	reset: function (start,type,data)
