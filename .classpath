@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="build/java/lib/optional/log4j-1.2.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="build/java/lib/commons-io-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="build/java/lib/commons-lang-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="build/java/lib/commons-monitoring.jar"/>
+	<classpathentry exported="true" kind="lib" path="build/java/lib/commons-monitoring.jar" sourcepath="/monitoring"/>
 	<classpathentry exported="true" kind="lib" path="build/java/lib/optional/junit.jar"/>
 	<classpathentry kind="output" path="output/classes"/>
 </classpath>

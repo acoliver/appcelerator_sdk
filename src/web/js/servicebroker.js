@@ -25,7 +25,6 @@ Appcelerator.Util.ServiceBroker =
 	marshaller:'xml/json',
 	transport:'appcelerator',
 	multiplex:true,
-	logStats: (window.location.href.indexOf('logStats=1') > 0),
 
     toString: function ()
     {
@@ -369,8 +368,7 @@ Appcelerator.Util.ServiceBroker =
         }
 
         var array = this.remoteDirectListeners[type];
-		if (this.logStats)
-			var start = new Date();
+		var stat = Appcelerator.Util.Performance.createStat();
         if (array && array.length > 0)
         {
             for (var c = 0, len = array.length; c < len; c++)
@@ -391,14 +389,8 @@ Appcelerator.Util.ServiceBroker =
                 }
             }
         }
-		if (this.logStats)
-			this.logDiff(start,type);
+		Appcelerator.Util.Performance.endStat(stat,type,data);
     },
-	logDiff: function(start,type)
-	{
-		var end = new Date();
-		Logger.info('stats '+type+': '+(end.getTime()-start.getTime())+'ms');
-	},
     sendToListener: function (listener, type, msg, datatype, from, scope)
     {
         // let the interceptors have at it
@@ -1376,5 +1368,48 @@ Appcelerator.Compiler.afterDocumentCompile(function()
 	Appcelerator.Util.ServiceBroker.triggerComplete();
 });
 
+Appcelerator.Util.Performance = Class.create();
+Appcelerator.Util.Performance = 
+{
+	logStats: (window.location.href.indexOf('logStats=1') > 0),
+	stats: $H({}),
+	createStat: function ()
+    {
+		if (this.logStats)
+			return new Date();
+	},
+	endStat: function (start,type,data)
+    {
+		if (this.logStats)
+		{
+			var end = new Date();
+			var stat = this.stats.get(type);
+        	var diff = (end.getTime() - start.getTime());
+			if (!stat)
+			{
+				var stat = {'type':type,'hits':0,'mean':0,'min':diff,'max':diff};
+				this.stats.set(type,stat);
+			}
+			stat.mean = ((stat.mean * stat.hits) + diff)/(stat.hits + 1);
+			stat.hits++;
+			stat.last = diff;
+			stat.max = (stat.last > stat.max ? stat.last : stat.max); 
+			stat.min = (stat.last < stat.min ? stat.last : stat.min); 
+			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + 'ms min:'+stat.min+'ms max:'+stat.max+'ms');
+		}
+	},
+	reset: function (start,type,data)
+    {
+		this.stats = $H({});
+	}
+};
+$MQL('l:get.performance.request',function(type,msg,datatype,from)
+{
+	$MQ('l:get.performance.response',{'stats':Appcelerator.Util.Performance.stats.values()});
+});
+$MQL('l:reset.performance.request',function(type,msg,datatype,from)
+{
+	Appcelerator.Util.Performance.reset();
+});
 
 
