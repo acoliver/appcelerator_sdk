@@ -6,9 +6,9 @@
  *     image: url, an optional image to be used for all markers,
  *     height: integer, if an image is specified, you must specify the height 
  *     width: integer, if an image is specified, you must specify the width	
- *     addresses: an array of address strings, with an optional identifier:
+ *     locations: an array of address strings, with an optional identifier:
  *            could either look like ['Atlanta', 'New York', 'Chicago', etc] or
- *            [{'id': 1, 'address': 'Atlanta'}, {'id': 2, 'address': 'Chicago'}, etc]
+ *            [{'id': 1, 'location': 'Atlanta'}, {'id': 2, 'location': 'Chicago'}, etc]
  */
 Appcelerator.Module.AppYuiMap =
 {
@@ -58,7 +58,8 @@ Appcelerator.Module.AppYuiMap =
 	center_and_zoom: function(id, parameters, data, scope, version)
 	{
 		var map = Appcelerator.Module.AppYuiMap.maps[id];
-		map.drawZoomAndCenter(data["location"], parseInt(data["zoom_level"]));
+		var zoom = (data['zoom_level']) ? parseInt(data["zoom_level"]) : map.getZoomLevel();
+		map.drawZoomAndCenter(data["location"], zoom);
 	},
 	best_fit: function(id, parameters, data, scope, version) 
 	{
@@ -83,14 +84,14 @@ Appcelerator.Module.AppYuiMap =
 		}
 		
 		var map = Appcelerator.Module.AppYuiMap.maps[id];
-		data['addresses'].each(function(address) 
+		data['locations'].each(function(location) 
 		{
 			var marker;
-			var myAddress = address, addrId = null;
-			if(typeof address['id'] != "undefined") 
+			var myAddress = location, addrId = null;
+			if(typeof location['id'] != "undefined") 
 			{
-				myAddress = address['address'];
-				addrId = address['id'];
+				myAddress = location['location'];
+				addrId = location['id'];
 			}
 			
 			if(null != image) 
@@ -105,8 +106,7 @@ Appcelerator.Module.AppYuiMap =
 			}
 			
 			var clickMessage = (typeof parameters["on_marker_click"] != "undefined") ? parameters["on_marker_click"] : "l:" + id + "_clicked";
-			
-    	    YEvent.Capture(marker, EventsList.MouseClick, function() { $MQ(clickMessage, {'id': addrId, 'address': myAddress});	});
+    	    YEvent.Capture(marker, EventsList.MouseClick, function() { $MQ(clickMessage, {'id': addrId, 'location': myAddress});	});
 			map.addOverlay(marker);
 		});
 	},
@@ -155,6 +155,10 @@ Appcelerator.Module.AppYuiMap =
 	},
 	initializeMap: function(params) 
 	{
+        var mapDiv = $(params['id']);
+        mapDiv.style.height = params['height'];
+        mapDiv.style.width = params['width'];
+        
 		var map = new YMap(document.getElementById(params['id']));
 		this.maps[params['id']] = map;
 		map.removeZoomScale();
