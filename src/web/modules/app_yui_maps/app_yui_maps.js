@@ -12,7 +12,7 @@
  */
 Appcelerator.Module.YahooMaps =
 {
-	included: true,
+	included: false,
 	maps: [],
 	getName: function()
 	{
@@ -165,11 +165,16 @@ Appcelerator.Module.YahooMaps =
 	},
 	compileWidget: function(params)
 	{
-		var yahooKey = params['api_key'];
-		Appcelerator.Core.queueRemoteLoadScriptWithDependencies(
-			"http://api.maps.yahoo.com/ajaxymap?v=3.7&appid=" + yahooKey, 
-			function() { Appcelerator.Module.YahooMaps.initializeMap(params);}
-		);
+		if(!this.included) {
+			var yahooKey = params['api_key'];
+			Appcelerator.Core.queueRemoteLoadScriptWithDependencies(
+				"http://api.maps.yahoo.com/ajaxymap?v=3.7&appid=" + yahooKey, 
+				function() { Appcelerator.Module.YahooMaps.initializeMap(params);}
+			);	
+			included = true;
+		} else {
+			Appcelerator.Module.YahooMaps.initializeMap(params);
+		}
 
 	},
 	buildWidget: function(element,params)
