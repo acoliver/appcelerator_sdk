@@ -80,8 +80,11 @@ module Appcelerator
     def Boot.boot
 
       config = Appcelerator::Installer.load_config
-      username,password=nil
+      
+      username=nil
+      password=nil
       save=false
+      install=false
       
       if config[:username] and config[:password]
 
@@ -130,8 +133,12 @@ module Appcelerator
           puts "Signing you up .... one moment please."
           puts
           
-          verification_code = Installer.signup(username,firstname,lastname,password)
+          result = Installer.signup(username,firstname,lastname,password)
           
+          if not result['success']
+            STDERR.puts "Signup failed. #{result['msg']}"
+            exit 1
+          end
           
           puts "Signup almost complete.  You will now need to check your email address"
           puts "at #{username} for a validation email.  In this email, you will find a "
@@ -140,45 +147,46 @@ module Appcelerator
           puts "in the email."
           puts
           
-          # while true
-          #   verification = ask 'Verification code:'
-          #   if verification.nil? or verification == ''
-          #     if Installer.network_login(username,password)
-          #       save = true
-          #       break
-          #     else
-          #       puts "Couldn't not validate your account. Please try again."
-          #     end
-          #   else
-          #     Installer.
-          #   end
-          # end
+          attempt_login = true
           
-#          while true
-#            verification = ask_with_validation 'Verification Code:', 'Invalid verification code. Must be 4 characters', /[a-zA-Z0-9]{4}/
-#            break if verification == code
-#            puts "Verification Code Invalid. Please re-try again. Your verification code is case sensitive." if verification
-#          end
-          
-          #TODO: now send final step message to let them know verification is complete
+          while true
+            verification = ask 'Verification code:'
+            if verification.nil? or verification == ''
+              if Installer.network_login(username,password)
+                attempt_login = false
+                break
+              else
+                puts "Couldn't not validate your account. Please try again."
+              end
+            else
+              result = Installer.validate_signup(username,password,verification)
+              if result and result['success']
+                break
+              else
+                puts "Error validating your verification code. #{result['msg']}"
+              end
+            end
+          end
           
           puts
-          puts "Congratulations! You're now signed up."
+          puts "Congratulations! You're now signed up and verified."
           puts
           puts '*' * 80
           puts
-          
-    			Installer.login(username,password)
     			
+          Installer.network_login(username,password) if attempt_login
+          
         end
 
-        # install the latest after login/signup
-        Installer.install_web_sdk
-        
         save = true
+        install = true
       end
       
-      Appcelerator::Installer.save_config(username,password) if save
+      # save the config
+      Installer.save_config(username,password) if save
+
+      # install the latest after login/signup
+      Installer.install_web_sdk if install
     end
     
   end

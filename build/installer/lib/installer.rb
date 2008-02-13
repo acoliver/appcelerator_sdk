@@ -73,24 +73,31 @@ module Appcelerator
       end
     end
 
-    def Installer.signup(username,firstname,lastname,password)
-      ''
+    def Installer.get_client
+      @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug] unless @@client
+      @@client
+    end
+
+    def Installer.signup(email,firstname,lastname,password)
+      client = get_client
+      result = client.send 'account.signup.request', {'offline'=>true,'email'=>email,'password'=>password,'firstname'=>firstname,'lastname'=>lastname}
+      puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
+      result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
     end
 
     def Installer.validate_signup(email,password,verification)
-      if not @@client
-        @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
-      end
-      #@@client.send 'account.signup.'
-      true
+      client = get_client
+      result = client.send 'account.confirmation.request', {'offline'=>true,'confirmation'=>verification}
+      puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
+      result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
     end
 
-    def Installer.network_login(email,password)
+    def Installer.network_login(email,password,silent=false)
       puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
-      puts "Checking update server ..." unless OPTIONS[:silent]
-      @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
-      result = @@client.send 'account.login.request', {'email'=>email,'password'=>password}
-      puts "result=>#{result.to_yaml}" if OPTIONS[:debug]
+      puts "Checking update server ..." unless OPTIONS[:silent] or silent
+      client = get_client
+      result = client.send 'account.login.request', {'email'=>email,'password'=>password}
+      puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       return result[:data]['success'] if result
       false
     end
@@ -374,6 +381,11 @@ module Appcelerator
           when /^\w+([:_]\w+)?$/
 
             pkg,packages,bundles,widgets=Installer.get_latest
+            
+            puts "pkg=#{pkg}"
+            puts "packages=#{packages}"
+            puts "bundles=#{bundles}"
+            puts "widgets=#{widgets}"
             
             if not widgets
               STDERR.puts "Couldn't login to the network to install #{from}"
