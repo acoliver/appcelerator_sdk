@@ -30,11 +30,12 @@ then
 		   # check to do the postflight install process for the macosx installer
   		 mkdir -p /Library/Appcelerator/releases
   		 mkdir -p /Library/Appcelerator/updates
-         chown -R root.admin /Library/Appcelerator/releases
-         chown -R root.admin /Library/Appcelerator/updates
+         chown -R root:admin /Library/Appcelerator/releases
+         chown -R root:admin /Library/Appcelerator/updates
   		 chmod -R 0777 /Library/Appcelerator/releases
   		 chmod -R 0777 /Library/Appcelerator/updates
-  		 /Library/Appcelerator/growlnotify -m "Appcelerator RIA Platform installed" -t "Appcelerator" -n "appcelerator" -w >/dev/null 2>&1
+		chmod +x /Library/Appcelerator/appcelerator
+#  		 au=`/Library/Appcelerator/growlnotify -m "Appcelerator RIA Platform installed" -t "Appcelerator" -n "appcelerator" -w >/dev/null 2>&1`
 		 exit 0
     fi 
 fi
