@@ -10,6 +10,9 @@ Appcelerator.Core.widgets = {};
 Appcelerator.Core.widgets_css = {};
 Appcelerator.Core.widgets_js = {};
 Appcelerator.Core.moduleLoaderCallbacks = {};
+Appcelerator.Core.script_count = 0;
+Appcelerator.Core.scriptWithDependenciesQueue = [];
+Appcelerator.Core.scriptWithDependenciesCallback;
 
 Appcelerator.Core.HeadElement = document.getElementsByTagName('head')[0];
 
@@ -104,6 +107,35 @@ Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
 Appcelerator.Core.remoteLoadScript = function(path,onload)
 {
     Appcelerator.Core.remoteLoad('script','text/javascript',path,onload);  
+};
+
+/**
+ * dynamically laod a javascript file with dependencies
+ * this will not call the callback until all resources are loaded
+ * multiple calls to this method are queued
+ * 
+ * @param {string} path to resource
+ * @param {function} the string representation of the callback
+ */
+Appcelerator.Core.queueRemoteLoadScriptWithDependencies = function(path, onload) 
+{
+    Appcelerator.Core.scriptWithDependenciesQueue.push({'path': path, 'onload': onload});
+    Appcelerator.Core.remoteLoadScriptWithDependencies();
+};
+
+Appcelerator.Core.remoteLoadScriptWithDependencies = function() 
+{
+    if(0 < Appcelerator.Core.scriptWithDependenciesQueue.length) 
+    {
+        var script = Appcelerator.Core.scriptWithDependenciesQueue[0];
+        Appcelerator.Core.remoteLoad('script', 'text/javascript', script.path, function() {});
+        Appcelerator.Core.scriptWithDependenciesCallback = function() 
+        {
+            script.onload();
+            Appcelerator.Core.scriptWithDependenciesQueue.shift();
+            Appcelerator.Core.remoteLoadScriptWithDependencies();
+        }
+    }
 };
 
 /**
@@ -738,4 +770,22 @@ Appcelerator.Core.onload(function()
 			document.body.style.display='';
 		}
 	}
+    
+    //Override document.write
+    Appcelerator.Core.old_document_write = document.write;
+    document.write = function(src) {
+        var re = /src=('([^']*)'|"([^"]*)")/gm;
+        re.lastIndex = 0;
+        var match = re.exec(src);
+        if(match) {
+            match = match[2] || match[3];
+            Appcelerator.Core.script_count++;
+            Appcelerator.Core.remoteLoadScript(match, function() {
+                Appcelerator.Core.script_count--;
+                if(0 == Appcelerator.Core.script_count) {
+                    Appcelerator.Core.scriptWithDependenciesCallback();
+                }
+            }); 
+        }
+    };
 });
