@@ -52,7 +52,9 @@ module Appcelerator
       @@config||={}
     end
     
-    def Installer.save_config
+    def Installer.save_config(username,password)
+      @@config[:username]=username
+      @@config[:password]=password
       f = File.open(@@config_file,'w+')
       f.puts @@config.to_yaml
       f.flush
@@ -71,6 +73,18 @@ module Appcelerator
       end
     end
 
+    def Installer.signup(username,firstname,lastname,password)
+      ''
+    end
+
+    def Installer.validate_signup(email,password,verification)
+      if not @@client
+        @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug]
+      end
+      #@@client.send 'account.signup.'
+      true
+    end
+
     def Installer.network_login(email,password)
       puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
       puts "Checking update server ..." unless OPTIONS[:silent]
@@ -85,9 +99,9 @@ module Appcelerator
       Installer.login unless @@loggedin
     end
 
-    def Installer.login
-      username = @@config['username']
-      password = @@config['password']
+    def Installer.login(un=nil,pw=nil)
+      username = @@config[:username] unless un
+      password = @@config[:password] unless pw
       while true 
         if username and password
   			  break if Installer.network_login(username,password)
@@ -103,9 +117,9 @@ module Appcelerator
       
       puts "Logged in" if OPTIONS[:debug]
       
-      if @@config['username']!=@@username or @@config['password']!=@@password
-        Installer.save_config
-      end
+      Installer.save_config(@@username,@@password)
+      
+      @@loggedin
     end
     
     def Installer.show_notice
@@ -268,13 +282,13 @@ module Appcelerator
     end
     
     def Installer.tempdir
-      dir = File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(1000)}"))
+      dir = File.expand_path(File.join(APP_TEMP_DIR,"#{$$}_#{rand(100000)}"))
       FileUtils.mkdir_p dir
       dir
     end
     
     def Installer.tempfile(dir=APP_TEMP_DIR)
-      File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(1000)}")),"w+")
+      File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(100000)}")),"w+")
     end
 
     def Installer.put(path,content)
@@ -334,18 +348,14 @@ module Appcelerator
       true
     end
 
-    def Installer.install_component(type,description,from,to)
+    def Installer.install_component(type,description,from,to,quiet=false)
 
       temp_dir = nil
       name = nil
       version = nil
       url = nil
-
+      
       if File.exists? from
-        if not File.exists?(from)
-          STDERR.puts "* Couldn't find #{description} at: #{from}"
-          exit 1
-        end
 
         if not from =~ /(.*)\.zip$/
           STDERR.puts "* Invalid description format at: #{from}. #{description} should be in zip format."
@@ -361,7 +371,7 @@ module Appcelerator
         case from
           when /^http:\/\//
             url = from
-          when /^\w+[:_]\w+$/
+          when /^\w+([:_]\w+)?$/
 
             pkg,packages,bundles,widgets=Installer.get_latest
             
@@ -375,10 +385,14 @@ module Appcelerator
             case type
               when 'widget'
                 array = widgets
+              when 'service'
+                array = packages
             else
               STDERR.puts "Type: #{type} not yet supported!"
               exit 1
             end
+            
+            #TODO: check the checksum
             
             array.each do |w|
               if w['name'] == from
@@ -390,7 +404,7 @@ module Appcelerator
       end
 
       if url
-        temp_dir = Appcelerator::Installer.tempdir
+        temp_dir = Appcelerator::Installer.tempdir unless temp_dir
         begin
           Installer.http_fetch_into(description,url,temp_dir)
         rescue OpenURI::HTTPError => e
@@ -406,43 +420,48 @@ module Appcelerator
       
       if temp_dir
         puts "temp directory used by install component: #{temp_dir}" if OPTIONS[:debug]
-        if not File.exists?("#{temp_dir}/build.yml")
-          STDERR.puts "* Invalid #{description} at: #{from}.\n#{description} missing build.yml"
-          exit 1
+        
+        begin
+          if not File.exists?("#{temp_dir}/build.yml")
+            STDERR.puts "* Invalid #{description} at: #{from}.\n#{description} missing build.yml"
+            exit 1
+          end
+
+          config = YAML.load_file("#{temp_dir}/build.yml")
+          component_name = config[:name]
+          version = config[:version]
+          same = name==component_name
+          name = component_name.gsub(':','_')
+
+          if same
+            path = "#{to}/#{version}"
+            config_path = "#{to}"
+          else
+            path = "#{to}/#{name}/#{version}"
+            config_path = "#{to}/#{name}"
+          end
+
+          FileUtils.mkdir_p path unless File.exists?(path)
+
+
+          Appcelerator::PluginManager.dispatchEvent 'before_install_#{type}',from,component_name,version,path
+
+          puts "install path => #{path}" if OPTIONS[:debug]
+
+          Appcelerator::Installer.copy(temp_dir,path,['build.yml'])
+
+          config = {:version=>version}
+          Appcelerator::Installer.put "#{config_path}/config.yml",config.to_yaml.to_s 
+
+          pre_flight = File.join(to,name,version.to_s,'pre_flight.rb')
+          require pre_flight if File.exists?(pre_flight)
+
+          Appcelerator::PluginManager.dispatchEvent 'after_install_#{type}',from,name,version,path
+
+          puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or quiet)
+        ensure
+          FileUtils.rm_r temp_dir
         end
-
-        config = YAML.load_file("#{temp_dir}/build.yml")
-        component_name = config[:name]
-        version = config[:version]
-        same = name==component_name
-        name = component_name.gsub(':','_')
-
-        if same
-          path = "#{to}/#{version}"
-          config_path = "#{to}"
-        else
-          path = "#{to}/#{name}/#{version}"
-          config_path = "#{to}/#{name}"
-        end
-
-        FileUtils.mkdir_p path unless File.exists?(path)
-
-
-        Appcelerator::PluginManager.dispatchEvent 'before_install_#{type}',from,component_name,version,path
-
-        puts "install path => #{path}" if OPTIONS[:debug]
-
-        Appcelerator::Installer.copy(temp_dir,path,['build.yml'])
-
-        config = {:version=>version}
-        Appcelerator::Installer.put "#{config_path}/config.yml",config.to_yaml.to_s 
-
-        pre_flight = File.join(to,name,version.to_s,'pre_flight.rb')
-        require pre_flight if File.exists?(pre_flight)
-
-        Appcelerator::PluginManager.dispatchEvent 'after_install_#{type}',from,name,version,path
-
-        puts "Installed #{description}: #{name},#{version}" unless OPTIONS[:quiet]
       else
         STDERR.puts "Couldn't find #{description}: #{from}" unless OPTIONS[:quiet]
         exit 1

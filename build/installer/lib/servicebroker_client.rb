@@ -234,11 +234,22 @@ module Appcelerator
       
       xml = res.body
       
+      if not xml or xml == '' or xml.nil?
+        STDERR.puts "No response received update server at #{@url}"
+        exit 1
+      end
+      
       #
       # find out path to service broker and the name of the cookie we
       # need to read
       #
       sb = xml.match(/<servicebroker.*?>(.*?)<\/servicebroker>/)
+      
+      if not sb
+        STDERR.puts "Invalid response received update server at #{@url}"
+        exit 1
+      end
+      
       @servicebroker = sb[1].gsub('@{rootPath}',@url.path)
       
       sn = xml.match(/<sessionid>(.*?)<\/sessionid>/)

@@ -22,12 +22,16 @@ Appcelerator::CommandRegistry.registerCommand('install:websdk','install the web 
   {
     :name=>'location',
     :help=>'path or URL to plugin file',
-    :required=>true,
+    :required=>false,
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
 ],nil,nil) do |args,options|
 
-  Appcelerator::Installer.install_component 'websdk','Web SDK',args[:location],"#{RELEASE_DIR}/web"
-
+  if args[:location]
+    STDERR.puts "Currently a non-network install isn't supported for the SDK."
+    exit 1
+  else
+    Appcelerator::Installer.install_web_sdk
+  end
 end

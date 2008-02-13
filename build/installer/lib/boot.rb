@@ -19,6 +19,61 @@
 #
 require 'yaml'
 
+def die(msg)
+  STDERR.puts msg
+  exit 1
+end
+
+def ask_with_validation(q,msg,regexp,mask=false)
+  response = nil
+  while true
+    response = ask(q,mask)
+    break if response =~ regexp
+    STDERR.puts msg if response
+  end
+  response
+end
+
+def ask(q,mask=false)
+  STDOUT.print "#{q} "
+  STDOUT.flush
+  system 'stty -echo' rescue nil if mask
+  answer = ''
+  while true
+    ch = STDIN.getc
+    break if ch==10
+    answer << ch
+  end
+  system 'stty echo' rescue nil if mask
+  puts if mask
+  answer
+end
+
+def confirm(q,canforce=true,die_if_fails=true)
+    return if OPTIONS[:force]
+    answer = ask(q)
+    OPTIONS[:force]=true if canforce and ['A','a'].index(answer)
+    if not ['','y','Y','a','A'].index(answer)
+      die('Cancelled!') if die_if_fails
+      return false
+    end
+    true
+end
+
+#
+# set up temp directory and delete it on exit
+#
+APP_TEMP_DIR=FileUtils.mkdir_p(File.join(ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP'] || '.',"appcelerator.#{rand(10000)}.#{$$}"))
+at_exit { FileUtils.rm_rf APP_TEMP_DIR }
+
+if OPTIONS[:version]
+  if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/
+    STDERR.puts "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
+    exit 1
+  end
+end
+
+
 module Appcelerator
   class Boot
 
@@ -28,7 +83,7 @@ module Appcelerator
       username,password=nil
       save=false
       
-      if config['username'] and config['password']
+      if config[:username] and config[:password]
 
         # nothing required
         
@@ -52,19 +107,8 @@ module Appcelerator
 
         if ['y','Y',''].index(yn)
 
-          # have an account already
-		      while true 
-    			  username=prompt_username
-      			password=prompt_password
-      			puts
-      			puts "Validating your credentials ... one moment..."
-      			break if Appcelerator::Installer.login(username,password)
-    			  puts "Invalid credentials, please try again..."
-          end
-		  
-          config['username']=username
-          config['password']=password     
-          
+    			Installer.login(username,password)
+
           puts "Welcome back ...."
           puts
                     
@@ -76,28 +120,45 @@ module Appcelerator
           puts "OK, let's sign you up to the Appcelerator Developer Network.  We'll need "
           puts "a little bit of information to get you signed up.  Here we go:"
           puts
-          username = prompt_username 'Email'
+          username = Installer.prompt_username 'Email'
           firstname = ask 'Firstname:'
           lastname = ask 'Lastname:'
-          password = prompt_password
-          prompt_password password
+          password = Installer.prompt_password
+          Installer.prompt_password password
           
-          #TODO: perform signup 
           puts 
           puts "Signing you up .... one moment please."
           puts
+          
+          verification_code = Installer.signup(username,firstname,lastname,password)
+          
+          
           puts "Signup almost complete.  You will now need to check your email address"
           puts "at #{username} for a validation email.  In this email, you will find a "
-          puts "four-character verification code.  Please enter that code below:"
+          puts "four-character verification code.  Please enter that code below or press"
+          puts "return if you have already verified your account by clicking on the URL"
+          puts "in the email."
           puts
           
-          code = MD5.hexdigest(username).to_s[0..3]
+          # while true
+          #   verification = ask 'Verification code:'
+          #   if verification.nil? or verification == ''
+          #     if Installer.network_login(username,password)
+          #       save = true
+          #       break
+          #     else
+          #       puts "Couldn't not validate your account. Please try again."
+          #     end
+          #   else
+          #     Installer.
+          #   end
+          # end
           
-          while true
-            verification = ask_with_validation 'Verification Code:', 'Invalid verification code. Must be 4 characters', /[a-zA-Z0-9]{4}/
-            break if verification == code
-            puts "Verification Code Invalid. Please re-try again. Your verification code is case sensitive." if verification
-          end
+#          while true
+#            verification = ask_with_validation 'Verification Code:', 'Invalid verification code. Must be 4 characters', /[a-zA-Z0-9]{4}/
+#            break if verification == code
+#            puts "Verification Code Invalid. Please re-try again. Your verification code is case sensitive." if verification
+#          end
           
           #TODO: now send final step message to let them know verification is complete
           
@@ -107,9 +168,6 @@ module Appcelerator
           puts '*' * 80
           puts
           
-          config['username'] = username
-          config['password'] = password
-
     			Installer.login(username,password)
     			
         end
@@ -120,7 +178,7 @@ module Appcelerator
         save = true
       end
       
-      Appcelerator::Installer.save_config if save
+      Appcelerator::Installer.save_config(username,password) if save
     end
     
   end

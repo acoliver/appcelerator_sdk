@@ -2,8 +2,8 @@
 ;
 ; Appcelerator RIA Platform Win32 Installer
 ;
-;
 ;-------------------------------------------------------------------;
+;
 ; This file is part of Appcelerator.
 ;
 ; Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
@@ -24,7 +24,7 @@
 ;
 
 !include "AddToPath.nsh"
-!include "MUI2.nsh"
+!include "MUI.nsh"
 
 Name "Appcelerator RIA Platform"
 OutFile "installer.exe"
@@ -55,8 +55,10 @@ LicenseForceSelection radiobuttons
 RequestExecutionLevel admin
     
 
+
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "header.bmp"
+!define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\orange.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\orange.bmp"
 !define MUI_ABORTWARNING
 
 
@@ -71,6 +73,7 @@ RequestExecutionLevel admin
   
 !insertmacro MUI_LANGUAGE "English"
 
+
 Section
 
   SectionIn RO
@@ -79,6 +82,7 @@ Section
   File "post-flight.rb"
   File "LICENSE"
   File "appcelerator"
+  File "console.rb"
   File /r "commands"
   File /r "lib"
 
@@ -159,7 +163,14 @@ Section
 
 SectionEnd
 
- 
+Function .onInstSuccess
+
+  ; open our welcome page
+  StrCpy $0 "http://www.appcelerator.org"
+  Call openLinkNewWindow
+
+FunctionEnd
+
 Section "Uninstall"
 
   Delete "$INSTDIR\ruby-installer.exe"
@@ -180,3 +191,35 @@ Section "Uninstall"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform"
 
 SectionEnd
+
+
+Function openLinkNewWindow
+  Push $3 
+  Push $2
+  Push $1
+  Push $0
+  ReadRegStr $0 HKCR "http\shell\open\command" ""
+  StrCpy $2 '"'
+  StrCpy $1 $0 1
+  StrCmp $1 $2 +2 # if path is not enclosed in " look for space as final char
+  StrCpy $2 ' '
+  StrCpy $3 1
+  loop:
+    StrCpy $1 $0 1 $3
+    DetailPrint $1
+    StrCmp $1 $2 found
+    StrCmp $1 "" found
+    IntOp $3 $3 + 1
+    Goto loop
+ 
+  found:
+    StrCpy $1 $0 $3
+    StrCmp $2 " " +2
+    StrCpy $1 '$1"'
+ 
+  Pop $0
+  Exec '$1 $0'
+  Pop $1
+  Pop $2
+  Pop $3
+FunctionEnd

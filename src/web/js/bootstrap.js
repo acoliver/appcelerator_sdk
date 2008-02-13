@@ -60,7 +60,7 @@ Appcelerator.Version =
 	}
 };
 
-Appcelerator.LicenseType = 'GNU Public License, version 2.0 (GPL)';
+Appcelerator.LicenseType = 'GNU Public License, version 3.0 (GPL)';
 Appcelerator.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
 Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
 Appcelerator.Parameters = $H({});
