@@ -39,33 +39,6 @@ module ServiceBroker
 	  def dispatch	    
   		session = request.session
   		
-  		#
-  		# set the lifetime tracking cookie
-  		#
-  		auid = cookies['AUID']
-  		if not auid or auid == ''
-        auid = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('SHA1'), rand(0).to_s, session.session_id)
-        opts = {'path'=>'/','expires'=>Time.now+5.years,'secure'=>false,'value'=>auid}
-
-        domain = request.domain
-        if domain
-          dots = domain.scan(/[\.]/).length
-          case dots
-              when 0
-                domain = nil
-              when 1
-                domain = ".#{domain}"
-              when 2..10
-        		    idx = domain.index('.')
-        		    domain = domain[idx,domain.length]
-        	end
-          if domain
-            opts['domain'] = domain
-          end
-        end
-        cookies['AUID'] = opts
-  		end
-  		
       # we check to make sure we're coming from an XHR request
       # this is easy to forge but a simple check
       #
