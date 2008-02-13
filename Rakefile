@@ -504,7 +504,14 @@ namespace :installer do
     end
     
     # build the package structure
-    system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
+    if File.exists? "/Developer/Tools/packagemaker"
+    	system "/Developer/Tools/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
+    elsif File.exists? "/Developer/usr/bin/packagemaker"
+    	system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
+    else
+		STDERR.puts "Couldn't find XTools packagemaker"
+      exit 1
+    end
 
     # add in our postflight install script
     postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight",'w+'
