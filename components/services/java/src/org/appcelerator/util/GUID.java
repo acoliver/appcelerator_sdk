@@ -7,7 +7,8 @@ package org.appcelerator.util;
 import java.net.InetAddress;
 import java.security.SecureRandom;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p/>
@@ -97,16 +98,16 @@ import org.apache.log4j.Logger;
  * in the same repeated millisecond value as in a previous sequence. </li>
  * </ul>
  * <p/>
- * Portions of this code have been updated and enhanced by hakano.
+ * Portions of this code have been updated and enhanced by Appcelerator and released into the 
+ * public domain.
  *
  * @author Steve Woodcock
- * @author <a href="mailto:jhaynie@hakano.com">Jeff Haynie</a>
- * @author <a href="mailto:jkashimba@hakano.com">Jared Kashimba</a>
+ * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  * @version 1.1
  */
 public class GUID
 {
-    private static final Logger LOG = Logger.getLogger(GUID.class);
+    private static final Log LOG = LogFactory.getLog(GUID.class);
 
     private static String prefixValueFormatted, prefixValueUnformatted;
 

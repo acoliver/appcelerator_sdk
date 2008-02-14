@@ -110,6 +110,16 @@ END_LICENSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
   
+
+  # comment out load for scriptaculous - we don't want that to run since we
+  # auto include them already
+  jsd = File.read(jsdebug)
+  jsd.gsub!('Scriptaculous.load();','')
+  jsdf = File.open(jsdebug,'w+')
+  jsdf.write jsd
+  jsdf.close
+  
+  
   system("java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar #{jsdebug} -o #{jsout} >/dev/null 2>&1")
   system("ruby #{BUILD_DIR}/lib/compress.rb #{jsout} #{jstemp} >/dev/null 2>&1")
   FileUtils.rm jsout

@@ -12,8 +12,8 @@
 
     <property file="${user.home}/.ant.properties"/>
     <property file="build.properties"/>
-	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
 	<property name="dist.dir" value="${stage.dir}"/>
+
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
@@ -22,7 +22,7 @@
 
 	<target name="banner">
 		<echo>Appcelerator RIA Platform for Java</echo>
-		<echo>Licensed under the GNU GPL version 3</echo>
+		<echo>Licensed under the GNU GPL version 3 or later</echo>
 		<echo>Please see COPYING for more details on license requirements</echo>
 	</target>
 
@@ -48,7 +48,7 @@
 		<mkdir dir="${stage.dir}/war"/>
 		<copy todir="${stage.dir}/war">
 			<fileset dir="${web.dir}" includes="**/*"/>
-			<fileset dir="${src.web.dir}" includes="**/*"/>
+			<fileset dir="${src.war.dir}" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/lib">
 			<fileset dir="${lib.dir}" includes="*.jar"/>

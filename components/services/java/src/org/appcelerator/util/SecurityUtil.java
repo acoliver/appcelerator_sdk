@@ -1,37 +1,39 @@
 /**
- *  Appcelerator SDK
- *  Copyright (C) 2006-2007 by Appcelerator, Inc. All Rights Reserved.
- *  For more information, please visit http://www.appcelerator.org
+ * This file is part of Appcelerator.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+ * For more information, please visit http://www.appcelerator.org
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * Appcelerator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 package org.appcelerator.util;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * SecurityUtil is a collection of utility methods to handle security and validation.
  *
- * @author <a href="mailto:jhaynie@hakano.com">Jeff Haynie</a>
+ * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
 public class SecurityUtil
 {
-    private static final Logger LOG = Logger.getLogger(SecurityUtil.class);
+    private static final Log LOG = LogFactory.getLog(SecurityUtil.class);
 
     private static MessageDigest digest256;
     private static MessageDigest digest512;

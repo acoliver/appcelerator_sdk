@@ -28,6 +28,12 @@ module Appcelerator
       replace_app_name name,"#{to_path}/build.properties"
       replace_app_name name,"#{to_path}/build.xml"
       FileUtils.cp_r "#{from_path}/appcelerator.xml","#{to_path}/public"
+      FileUtils.mkdir_p "#{to_path}/src/java"
+      FileUtils.mkdir_p "#{to_path}/src/war"
+      
+      template_dir = File.join(File.dirname(__FILE__),'templates')
+      FileUtils.mkdir_p "#{to_path}/src/war/WEB-INF"
+      FileUtils.cp_r "#{template_dir}/web.xml","#{to_path}/src/war/WEB-INF"
 
       #
       # create an Eclipse .project/.classpath file      
@@ -37,7 +43,6 @@ module Appcelerator
       classpath<<"<classpath>"
       classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
       classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
-      classpath<<"<classpathentry kind=\"src\" path=\"src/web\"/>"
       classpath<<"<classpathentry kind=\"src\" path=\"public\"/>"
       classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
       classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
