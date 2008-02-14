@@ -1,0 +1,96 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+BUILD_DIR = File.dirname(__FILE__)
+require File.expand_path("#{BUILD_DIR}/../../build.rb")
+build_config = load_config(BUILD_DIR)
+
+desc 'default build'
+task :default do
+  java_dir = "#{STAGE_DIR}/java"
+  java_classes = File.expand_path "#{java_dir}/classes"
+  java_source = "#{BUILD_DIR}/src"
+  
+  clean_dir(java_dir)
+  
+  FileUtils.mkdir_p java_classes
+  FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
+  FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
+
+  copy_dir "#{BUILD_DIR}/lib", File.join(java_dir,'dist','lib')
+  copy_dir "#{BUILD_DIR}/installer", File.join(java_dir,'dist')
+  
+  # 
+  # FIXME
+  #
+  # FileUtils.copy("#{BUILD_DIR}/java/build.xml",File.join(java_dir,'dist'))
+  # FileUtils.copy("#{BUILD_DIR}/java/build.properties",File.join(java_dir,'dist'))
+  # FileUtils.copy("#{BUILD_DIR}/java/appcelerator.xml",File.join(java_dir,'dist','src','web'))
+  # FileUtils.copy("#{BUILD_DIR}/java/web.xml",File.join(java_dir,'dist','src','web','WEB-INF'))
+  # FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  # FileUtils.copy("#{BUILD_DIR}/java/appcelerator.properties",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  # FileUtils.copy("#{BUILD_DIR}/java/appcelerator.log4j.properties",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  # FileUtils.copy("#{BUILD_DIR}/java/spring-beans.xml",File.join(java_dir,'dist','src','web','WEB-INF','classes'))
+  # FileUtils.copy("#{BUILD_DIR}/java/SampleService.java",File.join(java_dir,'dist','src','java'))
+  # FileUtils.copy("#{BUILD_DIR}/installer/build/java/install.rb",File.join(java_dir,'dist'))
+  # FileUtils.copy("#{BUILD_DIR}/installer/build/java/war.rb",File.join(java_dir,'dist'))
+  # 
+  
+  puts "Compiling Java files..." if VERBOSE
+   
+  cp = Dir["#{BUILD_DIR}/lib/**/*.jar"].inject([]) {|a,f| a<<f }
+  src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
+  
+  f = File.open "#{java_dir}/dist/build.yml", 'w+'
+  f.puts build_config.to_yaml
+  f.close
+   
+  FileUtils.mkdir_p "#{java_dir}/classes" unless File.exists? "#{java_dir}/classes"
+  system "javac -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_dir}/classes"
+   
+  FileUtils.mkdir_p "#{java_dir}/dist/lib" unless File.exists? "#{java_dir}/dist/lib"
+  FileUtils.cd(java_classes) do
+     cl = []
+
+     Find.find(java_classes) do |path|
+      f = File.expand_path path
+      next if File.directory?(f)
+      fn = f.gsub(java_classes+'/','')
+      cl << fn
+     end
+     
+     system "jar cvf #{java_dir}/dist/lib/appcelerator.jar ." if VERBOSE
+     system "jar cvf #{java_dir}/dist/lib/appcelerator.jar . >/dev/null" unless VERBOSE
+  
+     zipfile = "#{STAGE_DIR}/service_java_#{build_config[:version]}.zip"
+     FileUtils.rm_rf zipfile
+     
+     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+      dofiles("#{java_dir}/dist") do |f|
+        filename = f.to_s
+        if not filename == '.'
+          zipfile.add(filename,"#{java_dir}/dist/#{filename}")
+        end
+      end
+    end
+  end
+  
+  FileUtils.rm_rf java_dir
+end

@@ -1,0 +1,155 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+BUILD_DIR = File.dirname(__FILE__)
+require File.expand_path("#{BUILD_DIR}/../build.rb")
+build_config = load_config(BUILD_DIR)
+
+desc 'build websdk files'
+task :default do
+  web_dir = "#{STAGE_DIR}/websdk"
+  js_dir = "#{web_dir}/js"
+  js_source = "#{BUILD_DIR}/src/js"
+
+  clean_dir(web_dir)
+
+  FileUtils.mkdir_p js_dir
+
+  puts 'Compiling appcelerator-lite.js...' if VERBOSE
+  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js localization.js)
+  jslite = js_dir+'/appcelerator-lite.js'
+  
+  LICENSE_HEADER=<<END_LICENSE
+/*
+ * This file is part of Appcelerator.
+ *
+ * Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+ * For more information, please visit http://www.appcelerator.org
+ *
+ * Appcelerator is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+END_LICENSE
+
+  append_file(LICENSE_HEADER,jslite,true)
+  
+  rel = build_config[:version].to_s.split('.')
+
+  # fix the release information in the file
+  bf = File.read(js_source+'/bootstrap.js')
+  bf.gsub!('${version.major}',rel[0])
+  bf.gsub!('${version.minor}',rel[1])
+  bf.gsub!('${version.rev}',rel[2]||'0')
+  append_file(bf,jslite,true)
+
+  jslite_prefiles.each do |file|
+    append_file(js_source+'/'+file, jslite)
+  end
+
+  excluded_files = jslite_prefiles + %w(bootstrap.js prolog.js epilog.js)
+  jsfiles = []
+
+  Dir["#{js_source}/*.js"].sort {|a,b| a<=>b }.each do |path|
+      result = excluded_files.find{ |filename| path.include? filename }
+    if not result
+      jsfiles << path
+    end
+  end
+
+  %w(conditions processors actions).each do |dir|
+    Dir["#{js_source}/#{dir}/*.js"].sort {|a,b| a<=>b }.each do |path|
+    jsfiles << path
+    end
+  end
+
+  jsfiles.each {|path| append_file(path, jslite) }
+  append_file("#{js_source}/epilog.js", jslite)
+
+  puts 'Compiling appcelerator-debug.js...' if VERBOSE
+  
+  jsdebug = js_dir+'/appcelerator-debug.js'
+  append_file(LICENSE_HEADER,jsdebug,true)
+  append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
+  append_file(js_source+'/prolog.js', jsdebug)
+  thirdparty = %w(prototype/prototype.js scriptaculous/scriptaculous.js scriptaculous/effects.js scriptaculous/dragdrop.js scriptaculous/resizable.js)
+  thirdparty.each do |file|
+    append_file(BUILD_DIR+'/lib/'+file, jsdebug)
+  end
+  append_file("\n/* END THIRD PARTY SOURCE */\n", jsdebug, true)
+  append_file(jslite, jsdebug)
+  
+  puts 'Compiling appcelerator.js...' if VERBOSE
+  jsout = js_dir+'/appcelerator.js'
+  jstemp = js_dir+'/appcelerator-temp.js'
+  
+  system("java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar #{jsdebug} -o #{jsout} >/dev/null 2>&1")
+  system("ruby #{BUILD_DIR}/lib/compress.rb #{jsout} #{jstemp} >/dev/null 2>&1")
+  FileUtils.rm jsout
+  append_file(LICENSE_HEADER, jsout, true)
+  append_file(jstemp, jsout)
+  FileUtils.rm jstemp
+
+  system("java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar #{jslite} -o #{jstemp} >/dev/null 2>&1")
+  system("ruby #{BUILD_DIR}/lib/compress.rb #{jstemp} #{jslite} >/dev/null 2>&1")
+  FileUtils.rm jstemp
+  append_file(LICENSE_HEADER, jstemp, true)
+  append_file(jslite, jstemp)
+  FileUtils.rm jslite
+  append_file(jstemp, jslite)
+  FileUtils.rm jstemp
+
+  puts "Archiving JS/Web files..." if VERBOSE
+  zipfile = "#{STAGE_DIR}/websdk_#{build_config[:version]}.zip"
+  FileUtils.rm_rf zipfile if File.exists? zipfile
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+    zipfile.add('js/appcelerator-lite.js',jslite)
+    zipfile.add('js/appcelerator-debug.js',jsdebug)
+    zipfile.add('js/appcelerator.js',jsout)
+    zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
+    Find.find("#{BUILD_DIR}/src/web") do |path|
+      pathname = Pathname.new(path)
+      if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
+        filename = pathname.relative_path_from(Pathname.new("#{BUILD_DIR}/src/web")).to_s
+        zipfile.add(filename,path) if not filename =~ /^js(.*)\.js$/
+      end
+    end
+    Find.find("#{BUILD_DIR}/src/common") do |path|
+      pathname = Pathname.new(path)
+      if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
+        filename = pathname.relative_path_from(Pathname.new("#{BUILD_DIR}/src/common")).to_s
+        zipfile.add('common/' + filename,path)
+      end
+    end
+  end
+  
+  FileUtils.rm_rf web_dir
+end
+

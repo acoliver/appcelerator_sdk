@@ -1,0 +1,65 @@
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# Widget Rakefile
+#
+
+require 'rake'
+require 'fileutils'
+require 'zip/zip'
+require 'yaml'
+require 'find'
+require 'pathname'
+
+NAME = 'WIDGET'
+ZIPFILE = File.expand_path "#{NAME}.zip"
+
+desc 'default build which makes the widget'
+task :default => [:zip] do
+
+end
+
+desc 'zip up the widget'
+task :zip do
+  src_dir = File.expand_path "#{File.dirname(__FILE__)}/src"
+  FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
+  Zip::ZipFile.open(ZIPFILE, Zip::ZipFile::CREATE) do |zipfile|
+    Find.find(src_dir) do |path|
+        pathname = Pathname.new(path)
+        if not path.include? '.svn' and pathname.file?
+          filename = pathname.relative_path_from(Pathname.new(src_dir))
+          zipfile.add(filename,src_dir+'/'+filename)
+        end
+    end
+    zipfile.add('build.yml','build.yml')
+  end
+end
+
+desc 'install the widget'
+task :install => [:zip] do
+  system "appcelerator install:widget #{ZIPFILE}"
+end
+
+desc 'release the widget'
+task :release => [:zip] do
+  system "appcelerator release:widget #{ZIPFILE}"
+end
+
+

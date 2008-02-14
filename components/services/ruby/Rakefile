@@ -1,0 +1,71 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+BUILD_DIR = "#{File.dirname(__FILE__)}" 
+require File.expand_path("#{BUILD_DIR}/../../build.rb")
+build_config = load_config(BUILD_DIR)
+
+desc 'default ruby build'
+task :default do
+  ruby_dir = "#{STAGE_DIR}/ruby"
+  gem_dir = "#{ruby_dir}/gem"
+  ruby_source = 'src/ruby/gem-new'
+
+  clean_dir(ruby_dir)
+  FileUtils.mkdir_p gem_dir
+
+  puts "Copying Ruby files..." if VERBOSE
+  
+  # copy_dir(ruby_source, gem_dir)
+  # 
+  # FileUtils.cp_r "build/installer/build/ruby/.", ruby_dir
+  # 
+  # rubyfiles = Array.new
+  # dofiles(gem_dir) do |f|
+  #   rubyfiles.push(f.to_s)
+  # end
+  # 
+  # manifest = File.open(gem_dir+'/Manifest.txt', 'w')
+  # rubyfiles.each do |f|
+  #   manifest.puts f 
+  # end
+  # manifest.close
+  # 
+  # # fix the release information in the file
+  # insert_version_number("#{gem_dir}/lib/appcelerator.rb")
+  # 
+  # puts "Making Ruby gem file..." if VERBOSE
+  # FileUtils.cd(gem_dir) do
+  #   system('rake clean gem >/dev/null') unless VERBOSE
+  #   system('rake clean gem') if VERBOSE
+  # end  
+  # 
+  # puts "Archiving Ruby files..." if VERBOSE
+  # Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
+  #   zipfile.add('appcelerator.gem',gem_dir+'/pkg/appcelerator-'+RELEASE+'.gem')
+  #  Dir["#{ruby_dir}/**/**"].delete_if {|f| f=~/\.gem$/ or f=~/gem/ }.each do |file|
+  #     fn = file.gsub("#{ruby_dir}/",'')
+  #   zipfile.add(fn,file) unless File.directory?(file)
+  #   end
+  #   zipfile.get_output_stream('build.yml') {|f| version_config[:name]='ruby'; f.puts version_config.to_yaml }
+  # end
+  FileUtils.rm_rf ruby_dir
+end
+

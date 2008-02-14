@@ -1,0 +1,121 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+BUILD_DIR = File.dirname(__FILE__)
+require File.expand_path("#{BUILD_DIR}/build.rb")
+
+task :default => [:all] do
+end
+
+task :all => ["widget:all","service:all","websdk:all","installer:all"] do
+end
+
+namespace :installer do
+  
+  task :all => [:win32,:osx,:unix] do 
+    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
+      system "rake all"
+    end
+  end
+
+  task :win32 do
+    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
+      system "rake win32"
+    end
+  end
+
+  task :unix do
+    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
+      system "rake unix"
+    end
+  end
+
+  task :osx do
+    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
+      system "rake osx"
+    end
+  end
+    
+end
+
+namespace :websdk do
+
+  task :all do
+    FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
+      system "rake"
+    end
+  end
+
+end
+
+namespace :widget do
+  
+  task :all do
+    FileUtils.cd("#{BUILD_DIR}/widgets") do |d|
+      system "rake"
+    end
+  end
+
+end
+
+namespace :service do
+  
+  task :all do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake"
+    end
+  end
+
+  task :java do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake java"
+    end
+  end
+
+  task :python do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake python"
+    end
+  end
+
+  task :dotnet do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake dotnet"
+    end
+  end
+
+  task :ruby do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake ruby"
+    end
+  end
+
+  task :perl do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake perl"
+    end
+  end
+
+  task :php do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake php"
+    end
+  end
+
+end
