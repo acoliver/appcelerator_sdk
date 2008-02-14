@@ -45,7 +45,7 @@ Appcelerator::CommandRegistry.registerCommand('run','run an Appcelerator project
       cp << sep
       cp << jars.join(sep)
       #TODO: add src/java to classpath after compile
-      cmd = "java -cp #{cp} #{props} org.appcelerator.v21.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
+      cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
       puts cmd if OPTIONS[:debug]
       Appcelerator::PluginManager.dispatchEvent 'before_run_server',"#{pwd}",'java'
       begin
