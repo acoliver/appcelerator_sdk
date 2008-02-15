@@ -36,6 +36,68 @@ rescue
     SBC_HAS_JSON = false
 end  
 
+# -------------------------------------------------------------------------------------
+#
+# From: http://deftcode.com/code/flickr_upload/multipartpost.rb
+# Helper class to prepare an HTTP POST request with a file upload
+# Mostly taken from
+# http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-talk/113774
+# WAS:
+# Anything that's broken and wrong probably the fault of Bill Stilwell
+# (bill@marginalia.org)
+# NOW:
+# Everything wrong is due to keith@oreilly.com
+#
+module Multipart
+  class Param
+    attr_accessor :k, :v
+    def initialize( k, v )
+      @k = k
+      @v = v
+    end
+
+    def to_multipart
+      return "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
+    end
+  end
+
+  class FileParam
+    attr_accessor :k, :filename, :content, :mimetype
+    def initialize( k, filename, content, mimetype )
+      @k = k
+      @filename = filename
+      @content = content
+      @mimetype = mimetype
+    end
+
+    def to_multipart
+      return "Content-Disposition: form-data; name=\"#{k}\"; filename=\"#{filename}\"\r\n" + "Content-Transfer-Encoding: binary\r\n" + "Content-Type: #{@mimetype}\r\n\r\n" + content + "\r\n"
+    end
+  end
+  
+  class MultipartPost
+    BOUNDARY = 'appcelerator-'+rand(Time.now.to_f).to_s
+    HEADER = {"Content-type" => "multipart/form-data, boundary=" + BOUNDARY + " "}
+
+    def prepare_query (params)
+      fp = []
+      params.each {|k,v|
+        if v.respond_to?(:read)
+          fp.push(FileParam.new(k, File.basename(v.path), v.read, 'application/octet-stream'))
+        else
+          fp.push(Param.new(k,v))
+        end
+      }
+      query = fp.collect {|p| '--' + BOUNDARY + "\r\n" + p.to_multipart }.join('') + '--' + BOUNDARY + '--'
+      return query, HEADER
+    end
+  end  
+end
+#
+#--------------------- end HTTP POST helper content ---------------------
+#
+
+
 #
 # Simple ServiceBroker client implementation
 #
@@ -53,21 +115,78 @@ end
 #     :data=>{"message"=>"I recieved from you: hello world","success"=>true}
 #   }
 #
+# You can also post to the upload endpoint 
+#
+#   sc.upload('app.test.upload.request',{'blah'=>'foo','file'=>File.open('a.txt','r')})
+#  
 #
 module Appcelerator
 
   class ServiceBrokerClient
     
-	attr_reader :cookies
+	  attr_reader :cookies
 	
     def initialize(url,debug=false)
       @url = URI.parse(url)
       @instanceid = nil
       @auth = nil
       @sessionid = nil
+      @upload = nil
       @debug = debug
       @cookies = CookieJar.new
       bootstrap
+    end
+
+    #
+    # perform an upload to the remote upload endpoint
+    #
+    # the params can contain 0 or more File objects (or any kind of stream)
+    # which will be attached to the post as an upload file
+    #
+    def upload(type,params)
+      raise "upload not supported by this endpoint" unless @upload
+
+      params['type'] = convert_type(type)
+
+      mp = Multipart::MultipartPost.new
+      query,headers = mp.prepare_query(params)
+
+      params['instanceid']=@instanceid
+      params['auth']=@auth
+      params['ts']=Time.now.to_i
+
+      # send of session cookie
+      headers['Cookie'] = @cookies.to_s if @cookies
+
+      #
+      # send the POST
+      #
+      res  = Net::HTTP.new(@url.host,@url.port).start do |http|
+         http.post("/#{@upload}",query,headers);
+      end
+      
+      # make sure we reset cookies if necessary
+      get_cookies(res)
+      
+      if res.code.to_i == 200
+        body = res.body
+      
+        # pull out our response
+        rm = body.match(/window\.parent\.\$MQ\((.*?)\);/) if body
+      
+        if rm and rm[1]
+          rmc = rm[1].split(', ')
+      
+          response_type = convert_type(strip_quotes(rmc[0]))
+          response_payload = rmc[1]
+          response_scope = strip_quotes(rmc[2])
+          json_response = json_decode(response_payload)
+
+      	  return {:message=>response_type,:data=>json_response,:scope=>response_scope}
+      	end
+      end
+      
+      {:message=>nil, :data=>{'success'=>false}, :scope=>nil}
     end
 	
     #
@@ -79,11 +198,9 @@ module Appcelerator
     # message => response message name
     # data => data payload as hash
     #
-    def send(type,data={})
+    def send(type,data={},scope='appcelerator')
 
-      type.gsub!(/^r:/,'')
-      type.gsub!(/^remote:/,'')
-      
+      type = convert_type(type)
       json_data = json_encode(data)
       
       #
@@ -91,7 +208,7 @@ module Appcelerator
       #
       xml = "<?xml version=\"1.0\"?>\n"
       xml<< '<request version="1.0" idle="0" timestamp="0" tz="0">'
-      xml<< "<message requestid=\"1\" type=\"#{type}\" datatype=\"JSON\" scope=\"appcelerator\" version=\"1.0\"><![CDATA[#{json_data}]]></message>"
+      xml<< "<message requestid=\"1\" type=\"#{type}\" datatype=\"JSON\" scope=\"#{scope}\" version=\"1.0\"><![CDATA[#{json_data}]]></message>"
       xml<< '</request>'  
       xml.strip!
       
@@ -137,23 +254,24 @@ module Appcelerator
         #
         m[1].split(' ').map do |item|
             t = item.split('=')
-            k = t[0]
-            v = t[1]
-            if k=~ /^["'].*["']$/
-              k = k[1..-2]
-            end
-            if v=~ /^["'].*["']$/
-              v = v[1..-2]
-            end
+            k = strip_quotes t[0]
+            v = strip_quotes t[1]
             response[k]=v
         end
         json_response = json_decode(m[2])
       end
 
-	  {:message=>response['type'],:data=>json_response}
+	    {:message=>convert_type(response['type']),:data=>json_response,:scope=>response['scope']||scope}
     end
 
     private
+    
+    def strip_quotes(k)
+      if k=~ /^["'].*["']$/
+        k = k[1..-2]
+      end
+      k
+    end
 
     #
     # this is an absolutely minimal hack for encoding a ruby object
@@ -252,6 +370,12 @@ module Appcelerator
       
       @servicebroker = sb[1].gsub('@{rootPath}',@url.path)
       
+      ul = xml.match(/<upload>(.*?)<\/upload>/)
+      if ul
+        @upload = ul[1].gsub('@{rootPath}',@url.path)
+      end
+      
+      # get the sessionid cookiename
       sn = xml.match(/<sessionid>(.*?)<\/sessionid>/)
       @sessionname = sn[1]
       
@@ -266,5 +390,14 @@ module Appcelerator
       @instanceid = Time.now.to_i.to_s + "-" + (rand(1000)).to_s
       get_cookies(response)
     end
+
+    def convert_type(type)
+      type.gsub!(/^r:/,'')
+      type.gsub!(/^remote:/,'')
+      type
+    end
+
   end  
+  
 end
+

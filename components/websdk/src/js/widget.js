@@ -21,6 +21,19 @@ Appcelerator.Widget.register = function(moduleName,module,dynamic)
 };
 
 /**
+ * called to load a js file relative to the module js directory
+ *
+ * @param {string} moduleName
+ * @param {object} module object
+ * @param {string} js files(s)
+ * @param {string} js path
+ */
+Appcelerator.Widget.registerWithJS = function (moduleName,module,js,jspath)
+{
+	Appcelerator.Core.registerModule(moduleName,module,js,jspath);
+};
+
+/**
  * called to load a js file relative to the modules/common/js directory
  *
  * @param {string} moduleName
