@@ -141,10 +141,30 @@ task :osx=> [:stage] do
   FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight"
   
   # create our DMG file
-  FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg" 
+  #FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg" 
 
-  system "hdiutil create -format UDZO -srcfolder #{osx_dir}/installer/#{name}.mpkg #{osx_dir}/#{name}_tmp.dmg"
-  system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/#{name}_tmp.dmg"
+
+  #system "hdiutil convert #{osx_dir}/installer/build/osx/Appcelerator.dmg -format UDSP -o #{osx_dir}/installer/build/osx/Appcelerator" 
+  #system "hdiutil mount #{osx_dir}/installer/build/osx/Appcelerator.sparseimage"
+  #FileUtils.mkdir_p "#{osx_dir}/installer/build/osx/newinstaller/Appcelerator"
+  #FileUtils.cp_r "/Volumes/Appcelerator","#{osx_dir}/installer/build/osx/newinstaller/Appcelerator"
+
+  #FileUtils.cd("#{osx_dir}/installer/build/osx") do
+  #	system "unzip installer.zip -d out"
+  #end
+  FileUtils.mkdir_p "#{osx_dir}/installer/build/osx/installer"
+  system "hdiutil convert #{osx_dir}/installer/build/osx/Appcelerator.dmg -format UDSP -o #{osx_dir}/installer/build/osx/installer/Appcelerator"
+  system "hdiutil mount #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage"
+  
+  FileUtils.cp_r "#{osx_dir}/installer/#{name}.mpkg/Contents", "/Volumes/Appcelerator/Run Installer.mpkg"
+  FileUtils.cp_r "#{osx_dir}/installer/build/osx/README", "/Volumes/Appcelerator/Read Me.txt"
+  system "hdiutil eject /Volumes/Appcelerator"
+  system "hdiutil convert #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage -format UDBZ -o #{osx_dir}/Appcelerator.dmg"
+
+  FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
+  system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/Appcelerator.dmg"
+
+  #system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/#{name}_tmp.dmg"
 
   FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 
   Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
@@ -152,7 +172,6 @@ task :osx=> [:stage] do
     zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
   end
 
-  
   FileUtils.rm_rf osx_dir
   puts "Mac OSX Installer is now ready"
 end

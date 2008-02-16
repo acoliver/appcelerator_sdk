@@ -661,13 +661,7 @@ After running the installer, you can get more information on all the cool comman
 For example, to create a new Appcelerator-based Ruby on Rails project, execute the following in your console:\
 \
 
-\f1\b > appcelerator create ~/myproject ruby
-\f0\b0 \
-\
-You can also get command-specific help.  For example, to get help for the create command, you can enter the following in your console:\
-\
-
-\f1\b > appcelerator help create
+\f1\b > appcelerator create:project ~/myproject foo ruby
 \f0\b0 \
 \
 \
