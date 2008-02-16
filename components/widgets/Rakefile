@@ -50,6 +50,10 @@ task :default => [:stage] do
       next if filename == '.'
       zipfile.add(filename,"#{STAGE_DIR}/#{filename}")
     end
+	 zipfile.get_output_stream('build.yml') do |o|
+	   c = {:name=>'allwidgets',:type=>'allwidgets',:version=>1.0}	
+	   o.puts c.to_yaml
+    end
   end
   
   widgets.each do |name|

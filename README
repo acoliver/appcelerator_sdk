@@ -1,27 +1,68 @@
-===========================
- Appcelerator RIA Platform
-===========================
++=======================================================================================+
++                          Appcelerator RIA Platform                                    +
++=======================================================================================+
 
-To build Appcelerator from source, you will need the following pre-requisites:
+---------------------
+ Build Prerequisites
+---------------------
 
-- Ruby 1.8.6 or greater <http://www.ruby-lang.org/en/downloads/>
-- RubyGems with the following gems: rake, hoe, hpricot, json, maruku
-- Apache's Ant <http://ant.apache.org>
+To build Appcelerator from source, you will need the following prerequisites:
 
+  - Ruby 1.8.6 or greater <http://www.ruby-lang.org/en/downloads/>
+  - RubyGems with the following gems: rake, hoe, hpricot, json, maruku, rubyzip
+
+To build the platform installers, you will need the following:
+
+  - Mac OSX - you will need to install XCode 3.0 from the extra CD or download from Apple
+  - Win32* - you will need to install NSIS installer <http://nsis.sourceforge.net/Download>
+  - Unix - no additional third-party software is required at this time.
+
+* For building NSIS on OSX/Unix, you can download the non-Win32 compiler which will allow
+you to build the Win32 installer on other OS platforms.  For example, on OSX, if you have
+port installed, you can install it with:
+
+  > port install nsis
+
+--------------------
+ Build Instructions
+--------------------
 
 To build, you can execute rake normally, like:
 
   > rake
 
-To build a specific component, you can run rake with one or more taks, like:
+To build a specific component, you can run rake with one or more tasks, like:
 
-  > rake java
+  > rake service:java
 
-To build the platform installers, you will need the following:
+Each Rakefile is built into several sub-components, each within their own
+directory structures and Rakefiles.  The main components are:
 
- - Mac OSX - you will need to install XCode from the extra CD or download from Apple
- - Win32 - you will need to install NSIS installer <http://nsis.sourceforge.net/Download>
- - Unix - no additional third-party software is required at this time.
+  - widgets
+  - plugins
+  - runtime (includes both command-line bindary and installers)
+  - services
+  - websdk
+
+You can execute a specific component with the task <component>:<name>. For
+example, to build the Java Service:
+
+  > rake service:java
+
+Or, to execute a build of all services, you could do:
+
+  > rake service:all
+
+All components have an `all` target.  For example:
+
+  > rake widget:all
+  > rake websdk:all
+  > rake installer:all
+
+
+--------------------
+ Getting Assistance
+--------------------
 
 If you need more assistance, please go to the Appcelerator Developer Network 
 at <http://www.appcelerator.org>.
@@ -30,12 +71,16 @@ To report a bug or make a feature request, please visit our Issue Tracking porta
 at <http://jira.appcelerator.org>.
 
 If you are interested in becoming a community developer and contributing to
-Appcelerator, please contact us at info@appcelerator.com.
+Appcelerator, please contact us at <info@appcelerator.com>.
 
 
 -- The Appcelerator Team
 
-------------------
+
+-------------
+ Legal Stuff 
+-------------
+
 Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 For more information, please visit <http://www.appcelerator.org>.
 
@@ -53,3 +98,4 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Please see the file named LICENSE for the full license.
+

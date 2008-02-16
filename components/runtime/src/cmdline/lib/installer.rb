@@ -52,9 +52,9 @@ module Appcelerator
       @@config||={}
     end
     
-    def Installer.save_config(username,password)
-      @@config[:username]=username
-      @@config[:password]=password
+    def Installer.save_config(username=nil,password=nil)
+      @@config[:username]=username if username
+      @@config[:password]=password if password
       f = File.open(@@config_file,'w+')
       f.puts @@config.to_yaml
       f.flush

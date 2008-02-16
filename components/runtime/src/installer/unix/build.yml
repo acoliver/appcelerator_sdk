@@ -1,3 +1,4 @@
 --- 
-:name: unix
+:type: installer
 :version: 1.0
+:name: unix

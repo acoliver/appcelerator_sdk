@@ -19,3 +19,16 @@
 #
 require File.expand_path("#{File.dirname(__FILE__)}/../build.rb")
 
+task :default do
+
+	Dir["*"].each do |dir|
+		next unless File.directory?(dir)
+		FileUtils.cd(dir) do
+			puts "==> Building #{dir}"
+			system 'rake'
+		end
+   end
+
+end
+
+

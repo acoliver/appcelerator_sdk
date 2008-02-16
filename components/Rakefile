@@ -28,7 +28,7 @@ end
 
 namespace :installer do
   
-  task :all => [:win32,:osx,:unix] do 
+  task :all do 
     FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
       system "rake all"
     end

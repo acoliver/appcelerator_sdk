@@ -20,15 +20,16 @@
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 
-task :all => [:default] do
+task :default=> [:all] do
 end
 
-task :default => [:stage,:win32,:unix,:osx] do
+task :all=> [:win32,:unix,:osx] do
   FileUtils.rm_rf "#{STAGE_DIR}/installer"
 end
 
 desc 'build win32 installer'
 task :win32 do
+  puts "==> Building Win32 Installer"
   win32_dir = "#{STAGE_DIR}/installer/win32"
   clean_dir(win32_dir)
   FileUtils.mkdir_p win32_dir 
@@ -45,12 +46,19 @@ task :win32 do
     FileUtils.cp_r "installer.exe", "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
   end
 
+  FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip" 
+  Zip::ZipFile.open("#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
+	 zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
+    zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/win32/build.yml"
+  end
+
   FileUtils.rm_rf win32_dir
   puts "Win32 Installer is now ready"
 end
 
 desc 'build unix installer'
 task :unix do
+   puts "==> Building Unix Installer"
    unix_dir = "#{STAGE_DIR}/installer/unix"
    clean_dir(unix_dir)
    build_config = load_config(BUILD_DIR+'/src/installer/unix')
@@ -69,12 +77,19 @@ task :unix do
    system "#{BUILD_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{BUILD_DIR}/src/installer/unix/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
    FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
 
+  FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip" 
+  Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
+	 zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+    zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/unix/build.yml"
+  end
+
    FileUtils.rm_rf unix_dir
    puts "Unix Installer is now ready"
 end
 
 desc 'build osx installer'
 task :osx=> [:stage] do
+  puts "==> Building Mac OSX Installer"
   osx_dir = "#{STAGE_DIR}/installer/osx"
   name = "Appcelerator"
   build_config = load_config(BUILD_DIR+'/src/installer/osx')
@@ -130,6 +145,13 @@ task :osx=> [:stage] do
 
   system "hdiutil create -format UDZO -srcfolder #{osx_dir}/installer/#{name}.mpkg #{osx_dir}/#{name}_tmp.dmg"
   system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/#{name}_tmp.dmg"
+
+  FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 
+  Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
+	 zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
+    zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
+  end
+
   
   FileUtils.rm_rf osx_dir
   puts "Mac OSX Installer is now ready"
