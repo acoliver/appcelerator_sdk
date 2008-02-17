@@ -26,8 +26,15 @@ Appcelerator::CommandRegistry.registerCommand('install:plugin','install a plugin
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
-],nil,nil) do |args,options|
+],nil,[
+    'install:plugin my:plugin',
+    'install:plugin my:plugin,your:plugin',
+    'install:plugin http://www.mydir.com/aplugin.zip',
+    'install:plugin foo_plugin.zip',
+    'install:plugin foo:bar --server=http://localhost:3000'
+]) do |args,options|
 
-    Appcelerator::Installer.install_component 'plugin','Plugin',args[:location],"#{RELEASE_DIR}/plugins"
-
+    args[:location].split(',').uniq.each do |plugin|
+      Appcelerator::Installer.install_component 'plugin','Plugin',plugin.strip
+    end
 end

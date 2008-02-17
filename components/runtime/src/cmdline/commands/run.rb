@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+#TODO: move this into service-specific plugin
 
 Appcelerator::CommandRegistry.registerCommand('run','run an Appcelerator project server',nil,nil,nil) do |args,options|
   

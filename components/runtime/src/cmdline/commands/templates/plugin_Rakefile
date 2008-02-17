@@ -59,7 +59,7 @@ end
 
 desc 'release the plugin'
 task :release => [:zip] do
-  system "appcelerator release:plugin #{ZIPFILE}"
+  system "appcelerator release #{ZIPFILE}"
 end
 
 

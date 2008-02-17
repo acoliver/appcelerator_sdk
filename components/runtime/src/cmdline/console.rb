@@ -49,6 +49,18 @@ ARGV.each do |arg|
     end
 end
 
+HELP = {
+  :options=>[
+      {:name=>'--server=url',:help=>'set location of distribution server. url must be: http://host[:port]'},
+      {:name=>'--verbose',:help=>'print verbose output as the command is processed'},
+      {:name=>'--debug',:help=>'print very verbose debug output as the command is processed'},
+      {:name=>'--quiet',:help=>'be silent in printing any output'},
+      {:name=>'--force',:help=>'overwrite any existing files during installation'},
+      {:name=>'--force-update',:help=>'force download of components even if they exist in local cache'},
+    ]
+}
+
+OPTIONS[:quiet]||= OPTIONS[:silent]
 ET_PHONE_HOME = OPTIONS[:server] || 'http://updatesite.appcelerator.org'
 
 #

@@ -55,7 +55,8 @@ module Appcelerator
         end
       end
       show = OPTIONS[:quiet]==false and p.length > 0
-      puts " --> Loading plugin#{p.length > 1 ?'s':''}: #{p.join(',')}" if show
+      name = 'plugin' + (p.length > 1 ? 's' : '')
+      puts " --> Loading #{name}: #{p.join(',')}" if show
     end
   end
 end
@@ -73,7 +74,16 @@ PROJECT_PLUGIN_DIR = "#{Dir.pwd}/plugins"
       path = "#{dir}/#{version}/#{File.basename(dir)}.rb"
       require path if File.exists?(path)
     elsif File.file?(dir) and File.extname(dir)=='.rb'
+      # load plugins in same directory as plugins
       require dir
+    elsif File.directory?(dir)
+      # load any plugins that are subdirectories under plugins directory
+      # as long as the directory name and plugin name are the same
+      name = File.dirname(dir)
+      prb = "#{dir}/#{name}"
+      if File.exists?("#{prb}.rb")
+        require prb
+      end
     end
   end
 end

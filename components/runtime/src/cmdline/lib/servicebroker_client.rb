@@ -212,6 +212,8 @@ module Appcelerator
       xml<< '</request>'  
       xml.strip!
       
+      puts "Sending remote request with payload=> #{xml}" if @debug
+      
       #
       # build the path to the server
       #
@@ -244,6 +246,8 @@ module Appcelerator
 
         body = res.body
         
+        puts "received remote response => #{body}" if @debug
+        
         # currently we only support one response message in the data payload
         # extract it using simple regex
         #
@@ -259,6 +263,8 @@ module Appcelerator
             response[k]=v
         end
         json_response = json_decode(m[2])
+      else
+        puts "received error: #{res.code} => #{res.body}" if @debug
       end
 
 	    {:message=>convert_type(response['type']),:data=>json_response,:scope=>response['scope']||scope}
@@ -392,8 +398,8 @@ module Appcelerator
     end
 
     def convert_type(type)
-      type.gsub!(/^r:/,'')
-      type.gsub!(/^remote:/,'')
+      type.gsub!(/^r:/,'') if type
+      type.gsub!(/^remote:/,'') if type
       type
     end
 

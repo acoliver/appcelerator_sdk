@@ -51,21 +51,27 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
   puts
   
   if entry
-    astr = entry[:args].map {|a| "[#{a[:name]}]" }.join(' ')
+    puts 
+    puts "    #{args[:command]} => #{entry[:help]}"
+    puts 
+    astr = entry[:args].nil? ? '' : entry[:args].map {|a| a[:required] ? "[#{a[:name]}]" : "<#{a[:name]}>" }.join(' ')
     astr = "[options...] #{astr}" if args[:opts]
-    puts "    Usage for #{args[:command]}:"
+    puts "    Usage:"
     puts "      #{SCRIPTNAME} #{args[:command]} #{astr}"
     puts
-    puts "    Supported arguments:"
-    entry[:args].each do |a|
-        n = a[:name]
-        msg = a[:help]
-        puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
+    if entry[:args]
+      puts "    Supported arguments:"
+      entry[:args].each do |a|
+          n = a[:name]
+          msg = a[:help]
+          msg<<'  (optional)' unless a[:required]
+          puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
+      end
     end
-    if entry[:opts]
+    if HELP[:options]
         puts
         puts "    Supported options:"
-        args[:opts].each do |a|
+        HELP[:options].each do |a|
             n = a[:name]
             msg = a[:help]
             puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"

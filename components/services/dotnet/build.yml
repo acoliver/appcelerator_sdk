@@ -1,4 +1,8 @@
 --- 
 :type: service
-:name: dotnet
 :version: 1.0.0
+:name: dotnet
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk

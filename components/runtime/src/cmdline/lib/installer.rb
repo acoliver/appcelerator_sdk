@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 require 'open-uri'
+require 'digest/md5'
 
 module Appcelerator
   class Installer
@@ -30,6 +31,9 @@ module Appcelerator
     @@config = nil
     @@notice = false
     @@loggedin = false
+    @@distributions = nil
+    @@site_config = nil
+    @@site_config_file = nil
     
     def Installer.user_home
       if ENV['HOME']
@@ -94,7 +98,7 @@ module Appcelerator
 
     def Installer.network_login(email,password,silent=false)
       puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
-      puts "Checking update server ..." unless OPTIONS[:silent] or silent
+      puts "Checking update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
@@ -148,6 +152,7 @@ module Appcelerator
       
       if not @@packages
         result = @@client.send 'releases.latest.request'
+        puts "remote result=>#{result.inspect}" if OPTIONS[:debug]
         return nil,nil unless result[:data]['success']
         @@packages = result[:data]['pkgs']
         @@bundles = result[:data]['bundles']
@@ -261,7 +266,7 @@ module Appcelerator
               if url =~ /\.tgz$/
                 #FIXME - deal with windows or bundle in windows or something - or figure out how to do in ruby
                 system "tar xfz #{t.path} -C #{dirname}"
-              elsif url =~ /\.zip$/
+              elsif url =~ /\.zip$/ or f.content_type =~ /^application\/zip/
                 Installer.unzip dirname,t.path
                 FileUtils.rm_r t.path
                 puts "Downloaded: #{size} bytes" if OPTIONS[:debug]
@@ -282,6 +287,10 @@ module Appcelerator
           fpath = File.join(dirname, e.name)
           FileUtils.mkdir_p(File.dirname(fpath))
           puts "extracting ... #{fpath}" if OPTIONS[:debug]
+          if File.file?(fpath) 
+            confirm("Overwrite [#{fpath}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force]
+            FileUtils.rm_rf(fpath)
+          end
           zf.extract(e, fpath) 
         end
         zf.close
@@ -354,125 +363,419 @@ module Appcelerator
       end
       true
     end
-
-    def Installer.install_component(type,description,from,to,quiet=false)
-
-      temp_dir = nil
-      name = nil
-      version = nil
-      url = nil
-      
-      if File.exists? from
-
-        if not from =~ /(.*)\.zip$/
-          STDERR.puts "* Invalid description format at: #{from}. #{description} should be in zip format."
-          exit 1
+    
+    def Installer.load_site_config
+      return @@site_config if @@site_config
+      @@site_config_file = "#{RELEASE_DIR}/config.yml"
+      @@site_config = YAML::load_file @@site_config_file if File.exists?(@@site_config_file)
+      @@site_config||={}
+      @@site_config
+    end
+    
+    def Installer.save_site_config
+      if @@site_config
+        f = File.open @@site_config_file, 'w+'
+        f.puts @@site_config.to_yaml
+        f.close
+      end
+    end
+    
+    def Installer.with_site_config(save=true)
+      config = load_site_config
+      yield config
+      save_site_config if save
+    end
+    
+    def Installer.fetch_distribution_list
+        return @@distributions if @@distributions
+        login_if_required
+        client = get_client
+        puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
+        response = client.send('distribution.query.request')
+        @@distributions = response[:data]['distributions']
+        with_site_config do |site_config|
+          site_config[:distributions] = @@distributions
         end
-
-        # unzip to temporary directory
-        temp_dir = Appcelerator::Installer.tempdir
-        Appcelerator::Installer.unzip temp_dir, from
-
-        puts "extracted #{from} into tempdir => #{temp_dir}" if OPTIONS[:debug]
-      else
-        case from
-          when /^http:\/\//
-            url = from
-          when /^\w+([:_]\w+)?$/
-
-            pkg,packages,bundles,widgets=Installer.get_latest
-            
-            if not widgets
-              STDERR.puts "Couldn't login to the network to install #{from}"
-              STDERR.puts "Check your network connection and try again."
-              exit 1
+        @@distributions
+    end
+    
+    ##FIXME: need to make sure multiple versions can work and co-exist
+    
+    def Installer.each_installed_component_type
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        installed||={}
+        installed.keys.each do |key|
+          yield key
+        end
+      end
+    end
+    
+    def Installer.each_installed_component(type)
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        installed||={}
+        members = installed[type]
+        if members
+          members.each do |member|
+            yield member[:name],member[:version]
+          end
+        end
+      end
+    end
+    
+    def Installer.get_websdk
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        installed||={}
+        members = installed['websdk']
+        if members
+          members.each do |member|
+            if member[:name] == 'websdk'
+              return member
             end
-            
-            array=nil
-            case type
-              when 'widget'
-                array = widgets
-              when 'service'
-                array = packages
-            else
-              STDERR.puts "Type: #{type} not yet supported!"
-              exit 1
-            end
-            
-            #TODO: check the checksum
-            
-            array.each do |w|
-              if w['name'] == from
-                  url = w['url']
-                  break
+          end
+        end
+      end
+      nil
+    end
+    
+    def Installer.component_installed?(component)
+      type = component['type']
+      name = component['name']
+      version = component['version']
+      checksum = component['checksum']
+      filesize = component['filesize']
+      
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        installed||={}
+        members = installed[type]
+        if members
+          members.each do |member|
+            if member[:name] == name
+              v = member[:version]
+              if v == version and member[:checksum]==checksum
+                return true,component['dependencies']
               end
             end
+          end
         end
       end
-
-      if url
-        temp_dir = Appcelerator::Installer.tempdir unless temp_dir
-        begin
-          Installer.http_fetch_into(description,url,temp_dir)
-        rescue OpenURI::HTTPError => e
-          if e.to_s =~ /^404/
-            STDERR.puts "Couldn't fetch #{description} from #{from}"
-            STDERR.puts "The server reported that a file doesn't exist at this location"
-          else
-            STDERR.puts "Network error fetching #{from}: #{e}"
-          end     
-          exit 1
+      return false,nil
+    end
+    
+    def Installer.find_dependencies_for(component)
+      with_site_config(false) do |site_config|
+        members = site_config[:distributions][component['type']]
+        members.each do |m|
+          if m['name'] == component['name']
+            return m['dependencies']
+          end
+        end if members
+      end
+      []
+    end
+    
+    def Installer.dependency_specified?(component,dependencies)
+      dependencies.each do |d|
+        if d['name']==component['name'] and d['type']==component['type']
+          return true
         end
+      end
+      false
+    end
+    
+    def Installer.same?(a,b)
+      a['name']==b['name'] and a['type']==b['type']
+    end
+    
+    def Installer.get_dependencies(component,dependencies=[])
+      
+      return [] unless component
+      depends = component['dependencies']
+      return unless depends
+      
+      depends.each do |d|
+        next if same?(component,d)
+        next if dependency_specified?(d,dependencies)
+        installed,depends = component_installed?(d)
+        dependencies << d
+      end
+
+      # recursively resolve dependencies
+      while true
+        count = 0
+        dependencies.each do |d|
+          depends = find_dependencies_for(d)
+          depends.each do |dd|
+            next if Installer.same?(dd,component)
+            dependencies << dd
+            count+=1
+          end
+        end
+        break unless count > 0
       end
       
-      if temp_dir
-        puts "temp directory used by install component: #{temp_dir}" if OPTIONS[:debug]
+      dependencies
+    end
+    
+    def Installer.number_to_human_size(size, precision=1)
+      size = size.nil? ? 0 : Kernel.Float(size)
+      case
+         when size.to_i == 1;    "1 Byte"
+         when size < 1.kilobyte; "%d Bytes" % size
+         when size < 1.megabyte; "%.#{precision}f KB"  % (size / 1.0.kilobyte)
+         when size < 1.gigabyte; "%.#{precision}f MB"  % (size / 1.0.megabyte)
+         when size < 1.terabyte; "%.#{precision}f GB"  % (size / 1.0.gigabyte)
+       else                    "%.#{precision}f TB"  % (size / 1.0.terabyte)
+      end.sub(/([0-9])\.?0+ /, '\1 ' )
+      rescue
+      size.to_s + ' bytes'
+    end
+    
+    def Installer.install_dependencies(component,quiet_if_installed=false)
+      dependencies = get_dependencies(component)
+      if dependencies.length > 0
         
-        begin
-          if not File.exists?("#{temp_dir}/build.yml")
-            STDERR.puts "* Invalid #{description} at: #{from}.\n#{description} missing build.yml"
-            exit 1
+        if not OPTIONS[:force_update]
+          dependencies = dependencies.inject([]) do |a,d|
+            found = get_installed_component(d)
+            if found and not OPTIONS[:quiet] and not quiet_if_installed
+              puts "Dependent #{d['type']} #{d['name']}, #{d['version']} already installed - skipping..."
+            else
+              a << d
+            end
+            a
           end
-
-          config = YAML.load_file("#{temp_dir}/build.yml")
-          component_name = config[:name]
-          version = config[:version]
-          same = name==component_name
-          name = component_name.gsub(':','_')
-
-          if same
-            path = "#{to}/#{version}"
-            config_path = "#{to}"
-          else
-            path = "#{to}/#{name}/#{version}"
-            config_path = "#{to}/#{name}"
-          end
-
-          FileUtils.mkdir_p path unless File.exists?(path)
-
-
-          Appcelerator::PluginManager.dispatchEvent 'before_install_#{type}',from,component_name,version,path
-
-          puts "install path => #{path}" if OPTIONS[:debug]
-
-          Appcelerator::Installer.copy(temp_dir,path,['build.yml'])
-
-          config = {:version=>version}
-          Appcelerator::Installer.put "#{config_path}/config.yml",config.to_yaml.to_s 
-
-          pre_flight = File.join(to,name,version.to_s,'pre_flight.rb')
-          require pre_flight if File.exists?(pre_flight)
-
-          Appcelerator::PluginManager.dispatchEvent 'after_install_#{type}',from,name,version,path
-
-          puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or quiet)
-        ensure
-          FileUtils.rm_r temp_dir
+          return nil if dependencies.empty?
         end
-      else
-        STDERR.puts "Couldn't find #{description}: #{from}" unless OPTIONS[:quiet]
+        
+        str = dependencies.length > 1 ? 'ies' : 'y'
+        if not OPTIONS[:quiet]
+          puts
+          puts "(#{dependencies.length}) Dependenc#{str} resolved that requires download:"
+          puts "-"*120
+          puts "| " + 'Type'.center(9) + ' | ' + 'Name'.ljust(72) + ' | ' + 'Version'.center(10) + ' | ' + 'Filesize'.rjust(16) + ' |'
+          puts "-"*120
+          total = 0
+          dependencies.each do |d|
+            puts "| #{d['type'].center(9)} | #{d['name'].ljust(72)} | #{d['version'].center(10)} | #{number_to_human_size(d['filesize']).rjust(16)} |"
+            puts "-"*120
+            total+=d['filesize']
+          end
+          puts "Total download size (including component):" + number_to_human_size(total+component['filesize']).rjust(76)
+          puts
+        end
+        
+        dependencies.each_with_index do |d,idx|
+          yield d,idx,dependencies.length
+        end
+      end
+    end
+    
+    def Installer.get_build_from_zip(zipfile)
+      require 'zip/zip'
+      Zip::ZipFile::open(zipfile) do |zf|
+        build_contents = zf.read 'build.yml' rescue nil
+        return YAML::load(build_contents)
+      end
+      nil
+    end
+    
+    def Installer.get_component_directory(d)
+      Installer.get_release_directory(d['type'],d['name'],d['version'])
+    end
+    
+    def Installer.get_release_directory(type,name,version)
+      "#{RELEASE_DIR}/#{type}/#{name.gsub(':','_')}/#{version}"
+    end
+
+    def Installer.fetch_network_component(type,from,component,count=1,total=1)
+      to_dir = Installer.get_component_directory(component)
+      Installer.fetch_component(type,from,component['version'],to_dir,component['name'],component['url'],count,total)
+      return to_dir,component['name'],component['version'],component['checksum']
+    end
+
+    def Installer.fetch_network_url(type,from,config,url)
+      to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
+      Installer.fetch_component(type,from,config[:version],to_dir,config[:name],url,1,1)
+    end
+
+    def Installer.fetch_component(type,from,version,to_dir,name,url,idx,total)
+      puts "fetching into: #{to_dir} => #{url}" if OPTIONS[:debug]
+      FileUtils.mkdir_p to_dir unless File.exists? to_dir
+      Appcelerator::PluginManager.dispatchEvent 'before_
+      ',type,from,name,version,to_dir
+      Installer.http_fetch_into("(#{idx}/#{total}) #{name}",url,to_dir)
+      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,from,name,version,to_dir
+    end
+    
+    def Installer.install_from_zipfile(type,description,from)
+      config = Installer.get_build_from_zip from
+      if not config
+        STDERR.puts "Invalid package file #{from}. Missing build.yml"
         exit 1
       end
+      to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
+      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,from,config[:name],config[:version],to_dir
+      Installer.unzip to_dir,from
+      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,from,config[:name],config[:version],to_dir
+      return to_dir,config[:name],config[:version]
+    end
+
+    def Installer.install_component(type,description,from,quiet_if_installed=true)
+
+        to_dir = nil
+        name = nil
+        version = nil
+        checksum = nil
+        already_installed = false
+       
+        case from
+          when /^http:\/\//
+            #FIXME
+            STDERR.puts "not yet supported"
+            exit 1
+          when /\.zip$/
+            to_dir,name,version = Installer.install_from_zipfile(type,description,from)
+            checksum = Installer.checksum(from)
+        else
+          to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from)
+        end
+        
+        puts "Fetched into #{to_dir}" if OPTIONS[:debug]
+
+        # run pre_flight if it exists
+        pre_flight = File.join(to_dir,'pre_flight.rb')
+        if File.exists?(pre_flight)
+          puts "Found pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
+          require pre_flight 
+        end
+
+        Installer.add_installed_component(name,type,version,checksum)
+        
+        puts unless already_installed
+        puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or already_installed)
+        puts "NOTE: you can force a re-install with --force-update" if already_installed and not OPTIONS[:quiet] and not quiet_if_installed
+        
+        return to_dir,name,version,checksum,already_installed
+    end
+    
+    def Installer.add_installed_component(name,type,version,checksum,save=true)
+      with_site_config(save) do |site_config|
+        installed = site_config[:installed]
+        installed||={}
+        site_config[:installed] = installed
+        array = installed[type]
+        if array.nil?
+          array=[]
+          installed[type]=array
+        end
+        # don't re-add same one twice
+        array.delete_if do |e|
+          e[:name]==name and e[:type]==type and e[:version]==version
+        end
+        array << {:name=>name,:type=>type,:version=>version,:checksum=>checksum}
+      end
+    end
+    
+    def Installer.install_from_devnetwork(type,description,from)
+      list = Installer.fetch_distribution_list
+      components = list[type]
+
+      found = nil
+      components.each do |component|
+        if component['name'] == from
+          found = component
+          break
+        end
+      end
+
+      if not found
+        STDERR.puts "Couldn't find #{type} #{from}"
+        exit 1
+      end
+      
+      count = 0
+      Installer.install_dependencies(found) do |d,idx,total|
+        dc = Installer.get_installed_component(d) unless OPTIONS[:force_update]
+        if not dc
+          dir,name,version,checksum=Installer.fetch_network_component d['type'],from,d,idx+1,total+1
+          Installer.add_installed_component(name,d['type'],version,checksum)
+        end
+        count+=1
+      end
+
+      fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update]
+      return Installer.fetch_network_component(type,from,found,count+1,count+1) unless fnc
+      
+      puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." unless OPTIONS[:quiet] 
+      return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
+    end
+    
+    def Installer.get_installed_component(found)
+      matched = nil
+      type = found['type']
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        if installed
+          c = installed[type]
+          if c
+            c.each do |cm|
+              if cm[:name] == found['name'] and cm[:type] == type and cm[:version] == found['version']
+                matched = cm
+                break
+              end
+            end
+          end
+        end
+      end
+      matched
+    end
+    
+    def Installer.checksum(file)
+      f = File.open file,'rb'
+      md5 = Digest::MD5.hexdigest f.read
+      f.close
+      md5
     end
   end
 end
+
+
+#
+# bring these in since we can't depend on rails in this script
+#
+
+module NumericExtensions
+    def bytes
+      self
+    end
+    def kilobytes
+      self * 1024
+    end
+    def megabytes
+      self * 1024.kilobytes
+    end
+    def gigabytes
+      self * 1024.megabytes
+    end
+    def terabytes
+      self * 1024.gigabytes
+    end
+    alias :byte :bytes
+    alias :kilobyte :kilobytes
+    alias :megabyte :megabytes
+    alias :gigabyte :gigabytes
+    alias :terabyte :terabytes
+end
+
+class Fixnum
+  include NumericExtensions
+end
+
+class Float
+  include NumericExtensions
+end
+

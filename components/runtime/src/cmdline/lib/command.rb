@@ -92,13 +92,28 @@ module Appcelerator
       @@registry=Hash.new
       
       def CommandRegistry.registerCommand(name,help,args,opts,examples,&callback)
-        @@registry[name] = {
-          :args=>args,
-          :opts=>opts,
-          :examples=>examples,
-          :invoker=>callback,
-          :help=>help
-        } unless exists?(name)
+        case name.class.to_s
+          when 'Array'
+            name.each_with_index do |n,idx|
+              @@registry[n] = {
+                :args=>args,
+                :opts=>opts,
+                :examples=>examples,
+                :invoker=>callback,
+                :help=>help,
+                :alias=>idx > 0
+              } unless exists?(n)
+            end
+          when 'String'
+            @@registry[name] = {
+              :args=>args,
+              :opts=>opts,
+              :examples=>examples,
+              :invoker=>callback,
+              :help=>help,
+              :alias=>false
+            } unless exists?(name)
+        end
       end
       
       def CommandRegistry.exists?(name)
@@ -113,7 +128,7 @@ module Appcelerator
       
       def CommandRegistry.each
         @@registry.sort {|a,b| a[0]<=>b[0]}.each do |k,v|
-          yield k,v
+          yield k,v unless v[:alias]
         end
       end
       

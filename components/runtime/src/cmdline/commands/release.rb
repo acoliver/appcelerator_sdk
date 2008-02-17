@@ -26,7 +26,10 @@ Appcelerator::CommandRegistry.registerCommand('release','release a component (pl
     :default=>nil,
     :type=>Appcelerator::Types::FileType
   }
-],nil,nil) do |args,options|
+],nil,
+[
+  'release app_widget.zip'
+]) do |args,options|
 
   location = args[:location]
   

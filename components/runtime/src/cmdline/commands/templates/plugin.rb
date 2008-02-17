@@ -76,4 +76,16 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_create_war(directory)
       # called after a project war is created for java
     end
+    def before_add_plugin(plugin_name,version,plugin_dir,to_dir)
+      # called before a plugin is added to a project
+    end
+    def after_add_plugin(plugin_name,version,plugin_dir,to_dir)
+      # called after a plugin is added to a project
+    end
+    def before_install_component(type,from,name,version,to_dir)
+      # called before a component is installed
+    end
+    def after_install_component(type,from,name,version,to_dir)
+      # called after a component is installed
+    end
 end

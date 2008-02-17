@@ -76,4 +76,12 @@ class JavaSpring < Appcelerator::Plugin
     def after_create_war(directory)
       # called after a project war is created for java
     end
+    def before_add_plugin(plugin_name,version,plugin_dir,to_dir)
+      if plugin_name == 'java:spring'
+          puts "adding java spring"
+      end
+    end
+    def after_add_plugin(plugin_name,version,plugin_dir,to_dir)
+      # called after a plugin is added to a project
+    end
 end

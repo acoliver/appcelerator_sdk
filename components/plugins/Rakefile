@@ -26,6 +26,11 @@ task :default do
 		FileUtils.cd(dir) do
 			puts "==> Building #{dir}"
 			system 'rake'
+		  fn = "#{dir}.zip"
+			if File.exists?(fn)
+				FileUtils.cp fn,"#{STAGE_DIR}/plugin_#{fn}"
+				FileUtils.rm_rf fn
+			end
 		end
    end
 

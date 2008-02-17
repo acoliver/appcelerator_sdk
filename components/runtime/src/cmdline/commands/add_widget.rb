@@ -17,10 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('add:widget','add widget to a project',[
+Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
   {
     :name=>'name',
-    :help=>'name of the widget to create (such as app:my_widget)',
+    :help=>'name of the widget to add (such as app:my_widget)',
     :required=>true,
     :default=>nil,
     :type=>Appcelerator::Types::AnyType
@@ -37,12 +37,16 @@ Appcelerator::CommandRegistry.registerCommand('add:widget','add widget to a proj
     ],
     :conversion=>Appcelerator::Types::DirectoryType
   }
-],nil,nil) do |args,options|
+],nil,[
+  'add:widget app:message',
+  'add:widgets app:iterator,app:box',
+  'add:widget app:script ~/myproject'
+]) do |args,options|
   
   pwd = args[:path] || Dir.pwd
   
   FileUtils.cd(pwd) do 
-    args[:name].split(',').each do |name|
+    args[:name].split(',').uniq.each do |name|
       class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
       widget_name = name.gsub ':', '_'
 

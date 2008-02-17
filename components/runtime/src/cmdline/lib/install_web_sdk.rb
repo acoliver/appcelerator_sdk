@@ -18,80 +18,24 @@
 #
 module Appcelerator
   class Installer
-    def Installer.install_web_sdk
-      
-  		# get the latest SDK
-  		sdk_pkg,packages,bundles = Installer.get_latest_sdk
-		  config_file = File.join(RELEASE_DIR,'web','config.yml')
-		  config_file_found =  File.exists?(config_file)
-		  config = YAML.load_file(config_file) if config_file_found
-		  config||={}
-		  
-		  install = config_file_found==false
-		  target_dir = nil
-		  version = nil
-		  widgets = config[:widgets] || []
-		  
-  		if sdk_pkg
-  			url = sdk_pkg['url']
-  			version = sdk_pkg['version']
-  			checksum = sdk_pkg['checksum']||''
-  			target_dir = File.join(RELEASE_DIR,'web',version)
-  			if not File.exists?(target_dir) or OPTIONS[:force_update] or config[:checksum]!=checksum
-  			  install = true
-  			end
-  		else
-  	    if not config_file_found or not config[:version]
-  	      STDERR.puts "Can't install required Web SDK. Failed to connect to the Appcelerator Network."
-  	      STDERR.puts "Are you connected to the Internet? Please check your connection and try again." 
-  	      exit 1
-  	    else
-  	      # we're not connected but we have a local SDK
-  	      dir = File.join(RELEASE_DIR,'web',config[:version])
-  	      return dir,config[:version],widgets
-		    end
-  		end  
-  		
-  		if install
-  		  widgets = do_install(target_dir,version,url,bundles)
-		  end
-
-			return target_dir,version,widgets
-    end
-    
-    def Installer.do_install(target_dir,version,url,bundles)
-		  FileUtils.mkdir_p target_dir unless File.exists?(target_dir)
-      Appcelerator::PluginManager.dispatchEvent 'before_web_sdk_install',target_dir,version
-		  Installer.http_fetch_into "SDK #{version}", url, target_dir
-		  FileUtils.rm_r "#{RELEASE_DIR}/web/config.yml" if File.exists?("#{RELEASE_DIR}/web/config.yml")
-		  # download and install the core modules
-		  core_widgets = []
-			bundles.each do |b|
-			  if b['name'] == 'core'
-			      items = b['items']
-			      items.each do |item|
-			        name = item['name']
-			        version = item['version']
-			        Appcelerator::Installer.install_component 'widget',name,item['url'],"#{RELEASE_DIR}/widgets",true
-			        core_widgets << {:name=>name,:version=>version}
-		        end
-			    break
-		    end
-		  end
-		  Installer.put "#{RELEASE_DIR}/web/config.yml", {:version=>version, :widgets=>core_widgets}.to_yaml.to_s
-      Appcelerator::PluginManager.dispatchEvent 'after_web_sdk_install',target_dir,version
-      puts "Installed SDK: #{version}" unless OPTIONS[:quiet]
-      core_widgets
-    end
     
     def Installer.install_web_project(options)
+      
       raise "Invalid options, must specify :web option" unless options[:web]
       raise "Invalid options, must specify :javascript option" unless options[:javascript]
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      # determine the source 
-      source_dir,web_version,widgets = Installer.install_web_sdk
+      websdk = Appcelerator::Installer.get_websdk
+      if not websdk
+        Appcelerator::Installer.install_component 'websdk','WebSDK','websdk'
+      end
+      
+      source_dir = "#{RELEASE_DIR}/websdk/#{websdk[:name]}/#{websdk[:version]}"
+      web_version = websdk[:version]
+
+#FIXME - fix core widgets
+      widgets = []
       
       Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
 
@@ -103,6 +47,7 @@ module Appcelerator
       
       # install our widgets
       widgets.each do |widget|
+#FIXME install:widget
         Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true})
       end
 

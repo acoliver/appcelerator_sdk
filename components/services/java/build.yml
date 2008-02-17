@@ -1,4 +1,8 @@
 --- 
 :type: service
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
 :name: java
 :version: 1.0.0

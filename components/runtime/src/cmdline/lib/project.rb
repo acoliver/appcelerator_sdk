@@ -31,59 +31,21 @@ module Appcelerator
       config[:language]
     end
     
-    def Project.list_installed_sdks
-      puts
-      puts "The following web SDK version(s) are locally installed:"
-      puts
-
-      dir = "#{RELEASE_DIR}/web"
-      vers = []
-
-      config = YAML.load_file "#{dir}/config.yml" if File.exists?("#{dir}/config.yml")
-
-      Dir["#{dir}/*"].each do |v|
-        next unless File.directory?(v)
-        vs = File.basename(v) if v=~/[0-9]+\.[0-9]+(\.[0-9]+)?/ and File.directory?(v)
-        vs << '*' if config and "#{config[:version]}"==File.basename(v)
-        vers << vs
-      end
-
-      str = ' ' * 10 + '> ' 
-      str << "#{vers.join(', ')}"
-      puts str
-
-      puts
-    end
-    
     def Project.list_installed_components(type)
 
       puts
       puts "The following #{type} versions are locally installed:"
       puts
-
-      dir = "#{RELEASE_DIR}/#{type}"
-
-      Dir["#{dir}/*"].each do |d|
-        next unless File.directory?(d)
-        
-        name = File.basename(d).gsub('_',':')
-        str = ' ' * 10 + '> ' + name + ' '*(20-name.length)
-        
-        config = YAML.load_file "#{d}/config.yml" if File.exists?("#{d}/config.yml")
-        
-        vers = []
-        Dir["#{d}/*"].each do |v|
-          next unless File.directory?(v)
-          vs = File.basename(v) if v=~/[0-9]+\.[0-9]+(\.[0-9]+)?/ and File.directory?(v)
-          vs << '*' if config and "#{config[:version]}"==File.basename(v)
-          vers << vs
-        end
-        
-        str << "[#{vers.join(', ')}]"
-        
-        puts str
+      
+      count = 0
+      
+      Installer.each_installed_component(type) do |name,version|
+        puts ' ' * 10 + '> ' + name + ' '*(20-name.length) + "[#{version}]"
+        count+=1
       end
-
+      
+      puts ' ' * 10 + 'None installed' unless count > 0
+      
       puts
     end
   end

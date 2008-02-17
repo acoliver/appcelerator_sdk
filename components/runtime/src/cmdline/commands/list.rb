@@ -18,25 +18,25 @@
 #
 
 
-Appcelerator::CommandRegistry.registerCommand('list:widgets','list widgets locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'widgets'
+Appcelerator::CommandRegistry.registerCommand(%w(list:widgets list:widget),'list widgets locally installed',nil,nil,nil) do |args,options|
+  Appcelerator::Project.list_installed_components 'widget'
 end
 
-Appcelerator::CommandRegistry.registerCommand('list:services','list SOA integrations locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'services'
+Appcelerator::CommandRegistry.registerCommand(%w(list:services list:service),'list SOA integrations locally installed',nil,nil,nil) do |args,options|
+  Appcelerator::Project.list_installed_components 'service'
 end
 
-Appcelerator::CommandRegistry.registerCommand('list:websdks','list web SDKs locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_sdks
+Appcelerator::CommandRegistry.registerCommand(%w(list:websdks list:websdk),'list web SDKs locally installed',nil,nil,nil) do |args,options|
+  Appcelerator::Project.list_installed_components 'websdk'
 end
 
-Appcelerator::CommandRegistry.registerCommand('list:plugins','list plugins locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'plugins'
+Appcelerator::CommandRegistry.registerCommand(%w(list:plugins list:plugin),'list plugins locally installed',nil,nil,nil) do |args,options|
+  Appcelerator::Project.list_installed_components 'plugin'
 end
 
 Appcelerator::CommandRegistry.registerCommand('list:all','list all locally installed components',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_sdks 
-  Appcelerator::Project.list_installed_components 'services'
-  Appcelerator::Project.list_installed_components 'plugins'
-  Appcelerator::Project.list_installed_components 'widgets'
+  Appcelerator::Project.list_installed_components 'websdk' 
+  Appcelerator::Project.list_installed_components 'service'
+  Appcelerator::Project.list_installed_components 'plugin'
+  Appcelerator::Project.list_installed_components 'widget'
 end

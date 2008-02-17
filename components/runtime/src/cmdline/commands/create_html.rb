@@ -25,7 +25,10 @@ Appcelerator::CommandRegistry.registerCommand('create:html','create a new html f
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
-],nil,nil) do |args,options|
+],nil,[
+  'create:html test.html',
+  'create:html test'
+]) do |args,options|
 
   name = args[:name].gsub('.html','')
   

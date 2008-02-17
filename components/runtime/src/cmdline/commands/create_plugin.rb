@@ -20,7 +20,7 @@
 Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
   {
     :name=>'path',
-    :help=>'path to directory where project should be created',
+    :help=>'path to directory where plugin project should be created',
     :required=>true,
     :default=>nil,
     :type=>[
@@ -32,12 +32,16 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   },
   {
     :name=>'name',
-    :help=>'name of the plugin to create (such as helloworld)',
+    :help=>'name of the plugin to create (such as foo:bar)',
     :required=>true,
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
-],nil,nil) do |args,options|
+],nil,[
+  'create:plugin ~/tmp foo:bar',
+  'create:plugin C:\mytemp hello:world',
+  'create:plugin . test:plugin'
+]) do |args,options|
   
   class_name = args[:name].gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
   plugin_name = args[:name].gsub ':', '_'
@@ -60,8 +64,10 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   template = File.read "#{template_dir}/plugin_Rakefile"
   template.gsub! 'PLUGIN', plugin_name
   
+  build_config = {:name=>args[:name],:version=>1.0,:type=>'plugin',:description=>"#{args[:name]} plugin",:release_notes=>"initial release"}
+  
   Appcelerator::Installer.put "#{dir}/Rakefile", template
-  Appcelerator::Installer.put "#{dir}/build.yml", {:name=>plugin_name,:version=>1.0,:type=>'plugin'}.to_yaml.to_s
+  Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
   
   Appcelerator::PluginManager.dispatchEvent 'after_create_plugin',dir,args[:name]
   puts "Created Plugin: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]

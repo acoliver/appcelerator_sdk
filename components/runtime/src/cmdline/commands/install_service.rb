@@ -26,8 +26,15 @@ Appcelerator::CommandRegistry.registerCommand('install:service','install an SOA 
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
-],nil,nil) do |args,options|
+],nil,[
+  'install:service java',
+  'install:service service_java_1.0.zip',
+  'install:service http://myurl/service_java.zip',
+  'install:service java,ruby'
+]) do |args,options|
 
-  Appcelerator::Installer.install_component 'service','SOA Integration Point',args[:location],"#{RELEASE_DIR}/services"
+  args[:location].split(',').uniq.each do |service|
+    Appcelerator::Installer.install_component 'service','SOA Integration Point',service.strip
+  end
 
 end

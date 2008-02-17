@@ -26,8 +26,14 @@ Appcelerator::CommandRegistry.registerCommand('install:widget','install a widget
     :default=>nil,
     :type=>Appcelerator::Types::StringType
   }
-],nil,nil) do |args,options|
+],nil,[
+  'install:widget app:iterator',
+  'install:widget app:iterator,app:template,app:box',
+  'install:widget my_widget.zip,your_widget.zip',
+  'install:widget http://myurl.com/foo_widget.zip'
+]) do |args,options|
 
-  Appcelerator::Installer.install_component 'widget','Widget',args[:location],"#{RELEASE_DIR}/widgets"
-
+  args[:location].split(',').uniq.each do |widget|
+    Appcelerator::Installer.install_component 'widget','Widget',widget.strip
+  end
 end
