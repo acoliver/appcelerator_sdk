@@ -137,7 +137,17 @@ Appcelerator.Widget.Search =
         }, {
             name: 'name',
             optional: true,
+			type: T.identifier,
             description: "Name applied to the input element"
+        }, {
+            name: 'value',
+            optional: true,
+            description: "Value attribute applied to the input element"
+   		}, {
+            name: 'on',
+            optional: true,
+			type: T.onExpr,
+            description: "On attribute applied to the input element"
         }];
 	},
 	compileWidget: function(params)
@@ -158,7 +168,7 @@ Appcelerator.Widget.Search =
 		var indicator = params['indicator'];
 		var hideResults = params['hideResults'];
 		var compiled = null;
-		
+
 		if (params['template'])
 		{
 			compiled = eval(params['template'] + '; init_'+id);
@@ -172,16 +182,16 @@ Appcelerator.Widget.Search =
 				Element.hide(indicator);
 			}
 			var value = property ? Object.getNestedProperty(data, property) : data;
-			
+
 			Appcelerator.Compiler.destroy(select);		
-			
+
 			while (select.hasChildNodes())
 			{
 				select.removeChild(select.firstChild);
 			}
-			
+
 			var selectableData = [];
-			
+
 			for (var i = 0; i < value.length; i++)
 			{
 				(function(){
@@ -236,19 +246,23 @@ Appcelerator.Widget.Search =
 					selectableData.push({id: optionId, value: optionValue});
 				})();
 			}
-			
+
 			select.selectedIndex = -1;
 			select.selectableData = selectableData;
-			
+
 			Appcelerator.Compiler.dynamicCompile(select);
-			
+
 			if (select.selectableData.length > 0)
 			{
 				Effect.Appear(id+'_results', {duration: 0.5});
 			}
+			else
+			{
+				Element.hide(id+'_results');
+			}
 		},
 		elementScope);
-		
+
 		var selectFunction = function()
 		{
 			(function(){
@@ -281,7 +295,7 @@ Appcelerator.Widget.Search =
 				}
 			})();
 		};
-		
+
 		var timer = null;
 		var keystrokeCount = 0;
 		var timerFunc = function()
@@ -290,13 +304,13 @@ Appcelerator.Widget.Search =
 			{
 				Element.show(indicator);
 			}
-			
+
 			keystrokeCount = 0;
 			var payload = {};
 			payload[key] = input.value; 
 			$MQ(request, payload);
 		};
-		
+
 		input.onkeydown = function (event)
 		{
 			(function(){
@@ -361,13 +375,13 @@ Appcelerator.Widget.Search =
 						return;
 					}
 				}
-							
+
 				if (timer)
 				{
 					clearTimeout(timer);
 					timer = null;
 				}
-				
+
 				if (keystrokeCount++ < 10)
 				{
 					timer = setTimeout(timerFunc, delay);
@@ -378,7 +392,7 @@ Appcelerator.Widget.Search =
 				}
 			})();
 		};
-		
+
 		input.onblur = function (event)
 		{
 			setTimeout(function()
@@ -386,7 +400,7 @@ Appcelerator.Widget.Search =
 				Effect.Fade(id+'_results', {duration: 0.5});
 			},100);
 		}
-		
+
 		input.onfocus = function (event)
 		{
 			if (input.value.length > 0 && select.selectableData && select.selectableData.length > 0)
@@ -398,15 +412,15 @@ Appcelerator.Widget.Search =
 	buildWidget: function(element,parameters)
 	{
 		parameters['scope'] = element.scope;
-		
+
 		if (element.innerHTML.strip().length > 0)
 		{
 			parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);		
 		}
-		
+
 		var inputType = Appcelerator.Browser.isSafari? 'search' : 'text';
 		var html = '<div style="position: relative">';
-		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
+		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input autocomplete="off" type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
 		if (parameters['fieldset'])
 		{
 			html += ' fieldset="'+parameters['fieldset']+'" ';
@@ -419,11 +433,11 @@ Appcelerator.Widget.Search =
 		{
 			html += ' name="'+parameters['name']+'" ';
 		}
-		html += '/></td></tr>';
-		html += '<tr><td><div style="display:none;z-index:2;position:absolute;" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
-		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div></td></tr></table>';
+		html += '/></td></tr></table>';
+		html += '<div style="display:none;z-index:2;position:absolute; left: 0px" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
+		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div>';
 		html += '</div>';
-		
+
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,

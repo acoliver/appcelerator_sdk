@@ -116,7 +116,17 @@ Appcelerator.Module.Search =
         }, {
             name: 'name',
             optional: true,
+			type: T.identifier,
             description: "Name applied to the input element"
+        }, {
+            name: 'value',
+            optional: true,
+            description: "Value attribute applied to the input element"
+   		}, {
+            name: 'on',
+            optional: true,
+			type: T.onExpr,
+            description: "On attribute applied to the input element"
         }];
 	},
 	compileWidget: function(params)
@@ -225,6 +235,10 @@ Appcelerator.Module.Search =
 			{
 				Effect.Appear(id+'_results', {duration: 0.5});
 			}
+			else
+			{
+				Element.hide(id+'_results');
+			}			
 		},
 		elementScope);
 		
@@ -385,7 +399,7 @@ Appcelerator.Module.Search =
 		
 		var inputType = Appcelerator.Browser.isSafari? 'search' : 'text';
 		var html = '<div style="position: relative">';
-		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
+		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input autocomplete="off" type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
 		if (parameters['fieldset'])
 		{
 			html += ' fieldset="'+parameters['fieldset']+'" ';
@@ -398,9 +412,9 @@ Appcelerator.Module.Search =
 		{
 			html += ' name="'+parameters['name']+'" ';
 		}
-		html += '/></td></tr>';
-		html += '<tr><td><div style="display:none;z-index:2;position:absolute;" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
-		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div></td></tr></table>';
+		html += '/></td></tr></table>';
+		html += '<div style="display:none;z-index:2;position:absolute; left: 0px" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
+		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div>';
 		html += '</div>';
 		
 		return {
