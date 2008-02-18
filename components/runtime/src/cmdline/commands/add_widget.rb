@@ -52,25 +52,16 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
 
       # this is used to make sure we're in a project directory
       lang = Appcelerator::Project.get_language(pwd)
-
-      widget_config = "#{RELEASE_DIR}/widgets/#{widget_name}/config.yml"
-
-      if not File.exists?(widget_config)
-        # TODO: check the network for it
-        STDERR.puts "Couldn't find a locally installed widget named: #{name}. Try to install it first."
-        next
+      
+      widget = Appcelerator::Installer.get_component_from_config('widget',name,options[:version])
+      
+      if not widget
+        STDERR.puts "Couldn't find widget named: #{name}."
+        exit 1
       end
-
-      config = YAML.load_file widget_config
-      version = OPTIONS[:version] || config[:version]
-      widget_dir = "#{RELEASE_DIR}/widgets/#{widget_name}/#{version}"
-
-      if not File.exists?(widget_dir)
-        # TODO: check the network for it
-        STDERR.puts "Couldn't find a locally installed widget named: #{name} at version: #{version}. Try to install it first."
-        next
-      end
-
+      
+      widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component('widget','Widget',name,true)
+      
       to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
       FileUtils.mkdir_p to_dir unless File.exists?(to_dir)
 
@@ -78,7 +69,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
       Appcelerator::Installer.copy widget_dir, to_dir
       Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
 
-      puts "Installed #{name}" unless OPTIONS[:quiet] or config[:quiet]
+      puts "Installed #{name}" unless OPTIONS[:quiet] 
     end
   end
   

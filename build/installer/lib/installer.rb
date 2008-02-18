@@ -129,48 +129,6 @@ module Appcelerator
       @@loggedin
     end
     
-    def Installer.show_notice
-      if not @@notice and not OPTIONS[:quiet]
-        puts "Updating installed components ..."
-        @@notice=true
-      end
-    end
-
-    def Installer.get_latest(name=nil)
-      begin
-        Installer.login_if_required
-      rescue => e
-        puts "Failed to connect to network for login, exception => #{e}" if OPTIONS[:debug] or OPTIONS[:verbose]
-        return nil,nil,nil,nil
-      end
-      
-      show_notice
-      
-      if not @@packages
-        result = @@client.send 'releases.latest.request'
-        return nil,nil unless result[:data]['success']
-        @@packages = result[:data]['pkgs']
-        @@bundles = result[:data]['bundles']
-        @@widgets = result[:data]['widgets']
-      end
-      if name
-        @@packages.each do |pkg|
-          if pkg['name'] == name
-            return pkg,@@packages,@@bundles,@@widgets
-          end
-        end
-      end
-      return nil,@@packages,@@bundles,@@widgets
-    end
-        
-    def Installer.get_latest_sdk
-      get_latest 'web'
-    end
-    
-    def Installer.get_latest_service(lang)
-      get_latest lang
-    end
-    
     def Installer.current_user
       #TODO: windows?
       require 'etc'

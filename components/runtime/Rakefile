@@ -149,7 +149,7 @@ task :osx=> [:stage] do
   system "hdiutil eject /Volumes/Appcelerator"
   system "hdiutil convert #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage -format UDBZ -o #{osx_dir}/Appcelerator.dmg"
 
-  FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
+  FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg" rescue nil
   system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/Appcelerator.dmg"
 
   FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 

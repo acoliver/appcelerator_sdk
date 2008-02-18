@@ -22,7 +22,7 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_create_project(config)
       # called after a project is created
     end
-     def before_web_sdk_install(target_dir,version)
+    def before_web_sdk_install(target_dir,version)
       # called before the web sdk is installed
     end
     def after_web_sdk_install(target_dir,version)
@@ -33,12 +33,6 @@ class ExamplePlugin < Appcelerator::Plugin
     end
     def after_copy_web(options,source_dir,version)
       # called after the web assets are copied into a project
-    end
-    def before_service_install(service_dir,language,version)
-      # called before a service is installed
-    end
-    def after_service_install(service_dir,language,version)
-      # called after a service is installed
     end
     def before_create_plugin(project_dir,name)
       # called before a plugin project is created

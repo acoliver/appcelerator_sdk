@@ -22,9 +22,6 @@ require 'digest/md5'
 module Appcelerator
   class Installer
     
-    @@packages = nil
-    @@bundles = nil
-    @@widgets = nil
     @@client = nil
     @@username = nil
     @@password = nil
@@ -131,49 +128,6 @@ module Appcelerator
       Installer.save_config(@@username,@@password)
       
       @@loggedin
-    end
-    
-    def Installer.show_notice
-      if not @@notice and not OPTIONS[:quiet]
-        puts "Updating installed components ..."
-        @@notice=true
-      end
-    end
-
-    def Installer.get_latest(name=nil)
-      begin
-        Installer.login_if_required
-      rescue => e
-        puts "Failed to connect to network for login, exception => #{e}" if OPTIONS[:debug] or OPTIONS[:verbose]
-        return nil,nil,nil,nil
-      end
-      
-      show_notice
-      
-      if not @@packages
-        result = @@client.send 'releases.latest.request'
-        puts "remote result=>#{result.inspect}" if OPTIONS[:debug]
-        return nil,nil unless result[:data]['success']
-        @@packages = result[:data]['pkgs']
-        @@bundles = result[:data]['bundles']
-        @@widgets = result[:data]['widgets']
-      end
-      if name
-        @@packages.each do |pkg|
-          if pkg['name'] == name
-            return pkg,@@packages,@@bundles,@@widgets
-          end
-        end
-      end
-      return nil,@@packages,@@bundles,@@widgets
-    end
-        
-    def Installer.get_latest_sdk
-      get_latest 'web'
-    end
-    
-    def Installer.get_latest_service(lang)
-      get_latest lang
     end
     
     def Installer.current_user
@@ -385,6 +339,26 @@ module Appcelerator
       yield config
       save_site_config if save
     end
+
+    def Installer.convert_object(object)
+      case object.class.to_s
+        when 'Hash'
+          return convert_hash_to_symbol_keys(object)
+        when 'Array'
+          return object.inject([]) do |array,value|
+            array << convert_object(value)
+          end
+      end
+      object
+    end
+    
+    def Installer.convert_hash_to_symbol_keys(hash)
+      hash.each do |key,value|
+        hash.delete key
+        hash[key.to_sym]=convert_object(value)
+      end
+      hash
+    end
     
     def Installer.fetch_distribution_list
         return @@distributions if @@distributions
@@ -392,7 +366,7 @@ module Appcelerator
         client = get_client
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
         response = client.send('distribution.query.request')
-        @@distributions = response[:data]['distributions']
+        @@distributions = convert_object(response[:data]['distributions'])
         with_site_config do |site_config|
           site_config[:distributions] = @@distributions
         end
@@ -406,7 +380,7 @@ module Appcelerator
         installed = site_config[:installed]
         installed||={}
         installed.keys.each do |key|
-          yield key
+          yield key.to_s
         end
       end
     end
@@ -415,7 +389,7 @@ module Appcelerator
       with_site_config(false) do |site_config|
         installed = site_config[:installed]
         installed||={}
-        members = installed[type]
+        members = installed[type.to_sym]
         if members
           members.each do |member|
             yield member[:name],member[:version]
@@ -428,7 +402,7 @@ module Appcelerator
       with_site_config(false) do |site_config|
         installed = site_config[:installed]
         installed||={}
-        members = installed['websdk']
+        members = installed[:websdk]
         if members
           members.each do |member|
             if member[:name] == 'websdk'
@@ -441,22 +415,22 @@ module Appcelerator
     end
     
     def Installer.component_installed?(component)
-      type = component['type']
-      name = component['name']
-      version = component['version']
-      checksum = component['checksum']
-      filesize = component['filesize']
+      type = component[:type]
+      name = component[:name]
+      version = component[:version]
+      checksum = component[:checksum]
+      filesize = component[:filesize]
       
       with_site_config(false) do |site_config|
         installed = site_config[:installed]
         installed||={}
-        members = installed[type]
+        members = installed[type.to_sym]
         if members
           members.each do |member|
             if member[:name] == name
               v = member[:version]
               if v == version and member[:checksum]==checksum
-                return true,component['dependencies']
+                return true,component[:dependencies]
               end
             end
           end
@@ -467,51 +441,58 @@ module Appcelerator
     
     def Installer.find_dependencies_for(component)
       with_site_config(false) do |site_config|
-        members = site_config[:distributions][component['type']]
+        members = site_config[:distributions][component[:type].to_sym]
+        return nil unless members
         members.each do |m|
-          if m['name'] == component['name']
-            return m['dependencies']
+          if m[:name]==component[:name]
+            return m[:dependencies]
           end
-        end if members
+        end
       end
-      []
+      nil
     end
     
     def Installer.dependency_specified?(component,dependencies)
       dependencies.each do |d|
-        if d['name']==component['name'] and d['type']==component['type']
-          return true
-        end
+        return true if d[:name]==component[:name] and d[:type]==component[:type]
       end
       false
     end
     
     def Installer.same?(a,b)
-      a['name']==b['name'] and a['type']==b['type']
+      a[:name]==b[:name] or a[:type]==b[:type]
     end
     
     def Installer.get_dependencies(component,dependencies=[])
       
       return [] unless component
-      depends = component['dependencies']
+      depends = component[:dependencies]
       return unless depends
       
+      checked = Array.new
+
       depends.each do |d|
         next if same?(component,d)
         next if dependency_specified?(d,dependencies)
         installed,depends = component_installed?(d)
         dependencies << d
+        checked << d[:name]
       end
-
+      
       # recursively resolve dependencies
-      while true
+      sweeps = 0
+      while sweeps < 10
         count = 0
         dependencies.each do |d|
+          sweeps+=1
           depends = find_dependencies_for(d)
+          next unless depends
           depends.each do |dd|
             next if Installer.same?(dd,component)
+            next if checked.include?(dd[:name])
             dependencies << dd
             count+=1
+            checked << dd[:name]
           end
         end
         break unless count > 0
@@ -534,15 +515,21 @@ module Appcelerator
       size.to_s + ' bytes'
     end
     
-    def Installer.install_dependencies(component,quiet_if_installed=false)
+    def Installer.get_and_install_dependencies(component,quiet=false)
       dependencies = get_dependencies(component)
+      iterator_dependencies(dependencies,component,quiet) do |d,idx,len|
+        yield d,idx,len
+      end
+    end
+    
+    def Installer.iterator_dependencies(dependencies,component,quiet=false)
       if dependencies.length > 0
         
         if not OPTIONS[:force_update]
           dependencies = dependencies.inject([]) do |a,d|
             found = get_installed_component(d)
-            if found and not OPTIONS[:quiet] and not quiet_if_installed
-              puts "Dependent #{d['type']} #{d['name']}, #{d['version']} already installed - skipping..."
+            if found
+              puts "Dependent #{d[:type]} #{d[:name]}, #{d[:version]} already installed - skipping..."  if OPTIONS[:verbose]
             else
               a << d
             end
@@ -560,11 +547,17 @@ module Appcelerator
           puts "-"*120
           total = 0
           dependencies.each do |d|
-            puts "| #{d['type'].center(9)} | #{d['name'].ljust(72)} | #{d['version'].center(10)} | #{number_to_human_size(d['filesize']).rjust(16)} |"
+            type = d[:type]
+            name = d[:name]
+            version = d[:version]
+            filesize = d[:filesize]
+            puts "| #{type.center(9)} | #{name.ljust(72)} | #{version.center(10)} | #{number_to_human_size(filesize).rjust(16)} |"
             puts "-"*120
-            total+=d['filesize']
+            total+=filesize
           end
-          puts "Total download size (including component):" + number_to_human_size(total+component['filesize']).rjust(76)
+          filesize = 0
+          filesize = component[:filesize] if component
+          puts "Total download size (including component):" + number_to_human_size(total+filesize).rjust(76)
           puts
         end
         
@@ -584,7 +577,7 @@ module Appcelerator
     end
     
     def Installer.get_component_directory(d)
-      Installer.get_release_directory(d['type'],d['name'],d['version'])
+      Installer.get_release_directory(d[:type],d[:name],d[:version])
     end
     
     def Installer.get_release_directory(type,name,version)
@@ -593,8 +586,8 @@ module Appcelerator
 
     def Installer.fetch_network_component(type,from,component,count=1,total=1)
       to_dir = Installer.get_component_directory(component)
-      Installer.fetch_component(type,from,component['version'],to_dir,component['name'],component['url'],count,total)
-      return to_dir,component['name'],component['version'],component['checksum']
+      Installer.fetch_component(type,from,component[:version],to_dir,component[:name],component[:url],count,total)
+      return to_dir,component[:name],component[:version],component[:checksum]
     end
 
     def Installer.fetch_network_url(type,from,config,url)
@@ -624,7 +617,7 @@ module Appcelerator
       return to_dir,config[:name],config[:version]
     end
 
-    def Installer.install_component(type,description,from,quiet_if_installed=true)
+    def Installer.install_component(type,description,from,quiet_if_installed=false)
 
         to_dir = nil
         name = nil
@@ -641,23 +634,25 @@ module Appcelerator
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
             checksum = Installer.checksum(from)
         else
-          to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from)
+          to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed)
         end
         
-        puts "Fetched into #{to_dir}" if OPTIONS[:debug]
+        if not already_installed
+          puts "Fetched into #{to_dir}" if OPTIONS[:debug]
 
-        # run pre_flight if it exists
-        pre_flight = File.join(to_dir,'pre_flight.rb')
-        if File.exists?(pre_flight)
-          puts "Found pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
-          require pre_flight 
+          # run pre_flight if it exists
+          pre_flight = File.join(to_dir,'pre_flight.rb')
+          if File.exists?(pre_flight)
+            puts "Found pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
+            require pre_flight 
+          end
+
+          Installer.add_installed_component(name,type,version,checksum)
         end
-
-        Installer.add_installed_component(name,type,version,checksum)
         
         puts unless already_installed
         puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or already_installed)
-        puts "NOTE: you can force a re-install with --force-update" if already_installed and not OPTIONS[:quiet] and not quiet_if_installed
+        puts "NOTE: you can force a re-install with --force-update" if already_installed and OPTIONS[:verbose]
         
         return to_dir,name,version,checksum,already_installed
     end
@@ -667,10 +662,10 @@ module Appcelerator
         installed = site_config[:installed]
         installed||={}
         site_config[:installed] = installed
-        array = installed[type]
+        array = installed[type.to_sym]
         if array.nil?
           array=[]
-          installed[type]=array
+          installed[type.to_sym]=array
         end
         # don't re-add same one twice
         array.delete_if do |e|
@@ -680,29 +675,31 @@ module Appcelerator
       end
     end
     
-    def Installer.install_from_devnetwork(type,description,from)
+    def Installer.install_from_devnetwork(type,description,from,quiet_if_installed=false)
       list = Installer.fetch_distribution_list
-      components = list[type]
+      components = list[type.to_sym]
 
       found = nil
-      components.each do |component|
-        if component['name'] == from
-          found = component
-          break
+      if components
+        components.each do |component|
+          if component[:name] == from
+            found = component
+            break
+          end
         end
       end
-
+      
       if not found
         STDERR.puts "Couldn't find #{type} #{from}"
         exit 1
       end
       
       count = 0
-      Installer.install_dependencies(found) do |d,idx,total|
+      Installer.get_and_install_dependencies(found,quiet_if_installed) do |d,idx,total|
         dc = Installer.get_installed_component(d) unless OPTIONS[:force_update]
         if not dc
-          dir,name,version,checksum=Installer.fetch_network_component d['type'],from,d,idx+1,total+1
-          Installer.add_installed_component(name,d['type'],version,checksum)
+          dir,name,version,checksum=Installer.fetch_network_component d[:type],from,d,idx+1,total+1
+          Installer.add_installed_component(name,d[:type],version,checksum,quiet_if_installed)
         end
         count+=1
       end
@@ -710,28 +707,42 @@ module Appcelerator
       fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update]
       return Installer.fetch_network_component(type,from,found,count+1,count+1) unless fnc
       
-      puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." unless OPTIONS[:quiet] 
+      puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
       return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
     end
     
-    def Installer.get_installed_component(found)
-      matched = nil
-      type = found['type']
+    def Installer.get_component_from_config(type,name,version=nil)
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        if installed
-          c = installed[type]
+        distributions = site_config[:distributions]
+        if distributions
+          c = distributions[type.to_sym]
           if c
             c.each do |cm|
-              if cm[:name] == found['name'] and cm[:type] == type and cm[:version] == found['version']
-                matched = cm
-                break
-              end
+              return cm if cm[:name]==name and cm[:type]==type and ((!version.nil? and cm[:version]==version) or version.nil?)
             end
           end
         end
       end
-      matched
+      nil
+    end
+    
+    def Installer.get_installed_component(found)
+      name = found[:name]
+      type = found[:type]
+      version = found[:version]
+
+      with_site_config(false) do |site_config|
+        installed = site_config[:installed]
+        if installed
+          c = installed[type.to_sym]
+          if c
+            c.each do |cm|
+              return cm if cm[:name] == name and cm[:type]==type and cm[:version]==version
+            end
+          end
+        end
+      end
+      nil
     end
     
     def Installer.checksum(file)

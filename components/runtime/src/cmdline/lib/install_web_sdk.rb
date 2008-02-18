@@ -26,17 +26,8 @@ module Appcelerator
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      websdk = Appcelerator::Installer.get_websdk
-      if not websdk
-        Appcelerator::Installer.install_component 'websdk','WebSDK','websdk'
-      end
-      
-      source_dir = "#{RELEASE_DIR}/websdk/#{websdk[:name]}/#{websdk[:version]}"
-      web_version = websdk[:version]
+      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component 'websdk','WebSDK','websdk'
 
-#FIXME - fix core widgets 
-      widgets = []
-      
       Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
 
       FileUtils.cp_r "#{source_dir}/js/.", options[:javascript]
@@ -44,12 +35,14 @@ module Appcelerator
       FileUtils.cp_r "#{source_dir}/swf/.", options[:web] + '/swf'
       FileUtils.cp_r Dir.glob("#{source_dir}/*.html"), options[:web]
       FileUtils.cp_r "#{source_dir}/common/.", options[:widgets] + '/common'
+
+      widgets = Installer.find_dependencies_for({:name=>'websdk',:type=>'websdk'})
       
       # install our widgets
       widgets.each do |widget|
-#FIXME install:widget
-        Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true})
-      end
+       Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true})
+      end if widgets
+      
 
       Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version
 
