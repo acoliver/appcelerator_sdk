@@ -25,7 +25,12 @@ class ActiveRecord::Base
     def to_json(*a)
       result = Hash.new  
       self.class.columns.each do |column|
-        result[column.name.to_sym] = self.send(column.name)
+		begin
+			result[column.name.to_sym] = self.send(column.name)
+		rescue
+			# this is OK and can happen in cases where you
+			# have done a find_by_sql and haven't returned all columns
+		end
       end
       result.to_json(*a)
     end

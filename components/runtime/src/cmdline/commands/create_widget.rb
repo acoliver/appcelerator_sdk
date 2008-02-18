@@ -87,6 +87,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   
   build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release"}
   build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
+  build_config[:tags] = []
 
   Appcelerator::Installer.put "#{dir}/Rakefile", template
   Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s

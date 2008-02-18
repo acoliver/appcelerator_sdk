@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ dialog ]
+:description: "app:modalbox is a UI control for displaying a modal dialog box"

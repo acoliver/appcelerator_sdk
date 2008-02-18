@@ -65,6 +65,7 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   template.gsub! 'PLUGIN', plugin_name
   
   build_config = {:name=>args[:name],:version=>1.0,:type=>'plugin',:description=>"#{args[:name]} plugin",:release_notes=>"initial release"}
+  build_config[:tags] = []
   
   Appcelerator::Installer.put "#{dir}/Rakefile", template
   Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s

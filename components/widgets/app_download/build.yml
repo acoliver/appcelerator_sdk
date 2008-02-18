@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ ]
+:description: "app:download is a simple utility for doing dynamic downloads using a remote service"

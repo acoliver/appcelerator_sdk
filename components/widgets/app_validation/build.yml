@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ logic ]
+:description: "app:validation is a logic component for controlling multi-state validation across different elements"

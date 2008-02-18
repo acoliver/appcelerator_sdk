@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ uicontrol, layout ]
+:description: "app:box makes it easier to layout content in either a horizontal or vertical fashion"

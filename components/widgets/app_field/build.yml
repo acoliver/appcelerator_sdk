@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ uicontrol ]
+:description: "app:field is a ui control that supports laying out different types of fields for collecting or displaying values"

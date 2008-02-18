@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ security ]
+:description: "app:security is a simple widget which will attempt to hide content based on a security policy"

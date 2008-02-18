@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ uicontrol, search ]
+:description: "app:search is a UI control for performing dynamic searches based on key entry (without having to click a button)"

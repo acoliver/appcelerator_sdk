@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ ]
+:description: "app:widget is a meta-widget which allows you to dynamically create a widget inline in your code"

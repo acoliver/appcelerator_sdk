@@ -6,3 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
+:tags: [ logic ]
+:description: "app:statemachine is a non-visual widget for controlling states based on messages"

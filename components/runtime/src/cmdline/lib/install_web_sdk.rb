@@ -34,7 +34,7 @@ module Appcelerator
       source_dir = "#{RELEASE_DIR}/websdk/#{websdk[:name]}/#{websdk[:version]}"
       web_version = websdk[:version]
 
-#FIXME - fix core widgets
+#FIXME - fix core widgets 
       widgets = []
       
       Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
