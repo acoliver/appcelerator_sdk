@@ -33,7 +33,8 @@ task :default do
   FileUtils.mkdir_p js_dir
 
   puts 'Compiling appcelerator-lite.js...' if VERBOSE
-  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js localization.js)
+  # files that need to be included before the others in the directory
+  jslite_prefiles = %w(core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js)
   jslite = js_dir+'/appcelerator-lite.js'
   
   LICENSE_HEADER=<<END_LICENSE
@@ -74,23 +75,20 @@ END_LICENSE
     append_file(js_source+'/'+file, jslite)
   end
 
-  excluded_files = jslite_prefiles + %w(bootstrap.js prolog.js epilog.js)
-  jsfiles = []
-
-  Dir["#{js_source}/*.js"].sort {|a,b| a<=>b }.each do |path|
-      result = excluded_files.find{ |filename| path.include? filename }
-    if not result
-      jsfiles << path
-    end
+  # other files to avoid automatically adding
+  EXCLUDED_FILES = jslite_prefiles + %w(bootstrap.js prolog.js epilog.js)
+  
+  def not_already_included(path)
+    not EXCLUDED_FILES.find{ |excluded_file| path.include? excluded_file }
   end
 
-  %w(conditions processors actions).each do |dir|
-    Dir["#{js_source}/#{dir}/*.js"].sort {|a,b| a<=>b }.each do |path|
-    jsfiles << path
-    end
-  end
-
-  jsfiles.each {|path| append_file(path, jslite) }
+  js_files = Dir["#{js_source}/*.js"].select{|path| not_already_included path}
+  # don't filter out excluded files from subdirs,
+  # because we have some duplicate filenames
+  js_files += Dir["#{js_source}/*/*.js"]
+  
+  # must sort after including subdirs
+  js_files.sort.each {|path| append_file(path, jslite) }
   append_file("#{js_source}/epilog.js", jslite)
 
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
