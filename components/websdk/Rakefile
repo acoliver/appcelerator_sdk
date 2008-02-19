@@ -120,7 +120,7 @@ END_LICENSE
   # Make the compressors quiet, but if a fatal error occurs, display output
   require 'tempfile'
   require 'tmpdir'
-  ERROR_TEMP_FILE = Tempfile.new(Dir::tmpdir).path
+  ERROR_TEMP_FILE = Tempfile.new('websdk').path
    
   if VERBOSE
     SUPPRESS_OUTPUT = ""
