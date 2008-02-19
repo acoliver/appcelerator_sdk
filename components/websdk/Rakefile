@@ -119,16 +119,37 @@ END_LICENSE
   jsdf.write jsd
   jsdf.close
   
+  # Make the compressors quiet, but if a fatal error occurs, display output
+  require 'tempfile'
+  require 'tmpdir'
+  ERROR_TEMP_FILE = Tempfile.new(Dir::tmpdir).path
+   
+  if VERBOSE
+    SUPPRESS_OUTPUT = ""
+  else
+    SUPPRESS_OUTPUT = ">#{ERROR_TEMP_FILE} 2>&1"
+  end
   
-  system("java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar #{jsdebug} -o #{jsout} >/dev/null 2>&1")
-  system("ruby #{BUILD_DIR}/lib/compress.rb #{jsout} #{jstemp} >/dev/null 2>&1")
+  def compress_fail
+    if not VERBOSE
+      puts File.read(ERROR_TEMP_FILE)
+    end
+    fail("Syntax error in websdk source, unable to compress")
+  end
+
+  YUI_COMPRESSOR = "java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar"
+  COMPRESS_RB = "ruby #{BUILD_DIR}/lib/compress.rb"
+  
+  puts "Compressing appcelerator.js"
+  system("#{YUI_COMPRESSOR} #{jsdebug} -o #{jsout} #{SUPPRESS_OUTPUT}") || compress_fail
+  system("#{COMPRESS_RB} #{jsout} #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
   FileUtils.rm jsout
   append_file(LICENSE_HEADER, jsout, true)
   append_file(jstemp, jsout)
   FileUtils.rm jstemp
 
-  system("java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar #{jslite} -o #{jstemp} >/dev/null 2>&1")
-  system("ruby #{BUILD_DIR}/lib/compress.rb #{jstemp} #{jslite} >/dev/null 2>&1")
+  system("#{YUI_COMPRESSOR} #{jslite} -o #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
+  system("#{COMPRESS_RB} #{jstemp} #{jslite} #{SUPPRESS_OUTPUT}") || compress_fail
   FileUtils.rm jstemp
   append_file(LICENSE_HEADER, jstemp, true)
   append_file(jslite, jstemp)

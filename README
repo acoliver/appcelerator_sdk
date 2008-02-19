@@ -19,7 +19,7 @@ To build the platform installers, you will need the following:
 
 * For building NSIS on OSX/Unix, you can download the non-Win32 compiler which will allow
 you to build the Win32 installer on other OS platforms.  For example, on OSX, if you have
-port installed, you can install it with:
+darwinports installed, you can install NSIS with:
 
   > port install nsis
 
@@ -27,7 +27,7 @@ port installed, you can install it with:
  Build Instructions
 --------------------
 
-To build, you can execute rake normally, like:
+To build everything, you can execute rake normally, like:
 
   > rake
 
@@ -40,7 +40,7 @@ directory structures and Rakefiles.  The main components are:
 
   - widgets
   - plugins
-  - runtime (includes both command-line bindary and installers)
+  - runtime (includes both command-line binary and installers)
   - services
   - websdk
 
@@ -59,6 +59,10 @@ All components have an `all` target.  For example:
   > rake websdk:all
   > rake installer:all
 
+To have rake print additional into, you need to set an environment variable.
+From a bash shell you can run:
+
+  > export VERBOSE=true; rake
 
 --------------------
  Getting Assistance

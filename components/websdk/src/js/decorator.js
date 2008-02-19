@@ -8,12 +8,14 @@ Object.extend(Appcelerator.Decorator,
         return '[Appcelerator.Decorator]';
     },
 
-    defaultDecorator: function(element, valid)
-    {
-        // do nothing
-    },
+    decoratorId: 0,
+    names: [],
 
-    decoratorId:0,
+	addDecorator: function(name, decorator)
+	{
+		Appcelerator.Decorator[name] = decorator;
+		Appcelerator.Decorator.names.push(name);
+	},
 
     checkInvalid: function (element, valid, decId, msg, showValid)
     {
@@ -71,9 +73,19 @@ Object.extend(Appcelerator.Decorator,
                 Element.setStyle(id, {visibility:(valid ? 'hidden' : 'visible')});
             }
         }
-    },
+    }	
+});
 
-    custom: function(element, valid, decId)
+(function(){
+	
+	var addDecorator = Appcelerator.Decorator.addDecorator;
+	
+	addDecorator('defaultDecorator', function(element, valid)
+	{
+		// do nothing
+	});
+	
+	addDecorator('custom', function(element, valid, decId)
 	{
 		if (!decId)
 		{
@@ -106,66 +118,66 @@ Object.extend(Appcelerator.Decorator,
 				dec.style.visibility='hidden';
 			}
 		}
-	},
+	});
 	
-    termsAccepted: function(element, valid, decId)
+    addDecorator('termsAccepted', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'must accept terms and conditions');
-    },
+    });
 
-    required: function(element, valid, decId)
+    addDecorator('required', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'required');
-    },
+    });
 
-    email: function(element, valid, decId)
+    addDecorator('email', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'enter a valid email address');
-    },
-	date: function(element, valid, decId)
+    });
+	addDecorator('date', function(element, valid, decId)
 	{
        this.checkInvalid(element, valid, decId, 'invalid date');	
-	},	
-	number: function(element, valid, decId)
+	});
+	addDecorator('number', function(element, valid, decId)
 	{
        this.checkInvalid(element, valid, decId, 'invalid number');			
-	},
-    fullname: function(element, valid, decId)
+	});
+    addDecorator('fullname', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'enter first and last name');
-    },
+    });
 
-	alphanumeric: function(element,valid,decId)
+	addDecorator('alphanumeric', function(element,valid,decId)
 	{
         this.checkInvalid(element, valid, decId, 'enter an alphanumeric value');
-	},
+	});
 
-    noSpaces: function(element, valid, decId)
+    addDecorator('noSpaces', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'value must contain no spaces');
-    },
+    });
 
-    password: function(element, valid, decId)
+    addDecorator('password', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'password must be at least 6 characters');
-    },
+    });
 
-    url: function (element, valid, decId)
+    addDecorator('url', function (element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'enter a valid URL');
-    },
+    });
 
-   	checked: function (element, valid, decId)
+   	addDecorator('checked', function (element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'item must be checked');
-    },
+    });
 
-  	wholenumber: function (element, valid, decId)
+  	addDecorator('wholenumber', function (element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'enter a whole number');
-    },
+    });
 
-    length: function (element, valid, decId)
+    addDecorator('length', function (element, valid, decId)
     {
         if (!valid)
         {
@@ -177,5 +189,5 @@ Object.extend(Appcelerator.Decorator,
         {
             this.checkInvalid(element, valid, decId, element.value.length + ' characters', true);
         }
-    }
-});
+    });
+})();

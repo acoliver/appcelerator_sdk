@@ -6,159 +6,21 @@ Object.extend(Appcelerator.Validator,
     },
 
     uniqueId: 0,
-
-    required: function(value)
-    {
-       if (null == value)
-        {
-            return false;
-        }
-        if (typeof(value) == 'boolean')
-        {
-            return value;
-        }
-		value = ''+value;
-        return value.trim().length > 0;
-    },
-
- 	EMAIL_REGEXP: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
-
-	email_optional: function(value)
-	{
-		if (!value || value.trim().length == 0) return true;
-		return Appcelerator.Validator.EMAIL_REGEXP.test(value);		
-	},
-
-    email: function(value)
-    {
-        return Appcelerator.Validator.EMAIL_REGEXP.test(value);
-    },
-
-    fullname_optional: function(value)
-    {
-        if (!value || value.trim().length == 0) return true;
-        return Appcelerator.Validator.fullname(value);
-    },
-
-    fullname: function(value)
-    {
-        // allow Jeffrey George Haynie or Jeff Haynie or Jeff Smith, Jr.
-        return ((value.split(" ")).length > 1);
-    },
-
-   noSpaces_optional: function(value)
-    {
-       if (!value) return true;
-       return Appcelerator.Validator.noSpaces(value);
-    },
-
-    noSpaces: function(value)
-    {
-        // also must have a value
-        // check before we check for spaces
-        if (!Appcelerator.Validator.required(value))
-        {
-            return false;
-        }
-        return value.indexOf(' ') == -1;
-    },
- 
-   password_optional: function (value)
-    {
-	   if (!value || value.trim().length == 0) return true;
-       return Appcelerator.Validator.password(value);
-    },
-
-    password: function (value)
-    {
-        return (value.length >= 6);
-    },
-
- 	decimal_regexp: /^[-]?([1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|\.[0-9]{1,2})$/,
-
-    number: function (value)
-    {
-		if (!value || value.trim().length == 0 || value < 0)return false;
-		return Appcelerator.Validator.decimal_regexp.test(value);
-		
-	},
-
-    number_optional: function (value)
-    {
-		if (!value || value.trim().length == 0) return true;
-		return Appcelerator.Validator.number(value);
-	},
-
-    wholenumber_optional: function (value)
-    {
-		if (!value || value.trim().length == 0) return true;
-		return Appcelerator.Validator.wholenumber(value);
-	},
-		
-    wholenumber: function (value)
-    {
-		if (!value || value < 0) return false;
-		
-		for (var i = 0; i < value.length; i++)
-		{   
-			var c = value.charAt(i);
-		    if (((c < "0") || (c > "9"))) return false;
-		}
-		return true;
-
-    },
-
-    uri_regexp: /(ftp|http|https|file):(\/){1,2}(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
-
-    url_optional: function (value)
-    {
-		if (!value || value.trim().length == 0)return true;
-        return Appcelerator.Validator.url(value);
-    },
-
-    url: function (value)
-    {
-      	return Appcelerator.Validator.uri_regexp.test(value);
-    },
-
-    checked: function (value)
-    {
-        return value || value == 'on';
-    },
-
-    length: function (value, element)
-    {
-        if (value)
-        {
-            try
-            {
-                var min = parseInt(element.getAttribute('validatorMinLength') || '1');
-                var max = parseInt(element.getAttribute('validatorMaxLength') || '999999');
-                var v = value.length;
-                return v >= min && v <= max;
-            }
-            catch (e)
-            {
-            }
-        }
-        return false;
-    },
-    
-	ALPHANUM_REGEX: /^[0-9a-zA-Z]+$/,
-
-    alphanumeric_optional: function (value,element)
-    {
-    	if (!value || value.trim().length ==0)return true;
-		return Appcelerator.Validator.ALPHANUM_REGEX.test(value)==true;
-    },
+	names: [],
 	
-    alphanumeric: function (value,element)
-    {
-    	return Appcelerator.Validator.ALPHANUM_REGEX.test(value)==true;
-    },
+	addValidator: function(name, validator)
+	{
+		Appcelerator.Validator[name] = validator;
+		Appcelerator.Validator.names.push(name);
+	},
+
+	URI_REGEX: /(ftp|http|https|file):(\/){1,2}(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+    ALPHANUM_REGEX: /^[0-9a-zA-Z]+$/,
+    DECIMAL_REGEX: /^[-]?([1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|\.[0-9]{1,2})$/,
+ 	EMAIL_REGEX: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
 
 	//
-	// BEGIN DATE VALIDATION 
+	// DATE VALIDATION UTILS
 	//
 	dtCh:"/",
 	minYear:1900,
@@ -187,15 +49,163 @@ Object.extend(Appcelerator.Validator,
 			if (i==2) {this[i] = 29}
 	   } 
 	   return this;
-	},
+	}
+	
+});
 
-	date_optional: function(value)
+(function(){
+	
+	var addValidator = Appcelerator.Validator.addValidator;
+	
+    addValidator('required', function(value)
+    {
+       if (null == value)
+        {
+            return false;
+        }
+        if (typeof(value) == 'boolean')
+        {
+            return value;
+        }
+		value = ''+value;
+        return value.trim().length > 0;
+    });
+
+	addValidator('email_optional', function(value)
+	{
+		if (!value || value.trim().length == 0) return true;
+		return Appcelerator.Validator.EMAIL_REGEX.test(value);		
+	});
+
+    addValidator('email', function(value)
+    {
+        return Appcelerator.Validator.EMAIL_REGEX.test(value);
+    });
+
+    addValidator('fullname_optional', function(value)
+    {
+        if (!value || value.trim().length == 0) return true;
+        return Appcelerator.Validator.fullname(value);
+    });
+
+    addValidator('fullname', function(value)
+    {
+        // allow Jeffrey George Haynie or Jeff Haynie or Jeff Smith, Jr.
+        return ((value.split(" ")).length > 1);
+    });
+
+    addValidator('noSpaces_optional', function(value)
+    {
+       if (!value) return true;
+       return Appcelerator.Validator.noSpaces(value);
+    });
+
+    addValidator('noSpaces', function(value)
+    {
+        // also must have a value
+        // check before we check for spaces
+        if (!Appcelerator.Validator.required(value))
+        {
+            return false;
+        }
+        return value.indexOf(' ') == -1;
+    });
+ 
+    addValidator('password_optional', function (value)
+    {
+	   if (!value || value.trim().length == 0) return true;
+       return Appcelerator.Validator.password(value);
+    });
+
+    addValidator('password', function (value)
+    {
+        return (value.length >= 6);
+    });
+
+    addValidator('number', function (value)
+    {
+		if (!value || value.trim().length == 0 || value < 0)return false;
+		return Appcelerator.Validator.DECIMAL_REGEX.test(value);
+		
+	});
+
+    addValidator('number_optional', function (value)
+    {
+		if (!value || value.trim().length == 0) return true;
+		return Appcelerator.Validator.number(value);
+	});
+
+    addValidator('wholenumber_optional', function (value)
+    {
+		if (!value || value.trim().length == 0) return true;
+		return Appcelerator.Validator.wholenumber(value);
+	});
+		
+    addValidator('wholenumber', function (value)
+    {
+		if (!value || value < 0) return false;
+		
+		for (var i = 0; i < value.length; i++)
+		{   
+			var c = value.charAt(i);
+		    if (((c < "0") || (c > "9"))) return false;
+		}
+		return true;
+    });
+
+    addValidator('url_optional', function (value)
+    {
+		if (!value || value.trim().length == 0)return true;
+        return Appcelerator.Validator.url(value);
+    });
+
+    addValidator('url', function (value)
+    {
+      	return Appcelerator.Validator.URI_REGEX.test(value);
+    });
+
+    addValidator('checked', function (value)
+    {
+        return value || value == 'on';
+    });
+
+    addValidator('length', function (value, element)
+    {
+        if (value)
+        {
+            try
+            {
+                var min = parseInt(element.getAttribute('validatorMinLength') || '1');
+                var max = parseInt(element.getAttribute('validatorMaxLength') || '999999');
+                var v = value.length;
+                return v >= min && v <= max;
+            }
+            catch (e)
+            {
+            }
+        }
+        return false;
+    });
+    
+    addValidator('alphanumeric_optional', function (value,element)
+    {
+    	if (!value || value.trim().length ==0)return true;
+		return Appcelerator.Validator.ALPHANUM_REGEX.test(value)==true;
+    });
+	
+    addValidator('alphanumeric', function (value,element)
+    {
+    	return Appcelerator.Validator.ALPHANUM_REGEX.test(value)==true;
+    });
+
+	addValidator('date_optional', function(value)
 	{
 		if (!value || value.trim().length == 0)return true;
 		return Appcelerator.Validator.date(value);
 		
-	},
-	date: function(value)
+	});
+	
+	addValidator('date', function(value)
 	{
 		
 		var daysInMonth = Appcelerator.Validator.DaysArray(12);
@@ -238,6 +248,6 @@ Object.extend(Appcelerator.Validator,
 			return false;
 		}
 		return true;
-	}
-});
+	});
+})();
 
