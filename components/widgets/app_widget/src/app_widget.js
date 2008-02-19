@@ -113,6 +113,8 @@ Appcelerator.Widget.Widget =
                     description: name
                 });
             }
+        } else {
+            optionalParams = [];
         }
         
         var widget = {
