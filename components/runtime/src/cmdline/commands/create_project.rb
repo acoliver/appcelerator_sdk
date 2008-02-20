@@ -62,7 +62,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   end
   
   if not service_entry
-    with_site_config(false) do |site_config|
+    Appcelerator::Installer.with_site_config(false) do |site_config|
       installed = site_config[:installed]
       if installed
         c = installed[:service]
