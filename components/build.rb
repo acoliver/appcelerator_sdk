@@ -26,6 +26,7 @@ require 'yaml'
 require 'digest/md5'
 
 VERBOSE = ENV['v'] || ENV['verbose'] || ENV['VERBOSE']
+COMPRESS = ENV['nomin'] ? false : true 
 CWD = File.expand_path "#{File.dirname(__FILE__)}"
 STAGE_DIR = File.expand_path "#{CWD}/../stage"
 

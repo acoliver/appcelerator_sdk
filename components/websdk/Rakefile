@@ -108,7 +108,6 @@ END_LICENSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
   
-
   # comment out load for scriptaculous - we don't want that to run since we
   # auto include them already
   jsd = File.read(jsdebug)
@@ -138,22 +137,26 @@ END_LICENSE
   YUI_COMPRESSOR = "java -jar #{BUILD_DIR}/lib/yuicompressor-2.2.5.jar"
   COMPRESS_RB = "ruby #{BUILD_DIR}/lib/compress.rb"
   
-  puts "Compressing appcelerator.js"
-  system("#{YUI_COMPRESSOR} #{jsdebug} -o #{jsout} #{SUPPRESS_OUTPUT}") || compress_fail
-  system("#{COMPRESS_RB} #{jsout} #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
-  FileUtils.rm jsout
-  append_file(LICENSE_HEADER, jsout, true)
-  append_file(jstemp, jsout)
-  FileUtils.rm jstemp
+  if COMPRESS
+    puts "Compressing appcelerator.js"
+    system("#{YUI_COMPRESSOR} #{jsdebug} -o #{jsout} #{SUPPRESS_OUTPUT}") || compress_fail
+    system("#{COMPRESS_RB} #{jsout} #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
+    FileUtils.rm jsout
+    append_file(LICENSE_HEADER, jsout, true)
+    append_file(jstemp, jsout)
+    FileUtils.rm jstemp
 
-  system("#{YUI_COMPRESSOR} #{jslite} -o #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
-  system("#{COMPRESS_RB} #{jstemp} #{jslite} #{SUPPRESS_OUTPUT}") || compress_fail
-  FileUtils.rm jstemp
-  append_file(LICENSE_HEADER, jstemp, true)
-  append_file(jslite, jstemp)
-  FileUtils.rm jslite
-  append_file(jstemp, jslite)
-  FileUtils.rm jstemp
+    system("#{YUI_COMPRESSOR} #{jslite} -o #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
+    system("#{COMPRESS_RB} #{jstemp} #{jslite} #{SUPPRESS_OUTPUT}") || compress_fail
+    FileUtils.rm jstemp
+    append_file(LICENSE_HEADER, jstemp, true)
+    append_file(jslite, jstemp)
+    FileUtils.rm jslite
+    append_file(jstemp, jslite)
+    FileUtils.rm jstemp
+  else
+    FileUtils.cp jsdebug, jsout
+  end
 
   puts "Archiving JS/Web files..." if VERBOSE
   zipfile = "#{STAGE_DIR}/websdk_#{build_config[:version]}.zip"
@@ -178,7 +181,5 @@ END_LICENSE
       end
     end
   end
-  
-  FileUtils.rm_rf web_dir
 end
 
