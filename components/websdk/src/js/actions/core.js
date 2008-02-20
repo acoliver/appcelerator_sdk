@@ -446,10 +446,11 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 		code += '   if (targetSelect.options[j].value == selectedValue)';
 		code += '   {';
 		code += '      targetSelect.selectedIndex = j;';
-		code += '      return;';
+		code += '      break;';
 		code += '    }';
 		code += '  }';
-		return code;		
+        code += 'Appcelerator.Compiler.executeFunction(targetSelect,"revalidate");';
+        return code;		
 	}
 });
 
