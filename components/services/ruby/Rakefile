@@ -24,48 +24,20 @@ build_config = load_config(BUILD_DIR)
 
 desc 'default ruby build'
 task :default do
-  ruby_dir = "#{STAGE_DIR}/ruby"
-  gem_dir = "#{ruby_dir}/gem"
-  ruby_source = 'src/ruby/gem-new'
 
-  clean_dir(ruby_dir)
-  FileUtils.mkdir_p gem_dir
+  FileUtils.mkdir_p "#{STAGE_DIR}"
+  zipfile = "#{STAGE_DIR}/service_ruby_#{build_config[:version]}.zip"
+  FileUtils.rm_rf zipfile
 
-  puts "Copying Ruby files..." if VERBOSE
-  
-  # copy_dir(ruby_source, gem_dir)
-  # 
-  # FileUtils.cp_r "build/installer/build/ruby/.", ruby_dir
-  # 
-  # rubyfiles = Array.new
-  # dofiles(gem_dir) do |f|
-  #   rubyfiles.push(f.to_s)
-  # end
-  # 
-  # manifest = File.open(gem_dir+'/Manifest.txt', 'w')
-  # rubyfiles.each do |f|
-  #   manifest.puts f 
-  # end
-  # manifest.close
-  # 
-  # # fix the release information in the file
-  # insert_version_number("#{gem_dir}/lib/appcelerator.rb")
-  # 
-  # puts "Making Ruby gem file..." if VERBOSE
-  # FileUtils.cd(gem_dir) do
-  #   system('rake clean gem >/dev/null') unless VERBOSE
-  #   system('rake clean gem') if VERBOSE
-  # end  
-  # 
-  # puts "Archiving Ruby files..." if VERBOSE
-  # Zip::ZipFile.open(ruby_dir+'/ruby.zip', Zip::ZipFile::CREATE) do |zipfile|
-  #   zipfile.add('appcelerator.gem',gem_dir+'/pkg/appcelerator-'+RELEASE+'.gem')
-  #  Dir["#{ruby_dir}/**/**"].delete_if {|f| f=~/\.gem$/ or f=~/gem/ }.each do |file|
-  #     fn = file.gsub("#{ruby_dir}/",'')
-  #   zipfile.add(fn,file) unless File.directory?(file)
-  #   end
-  #   zipfile.get_output_stream('build.yml') {|f| version_config[:name]='ruby'; f.puts version_config.to_yaml }
-  # end
-  FileUtils.rm_rf ruby_dir
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+    dofiles("#{BUILD_DIR}/src") do |f|
+      filename = f.to_s
+      if not filename == '.'
+        zipfile.add("rails/#{filename}","#{BUILD_DIR}/src/#{filename}")
+      end
+    end
+    zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
+    zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
+  end
 end
 
