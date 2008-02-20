@@ -27,6 +27,8 @@ module Appcelerator
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
       source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component 'websdk','WebSDK','websdk'
+      options[:websdk] = web_version
+      options[:installed_widgets] = []
 
       Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
 
@@ -41,8 +43,8 @@ module Appcelerator
       # install our widgets
       widgets.each do |widget|
        Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true})
-      end if widgets
-      
+       options[:installed_widgets] << {:name=>widget[:name],:version=>widget[:version]}
+      end if widgets      
 
       Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version
 

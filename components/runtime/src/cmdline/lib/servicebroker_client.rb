@@ -168,8 +168,12 @@ module Appcelerator
       # make sure we reset cookies if necessary
       get_cookies(res)
       
+      puts "Response code from /#{@upload} was #{res.code}" if @debug
+      
       if res.code.to_i == 200
         body = res.body
+
+        puts "Response body from /#{@upload} was #{body}" if @debug
       
         # pull out our response
         rm = body.match(/window\.parent\.\$MQ\((.*?)\);/) if body
@@ -181,6 +185,8 @@ module Appcelerator
           response_payload = rmc[1]
           response_scope = strip_quotes(rmc[2])
           json_response = json_decode(response_payload)
+
+          puts "response_type=#{response_type},response_payload=#{response_payload},response_scope=#{response_scope}" if @debug
 
       	  return {:message=>response_type,:data=>json_response,:scope=>response_scope}
       	end

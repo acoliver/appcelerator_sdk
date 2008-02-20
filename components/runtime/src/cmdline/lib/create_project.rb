@@ -20,9 +20,9 @@ require 'fileutils'
 
 module Appcelerator
   class Installer
-    def Installer.create_project(path,name,language,version)
+    def Installer.create_project(path,name,service,version)
       
-      puts "Creating new project at #{path} with name: #{name} for #{language}" if OPTIONS[:debug]
+      puts "Creating new project at #{path} with name: #{name} for #{service}" if OPTIONS[:debug]
       
       public_path="#{path}/public"
 
@@ -36,7 +36,7 @@ module Appcelerator
       
       config=Hash.new
       config[:name]=name
-      config[:lang_version]=version
+      config[:service_version]=version
       config[:web]="#{public_path}"
       config[:javascript]="#{public_path}/javascripts"
       config[:images]="#{public_path}/images"
@@ -51,15 +51,14 @@ module Appcelerator
       config[:script]="#{path}/script"
       config[:plugin]="#{path}/plugins"
       config[:project]=path
-      config[:language]=language
+      config[:service]=service
       
-      # write out our main configuration file
-      props = {:installed=>Time.now,:language=>language,:language_version=>version,:web_version=>config[:web_version]}
-      
-      put "#{path}/config/appcelerator.config", props.to_yaml.to_s
-
       # install the web files
-      install_web_project(config)
+      config = install_web_project(config)
+
+      # write out our main configuration file
+      props = {:installed=>Time.now,:service=>service,:service_version=>version,:websdk=>config[:websdk],:widgets=>config[:installed_widgets]}
+      put "#{path}/config/appcelerator.config", props.to_yaml.to_s
 
       # return our config
       config

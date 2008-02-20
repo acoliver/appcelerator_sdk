@@ -19,17 +19,6 @@
 module Appcelerator
   class Installer
     
-    def Installer.install_appcelerator_gem_if_needed(dir)
-      begin
-        require 'appcelerator'
-      rescue => e
-        require_admin_user
-        gem = File.join(dir,'appcelerator.gem')
-        cmd = "gem install #{gem}"
-        system cmd
-      end
-    end
-    
     def Installer.install_appcelerator_egg_if_needed(dir)
       if not system('python -c "import appcelerator"')
         # in reality this probably includes a version number

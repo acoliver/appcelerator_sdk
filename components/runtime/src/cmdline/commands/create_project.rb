@@ -17,9 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# FIXME - this needs to come from the network
-languages = ['java','ruby','python','perl','dotnet','ruby']
-
 Appcelerator::CommandRegistry.registerCommand('create:project','create a new project',[
   {
     :name=>'path',
@@ -41,21 +38,36 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
     :type=>Appcelerator::Types::StringType
   },
   {
-    :name=>'language',
-    :help=>'language-specific project to create (such as java)',
+    :name=>'service',
+    :help=>'service-specific project to create (such as java)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::EnumerationType.new(languages),
-    :conversion=>Appcelerator::Types::StringType
+    :type=>Appcelerator::Types::StringType
   }
 ],nil,[
   'create:project ~/mypath test java',
   'create:project C:\mydir myproject ruby'
 ]) do |args,options|
 
-  # figure out path to language directory
-  service = args[:language]
 
+  service_entry = nil
+  
+  # determine if we have the service the user is asking for
+  list = Appcelerator::Installer.fetch_distribution_list
+  list[:service].each do |svc|
+    if args[:service] == svc[:name]
+      service_entry = svc
+      break
+    end
+  end
+  
+  if not service_entry
+    STDERR.puts "Couldn't find a service named #{args[:service]}."
+    exit 1
+  end
+  
+  service = service_entry[:name]
+  
   service_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component 'service','SOA Integration Point',service,true
   
   if OPTIONS[:debug]
@@ -75,19 +87,19 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   # from and to directories
   from = service_dir
   to = File.expand_path(File.join(args[:path].path,args[:name]))
-  lang = "#{service[0,1].upcase}#{service[1..-1]}"
+  service_name = "#{service[0,1].upcase}#{service[1..-1]}"
   
-  puts "Creating #{lang} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{service_name} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
   # use our helper
   Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],service,version
   config = Appcelerator::Installer.create_project(to,args[:name],service,version)
   
   # now execute the install script
-  installer = eval "Appcelerator::#{lang}.new"
+  installer = eval "Appcelerator::#{service_name}.new"
   success = false
   if installer.create_project(from,to,config)
-    puts "Appcelerator #{lang} project created ... !" unless OPTIONS[:quiet]
+    puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
     success = true
   end
 

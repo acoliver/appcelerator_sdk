@@ -31,6 +31,7 @@ module Appcelerator
     @@distributions = nil
     @@site_config = nil
     @@site_config_file = nil
+    @@installed_in_session = Array.new
     
     def Installer.user_home
       if ENV['HOME']
@@ -474,6 +475,7 @@ module Appcelerator
       depends.each do |d|
         next if same?(component,d)
         next if dependency_specified?(d,dependencies)
+        next if @@installed_in_session.include? "#{d[:type]}_#{d[:name]}_#{d[:version]}"
         installed,depends = component_installed?(d)
         dependencies << d
         checked << d[:name]
@@ -490,6 +492,7 @@ module Appcelerator
           depends.each do |dd|
             next if Installer.same?(dd,component)
             next if checked.include?(dd[:name])
+            next if @@installed_in_session.include? "#{dd[:type]}_#{dd[:name]}_#{dd[:version]}"
             dependencies << dd
             count+=1
             checked << dd[:name]
@@ -672,6 +675,7 @@ module Appcelerator
           e[:name]==name and e[:type]==type and e[:version]==version
         end
         array << {:name=>name,:type=>type,:version=>version,:checksum=>checksum}
+        @@installed_in_session << "#{type}_#{name}_#{version}"
       end
     end
     
@@ -703,8 +707,12 @@ module Appcelerator
         end
         count+=1
       end
+      
+      # check to see if within this session (only) if we've already installed this and if so, don't attempt
+      # to get it again
+      installed = @@installed_in_session.include? "#{found[:type]}_#{found[:name]}_#{found[:version]}"
 
-      fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update]
+      fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update] and not installed
       return Installer.fetch_network_component(type,from,found,count+1,count+1) unless fnc
       
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
