@@ -163,6 +163,19 @@ function(element,condition,action,elseAction,delay,ifCond)
 		};
 		Appcelerator.Compiler.addEventListener(element,event,f,delay);		
 	}
+    else if(event == 'change')
+    {
+        var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifCond);
+        
+        element._validatorObserver = new Form.Element.Observer(
+            element,
+            .5,  
+            function(element, value)
+            {
+                actionFunc(element,value);
+            }
+        );
+    }
 	else
 	{
 		if (children)
