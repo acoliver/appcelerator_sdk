@@ -366,9 +366,9 @@ Appcelerator.Util.ServiceBroker =
                 return;
             }
         }
+		var stat = Appcelerator.Util.Performance.createStat();
 
         var array = this.remoteDirectListeners[type];
-		var stat = Appcelerator.Util.Performance.createStat();
         if (array && array.length > 0)
         {
             for (var c = 0, len = array.length; c < len; c++)
@@ -389,7 +389,8 @@ Appcelerator.Util.ServiceBroker =
                 }
             }
         }
-		Appcelerator.Util.Performance.endStat(stat,type,data);
+		Appcelerator.Util.Performance.endStat(stat,type,"remote");
+
     },
     sendToListener: function (listener, type, msg, datatype, from, scope)
     {
@@ -432,6 +433,7 @@ Appcelerator.Util.ServiceBroker =
         }
         
         $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
+		var stat = Appcelerator.Util.Performance.createStat();
         try
         {
             listener['onMessage'].apply(listener, [type,msg,datatype,from,scope]);
@@ -440,6 +442,7 @@ Appcelerator.Util.ServiceBroker =
         {
             $E("Unhandled Exception dispatching:" + type + ", " + msg + ", to listener:" + listener + ", " + Object.getExceptionDetail(e));
         }
+		Appcelerator.Util.Performance.endStat(stat,type,from);
         return true;
     },
 
@@ -1378,25 +1381,30 @@ Appcelerator.Util.Performance =
 		if (this.logStats)
 			return new Date();
 	},
-	endStat: function (start,type,data)
+	endStat: function (start,type,category,data)
     {
 		if (this.logStats)
 		{
+			var id = type;
+			if (category)
+				id = id+'.'+category
+			else
+				category='';
 			var end = new Date();
-			var stat = this.stats.get(type);
+			var stat = this.stats.get(id);
         	var diff = (end.getTime() - start.getTime());
 			if (!stat)
 			{
-				var stat = {'type':type,'hits':0,'mean':0,'min':diff,'max':diff,'total':0};
-				this.stats.set(type,stat);
+				var stat = {'type':type,'category':category,'hits':0,'mean':0,'min':diff,'max':diff,'total':0};
+				this.stats.set(id,stat);
 			}
 			stat.hits++;
 			stat.last = diff;
-			stat.max = (stat.last > stat.max ? stat.last : stat.max); 
-			stat.min = (stat.last < stat.min ? stat.last : stat.min); 
 			stat.total +=diff;
 			stat.mean = stat.total/stat.hits;
-			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + 'ms min:'+stat.min+'ms max:'+stat.max+'ms total:'+stat.total);
+			stat.max = (stat.last > stat.max ? stat.last : stat.max); 
+			stat.min = (stat.last < stat.min ? stat.last : stat.min); 
+			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + ' min:'+stat.min+'ms max:'+stat.max+'ms total:' + stat.total+'ms');
 		}
 	},
 	reset: function (start,type,data)

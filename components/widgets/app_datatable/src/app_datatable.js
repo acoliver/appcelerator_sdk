@@ -406,28 +406,11 @@ Appcelerator.Widget.Datatable =
 				//compare all lower case strings so words starting with capital letters are not at the top/bottom of the list
 				var astr = Object.getNestedProperty(a,column_property_name);
 				var bstr = Object.getNestedProperty(b,column_property_name);
-				if (!isNaN(astr) || "NaN" == astr && !isNaN(bstr) || "NaN" == bstr) {
-					if (parameterMap['sortBy'][column_property_name] == true)
-						if (astr == "NaN")
-							return -1;
-						else if (bstr == "NaN")
-						 	return 1;
-						else 
-							return parseFloat(astr) - parseFloat(bstr);
-					else
-						if (bstr == "NaN")
-							return -1;
-						else if (astr == "NaN")
-						 	return 1;
-						else 
-							return parseFloat(bstr) - parseFloat(astr);
-				} else {
-					if (bstr)
-						bstr = bstr.toLowerCase();
-					if (astr)
-						astr = astr.toLowerCase();
-				    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
-				}
+				if (bstr)
+					bstr = bstr.toLowerCase();
+				if (astr)
+					astr = astr.toLowerCase();
+			    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
 		  };
 			array.sort(compareString);
 		}	
@@ -456,6 +439,24 @@ Appcelerator.Widget.Datatable =
 		parameterMap['add_spacers_to_header'] = false;
 		
 		Appcelerator.Widget.Datatable.createDataTable(id);
+	},
+	sortNan: function (astr,bstr)
+	{
+		if (!astr)
+			astr=0;
+		if (!bstr)
+			bstr=0;
+		if (!isNaN(astr) || "NaN" == astr && !isNaN(bstr) || "NaN" == bstr) {
+			if (astr == "NaN")
+				return -1;
+			else if (bstr == "NaN")
+			 	return 1;
+			else 
+				return parseFloat(astr) - parseFloat(bstr);
+		} else {
+		    return (bstr < astr) - (astr < bstr);
+		}
+		
 	},
 	sortDataTableServer: function (index, id)
 	{
