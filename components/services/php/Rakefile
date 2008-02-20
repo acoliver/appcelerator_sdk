@@ -25,6 +25,7 @@ build_config = load_config(BUILD_DIR)
 desc 'default build'
 task :default do
 
+  FileUtils.mkdir_p "#{STAGE_DIR}"
   zipfile = "#{STAGE_DIR}/service_php_#{build_config[:version]}.zip"
   FileUtils.rm_rf zipfile
 

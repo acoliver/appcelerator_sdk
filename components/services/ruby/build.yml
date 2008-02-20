@@ -1,8 +1,8 @@
 --- 
 :type: service
+:name: ruby
 :dependencies: 
 - :type: websdk
   :name: websdk
   :version: ">=2.1"
-:name: ruby
 :version: 1.0.0
