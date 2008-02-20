@@ -34,7 +34,7 @@ Appcelerator::CommandRegistry.registerCommand('install:service','install an SOA 
 ]) do |args,options|
 
   args[:location].split(',').uniq.each do |service|
-    Appcelerator::Installer.install_component 'service','SOA Integration Point',service.strip
+    Appcelerator::Installer.install_component :service,'SOA Integration Point',service.strip
   end
 
 end

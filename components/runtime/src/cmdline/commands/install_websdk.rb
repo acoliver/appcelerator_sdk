@@ -32,6 +32,6 @@ Appcelerator::CommandRegistry.registerCommand('install:websdk','install the web 
   'install:websdk http://aurl.com/websdk.zip'
 ]) do |args,options|
 
-  Appcelerator::Installer.install_component 'websdk','WebSDK',args[:location] || 'websdk'
+  Appcelerator::Installer.install_component :websdk,'WebSDK',args[:location] || 'websdk'
   
 end

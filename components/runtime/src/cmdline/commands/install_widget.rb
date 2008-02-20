@@ -34,6 +34,6 @@ Appcelerator::CommandRegistry.registerCommand('install:widget','install a widget
 ]) do |args,options|
 
   args[:location].split(',').uniq.each do |widget|
-    Appcelerator::Installer.install_component 'widget','Widget',widget.strip
+    Appcelerator::Installer.install_component :widget,'Widget',widget.strip
   end
 end

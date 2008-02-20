@@ -26,7 +26,7 @@ module Appcelerator
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component 'websdk','WebSDK','websdk'
+      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk'
       options[:websdk] = web_version
       options[:installed_widgets] = []
 

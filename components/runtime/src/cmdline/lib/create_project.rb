@@ -53,15 +53,19 @@ module Appcelerator
       config[:project]=path
       config[:service]=service
       
-      # install the web files
-      config = install_web_project(config)
-
       # write out our main configuration file
-      props = {:installed=>Time.now,:service=>service,:service_version=>version,:websdk=>config[:websdk],:widgets=>config[:installed_widgets]}
-      put "#{path}/config/appcelerator.config", props.to_yaml.to_s
+      props = {
+        :installed=>Time.now,
+        :service=>service,
+        :service_version=>version,
+        :websdk=>config[:websdk],
+        :widgets=>config[:installed_widgets],
+        :plugins=>[]
+      }
+      Installer.save_project_config path,props
 
-      # return our config
-      config
+      # install the web files
+      install_web_project(config)
     end
     
   end

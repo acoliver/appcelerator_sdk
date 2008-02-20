@@ -11,7 +11,7 @@
     <description>myapp Build File</description>
 
     <property file="${user.home}/.ant.properties"/>
-    <property file="build.properties"/>
+    <property file="config/build.properties"/>
 	<property name="dist.dir" value="${stage.dir}"/>
 
 	<path id="classpath">
@@ -65,6 +65,9 @@
 		<copy todir="${stage.dir}/war">
 			<fileset dir="${web.dir}" includes="**/*"/>
 			<fileset dir="${src.war.dir}" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/war/WEB-INF/classes">
+			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config"/>
 		</copy>
 		<copy todir="${stage.dir}/lib">
 			<fileset dir="${lib.dir}" includes="*.jar"/>

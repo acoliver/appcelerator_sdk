@@ -49,36 +49,34 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
     args[:name].split(',').uniq.each do |name|
       class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
       plugin_name = name.gsub ':', '_'
-
+      
       # this is used to make sure we're in a project directory
-      lang = Appcelerator::Project.get_language(pwd)
-
-      config_file = "#{RELEASE_DIR}/plugins/#{plugin_name}/config.yml"
-
-      if not File.exists?(config_file)
-        # TODO: check the network for it
-        STDERR.puts "Couldn't find a locally installed plugin named: #{name}. Try to install it first."
-        next
+      lang = Appcelerator::Project.get_service(pwd)
+      
+      plugin = Appcelerator::Installer.get_component_from_config(:plugin,name,options[:version])
+      
+      if not plugin
+        STDERR.puts "Couldn't find plugin named: #{name}."
+        exit 1
       end
-
-      config = YAML.load_file config_file
-      version = OPTIONS[:version] || config[:version]
-      plugin_dir = "#{RELEASE_DIR}/plugins/#{plugin_name}/#{version}"
-
-      if not File.exists?(plugin_dir)
-        # TODO: check the network for it
-        STDERR.puts "Couldn't find a locally installed plugin named: #{name} at version: #{version}. Try to install it first."
-        next
-      end
-
-      to_dir = "#{Dir.pwd}/plugins/#{plugin_name}"
+      
+      plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true)
+      
+      to_dir = "#{pwd}/plugins/#{plugin_name}"
       FileUtils.mkdir_p to_dir unless File.exists?(to_dir)
 
-      Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',plugin_name,version,plugin_dir,to_dir
-      Appcelerator::Installer.copy plugin_dir, to_dir
-      Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',plugin_name,version,plugin_dir,to_dir
+      Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',name,version,plugin_dir,to_dir,pwd
+      
+      Appcelerator::Installer.with_project_config(pwd) do |config|
+        p = config[:plugins]
+        p.delete_if do |plugin|
+          plugin[:name] == name and plugin[:type] == 'plugin'
+        end
+        p << {:name=>name,:type=>'plugin',:version=>version}
+      end
 
-      puts "Installed #{name}" unless OPTIONS[:quiet] or config[:quiet]
+      Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd
+      puts "Installed #{name}" unless OPTIONS[:quiet]
     end
   end
   

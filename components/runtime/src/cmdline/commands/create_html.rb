@@ -33,7 +33,7 @@ Appcelerator::CommandRegistry.registerCommand('create:html','create a new html f
   name = args[:name].gsub('.html','')
   
   # this is used to make sure we're in a project directory
-  lang = Appcelerator::Project.get_language
+  lang = Appcelerator::Project.get_service
 
   Appcelerator::PluginManager.dispatchEvent 'before_create_html',"#{Dir.pwd}/public/#{name}.html",lang
   template = File.read "#{File.dirname(__FILE__)}/templates/template.html"

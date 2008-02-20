@@ -21,7 +21,7 @@
 module Appcelerator
   class Java
     def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml'])
+      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml'])
 
       # re-write the application name to be the name of the directory
       name = File.basename(to_path)
@@ -34,6 +34,8 @@ module Appcelerator
       template_dir = File.join(File.dirname(__FILE__),'templates')
       FileUtils.mkdir_p "#{to_path}/src/war/WEB-INF"
       FileUtils.cp_r "#{template_dir}/web.xml","#{to_path}/src/war/WEB-INF"
+      
+      FileUtils.mv "#{to_path}/build.properties", "#{to_path}/config/build.properties"
 
       #
       # create an Eclipse .project/.classpath file      
@@ -54,6 +56,8 @@ module Appcelerator
       classpath<<"</classpath>"
       
       Appcelerator::Installer.put "#{to_path}/.classpath",classpath.join("\n")
+      
+      ###FIXME add appcelerator nature
       
       project=<<STR
 <projectDescription>

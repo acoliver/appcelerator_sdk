@@ -23,7 +23,7 @@ Appcelerator::CommandRegistry.registerCommand('run','run an Appcelerator project
   
   pwd = Dir.pwd
   
-  case Appcelerator::Project.get_language
+  case Appcelerator::Project.get_service
     when 'java'
       port = options[:port] || 4000
       scanperiod = options[:scan_period] || 5000

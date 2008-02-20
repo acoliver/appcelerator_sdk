@@ -82,10 +82,12 @@ task :default do
      zipfile = "#{STAGE_DIR}/service_java_#{build_config[:version]}.zip"
      FileUtils.rm_rf zipfile
      
+     excludes = %w(lib/optional/spring-2.5.jar lib/optional/ant-1.7.0.jar lib/optional/cglib-2.1.3.jar lib/optional/junit.jar)
+     
      Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
       dofiles("#{java_dir}/dist") do |f|
         filename = f.to_s
-        if not filename == '.'
+        if not filename == '.' and not excludes.include? filename
           zipfile.add(filename,"#{java_dir}/dist/#{filename}")
         end
       end

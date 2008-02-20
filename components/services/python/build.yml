@@ -2,7 +2,7 @@
 :type: service
 :dependencies: 
 - :type: websdk
-  :name: websdk
   :version: ">=2.1"
-:name: python
+  :name: websdk
 :version: 1.0.0
+:name: python

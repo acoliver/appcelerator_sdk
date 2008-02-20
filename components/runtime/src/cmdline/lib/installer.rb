@@ -526,6 +526,7 @@ module Appcelerator
     end
     
     def Installer.iterator_dependencies(dependencies,component,quiet=false)
+      return nil unless dependencies
       if dependencies.length > 0
         
         if not OPTIONS[:force_update]
@@ -680,21 +681,11 @@ module Appcelerator
     end
     
     def Installer.install_from_devnetwork(type,description,from,quiet_if_installed=false)
-      list = Installer.fetch_distribution_list
-      components = list[type.to_sym]
 
-      found = nil
-      if components
-        components.each do |component|
-          if component[:name] == from
-            found = component
-            break
-          end
-        end
-      end
+      found = Installer.get_component_from_config type,from
       
       if not found
-        STDERR.puts "Couldn't find #{type} #{from}"
+        STDERR.puts "Couldn't find #{type.to_s} #{from}"
         exit 1
       end
       
@@ -723,29 +714,28 @@ module Appcelerator
       with_site_config(false) do |site_config|
         distributions = site_config[:distributions]
         if distributions
-          c = distributions[type.to_sym]
+          c = distributions[type]
           if c
             c.each do |cm|
-              return cm if cm[:name]==name and cm[:type]==type and ((!version.nil? and cm[:version]==version) or version.nil?)
+              return cm if cm[:name]==name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
             end
           end
         end
       end
-      nil
+      get_installed_component({:name=>name,:type=>type,:version=>version})
     end
     
     def Installer.get_installed_component(found)
       name = found[:name]
       type = found[:type]
       version = found[:version]
-
       with_site_config(false) do |site_config|
         installed = site_config[:installed]
         if installed
           c = installed[type.to_sym]
           if c
             c.each do |cm|
-              return cm if cm[:name] == name and cm[:type]==type and cm[:version]==version
+              return cm if cm[:name] == name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
             end
           end
         end
@@ -759,6 +749,26 @@ module Appcelerator
       f.close
       md5
     end
+    
+    def Installer.get_project_config(dir)
+      config = YAML::load_file "#{dir}/config/appcelerator.config" if File.exists? "#{dir}/config/appcelerator.config"
+      config||={}
+      config
+    end
+    
+    def Installer.save_project_config(dir,config)
+      f = File.open "#{dir}/config/appcelerator.config", 'w+'
+      puts "saving project config = #{dir}" if OPTIONS[:debug]
+      f.puts config.to_yaml
+      f.close
+    end
+    
+    def Installer.with_project_config(dir,save=true)
+      config = get_project_config dir
+      yield config
+      save_project_config dir,config if save
+    end
+    
   end
 end
 

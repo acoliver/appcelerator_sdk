@@ -3,6 +3,7 @@
 :name: php
 :dependencies: 
 - :type: websdk
-  :name: websdk
   :version: ">=2.1"
+  :name: websdk
+:name: php
 :version: 1.0.0

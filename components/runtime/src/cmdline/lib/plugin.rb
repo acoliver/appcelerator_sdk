@@ -61,19 +61,24 @@ module Appcelerator
   end
 end
 
-PLUGIN_DIR = "#{RELEASE_DIR}/plugins"
-PROJECT_PLUGIN_DIR = "#{Dir.pwd}/plugins"
+PROJECT_PLUGIN_DIR = "#{Dir.pwd}/plugin"
+
+Appcelerator::Installer.with_site_config(false) do |config|
+  onload = config[:onload]
+  if onload
+    onload.each do |l|
+      next unless File.exists? l
+      name = l.gsub('.rb','')
+      require name
+    end
+  end
+end
 
 # load all the plugins
-[PLUGIN_DIR,PROJECT_PLUGIN_DIR].each do |pdir|
+[PROJECT_PLUGIN_DIR].each do |pdir|
   next unless File.exists?(pdir)
   Dir["#{pdir}/*"].each do |dir|
-    if File.directory?(dir) and File.exists?("#{dir}/config.yml")
-      config = YAML.load_file("#{dir}/config.yml")
-      version = config[:version]
-      path = "#{dir}/#{version}/#{File.basename(dir)}.rb"
-      require path if File.exists?(path)
-    elsif File.file?(dir) and File.extname(dir)=='.rb'
+    if File.file?(dir) and File.extname(dir)=='.rb'
       # load plugins in same directory as plugins
       require dir
     elsif File.directory?(dir)

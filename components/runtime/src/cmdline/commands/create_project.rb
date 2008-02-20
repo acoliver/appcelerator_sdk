@@ -68,7 +68,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   
   service = service_entry[:name]
   
-  service_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component 'service','SOA Integration Point',service,true
+  service_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component :service,'SOA Integration Point',service,true
   
   if OPTIONS[:debug]
     puts "service_dir=#{service_dir}"

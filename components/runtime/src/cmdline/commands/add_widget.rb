@@ -51,16 +51,16 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
       widget_name = name.gsub ':', '_'
 
       # this is used to make sure we're in a project directory
-      lang = Appcelerator::Project.get_language(pwd)
+      lang = Appcelerator::Project.get_service(pwd)
       
-      widget = Appcelerator::Installer.get_component_from_config('widget',name,options[:version])
+      widget = Appcelerator::Installer.get_component_from_config(:widget,name,options[:version])
       
       if not widget
         STDERR.puts "Couldn't find widget named: #{name}."
         exit 1
       end
       
-      widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component('widget','Widget',name,true)
+      widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true)
       
       to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
       FileUtils.mkdir_p to_dir unless File.exists?(to_dir)

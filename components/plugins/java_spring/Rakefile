@@ -39,15 +39,22 @@ end
 desc 'zip up the plugin'
 task :zip do
   src_dir = File.expand_path "#{File.dirname(__FILE__)}/src"
+  etc_dir = File.expand_path "#{File.dirname(__FILE__)}/etc"
+  lib_dir = File.expand_path "#{File.dirname(__FILE__)}/lib"
+  templates_dir = File.expand_path "#{File.dirname(__FILE__)}/templates"
   FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
   Zip::ZipFile.open(ZIPFILE, Zip::ZipFile::CREATE) do |zipfile|
-    Find.find(src_dir) do |path|
-        pathname = Pathname.new(path)
-        if not path.include? '.svn' and pathname.file?
-          filename = pathname.relative_path_from(Pathname.new(src_dir))
-          zipfile.add(filename,src_dir+'/'+filename)
-        end
+    [etc_dir,lib_dir,templates_dir].each do |dir|
+      Find.find(dir) do |path|
+          pathname = Pathname.new(path)
+          if not path.include? '.svn' and pathname.file?
+            filename = pathname.relative_path_from(Pathname.new(dir))
+            name=path.gsub(File.dirname(__FILE__)+'/','')
+            zipfile.add(name,dir+'/'+filename)
+          end
+      end 
     end
+    zipfile.add('java_spring.rb',"#{src_dir}/java_spring.rb")
     zipfile.add('build.yml','build.yml')
   end
 end

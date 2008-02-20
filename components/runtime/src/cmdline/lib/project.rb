@@ -19,16 +19,14 @@
 
 module Appcelerator
   class Project
-    def Project.get_language(pwd=Dir.pwd)
-      config_file = File.join(pwd,'config','appcelerator.config')
-
-      if not File.exists?(config_file)
+    def Project.get_service(pwd=Dir.pwd)
+      config = Installer.get_project_config(pwd)
+      service = config[:service]
+      if not service
         STDERR.puts "This directory doesn't look like an Appcelerator project. Please switch to your project directory and re-run"
         exit 1
       end
-
-      config = YAML.load_file config_file
-      config[:language]
+      service
     end
     
     def Project.list_installed_components(type)

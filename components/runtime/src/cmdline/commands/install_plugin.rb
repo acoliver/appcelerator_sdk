@@ -35,6 +35,14 @@ Appcelerator::CommandRegistry.registerCommand('install:plugin','install a plugin
 ]) do |args,options|
 
     args[:location].split(',').uniq.each do |plugin|
-      Appcelerator::Installer.install_component 'plugin','Plugin',plugin.strip
+      to_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component :plugin,'Plugin',plugin.strip
+      comp = {:name=>name,:type=>:plugin,:version=>version}
+      component = Appcelerator::Installer.get_installed_component comp
+      Appcelerator::Installer.with_site_config(true) do |config|
+        plugin_name = name.gsub(':','_')
+        config[:onload]||=Array.new
+        config[:onload] << "#{to_dir}/#{plugin_name}.rb"
+      end
     end
 end
+

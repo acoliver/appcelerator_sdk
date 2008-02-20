@@ -2,3 +2,7 @@
 :type: plugin
 :name: java:spring
 :version: 1.0
+:dependencies:
+-   :name: java
+    :type: service
+    :version: ">=1.0.0"
