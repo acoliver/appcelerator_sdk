@@ -421,6 +421,10 @@ Appcelerator.Module.Datatable =
 	},
 	sortNan: function (astr,bstr)
 	{
+		if (!astr)
+			astr=0;
+		if (!bstr)
+			bstr=0;
 		if (!isNaN(astr) || "NaN" == astr && !isNaN(bstr) || "NaN" == bstr) {
 			if (astr == "NaN")
 				return -1;
@@ -429,10 +433,6 @@ Appcelerator.Module.Datatable =
 			else 
 				return parseFloat(astr) - parseFloat(bstr);
 		} else {
-			if (bstr)
-				bstr = bstr.toLowerCase();
-			if (astr)
-				astr = astr.toLowerCase();
 		    return (bstr < astr) - (astr < bstr);
 		}
 		
