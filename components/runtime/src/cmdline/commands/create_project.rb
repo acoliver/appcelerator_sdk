@@ -62,6 +62,21 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   end
   
   if not service_entry
+    with_site_config(false) do |site_config|
+      installed = site_config[:installed]
+      if installed
+        c = installed[:service]
+        if c
+          c.each do |cm|
+              service_entry = cm if cm[:name] == args[:service]
+              break if service_entry
+          end
+        end
+      end
+    end
+  end
+  
+  if not service_entry
     STDERR.puts "Couldn't find a service named #{args[:service]}."
     exit 1
   end
