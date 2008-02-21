@@ -41,6 +41,8 @@ public class ServiceAdapter
         this.instance = i;
         this.method = m;
         this.service = s;
+        
+        this.method.setAccessible(true);
     }
     public boolean is(Class<? extends Object> clz, Method method, Service service)
     {
@@ -48,7 +50,7 @@ public class ServiceAdapter
         {
             if (method.equals(this.method))
             {
-                return this.service.equals(service);
+                return this.service.annotationType().equals(service.annotationType());
             }
         }
         return false;
@@ -60,7 +62,7 @@ public class ServiceAdapter
             ServiceAdapter sa=(ServiceAdapter)obj;
             return sa.instance.equals(instance) && 
                    sa.method.equals(method) &&
-                   service.equals(service);
+                   sa.service.equals(service);
         }
         return false;
     }
@@ -98,6 +100,10 @@ public class ServiceAdapter
                 {
                     this.method.invoke(this.instance, request, response);
                     break;
+                }
+                default:
+                {
+                    throw new Exception("invalid service signature");
                 }
             }
         }

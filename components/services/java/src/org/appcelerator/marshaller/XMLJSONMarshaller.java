@@ -81,6 +81,7 @@ public class XMLJSONMarshaller
         // now serialize the XML to the servlet's output stream
         PrintWriter writer = new PrintWriter(out,true);
         Util.serialize(xml, writer, "UTF-8");
+        writer.flush();
         
         return "text/xml;charset=UTF-8";
     }

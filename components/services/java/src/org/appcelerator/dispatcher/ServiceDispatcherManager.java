@@ -46,7 +46,12 @@ public class ServiceDispatcherManager
                 {
                     try
                     {
-                        dispatchers.add(new ServiceDispatcherAdapter(dispatcher,method));
+                        Method m = dispatcher.getMethod("createDispatcher");
+                        Object instance = m.invoke(null);
+                        if (instance!=null)
+                        {
+                            dispatchers.add(new ServiceDispatcherAdapter(instance,method));
+                        }
                     }
                     catch (ClassNotFoundException cnf)
                     {
@@ -66,12 +71,12 @@ public class ServiceDispatcherManager
         private final Object instance;
         private final Method method;
 
-        ServiceDispatcherAdapter(Class<? extends Object> clz, Method method) throws Exception
+        ServiceDispatcherAdapter(Object instance, Method method) throws Exception
         {
-            this.instance = clz.newInstance();
+            this.instance = instance;
             this.method = method;
             this.method.setAccessible(true);
-            Method init = clz.getMethod("initialize");
+            Method init = instance.getClass().getMethod("initialize");
             if (init!=null)
             {
                 init.setAccessible(true);
@@ -97,15 +102,13 @@ public class ServiceDispatcherManager
      */
     public static boolean dispatch (Message request, List<Message> responses) throws Exception
     {
-        int count = 0;
         for (ServiceDispatcherAdapter dispatcher : dispatchers)
         {
-            if (!dispatcher.call(request, responses))
+            if (dispatcher.call(request, responses))
             {
-                break;
+                return true;
             }
-            count++;
         }
-        return count > 0;
+        return false;
     }
 }

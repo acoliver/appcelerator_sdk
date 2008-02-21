@@ -20,15 +20,8 @@
  */
 package org.appcelerator.messaging;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Date;
-
-import org.appcelerator.annotation.MessageAttr;
-import org.appcelerator.util.DateUtil;
 
 /**
  * MessageDataSerializer handles serialization of a particular object to a transportable IMessageDataObject.

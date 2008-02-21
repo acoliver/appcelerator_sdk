@@ -36,17 +36,26 @@ import org.appcelerator.messaging.Message;
 public class ServiceAnnotationDispatcher
 {
     private static final Log LOG = LogFactory.getLog(ServiceAnnotationDispatcher.class);
-    
+
+    /**
+     * called by dispatcher manager to create an instance of this dispatcher
+     * 
+     * @return
+     */
+    public static Object createDispatcher()
+    {
+        return new ServiceAnnotationDispatcher();
+    }
     /**
      * called when the dispatcher is loaded
      */
-    public void initialize ()
+    public void initialize()
     {
         for (Class<? extends Object> serviceClass : AnnotationHelper.findAnnotation(Service.class))
         {
             try
             {
-                ServiceRegistry.registerServiceMethods(serviceClass,false,null);
+                ServiceRegistry.registerServiceMethods(serviceClass,false,null,null);
             }
             catch (Exception ex)
             {

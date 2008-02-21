@@ -56,6 +56,8 @@ task :zip do
     end
     zipfile.add('java_spring.rb',"#{src_dir}/java_spring.rb")
     zipfile.add('build.yml','build.yml')
+    zipfile.add('spring_license.txt','spring_license.txt')
+    zipfile.add('spring_notice.txt','spring_notice.txt')
   end
 end
 

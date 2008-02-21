@@ -33,6 +33,24 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Service
 {
+    /**
+     * service request name
+     * 
+     * @return
+     */
     String request();
+    
+    /**
+     * service response name or null/empty string for no response
+     * 
+     * @return
+     */
     String response() default "";
+    
+    /**
+     * service version (defaults to 1.0)
+     * 
+     * @return
+     */
+    String version() default "1.0";
 }

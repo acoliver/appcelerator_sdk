@@ -74,10 +74,9 @@ public class ServiceRegistry
         adapter=null;
     }
     
-    public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations) throws Exception
+    public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance) throws Exception
     {
-        Object instance = null;
-        for (Method method : serviceClass.getMethods())
+        for (Method method : serviceClass.getDeclaredMethods())
         {
            Service service = method.getAnnotation(Service.class);
            if (service!=null)
@@ -146,7 +145,7 @@ public class ServiceRegistry
         {
             registrations.add(adapter);
         }
-        return null;
+        return instance;
     }
     
     public static boolean dispatch (Message request, List<Message> responses)
@@ -156,15 +155,26 @@ public class ServiceRegistry
         {
             for (ServiceAdapter adapter : adapters)
             {
-                Message response = null;
-                if (adapter.getService().response()!=null)
+                String version = adapter.getService().version();
+                if (version == null || version.equals("") || version.equals(request.getVersion()))
                 {
-                    response = MessageUtils.createResponseMessage(request);
-                    response.setType(adapter.getService().response());
+                    Message response = null;
+                    boolean hasResponse = false;
+                    if (adapter.getService().response()!=null)
+                    {
+                        response = MessageUtils.createResponseMessage(request);
+                        response.setType(adapter.getService().response());
+                        hasResponse = true;
+                    }
+                    adapter.dispatch(request, response);
+                    if (hasResponse)
+                    {
+                        responses.add(response);
+                    }
+                    return true;
                 }
-                adapter.dispatch(request, response);
             }
         }
-        return true;
+        return false;
     }
 }

@@ -1,9 +1,8 @@
 --- 
 :type: service
-:name: php
 :dependencies: 
 - :type: websdk
-  :version: ">=2.1"
   :name: websdk
-:name: php
+  :version: ">=2.1"
 :version: 1.0.0
+:name: php

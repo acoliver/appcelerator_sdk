@@ -31,11 +31,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javassist.ClassPool;
 import javassist.CtClass;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -242,7 +242,7 @@ public class ServiceDirectoryScanner implements Runnable
             
             try
             {
-                ServiceRegistry.registerServiceMethods(clz,true,registrations);
+                ServiceRegistry.registerServiceMethods(clz,true,registrations,null);
             }
             catch (Exception ex)
             {

@@ -69,14 +69,18 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
       
       Appcelerator::Installer.with_project_config(pwd) do |config|
         p = config[:plugins]
-        p.delete_if do |plugin|
-          plugin[:name] == name and plugin[:type] == 'plugin'
+        if not p
+          p = []
+          config[:plugins] = p
         end
-        p << {:name=>name,:type=>'plugin',:version=>version}
+        p.delete_if do |plugin|
+          plugin[:name] == name
+        end
+        p << {:name=>name,:version=>version}
       end
 
       Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd
-      puts "Installed #{name}" unless OPTIONS[:quiet]
+      puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
     end
   end
   

@@ -22,44 +22,71 @@ package org.appcelerator.dispatcher;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.ServiceDispatcher;
 import org.appcelerator.messaging.Message;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 /**
  * A {@link @ServiceDispatcher} which loads {@link @Service} annotations from
  * a Spring BeanContext.
  */
-public class SpringBeanDispatcher implements BeanPostProcessor
+public class SpringBeanDispatcher implements BeanFactoryAware
 {
     private static final Log LOG = LogFactory.getLog(SpringBeanDispatcher.class);
+    private ListableBeanFactory factory;
+    private static Object instance;
+    
     
     @ServiceDispatcher
     public boolean dispatch (Message request, List<Message> responses)
     {
         return ServiceRegistry.dispatch(request, responses);
     }
-
-    public Object postProcessAfterInitialization(Object bean, String beanName)
-            throws BeansException
+    
+    @PostConstruct
+    public void create()
     {
-        try
-        {
-            ServiceRegistry.registerServiceMethods(bean.getClass(), true, null);
-        }
-        catch (Exception e)
-        {
-            LOG.error("Error registering spring bean: "+beanName+" as @Service");
-        }
-        return bean;
+        instance = this;
+    }
+    
+    public static Object createDispatcher()
+    {
+        return instance;
     }
 
-    public Object postProcessBeforeInitialization(Object bean, String beanName)
-            throws BeansException
+	public void initialize()
+	{
+	    for (String name : factory.getBeanDefinitionNames())
+	    {
+	        Object bean = factory.getBean(name);
+	        try
+	        {
+	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+name);
+	            ServiceRegistry.registerServiceMethods(bean.getClass(), true, null, bean);
+	        }
+	        catch (Exception e)
+	        {
+	            LOG.error("Error registering spring bean: "+name+" as @Service");
+	        }
+	    }
+	}
+
+	public void setBeanFactory(BeanFactory f) throws BeansException
     {
-        return bean;
+        if (f instanceof ListableBeanFactory)
+        {
+            this.factory = (ListableBeanFactory)f;
+        }
+        else
+        {
+            throw new IllegalArgumentException("bean factory needs to have implemented ListableBeanFactory for SpringBeanDispatcher to work");
+        }
     }
 }

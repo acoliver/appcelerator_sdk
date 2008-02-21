@@ -20,9 +20,12 @@
  */
 package org.appcelerator.transport;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -170,9 +173,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             
             for (Message request : requests)
             {
-                // dispatch the message
-//FIXME                request.setUser(req.getUserPrincipal());
-
+                request.setUser(req.getUserPrincipal());
                 request.setInstanceid(instanceid);
                 request.setSession(session);
                 request.setSessionid(session.getId());
@@ -207,10 +208,35 @@ public class AjaxServiceTransportServlet extends HttpServlet
             resp.setHeader("Cache-control", "no-cache, no-store, private, must-revalidate");
             resp.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             
+            
             // encode the responses
             ServletOutputStream output = resp.getOutputStream();
-            String responseType = ServiceMarshallerManager.encode(type, responses, output);
+            ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
+            String responseType = ServiceMarshallerManager.encode(type, responses, bout);
+            byte buf [] = bout.toByteArray();
+            ByteArrayInputStream bin = new ByteArrayInputStream(buf);
+            
             resp.setContentType(responseType);
+            
+            // do gzip encoding if browser supports it and if length > 1000 bytes
+            String ae = req.getHeader("accept-encoding");
+            if (ae != null && ae.indexOf("gzip") != -1 && buf.length > 1000)
+            {
+                resp.setHeader("Content-Encoding", "gzip");
+                //a Vary: Accept-Encoding HTTP response header to alert proxies that a cached response should be sent only to 
+                //clients that send the appropriate Accept-Encoding request header. This prevents compressed content from being sent 
+                //to a client that will not understand it.
+                resp.addHeader("Vary","Accept-Encoding");
+                GZIPOutputStream gzip = new GZIPOutputStream(output,buf.length);
+                Util.copy(bin, gzip);
+                gzip.flush();
+                gzip.finish();
+            }
+            else
+            {
+                resp.setContentLength(buf.length);
+                Util.copy(bin, output);
+            }
             output.flush();
         }
         catch (Throwable e)

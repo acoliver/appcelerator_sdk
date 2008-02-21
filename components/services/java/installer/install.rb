@@ -33,7 +33,7 @@ module Appcelerator
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
       FileUtils.mkdir_p "#{to_path}/src/war/WEB-INF"
-      FileUtils.cp_r "#{template_dir}/web.xml","#{to_path}/src/war/WEB-INF"
+      FileUtils.cp_r "#{template_dir}/web.xml","#{to_path}/config"
       
       FileUtils.mv "#{to_path}/build.properties", "#{to_path}/config/build.properties"
 

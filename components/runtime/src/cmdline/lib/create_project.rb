@@ -58,14 +58,19 @@ module Appcelerator
         :installed=>Time.now,
         :service=>service,
         :service_version=>version,
-        :websdk=>config[:websdk],
-        :widgets=>config[:installed_widgets],
         :plugins=>[]
       }
       Installer.save_project_config path,props
 
       # install the web files
-      install_web_project(config)
+      config = Installer.install_web_project(config)
+
+      props[:widgets] = config[:installed_widgets]
+      props[:websdk] = config[:websdk]
+
+      # resize to update changes from web
+      Installer.save_project_config path,props
+      
     end
     
   end

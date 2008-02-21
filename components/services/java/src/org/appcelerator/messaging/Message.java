@@ -22,8 +22,8 @@ package org.appcelerator.messaging;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.security.Principal;
 
-import javax.security.auth.Subject;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -53,7 +53,7 @@ public class Message implements Serializable
     private InetAddress address;
     private String version;
     
-    private transient Subject user;
+    private transient Principal user;
     private transient HttpSession session;
 
     public Message()
@@ -95,7 +95,7 @@ public class Message implements Serializable
      *
      * @param user user originating this message
      */
-    public Message(Subject user)
+    public Message(Principal user)
     {
         super();
         this.user = user;
@@ -129,7 +129,7 @@ public class Message implements Serializable
      * @param sentTimestamp message sender timestamp
      * @param tz        timezone offset of message sender
      */
-    public Message(Subject user, String sessionid, String instanceid, String requestid, String type, MessageDirection direction, MessageDataType dataType, IMessageDataObject data, String scope, InetAddress addr, String version, long sentTimestamp, float timezoneOffset)
+    public Message(Principal user, String sessionid, String instanceid, String requestid, String type, MessageDirection direction, MessageDataType dataType, IMessageDataObject data, String scope, InetAddress addr, String version, long sentTimestamp, float timezoneOffset)
     {
         super();
         this.user = user;
@@ -194,7 +194,7 @@ public class Message implements Serializable
      *
      * @return user
      */
-    public Subject getUser()
+    public Principal getUser()
     {
         return user;
     }
@@ -204,7 +204,7 @@ public class Message implements Serializable
      *
      * @param user originating user
      */
-    public void setUser(Subject user)
+    public void setUser(Principal user)
     {
         this.user = user;
     }

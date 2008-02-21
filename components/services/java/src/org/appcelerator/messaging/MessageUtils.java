@@ -20,12 +20,11 @@
  */
 package org.appcelerator.messaging;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import javax.security.auth.Subject;
 
 import org.appcelerator.json.JSONException;
 import org.appcelerator.json.JSONObject;
@@ -100,7 +99,7 @@ public class MessageUtils
      * @param user    user originating message
      * @return deserialized message
      */
-    public static Message fromXML(Element element, Subject user) throws Exception
+    public static Message fromXML(Element element, Principal user) throws Exception
     {
         Message message = new Message(user);
         message.setRequestid(element.getAttribute("requestid"));
@@ -110,7 +109,7 @@ public class MessageUtils
         message.setData(MessageUtils.createMessageDataObject(element));
         message.setScope(element.getAttribute("scope"));
         String version = element.getAttribute("version");
-        if (version==null)
+        if (version==null || version.equals(""))
         {
             version="1.0";
         }

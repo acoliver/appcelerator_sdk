@@ -67,12 +67,14 @@
 			<fileset dir="${src.war.dir}" includes="**/*"/>
 		</copy>
 		<copy todir="${stage.dir}/war/WEB-INF/classes">
-			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config"/>
+			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml"/>
 		</copy>
 		<copy todir="${stage.dir}/lib">
 			<fileset dir="${lib.dir}" includes="*.jar"/>
+			<fileset dir="${lib.dir}/compiler" includes="xerces-*.jar"/>
+			<fileset dir="${lib.dir}/compiler" includes="xml-apis-*.jar"/>
 		</copy>
-		<war destfile="${stage.dir}/${app.name}.war" webxml="${stage.dir}/war/WEB-INF/web.xml">
+		<war destfile="${stage.dir}/${app.name}.war" webxml="config/web.xml">
 			<lib dir="${stage.dir}/lib" includes="*.jar" />
 			<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
 		</war>
