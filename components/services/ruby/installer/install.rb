@@ -43,7 +43,6 @@ module Appcelerator
       FileUtils.cp_r "#{from_path}/rails/.", "#{to_path}"
       
       projectname = File.basename(to_path)
-      puts "PROJECT #{projectname}"
       xml = File.read("#{to_path}/public/appcelerator.xml")
       if rails_gem.version.to_s.to_f > 1.2
         xml.gsub!(/SESSIONID/,"_#{projectname}_session")
