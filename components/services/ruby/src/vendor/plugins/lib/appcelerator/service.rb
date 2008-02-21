@@ -20,13 +20,17 @@
 #
 
 class Array
+  alias :previous_all? :all?
   def all? &pred
-    each do |e|
-      if not pred.call(e)
-        return false
+    if pred and pred.class.to_s == 'Proc'
+      each do |e|
+        if not pred.call(e)
+          return false
+        end
       end
+      return true
     end
-    return true
+    previous_all?
   end
 end  
 
