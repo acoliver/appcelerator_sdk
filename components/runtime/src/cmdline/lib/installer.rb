@@ -602,8 +602,7 @@ module Appcelerator
     def Installer.fetch_component(type,from,version,to_dir,name,url,idx,total)
       puts "fetching into: #{to_dir} => #{url}" if OPTIONS[:debug]
       FileUtils.mkdir_p to_dir unless File.exists? to_dir
-      Appcelerator::PluginManager.dispatchEvent 'before_
-      ',type,from,name,version,to_dir
+      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,from,name,version,to_dir
       Installer.http_fetch_into("(#{idx}/#{total}) #{name}",url,to_dir)
       Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,from,name,version,to_dir
     end
@@ -628,6 +627,7 @@ module Appcelerator
         version = nil
         checksum = nil
         already_installed = false
+        
        
         case from
           when /^http:\/\//
@@ -662,6 +662,7 @@ module Appcelerator
     end
     
     def Installer.add_installed_component(name,type,version,checksum,save=true)
+      type = type.to_s
       with_site_config(save) do |site_config|
         installed = site_config[:installed]
         installed||={}
@@ -703,6 +704,11 @@ module Appcelerator
       # to get it again
       installed = @@installed_in_session.include? "#{found[:type]}_#{found[:name]}_#{found[:version]}"
 
+      if found[:url].nil?
+        # this was installed locally and not remote
+        return Installer.get_release_directory(found[:type],found[:name],found[:version]),found[:name],found[:version],nil,true
+      end
+      
       fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update] and not installed
       return Installer.fetch_network_component(type,from,found,count+1,count+1) unless fnc
       
