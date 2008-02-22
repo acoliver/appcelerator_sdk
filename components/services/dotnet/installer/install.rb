@@ -21,7 +21,18 @@
 module Appcelerator
   class Dotnet
     def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
+      src_dir = to_path + '/src'
+      public_dir = to_path + '/public'
+      sb_dir = public_dir + '/bin'
+      
+      FileUtils.mkdir_p src_dir
+      FileUtils.mkdir_p sb_dir
+      
+      Appcelerator::Installer.copy(from_path,src_dir,["#{__FILE__}",'appcelerator.xml'])
+      Appcelerator::Installer.copy(from_path + '/appcelerator.xml',public_dir)
+      Appcelerator::Installer.copy(src_dir + '/web.config',public_dir)
+      Appcelerator::Installer.copy(src_dir + '/appcelerator-config.xml',sb_dir)
+      Appcelerator::Installer.copy(src_dir + '/bin/Release/Appcelerator.dll',sb_dir)
       true
     end
   end
