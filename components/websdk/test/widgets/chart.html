@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Chart Widget </h3> 
+<p>
+	These tests exercise the chart widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic Bar Chart
+		</td>
+		<td class="result" >
+			<app:chart on="l:bar1 then execute" type="bar" property="data">
+			</app:chart>
+			<app:message name="l:bar1" args="{'data':[{'name':'coke','value':10},{'name':'pepsi','value':5},{'name':'tab','value':3}]}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Pie Chart
+		</td>
+		<td class="result" >
+			<app:chart on="l:pie1 then execute" type="pie" property="data">
+			</app:chart>
+			<app:message name="l:pie1" args="{'data':[{'name':'coke','value':10},{'name':'pepsi','value':5},{'name':'tab','value':3}]}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Line Chart
+		</td>
+		<td class="result" >
+			<app:chart on="l:line1 then execute" type="line" property="data">
+			</app:chart>
+			<app:message name="l:line1" args="{'data':[{'name':'coke','value':10},{'name':'pepsi','value':5},{'name':'tab','value':3}]}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Bar Chart (test:title, angle, barOrientation, indicator, marginBottom, legendHighlight, legend, chartTitles, color)
+		</td>
+		<td class="result" >
+			<app:chart on="l:bar2 then execute" type="bar" property="data" indicator="true"
+			 legend="true" chartTitles="titles"
+			marginBottom="90" legendHighlght="true" barOrientation="horizontal" color="#ff9900,#336699,#aaaaaa">
+			</app:chart>
+			<app:message name="l:bar2" args="{'data':[{'name':'open defects','value':'10,20,30'},{'name':'closed defects','value':'15,20,5'},{'name':'rejected defects','value':'5,3,7'}],'titles':[{'title':'critical'},{'title':'major'},{'title':'trivial'}]}">
+			</app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Line Chart (test:title, angle, indicator, rotateXY, marginBottom, legendHighlight, legend, chartTitles)
+		</td>
+		<td class="result" >
+			<app:chart on="l:line2 then execute" type="line" property="data" indicator="true"
+			rotateXAxisLabel="true" rotateYAxisLabel="true" legend="true" chartTitles="titles"
+			marginBottom="90" legendHighlght="true">
+			</app:chart>
+			<app:message name="l:line2" args="{'data':[{'name':'open defects','value':'10,20,30'},{'name':'closed defects','value':'15,20,5'},{'name':'rejected defects','value':'5,3,7'}],'titles':[{'title':'critical'},{'title':'major'},{'title':'trivial'}]}">
+			</app:message>
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+#styled_tab .tabpanel_active
+{
+
+	background-color:#ff9900;
+	color:#111;
+}
+
+#styled_tab .tabpanel_inactive
+{
+
+	background-color:#fff;
+	color:#111;
+	font-weight:bold;
+}
+
+#styled_tab .tabpanel_hover
+{
+    background-color: #ccc;
+}
