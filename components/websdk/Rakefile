@@ -21,11 +21,12 @@
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
+JS_PATH = "javascripts"
 
 desc 'build websdk files'
 task :default do
   web_dir = "#{STAGE_DIR}/websdk"
-  js_dir = "#{web_dir}/js"
+  js_dir = "#{web_dir}/#{JS_PATH}" # staging location
   js_source = "#{BUILD_DIR}/src/js"
 
   clean_dir(web_dir)
@@ -108,8 +109,7 @@ END_LICENSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
   
-  # comment out load for scriptaculous - we don't want that to run since we
-  # auto include them already
+  # Strip out scriptaculous's load - since we include its files already
   jsd = File.read(jsdebug)
   jsd.gsub!('Scriptaculous.load();','')
   jsdf = File.open(jsdebug,'w+')
@@ -162,9 +162,9 @@ END_LICENSE
   zipfile = "#{STAGE_DIR}/websdk_#{build_config[:version]}.zip"
   FileUtils.rm_rf zipfile if File.exists? zipfile
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    zipfile.add('js/appcelerator-lite.js',jslite)
-    zipfile.add('js/appcelerator-debug.js',jsdebug)
-    zipfile.add('js/appcelerator.js',jsout)
+    zipfile.add("#{JS_PATH}/appcelerator-lite.js",jslite)
+    zipfile.add("#{JS_PATH}/appcelerator-debug.js",jsdebug)
+    zipfile.add("#{JS_PATH}/appcelerator.js",jsout)
     zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
     Find.find("#{BUILD_DIR}/src/web") do |path|
       pathname = Pathname.new(path)
@@ -183,3 +183,6 @@ END_LICENSE
   end
 end
 
+task :test do
+  
+end
