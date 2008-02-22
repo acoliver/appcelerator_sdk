@@ -61,6 +61,12 @@ namespace :websdk do
       system "rake"
     end
   end
+  
+  task :test do
+    FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
+      system "rake test"
+    end
+  end
 
 end
 

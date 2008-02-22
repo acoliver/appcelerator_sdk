@@ -22,14 +22,14 @@ BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
 JS_PATH = "javascripts"
+WEBSDK_STAGE_DIR = "#{STAGE_DIR}/websdk"
 
 desc 'build websdk files'
 task :default do
-  web_dir = "#{STAGE_DIR}/websdk"
-  js_dir = "#{web_dir}/#{JS_PATH}" # staging location
+  js_dir = "#{WEBSDK_STAGE_DIR}/#{JS_PATH}" # staging location
   js_source = "#{BUILD_DIR}/src/js"
 
-  clean_dir(web_dir)
+  clean_dir(WEBSDK_STAGE_DIR)
 
   FileUtils.mkdir_p js_dir
 
@@ -183,6 +183,16 @@ END_LICENSE
   end
 end
 
-task :test do
+task :test => [:default] do
+  test_stage_dir = "#{STAGE_DIR}/unittest"
+  widgets_path = "#{test_stage_dir}/widgets"
   
+  FileUtils.cp_r("#{BUILD_DIR}/test", test_stage_dir)
+  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_stage_dir)
+  FileUtils.mkdir_p(widgets_path)
+  
+  Dir["#{BUILD_DIR}/../widgets/*/src/"].each do |file|
+    name = file[/widgets\/([^\/]+)\/src/,1]
+    FileUtils.cp_r(file,"#{widgets_path}/#{name}")
+  end
 end
