@@ -171,7 +171,12 @@ Appcelerator.Widget.AppYuiMap =
 			optional: true,
 			description: "the zoom level of the map",
 			defaultValue: "15"
-		}
+        }, {
+            name: "disable_key_controls",
+            optional: true,
+            description: "Disable default keyboard/mouse wheel zoom and pan controls shortcuts",
+            defaultValue: true
+        }
 		];
 	},
 	initializeMap: function(params) 
@@ -180,13 +185,16 @@ Appcelerator.Widget.AppYuiMap =
         mapDiv.style.height = params['height'];
         mapDiv.style.width = params['width'];
         
-		var map = new YMap(document.getElementById(params['id']));
-		this.maps[params['id']] = map;
-		map.removeZoomScale();
-    	map.setMapType(YAHOO_MAP_REG);
-		map.addZoomShort();
-    	map.drawZoomAndCenter(params["initial_location"], parseInt(params["zoom_level"]));
-		$MQ('l:' + params['id'] + '_init');
+        var map = new YMap(document.getElementById(params['id']));
+        this.maps[params['id']] = map;
+        map.removeZoomScale();
+        map.setMapType(YAHOO_MAP_REG);
+        map.addZoomShort();
+        if(params['disable_key_controls']) {
+            map.disableKeyControls();
+        }
+        map.drawZoomAndCenter(params["initial_location"], parseInt(params["zoom_level"]));
+        $MQ('l:' + params['id'] + '_init');
 	},
 	compileWidget: function(params)
 	{
