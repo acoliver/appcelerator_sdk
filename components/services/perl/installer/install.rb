@@ -20,8 +20,8 @@
 
 module Appcelerator
   class Perl
-    def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}"])
+    def create_project(from_path,to_path,config,tx)
+      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}"])
       true
     end
   end

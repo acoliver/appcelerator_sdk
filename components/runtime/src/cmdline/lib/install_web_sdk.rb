@@ -19,34 +19,34 @@
 module Appcelerator
   class Installer
     
-    def Installer.install_web_project(options)
+    def Installer.install_web_project(options,tx)
       
       raise "Invalid options, must specify :web option" unless options[:web]
       raise "Invalid options, must specify :javascript option" unless options[:javascript]
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk'
+      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk',tx
       options[:websdk] = web_version
       options[:installed_widgets] = []
 
-      Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version
+      Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version,tx
 
-      FileUtils.cp_r "#{source_dir}/js/.", options[:javascript]
-      FileUtils.cp_r "#{source_dir}/images/.", options[:images]
-      FileUtils.cp_r "#{source_dir}/swf/.", options[:web] + '/swf'
-      FileUtils.cp_r Dir.glob("#{source_dir}/*.html"), options[:web]
-      FileUtils.cp_r "#{source_dir}/common/.", options[:widgets] + '/common'
+      Installer.copy tx, "#{source_dir}/js/.", options[:javascript]
+      Installer.copy tx, "#{source_dir}/images/.", options[:images]
+      Installer.copy tx, "#{source_dir}/swf/.", options[:web] + '/swf'
+      Installer.copy tx, Dir.glob("#{source_dir}/*.html"), options[:web]
+      Installer.copy tx, "#{source_dir}/common/.", options[:widgets] + '/common'
 
       widgets = Installer.find_dependencies_for({:name=>'websdk',:type=>'websdk'})
       
       # install our widgets
       widgets.each do |widget|
-       Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true})
+       Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true,:tx=>tx,:ignore_path_check=>true})
        options[:installed_widgets] << {:name=>widget[:name],:version=>widget[:version]}
       end if widgets      
 
-      Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version
+      Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version,tx
 
       options
     end

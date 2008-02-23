@@ -131,3 +131,23 @@ namespace :service do
   end
 
 end
+
+namespace :plugin do
+  task :all do
+    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
+      system "rake"
+    end
+  end
+
+  task :java do
+    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
+      system "rake java:all"
+    end
+  end
+
+  task :java_spring do
+    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
+      system "rake java:spring"
+    end
+  end
+end

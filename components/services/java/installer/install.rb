@@ -17,26 +17,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 module Appcelerator
   class Java
-    def create_project(from_path,to_path,config)
-      Appcelerator::Installer.copy(from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml'])
+    def create_project(from_path,to_path,config,tx)
+      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties'])
 
       # re-write the application name to be the name of the directory
       name = File.basename(to_path)
-      replace_app_name name,"#{to_path}/build.properties"
-      replace_app_name name,"#{to_path}/build.xml"
-      FileUtils.cp_r "#{from_path}/appcelerator.xml","#{to_path}/public"
-      FileUtils.mkdir_p "#{to_path}/src/java"
-      FileUtils.mkdir_p "#{to_path}/src/war"
+
+      temp1 = Installer.tempfile
+      FileUtils.cp "#{from_path}/build.properties",temp1.path
+      temp2 = Installer.tempfile
+      FileUtils.cp "#{from_path}/build.xml",temp2.path
+      
+      replace_app_name name,temp1.path
+      replace_app_name name,temp2.path
+
+      Installer.copy tx, temp1.path, "#{to_path}/config/build.properties"
+      Installer.copy tx, temp2.path, "#{to_path}/build.xml"
+      Installer.copy tx, "#{from_path}/appcelerator.xml", "#{to_path}/public"
+
+      tx.mkdir "#{to_path}/src/java"
+      tx.mkdir "#{to_path}/src/war"
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
-      FileUtils.mkdir_p "#{to_path}/src/war/WEB-INF"
-      FileUtils.cp_r "#{template_dir}/web.xml","#{to_path}/config"
+      tx.mkdir "#{to_path}/src/war/WEB-INF"
+      Installer.copy tx, "#{template_dir}/web.xml","#{to_path}/config"
       
-      FileUtils.mv "#{to_path}/build.properties", "#{to_path}/config/build.properties"
-
       #
       # create an Eclipse .project/.classpath file      
       #
@@ -55,7 +62,7 @@ module Appcelerator
       
       classpath<<"</classpath>"
       
-      Appcelerator::Installer.put "#{to_path}/.classpath",classpath.join("\n")
+      tx.put "#{to_path}/.classpath",classpath.join("\n")
       
       ###FIXME add appcelerator nature
       
@@ -79,9 +86,8 @@ module Appcelerator
 STR
      
       project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
-      Appcelerator::Installer.put "#{to_path}/.project",project
-      
-      FileUtils.cp_r "#{from_path}/war.rb","#{to_path}/plugins"
+      tx.put "#{to_path}/.project",project
+      Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"
       
       true
     end
@@ -93,6 +99,7 @@ STR
       f.puts content
       f.flush
       f.close
+      true
     end
   end
 end

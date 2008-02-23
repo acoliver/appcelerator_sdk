@@ -7,93 +7,95 @@
 # that you don't intend to implement.
 #
 class JavaSpring < Appcelerator::Plugin
-    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir)
+    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
       if plugin_name == 'java:spring'
         
-          Appcelerator::Installer.copy "#{plugin_dir}/lib/spring-2.5.1.jar", "#{project_dir}/lib"
-          Appcelerator::Installer.copy "#{plugin_dir}/templates/spring.xml","#{project_dir}/config"
-          Appcelerator::Installer.copy "#{plugin_dir}/spring_license.txt", "#{to_dir}"
-          Appcelerator::Installer.copy "#{plugin_dir}/spring_notice.txt", "#{to_dir}"
+          tx.rm Dir.glob("#{project_dir}/lib/spring-*.jar")
+          
+          Appcelerator::Installer.copy tx,"#{plugin_dir}/lib/spring-2.5.1.jar", "#{project_dir}/lib/spring-2.5.1.jar"
+          Appcelerator::Installer.copy tx,"#{plugin_dir}/templates/spring.xml","#{project_dir}/config/spring.xml"
+          Appcelerator::Installer.copy tx,"#{plugin_dir}/spring_license.txt", "#{to_dir}/spring_license.txt"
+          Appcelerator::Installer.copy tx,"#{plugin_dir}/spring_notice.txt", "#{to_dir}/spring_notice.txt"
 
-          if OPTIONS[:force] or confirm "Add spring config to #{project_dir}config/web.xml? [Y]",true,false
-            require "rexml/document"
-          
-            webxml = File.read "#{project_dir}config/web.xml"
-            doc = REXML::Document.new(webxml)
-          
-            found = nil
-            doc.root.elements.each 'context-param/param-name' do |element|
-              if element.text.strip == 'contextConfigLocation'
-                found = element.parent
+          require "rexml/document"
+      
+          webxml = File.read "#{project_dir}/config/web.xml"
+          doc = REXML::Document.new(webxml)
+      
+          found = nil
+          doc.root.elements.each 'context-param/param-name' do |element|
+            if element.text.strip == 'contextConfigLocation'
+              found = element.parent
+              break
+            end
+          end
+      
+          error = false
+      
+          if found.nil?
+            param = REXML::Element.new 'context-param'
+            name = REXML::Element.new 'param-name'
+            value = REXML::Element.new 'param-value'
+            name.text = 'contextConfigLocation'
+            value.text = '/WEB-INF/classes/spring.xml' 
+            param.add name
+            param.add value
+        
+            children = doc.root.elements
+            added = false
+            children.each_with_index do |element,idx|
+              if element.name == 'servlet'
+                element.parent.insert_after element.previous_element,param
+                added = true
                 break
               end
             end
-          
-            error = false
-          
-            if found.nil?
-              param = REXML::Element.new 'context-param'
-              name = REXML::Element.new 'param-name'
-              value = REXML::Element.new 'param-value'
-              name.text = 'contextConfigLocation'
-              value.text = '/WEB-INF/classes/spring.xml' 
-              param.add name
-              param.add value
-            
-              children = doc.root.elements
-              added = false
-              children.each_with_index do |element,idx|
-                if element.name == 'servlet'
-                  element.parent.insert_after element.previous_element,param
-                  added = true
-                  break
-                end
-              end
-            
-              if not added
-                # oops, fell off the end
-                STDERR.puts "ERROR: Couldn't add Spring context-param to your web.xml. You will need to do this manually."
-                error = false
-              end
+        
+            if not added
+              # oops, fell off the end
+              STDERR.puts "ERROR: Couldn't add Spring context-param to your web.xml. You will need to do this manually."
+              error = false
             end
+          end
 
-            found = nil
-            doc.root.elements.each 'listener/listener-class' do |element|
-              if element.text.strip == 'org.springframework.web.context.ContextLoaderListener'
-                found = element
+          found = nil
+          doc.root.elements.each 'listener/listener-class' do |element|
+            if element.text.strip == 'org.springframework.web.context.ContextLoaderListener'
+              found = element
+              break
+            end
+          end
+
+          if found.nil?
+            listener = REXML::Element.new 'listener'
+            listener_class = REXML::Element.new 'listener-class'
+            listener.add listener_class
+            listener_class.text = 'org.springframework.web.context.ContextLoaderListener'
+        
+            children = doc.root.elements
+            added = false
+            children.each_with_index do |element,idx|
+              if element.name == 'servlet'
+                element.parent.insert_after element.previous_element,listener
+                added = true
                 break
               end
             end
-
-            if found.nil?
-              listener = REXML::Element.new 'listener'
-              listener_class = REXML::Element.new 'listener-class'
-              listener.add listener_class
-              listener_class.text = 'org.springframework.web.context.ContextLoaderListener'
-            
-              children = doc.root.elements
-              added = false
-              children.each_with_index do |element,idx|
-                if element.name == 'servlet'
-                  element.parent.insert_after element.previous_element,listener
-                  added = true
-                  break
-                end
-              end
-            
-              if not added
-                # oops, fell off the end
-                STDERR.puts "ERROR: Couldn't add Spring listener to your web.xml. You will need to do this manually."
-                error = false
-              end
+        
+            if not added
+              # oops, fell off the end
+              STDERR.puts "ERROR: Couldn't add Spring listener to your web.xml. You will need to do this manually."
+              error = false
             end
+          end
 
-          
-            if not error
-              f = File.new "#{project_dir}/config/web.xml", 'w+'
-              doc.write f,3
-              f.close
-            end
+          if not error
+            require 'stringio'
+            s = StringIO.new
+            doc.write s,3
+            s.flush
+            s.rewind
+            tx.put "#{project_dir}/config/web.xml",s.read
           end
       end
     end

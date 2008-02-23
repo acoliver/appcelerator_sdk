@@ -16,10 +16,10 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_command(command,argHash,opts)
       # called after a command executes 
     end
-    def before_create_project(to,from,name,language,version)
+    def before_create_project(to,from,name,language,version,transaction)
       # called before a project is created
     end
-    def after_create_project(config)
+    def after_create_project(config,success,transaction)
       # called after a project is created
     end
     def before_web_sdk_install(target_dir,version)
@@ -28,10 +28,10 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_web_sdk_install(target_dir,version)
       # called after the web sdk is installed
     end
-    def before_copy_web(options,source_dir,version)
+    def before_copy_web(options,source_dir,version,tx)
       # called before the web assets are copied into a project
     end
-    def after_copy_web(options,source_dir,version)
+    def after_copy_web(options,source_dir,version,tx)
       # called after the web assets are copied into a project
     end
     def before_create_plugin(project_dir,name)
@@ -70,10 +70,10 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_create_war(directory)
       # called after a project war is created for java
     end
-    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir)
+    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
       # called before a plugin is added to a project
     end
-    def after_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir)
+    def after_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
       # called after a plugin is added to a project
     end
     def before_install_component(type,from,name,version,to_dir)

@@ -56,7 +56,7 @@
 			</fileset>
 		</jar>
 	</target>
-
+	
 	<!-- these are lifecycle tasks to allow others to hook into the war task -->
 	<target name="pre_war" depends=""></target>
 	<target name="post_war" depends=""></target>
@@ -68,7 +68,7 @@
 		</copy>
 		<copy todir="${stage.dir}/war/WEB-INF/classes">
 			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml"/>
-		</copy>
+		</copy> 
 		<copy todir="${stage.dir}/lib">
 			<fileset dir="${lib.dir}" includes="*.jar"/>
 			<fileset dir="${lib.dir}/compiler" includes="xerces-*.jar"/>

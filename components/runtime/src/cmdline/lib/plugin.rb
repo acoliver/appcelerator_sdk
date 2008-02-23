@@ -19,7 +19,7 @@
 module Appcelerator
   class Plugin
     def event(name,*options)
-      puts "--> event => #{name}" if OPTIONS[:debug]
+      puts "--> event => #{name} with #{options.join(',')}" if OPTIONS[:debug]
       if self.respond_to?(name)
         self.send name,*options
       end
@@ -69,7 +69,11 @@ Appcelerator::Installer.with_site_config(false) do |config|
     onload.each do |l|
       next unless File.exists? l
       name = l.gsub('.rb','')
-      require name
+      begin
+        require name
+      rescue => e
+        STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
+      end
     end
   end
 end
@@ -78,17 +82,21 @@ end
 [PROJECT_PLUGIN_DIR].each do |pdir|
   next unless File.exists?(pdir)
   Dir["#{pdir}/*"].each do |dir|
-    if File.file?(dir) and File.extname(dir)=='.rb'
-      # load plugins in same directory as plugins
-      require dir
-    elsif File.directory?(dir)
-      # load any plugins that are subdirectories under plugins directory
-      # as long as the directory name and plugin name are the same
-      name = File.dirname(dir)
-      prb = "#{dir}/#{name}"
-      if File.exists?("#{prb}.rb")
-        require prb
+    begin
+      if File.file?(dir) and File.extname(dir)=='.rb'
+        # load plugins in same directory as plugins
+        require dir
+      elsif File.directory?(dir)
+        # load any plugins that are subdirectories under plugins directory
+        # as long as the directory name and plugin name are the same
+        name = File.dirname(dir)
+        prb = "#{dir}/#{name}"
+        if File.exists?("#{prb}.rb")
+          require prb
+        end
       end
+    rescue => e
+      STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
     end
   end
 end

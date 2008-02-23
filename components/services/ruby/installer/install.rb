@@ -25,7 +25,7 @@ require 'erb'
 
 module Appcelerator
   class Ruby 
-    def create_project(from_path,to_path,options)
+    def create_project(from_path,to_path,options,tx)
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
 
       rails_gem = Gem.cache.search('rails').last
@@ -40,7 +40,7 @@ module Appcelerator
         system("rails #{to_path} --skip -q #{OPTIONS[:railsargs]}")
       end
       
-      FileUtils.cp_r "#{from_path}/rails/.", "#{to_path}"
+      tx.cp "#{from_path}/rails/.", "#{to_path}"
       
       projectname = File.basename(to_path)
       xml = File.read("#{to_path}/public/appcelerator.xml")
@@ -49,18 +49,12 @@ module Appcelerator
       else
         xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
       end
-
-      f = File.open("#{to_path}/public/appcelerator.xml",'w')
-      f.puts xml
-      f.flush
-      f.close
+      
+      tx.put "#{to_path}/public/appcelerator.xml", xml
       
       secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)       
       result = ERB.new(File.read("#{to_path}/app/controllers/service_broker_controller.rb")).result(binding)
-      f = File.new("#{to_path}/app/controllers/service_broker_controller.rb",'w')
-      f.puts result
-      f.flush
-      f.close
+      tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
     end
   end
 end

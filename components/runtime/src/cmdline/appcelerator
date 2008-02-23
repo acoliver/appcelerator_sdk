@@ -169,36 +169,34 @@ count = 0
 
 check_for_update
 
-FileUtils.cd(TARGET_DIR) do
-  while true
+while true
 
-    count+=1
+  count+=1
 
-    # this is a safety mechanism to not
-    # allow this to continue more than twice
-    if count > 2
-      exitcode = 1
-      break
-    end
-    
-    fork do
-       exec "ruby console.rb #{ARGV.join(' ')} #{cmdappend}"
-    end
-    
-    Process.wait
-    p = $?
-    exitcode = p.exitstatus
-
-    case exitcode
-      when 1259,1260
-        cmdappend = '--after-update-applied'
-        check_for_update
-        break if exitcode==1260
-    else
-      break
-    end
-    
+  # this is a safety mechanism to not
+  # allow this to continue more than twice
+  if count > 2
+    exitcode = 1
+    break
   end
+  
+  fork do
+     exec "ruby #{TARGET_DIR}/console.rb #{ARGV.join(' ')} #{cmdappend}"
+  end
+  
+  Process.wait
+  p = $?
+  exitcode = p.exitstatus
+
+  case exitcode
+    when 1259,1260
+      cmdappend = '--after-update-applied'
+      check_for_update
+      break if exitcode==1260
+  else
+    break
+  end
+  
 end
 
 exit exitcode

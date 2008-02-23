@@ -44,33 +44,36 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
 ]) do |args,options|
   
   pwd = args[:path] || Dir.pwd
+  # this is used to make sure we're in a project directory
+  # but only if we didn't pass in path
+  lang = Appcelerator::Project.get_service(pwd) unless options[:ignore_path_check]
   
   FileUtils.cd(pwd) do 
-    args[:name].split(',').uniq.each do |name|
-      class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
-      widget_name = name.gsub ':', '_'
 
-      # this is used to make sure we're in a project directory
-      lang = Appcelerator::Project.get_service(pwd)
-      
-      widget = Appcelerator::Installer.get_component_from_config(:widget,name,options[:version])
-      
-      if not widget
-        STDERR.puts "Couldn't find widget named: #{name}."
-        exit 1
+    with_io_transaction(pwd,options[:tx]) do |tx|
+      args[:name].split(',').uniq.each do |name|
+        class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
+        widget_name = name.gsub ':', '_'
+
+        widget = Appcelerator::Installer.get_component_from_config(:widget,name,options[:version])
+
+        if not widget
+          STDERR.puts "Couldn't find widget named: #{name}."
+          exit 1
+        end
+
+        widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true,tx)
+
+        to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
+        tx.mkdir to_dir
+
+        Appcelerator::PluginManager.dispatchEvent 'before_add_widget',widget_name,version,widget_dir,to_dir
+        Appcelerator::Installer.copy tx, widget_dir, to_dir
+        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
+
+        puts "Installed #{name}" unless OPTIONS[:quiet] 
       end
-      
-      widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true)
-      
-      to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
-      FileUtils.mkdir_p to_dir unless File.exists?(to_dir)
-
-      Appcelerator::PluginManager.dispatchEvent 'before_add_widget',widget_name,version,widget_dir,to_dir
-      Appcelerator::Installer.copy widget_dir, to_dir
-      Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
-
-      puts "Installed #{name}" unless OPTIONS[:quiet] 
     end
+    
   end
-  
 end

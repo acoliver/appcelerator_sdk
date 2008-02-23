@@ -261,11 +261,12 @@ module Appcelerator
     def Installer.tempfile(dir=APP_TEMP_DIR)
       File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(100000)}")),"w+")
     end
-
+    
+    #TODO: tx
     def Installer.put(path,content)
       if File.exists?(path)
         puts "Writing content to #{path}" if OPTIONS[:debug]
-        confirm("Overwrite [#{path}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force]
+        confirm("overwrite [#{path}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force]
       end
       f = File.open(path,'w+')
       f.puts content
@@ -273,6 +274,7 @@ module Appcelerator
       f.close
     end
 
+    #TODO: tx?
     def Installer.mkdir(path)
       case path.class.to_s
         when 'String'
@@ -284,13 +286,73 @@ module Appcelerator
       end
     end
     
-    def Installer.copy(from_path,to_path,excludes=nil)
+    def Installer.confirm_copy(from,destination)
+        return :force if OPTIONS[:force]
+        return :force unless File.exists?(destination)
+        return :skip if Installer.same_file?(from,destination)
+        while true
+          STDOUT.print "overwrite #{destination}? (enter \"h\" for help) [Ynbaqdh] "
+          STDOUT.flush
+          case STDIN.gets.chomp
+            when /\Ad\z/i
+              #FIXME: win32 package sdiff in installer
+              fork do
+                 exec "sdiff \"#{destination}\" \"#{from}\" | less"
+              end
+              Process.wait
+            when /\Aa\z/i
+              STDOUT.puts "forcing #{from}"
+              OPTIONS[:force] = true
+              return :force
+            when /\Ab\z/i
+              return :backup
+            when /\Aq\z/i
+              STDOUT.puts "aborting from copy #{from}"
+              raise SystemExit
+            when /\An\z/i then return :skip
+            when /\Ay\z/i then return :force
+            else
+              STDOUT.puts <<-HELP
+Y - yes, overwrite
+n - no, do not overwrite -- skip copy of this file
+b - no, do not overwrite but create backup file as <name>.backup
+a - all, overwrite this and all others
+q - quit, abort command
+d - diff, show the differences between the old and the new
+h - help, show this help
+HELP
+          end
+      end
+    end
+
+    def Installer.do_cp_confirm(tx,from_path,to_path)
+      case confirm_copy from_path,to_path
+        when :force
+          tx.cp from_path,to_path
+        when :backup
+          tx.cp from_path,"#{to_path}.backup"
+          tx.cp from_path,to_path
+        when :skip
+      end
+      true
+    end
+    
+    def Installer.copy(tx,from_path,to_path,excludes=nil)
+      
+      if from_path.class == Array
+        from_path.each do |e|
+          Installer.copy(tx,e,to_path,excludes)
+        end
+        return true
+      end
       
       puts "Copy called from: #{from_path} => to: #{to_path}, excludes=> #{excludes}" if OPTIONS[:debug]
       
       if File.exists?(from_path) and File.file?(from_path)
-        FileUtils.cp from_path,to_path
-        return true
+        if File.directory?(to_path)
+          return do_cp_confirm(tx,from_path,File.join(to_path,File.basename(from_path)))
+        end
+        return do_cp_confirm(tx,from_path,to_path)
       end
       
       Dir["#{from_path}/**/*"].each do |file|
@@ -308,12 +370,12 @@ module Appcelerator
         target = File.join(to_path,target_file)
         if File.directory?(file) and not File.exists?(target)
           puts "Creating directory #{target}" if OPTIONS[:verbose]
-          FileUtils.mkdir(target)
+          tx.mkdir(target) unless File.exists?(target)
         end
         if File.file?(file) 
           puts "Copying #{file} to #{target}" if OPTIONS[:verbose]
-          confirm("Overwrite [#{target}]? (Y)es,(N)o,(A)ll [Y]") if File.exists?(target) and not OPTIONS[:quiet] and not OPTIONS[:force]
-          FileUtils.copy(file,target)
+          tx.mkdir File.dirname(target) unless File.exists?(target)
+          do_cp_confirm tx,file,target
         end
       end
       true
@@ -620,14 +682,13 @@ module Appcelerator
       return to_dir,config[:name],config[:version]
     end
 
-    def Installer.install_component(type,description,from,quiet_if_installed=false)
+    def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil)
 
         to_dir = nil
         name = nil
         version = nil
         checksum = nil
         already_installed = false
-        
        
         case from
           when /^http:\/\//
@@ -749,6 +810,13 @@ module Appcelerator
       nil
     end
     
+    def Installer.same_file?(file1,file2)
+      return false unless File.exists?(file2)
+      checksum1 = checksum file1
+      checksum2 = checksum file2
+      checksum1 == checksum2
+    end
+    
     def Installer.checksum(file)
       f = File.open file,'rb'
       md5 = Digest::MD5.hexdigest f.read
@@ -762,17 +830,15 @@ module Appcelerator
       config
     end
     
-    def Installer.save_project_config(dir,config)
-      f = File.open "#{dir}/config/appcelerator.config", 'w+'
+    def Installer.save_project_config(dir,config,tx)
       puts "saving project config = #{dir}" if OPTIONS[:debug]
-      f.puts config.to_yaml
-      f.close
+      tx.put "#{dir}/config/appcelerator.config", config.to_yaml.to_s
     end
     
-    def Installer.with_project_config(dir,save=true)
+    def Installer.with_project_config(tx,dir,save=true)
       config = get_project_config dir
       yield config
-      save_project_config dir,config if save
+      save_project_config dir,config,tx if save
     end
     
   end

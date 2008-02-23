@@ -106,18 +106,23 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   
   puts "Creating #{service_name} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
-  # use our helper
-  Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],service,version
-  config = Appcelerator::Installer.create_project(to,args[:name],service,version)
-  
-  # now execute the install script
-  installer = eval "Appcelerator::#{service_name}.new"
   success = false
-  if installer.create_project(from,to,config)
-    puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
-    success = true
+  tx = Appcelerator::IOTransaction.new to,nil,OPTIONS[:debug]
+
+  with_io_transaction(to) do |tx|
+    Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],service,version,tx
+    
+    config = Appcelerator::Installer.create_project(to,args[:name],service,version,tx)
+  
+    # now execute the install script
+    installer = eval "Appcelerator::#{service_name}.new"
+    if installer.create_project(from,to,config,tx)
+      puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
+      success = true
+    end
+
+    Appcelerator::PluginManager.dispatchEvent 'after_create_project',config,success,tx
   end
 
-  Appcelerator::PluginManager.dispatchEvent 'after_create_project',config,success
   success
 end

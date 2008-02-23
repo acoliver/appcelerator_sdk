@@ -20,7 +20,7 @@
 
 module Appcelerator
   class Python
-    def create_project(from_path,to_path,config)
+    def create_project(from_path,to_path,config,tx)
       
       if not system('python --version')
         puts 'A python interpreter must be installed to use the appcelerator python sdk,'

@@ -46,42 +46,45 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
   pwd = args[:path] || Dir.pwd
   
   FileUtils.cd(pwd) do 
-    args[:name].split(',').uniq.each do |name|
-      class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
-      plugin_name = name.gsub ':', '_'
-      
-      # this is used to make sure we're in a project directory
-      lang = Appcelerator::Project.get_service(pwd)
-      
-      plugin = Appcelerator::Installer.get_component_from_config(:plugin,name,options[:version])
-      
-      if not plugin
-        STDERR.puts "Couldn't find plugin named: #{name}."
-        exit 1
-      end
-      
-      plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true)
-      
-      to_dir = "#{pwd}/plugins/#{plugin_name}"
-      FileUtils.mkdir_p to_dir unless File.exists?(to_dir)
+    # this is used to make sure we're in a project directory
+    lang = Appcelerator::Project.get_service(pwd)
+    
+    with_io_transaction(pwd,options[:tx]) do |tx|
+      args[:name].split(',').uniq.each do |name|
+        class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
+        plugin_name = name.gsub ':', '_'
 
-      Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',name,version,plugin_dir,to_dir,pwd
-      
-      Appcelerator::Installer.with_project_config(pwd) do |config|
-        p = config[:plugins]
-        if not p
-          p = []
-          config[:plugins] = p
-        end
-        p.delete_if do |plugin|
-          plugin[:name] == name
-        end
-        p << {:name=>name,:version=>version}
-      end
+        plugin = Appcelerator::Installer.get_component_from_config(:plugin,name,options[:version])
 
-      Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd
-      puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
+        if not plugin
+          STDERR.puts "Couldn't find plugin named: #{name}."
+          exit 1
+        end
+
+        plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true,tx)
+
+        to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
+        tx.mkdir to_dir
+
+        Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
+
+        Appcelerator::Installer.with_project_config(tx,pwd) do |config|
+          p = config[:plugins]
+          if not p
+            p = []
+            config[:plugins] = p
+          end
+          p.delete_if do |plugin|
+            plugin[:name] == name
+          end
+          p << {:name=>name,:version=>version}
+        end
+
+        Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
+        puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
+      end
     end
+    
   end
   
 end
