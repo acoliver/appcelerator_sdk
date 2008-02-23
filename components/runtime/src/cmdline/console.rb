@@ -30,24 +30,30 @@ SCRIPTDIR = File.dirname(__FILE__)
 LIB_DIR = "#{SCRIPTDIR}/lib"
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
 
+def dequote(s)
+  return nil unless s
+  m = /^['"](.*)["']$/.match(s)
+  m ? m[1] : s
+end
 
 ARGV.each do |arg|
     case arg
         when /^--/
            t = arg[2..-1].to_s.split('=')
            k = t[0]
-           v = t[1] || true
+           v = dequote(t[1]) || true
            OPTIONS[k.gsub('-','_').to_sym]=v
         when /^-/
            t = arg[1..-1].to_s.split('=')
            k = t[0]
-           v = t[1] || true
+           v = dequote(t[1]) || true
            OPTIONS[k.gsub('-','_').to_sym]=v
     else
         ARGS << arg if action
         action = arg unless action        
     end
 end
+
 
 HELP = {
   :options=>[

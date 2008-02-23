@@ -72,7 +72,7 @@ if OPTIONS[:version]
     exit 1
   end
 end
-
+ 
 
 module Appcelerator
   class Boot

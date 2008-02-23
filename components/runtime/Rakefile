@@ -19,12 +19,35 @@
 #
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
+build_config = load_config(BUILD_DIR)
 
 task :default=> [:all] do
 end
 
-task :all=> [:win32,:unix,:osx] do
+task :all=> [:win32,:unix,:osx,:update] do
   FileUtils.rm_rf "#{STAGE_DIR}/installer"
+end
+
+desc 'build runtime update patch file'
+task :update do
+  puts "==> Building Runtime Update Patch"
+  update_dir = "#{STAGE_DIR}/installer-update"
+  clean_dir(update_dir)
+
+  FileUtils.mkdir_p update_dir
+
+  copy_dir "#{BUILD_DIR}/src/cmdline", update_dir 
+
+  zipfile = "#{STAGE_DIR}/installer_update_#{build_config[:version]}.zip"
+  FileUtils.rm_rf zipfile
+
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+    zipfile.add 'build.yml', "#{BUILD_DIR}/build.yml"
+    Dir["#{update_dir}/**/**"].each do |f|
+      name = f.gsub(update_dir+'/','')
+      zipfile.add name,f
+    end
+  end
 end
 
 desc 'build win32 installer'
@@ -48,7 +71,7 @@ task :win32 do
 
   FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip" 
   Zip::ZipFile.open("#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-	 zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
+	  zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
     zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/win32/build.yml"
   end
 
@@ -79,7 +102,7 @@ task :unix do
 
   FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip" 
   Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-	 zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+	  zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
     zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/unix/build.yml"
   end
 
@@ -154,7 +177,7 @@ task :osx=> [:stage] do
 
   FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 
   Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-	 zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
+	  zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
     zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
   end
 
@@ -185,10 +208,10 @@ end
 
 def make_pkg_file(file,dir)
    f = File.open file,'w+'
-  f.puts "<?xml version=\"1.0\"?>"
-  f.puts "<pkg-contents spec=\"1.12\">"
-  f.puts build_pkg_contents(dir) 
-  f.puts "</pkg-contents>"
-  f.close
+   f.puts "<?xml version=\"1.0\"?>"
+   f.puts "<pkg-contents spec=\"1.12\">"
+   f.puts build_pkg_contents(dir) 
+   f.puts "</pkg-contents>"
+   f.close
 end
 

@@ -51,6 +51,12 @@ namespace :installer do
       system "rake osx"
     end
   end
+
+  task :update do
+    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
+      system "rake update"
+    end
+  end
     
 end
 

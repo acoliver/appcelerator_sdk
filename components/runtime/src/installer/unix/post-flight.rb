@@ -75,6 +75,25 @@ from_dir = File.expand_path(File.dirname(__FILE__))
 
 puts "Installing Appcelerator to #{install_dir}, One moment..."
 
+
+# remove old symlinks from before 2.1
+FileUtils.safe_unlink '/usr/local/bin/appcelerator' rescue nil
+FileUtils.safe_unlink '/usr/bin/appcelerator' rescue nil
+
+# check for earlier non-compatible < 2.1 gems
+begin
+  IO.popen 'gem list appcelerator' do |io|
+    data = io.readlines.join('')
+    m = /appcelerator \((.*)\)/.match(data)
+    next unless m
+    if m[1].index '2.0'
+      STDERR.puts "WARNING: Detected older Appcelerator Ruby Gem. You will want to remove this gem."
+      STDERR.puts "Found: #{m[0]}"
+    end
+  end
+rescue
+end
+
 # do our installation
 FileUtils.mkdir_p install_dir unless File.exists?(install_dir)
 FileUtils.cp_r "#{from_dir}/.", install_dir
@@ -97,8 +116,11 @@ FileUtils.chown_R 'root', 'admin', "#{bindir}/appcelerator"
 # set execution bits
 FileUtils.chmod 0755, "#{install_dir}/appcelerator"
 FileUtils.chmod 0755, "#{bindir}/appcelerator"
-FileUtils.chmod_R 0777, "#{install_dir}/releases"
-FileUtils.chmod_R 0777, "#{install_dir}/updates"
+
+# these directories need to be writable by non-root
+%w(releases updates lib commands).each do |name|
+  FileUtils.chmod_R 0777, "#{install_dir}/#{name}"
+end
 
 puts "Installation successful! Enjoy."
 
