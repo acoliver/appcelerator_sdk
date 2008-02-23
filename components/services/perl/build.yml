@@ -2,7 +2,7 @@
 :type: service
 :dependencies: 
 - :type: websdk
-  :version: ">=2.1"
   :name: websdk
-:version: 1.0.0
+  :version: ">=2.1"
 :name: perl
+:version: 1.0.0

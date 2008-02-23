@@ -126,6 +126,11 @@ def java_path_separator
 end
 
 def save_config(dir,config)
+  # remove our backup glob and compare it to the 
+  # new hash and only continue to save it there
+  # are changes
+  backup = config.delete :backup_glob
+  return nil if backup == config
   fn = File.join(dir,'build.yml')
   f = File.open(fn,'w+')
   f.puts config.to_yaml
@@ -137,6 +142,9 @@ def load_config(dir)
   config = Hash.new
   config = YAML::load_file(fn) if File.exists?(fn)
   config[:version] = 1.0 unless File.exists?(fn)
+  # we are going to store a snapshot of the original
+  # so we can later compare if we have any changes
+  config[:backup_glob] = config
   at_exit { save_config(dir,config) }
   config 
 end

@@ -18,7 +18,8 @@
 #
 
 
-Appcelerator::CommandRegistry.registerCommand('release','release a component (plugin, service, etc)',[
+Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:plugin release:service release:websdk release:installer),
+'release a component (plugin, service, etc)',[
   {
     :name=>'location',
     :help=>'path to packaged file to be released',
