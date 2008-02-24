@@ -25,7 +25,7 @@ require 'open-uri'
 OPTIONS = {}
 ARGS = []
 action = nil
-SCRIPTNAME = File.basename($0)
+SCRIPTNAME = 'appcelerator'
 SCRIPTDIR = File.dirname(__FILE__)
 LIB_DIR = "#{SCRIPTDIR}/lib"
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')

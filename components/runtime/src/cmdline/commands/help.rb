@@ -46,7 +46,7 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
   puts 'Appcelerator RIA Platform'.center(80)
   puts 
   puts "  This program comes with ABSOLUTELY NO WARRANTY; for details type "
-  puts "  `#{File.basename($0)} help:license`. This is free software, and you are welcome to "
+  puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
   puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
   puts
   
@@ -109,7 +109,7 @@ Appcelerator::CommandRegistry.registerCommand('help:commands','get information o
   puts 'Appcelerator RIA Platform'.center(80)
   puts 
   puts "  This program comes with ABSOLUTELY NO WARRANTY; for details type "
-  puts "  `#{File.basename($0)} help:license`. This is free software, and you are welcome to "
+  puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
   puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
   puts
   puts "    Supported commands:"
