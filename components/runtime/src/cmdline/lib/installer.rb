@@ -227,8 +227,7 @@ module Appcelerator
                 puts "Downloaded: #{size} bytes" if OPTIONS[:debug]
               end
             else
-              STDERR.puts "Error fetching #{name}. Distribution server returned status code: #{f.status.join(' ')}."
-              exit 1
+              die "Error fetching #{name}. Distribution server returned status code: #{f.status.join(' ')}."
             end
       end
       puts if pbar
@@ -262,11 +261,10 @@ module Appcelerator
       File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(100000)}")),"w+")
     end
     
-    #TODO: tx
-    def Installer.put(path,content)
+    def Installer.put(path,content,force=false)
       if File.exists?(path)
         puts "Writing content to #{path}" if OPTIONS[:debug]
-        confirm("overwrite [#{path}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force]
+        confirm("overwrite [#{path}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force] and not force
       end
       f = File.open(path,'w+')
       f.puts content
@@ -650,30 +648,29 @@ HELP
       "#{RELEASE_DIR}/#{type}/#{name.gsub(':','_')}/#{version}"
     end
 
-    def Installer.fetch_network_component(type,from,component,count=1,total=1)
+    def Installer.fetch_network_component(type,component,count=1,total=1)
       to_dir = Installer.get_component_directory(component)
-      Installer.fetch_component(type,from,component[:version],to_dir,component[:name],component[:url],count,total)
+      Installer.fetch_component(type,component[:name],component[:version],to_dir,component[:url],count,total)
       return to_dir,component[:name],component[:version],component[:checksum]
     end
 
     def Installer.fetch_network_url(type,from,config,url)
       to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
-      Installer.fetch_component(type,from,config[:version],to_dir,config[:name],url,1,1)
+      Installer.fetch_component(type,config[:name],config[:version],to_dir,url,1,1)
     end
 
-    def Installer.fetch_component(type,from,version,to_dir,name,url,idx,total)
+    def Installer.fetch_component(type,name,version,to_dir,url,idx,total)
       puts "fetching into: #{to_dir} => #{url}" if OPTIONS[:debug]
       FileUtils.mkdir_p to_dir unless File.exists? to_dir
-      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,from,name,version,to_dir
+      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,name,version,to_dir
       Installer.http_fetch_into("(#{idx}/#{total}) #{name}",url,to_dir)
-      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,from,name,version,to_dir
+      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,name,version,to_dir
     end
     
     def Installer.install_from_zipfile(type,description,from)
       config = Installer.get_build_from_zip from
       if not config
-        STDERR.puts "Invalid package file #{from}. Missing build.yml"
-        exit 1
+        die "Invalid package file #{from}. Missing build.yml"
       end
       to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
       Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,from,config[:name],config[:version],to_dir
@@ -682,7 +679,7 @@ HELP
       return to_dir,config[:name],config[:version]
     end
 
-    def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil)
+    def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false)
 
         to_dir = nil
         name = nil
@@ -699,7 +696,7 @@ HELP
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
             checksum = Installer.checksum(from)
         else
-          to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed)
+          to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed,force,skip_dependencies)
         end
         
         if not already_installed
@@ -742,23 +739,27 @@ HELP
       end
     end
     
-    def Installer.install_from_devnetwork(type,description,from,quiet_if_installed=false)
+    def Installer.install_from_devnetwork(type,description,from,quiet_if_installed=false,force=false,skip_dependencies=false)
 
+      puts "Install from Dev Network: #{type},#{from} (force=#{force}) " if OPTIONS[:verbose]
+      
       found = Installer.get_component_from_config type,from
       
       if not found
-        STDERR.puts "Couldn't find #{type.to_s} #{from}"
-        exit 1
+        die "Couldn't find #{type.to_s} #{from}"
       end
       
       count = 0
-      Installer.get_and_install_dependencies(found,quiet_if_installed) do |d,idx,total|
-        dc = Installer.get_installed_component(d) unless OPTIONS[:force_update]
-        if not dc
-          dir,name,version,checksum=Installer.fetch_network_component d[:type],from,d,idx+1,total+1
-          Installer.add_installed_component(name,d[:type],version,checksum,quiet_if_installed)
+
+      if not skip_dependencies
+        Installer.get_and_install_dependencies(found,quiet_if_installed) do |d,idx,total|
+          dc = Installer.get_installed_component(d) unless OPTIONS[:force_update]
+          if not dc
+            dir,name,version,checksum=Installer.fetch_network_component d[:type],d,idx+1,total+1
+            Installer.add_installed_component(name,d[:type],version,checksum,quiet_if_installed)
+          end
+          count+=1
         end
-        count+=1
       end
       
       # check to see if within this session (only) if we've already installed this and if so, don't attempt
@@ -770,26 +771,37 @@ HELP
         return Installer.get_release_directory(found[:type],found[:name],found[:version]),found[:name],found[:version],nil,true
       end
       
-      fnc = Installer.get_installed_component(found) unless OPTIONS[:force_update] and not installed
-      return Installer.fetch_network_component(type,from,found,count+1,count+1) unless fnc
+      fnc = Installer.get_installed_component(found) unless (OPTIONS[:force_update] and not installed) or force
+      return Installer.fetch_network_component(type,found,count+1,count+1) unless fnc
       
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
       return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
     end
     
     def Installer.get_component_from_config(type,name,version=nil)
+      found = []
       with_site_config(false) do |site_config|
         distributions = site_config[:distributions]
         if distributions
           c = distributions[type]
           if c
             c.each do |cm|
-              return cm if cm[:name]==name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
+              if cm[:name]==name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
+                found << cm
+              end
             end
           end
         end
       end
-      get_installed_component({:name=>name,:type=>type,:version=>version})
+      c = get_installed_component({:name=>name,:type=>type,:version=>version})
+      found << c if c
+      if not found.empty?
+        found.sort! do |a,b|
+          (a[:version]||0).to_f <=> (b[:version]||0).to_f
+        end
+        return found.first
+      end
+      nil
     end
     
     def Installer.get_installed_component(found)
@@ -830,15 +842,22 @@ HELP
       config
     end
     
-    def Installer.save_project_config(dir,config,tx)
+    def Installer.save_project_config(dir,config)
       puts "saving project config = #{dir}" if OPTIONS[:debug]
-      tx.put "#{dir}/config/appcelerator.config", config.to_yaml.to_s
+      
+      out = "---\n"
+
+      config.keys.sort {|a,b| a.to_s<=>b.to_s}.each do |k|
+        out << ":#{k}: #{config[k].to_yaml[4..-1]}"
+      end
+      
+      Installer.put "#{dir}/config/appcelerator.config", out, true
     end
     
-    def Installer.with_project_config(tx,dir,save=true)
+    def Installer.with_project_config(dir,save=true)
       config = get_project_config dir
       yield config
-      save_project_config dir,config,tx if save
+      save_project_config dir,config if save
     end
     
   end

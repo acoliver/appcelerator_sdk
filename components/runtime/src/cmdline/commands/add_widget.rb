@@ -48,6 +48,9 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
   # but only if we didn't pass in path
   lang = Appcelerator::Project.get_service(pwd) unless options[:ignore_path_check]
   
+  force = options[:force]
+  force = false if force.nil?
+  
   FileUtils.cd(pwd) do 
 
     with_io_transaction(pwd,options[:tx]) do |tx|
@@ -58,20 +61,29 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         widget = Appcelerator::Installer.get_component_from_config(:widget,name,options[:version])
 
         if not widget
-          STDERR.puts "Couldn't find widget named: #{name}."
-          exit 1
+          die "Couldn't find widget named: #{name}."
         end
-
-        widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true,tx)
+        
+        widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true,tx,force)
 
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
 
         Appcelerator::PluginManager.dispatchEvent 'before_add_widget',widget_name,version,widget_dir,to_dir
         Appcelerator::Installer.copy tx, widget_dir, to_dir
-        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
 
-        puts "Installed #{name}" unless OPTIONS[:quiet] 
+        config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
+        p = config[:widgets]
+        if not p
+          p = []
+          config[:widgets] = p
+        end
+        p.delete_if { |w| w[:name] == name } 
+        p << {:name=>name,:version=>version}
+        Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
+
+        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
+        puts "Installed #{name}" unless OPTIONS[:quiet] or options[:quiet]
       end
     end
     

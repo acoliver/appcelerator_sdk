@@ -45,8 +45,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   name = args[:name]
   
   if not name =~ /^app:/
-    STDERR.puts "Widgets must begin with app:"
-    exit 1
+    die "Widgets must begin with app:"
   end
   
   if not name =~ /^app:[\w\d]+[_][\w\d_]+$/

@@ -19,7 +19,30 @@
 
 module Appcelerator
   class Java
+
+    #
+    # this method is called when a project:update command is ran on an existing
+    # project.  NOTE: from_version and to_version *might* be the same in the case
+    # we're forcing and re-install.  they could be different if moving from one
+    # version to the next
+    #
+    def update_project(from_path,to_path,config,tx,from_version,to_version)
+      puts "Updating java from #{from_version} to #{to_version}" if OPTIONS[:verbose]
+      install(from_path,to_path,config,tx,true)
+      true
+    end
+
+    # 
+    # this method is called when a create:project command is ran.  NOTE: this
+    # command *might* be called instead of update_project in the case the user
+    # ran --force-update on an existing project using create:project
+    #
     def create_project(from_path,to_path,config,tx)
+      install(from_path,to_path,config,tx,false)
+    end
+    
+    private 
+    def install(from_path,to_path,config,tx,update)
       Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties'])
 
       # re-write the application name to be the name of the directory
@@ -44,29 +67,32 @@ module Appcelerator
       tx.mkdir "#{to_path}/src/war/WEB-INF"
       Installer.copy tx, "#{template_dir}/web.xml","#{to_path}/config"
       
-      #
-      # create an Eclipse .project/.classpath file      
-      #
-      classpath=[]
-      classpath<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      classpath<<"<classpath>"
-      classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
-      classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
-      classpath<<"<classpathentry kind=\"src\" path=\"public\"/>"
-      classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
-      classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
+      if not update or (update and not File.exists? "#{to_path}/.classpath")
+        #
+        # create an Eclipse .project/.classpath file      
+        #
+        classpath=[]
+        classpath<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        classpath<<"<classpath>"
+        classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
+        classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
+        classpath<<"<classpathentry kind=\"src\" path=\"public\"/>"
+        classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
+        classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
       
-      Dir["#{to_path}/lib/**/*"].each do |dir|
-        classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
+        Dir["#{to_path}/lib/**/*"].each do |dir|
+          classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
+        end
+      
+        classpath<<"</classpath>"
+      
+        tx.put "#{to_path}/.classpath",classpath.join("\n")
       end
       
-      classpath<<"</classpath>"
-      
-      tx.put "#{to_path}/.classpath",classpath.join("\n")
-      
+      if not update or (update and not File.exists? "#{to_path}/.project")
       ###FIXME add appcelerator nature
       
-      project=<<STR
+        project=<<STR
 <projectDescription>
    <name>#{name}</name>
    <comment>Appcelerator Java Project</comment>
@@ -85,8 +111,10 @@ module Appcelerator
 </projectDescription>
 STR
      
-      project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
-      tx.put "#{to_path}/.project",project
+        project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
+        tx.put "#{to_path}/.project",project
+      end
+    
       Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"
       
       true

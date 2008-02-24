@@ -19,8 +19,9 @@
 #
 require 'yaml'
 
-def die(msg)
-  STDERR.puts msg
+def die(msg=nil)
+  STDERR.puts msg unless nil
+  STDERR.flush
   exit 1
 end
 
@@ -50,7 +51,7 @@ def ask(q,mask=false)
 end
 
 def confirm(q,canforce=true,die_if_fails=true,default='y')
-    return if OPTIONS[:force]
+    return true if OPTIONS[:force]
     answer = ask(q)
     answer = default if not answer or answer == ''
     OPTIONS[:force]=true if canforce and ['A','a'].index(answer)
@@ -69,8 +70,7 @@ at_exit { FileUtils.rm_rf APP_TEMP_DIR }
 
 if OPTIONS[:version]
   if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/
-    STDERR.puts "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
-    exit 1
+    die "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
   end
 end
  
@@ -137,8 +137,7 @@ module Appcelerator
           result = Installer.signup(username,firstname,lastname,password)
           
           if not result['success']
-            STDERR.puts "Signup failed. #{result['msg']}"
-            exit 1
+            die "Signup failed. #{result['msg']}"
           end
           
           puts "Signup almost complete.  You will now need to check your email address"

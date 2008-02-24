@@ -211,6 +211,7 @@ module Appcelerator
       dest = dest.path if dest.class == File
       @state[:src] = src
       @state[:dest] = dest
+      @state[:exists] = File.exists?(dest)
       @state[:backup] = backup dest if File.exists?(dest)
       if not recordonly
         return true if Installer.same_file?(src,dest)
@@ -220,10 +221,14 @@ module Appcelerator
       true
     end
     def cp_rollback
-      return true unless File.exists?(@state[:backup])
-      trace "=> rollback copy #{@state[:backup]} to #{@state[:dest]}"
-      FileUtils.cp @state[:backup],@state[:dest] 
-      FileUtils.rm_rf @state[:backup]
+      if @state[:exists]
+        trace "=> rollback copy #{@state[:backup]} to #{@state[:dest]}"
+        FileUtils.cp @state[:backup],@state[:dest] 
+        FileUtils.rm_rf @state[:backup]
+      else
+        trace "=> rollback copy by removing #{@state[:dest]}"
+        FileUtils.rm_rf @state[:dest] 
+      end
       true
     end
     def mkdir_commit(recordonly,path)

@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('rollback','rollback project change (install, update)',[
+Appcelerator::CommandRegistry.registerCommand('project:rollback','rollback project change (install, update)',[
   {
     :name=>'path',
     :help=>'path of the project',
@@ -58,7 +58,7 @@ Appcelerator::CommandRegistry.registerCommand('rollback','rollback project chang
 
       confirm "Are you sure you want to rollback changes? [yN] ",false,true,'n'
 
-      tx = Appcelerator::IOTransaction.new pwd,true,OPTIONS[:verbose]
+      tx = Appcelerator::IOTransaction.new pwd,true,OPTIONS[:verbose]||OPTIONS[:debug]
       tx.rollback
 
       puts "Rollback complete...."
@@ -68,5 +68,5 @@ Appcelerator::CommandRegistry.registerCommand('rollback','rollback project chang
 
   end
   
-  exit 1 if fail
+  die if fail
 end

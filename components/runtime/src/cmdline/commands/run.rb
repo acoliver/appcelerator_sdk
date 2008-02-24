@@ -19,7 +19,7 @@
 
 #TODO: move this into service-specific plugin
 
-Appcelerator::CommandRegistry.registerCommand('run','run an Appcelerator project server',nil,nil,nil) do |args,options|
+Appcelerator::CommandRegistry.registerCommand('project:run','run a project server',nil,nil,nil) do |args,options|
   
   pwd = Dir.pwd
   
@@ -62,8 +62,7 @@ Appcelerator::CommandRegistry.registerCommand('run','run an Appcelerator project
         Appcelerator::PluginManager.dispatchEvent 'after_run_server',"#{pwd}",'ruby'
       end
   else
-    STDERR.puts "This command is only supported currently for Java and Ruby"
-    exit 1
+    die "This command is only supported currently for Java and Ruby"
   end  
   
 end

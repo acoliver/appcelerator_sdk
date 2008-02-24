@@ -67,6 +67,7 @@ Appcelerator::Installer.with_site_config(false) do |config|
   onload = config[:onload]
   if onload
     onload.each do |l|
+      next unless l.class == Hash
       next unless File.exists? l
       name = l.gsub('.rb','')
       begin

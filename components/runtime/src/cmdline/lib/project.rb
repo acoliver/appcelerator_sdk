@@ -19,14 +19,43 @@
 
 module Appcelerator
   class Project
+    
+    def Project.to_version(v)
+      return 0 unless v
+      v.to_s.gsub('.','').to_i
+    end
+    
+    def Project.make_service_name(service)
+      "#{service[0,1].upcase}#{service[1..-1]}"
+    end
+    
     def Project.get_service(pwd=Dir.pwd)
       config = Installer.get_project_config(pwd)
       service = config[:service]
       if not service
-        STDERR.puts "This directory doesn't look like an Appcelerator project. Please switch to your project directory and re-run"
-        exit 1
+        die "This directory doesn't look like an Appcelerator project. Please switch to your project directory and re-run"
       end
       service
+    end
+    
+    def Project.get_config(path)
+      config=Hash.new
+      public_path = File.expand_path(File.join(path,'public'))
+      config[:web]="#{public_path}"
+      config[:javascript]="#{public_path}/javascripts"
+      config[:images]="#{public_path}/images"
+      config[:swf]="#{public_path}/swf"
+      config[:widgets]="#{public_path}/widgets"
+      config[:stylesheets]="#{public_path}/stylesheets"
+      config[:log]="#{path}/log"
+      config[:tmp]="#{path}/tmp"
+      config[:config]="#{path}/config"
+      config[:services]="#{path}/app/services"
+      config[:app]="#{path}/app"
+      config[:script]="#{path}/script"
+      config[:plugin]="#{path}/plugins"
+      config[:project]=path
+      config
     end
     
     def Project.list_installed_components(type)

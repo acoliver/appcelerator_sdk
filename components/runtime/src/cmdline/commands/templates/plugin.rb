@@ -22,6 +22,12 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_create_project(config,success,transaction)
       # called after a project is created
     end
+    def before_update_project(project_dir,config,tx)
+      # called before a project is updated
+    end
+    def after_update_project(project_dir,config,tx)
+      # called after a project is updated
+    end
     def before_web_sdk_install(target_dir,version)
       # called before the web sdk is installed
     end
@@ -76,7 +82,7 @@ class ExamplePlugin < Appcelerator::Plugin
     def after_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
       # called after a plugin is added to a project
     end
-    def before_install_component(type,from,name,version,to_dir)
+    def before_install_component(type,name,version,to_dir)
       # called before a component is installed
     end
     def after_install_component(type,from,name,version,to_dir)

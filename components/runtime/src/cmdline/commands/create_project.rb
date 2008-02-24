@@ -77,8 +77,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   end
   
   if not service_entry
-    STDERR.puts "Couldn't find a service named #{args[:service]}."
-    exit 1
+    die "Couldn't find a service named #{args[:service]}."
   end
   
   service = service_entry[:name]
@@ -102,12 +101,11 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   # from and to directories
   from = service_dir
   to = File.expand_path(File.join(args[:path].path,args[:name]))
-  service_name = "#{service[0,1].upcase}#{service[1..-1]}"
+  service_name = Appcelerator::Project.make_service_name(service)
   
   puts "Creating #{service_name} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
   success = false
-  tx = Appcelerator::IOTransaction.new to,nil,OPTIONS[:debug]
 
   with_io_transaction(to) do |tx|
     Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],service,version,tx

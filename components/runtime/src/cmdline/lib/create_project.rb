@@ -20,9 +20,10 @@ require 'fileutils'
 
 module Appcelerator
   class Installer
-    def Installer.create_project(path,name,service,version,tx)
+    def Installer.create_project(path,name,service,version,tx,update=false)
       
-      puts "Creating new project at #{path} with name: #{name} for #{service}" if OPTIONS[:debug]
+      puts "Creating new project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and not update
+      puts "Updating project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and update
       
       public_path="#{path}/public"
 
@@ -34,23 +35,9 @@ module Appcelerator
       copy tx, "#{template_dir}/COPYING", "#{path}/COPYING"
       copy tx, "#{template_dir}/README", "#{path}/README"
       
-      config=Hash.new
+      config=Appcelerator::Project.get_config(path)
       config[:name]=name
       config[:service_version]=version
-      config[:web]="#{public_path}"
-      config[:javascript]="#{public_path}/javascripts"
-      config[:images]="#{public_path}/images"
-      config[:swf]="#{public_path}/swf"
-      config[:widgets]="#{public_path}/widgets"
-      config[:stylesheets]="#{public_path}/stylesheets"
-      config[:log]="#{path}/log"
-      config[:tmp]="#{path}/tmp"
-      config[:config]="#{path}/config"
-      config[:services]="#{path}/app/services"
-      config[:app]="#{path}/app"
-      config[:script]="#{path}/script"
-      config[:plugin]="#{path}/plugins"
-      config[:project]=path
       config[:service]=service
       
       # write out our main configuration file
@@ -60,17 +47,18 @@ module Appcelerator
         :service_version=>version,
         :plugins=>[]
       }
-      Installer.save_project_config path,props,tx
+      Installer.save_project_config path,props unless update
 
       # install the web files
-      config = Installer.install_web_project(config,tx)
+      config = Installer.install_web_project(config,tx,update)
 
       props[:widgets] = config[:installed_widgets]
       props[:websdk] = config[:websdk]
 
       # resize to update changes from web
-      Installer.save_project_config path,props,tx
+      Installer.save_project_config path,props unless update
       
+      return config,props
     end
     
   end

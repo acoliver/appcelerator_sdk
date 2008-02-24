@@ -183,8 +183,7 @@ module Appcelerator
                   typestr = type.to_s
                 end
                 if not match
-                  STDERR.puts " *ERROR: Invalid argument value: #{value} for argument: #{key}. Must be of type: #{typestr}"
-                  exit 1
+                  die " *ERROR: Invalid argument value: #{value} for argument: #{key}. Must be of type: #{typestr}"
                 end
                 if arg[:conversion]
                   value = eval "#{arg[:conversion]}.new.convert('#{value}')"

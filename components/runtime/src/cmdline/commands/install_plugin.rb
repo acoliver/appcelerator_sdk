@@ -41,7 +41,9 @@ Appcelerator::CommandRegistry.registerCommand('install:plugin','install a plugin
       Appcelerator::Installer.with_site_config(true) do |config|
         plugin_name = name.gsub(':','_')
         config[:onload]||=Array.new
-        config[:onload] << "#{to_dir}/#{plugin_name}.rb"
+        plugin_path = "#{to_dir}/#{plugin_name}.rb"
+        config[:onload].delete_if { |e| e[:name]==plugin_name }
+        config[:onload] << {:name=>plugin_name, :path=>plugin_path}
       end
     end
 end

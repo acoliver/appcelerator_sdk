@@ -44,6 +44,8 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
 ]) do |args,options|
   
   pwd = args[:path] || Dir.pwd
+  force = options[:force]
+  force = false if force.nil?
   
   FileUtils.cd(pwd) do 
     # this is used to make sure we're in a project directory
@@ -57,29 +59,26 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
         plugin = Appcelerator::Installer.get_component_from_config(:plugin,name,options[:version])
 
         if not plugin
-          STDERR.puts "Couldn't find plugin named: #{name}."
-          exit 1
+          die"Couldn't find plugin named: #{name}."
         end
 
-        plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true,tx)
+        plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true,tx,force)
 
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
 
         Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
 
-        Appcelerator::Installer.with_project_config(tx,pwd) do |config|
-          p = config[:plugins]
-          if not p
-            p = []
-            config[:plugins] = p
-          end
-          p.delete_if do |plugin|
-            plugin[:name] == name
-          end
-          p << {:name=>name,:version=>version}
+        config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
+        p = config[:plugins]
+        if not p
+          p = []
+          config[:plugins] = p
         end
-
+        p.delete_if { |w| w[:name] == name } 
+        p << {:name=>name,:version=>version}
+        Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
+        
         Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
         puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
       end

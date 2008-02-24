@@ -37,8 +37,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
   basename = File.basename(location)
   
   if not basename =~ /\.zip$/
-    STDERR.puts "Invalid file format: #{File.expand_path(location)}. File must be packaged as zip file."
-    exit 1
+    die "Invalid file format: #{File.expand_path(location)}. File must be packaged as zip file."
   end
   
   # must be logged in
@@ -81,8 +80,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
       Appcelerator::Installer.save_config
     end
     
-    STDERR.puts response[:data]['msg'] || 'Unknown response from server'
-    exit 1
+    die response[:data]['msg'] || 'Unknown response from server'
   end
   
   # save off the api key

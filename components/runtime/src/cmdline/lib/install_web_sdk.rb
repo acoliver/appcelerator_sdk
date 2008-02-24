@@ -19,14 +19,15 @@
 module Appcelerator
   class Installer
     
-    def Installer.install_web_project(options,tx)
+    def Installer.install_web_project(options,tx,update=false)
       
       raise "Invalid options, must specify :web option" unless options[:web]
       raise "Invalid options, must specify :javascript option" unless options[:javascript]
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk',tx
+      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk',true,tx,update
+
       options[:websdk] = web_version
       options[:installed_widgets] = []
 
@@ -37,15 +38,16 @@ module Appcelerator
       Installer.copy tx, "#{source_dir}/swf/.", options[:web] + '/swf'
       Installer.copy tx, Dir.glob("#{source_dir}/*.html"), options[:web]
       Installer.copy tx, "#{source_dir}/common/.", options[:widgets] + '/common'
-
-      widgets = Installer.find_dependencies_for({:name=>'websdk',:type=>'websdk'})
       
-      # install our widgets
-      widgets.each do |widget|
-       Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true,:tx=>tx,:ignore_path_check=>true})
-       options[:installed_widgets] << {:name=>widget[:name],:version=>widget[:version]}
-      end if widgets      
-
+      if not update
+        widgets = Installer.find_dependencies_for({:name=>'websdk',:type=>'websdk'})
+        # install our widgets
+        widgets.each do |widget|
+         Appcelerator::CommandRegistry.execute('add:widget',[widget[:name],options[:project]],{:version=>widget[:version],:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true})
+         options[:installed_widgets] << {:name=>widget[:name],:version=>widget[:version]}
+        end if widgets      
+      end
+      
       Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version,tx
 
       options
