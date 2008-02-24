@@ -49,11 +49,12 @@ def ask(q,mask=false)
   answer
 end
 
-def confirm(q,canforce=true,die_if_fails=true)
+def confirm(q,canforce=true,die_if_fails=true,default='y')
     return if OPTIONS[:force]
     answer = ask(q)
+    answer = default if not answer or answer == ''
     OPTIONS[:force]=true if canforce and ['A','a'].index(answer)
-    if not ['','y','Y','a','A'].index(answer)
+    if not ['y','Y','a','A'].index(answer)
       die('Cancelled!') if die_if_fails
       return false
     end

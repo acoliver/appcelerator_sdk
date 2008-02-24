@@ -22,17 +22,16 @@ require 'yaml'
 module Appcelerator
   class IOTransaction
     def initialize(project_dir,rollback=false,debug=false)
+      @project_dir = project_dir
+      @temp_dir = "#{project_dir}/tmp/rollback"
       if rollback
-        fn = "#{project_dir}/rollback.yml"
+        fn = "#{@temp_dir}/rollback.yml"
         if not File.exists? fn
           raise "invalid rollback directory - couldn't find rollback file at #{fn}"
         end
         @completed = YAML::load_file fn
         @project_dir = project_dir
-        @temp_dir = project_dir
       else
-        @project_dir = project_dir
-        @temp_dir = "#{project_dir}/tmp/rollback"
         FileUtils.rm_rf @temp_dir if File.exists? @temp_dir
         FileUtils.mkdir_p @temp_dir
       end
@@ -104,7 +103,7 @@ module Appcelerator
     
     def rollback
       raise "Cannot commit transaction since one has not yet been started" unless @completed
-      create_tracefile
+      create_tracefile true
       begin
         trace "=> begin rollback"
         if @completed and not @completed.empty?
@@ -119,8 +118,8 @@ module Appcelerator
         end
         trace "=> end rollback"
       ensure
-        close_tracefile
-        STDERR.puts "Rolled back. Details at: #{@temp_dir}/trace.log"
+        loc = close_tracefile
+        STDERR.puts "Rolled back. Details at: #{loc}" if loc
       end
     end
     
@@ -309,17 +308,23 @@ module Appcelerator
     end
     
     def close_tracefile
+      path = @tracefile.path if @tracefile
       if @tracefile
         @tracefile.close
         @tracefile = nil
       end
+      path
     end
     
-    def create_tracefile
+    def create_tracefile(rollback=false)
       return nil if @tracefile
       return nil unless File.exists? @temp_dir
       begin
-        @tracefile = File.new File.join(@temp_dir,'trace.log'), 'w+'
+        if rollback
+          @tracefile = File.new File.join(@project_dir,'tmp','rollback.log'), 'w+'
+        else
+          @tracefile = File.new File.join(@temp_dir,'trace.log'), 'w+'
+        end
       rescue
         nil
       end
