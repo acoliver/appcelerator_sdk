@@ -323,7 +323,11 @@ HELP
       end
     end
 
-    def Installer.do_cp_confirm(tx,from_path,to_path)
+    def Installer.do_cp_confirm(tx,from_path,to_path,force=false)
+      if force
+        tx.cp from_path,to_path
+        return true
+      end
       case confirm_copy from_path,to_path
         when :force
           tx.cp from_path,to_path
@@ -335,22 +339,22 @@ HELP
       true
     end
     
-    def Installer.copy(tx,from_path,to_path,excludes=nil)
+    def Installer.copy(tx,from_path,to_path,excludes=nil,force=false)
       
       if from_path.class == Array
         from_path.each do |e|
-          Installer.copy(tx,e,to_path,excludes)
+          Installer.copy(tx,e,to_path,excludes,force)
         end
         return true
       end
       
-      puts "Copy called from: #{from_path} => to: #{to_path}, excludes=> #{excludes}" if OPTIONS[:debug]
+      puts "Copy called from: #{from_path} => to: #{to_path}, excludes=> #{excludes}, force=#{force}" if OPTIONS[:debug]
       
       if File.exists?(from_path) and File.file?(from_path)
         if File.directory?(to_path)
-          return do_cp_confirm(tx,from_path,File.join(to_path,File.basename(from_path)))
+          return do_cp_confirm(tx,from_path,File.join(to_path,File.basename(from_path)),force)
         end
-        return do_cp_confirm(tx,from_path,to_path)
+        return do_cp_confirm(tx,from_path,to_path,force)
       end
       
       Dir["#{from_path}/**/*"].each do |file|
@@ -373,7 +377,7 @@ HELP
         if File.file?(file) 
           puts "Copying #{file} to #{target}" if OPTIONS[:verbose]
           tx.mkdir File.dirname(target) unless File.exists?(target)
-          do_cp_confirm tx,file,target
+          do_cp_confirm tx,file,target,force
         end
       end
       true

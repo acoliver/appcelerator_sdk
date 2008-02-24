@@ -18,7 +18,6 @@
 #
 
 require 'rubygems'
-
 require 'md5'
 require 'socket'
 require 'erb'
@@ -27,12 +26,16 @@ module Appcelerator
   class Ruby 
     def create_project(from_path,to_path,options,tx)
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
-
-      rails_gem = Gem.cache.search('rails').last
-      if not rails_gem
-        puts "Unable to create project. You must have Rails and all its dependencies installed first. Run 'gem install rails'."
-        return
+      
+      
+      ## FIXME: need to ensure that json and other base libraries are installed
+      
+      rails_gem_array = Gem.cache.search('rails')
+      if rails_gem_array.empty?
+        die "Unable to create project. You must have Rails and all its dependencies installed first. Run 'gem install rails'."
       end
+      
+      rails_gem = rails_gem_array.last
       
       if OPTIONS[:debug]
         system("rails #{to_path} --skip #{OPTIONS[:railsargs]}")
@@ -40,10 +43,10 @@ module Appcelerator
         system("rails #{to_path} --skip -q #{OPTIONS[:railsargs]}")
       end
       
-      tx.cp "#{from_path}/rails/.", "#{to_path}"
-      
+      Appcelerator::Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
+
       projectname = File.basename(to_path)
-      xml = File.read("#{to_path}/public/appcelerator.xml")
+      xml = File.read("#{from_path}/rails/public/appcelerator.xml")
       if rails_gem.version.to_s.to_f > 1.2
         xml.gsub!(/SESSIONID/,"_#{projectname}_session")
       else
@@ -53,8 +56,10 @@ module Appcelerator
       tx.put "#{to_path}/public/appcelerator.xml", xml
       
       secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)       
-      result = ERB.new(File.read("#{to_path}/app/controllers/service_broker_controller.rb")).result(binding)
+      result = ERB.new(File.read("#{from_path}/rails/vendor/plugins/lib/appcelerator/service_broker_controller.rb")).result(binding)
       tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
+      
+      true
     end
   end
 end
