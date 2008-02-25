@@ -99,6 +99,10 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
     puts
     puts "        #{SCRIPTNAME} help:commands"
     puts
+    puts "    For command-specific help, use:"
+    puts
+    puts "        #{SCRIPTNAME} help [command]"
+    puts
   end
   puts
   success
