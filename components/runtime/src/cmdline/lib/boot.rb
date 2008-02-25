@@ -185,8 +185,6 @@ module Appcelerator
       # save the config
       Installer.save_config(username,password) if save
 
-      # install the latest after login/signup
-      Installer.install_web_sdk if install
     end
     
   end

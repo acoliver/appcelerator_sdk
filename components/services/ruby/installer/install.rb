@@ -49,6 +49,8 @@ module Appcelerator
         tx.put "#{to_path}/config/environment.rb", env
       end
       
+      #TODO: fix VERSION 0.0.0 in boot.rb
+      
       Appcelerator::Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
 
       projectname = File.basename(to_path)

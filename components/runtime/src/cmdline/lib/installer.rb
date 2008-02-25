@@ -54,6 +54,13 @@ module Appcelerator
       @@config||={}
     end
     
+    def Installer.forget_credentials
+      Installer.load_config unless @@config
+      @@config.delete :username
+      @@config.delete :password
+      Installer.save_config
+    end
+    
     def Installer.save_config(username=nil,password=nil)
       @@config[:username]=username if username
       @@config[:password]=password if password
@@ -96,7 +103,7 @@ module Appcelerator
 
     def Installer.network_login(email,password,silent=false)
       puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
-      puts "Checking update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
+      puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
@@ -108,13 +115,14 @@ module Appcelerator
       Installer.login unless @@loggedin
     end
 
-    def Installer.login(un=nil,pw=nil)
-      username = @@config[:username] unless un
-      password = @@config[:password] unless pw
+    def Installer.login(un=nil,pw=nil,exit_on_failure=false)
+      username = un.nil? ? @@config[:username] : un
+      password = pw.nil? ? @@config[:password] : pw
       while true 
         if username and password
   			  break if Installer.network_login(username,password)
-  			  puts "Invalid credentials, please try again..."
+  			  STDERR.puts "Invalid credentials, please try again..."
+  			  return false if exit_on_failure
 			  end
         username = prompt_username
         password = prompt_password
