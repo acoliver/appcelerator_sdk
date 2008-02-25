@@ -38,7 +38,7 @@ Appcelerator::CommandRegistry.registerCommand('network:login','login to the Appc
   
   password = args[:password] || ask('Enter your password: ',true)
   if Appcelerator::Installer.login(args[:email],password,true)
-    puts "Logged in! Welcome back."
+    puts "Logged in! Welcome back." unless OPTIONS[:quiet]
   end
 end
 
@@ -72,17 +72,18 @@ Appcelerator::CommandRegistry.registerCommand('network:list','query network for 
       if args[:name]
         l.each do |e|
           if e[:name] == args[:name]
-            puts e.to_yaml
+            puts e.to_yaml unless OPTIONS[:quiet]
             break
           end
         end
       else
-        puts l.to_yaml
+        puts l.to_yaml unless OPTIONS[:quiet]
       end
     else
-      die "Couldn't find component type: '#{args[:type]}'"
+      die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
+      exit 1
     end
   else
-    puts list.to_yaml
+    puts list.to_yaml unless OPTIONS[:quiet]
   end
 end

@@ -72,7 +72,23 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         event = {:project_dir=>pwd,:service=>'ruby'}
         Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
         begin
-          system "#{pwd}/script/runner"
+          server = ''
+          server = options[:server] if options[:server]
+          args = ''
+          includes = %w(port p binding b daemon d debugger u environment e help h)
+          single = %w(daemon debugger help)
+          map = {:p=>:port,:b=>:binding,:d=>:daemon,:u=>:debugger,:e=>:environment,:h=>:help}
+          options.each do |k,v|
+            next unless includes.include? k.to_s
+            k = map[k] if k.to_s.length == 1
+            if single.include? k.to_s
+              args << "--#{k.to_s} " 
+            else
+              args << "--#{k.to_s}=#{v} "
+            end
+          end
+          puts "#{pwd}/script/server #{server} #{args}" if OPTIONS[:verbose]
+          system "#{pwd}/script/server #{server} #{args}"
         ensure
           Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
         end

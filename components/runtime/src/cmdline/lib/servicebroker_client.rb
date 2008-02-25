@@ -376,7 +376,7 @@ module Appcelerator
       sb = xml.match(/<servicebroker.*?>(.*?)<\/servicebroker>/)
       
       if not sb
-        STDERR.puts "Invalid response received update server at #{@url}"
+        STDERR.puts "Invalid response received update server at #{@url}" unless OPTIONS[:quiet]
         exit 1
       end
       
