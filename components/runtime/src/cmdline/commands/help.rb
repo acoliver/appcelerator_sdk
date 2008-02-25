@@ -65,7 +65,7 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
           n = a[:name]
           msg = a[:help]
           msg<<'  (optional)' unless a[:required]
-          puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
+          puts "      #{n}" + (" "*(20-n.length)) + "#{msg}"
       end
     end
     if HELP[:options]
@@ -74,7 +74,7 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
         HELP[:options].each do |a|
             n = a[:name]
             msg = a[:help]
-            puts "      #{n}" + (" "*(25-n.length)) + "#{msg}"
+            puts "      #{n}" + (" "*(20-n.length)) + "#{msg}"
         end
     end
     if entry[:examples]
@@ -102,7 +102,6 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
     puts "    For command-specific help, use:"
     puts
     puts "        #{SCRIPTNAME} help [command]"
-    puts
   end
   puts
   success
@@ -124,7 +123,7 @@ Appcelerator::CommandRegistry.registerCommand('help:commands','get information o
     help = entry[:help]
     n = name.split(':')[0]
     puts if current and current!=n
-    puts "       #{name}" + (" "*(25-name.length)) + "#{help}"
+    puts "       #{name}" + (" "*(20-name.length)) + "#{help}"
     current = n
   end
   true
@@ -132,8 +131,8 @@ end
 
 
 Appcelerator::CommandRegistry.registerCommand('help:license','gets license details for this software',nil,nil,nil) do |args,options|
-  license = "#{File.dirname(__FILE__)}/templates/COPYING"
-  system "more #{license}"
+  license = File.expand_path "#{File.dirname(__FILE__)}/templates/COPYING"
+  system "less \"#{license}\""
   true
 end
 

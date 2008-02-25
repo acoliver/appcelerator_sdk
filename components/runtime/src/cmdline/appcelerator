@@ -145,59 +145,10 @@ def check_for_update
   end
 end
 
-exitcode = 0
-cmdappend = ''
-count = 0
-
-#
-# this logic is rather simple although it might look otherwise
-#
-# we are going to run our main ruby console.rb file and in a forked 
-# sub-process of this process and  wait for exit of sub-process.  
-# we're going to check the exit code for the sub-process and if we 
-# receive a special exit code - we're going to take that to mean we 
-# have an update that needs to be installed
-#
-# the 1259 exit code means we have an update and we 
-# should re-run the exact command again
-#
-# the 1260 exit code means we have an update and we
-# should exit like normal after applying the update
-#
-# otherwise we exit with whatever code the sub-process gave us
-#
-
 check_for_update
 
-while true
-
-  count+=1
-
-  # this is a safety mechanism to not
-  # allow this to continue more than twice
-  if count > 2
-    exitcode = 1
-    break
-  end
-  
-  fork do
-     exec "ruby #{TARGET_DIR}/console.rb #{ARGV.join(' ')} #{cmdappend}"
-  end
-  
-  Process.wait
-  p = $?
-  exitcode = p.exitstatus
-
-  case exitcode
-    when 1259,1260
-      cmdappend = '--after-update-applied'
-      check_for_update
-      break if exitcode==1260
-  else
-    break
-  end
-  
+if system "ruby \"#{TARGET_DIR}/console.rb\" #{ARGV.join(' ')}"
+  exit 0
+else
+  exit 1
 end
-
-exit exitcode
-
