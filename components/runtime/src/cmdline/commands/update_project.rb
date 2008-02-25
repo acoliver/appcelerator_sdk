@@ -175,7 +175,8 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
 
           Appcelerator::Installer.with_project_config(pwd,true) do |config|
             config[:last_updated] = Time.now
-            Appcelerator::PluginManager.dispatchEvent 'before_update_project',pwd,config,tx
+            event = {:project_dir=>pwd,:config=>config,:tx=>tx}
+            Appcelerator::PluginManager.dispatchEvent 'before_update_project',event
             opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
             updates.each do |component|
               case component[:type]
@@ -213,7 +214,7 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
               else
               end
             end
-            Appcelerator::PluginManager.dispatchEvent 'after_update_project',pwd,config,tx
+            Appcelerator::PluginManager.dispatchEvent 'after_update_project',event
           end
         end
       else

@@ -31,7 +31,8 @@ module Appcelerator
       options[:websdk] = web_version
       options[:installed_widgets] = []
 
-      Appcelerator::PluginManager.dispatchEvent 'before_copy_web',options,source_dir,web_version,tx
+      event = {:options=>options,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
+      Appcelerator::PluginManager.dispatchEvent 'before_copy_web',event
 
       Installer.copy tx, "#{source_dir}/js/.", options[:javascript]
       Installer.copy tx, "#{source_dir}/images/.", options[:images]
@@ -48,7 +49,7 @@ module Appcelerator
         end if widgets      
       end
       
-      Appcelerator::PluginManager.dispatchEvent 'after_copy_web',options,source_dir,web_version,tx
+      Appcelerator::PluginManager.dispatchEvent 'after_copy_web',event
 
       options
     end

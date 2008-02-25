@@ -43,7 +43,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
   'add:plugin my:plugin ~/myproject'
 ]) do |args,options|
   
-  pwd = args[:path] || Dir.pwd
+  pwd = File.expand_path(args[:path] || Dir.pwd)
   force = options[:force]
   force = false if force.nil?
   
@@ -67,7 +67,8 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
 
-        Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
+        event = {:name=>name,:version=>version,:plugin_dir=>plugin_dir,:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
+        Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',event
 
         config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
         p = config[:plugins]
@@ -79,7 +80,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
         p << {:name=>name,:version=>version}
         Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
         
-        Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',name,version,plugin_dir,to_dir,pwd,tx
+        Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',event
         puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
     end

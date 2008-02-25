@@ -85,11 +85,6 @@ Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b)
 end
 
 #
-# load our plugins
-#
-Appcelerator::PluginManager.loadPlugins
-
-#
 # execute the command
 #
 if Appcelerator::CommandRegistry.execute(action,ARGS,OPTIONS)

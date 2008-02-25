@@ -666,9 +666,10 @@ HELP
     def Installer.fetch_component(type,name,version,to_dir,url,idx,total)
       puts "fetching into: #{to_dir} => #{url}" if OPTIONS[:debug]
       FileUtils.mkdir_p to_dir unless File.exists? to_dir
-      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,name,version,to_dir
+      event = {:to_dir=>to_dir,:from=>url,:type=>type,:name=>name,:version=>version}
+      Appcelerator::PluginManager.dispatchEvent 'before_install_component',event
       Installer.http_fetch_into("(#{idx}/#{total}) #{name}",url,to_dir)
-      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,name,version,to_dir
+      Appcelerator::PluginManager.dispatchEvent 'after_install_component',event
     end
     
     def Installer.install_from_zipfile(type,description,from)
@@ -677,9 +678,10 @@ HELP
         die "Invalid package file #{from}. Missing build.yml"
       end
       to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
-      Appcelerator::PluginManager.dispatchEvent 'before_install_component',type,from,config[:name],config[:version],to_dir
+      event = {:to_dir=>to_dir,:from=>from,:type=>config[:type],:name=>config[:name],:from=>from,:version=>config[:version]}
+      Appcelerator::PluginManager.dispatchEvent 'before_install_component',event
       Installer.unzip to_dir,from
-      Appcelerator::PluginManager.dispatchEvent 'after_install_component',type,from,config[:name],config[:version],to_dir
+      Appcelerator::PluginManager.dispatchEvent 'after_install_component',event
       return to_dir,config[:name],config[:version]
     end
 

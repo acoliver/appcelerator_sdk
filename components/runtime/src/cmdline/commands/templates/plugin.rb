@@ -7,85 +7,88 @@
 # that you don't intend to implement.
 #
 class ExamplePlugin < Appcelerator::Plugin
-    def plugin_registered
+    def on_event(event)
+      # this is a catch-all event method - will catch everything
+    end
+    def plugin_registered(event)
       # called when this plugin is loaded
     end
-    def before_command(command,argHash,opts)
+    def before_command(event)
       # called before a command executes
     end
-    def after_command(command,argHash,opts)
+    def after_command(event)
       # called after a command executes 
     end
-    def before_create_project(to,from,name,language,version,transaction)
+    def before_create_project(event)
       # called before a project is created
     end
-    def after_create_project(config,success,transaction)
+    def after_create_project(event)
       # called after a project is created
     end
-    def before_update_project(project_dir,config,tx)
+    def before_update_project(event)
       # called before a project is updated
     end
-    def after_update_project(project_dir,config,tx)
+    def after_update_project(event)
       # called after a project is updated
     end
-    def before_web_sdk_install(target_dir,version)
+    def before_web_sdk_install(event)
       # called before the web sdk is installed
     end
-    def after_web_sdk_install(target_dir,version)
+    def after_web_sdk_install(event)
       # called after the web sdk is installed
     end
-    def before_copy_web(options,source_dir,version,tx)
+    def before_copy_web(event)
       # called before the web assets are copied into a project
     end
-    def after_copy_web(options,source_dir,version,tx)
+    def after_copy_web(event)
       # called after the web assets are copied into a project
     end
-    def before_create_plugin(project_dir,name)
+    def before_create_plugin(event)
       # called before a plugin project is created
     end
-    def after_create_plugin(project_dir,name)
+    def after_create_plugin(event)
       # called after a plugin project is created
     end
-    def before_install_plugin(location,name,version,path)
+    def before_install_plugin(event)
       # called before a plugin is installed
     end
-    def after_install_plugin(location,name,version,path)
+    def after_install_plugin(event)
       # called after a plugin is installed
     end
-    def before_add_widget(widget_name,version,widget_dir,to_dir)
+    def before_add_widget(event)
       # called before a widget is added to a project directory
     end
-    def after_add_widget(widget_name,version,widget_dir,to_dir)
+    def after_add_widget(event)
       # called after a widget is added to a project directory
     end
-    def before_create_html(html,language)
+    def before_create_html(event)
       # called before an HTML template is created in a project directory
     end
-    def after_create_html(html,language)
+    def after_create_html(event)
       # called after an HTML template is created in a project directory
     end
-    def before_run_server(directory,language)
+    def before_run_server(event)
       # called before the project specific server is run
     end
-    def after_run_server(directory,language)
+    def after_run_server(event)
       # called after the project specific server is run
     end
-    def before_create_war(directory)
+    def before_create_war(event)
       # called before a project war is created for java
     end
-    def after_create_war(directory)
+    def after_create_war(event)
       # called after a project war is created for java
     end
-    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
+    def before_add_plugin(event)
       # called before a plugin is added to a project
     end
-    def after_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
+    def after_add_plugin(event)
       # called after a plugin is added to a project
     end
-    def before_install_component(type,name,version,to_dir)
+    def before_install_component(event)
       # called before a component is installed
     end
-    def after_install_component(type,from,name,version,to_dir)
+    def after_install_component(event)
       # called after a component is installed
     end
 end

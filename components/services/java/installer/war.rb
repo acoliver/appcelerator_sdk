@@ -19,10 +19,11 @@
 class WARPlugin < Appcelerator::Plugin
     def plugin_registered
       # called when this plugin is loaded
-      Appcelerator::CommandRegistry.registerCommand('war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
-        Appcelerator::PluginManager.dispatchEvent 'before_create_war',"#{Dir.pwd}"
+      Appcelerator::CommandRegistry.registerCommand('project:war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
+        event = {:project_dir=>Dir.pwd}
+        Appcelerator::PluginManager.dispatchEvent 'before_create_war',event
         system "ant war"
-        Appcelerator::PluginManager.dispatchEvent 'after_create_war',"#{Dir.pwd}"
+        Appcelerator::PluginManager.dispatchEvent 'after_create_war',event
       end
     end
 end

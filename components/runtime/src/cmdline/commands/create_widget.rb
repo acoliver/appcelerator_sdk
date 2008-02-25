@@ -66,7 +66,8 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   widget_name = name.gsub ':', '_'
   
   dir = File.join(args[:path].path,widget_name)
-  Appcelerator::PluginManager.dispatchEvent 'before_create_widget',dir,name
+  event = {:widget_dir=>dir,:name=>name}
+  Appcelerator::PluginManager.dispatchEvent 'before_create_widget',event
 
   FileUtils.mkdir_p(dir) unless File.exists?(dir)
   
@@ -102,6 +103,6 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   
   #TODO: add compression and symbol stuff here to rake file and path
   
-  Appcelerator::PluginManager.dispatchEvent 'after_create_widget',dir,name
+  Appcelerator::PluginManager.dispatchEvent 'after_create_widget',event
   puts "Created Widget: #{name} in #{dir}" unless OPTIONS[:quiet]
 end

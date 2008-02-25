@@ -108,7 +108,8 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   success = false
 
   with_io_transaction(to) do |tx|
-    Appcelerator::PluginManager.dispatchEvent 'before_create_project',to,from,args[:name],service,version,tx
+    event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],:service=>service,:version=>version,:tx=>tx}
+    Appcelerator::PluginManager.dispatchEvent 'before_create_project',event
     
     config = Appcelerator::Installer.create_project(to,args[:name],service,version,tx)
   
@@ -118,8 +119,9 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
       puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
       success = true
     end
-
-    Appcelerator::PluginManager.dispatchEvent 'after_create_project',config,success,tx
+    
+    event[:success]=success
+    Appcelerator::PluginManager.dispatchEvent 'after_create_project',event
   end
 
   success

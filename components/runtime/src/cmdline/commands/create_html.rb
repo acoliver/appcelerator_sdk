@@ -36,10 +36,11 @@ Appcelerator::CommandRegistry.registerCommand('create:html','create a new html f
   lang = Appcelerator::Project.get_service
 
   with_io_transaction(Dir.pwd) do |tx|
-    Appcelerator::PluginManager.dispatchEvent 'before_create_html',"#{Dir.pwd}/public/#{name}.html",lang
+    event = {:file=>"#{Dir.pwd}/public/#{name}.html", :service=>lang, :project_dir=> Dir.pwd}
+    Appcelerator::PluginManager.dispatchEvent 'before_create_html',event
     template = File.read "#{File.dirname(__FILE__)}/templates/template.html"
     tx.put "#{Dir.pwd}/public/#{name}.html", template
-    Appcelerator::PluginManager.dispatchEvent 'after_create_html',"#{Dir.pwd}/public/#{name}.html",lang
+    Appcelerator::PluginManager.dispatchEvent 'after_create_html',event
     puts "Created HTML file => #{Dir.pwd}/public/#{name}.html" unless OPTIONS[:quiet]
   end
 

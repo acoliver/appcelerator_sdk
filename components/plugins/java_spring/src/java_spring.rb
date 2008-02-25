@@ -7,8 +7,14 @@
 # that you don't intend to implement.
 #
 class JavaSpring < Appcelerator::Plugin
-    def before_add_plugin(plugin_name,version,plugin_dir,to_dir,project_dir,tx)
-      if plugin_name == 'java:spring'
+    def before_add_plugin(event)
+      if event[:plugin_name] == 'java:spring'
+        
+          version = event[:version]
+          plugin_dir = event[:plugin_dir]
+          to_dir = event[:to_dir]
+          project_dir = event[:project_dir]
+          tx = event[:tx]
         
           tx.rm Dir.glob("#{project_dir}/lib/spring-*.jar")
           

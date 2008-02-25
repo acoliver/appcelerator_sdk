@@ -47,7 +47,8 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   plugin_name = args[:name].gsub ':', '_'
 
   dir = File.join(args[:path].path,plugin_name)
-  Appcelerator::PluginManager.dispatchEvent 'before_create_plugin',dir,args[:name]
+  event = {:plugin_dir=>dir,:name=>args[:name]}
+  Appcelerator::PluginManager.dispatchEvent 'before_create_plugin',event
 
   FileUtils.mkdir_p(dir) unless File.exists?(dir)
   
@@ -76,6 +77,6 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   Appcelerator::Installer.put "#{dir}/Rakefile", template
   Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
   
-  Appcelerator::PluginManager.dispatchEvent 'after_create_plugin',dir,args[:name]
+  Appcelerator::PluginManager.dispatchEvent 'after_create_plugin',event
   puts "Created Plugin: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]
 end

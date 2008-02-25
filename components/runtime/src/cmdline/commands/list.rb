@@ -34,7 +34,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(list:plugins list:plugin),'list
   Appcelerator::Project.list_installed_components 'plugin'
 end
 
-Appcelerator::CommandRegistry.registerCommand('list:all','list all locally installed components',nil,nil,nil) do |args,options|
+Appcelerator::CommandRegistry.registerCommand(%w(list:all list),'list all locally installed components',nil,nil,nil) do |args,options|
   Appcelerator::Project.list_installed_components 'websdk' 
   Appcelerator::Project.list_installed_components 'service'
   Appcelerator::Project.list_installed_components 'plugin'

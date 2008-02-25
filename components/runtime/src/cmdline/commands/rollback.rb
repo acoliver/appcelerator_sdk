@@ -35,7 +35,7 @@ Appcelerator::CommandRegistry.registerCommand('project:rollback','rollback proje
   'rollback ~/myproject'
 ]) do |args,options|
   
-  pwd = args[:path] || Dir.pwd
+  pwd = File.expand_path(args[:path] || Dir.pwd)
 
   fail = false
   

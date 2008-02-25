@@ -43,7 +43,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
   'add:widget app:script ~/myproject'
 ]) do |args,options|
   
-  pwd = args[:path] || Dir.pwd
+  pwd = File.expand_path(args[:path] || Dir.pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   lang = Appcelerator::Project.get_service(pwd) unless options[:ignore_path_check]
@@ -69,7 +69,8 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
 
-        Appcelerator::PluginManager.dispatchEvent 'before_add_widget',widget_name,version,widget_dir,to_dir
+        event = {:widget_name=>widget_name,:version=>version,:widget_dir=>widget_dir,:to_dir=>to_dir}
+        Appcelerator::PluginManager.dispatchEvent 'before_add_widget', event
         Appcelerator::Installer.copy tx, widget_dir, to_dir
 
         config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
@@ -82,7 +83,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         p << {:name=>name,:version=>version}
         Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
 
-        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',widget_name,version,widget_dir,to_dir
+        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',event
         puts "Installed #{name}" unless OPTIONS[:quiet] or options[:quiet]
       end
     end
