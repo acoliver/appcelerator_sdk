@@ -80,7 +80,11 @@ module Appcelerator
         classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
         classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
       
-        Dir["#{to_path}/lib/**/*"].each do |dir|
+        Dir["#{from_path}/lib/**/*"].each do |dir|
+          dir = dir.gsub("#{from_path}",'')
+          if dir =~ /^\//
+            dir = dir[1..-1]
+          end
           classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
         end
       
