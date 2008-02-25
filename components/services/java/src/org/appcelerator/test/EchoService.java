@@ -20,21 +20,16 @@
  */
 package org.appcelerator.test;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Service;
 import org.appcelerator.messaging.Message;
-import org.springframework.stereotype.Component;
 
 /**
  * Simple EchoService example
  *
  * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
-@Component
 public class EchoService
 {
     private static final Log LOG = LogFactory.getLog(EchoService.class);
@@ -48,18 +43,6 @@ public class EchoService
      * response message type
      */
     private static final String TEST_MESSAGE_RESPONSE = "app.test.message.response";
-    
-    @PostConstruct
-    public void initialize ()
-    {
-        LOG.info("initialize");
-    }
-    
-    @PreDestroy
-    public void destroy()
-    {
-        LOG.info("destroy");
-    }
     
     /**
      * method will be invoked when the message
