@@ -91,6 +91,14 @@ module Appcelerator
     class CommandRegistry
       @@registry=Hash.new
       
+      def CommandRegistry.addOptions(opts=nil)
+        if opts
+          opts.each do |opt|
+            HELP[opt[:name].to_sym] = opt
+          end
+        end
+      end
+      
       def CommandRegistry.registerCommand(name,help,args,opts,examples,&callback)
         case name.class.to_s
           when 'Array'
@@ -103,6 +111,7 @@ module Appcelerator
                 :help=>help,
                 :alias=>idx > 0
               } unless exists?(n)
+              CommandRegistry.addOptions(opts)
             end
           when 'String'
             @@registry[name] = {
@@ -113,6 +122,7 @@ module Appcelerator
               :help=>help,
               :alias=>false
             } unless exists?(name)
+            CommandRegistry.addOptions(opts)
         end
       end
       

@@ -38,9 +38,9 @@ module Appcelerator
       rails_gem = rails_gem_array.last
       
       if OPTIONS[:debug]
-        system("rails #{to_path} --skip #{OPTIONS[:railsargs]}")
+        system("rails #{to_path} --skip #{OPTIONS[:args]}")
       else
-        system("rails #{to_path} --skip -q #{OPTIONS[:railsargs]}")
+        system("rails #{to_path} --skip -q #{OPTIONS[:args]}")
       end
       
       env = File.read "#{to_path}/config/environment.rb"

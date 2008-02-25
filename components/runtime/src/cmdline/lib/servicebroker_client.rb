@@ -23,19 +23,6 @@ require 'yaml'
 require 'cgi'
 require File.join(File.dirname(__FILE__),'cookie')
 
-begin
-    require 'rubygems'
-    json = Gem.cache.search('json')
-    if json and json.first
-      require 'json'
-      SBC_HAS_JSON = true
-    else
-      SBC_HAS_JSON = false
-    end
-rescue
-    SBC_HAS_JSON = false
-end  
-
 # -------------------------------------------------------------------------------------
 #
 # From: http://deftcode.com/code/flickr_upload/multipartpost.rb
@@ -290,56 +277,11 @@ module Appcelerator
     # into JSON - it's not foolproof at all - be warned
     #
     def json_encode(obj)
-      
-      return obj.to_json if SBC_HAS_JSON
-      
-      case obj.class.to_s
-        when 'String'
-          return "\"#{obj}\""
-        when 'Fixnum','TrueClass','FalseClass'
-          return obj.to_s
-        when 'NilClass'
-          return 'null'
-        when 'Date'
-          return %("#{obj.strftime("%Y/%m/%d %H:%M:%S %z")}")
-        when 'Array'
-          str = '['
-          obj.each_with_index do |e,index|
-            str << json_encode(e)
-            str << ',' if index < obj.length
-          end
-          str << ']'
-          return str
-      end
-      
-      str = '{'
-      values = []
-      obj.each do |k,v|
-        values << "\"#{k}\":#{json_encode(v)}"
-      end
-      str << values.join(',')
-      str << '}'
-      str
-
+      obj.to_json
     end
     
     def json_decode(json_str)
-        
-      return JSON.parse(json_str) if SBC_HAS_JSON
-      
-      json_str_post = json_str.gsub(/":/,'": ').gsub(/,"/,', "')
-
-      puts "response (in)=> #{json_str}" if @debug
-      puts "response (out)=> #{json_str_post}" if @debug
-        
-      yaml = YAML::load_stream(json_str_post)
-        
-      begin
-          # get the first doc since we only have one doc in this struct
-          yaml = yaml[0]
-      rescue
-          yaml = Hash.new
-      end
+      return JSON.parse(json_str)
     end
     
     def get_cookies(response)

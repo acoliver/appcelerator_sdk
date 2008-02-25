@@ -32,7 +32,14 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
     ],
     :conversion=>Appcelerator::Types::DirectoryType
   }
-],nil,nil) do |args,options|
+],[
+  {
+     :name=>:server,
+     :display=>'--server=servername',
+     :help=>'server to use. for example: webrick',
+     :value=>true
+  }
+],nil) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
   FileUtils.cd(pwd) do 
@@ -74,19 +81,7 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         begin
           server = ''
           server = options[:server] if options[:server]
-          args = ''
-          includes = %w(port p binding b daemon d debugger u environment e help h)
-          single = %w(daemon debugger help)
-          map = {:p=>:port,:b=>:binding,:d=>:daemon,:u=>:debugger,:e=>:environment,:h=>:help}
-          options.each do |k,v|
-            next unless includes.include? k.to_s
-            k = map[k] if k.to_s.length == 1
-            if single.include? k.to_s
-              args << "--#{k.to_s} " 
-            else
-              args << "--#{k.to_s}=#{v} "
-            end
-          end
+          args = options[:args] || ''
           puts "#{pwd}/script/server #{server} #{args}" if OPTIONS[:verbose]
           system "#{pwd}/script/server #{server} #{args}"
         ensure

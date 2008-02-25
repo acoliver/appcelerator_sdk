@@ -393,6 +393,7 @@ HELP
     
     def Installer.load_site_config
       return @@site_config if @@site_config
+      FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
       @@site_config_file = "#{RELEASE_DIR}/config.yml"
       @@site_config = YAML::load_file @@site_config_file if File.exists?(@@site_config_file)
       @@site_config||={}
@@ -401,6 +402,7 @@ HELP
     
     def Installer.save_site_config
       if @@site_config
+        FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
         f = File.open @@site_config_file, 'w+'
         f.puts @@site_config.to_yaml
         f.close
