@@ -43,6 +43,12 @@ module Appcelerator
         system("rails #{to_path} --skip -q #{OPTIONS[:railsargs]}")
       end
       
+      env = File.read "#{to_path}/config/environment.rb"
+      if not env =~ /require 'appcelerator'/
+        env << "\nrequire 'appcelerator'\n"
+        tx.put "#{to_path}/config/environment.rb", env
+      end
+      
       Appcelerator::Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
 
       projectname = File.basename(to_path)
@@ -56,7 +62,7 @@ module Appcelerator
       tx.put "#{to_path}/public/appcelerator.xml", xml
       
       secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)       
-      result = ERB.new(File.read("#{from_path}/rails/vendor/plugins/lib/appcelerator/service_broker_controller.rb")).result(binding)
+      result = ERB.new(File.read("#{from_path}/rails/app/controllers/service_broker_controller.rb")).result(binding)
       tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
       
       true

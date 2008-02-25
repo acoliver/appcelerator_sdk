@@ -1,6 +1,4 @@
 require 'rubygems'
-gem 'appcelerator'
-require 'appcelerator'
 
 class ServiceBrokerController < ApplicationController
   include ServiceBroker
