@@ -119,6 +119,10 @@ STR
         tx.put "#{to_path}/.project",project
       end
     
+      %w(templates script log).each do |name|
+        tx.rm "#{to_path}/#{name}"
+      end
+
       Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"
       
       true

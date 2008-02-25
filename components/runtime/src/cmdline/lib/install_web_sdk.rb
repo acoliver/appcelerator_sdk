@@ -34,7 +34,7 @@ module Appcelerator
       event = {:options=>options,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
       Appcelerator::PluginManager.dispatchEvent 'before_copy_web',event
 
-      Installer.copy tx, "#{source_dir}/js/.", options[:javascript]
+      Installer.copy tx, "#{source_dir}/javascripts/.", options[:javascript]
       Installer.copy tx, "#{source_dir}/images/.", options[:images]
       Installer.copy tx, "#{source_dir}/swf/.", options[:web] + '/swf'
       Installer.copy tx, Dir.glob("#{source_dir}/*.html"), options[:web]

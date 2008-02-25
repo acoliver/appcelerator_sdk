@@ -57,6 +57,9 @@ task :default do
    
   cp = Dir["#{BUILD_DIR}/lib/**/*.jar"].inject([]) {|a,f| a<<f }
   src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
+  src.delete_if {|f| f =~ /EchoService.java$/ }
+  
+#  FileUtils.cp_r "#{java_source}/org/appcelerator/test/EchoService.java", ""
   
   f = File.open "#{java_dir}/dist/build.yml", 'w+'
   f.puts build_config.to_yaml
@@ -91,6 +94,7 @@ task :default do
           zipfile.add(filename,"#{java_dir}/dist/#{filename}")
         end
       end
+      zipfile.add('app/services/EchoService.java',"#{java_source}/org/appcelerator/test/EchoService.java")
     end
   end
   

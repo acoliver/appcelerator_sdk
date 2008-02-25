@@ -60,7 +60,8 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         end
         props=props.join(' ')
         sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
-        cp = "#{pwd}/stage/java/classes"
+        cp = "#{servicesdir}"
+        #cp << "#{pwd}/stage/java/classes"
         cp << sep
         cp << "#{pwd}/output/classes" if File.exists?("#{pwd}/output/classes")
         cp << sep
