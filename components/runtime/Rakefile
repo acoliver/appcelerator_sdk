@@ -143,6 +143,8 @@ task :osx=> [:stage] do
     f.puts c
     f.close
   end
+
+  FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
   
   # build the package structure
   if File.exists? "/Developer/Tools/packagemaker"
@@ -155,13 +157,15 @@ task :osx=> [:stage] do
     exit 1
   end
 
+
   # add in our postflight install script
-  postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight",'w+'
+  postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight",'w+'
   postflight.puts "#!/bin/sh"
   postflight.puts "/usr/bin/appcelerator '--postflight--'"
+  postflight.puts "open http://www.appcelerator.org"
   postflight.puts "exit 0"
   postflight.close
-  FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/lib.pkg/Contents/Resources/postflight"
+  FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight"
   
   FileUtils.mkdir_p "#{osx_dir}/installer/build/osx/installer"
   system "hdiutil convert #{osx_dir}/installer/build/osx/Appcelerator.dmg -format UDSP -o #{osx_dir}/installer/build/osx/installer/Appcelerator"

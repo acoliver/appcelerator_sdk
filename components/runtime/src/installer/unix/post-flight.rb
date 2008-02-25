@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #
 # This file is part of Appcelerator.
 #
@@ -102,7 +102,8 @@ FileUtils.cp_r "#{from_dir}/.", install_dir
 bindir = '/usr/bin'
 
 if File.exists?(bindir)
-  FileUtils.ln_s "#{install_dir}/appcelerator", "#{bindir}/appcelerator", :force=>true
+  FileUtils.ln_s "#{install_dir}/appcelerator", "#{install_dir}/app", :force=>true
+  FileUtils.ln_s "#{install_dir}/appcelerator", "#{bindir}/app", :force=>true
 end
 
 # make the directory cache where our files will go
@@ -111,11 +112,12 @@ FileUtils.mkdir_p "#{install_dir}/updates" unless File.exists? "#{install_dir}/u
 
 # set permissions
 FileUtils.chown_R 'root', 'admin', "#{install_dir}"
-FileUtils.chown_R 'root', 'admin', "#{bindir}/appcelerator"
+FileUtils.chown_R 'root', 'admin', "#{bindir}/app"
 
 # set execution bits
 FileUtils.chmod 0755, "#{install_dir}/appcelerator"
-FileUtils.chmod 0755, "#{bindir}/appcelerator"
+FileUtils.chmod 0755, "#{install_dir}/app"
+FileUtils.chmod 0755, "#{bindir}/app"
 
 # these directories need to be writable by non-root
 %w(releases updates lib commands).each do |name|

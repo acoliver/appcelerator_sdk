@@ -26,17 +26,20 @@
 if [ $UID -eq 0 ]
 then
     if [ "$1" == "--postflight--" ]
-	  then
-		   # check to do the postflight install process for the macosx installer
-  		 mkdir -p /Library/Appcelerator/releases
-  		 mkdir -p /Library/Appcelerator/updates
+    then
+       # check to do the postflight install process for the macosx installer
+         mkdir -p /Library/Appcelerator/releases
+         mkdir -p /Library/Appcelerator/updates
          chown -R root:admin /Library/Appcelerator/releases
          chown -R root:admin /Library/Appcelerator/updates
-  		 chmod -R 0777 /Library/Appcelerator/releases
-  		 chmod -R 0777 /Library/Appcelerator/updates
-		chmod +x /Library/Appcelerator/appcelerator
-#  		 au=`/Library/Appcelerator/growlnotify -m "Appcelerator RIA Platform installed" -t "Appcelerator" -n "appcelerator" -w >/dev/null 2>&1`
-		 exit 0
+         chown -R root:admin /usr/bin/appcelerator
+         chmod -R 0777 /Library/Appcelerator/releases
+         chmod -R 0777 /Library/Appcelerator/updates
+         chmod +x /Library/Appcelerator/appcelerator
+         ln -fs /Library/Appcelerator/appcelerator /usr/bin/app
+         chmod +x /usr/bin/app
+         open "http://www.appcelerator.org"
+         exit 0
     fi 
 fi
 

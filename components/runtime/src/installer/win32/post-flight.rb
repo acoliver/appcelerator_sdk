@@ -34,7 +34,7 @@ EOS
 # write out the batch file
 #
 
-f = File.open File.join(APPC_BIN,'appcelerator.bat'), 'w+'
+f = File.open File.join(APPC_BIN,'app.bat'), 'w+'
 f.puts str
 f.flush
 f.close

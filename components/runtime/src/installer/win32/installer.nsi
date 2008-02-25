@@ -204,6 +204,7 @@ Section "Uninstall"
   Delete "$INSTDIR\post-flight.rb"
   Delete "$INSTDIR\LICENSE"
   Delete "$INSTDIR\appcelerator"
+  Delete "$INSTDIR\app"
   Delete "$INSTDIR\appcelerator.bat"
 
   RMDir /r "$INSTDIR\commands"
