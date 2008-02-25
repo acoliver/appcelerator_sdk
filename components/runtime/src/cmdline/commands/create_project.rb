@@ -111,7 +111,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
     event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],:service=>service,:version=>version,:tx=>tx}
     Appcelerator::PluginManager.dispatchEvent 'before_create_project',event
     
-    config = Appcelerator::Installer.create_project(to,args[:name],service,version,tx)
+    config, props = Appcelerator::Installer.create_project(to,args[:name],service,version,tx)
   
     # now execute the install script
     installer = eval "Appcelerator::#{service_name}.new"

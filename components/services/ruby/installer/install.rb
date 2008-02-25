@@ -67,6 +67,10 @@ module Appcelerator
       result = ERB.new(File.read("#{from_path}/rails/app/controllers/service_broker_controller.rb")).result(binding)
       tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
       
+      boot = File.read("#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator.rb")
+      boot.gsub!('0.0.0',options[:service_version])
+      tx.put "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator.rb", boot
+      
       true
     end
   end
