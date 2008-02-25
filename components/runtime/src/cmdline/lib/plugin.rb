@@ -49,23 +49,26 @@ module Appcelerator
     end
     def PluginManager.loadPlugins(args)
       path = args[:path] || Dir.pwd
-      if path and File.exists? path and File.exists? "#{path}/plugins"
-        Dir["#{path}/plugins/*"].each do |dir|
-          begin
-            if File.file?(dir) and File.extname(dir)=='.rb'
-              # load plugins in same directory as plugins
-              require dir
-            elsif File.directory?(dir)
-              # load any plugins that are subdirectories under plugins directory
-              # as long as the directory name and plugin name are the same
-              name = File.dirname(dir)
-              prb = "#{dir}/#{name}"
-              if File.exists?("#{prb}.rb")
-                require prb
+      if path 
+        path = path.path if path.class==Dir
+        if File.exists? path and File.exists? "#{path}/plugins"
+          Dir["#{path}/plugins/*"].each do |dir|
+            begin
+              if File.file?(dir) and File.extname(dir)=='.rb'
+                # load plugins in same directory as plugins
+                require dir
+              elsif File.directory?(dir)
+                # load any plugins that are subdirectories under plugins directory
+                # as long as the directory name and plugin name are the same
+                name = File.dirname(dir)
+                prb = "#{dir}/#{name}"
+                if File.exists?("#{prb}.rb")
+                  require prb
+                end
               end
+            rescue => e
+              STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
             end
-          rescue => e
-            STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
           end
         end
       end
