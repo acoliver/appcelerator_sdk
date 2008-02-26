@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+<style>
+<!--
+
+
+#styled .tabpanel a:hover
+{
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+#styled .tab_inactive
+{
+	border-bottom:none; 
+	background-color:#fff;
+	color:#111;
+	font-weight:bold;
+	opacity:0.4;
+}
+
+#styled .tab_active
+{
+	border-bottom:2px solid #3B5998; 
+	background-color:#3B5998;
+	color:#fff;
+	font-weight:bold;
+	opacity:0.99;
+}
+
+#my_tab_divider
+{
+	border:1px solid #999;
+	border-top:none;
+	padding-bottom:5px;
+	height:3px;
+	background-color:#3B5998;
+	clear:both
+}
+-->
+</style>
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Content</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:content[show=example] and add[class=active] or l:content[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:content[show=code] and add[class=active] or l:content[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:content[show=usage] and add[class=active] or l:content[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	<!-- EXAMPLE -->
+	<div on="l:content[show=example] then show else hide">
+		<p>
+			The Content Widget allows you to create re-usable HTML code snippets that can be included throughout your
+			application. The example below shows a tab panel (see Tab Panel for more information) that displays different
+			HTML files based on the active tab.  When you click a tab, it triggers the display of an external HTML file
+			specified in the Content Widgets definition.  You can also pass arguments to a content file to do things like
+			set page titles (like in the example below) or anything else you can think up.
+		</p>
+		<p>
+		    The content of the Content Widget should be a well-formed XHTML page.  This is not a requirement, just a good thing
+		    to do.  Having your content in a valid XHTML page means that they can be used independently, if required, and 
+		    indexed by search engines, such as <a href="http://www.google.com" rel="external">Google</a>.  The Content Widget
+		    applies any styles defined in the header and removes conflicting markup, such as &lt;html&gt; tags.  
+	    </p>
+	    <p>
+            The way Content Widgets work can expose a few quirks.  The Content Widget does nothing with duplicate id's.
+            Also, the content of a Content Widget is loaded initially in a hidden iframe then loaded into the DOM of the
+            parent page.  Although the Content Widget will eventually throw away any script tags defined in the header, 
+            they will be evaluated when the content is parsed in the iframe.  This means that including references to 
+            large javascript files (such as Appcelerator) will cause performance degradation. Any javascript that
+            the include file will need should either be included in the parent file or included in an &lt;app:script&gt; block.  
+		</p>
+		<div id="styled">
+			<app:tabpanel id="contentmenu" initial="movies">
+				<tab name="movies">Favorite Movies</tab>
+				<tab name="music">Favorite Music</tab>
+				<tab name="banjo">Banjo Sonatas in D</tab>
+			</app:tabpanel>
+		</div>
+		<div id="my_tab_divider"></div>
+		<app:content
+			lazy="false"
+			args="{'title':'These movies do not suck'}"
+			src="content/movies.html" 
+			on="contentmenu[movies] then show else hide">
+		</app:content>
+		<app:content
+			lazy="false"
+			args="{'title':'These albums do not suck'}"
+			src="content/music.html" 
+			on="contentmenu[music] then show else hide">
+		</app:content>
+		<app:content
+			lazy="false"
+			args="{'title':'Banjo - the new Cow Bell'}"
+			src="content/banjo.html" 
+			on="contentmenu[banjo] then show else hide">
+		</app:content>			
+
+	</div>
+
+	<!-- CODE -->
+	<div on="l:content[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:tabpanel id="contentmenu" initial="movies">
+					<tab name="movies">Favorite Movies</tab>
+					<tab name="music">Favorite Music</tab>
+					<tab name="banjo">Banjo Sonatas in D</tab>
+				</app:tabpanel>
+				<div id="my_tab_divider"></div>
+				<app:content
+					lazy="false"
+					args="{'title':'These movies do not suck'}"
+					src="content/movies.html" 
+					on="contentmenu[movies] then show else hide">
+				</app:content>
+				<app:content
+					lazy="false"
+					args="{'title':'These albums do not suck'}"
+					src="content/music.html" 
+					on="contentmenu[music] then show else hide">
+				</app:content>
+				<app:content
+					lazy="false"
+					args="{'title':'Banjo - the new Cow Bell'}"
+					src="content/banjo.html" 
+					on="contentmenu[banjo] then show else hide">
+				</app:content>			
+			</textarea>	
+		</p>
+
+		<p>Here's music.html:
+			<textarea name="code" class="xml:nocontrols">
+				<html>
+				<body>
+					<div class="bold_value_grey_lg" style="margin-top:10px;margin-bottom:10px;clear:both">#{title}</div>
+					<div style="float:left;padding:10px">
+						<img src="images/cure.jpg"/>
+					</div>
+					<div style="float:left;padding:10px">
+						<img src="images/rage.jpg"/>
+					</div>
+					<div style="float:left;padding:10px">
+						<img src="images/silver_jews.jpg"/>
+					</div>
+					<div style="float:left;padding:10px">
+						<img src="images/esmith.jpg"/>
+					</div>
+				</body>
+				</html>
+			</textarea>	
+		</p>
+
+		<p>Here's movies.html:
+			<textarea name="code" class="xml:nocontrols">
+				<html>
+				<body>
+					<div class="bold_value_grey_lg" style="margin-top:10px;margin-bottom:10px;clear:both">#{title}</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/godfather.jpg"/>
+					</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/bottle_rocket.jpg"/>
+					</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/raising_arizona.jpg"/>
+					</div>
+				</body>
+				</html>			
+				</textarea>	
+		</p>
+
+		<p>Here's banjo.html:
+			<textarea name="code" class="xml:nocontrols">
+				<html>
+				<body>
+					<div class="bold_value_grey_lg" style="margin-top:10px;margin-bottom:10px;clear:both">#{title}</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/banjo1.jpg"/>
+					</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/banjo2.jpg"/>
+					</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/banjo3.jpg"/>
+					</div>
+					<div style="float:left;margin-right:10px">
+						<img src="images/banjo4.jpg"/>
+					</div>
+				</body>
+				</html>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:content[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">the expression that determines what message will trigger the execution
+						of the Content Widget.  The correct syntax is :<tt>on="[message_name] then execute"</tt>
+					</td>
+					</tr>
+					<tr>
+					  <td class="term">src</td>
+					  <td class="def">URI for the content source (should reference a HTML file)</td>
+					</tr>
+					<tr>
+					  <td class="term">lazy</td>
+					  <td class="def">whether or not to lazy load the content file (true|false)</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">JSON representation of parameters.  For example: <tt>args="{'id':'123'}"</tt></td>
+					</tr>
+					<tr>
+					  <td class="term">onload</td>
+					  <td class="def">The name of the message to be published when the content is loaded (content lifecycle is fetch, compile, load, then execute).  This will carry a payload of <tt>src</tt> and <tt>args</tt>
+						so that you can uniquely identify the callback.</td>
+					</tr>
+					<tr>
+					  <td class="term">onfetch</td>
+					  <td class="def">The name of the message to be published when the content is fetched (content lifecycle is fetch, compile, load, then execute).  This will carry a payload of <tt>src</tt> and <tt>args</tt>
+						so that you can uniquely identify the callback.</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

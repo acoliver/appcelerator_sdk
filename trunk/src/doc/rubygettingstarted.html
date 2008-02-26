@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Ruby</h2>
+	<p>
+	<a class="active" on="click then l:rubygettingstarted[show=install] and add[class=active] or l:rubygettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:rubygettingstarted[show=client] and add[class=active] or l:rubygettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:rubygettingstarted[show=service] and add[class=active] or l:rubygettingstarted[show!=service] then remove[class=active]">Ruby Service</a> 
+	</p>
+
+
+	<div on="l:rubygettingstarted[show=install] then effect[Appear] else effect[Fade]">
+		<h3>Pre-requisites</h3>
+		<p>
+		It is assumed that you already have the following installed:
+		<ul>
+			<li><a href="http://www.ruby-lang.org" target="_blank">Ruby</a> 1.8.6 or higher</li>
+			<li><a href="http://www.rubygems.org/" target="_blank">Ruby Gems</a> 0.9.4 or higher</li>
+			<li>Additional gems (the following are not packaged with the distribution)</li>
+			<ul>
+				<li>rails (>= 1.2.3)</li>
+				<li>json (>= 0.4.3) [if using Windows and you do not have Visual Studio installed, use json_pure (>= 0.4.3) instead]</li>
+				<li>hpricot (>= 0.5.0)</li>
+			</ul>
+		</ul>
+		</p>
+		<h3>A Note For Windows Users</h3>
+		<p>
+		As mentioned above, it's easiest to use the json_pure gem instead of json if you're on a Windows-based machine.  If the performance penalty of using json_pure (over the json gem) is unacceptable, then install <a href="http://www.microsoft.com/express/">Microsoft Visual Studio Express</a> and you will be able to use the json gem instead.
+		</p>
+		<p>
+		If you receive the error:
+		<pre class="command">
+c:\ruby\lib\ruby\1.8\i386-mswin32\config.h(2) : fatal error C1189:
+#error : MSC version unmatch
+		</pre>
+		while trying to install the json gem (or any other gem requiring the use of the Visual Studio compiler upon installation) then open the file referenced in the error (config.h) and comment out the first three lines.  You can then install the json gem normally.
+		</p>
+
+		<h3>Reference</h3>
+		<p>
+		In the documentation below, the following symbols will be used in lieu of concrete examples
+		<ul>
+			<li><tt>$APP</tt>: ex: myapp
+		</ul>
+		</p>
+
+		<h3>Get the Distribution</h3>
+		<p>
+		Download the appcelerator ruby gem from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
+		<ul>
+			<li>appcelerator-@VERSION@.gem - this is the distribution for creating your ruby services (which are deployed as appcelerator services and applications)
+		</ul>
+		<h3>Install Appcelerator</h3>
+		<p>
+			First lets install the gem
+			<pre class="command">gem install -y -l appcelerator-@VERSION@.gem</pre>
+			Now create your project workspace
+			<pre class="command">appcelerator $APP</pre>
+			now you can start the service
+			<pre class="command">cd $APP
+script/server</pre>
+			In Windows, use
+			<pre class="command">cd $APP
+ruby script/server</pre>
+			You can take a look at the starting page at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a>
+		</p>
+	
+		<h3>Testing</h3>
+		You should now be able to hit the test service.  Goto <a href="http://localhost:3000/servicetester.html" target="_blank">http://localhost:3000/servicetester.html</a> and put the following in
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request
+		</ul>
+		you should get the following back
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.response
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:rubygettingstarted[show=client]">Web Client</a>
+	</div>
+	<div on="l:rubygettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			Once you have created the ruby project, your web source will exist in:
+			<ul>
+				<li><b>public</b>: directory where all your html exists
+				<li><b>public/appcelerator.xml</b>: defines the location and behaviour of the service broker
+			</ul>
+
+			<h3>public/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@ruby_appcelerator.xml@
+			</textarea>
+
+			<h3>public/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+			<h3>Next Steps</h3>
+			You are now ready to proceed to creating your <a on="click then l:rubygettingstarted[show=service]">Ruby Service</a>
+		</p>
+	</div>
+	<div on="l:rubygettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
+		<p>
+			<h3>Ruby Service</h3>
+			To add a new service, just add a method to a class in the <tt>app/services/</tt> directory.<br/>
+			For the service broker to find your method, it must be defined in:
+			<ul>
+				<li>a file ending with <tt>_service.rb</tt>
+				<li>a class ending with <tt>Service</tt> and extending <tt>Appcelerator::Service</tt>
+			</ul>
+			For each service method you create, you also need to add a <tt>Service</tt> annotation to define
+			the request and response message types that the method responds to. Annotation look like this:
+			
+			<textarea name="code" class="ruby:nocontrols">Service "myapp.users.find.request", :find_users, "myapp.users.find.response" </textarea>
+			
+			This tells the service broker to send all messages of type <tt>"myapp.users.find.request"</tt> to the method named <tt>find_users</tt> on the current class,
+			and to respond to the client with a message of type <tt>"myapp.users.find.response"</tt> and a payload consisting of the return value from your
+			<tt>find_users</tt> function.
+			
+			 
+			<h3>app/services/contact_manager_service.rb</h3>
+			For example, you could create a new class ContactManagerService with the following source
+			<textarea name="code" class="ruby:nocontrols">
+@contact_manager_service.rb@
+			</textarea>
+			
+			
+			<h3>Accessing Request Values</h3>
+			All methods define in a subclass of <tt>Appcelerator::Service</tt> have access to the following values
+			<ul>
+				<li>  
+			         <tt>params</tt>:<br/>
+	 a hash containing the arguments passed with the message
+				</li>
+				<li>
+                    <tt>message_type</tt>:<br/>
+    the name of the message sent from the client, like "kittyapp.cats.adopt.request",
+    this will not contain the "r:" prefix that the client code uses because everything on the server is remote.
+                </li>
+				<li>
+                    <tt>session</tt>:<br/>
+    contains per-user data that persists between requests, identical to the rails session object
+				</li>
+                <li>
+                	<tt>request</tt>:<br/>
+    the original request that triggered the service handler, identical to the rails request object
+                </li>
+            </ul>
+			
+			<h3>Before and After Filters</h3>
+			
+			If you want to execute code before (or after) every service request,
+			you can add a <tt>before_filter</tt> (or an <tt>after_filter</tt>) to your services class.
+			This is useful for doing things like authentication or logging. An example:
+			
+<textarea name="code" class="ruby:nocontrols">
+  before_filter :do_authentication
+  def do_authentication  
+    if not session[:user_id]
+      respond_with({'success' => false, 'message' => 'Not Logged In'})
+    else
+      @current_user = User.find_by_id(session[:user_id])
+      if not @current_user
+        respond_with({'success' => false, 'message' => 'Invalid User'})
+      end
+    end
+  end
+</textarea>
+  
+            The "respond_with" method takes a response object (in this example an authentication failure)
+			and optional response type (such as <tt>"myapp.logout.response"</tt>) and then prevents the service method from running,
+			instead sending the given response object after the <tt>before_filter</tt> returns.
+
+            <tt>after_filters</tt> are declared in the same way,
+			and have access to the service method's return value (as the <tt>response</tt> attribute).
+
+<textarea name="code" class="ruby:nocontrols">
+  after_filter :add_user_name
+  def add_user_name
+    response['user_first_name'] = current_user.profile.firstname
+  end
+</textarea>
+
+            This filter will add a <tt>user_first_name</tt> value to every response from the service class where this is defined.<br/>
+
+            If you want multiple service classes to share a filter, you can add the filtering method to a super-class
+			of those services and then add the one-line <tt>before_filter :do_authentication</tt> declaration to each of those subclasses.
+			We don't support implicitly calling the <tt>before_filter</tt>s of super-classes because it would
+			make reordering or removing the filters rather convoluted.
+			
+			
+			<h3>Next Steps</h3>
+			You may want to kill and restart rails
+			<pre class="command">script/server</pre>
+			In Windows, use 
+			<pre class="command">ruby script/server</pre>
+		</p>
+	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+</body>
+
+</html>

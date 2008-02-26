@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Activators</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:activators[show=example] and add[class=active] or l:activators[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:activators[show=code] and add[class=active] or l:activators[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:activators[show=usage] and add[class=active] or l:activators[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+	
+	<!-- EXAMPLE -->
+	<div on="l:activators[show=example] then show else hide">
+		<p>
+			Activators control whether a button is enabled or disabled within a named Fieldset.
+			The primary use case for Activators is to make sure a form button is disabled until
+			all fields within the Fieldset are valid.  Therefore, Activators are used in conjunction
+			with Fieldsets and Validators, so when all fields in a Fieldset are valid, the Activator
+			will enable the form button
+		</p>
+
+		<h3> Appcelerator Employee Screening Test</h3>
+		<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+			<tr>
+				<td class="bold_value_grey">
+					Name:
+				</td>
+				<td>
+					<input type="text" fieldset="myform" id="name" validator="required" decorator="required"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Favorite Beer:
+				</td>
+				<td>
+					<select fieldset="myform" id="beer">
+						<option value="your_hired">Stella</option>
+						<option value="3_points">Sierra Nevada</option>
+						<option value="4_points">Newcastle</option>
+						<option value="intern">PBR</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="bold_value_grey">
+					Brake for animals?:
+				</td>
+				<td>
+					<input type="checkbox" fieldset="myform" id="break_for_animals" validator="checked" decorator="checked"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="left" >
+					<input type="button" value="transfer credit card# now!" fieldset="myform" 
+						style="margin-top:10px" on="click then l:show.values"
+						activators="name,break_for_animals"/>
+				</td>
+			</tr>
+
+		</table>
+		<app:script on="l:show.values then execute">
+		alert(this.data);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:activators[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+					<tr>
+						<td class="bold_value_grey">
+							Name:
+						</td>
+						<td>
+							<input type="text" fieldset="myform" id="name" validator="required" decorator="required"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Favorite Beer:
+						</td>
+						<td>
+							<select fieldset="myform" id="beer">
+								<option value="your_hired">Stella</option>
+								<option value="3_points">Sierra Nevada</option>
+								<option value="4_points">Newcastle</option>
+								<option value="intern">PBR</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="bold_value_grey">
+							Brake for animals?:
+						</td>
+						<td>
+							<input type="checkbox" fieldset="myform" id="break_for_animals" validator="checked" decorator="checked"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" align="left" >
+							<input type="button" value="transfer credit card# now!" fieldset="myform" 
+								style="margin-top:10px" on="click then l:show.values"
+								activators="name,break_for_animals"/>
+						</td>
+					</tr>
+
+				</table>
+
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:activators[show=usage] then show else hide" style="display:none">
+		<p>
+		Required Options:
+		
+		<table cellspacing="5px">
+			<tr>
+				<td class="term">activators</td>
+			 	<td class="def">a comma-delimited list of element IDs in your fieldset that are 
+				being validated with a Validator
+				</td>
+			</tr>
+		</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

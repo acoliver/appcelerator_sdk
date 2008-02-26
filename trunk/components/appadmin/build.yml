@@ -1,0 +1,6 @@
+--- 
+:type: appadmin 
+:name: appadmin 
+:version: 1.0
+:dependencies: [] 
+:description: "Appcelerator administration server"

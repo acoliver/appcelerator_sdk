@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+<script>
+Appcelerator.Validator.orange = function(value)
+{
+    if (value != "orange")
+		return false;
+	else
+		return true;		
+};
+Appcelerator.Decorator.orange = function(element, valid, decId)
+{
+	// call helper method that will do formatting for us
+	Appcelerator.Decorator.checkInvalid(element, valid, decId, 'can you read?  I said "orange"');
+};
+</script>
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Extend Validators and Decorators</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:extend_val_dec[show=example] and add[class=active] or l:extend_val_dec[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:extend_val_dec[show=code] and add[class=active] or l:extend_val_dec[show!=code] then remove[class=active]">Code</a>
+	
+	<!-- EXAMPLE -->
+	<div on="l:extend_val_dec[show=example] then show else hide">
+		<p>
+			The Appcelerator Platform allows you to easily create your own Validators and Decorators.  The
+			following example uses both a new decorator and a new validator
+		</p>
+
+		<h3>Look Ma, I can code real good like and stuff...</h3>
+		<table width="100%" style="background-color:#f6f6f6;padding:10px;border:1px dashed #bbb">
+			<tr>
+				<td class="bold_value_grey">
+					Enter the word "orange":
+				</td>
+				<td>
+					<input type="text" fieldset="myform" id="name" validator="orange" decorator="orange"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="left" >
+					<input type="button" value="transfer credit card# now!" fieldset="myform" 
+						style="margin-top:10px" on="click then l:show.values"
+						activators="name"/>
+				</td>
+			</tr>
+
+		</table>
+		<app:script on="l:show.values then execute">
+		alert(this.data);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:extend_val_dec[show=code] then show else hide" style="display:none">
+		<p>Here's the code.  For validators, return "true" when valid and "false" when not valid.
+			<textarea name="code" class="javascript:nocontrols">
+				<script>
+				Appcelerator.Validator.orange = function(value)
+				{
+				    if (value != "orange")
+						return false;
+					else
+						return true;		
+				};
+				Appcelerator.Decorator.orange = function(element, valid, decId)
+				{
+					// call helper method that will do formatting for us
+					Appcelerator.Decorator.checkInvalid(element, valid, decId, 'can you read?  I said "orange"');
+				};
+				</script>
+				
+				<input type="text" fieldset="myform" id="name" validator="orange" decorator="orange"/>
+				
+			</textarea>	
+		</p>
+	</div>
+
+
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

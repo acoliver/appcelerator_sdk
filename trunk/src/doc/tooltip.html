@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<script type="text/javascript" src="js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+	<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+	<script type="text/javascript" src="js/doc.js"></script>
+	<script type="text/javascript" src="js/sh/shCore.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+	<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+    <h2>Tooltip</h2>
+
+    <!-- NAVIGATION -->
+    <p>
+    <a class="active" on="click then l:tooltip[show=example] and add[class=active] or l:tooltip[show!=example] then remove[class=active]">Example</a> |
+    <a  on="click then l:tooltip[show=code] and add[class=active] or l:tooltip[show!=code] then remove[class=active]">Code</a> |
+    <a  on="click then l:tooltip[show=usage] and add[class=active] or l:tooltip[show!=usage] then remove[class=active]">Usage</a> 
+    </p>
+    
+    <!-- EXAMPLE -->
+    <div on="l:tooltip[show=example] then show else hide">
+        <p>
+            The Tooltip widget allows you to easily construct and display nice visual tool tips over an element when you
+            hover over it.  The widget automatically controls the positioning and visibility of the tooltip.  
+            The content of the tooltip container is specified
+            inside the definition of the tooltip using standard HTML elements.  Here's an example:
+        </p>
+         <div style="margin-top:10px" id="pict">
+             <img src="images/macallan.gif"/>
+         </div>
+         <app:tooltip element="pict">
+              <html:div>You are hovering over a cool picture.</html:div>
+              <html:div>You could specify all sorts of cool stuff here using normal HTML or embedded appcelerator-enabled HTML.</html:div>
+         </app:tooltip>
+    </div>
+
+    <!-- CODE -->
+    <div on="l:tooltip[show=code] then show else hide" style="display:none">
+        <p>Here's the code:
+            <textarea name="code" class="xml:nocontrols">
+		         <div style="margin-top:10px" id="pict">
+		             <img src="images/macallan.gif"/>
+		         </div>
+		         <app:tooltip element="pict">
+		             <html:div>You are hovering over a cool picture.</html:div>
+		             <html:div>You could specify all sorts of cool stuff here using 
+		             normal HTML or embedded appcelerator-enabled HTML.</html:div>
+		         </app:tooltip>
+            </textarea> 
+        </p>
+    </div>
+
+    <!-- USAGE -->
+    <div on="l:tooltip[show=usage] then show else hide" style="display:none">
+        <div>
+             Required Options:
+                <table cellspacing="5px">
+                    <tr>
+                      <td class="term">element</td>
+                      <td class="def">
+                        the target element to trigger the tooltip once the mouse is over the element
+                      </td>
+                    </tr>
+                </table>
+        </div>
+        <div>
+             Optional Options:
+                <table cellspacing="5px">
+                    <tr>
+                      <td class="term">backgroundColor</td>
+                      <td class="def">
+                        background color for the tooltip container. defaults to #FC9 if not specified.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="term">borderColor</td>
+                      <td class="def">
+                        border color for the tooltip container. defaults to #c96 if not specified.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="term">textColor</td>
+                      <td class="def">
+                        foreground color for the tooltip container. defaults to #111 if not specified.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="term">mouseFollow</td>
+                      <td class="def">
+                        should the tooltip follow the mouse as it moves over the element. defaults to true.
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="term">opacity</td>
+                      <td class="def">
+                        opacity for the tooltip container. defaults to .75 if not specified.
+                      </td>
+                    </tr>
+                </table>
+        </div>
+    </div>  
+    
+    <script>
+        dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+        dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+
+</body>
+
+</html>

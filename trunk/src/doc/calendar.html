@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Calendar</h2>
+		
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:calendar[show=example] and add[class=active] or l:calendar[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:calendar[show=code] and add[class=active] or l:calendar[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:calendar[show=usage] and add[class=active] or l:calendar[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+		The calendar widget provides a control for selecting dates and populates a target input such as a text input.
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:calendar[show=example] then show else hide">
+		<app:calendar title="Select Start Date" inputId="jobfilter_date_start" on="l:calendarexample.start then execute"
+			minDate="10/16/2007">
+		</app:calendar>
+		<input type="text" id="jobfilter_date_start" size="10" MAXLENGTH="10" />
+		<img src="images/calendar.png" on="click then l:calendarexample.start" />
+	</div>
+
+	<!-- CODE -->
+	<div on="l:calendar[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:calendar title="Select Start Date" elementId="jobfilter_date_start" 
+					on="l:calendarexample.start then execute">
+				</app:calendar>
+				<input type="text" id="jobfilter_date_start"></input>
+				<img src="images/calendar.png" on="click then l:calendarexample.start"></img>
+			</textarea>	
+		</p>
+	</div>
+	<!-- USAGE -->
+	<div on="l:calendar[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">the expression that determines what message will trigger the execution
+						of the Calendar Widget.  The correct syntax is :<tt>on="[message_name] then execute"</tt>
+					</tr>
+					<tr>
+					  <td class="term">inputId or elementId</td>
+					  <td class="def">both resolve to the same parameter: the id for the element which the calendar will set the value to.  Note that inputId should only be used if the element is an input</td>
+					</tr>
+					<tr>
+					  <td class="term">minDate</td>
+					  <td class="def">the minimum date that can be selected in the widget of the format mm/dd/yyyy</td>
+					</tr>
+					<tr>
+					  <td class="term">title</td>
+					  <td class="def">title for the widget.  defaults to ''</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+  	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

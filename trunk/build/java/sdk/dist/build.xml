@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==================================================================== -->
+<!-- Appcelerator Project Build                                           -->	
+<!--                                                                      -->	
+<!-- @APPNAME@                                                            -->	
+<!-- ==================================================================== -->
+
+<project name="@APPNAME@" default="dist" basedir=".">
+
+    <description>@APPNAME@ Build File</description>
+
+    <property file="${user.home}/.ant.properties"/>
+    <property file="build.properties"/>
+	<property name="server.deploy.dir" value="${deploy.dir}/appcelerator/WEB-INF/deploy"/>
+	<property name="dist.dir" value="${stage.dir}"/>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar"/>
+		<fileset dir="${lib.dir}/appcelerator" includes="**/*.jar"/>
+	</path>
+	<taskdef name="appc" classname="org.appcelerator.compiler.ant.Compiler" classpathref="classpath" />
+	<import file="build-override.xml" optional="true"/>
+	
+	<target name="dist" depends="init,build_composite_bundle,build_merged_bundle,bundle_simplewar,cleanup" description="* Builds the service and application deployment archives"></target>
+
+	<target name="banner">
+		<echo>Appcelerator Platform SDK for Java</echo>
+		<echo>Licensed under the GNU GPL version 2</echo>
+		<echo>Please read LICENSE for more details on usage</echo>
+	</target>
+
+	<target name="clean">
+		<delete dir="${stage.dir}"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${stage.dir}"/>
+	</target>
+	<target name="copy_simplewar" if="server_dist.exists">
+		<delete failonerror="false" dir="stage/setupfiles_extracted"/>
+		<copy todir="stage/setupfiles_extracted">
+			<fileset dir="server_dist" includes="**"/>
+		</copy>
+	</target>
+	<target name="extract_simplewar" unless="server_dist.exists">
+		<unwar src="server/setupfiles" dest="stage/setupfiles_extracted"/>
+	</target>
+	<target name="bundle_simplewar">
+		<delete failonerror="false">
+			<fileset dir="stage/transform" includes="*"/>
+		</delete>
+		<available type="dir" file="server_dist" property="server_dist.exists"/>
+		<echo>${server_dist.exists}</echo>
+		<antcall target="extract_simplewar"/>
+		<antcall target="copy_simplewar"/>
+		<xslt in="stage/setupfiles_extracted/WEB-INF/classes/spring-beans.xml" out="stage/transform/spring-beans.xml" style="merge_spring.xslt">
+			<outputproperty name="indent" value="yes"/>
+			<outputproperty name="method" value="xml"/>
+			<outputproperty name="encoding" value="UTF-8"/>
+			<outputproperty name="doctype-public" value="-//SPRING//DTD BEAN//EN"/>
+			<outputproperty name="doctype-system" value="http://www.springframework.org/dtd/spring-beans.dtd"/>
+			<outputproperty name="indent" value="yes"/>
+			<param name="mergefile" expression="appcelerator-services.xml"/>
+			<xmlcatalog>
+				<dtd publicId="-//SPRING//DTD BEAN//EN" location="./spring-beans.dtd"/>
+			</xmlcatalog>
+		</xslt>
+		<copy todir="stage/setupfiles_extracted/WEB-INF/classes" file="stage/transform/spring-beans.xml"/>
+		<copy todir="stage/setupfiles_extracted/WEB-INF/lib">
+			<fileset dir="${stage.dir}/assemble/lib" includes="*.jar"/>
+		</copy>
+		<copy todir="stage/setupfiles_extracted/WEB-INF/lib" overwrite="true">
+			<fileset dir="lib/appcelerator" includes="*.jar"/>
+		</copy>
+        <copy todir="stage/setupfiles_extracted/WEB-INF/lib" overwrite="true">
+            <fileset dir="lib/" includes="*.jar"/>
+        </copy>
+			<!--<copy todir="stage/setupfiles_extracted">
+				<fileset dir="${stage.dir}/assemble/web" includes="**/*"/>
+			</copy>
+		-->
+		<copy todir="stage/setupfiles_extracted" overwrite="true">
+			<fileset dir="src/web" includes="**/*"/>
+		</copy>
+		<war destfile="${stage.dir}/${app.name}.war" webxml="stage/setupfiles_extracted/WEB-INF/web.xml">
+			<lib dir="stage/setupfiles_extracted/WEB-INF/lib" includes="*.jar"/>
+			<fileset dir="stage/setupfiles_extracted" includes="**/**" excludes="lib/**,WEB-INF/web.xml"/>
+		</war>
+	</target>
+	<target name="cleanup" unless="dont.cleanup">
+		<delete>
+			<fileset dir="stage" includes="*_merged.war,*.jar,*.aar"/>
+		</delete>
+		<delete dir="stage/setupfiles_extracted"/>
+	</target>
+
+	<target name="build_merged_bundle" depends="build_composite_bundle">
+		<copy tofile="${dist.dir}/${app.name}_merged.war" file="server/setupfiles"/>
+		<zip update="true" destfile="${dist.dir}/${app.name}_merged.war">
+			<zipfileset dir="${stage.dir}" includes="${app.name}.aar" prefix="WEB-INF/deploy"/>
+		</zip>
+	</target>
+	<target name="prompt.deploy.dir" unless="deploy.dir">
+		<echo>Deploy the Appcelerator Server</echo>
+		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
+	</target>
+
+	<target name="deploy" depends="banner,dist" description="* Deploy the Appcelerator Server war">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy tofile="${deploy.dir}/${app.name}.war" file="stage/${app.name}.war"/>
+	</target>
+	<target name="deploy_server" depends="banner,dist">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy tofile="${deploy.dir}/appcelerator.war" file="server/setupfiles"/>
+	</target>
+	<target name="deploy_server_merged" depends="banner,dist">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy tofile="${deploy.dir}/${app.name}.war" file="${dist.dir}/${app.name}_merged.war"/>
+	</target>
+	<target name="undeploy" description="* Undeploy the Appcelerator Server war">
+		<available file="${deploy.dir}/${app.name}" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/${app.name}.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war">
+			<param name="file" value="${app.name}.war"/>
+		</antcall>
+		<antcall target="undeploy.dir">
+			<param name="dir" value="${app.name}"/>
+		</antcall>
+	</target>
+	<target name="undeploy_server" depends="banner">
+		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war">
+			<param name="file" value="appcelerator.war"/>
+		</antcall>
+		<antcall target="undeploy.dir">
+			<param name="dir" value="appcelerator"/>
+		</antcall>
+	</target>
+
+	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
+		<delete dir="${deploy.dir}/${dir}"/>
+	</target>
+
+	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
+		<delete file="${deploy.dir}/${file}"/>
+	</target>
+
+	<target name="deploy_service" depends="build_services_bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}-services.jar" />
+		</copy>
+	</target>
+
+	<target name="deploy_app" depends="build_app_bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}-app.jar" />
+		</copy>
+	</target>
+
+	<target name="deploy_composite" depends="build_composite_bundle">
+		<available file="${server.deploy.dir}" type="dir" property="server.deploy.dir.exists" />
+		<fail unless="server.deploy.dir.exists">Directory ${server.deploy.dir} doesn't exist.</fail>
+		<copy todir="${server.deploy.dir}">
+			<fileset dir="stage" includes="${app.name}.aar" />
+		</copy>
+	</target>
+
+	<target name="copy_web_files" depends="init">
+		<copy todir="${stage.dir}/assemble/web" filtering="no">
+			<fileset dir="${src.web.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="java_compile" depends="init">
+		<mkdir dir="${stage.dir}/assemble/java/classes"/>
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/assemble/java/classes" classpathref="classpath" includeAntRuntime="false"/>
+		<jar destfile="${stage.dir}/assemble/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
+			<fileset dir="${stage.dir}/assemble/java/classes">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${src.java.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build_app_bundle" depends="copy_web_files">
+		<mkdir dir="${stage.dir}/assemble/web"/>
+		<!--<appc srcdir="${stage.dir}/assemble/web" destdir="${stage.dir}/assemble/web-compiled"/> -->
+		<jar destfile="${stage.dir}/${app.name}-app.jar">
+			<fileset dir="${stage.dir}/assemble/web">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build_services_bundle" depends="java_compile">
+		<mkdir dir="${stage.dir}/assemble/lib"/>
+		<copy todir="${stage.dir}/assemble/lib">
+			<fileset dir="${lib.dir}" includes="*.jar"/>
+		</copy>
+		<jar destfile="${stage.dir}/${app.name}-services.jar">
+			<fileset dir="${stage.dir}/assemble/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="appcelerator-services.xml"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build_composite_bundle" depends="build_app_bundle,build_services_bundle">
+		<jar destfile="${stage.dir}/${app.name}.aar">
+			<fileset dir="${stage.dir}"> 
+				<include name="${app.name}-services.jar"/>
+				<include name="${app.name}-app.jar"/>
+			</fileset>
+		</jar>
+	</target>
+	<target name="deploy_scp">
+		<antcall target="-deploy_scp">
+			<param name="dir" value="stage"/>
+			<param name="includes" value="${app.name}.war"/>
+		</antcall>
+	</target>
+	<target name="undeploy_ssh">
+		<antcall target="-undeploy_ssh">
+			<param name="file" value="${app.name}.war"/>
+			<param name="dir" value="${app.name}"/>
+		</antcall>
+	</target>
+
+	<target name="-undeploy_ssh" depends="get_jsch">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<sshexec host="${scp.host}" username="${scp.user}" password="${scp.pwd}" trust="true"
+			command="rm -rf ${scp.dir}/${dir}/*;rm -rf ${scp.dir}/${file}"/>
+	</target>
+	<target name="get_jsch">
+		<available file="${ant.home}/lib/jsch-0.1.35.jar" type="file" property="jsch.exists" />
+		<antcall target="-get_jsch"/>
+	</target>
+	<target name="-get_jsch" unless="jsch.exists">
+		<get src="http://superb-east.dl.sourceforge.net/sourceforge/jsch/jsch-0.1.35.jar" dest="${ant.home}/lib/jsch-0.1.35.jar"/>
+	</target>
+	<target name="echoproperties">
+		<echoproperties/>
+	</target>
+	<target name="-deploy_scp" depends="get_jsch">
+		<fail message="must define scp.dir" unless="scp.dir"/>
+		<fail message="must define scp.host" unless="scp.host"/>
+		<fail message="must define scp.user" unless="scp.user"/>
+		<fail message="must define scp.pwd" unless="scp.pwd"/>
+		<scp todir="${scp.user}@${scp.host}:${scp.dir}" trust="true" password="${scp.pwd}">
+		    <fileset dir="${dir}" includes="${includes}"/>
+		</scp>
+	</target>
+    <target name="update_platform">
+        <!-- unzip to sdk.dir-->
+        <echo message="Updating Platfrom from ${java.sdk.update.dir}" />
+        <ant dir="${java.sdk.update.dir}" target="do.update" inheritAll="false" inheritRefs="false">
+            <property name="create.dir" value="${basedir}"/>
+            <property name="overwrite.plat" value="true" />
+        </ant>
+    </target>
+	<target name="pullweb" description="pulls the modified web files in the deploy dir to your local workspace">
+		<copy todir="src/web">
+			<fileset dir="${deploy.dir}/${app.name}" includes="content/**,js/**,*.html,images/**,css/**,modules/**"/>
+		</copy>
+	</target>
+    <target name="update_sdk" description="updates the platform based on the sdk directory (not the dist)">
+		<fail unless="sdk.dir" message="you need to define sdk.dir ex: ../SDK"/>
+        <ant dir="${sdk.dir}" target="clean" inheritAll="false">
+			<property name="dont.jscompress" value="anything"/>
+		</ant>
+        <ant dir="${sdk.dir}" target="sdk_java_dist" inheritAll="false">
+			<property name="dont.jscompress" value="anything"/>
+		</ant>
+		<property file="${sdk.dir}/build.properties" prefix="sdk"/>
+		<delete dir="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}" failonerror="false"/>
+		<unzip src="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}.zip" dest="${sdk.dir}/stage/"/>
+        <property name="java.sdk.update.dir" value="${sdk.dir}/stage/appcelerator_sdk_java_${sdk.version.major}.${sdk.version.minor}.${sdk.version.rev}"/>
+		<echo>${java.sdk.update.dir}</echo>
+        <antcall target="update_platform">
+            <param name="java.sdk.update.dir" value="${java.sdk.update.dir}"/>
+        </antcall>
+    </target>
+
+</project>

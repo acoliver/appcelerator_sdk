@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+<style>
+	span.code
+	{
+		font-family:"Courier New", Courier, monospace;
+		font-weight:bold;
+	}
+</style>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+    <h2>Advanced Actions</h2>
+
+    <div>
+        Some actions take parameters in the form of <span class="code">action[key=value,key2=value2]</span>.
+    </div>
+	
+	<h3>Dynamic Values from an Element</h3>
+	<div>
+		You can dynamically set the value of a property from an element's value by using the special syntax
+		<span class="code">$element_id</span>.  For example:
+		
+		<textarea name="code" class="xml:nocontrols">
+			<input type="hidden" value="hello" id="my_hidden_field"/>
+			<input type="button" on="click then r:send.message[name=$my_hidden_field]" />
+		</textarea>
+		
+		When the <span class="code">r:send.message</span> message is sent, it will contain the data payload
+		with the key <span class="code">name</span> set to the value of the element with the id
+		<span class="code">my_hidden_field</span>.
+		
+		You can combine dynamically setting fields and then later reference that value, such as:
+		
+        <textarea name="code" class="xml:nocontrols">
+            <input type="hidden" id="my_hidden_field" on="r:recv.msg[success=true] then value[name]"/>
+            <input type="button" on="click then r:send.message[name=$my_hidden_field]" />
+        </textarea>
+		
+		In the above example, the value of the <span class="code">my_hidden_field</span> element will be 
+		dynamically set to the <span class="code">name</span> property of the message
+		<span class="code">r:recv.msg</span> when it conditionally has the property 
+		<span class="code">success</span> set to the value <span class="code">true</span>.
+		
+	</div>
+    <h3>Dynamic Values from a Javascript Expression</h3>
+    <div>
+        You can dynamically set the value of a property from a Javascript expression by using the special syntax
+        <span class="code">expr(javascript expression)</span>.  For example:
+        <textarea name="code" class="xml:nocontrols">
+            <input type="button" on="click then r:send.message[name=expr(my_hidden_field)]" />
+        </textarea>
+		
+        In the above example, the value of the <span class="code">my_hidden_field</span> variable will be 
+        used to set the <span class="code">name</span> property when send the 
+		message <span class="code">r:send.message</span> is sent.
+		
+		You can use more advanced Javascript, for example, you can invoke a method and use it's return value:
+        <textarea name="code" class="xml:nocontrols">
+            <input type="button" on="click then r:send.message[name=expr(getMessageValue())]" />
+        </textarea>
+    </div>
+
+    <h3>Advanced Conditional Actions using expression</h3>
+    <div>
+        You can conditional execute one or more actions based on a conditional expression using the 
+		syntax:
+        <span class="code">if expr[javascript expression]</span>.  For example:
+        <textarea name="code" class="xml:nocontrols">
+            <input type="button" on="click then r:send.message if expr[confirm('are you sure you want to send?')]" />
+        </textarea>
+        
+        In the above example, the message <span class="code">r:send.message</span> is sent only after you
+		click OK to the alert box with the message
+		<span class="code">are you sure you want to send?</span>. If you click Cancel, the return value will be 
+		false and the action will not be executed.
+    </div>
+
+    <h3>Delayed Execution of Actions</h3>
+    <div>
+        You can execute an action after an arbitrary period of time using the syntax:
+        <span class="code">after &lt;t&gt;</span>, where &lt;t&gt; is an integer number of milliseconds.
+        For example:
+        <textarea name="code" class="xml:nocontrols">
+            <input type="button" on="click then r:send.message after 2000" />
+        </textarea>
+        
+        In the above example, <span class="code">r:send.message</span> will be sent 2 seconds after the button is clicked.
+        Appcelerator also supports the units 's' and 'ms' placed directly after the numeral.  For example, 
+        <span class="code">2000ms</span> and <span class="code">2s</span> both work and wait 2 seconds before executing.
+    </div>
+    <script>
+        dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+        dp.SyntaxHighlighter.HighlightAll('code');
+    </script>
+
+</body>
+
+</html>

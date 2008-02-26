@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Folder</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:folder[show=example] and add[class=active] or l:folder[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:folder[show=code] and add[class=active] or l:folder[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:folder[show=usage] and add[class=active] or l:folder[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	
+	<!-- EXAMPLE -->
+	<div on="l:folder[show=example] then show else hide">
+		<p>
+			The Folder widget allows you to easily build a simple Folder/Tree structure.  Here's an example:
+		</p>
+		
+		<app:folder id="folder_example">
+			<folder name="Overview">
+				<item onopen="l:test.folder[name=my]">My Documents</item>
+				<item onopen="l:test.folder[name=your]">Your Documents</item>
+			</folder>
+		</app:folder>
+
+		<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+			<span on="l:test.folder then hide" >
+				Click a folder item to see a message here
+			</span>
+			<span on="l:test.folder[name=my] then show else hide" style="color:green;display:none">
+				You clicked "My Documents"
+			</span>
+			<span on="l:test.folder[name=your] then show else hide" style="color:green;display:none">
+				You click "Your Documents"
+			</span>
+		</div>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:folder[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:folder id="folder_example">
+					<folder name="Overview">
+						<item onopen="l:test.folder[name=my]">My Documents</item>
+						<item onopen="l:test.folder[name=your]">Your Documents</item>
+					</folder>
+				</app:folder>
+
+				<div style="padding:10px;border:1px solid #999;background-color:#ffffcc;margin-top:20px">
+					<span on="l:test.folder then hide" >
+						Click a folder item to see a message here
+					</span>
+					<span on="l:test.folder[name=my] then show else hide" style="color:green;display:none">
+						You clicked "My Documents"
+					</span>
+					<span on="l:test.folder[name=your] then show else hide" style="color:green;display:none">
+						You click "Your Documents"
+					</span>
+				</div>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:folder[show=usage] then show else hide" style="display:none">
+		<p>
+			The folder widget has both &lt;folder&gt; and &lt;item&gt; elements for which they both have the same required and optional attributes.
+		</p>
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">name</td>
+					  <td class="def">The display name of a folder</td>
+					</tr>
+					<tr>
+					  <td class="term">&lt;item&gt; TEXT &lt;/item&gt;</td>
+					  <td class="def">The innerHTML for the &lt;item&gt; element is the display name for the item</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+                    <tr>
+                      <td class="term">onopen</td>
+                      <td class="def">The message to be publish when the item is selected</td>
+                    </tr>
+                    <tr>
+                      <td class="term">open</td>
+                      <td class="def">A condition which will trigger the item to be opened</td>
+                    </tr>
+					<tr>
+					  <td class="term">opened_icon</td>
+					  <td class="def">Location of the image to use for when item or folder is open.
+						This attribute can be applied to the Folder and the Item</td>
+					</tr>
+					<tr>
+					  <td class="term">closed_icon</td>
+					  <td class="def">Location of the image to use for when item or folder is closed.
+						This attribute can be applied to the Folder and the Item</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+Appcelerator::CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to update installed components',nil,nil,[
+  'install:updates',
+]) do |args,options|
+  
+  puts "Checking for updates..." unless OPTIONS[:quiet]
+
+  list = Appcelerator::Installer.fetch_distribution_list
+  count = 0
+  updated = []
+  
+  Appcelerator::Installer.with_site_config(false) do |site_config|
+    installed = site_config[:installed]
+    if installed
+      installed.keys.each do |key|
+        entries = installed[key]
+        entries.each do |entry|
+          found = list[entry[:type].to_sym]
+          if found
+            found.each do |e|
+              if e[:name] == entry[:name] and not updated.include? "#{entry[:type]}_#{entry[:name]}"
+                local_version = Appcelerator::Project.to_version(e[:version])
+                remote_version = Appcelerator::Project.to_version(entry[:version])
+                update = OPTIONS[:force_update] or (e[:version]==entry[:version] and e[:hashcode] != entry[:hashcode])
+                update = update ? local_version <= remote_version : remote_version > local_version
+                count+=1 if update
+                if update and confirm "Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y'
+                  Appcelerator::Installer.install_component entry[:type].to_sym,entry[:type].to_s,entry[:name],true,nil,true,false
+                  updated << "#{entry[:type]}_#{entry[:name]}"
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  
+  if count == 0
+    puts "No updates found. You're completely up-to-date." unless OPTIONS[:quiet]
+  end
+
+end

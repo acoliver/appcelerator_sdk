@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Progress Bar</h2>
+		
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:progressbar[show=example] and add[class=active] or l:progressbar[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:progressbar[show=code] and add[class=active] or l:progressbar[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:progressbar[show=usage] and add[class=active] or l:progressbar[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<p>
+        The progress bar widget provides an easy way to keep users updated on long-running processes.
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:progressbar[show=example] then show else hide">
+        <app:progressbar id="pb" message="pb.set" property="value" width="200px" height="20px">
+        </app:progressbar>
+        <a on="click then l:pb.set[value=20]">Show me!</a>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:progressbar[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+                <app:progressbar id="pb" message="pb.set" property="value" width="200px" height="20px">
+                </app:progressbar>
+                 <a on="click then l:pb.set[value=20]">Show me!</a>
+			</textarea>	
+		</p>
+	</div>
+	<!-- USAGE -->
+	<div on="l:progressbar[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">message</td>
+					  <td class="def">the message that will trigger an update to a progress bar widget.</td>
+                    </tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">the property name under which the progress bar widget will look for the new value. Values passed to a progress bar should be numeric and between 0 and 100 inclusive.</td>
+                    </tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">borderClassName</td>
+					  <td class="def">the class name of the border portion of the progress bar. This allows the border to be styled via CSS.</tt>
+					</tr>
+					<tr>
+					  <td class="term">fillClassName</td>
+					  <td class="def">the class name of the fill portion of the progress bar. This allows the fill to be styled via CSS.</tt>
+					</tr>
+					<tr>
+					  <td class="term">width</td>
+					  <td class="def">the width progress bar widget, including units. The default width is 500px.</tt>
+					</tr>
+					<tr>
+					  <td class="term">height</td>
+					  <td class="def">the height progress bar widget, including units. The default height is 20px.</tt>
+					</tr>
+					<tr>
+					  <td class="term">animate</td>
+					  <td class="def">this attribute determines whether or not changes to the progress bar value are animated. Can be true or false (defaults to true).</tt>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+  	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

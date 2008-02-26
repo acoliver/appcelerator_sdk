@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Widget Creation</h2>
+	
+<p>Extending Appcelerator to support new widgets is actually pretty straight-forward. 
+The first, and quite possibly most important, step is to create a name.  
+The name must be unique to its namespace and, unless you want all your hard work to be ignored, be somewhat descriptive of what it does.  
+If it's a standard, general use widget, like a button, panel, or script block, it makes sense to put it in the <code>app</code> namespace.  
+Specialized widgets, such as the widget to drop in google analytics, go in their own namespace. 
+Staying within these conventions makes it simpler to include new widgets into the Appcelerator core.  
+Other than convention, neither the name nor namespace will effect the functionality of the widget.  
+For the stopwatch widget, we picked <code>app:stopwatch</code>.  
+The rest of this article focuses on how we built it.</p>
+
+<p>Once you've got a name, it's time to create the directory structure for the widget.  
+Navigate to the modules directory in the appcelerator source in your file-browser of choice, and create the following directory structure:
+<p><img src="http://www.appcelerant.com/wp-content/uploads/2007/12/directory-structure.png" alt="Directory Structure" /></p>
+<p>The directory should be called <code>%namespace%_%widget%</code> and needs to contain a file called <code>%namespace%_%widget%.js</code>. 
+The directories css, images, and js aren't required, you can omit them if your module does need any css, 
+images nor depend on any javascript not contained within the widget.  
+The stopwatch does not need any third party javascript or images, so weÕre going to remove those directories.</p>
+
+<p>You can write out all the boiler plate on your own, or you can do what we do and copy from a pre-existing widget.  
+<code>app:script</code> is a good choice, since its implementation is relatively simple.
+Lets take a look at the structure of the template:</p>
+
+<textarea name="code" class="js:nocontrols">
+Appcelerator.Module.Stopwatch =
+{
+    getName: function()
+    {
+        return 'appcelerator stopwatch';
+    },
+    getDescription: function()
+    {
+        return 'stopwatch widget';
+    },
+    getVersion: function()
+    {
+        return 1.0;
+    },
+    getSpecVersion: function()
+    {
+        return 1.0;
+    },
+    getAuthor: function()
+    {
+        return 'My Name';
+    },
+    getModuleURL: function ()
+    {
+        return 'http://www.appcelerator.org';
+    },
+    isWidget: function ()
+    {
+        return true;
+    },
+    getWidgetName: function()
+    {
+        return 'app:stopwatch';
+    },
+    getAttributes: function()
+    {
+        //these attributes become part of the parameter map.
+    },
+    getActions: function()
+    {
+        //custom actions that this widget responds to go here
+    },
+    compileWidget: function(params)
+    {
+        //put code here if you need to add run-time code
+    },
+    buildWidget: function(element,parameters)
+    {
+        //this is where you build your widgetÕs html code.
+
+        return {
+            'position' : Appcelerator.Compiler.POSITION_REMOVE
+        };
+    }
+};
+
+Appcelerator.Core.registerModule('stopwatch',Appcelerator.Module.Panel);
+</textarea>
+
+<h3>Boring Functions</h3>
+<p><code>getName</code>, <code>getDescription</code>, <code>getVersion</code>, <code>getAuthor</code>, and <code>getModuleURL</code>, are all for documentation.   They do not effect the functionality of your widget.
+</p>
+
+<p><code>getSpecVersion</code> is the version for the module framework.  For now, and the foreseeable future, it's 1.0.  This will be used in future versions of Appcelerator to provide backwards compatibility.
+</p>
+
+<p>Again, in the future modules might be more than just widgets.  The function <code>isWidget</code> should return true for widgets, so that the Appcelerator compiler does the right thing.
+</p>
+
+<p>All of these functions are already correctly filled out in the stub above.</p>
+
+<h3>getAttributes: function()</h3>
+<p>This method returns the list of supported element attributes.  The attributes defined in here will become the parameter keys in the parameter map passed into buildWidget and compileWidget.  Each item in the list should be an object with the following properties:
+</p>
+
+<table >
+<tr><th class="def">name</th><th class="def">description</th><th class="def">required</th></tr>
+<tr><td class="def">name</td><td class="def">the name of the attribute</td><td class="def">true</td></tr>
+<tr><td class="def">optional</td><td class="def">designates wether this is a required attribute</td><td class="def">true</td></tr>
+<tr><td class="def">description</td><td class="def">a short description of the attribute</td><td class="def">true</td></tr>
+<tr><td class="def">defaultValue</td><td class="def">the default value if the user does not suppy a value</td><td class="def">true</td></tr>
+</table>
+
+<p>The stopwatch has one optional parameter to control wether or not the buttons should be displayed.  The complete code for this function in the stopwatch widget is:
+</p>
+
+<textarea name="code" class="js:nocontrols">
+getAttributes: function()
+{
+    return [{name: 'show_button', optional: true, description: "Set to false to hide button"}];
+},</textarea>
+
+<h3>buildWidget: function(element, parameters)</h3>
+<p>This is where you define the presentation for your widget.  Only presentation logic should reside in this function.  Things like state and event listeners go in the <code>compileWidget</code> function described later.  
+</p>
+
+<p>The stopwatch widget replaces &lt;app:stopwatch&gt;&lt;/app:stopwatch&gt; with the text for the current time and, optionally, some buttons to control the widget.   Therefore, we need to construct an html string.  
+</p>
+
+<textarea name="code" class="js:nocontrols">
+var html = [];
+html.push('<div id="' + element.id + '" class="stopwatch">');
+html.push('<table><tr>');
+html.push('<td><h3 id="' + element.id + '_clock">00:00 <span>00</span></h3></td>');
+if(parameters["show_button"] != "false") 
+{
+    html.push('<td>');
+    html.push('<div class="stopwatch_start">');
+    html.push('<app:button width="100" on="click then script[Appcelerator.Module.Stopwatch.start_stop(\'' 
+            + element.id + '\')]">Start</app:button>');
+    html.push('</div>');
+    html.push('<div class="stopwatch_stop">');
+    html.push('<app:button width="100" on="click then script[Appcelerator.Module.Stopwatch.start_stop(\'' 
+            + element.id + '\')] and l:' + element.id + '_reset">Stop</app:button>');
+    html.push('</div>');
+    html.push('</td>');
+    html.push('<td class="stopwatch_reset">');
+    html.push('<app:button disabled="true" width="100" on="click then script[Appcelerator.Module.Stopwatch.clear_time(\''
+            + element.id + '\')] and disable or l:' + element.id + '_reset then enable">Reset</app:button>');
+    html.push('</td>');
+}
+html.push('</tr></table>');
+html.push('</div>');
+</textarea>
+
+<p>As you can see, this is pretty basic stuff. It's just html.  YouÕll notice that weÕve used another widget <code>app:button</code> in this widget.  This is completely valid and highly recommended.  After all, it does not make sense to reinvent the wheel, if you donÕt have to.  
+</p>
+
+<p>Also, notice that the buttons are controlled using <code>on</code> expressions.  One drawback of using widgets inside other widgets is that they are not guaranteed to be loaded when <code>compileWidget</code> is called.  Therefore, you cannot reliably add event listeners to widgets in <code>compileWidget</code> and you should use on expressions instead.  In order to call functions within your module, you need to give the fully-qualified class name and surround the call in a script tag.
+</p>
+
+<p>From this function, you need to return an object that looks like this:</p>
+<textarea name="code" class="js:nocontrols">
+return {
+    'presentation' : html.join(' '),
+    'position' : Appcelerator.Compiler.POSITION_REPLACE,
+    'compile' : true,
+    'wire' : true
+};
+</textarea>
+
+<p>What all this means:</p>
+<table class="properties">
+<tr><th class="def">name</th><th class="def">description</th><th class="def">required</th></tr>
+<tr><td class="def">presentation</td><td class="def">the html that will be inserted into the DOM</td><td class="def">false</td></tr>
+<tr><td class="def">position</td><td class="def">where whatever gets inserted goes</td><td class="def">true</td></tr>
+<tr><td class="def">compile</td><td class="def">set to true to have your <code>compileWidget</code> function be called</td><td class="def">false</td></tr>
+<tr><td class="def">wire</td><td class="def">set to true if you use Appcelerator (widgets, <code>on</code> attribute, etc) inside the widget</td><td class="def">false</td></tr>
+</table>
+
+<p>Widgets aren't required to have any presentation and could be completely non-visual.  Therefore, the two most common values for position are <code>Appcelerator.Compiler.POSITION_REMOVE</code>, which removes this element from the DOM entirely (for non-visual widgets) and <code>Appcelerator.Compiler.POSITION_REPLACE</code> which removes the Appcelerator markup and substitutes what was defined in <code>presentation</code>.  
+</p>
+
+<h3>compileWidget: function()</h3>
+<p>The stopwatch needs to store the state of its clocks and timer somewhere and the logical place is the class-level hash-map called stopwatches.  In <code>compileWidget</code>, we create the entry for this particular stopwatch in the map:
+</p>
+
+<textarea name="code" class="js:nocontrols">
+compileWidget: function(params)
+{
+    var id = params['id'];
+    Appcelerator.Module.Stopwatch.stopwatches.set(id, {'date': new Date(0), 'timer_id': null});
+},
+</textarea>
+
+<p>You could also assign event listeners to any html elements here as well, if you choose to use that approach instead of <code>on</code> events.</p>  
+
+<h3>getActions: function()</h3>
+<p>This returns a list of functions that can serve as actions when the widget receives a message.  The stopwatch allows you to start_stop, and clear_time.  You might pause here and think that "toggle" and "reset" might be more logical names, but these are global actions available on all elements.  Global action declarations take precedence over custom actions.
+</p>
+
+<p>The code for this function is just:</p>
+
+<textarea name="code" class="js:nocontrols">
+getActions: function()
+{
+    return ['start_stop', 'clear_time'];  
+},
+</textarea>
+
+<h3>Custom Actions</h3>
+<p>The get actions method allows you to define the custom actions that can be performed on the widget.  To implement a custom action you need to implement a function with a particular signature:
+</p>
+
+<pre class="command">
+start_stop: function(id,parameters,data,scope,version)</pre>
+
+<table class="properties">
+<tr><th class="def">name</th><th class="def">description</th></tr>
+<tr><td class="def">id</td><td class="def">the id of your widget</td></tr>
+<tr><td class="def">parameters</td><td class="def">included parameters</td></tr>
+<tr><td class="def">data</td><td class="def">the data payload of the message</td></tr>
+<tr><td class="def">scope</td><td class="def">the scope of the message, usually 'appcelerator'</td</tr>
+<tr><td class="def">version</td><td class="def">not used</td></tr>
+</table>
+
+<p>The full implementation of the <code>start_stop</code> function is:
+</p>
+<textarea name="code" class="js:nocontrols">
+start_stop: function(id,parameters,data,scope,version)
+{
+    var stopwatch = Appcelerator.Module.Stopwatch.stopwatches.get(id);
+    if(stopwatch.timer_id != null)
+    {
+        Appcelerator.Module.Stopwatch.stop(id);
+    } 
+    else
+    {
+        Appcelerator.Module.Stopwatch.start(id);
+    }
+},</textarea>
+
+<h3>Responding to messages and events</h3>
+<p>There are a few ways you can do this, which you choose depends on your needs.  The standard is to not do anything.  Your widget will automatically respect the <code>on</code> attributed specified on it. For example:
+</p>
+
+<pre class="command">
+&lt;app:script on="l:toggle_me then start_stop">&lt;/app:script></pre>
+<p>will call the function <code>start_stop</code> on the message <code>l:toggle_me</code>.  No additional code was required.</p>
+
+<p>However, this doesn't always work, such as when an element internal to the widget needs to respect the <code>on</code> and not the widget itself.  In this case, you need to over-ride the function <code>dontParseOnAttributes</code> like so:
+</p>
+<textarea name="code" class="js:nocontrols">
+dontParseOnAttributes: function()
+{
+    return true;
+},</textarea>
+<p>then manually add the contents of <code>on</code> to the required element in your <code>buildWidget</code> function.  Also, remember to set <code>wire</code> to <code>true</code>.
+</p>
+
+<h3>Registering Module Resources</h3>
+<p>Every module has at least one resource that it will need to register (itself).  To do this, you need to call 
+</p>
+<pre class="command">
+Appcelerator.Compiler.registerModule(moduleName, moduleClass)</pre>
+<p>outside of the class declaration for your module. 
+If you have third party javascript, you need to call:
+</p>
+<pre class="command">
+Appcelerator.Core.registerModuleWithJS(moduleName,moduleClass,[list_of_files]);</pre>
+<p>instead.  The javascript must be in the javascript directory under the module root.</p>
+
+<p>If your module has any module-specific css, you will also need to call</p> 
+<pre class="command">
+Appcelerator.Compiler.loadModuleCSS(moduleName,cssFileName).</pre>
+<p>For this call to work, the file must be in the moduleÕs css directory.</p>  
+
+<p>Since the stopwatch has css, but no javascript, you'll find the following at the very bottom of <code>app_stopwatch.js</code></p>
+<textarea name="code" class="js:nocontrols">
+Appcelerator.Core.registerModule('app:stopwatch', Appcelerator.Module.Stopwatch);
+Appcelerator.Core.loadModuleCSS('app:stopwatch', 'stopwatch.css');</textarea>
+
+<h3>The Final Product</h3>
+<p>The stopwatch is now complete.  You can see the full source code at https://svn.appcelerator.org/appcelerator_sdk/trunk/src/web/modules/app_stopwatch/.</p>
+
+<p>Any questions about this guide or building widgets should be directed towards our google group, appcelerator-platform-sdk@googlegroups.com.</p>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

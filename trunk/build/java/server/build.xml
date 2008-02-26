@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==================================================================== -->
+<!-- Appcelerator Server                                          -->	
+<!-- ==================================================================== -->
+
+<project name="Appcelerator Platform Server" default="deploy" basedir=".">
+    <description>Appcelerator Platform Server</description>
+    <property file="${user.home}/.ant.properties"/>
+	<property name="dist.dir" value="dist/server"/>
+	<target name="banner">
+		<echo>Appcelerator Platform SDK for Java</echo>
+		<echo>Licensed under the GNU GPL version 2</echo>
+		<echo>Please read LICENSE for more details on usage</echo>
+	</target>
+	
+	<target name="prompt.deploy.dir" unless="deploy.dir">
+		<echo>Deploy the Appcelerator Server</echo>
+		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
+	</target>
+	<target name="deploy_server" depends="banner" description="** Deploy the Appcelerator Server">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${dist.dir}" includes="*.war" />
+		</copy>
+	</target>
+	<target name="undeploy_server" depends="banner" description="** Undeploy the Appcelerator Server">
+		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war"/>
+		<antcall target="undeploy.dir"/>
+	</target>
+	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
+		<delete dir="${deploy.dir}/appcelerator"/>
+	</target>
+	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
+		<delete file="${deploy.dir}/appcelerator.war"/>
+	</target>
+	
+</project>

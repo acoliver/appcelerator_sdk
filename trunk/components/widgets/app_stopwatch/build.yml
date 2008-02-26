@@ -1,0 +1,10 @@
+--- 
+:type: widget
+:name: app:stopwatch
+:version: 1.0
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
+:tags: [ uicontrol ]
+:description: "app:stopwatch is a simple UI control for displaying and controlling a stop watch"

@@ -1,0 +1,44 @@
+#!/bin/sh
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+#
+# we need to check and see if we're in pre-flight mode
+#
+if [ $UID -eq 0 ]
+then
+    if [ "$1" == "--postflight--" ]
+	  then
+		   # check to do the postflight install process for the macosx installer
+  		 mkdir -p /Library/Appcelerator/releases
+  		 mkdir -p /Library/Appcelerator/updates
+         chown -R root:admin /Library/Appcelerator/releases
+         chown -R root:admin /Library/Appcelerator/updates
+  		 chmod -R 0777 /Library/Appcelerator/releases
+  		 chmod -R 0777 /Library/Appcelerator/updates
+		chmod +x /Library/Appcelerator/appcelerator
+#  		 au=`/Library/Appcelerator/growlnotify -m "Appcelerator RIA Platform installed" -t "Appcelerator" -n "appcelerator" -w >/dev/null 2>&1`
+		 exit 0
+    fi 
+fi
+
+/Library/Appcelerator/appcelerator $*
+exit $?

@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Script</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:script[show=example] and add[class=active] or l:script[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:script[show=code] and add[class=active] or l:script[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:script[show=usage] and add[class=active] or l:script[show!=usage] then remove[class=active]">Usage</a> 
+	</p>
+
+	
+	<!-- EXAMPLE -->
+	<div on="l:script[show=example] then show else hide">
+		<p>
+			The Appcelerator Platform allows you to build RIAs without using Javascript, but we certainly
+			do not mind if you want to write Javascript.  To make this easy for you, we created a Script Widget.  
+			Within a Script Widget, you can write any valid Javascript code.   The Script
+			Widget is powerful because it allows you to trigger the execution of Javascript using our Expression 
+			Language like so <tt>on="[condition] then execute</tt>"
+		</p>
+		<p>Here's an example</p>
+		<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer"
+			on="click then l:get.current.datetime
+			or l:show.current.datetime then hide 
+			or l:reset.script.example then show">
+			Click me to get the current date and time
+		</div>
+		<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;display:none"
+			on="l:show.current.datetime then show and effect[Highlight] or l:reset.script.example then hide">
+			<span style="color:#000">
+				Current Date Time = <span on="l:show.current.datetime then value[datetime]"></span>
+				<a on="click then l:reset.script.example">Reset Example</a>
+			</span>
+		</div>
+
+		<!-- get current date time and send a message with the value -->
+		<app:script on="l:get.current.datetime then execute">
+			var date = new Date();
+			$MQ('l:show.current.datetime',{'datetime':date});
+		</app:script>
+
+	</div>
+
+	<!-- CODE -->
+	<div on="l:script[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;cursor:pointer"
+					on="click then l:get.current.datetime
+					or l:show.current.datetime then hide 
+					or l:reset.script.example then show">
+					Click me to get the current date and time
+				</div>
+				<div style="border:1px solid #ccc;background-color:#f6f6f6;padding:10px;margin-top:10px;display:none"
+					on="l:show.current.datetime then show and effect[Highlight] or l:reset.script.example then hide">
+					<span style="color:#000">
+						Current Date Time = <span on="l:show.current.datetime then value[datetime]"></span>
+						<a on="click then l:reset.script.example">Reset Example</a>
+					</span>
+				</div>
+
+				<!-- get current date time and send a message with the value -->
+				<app:script on="l:get.current.datetime then execute">
+					var date = new Date();
+					$MQ('l:show.current.datetime',{'datetime':date});
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:script[show=usage] then show else hide" style="display:none">
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">If the Script Widget does not have a <tt>on</tt> expression
+						defined. The script will be executed when the page is loaded.  If the expression
+						is defined the script will be executed when the <tt>on</tt> condition is met.
+						<p>Usage: <tt>on="[condition] then execute"</tt>.  </p>  
+						<p>You can add an optional <tt>after</tt> that will execute the script
+							when its condition is met after some defined amount of time - e.g.,
+							<tt>on="l:my.message then execute after 2s"</tt>
+						</p>
+						</td>
+					</tr>
+					<tr>
+					  <td class="term">inner HTML</td>
+					  <td class="def">The actual javascript itself.  Note that since this is in the html, you must properly escape the script for example using <tt>&amp;lt;</tt> instead of <tt>&lt;</tt>.
+					</tr>
+				</table>
+		</p>
+<!--
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">args</td>
+					  <td class="def">json representation of parameters</td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

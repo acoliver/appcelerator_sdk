@@ -1,0 +1,105 @@
++=======================================================================================+
++                          Appcelerator RIA Platform                                    +
++=======================================================================================+
+
+---------------------
+ Build Prerequisites
+---------------------
+
+To build Appcelerator from source, you will need the following prerequisites:
+
+  - Ruby 1.8.6 or greater <http://www.ruby-lang.org/en/downloads/>
+  - RubyGems with the following gems: rake, hoe, hpricot, json, maruku, rubyzip
+
+To build the platform installers, you will need the following:
+
+  - Mac OSX - you will need to install XCode 3.0 from the extra CD or download from Apple
+  - Win32* - you will need to install NSIS installer <http://nsis.sourceforge.net/Download>
+  - Unix - no additional third-party software is required at this time.
+
+* For building NSIS on OSX/Unix, you can download the non-Win32 compiler which will allow
+you to build the Win32 installer on other OS platforms.  For example, on OSX, if you have
+darwinports installed, you can install NSIS with:
+
+  > port install nsis
+
+--------------------
+ Build Instructions
+--------------------
+
+To build everything, you can execute rake normally, like:
+
+  > rake
+
+To build a specific component, you can run rake with one or more tasks, like:
+
+  > rake service:java
+
+Each Rakefile is built into several sub-components, each within their own
+directory structures and Rakefiles.  The main components are:
+
+  - widgets
+  - plugins
+  - runtime (includes both command-line binary and installers)
+  - services
+  - websdk
+
+You can execute a specific component with the task <component>:<name>. For
+example, to build the Java Service:
+
+  > rake service:java
+
+Or, to execute a build of all services, you could do:
+
+  > rake service:all
+
+All components have an `all` target.  For example:
+
+  > rake widget:all
+  > rake websdk:all
+  > rake installer:all
+
+To have rake print additional into, you need to set an environment variable.
+From a bash shell you can run:
+
+  > export VERBOSE=true; rake
+
+--------------------
+ Getting Assistance
+--------------------
+
+If you need more assistance, please go to the Appcelerator Developer Network 
+at <http://www.appcelerator.org>.
+
+To report a bug or make a feature request, please visit our Issue Tracking portal
+at <http://jira.appcelerator.org>.
+
+If you are interested in becoming a community developer and contributing to
+Appcelerator, please contact us at <info@appcelerator.com>.
+
+
+-- The Appcelerator Team
+
+
+-------------
+ Legal Stuff 
+-------------
+
+Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+For more information, please visit <http://www.appcelerator.org>.
+
+Appcelerator is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+ 
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Please see the file named LICENSE for the full license.
+

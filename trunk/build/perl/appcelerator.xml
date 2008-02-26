@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<appcelerator version="1.0" xmlns="http://www.appcelerator.org/config">
+    <servicebroker poll="false">@{rootPath}servicebroker.pl</servicebroker>
+    <upload>@{rootPath}upload</upload>
+    <download>@{rootPath}download</download>
+    <sessionid>SESSIONID</sessionid>
+    <language>perl</language>
+</appcelerator>

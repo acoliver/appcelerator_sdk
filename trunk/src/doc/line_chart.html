@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Line Chart</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:linechart[show=example] and add[class=active] or l:linechart[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:linechart[show=code] and add[class=active] or l:linechart[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:linechart[show=usage] and add[class=active] or l:linechart[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+
+	<!-- EXAMPLE -->
+	<div on="l:linechart[show=example] then show else hide">
+		<p>
+		Here's an Appcelerator line chart:
+		</p>
+		<div><strong>Chart Mode: </strong>
+			<a on="click then l:change.linemode[mode='line']">Line</a> | 
+			<a on="click then l:change.linemode[mode='stacked']">Stacked</a> | 
+			<a on="click then l:change.linemode[mode='100% stacked']">100% Stacked</a>
+		</div>
+
+		<app:chart type="line" chartMode="mode" on="l:load.linechart then execute" property="rows" chartTitles="titles"
+			title="Random Data" color="#B0DE09,#04D215,#0D8ECF,#0D52D1,#2A0CD0,#8A0CCF,#CD0D74"
+			height="400" width="600" indicator="true" fillAlpha="15" legend="true">
+		</app:chart> 
+	</div>
+
+	<!-- CODE -->
+	<div on="l:linechart[show=code] then show else hide" style="display:none">
+
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<div><strong>Chart Mode: </strong>
+					<a on="click then l:change.linemode[mode='line']">Line</a> | 
+					<a on="click then l:change.linemode[mode='stacked']">Stacked</a> | 
+					<a on="click then l:change.linemode[mode='100% stacked']">100% Stacked</a>
+				</div>
+
+				<app:chart type="line" chartMode="mode" on="l:load.linechart then execute" property="rows" chartTitles="titles"
+					title="Random Data" color="#B0DE09,#04D215,#0D8ECF,#0D52D1,#2A0CD0,#8A0CCF,#CD0D74"
+					height="400" width="600" indicator="true" fillAlpha="15" legend="true">
+				</app:chart> 
+			</textarea>		
+		</p>
+		<p>Here's the local Appcelerator message that populated the chart:
+			<textarea name="code" class="xml:nocontrols">
+				<app:script style="display:none;">    	
+				$MQ('l:load.linechart',{'rows': [{'name':'First', 'value':'50,30,20'},
+				{'name':'Second', 'value':'10,40,30'},{'name':'Third', 'value':'110,20,40'},
+				{'name':'Fourth', 'value':'54,30,40'},{'name':'Fifth', 'value':'80,50,20'}], 
+				'titles':[{'title':'Hard'},{'title':'Soft'},{'title':'Other'}],'mode':'line'}); 	
+				</app:script>
+
+				<app:script on="l:change.linemode then execute" style="display:none;">
+				$MQ('l:load.linechart',{'rows': [{'name':'First', 'value':'50,30,20'},
+				{'name':'Second', 'value':'10,40,30'},{'name':'Third', 'value':'110,20,40'},
+				{'name':'Fourth', 'value':'54,30,40'},{'name':'Fifth', 'value':'80,50,20'}],
+				'titles':[{'title':'Hard'},{'title':'Soft'},{'title':'Other'}],'mode':this.data.mode}); 	
+				</app:script>
+			</textarea>		
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:linechart[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">on</td>
+					  <td class="def">The message that contains the data to populate the chart </td>
+					</tr>
+					<tr>
+					  <td class="term">type</td>
+					  <td class="def">The chart type: bar, line, pie or dynamic property value </td>
+					</tr>
+					<tr>
+					  <td class="term">property</td>
+					  <td class="def">The array property that contains the chart data </td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">color</td>
+					  <td class="def">Specifies the base color of the chart or the color for each bar/slice/line - defaults to #477398.  You can provide a single hex color or csv color list
+					  </td>
+					</tr>
+					<tr>
+					  <td class="term">title</td>
+					  <td class="def">Title displayed at the top of the chart.  Default is no title. </td>
+					</tr>
+					<tr>
+					  <td class="term">angle</td>
+					  <td class="def">Angle for '3D' graphs (bar and pie). Default is 15 (in degrees)  </td>
+					</tr>
+					<tr>
+					  <td class="term">thickness</td>
+					  <td class="def">Thickness of '3D' graphs. Default is 15 (in pixels)</td>
+					</tr>
+					<tr>
+					  <td class="term">width</td>
+					  <td class="def">The width of the chart.  The default is 400 (in pixels)</td>
+					</tr>
+					<tr>
+					  <td class="term">height</td>
+					  <td class="def">The height of the chart.  The default is 360 (in pixels)</td>
+					</tr>
+					<tr>
+					  <td class="term">chartMode</td>
+					  <td class="def">The sub-type for bar and line charts.  Defaults to "clustered" for
+						bar charts.  Defaults to "line" for line charts. Other values: "stacked" and "100% stacked"  
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">barOrientation</td>
+					  <td class="def">"vertical" or "horizontal" orientation for a bar chart 
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">rotateXAxisLabel</td>
+					  <td class="def">"true" or "false".  If "true" x axis labels are rotated by 90 degrees. Default is false.
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">rotateYAxisLabel</td>
+					  <td class="def">"true" or "false".  If "true" y axis labels are rotated by 90 degrees. Default is false.
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">legend</td>
+					  <td class="def">"true" or "false".  If "true" a legend will be displayed. Default is false.
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">textSize</td>
+					  <td class="def">Font size. Default is 11 (in pixels)
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">chartTitles</td>
+					  <td class="def">Array property name that contains the titles for the legend and labels composite bar charts.
+					   </td>
+					</tr>
+					<tr>
+					  <td class="term">fillAlpha</td>
+					  <td class="def">Specifies the opacity of the shaded area under a line in a line chart. Default is 30 (in %)
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">indicator</td>
+					  <td class="def">Enable a mouseover bubble to show the value of every line at a given x value on a line graph. Default is 'false'
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">oneBalloon</td>
+					  <td class="def">Specifies whether an indicator balloon will be shown for all lines or only the line closest to the mouse pointer on the line graph. Possible values are 'true' or 'false'. Default is 'true'
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">marginTop</td>
+					  <td class="def">Specifies the space between the top of the chart and the start of the line or bar chart. Default is 50 (in pixels)
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">marginLeft</td>
+					  <td class="def">Specifies the space between the left of the chart and the start of the line or bar chart. Default is 50 (in pixels)
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">marginRight</td>
+					  <td class="def">Specifies the space between the right of the chart and the start of the line or bar chart. Default is 50 (in pixels)
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">marginBottom</td>
+					  <td class="def">Specifies the space between the bottom of the chart and the start of the line or bar chart. Default is 50 (in pixels)
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">legendHighlight</td>
+					  <td class="def">Specifies whether the lines on the line chart will be "highlighted" when one mouses over a legend value for that line. Default is "true"
+					   </td>
+
+					</tr>
+					<tr>
+					  <td class="term">innerRadius</td>
+					  <td class="def">Specifies the radius of the "hole" in the center of the pie chart.
+					   </td>
+
+					</tr>
+
+				</table>
+		</p>
+	</div>	
+	
+	
+	<app:script style="display:none;">    	
+	$MQ('l:load.linechart',{'rows': [{'name':'First', 'value':'50,30,20'},{'name':'Second', 'value':'10,40,30'},{'name':'Third', 'value':'110,20,40'},{'name':'Fourth', 'value':'54,30,40'},{'name':'Fifth', 'value':'80,50,20'}], 'titles':[{'title':'Hard'},{'title':'Soft'},{'title':'Other'}],'mode':'line'}); 	
+	</app:script>
+
+	<app:script on="l:change.linemode then execute" style="display:none;">
+	$MQ('l:load.linechart',{'rows': [{'name':'First', 'value':'50,30,20'},{'name':'Second', 'value':'10,40,30'},{'name':'Third', 'value':'110,20,40'},{'name':'Fourth', 'value':'54,30,40'},{'name':'Fifth', 'value':'80,50,20'}], 'titles':[{'title':'Hard'},{'title':'Soft'},{'title':'Other'}],'mode':this.data.mode}); 	
+	</app:script>
+
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

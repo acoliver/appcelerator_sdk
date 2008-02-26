@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Debugging and Logging</h2>
+
+	<p>
+		The Appcelerator Platform allows you view debug level information from the platform
+		and from your application, including messages that are sent and received by your
+		application.
+		
+	</p>
+	<p>
+		Currently, the Appcelerator Platform only logs messages to the Firebug console in Firefox, so 
+		you must run Firefox and install the Firebug plugin.
+	<h3>Debug Mode</h3>
+	<p>
+		To enable Debug mode, simply add <tt>?debug=1</tt> to the end of your URL and open the Firebug
+		console to see all debug statements.
+	</p>
+
+	<h3>Javascript-based Logging</h3>
+	<p>
+		You can also access our Logging API within Script Widgets  if you want to log statements to the console.  Here's 
+		an example of logging (one for each supported log level):
+	</p>
+		<textarea name="code" class="xml:nocontrols">
+			<app:script>
+			 Logger.fatal('fatal message');
+			 Logger.error('error message');
+			 Logger.warn('warning message');
+			 Logger.info('info message');
+			 Logger.debug('debug message');
+			 Logger.trace('trace message');
+			</app:script>
+		</textarea>	
+	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+<script type="text/javascript" src="js/locale/en.js"></script>
+<script>
+	var PaginationExample = Class.create();
+	PaginationExample.rows = new Array()
+	function addScore(array,home,away,homescore,awayscore,date,timeleft)
+	{
+		array.push({'home':home,'away':away,'homescore':homescore,'awayscore':awayscore,'date':date,'timeleft':timeleft})
+	}
+	addScore(PaginationExample.rows,"(16) Hawaii","Nevada","","","Fri 11/16","");
+	addScore(PaginationExample.rows,"(2) Oregon","Arizona",24,34,"Thu 11/15","Final");
+	addScore(PaginationExample.rows,"(1) LSU","Mississippi","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(3) Kansas","Iowa St","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(4) Oklahoma","Texas Tech","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(5) Missouri","Kansas St","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(6) West Virgina","(22) Cincinatti","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(7) Ohio St","(21) Michigan","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(23) Kentucky","(9) Georgia","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"Miami (FL)","(10) Virginia Tech","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"Florida Atlantic","(12) Florida","","","Sat 11/17","");
+	addScore(PaginationExample.rows,"(17) Boston College","(15) Clemson","","","Sat 11/17","");
+</script>
+
+<style>
+.scoretitle
+{
+	color:#696969;
+	background-color:#FFFFCC;
+	font-weight:bold;
+}
+.home
+{
+	font-weight:bold;
+	font-size:10px;
+}
+.scoretime
+{
+	color:#F00;
+	font-size:10px;
+	position:absolute;
+	top:5px;
+	right:14px;
+}
+.away
+{
+	font-size:10px;
+}
+.scoreentry
+{
+	border-left:1px solid #ccc;
+	border-top:1px solid #ccc;
+	border-right:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	padding:3px 3px;
+	margin-bottom:5px;
+	width:150px;
+	position:relative;
+}
+.scorecontainer
+{
+	padding-top:10px;
+	padding-bottom:10px;
+}
+</style>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Pagination</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:pagination[show=example] and add[class=active] or l:pagination[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:pagination[show=code] and add[class=active] or l:pagination[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:pagination[show=usage] and add[class=active] or l:pagination[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+	<!-- EXAMPLE -->
+	<div on="l:pagination[show=example] then show else hide">
+		<p>
+			The pagination widget provides you with the appropriate rendering of the control to page through a resultset.  It is usually used in conjunction
+			with an iterator or datatable.  
+		</p>
+		<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
+			resultsString="#{start}-#{end}" totalsString="of #{total} scores" nextText="next"
+			prevText="prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
+		</app:pagination>
+		<div class="scorecontainer">
+			<app:iterator on="l:paginationexample.response then execute" property="rows" >
+				<html:div class="scoreentry">
+					<html:table width="100%">
+						<html:tr class="scoretitle"><html:td>#{date} </html:td></html:tr>
+						<html:tr><html:td class="home">#{home} #{homescore}</html:td></html:tr>
+						<html:tr><html:td class="away">#{away} #{awayscore}</html:td></html:tr>
+					</html:table>
+					<html:div class="scoretime">#{timeleft}</html:div>
+				</html:div>
+			</app:iterator>
+		</div>
+		<app:script>
+			var start = 1;
+			var end = 4;
+			var total = 12;
+			var rows = new Array();
+			for (var i=start-1;i&lt;=end-1;i++)
+			{
+				rows.push (PaginationExample.rows[i]);
+			}
+			var result = {'end':end,'start':start,'total':total,'rows':rows};
+			$MQ('l:paginationexample.response',result);
+		</app:script>
+		<app:script on="l:paginationexample.request then execute">
+			var start = 0;
+			var end = 0;
+			if (this.data.dir == 'next')
+			{
+				start = this.data.end + 1;
+				end = this.data.end + 4;
+			}
+			else
+			{
+				start = this.data.start - 4;
+				end = this.data.end - 4;
+			}
+			var dir = this.data.dir;
+			var total = this.data.total;
+			var rows = new Array();
+			for (var i=start-1;i&lt;=end-1;i++)
+			{
+				rows.push (PaginationExample.rows[i]);
+			}
+			var result = {'end':end,'start':start,'total':total,'rows':rows};
+			$MQ('l:paginationexample.response',result);
+		</app:script>
+	</div>
+
+	<!-- CODE -->
+	<div on="l:pagination[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				<app:pagination id="example_pagination" request="l:paginationexample.request" response="l:paginationexample.response"
+					resultsString="#{start}-#{end}" totalsString="of #{total} scores" nextText="next"
+					prevText="prev" showTotals="true" startProperty="start" endProperty="end" totalProperty="total">
+				</app:pagination>
+				<div class="scorecontainer">
+					<app:iterator on="l:paginationexample.response then execute" property="rows" >
+						<html:div class="scoreentry">
+							<html:table>
+								<html:tr><html:td class="scoretitle">#{date} </html:td></html:tr>
+								<html:tr><html:td class="home">#{home} #{homescore}</html:td></html:tr>
+								<html:tr><html:td class="away">#{away} #{awayscore}</html:td></html:tr>
+							</html:table>
+							<html:div class="scoretime">#{timeleft}</html:div>
+						</html:div>
+					</app:iterator>
+				</div>
+				<app:script>
+					var start = 1;
+					var end = 4;
+					var total = 12;
+					var rows = new Array();
+					for (var i=start-1;i&lt;=end-1;i++)
+					{
+						rows.push (PaginationExample.rows[i]);
+					}
+					var result = {'end':end,'start':start,'total':total,'rows':rows};
+					$MQ('l:paginationexample.response',result);
+				</app:script>
+				<app:script on="l:paginationexample.request then execute">
+					var start = 0;
+					var end = 0;
+					if (this.data.dir == 'next')
+					{
+						start = this.data.end + 1;
+						end = this.data.end + 4;
+					}
+					else
+					{
+						start = this.data.start - 4;
+						end = this.data.end - 4;
+					}
+					var dir = this.data.dir;
+					var total = this.data.total;
+					var rows = new Array();
+					for (var i=start-1;i&lt;=end-1;i++)
+					{
+						rows.push (PaginationExample.rows[i]);
+					}
+					var result = {'end':end,'start':start,'total':total,'rows':rows};
+					$MQ('l:paginationexample.response',result);
+				</app:script>
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:pagination[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">request</td>
+					  <td class="def">the request message</td>
+					</tr>
+					<tr>
+					  <td class="term">response</td>
+					  <td class="def">the response message</td>
+					</tr>
+				</table>
+		</p>
+		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term">startProperty</td>
+					  <td class="def">defaults to start: the data property name that contains the start record for the current results (e.g., Showing 1-10 of 500 - in this case "1" is the startProperty value - the default is "start"</td>
+					</tr>
+					<tr>
+					  <td class="term">endProperty</td>
+					  <td class="def">defaults to end: the data property name that contains the end record for the current results (e.g., Showing 1-10 of 500 - in this case "10" is the endProperty value - the default is "end"</td>
+					</tr>
+					<tr>
+					  <td class="term">totalProperty</td>
+					  <td class="def">defaults to total: the data property name that contains the total records for the current results (e.g., Showing 1-10 of 500 - in this case "500" is the totalProperty value - the default is "total"</td>
+					</tr>
+					<tr>
+					  <td class="term">nextText</td>
+					  <td class="def">the text displayed for the "next" link</td>
+					</tr>
+					<tr>
+					  <td class="term">prevText</td>
+					  <td class="def">the text displayed for the "prev" link</td>
+					</tr>
+					<tr>
+					  <td class="term">nextLangId</td>
+					  <td class="def">the text displayed for the next link using a locale value</td>
+					</tr>
+					<tr>
+					  <td class="term">prevLangId</td>
+					  <td class="def">the text displayed for the prev link using a locale value</td>
+					</tr>
+					<tr>
+					  <td class="term">resultsString</td>
+					  <td class="def">a template string for text - default is "Showing #{start} of #{end}</td>
+					</tr>
+					<tr>
+					  <td class="term">totalsString</td>
+					  <td class="def">a template string for totals text - default is "#{total} records found</td>
+					</tr>
+					<tr>
+					  <td class="term">resultsLangId</td>
+					  <td class="def">resultString using a langId</td>
+					</tr>
+					<tr>
+					  <td class="term">totalsLangId</td>
+					  <td class="def">totalsString using a langid</td>
+					</tr>
+					<tr>
+					  <td class="term">showTotals</td>
+					  <td class="def">true or false - in some cases the total number of records are not available</td>
+					</tr>
+				</table>
+		</p>
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

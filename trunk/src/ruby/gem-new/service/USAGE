@@ -1,0 +1,21 @@
+Description:
+    The generator creates stubs for a new Appcelerator Service.
+
+    The generator takes a class name, message type and method name as arguments.
+    The messagehandler name may be given in CamelCase or under_score and should
+    not be suffixed with 'Service'.  
+
+    The generator creates a service class in app/services.
+
+    ./script/generate service <ServiceClassName> <ServiceMessageRequest> <ServiceMethod> [ServiceMessageResponse]
+
+    The following are the arguments:
+    
+    ServiceClassName      - name of the service class
+    ServiceMessageRequest - message request type
+    ServiceMethod         - method name to call
+    ServiceMessageRequest - message response type
+
+Example:
+    ./script/generate service CreditCard service.creditcard.charge.request charge [service.creditcard.charge.response]
+

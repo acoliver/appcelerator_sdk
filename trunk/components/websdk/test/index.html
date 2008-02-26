@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <noscript><meta http-equiv="refresh" content="0;URL=upgrade_script.html"></noscript>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Appcelerator&trade; Web Unit Tests</title>
+	<script type="text/javascript" src="javascripts/appcelerator.js"></script> 
+	<link rel="stylesheet" type="text/css" href="css/webunit.css" />
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<div id="header">
+		<div id="logo">
+			<a href="http://www.appcelerator.org/index.html" title="Appcelerator Developer Community">
+				<img src="images/app_logo_BW_noBG.png" alt="Appcelerator.org"/>
+			</a>
+		</div>
+	</div>
+	<div id="body">
+		<div id="container">
+	        <div id="status">
+	            <div on="l:item then show or l:item.loaded then hide" style="display:none"><img src="images/indicator3.gif"/> <span>Loading...</span></div>
+	        </div>
+			<table>
+				<tr>
+					<td width="25%" valign="top">
+						<div id="nav_container">
+							<div id="nav">
+								<app:folder id="folder">
+									<folder name="Widgets">
+                                        <item onopen="l:item[src='widget_tests/box.html']">Box</item>
+                                        <item onopen="l:item[src='widget_tests/button.html']">Button</item>
+                                        <item onopen="l:item[src='widget_tests/calendar.html']">Calendar</item>
+                                        <item onopen="l:item[src='widget_tests/chart.html']">Chart</item>
+                                        <item onopen="l:item[src='widget_tests/content.html']">Content</item>
+                                        <item onopen="l:item[src='widget_tests/datacache.html']">Data Cache</item>
+                                        <item onopen="l:item[src='widget_tests/datatable.html']">Data Table</item>
+                                        <item onopen="l:item[src='widget_tests/editinplace.html']">Edit-in-Place</item>
+                                        <item onopen="l:item[src='widget_tests/field.html']">Field</item>
+                                        <item onopen="l:item[src='widget_tests/folder.html']">Folder</item>
+                                        <item onopen="l:item[src='widget_tests/if.html']">If</item>
+                                        <item onopen="l:item[src='widget_tests/iterator.html']">Iterator</item>
+										<item onopen="l:item[src='widget_tests/message.html']">Message</item>
+										<item onopen="l:item[src='widget_tests/modal.html']">Modal Dialog</item>
+                                        <item onopen="l:item[src='widget_tests/modalbox.html']">Modal Box</item>
+										<item onopen="l:item[src='widget_tests/panel.html']">Panel</item>
+                                        <item onopen="l:item[src='widget_tests/pagination.html']">Pagination</item>
+                                        <item onopen="l:item[src='widget_tests/progressbar.html']">Progress Bar</item>
+                                        <item onopen="l:item[src='widget_tests/search.html']">Search</item>
+                                        <item onopen="l:item[src='widget_tests/script.html']">Script</item>
+                                        <item onopen="l:item[src='widget_tests/security.html']">Security</item>
+                                        <item onopen="l:item[src='widget_tests/statemachine.html']">State Machine</item>
+                                        <item onopen="l:item[src='widget_tests/stopwatch.html']">Stopwatch</item>
+										<item onopen="l:item[src='widget_tests/tabpanel.html']">Tab Panel</item>
+                                        <item onopen="l:item[src='widget_tests/template.html']">Template</item>
+                                        <item onopen="l:item[src='widget_tests/tooltip.html']">Toolip</item>
+										<item onopen="l:item[src='widget_tests/validation.html']">Validation</item>
+								    </folder>
+									<folder name="Expressions">
+										<item onopen="l:item[src='expressions/basic_expr.html']">Basic Expressions</item>
+										<item onopen="l:item[src='expressions/advanced_expr.html']">Advanced Expressions</item>
+									</folder>
+									<folder name="Forms">
+										<item onopen="l:item[src='validation/validators.html']">
+											Validators
+										</item>
+										<item onopen="l:item[src='validation/fieldsets.html']">
+											Fieldsets and Activators
+										</item>
+									</folder>
+									<folder name="Miscellaneous">
+										<item onopen="l:item[src='misc/images.html']">Images</item>
+										<item onopen="l:item[src='misc/localization.html']">Localization</item>
+                                        <item onopen="l:item[src='misc/history.html']">History</item>
+                                        <item onopen="l:item[src='misc/idlemanager.html']">Idle Manager</item>
+									</folder>
+								</app:folder>
+							</div>
+						</div>
+					</td>
+					<td width="75%" valign="top">
+						<div id="detail_container">
+							<div id="detail">
+								<div on="l:item then hide">
+						   			<table width="100%">
+						   				<tr>
+						   					<td height="470px" valign="middle" align="center">
+												<img src="images/unittester_logonoBG.png"/>
+											</td>
+										</tr>
+									</table>
+								</div>
+								<div on="l:item then show" style="display:none">
+									<iframe id="editor" src="blank.html" on="l:item then set[src=src]" onloaded="l:item.loaded"
+										frameborder="0" style="margin:0;padding:0;margin-top:0px;width:100%;height:490px">
+									</iframe>
+								</div>
+							</div>
+						</div>
+					</td>
+			   </tr>
+			</table>
+		</div>
+	</div>
+	<div id="footer">
+        <div>
+            <a href="http://www.appcelerator.org">Appcelerator</a> is Copyright &copy; 2007 by <a href="http://www.appcelerator.com">Appcelerator, Inc.</a> and is 
+            licensed under the <a href="http://www.fsf.org/licensing/licenses/info/GPLv2.html">GNU Public License, version 2</a>.
+        </div>
+        <div>Appcelerator is a trademark of Appcelerator, Inc.</div>
+	</div>
+</body>
+
+</html>

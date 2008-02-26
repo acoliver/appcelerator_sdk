@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>PHP</h2>
+	<p>
+	<a class="active" on="click then l:phpgettingstarted[show=install] and add[class=active] or l:phpgettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:phpgettingstarted[show=client] and add[class=active] or l:phpgettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:phpgettingstarted[show=service] and add[class=active] or l:phpgettingstarted[show!=service] then remove[class=active]">PHP Service</a> 
+	</p>
+
+	<div on="l:phpgettingstarted[show=install] then effect[Appear] else effect[Fade]">
+
+		<h3>Pre-requisites</h3>
+		<p>
+		It is assumed that you already have the following installed:
+		<ul>
+			<li><a href="http://httpd.apache.org/" target="_blank">Apache</a> 1.3 or higher
+			<li>PHP 4/5</li>
+		</ul>
+		</p>
+
+		<h3>Reference</h3>
+		<p>
+		In the documentation below, the following symbols will be used in lieu of concrete examples
+		<ul>
+			<li><tt>$APACHE_USERHOME</tt>: ex: /Users/azuercher/Sites
+			<li><tt>$USER</tt>: ex: azuercher
+		</ul>
+		</p>
+
+		<h3>Get the distribution</h3>
+		<p>
+		Download the PHP SDK distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
+	
+		<h3>Deploy</h3>
+		<p>
+		If you are running apache with the php support then you can simply copy to your sites directory
+			<pre class="command">cp -R src/* $APACHE_USERHOMEE</pre>
+		Now you can hit the test page (replace <b>myname</b> with your actual username): <a href="http://localhost/~myname/index.html" target="_blank">http://localhost/~$USER/index.html</a>
+
+		<h3>Testing</h3>
+		You should now be able to hit the test service.  Goto <a href="http://localhost/~myname/servicetester.html" target="_blank">http://localhost/~$USER/servicetester.html</a> and put the following in
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request.response
+		</ul>
+		you should get the following back
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.response
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=client]">Web Client</a>
+	</div>
+	<div on="l:phpgettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
+		<h3>PHP Service</h3>
+		To add a new service, simply properly define methods in a class as the individual handlers.  The key things for this are that
+		<ul>
+			<li>the file ends with <tt>_service.php</tt>
+			<li>the class ends with <tt>Service</tt>
+			<li>you put the proper method signature <tt>method_name(&amp;$request,&amp;$response)</tt>
+			<li>you put the proper comments directly above the method <tt>@Service(request=xxx,response=xxx,version=xx) </tt>
+		</ul>
+
+		<h3>src/services/contact_manager_service.php</h3>
+		You could create a new class ContactManagerService with the following source
+		<textarea name="code" class="xml:nocontrols">
+@contact_manager_service.php@
+		</textarea>
+		
+		<h3>Next Steps</h3>
+		Copy over your php files
+		<pre class="command">cp -R src/* $APACHE_USERHOME</pre>
+
+		<h3>Troubleshooting</h3>
+		On apache, you can view the logs to see what exceptions may occur based upon your ErrorLog config (/etc/httpd/httpd.conf)
+		<pre class="command">ErrorLog "/private/var/log/httpd/error_log"</pre>
+		You may want to restart apache (rarely needed)
+	</div>
+	<div on="l:phpgettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			Once you have created your project, your web source will exist in:
+			<ul>
+				<li><b>src</b>: directory where all your html exists
+				<li><b>src/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>examples/simple/src/index.html</b>: the sample source used for this demonstration
+			</ul>
+
+			<h3>src/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator-php.xml@
+			</textarea>
+
+			<h3>src/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
+			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+
+			<h3>Next Steps</h3>
+			Copy over your web files
+			<pre class="command">cp -R src/* $APACHE_USERHOME</pre>
+			You are now ready to proceed to creating your <a on="click then l:phpgettingstarted[show=service]">PHP Service</a>
+		</p>
+	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+</body>
+
+</html>

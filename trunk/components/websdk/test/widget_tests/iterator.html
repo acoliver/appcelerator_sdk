@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+input[type=text]
+{
+	width:80%;
+	border:1px solid #ccc;
+	padding:1px;
+	font-size:11px;
+}
+input[type=button]
+{
+   border-width:1px;
+   padding: 2px 7.5px 2px 7.5px;
+   margin: 0;
+}
+.row
+{
+	border:1px solid #999;
+	padding:5px;
+	margin:3px;
+	height:20px;
+
+}
+.name
+{
+	float:left;
+	margin-left:5px;
+	color:#336699;
+	font-size:16px;
+	line-height:20px;
+	text-align:middle;
+}
+.city
+{
+	float:right;
+	margin-left:5px;
+	color:#333;
+	font-size:11px;
+	line-height:20px;
+	text-align:middle;
+}
+th
+{
+	border:1px solid #999;
+	background-color:#bbb;
+	color:white;
+}
+</style>
+</head>
+<body>
+
+<h3> Iterator Widget </h3> 
+<p>
+	These tests exercise the iterator widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" width="40%" valign="middle">
+			<a on="click then l:load.iterator1">Run Test</a>
+			Basic Iterator (just rows)
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator1 then execute" property="rows">
+				<html:div class="row">
+					<html:div class="name">#{name}</html:div>
+					<html:div class="city">#{city}</html:div>
+				</html:div>
+			</app:iterator>
+			
+			<app:script on="l:load.iterator1 then execute">
+				$MQ('l:iterator1',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator2">Run Test</a>
+			Basic Iterator with compiled elements
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator2 then execute" property="rows">
+				<html:div class="row">
+					<html:a class="name" on="click then script[alert('test passed')]">#{name}</html:a>
+				</html:div>
+			</app:iterator>
+			
+			<app:script on="l:load.iterator2 then execute">
+				$MQ('l:iterator2',{rows:[{'name':'Click Me'},{'name':'Click Me'}]});
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator3">Run Test</a>
+			Basic Iterator with widgets (edit in place)
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator3 then execute" property="rows">
+				<html:div class="row">
+				<app:editinplace type="text"  saveOn="click then l:save" 
+					cancelOn="click then l:cancel" defaultValue="#{name}">
+				</app:editinplace>
+				</html:div>
+			</app:iterator>
+			
+			<app:script on="l:load.iterator3 then execute">
+				$MQ('l:iterator3',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator4">Run Test</a>
+			Nested Iterators
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator4 then execute" property="rows">
+				<html:div class="row" style="height:50px">
+					<html:div class="name">#{name}</html:div>
+					<html:div class="city">#{city}</html:div>
+					<app:iterator on="l:iterator4a then execute" property="cars">
+							<html:div style="clear:both;display:block">#{car}</html:div>
+					</app:iterator>
+					<app:script>
+						$MQ('l:iterator4a',{cars:[{'car':'mazda (nested data)'},{'car':'toyota (nested data)'}]});
+					</app:script>
+				</html:div>
+			</app:iterator>
+			
+			<app:script on="l:load.iterator4 then execute">
+				$MQ('l:iterator4',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+			</app:script>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator5">Run Test</a>
+			Table Iterator (with image and link)
+		</td>
+		<td class="result">
+			<app:iterator on="l:iterator5 then execute" property="rows" table="true" headers="name,city,image" 
+				cellspacing="1" width="100%">
+				<html:td style="border:1px solid #ccc">
+					<html:a on="click then script[alert('passed')]">#{name}</html:a>
+				</html:td>
+				<html:td style="border:1px solid #ccc">#{city}</html:td>
+				<html:td style="border:1px solid #ccc">
+					<html:img src="../images/#{image}.png"></html:img>
+					See image to the left?
+				</html:td>
+
+			</app:iterator>
+			
+			<app:script on="l:load.iterator5 then execute">
+				$MQ('l:iterator5',{rows:[{'name':'Joe','city':'New York','image':'confirm'},{'name':'Fred','city':'New Jersey','image':'confirm'},{'name':'Earl','city':'Texas','image':'confirm'}]});
+
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			<a on="click then l:load.iterator6">Run Test</a>
+			Single quote selectable (try Jeff's cool list)
+		</td>
+		<td class="result">
+				<!-- popup select -->
+				<div style="display:none;z-index:2;position:absolute;width:450px;height:100px;border:1px solid #999;color:#222;overflow:auto;cursor:pointer;background-color:#eee;" 
+					 on="r:list.search.response[count!=0] then show or l:recipient.list.row.selected then hide"> 
+				   <app:iterator on="r:list.search.response then execute" property="rows" selectable="lists" id="message_preview_selectlist">
+						<html:div class="dropdown" on="selected then l:recipient.list.row.selected[count=count,listid=#{list_id},value=&quot;#{list_name}&quot;]">
+							#{list_name} 
+				       </html:div>
+				  </app:iterator>
+				</div>
+				<span on="l:recipient.list.row.selected then value[value]"></span>
+				<app:script on="l:load.iterator6 then execute">
+					$MQ('r:list.search.response',{rows:[{'count':3,'list_id':1,'list_name':"Jeff's cool list"},
+						{'count':33,'list_id':2,'list_name':"its good cool list"}]});
+				</app:script>
+		</td>
+	</tr>
+    <tr>
+        <td class="test" valign="middle">
+           	items attribute
+        </td>
+        <td class="result" >
+            <app:iterator items="[1,2,3]">
+				tested passed with #{iterator_value} item
+            </app:iterator>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+           	items attribute inside content file
+        </td>
+        <td class="result" >
+            <app:content src="content/iterator_items.html"></app:content>
+        </td>
+    </tr>
+</table>
+
+
+
+</body>
+
+</html>

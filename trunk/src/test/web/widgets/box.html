@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../js/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:35%;
+}
+input[type=text]
+{
+	width:40%;
+	border:1px solid #ccc;
+	padding:3px;
+	font-size:12px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Box Widget </h3> 
+<p>
+	These tests exercise the box widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic Box (horizontal)
+		</td>
+		<td class="result" >
+			<app:box mode="horizontal" style="margin-top:20px;background-color:#fff;" cellPadding="0">
+				<html:div>Container 1</html:div>
+				<html:div>Container 2</html:div>
+				<html:div>Container 3</html:div>
+			</app:box>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Box (vertical)
+		</td>
+		<td class="result" >
+			<app:box mode="vertical" style="margin-top:20px;background-color:#fff;" cellPadding="0">
+				<html:div>Container 1</html:div>
+				<html:div>Container 2</html:div>
+				<html:div>Container 3</html:div>
+			</app:box>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Box with Iterator
+		</td>
+		<td class="result" >
+			<app:box mode="horizontal" style="margin-top:20px;background-color:#fff;" cellPadding="0">
+				<html:div>Container 1</html:div>
+				<html:div>Container 2</html:div>
+				<app:iterator on="l:iterator1 then execute" property="rows">
+					<html:div class="row">
+						<html:div class="name">#{name}</html:div>
+						<html:div class="city">#{city}</html:div>
+					</html:div>
+				</app:iterator>
+			</app:box>
+		</td>
+		
+		<app:script>
+			$MQ('l:iterator1',{rows:[{'name':'Joe','city':'New York'},{'name':'Fred','city':'New Jersey'},{'name':'Earl','city':'Texas'}]});
+		</app:script>		
+	</tr>
+</table>
+</body>
+</html>

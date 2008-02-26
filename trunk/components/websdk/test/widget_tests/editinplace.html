@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+input[type=text]
+{
+	width:80%;
+	border:1px solid #ccc;
+	padding:3px;
+	font-size:12px;
+}
+.button
+{
+	font-size:11px;
+	padding-left:5px;
+	padding-right:5px;
+	padding-top:3px;
+	padding-bottom:3px;
+	border-top:1px solid #aaa;
+	border-left:1px solid #aaa;
+}
+.edit
+{
+	background-color:#ffffcc;
+	padding:3px;
+}
+.default
+{
+	font-size:11px;
+	color:#336699;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Edit-in-Place Widget </h3> 
+<p>
+	These tests exercise the edit-in-place widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" width="40%" valign="middle">
+			Basic Edit-in-Place
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_1" saveOn="click then l:save1[value=$eip_1]" 
+				cancelOn="click then l:cancel1" defaultValue="Joe Smith">
+			</app:editinplace>
+			<app:script on="l:save1 then execute">
+			alert(this.data);
+			</app:script>		
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			Edit-in-Place (populate default via message)
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_2" saveOn="click then l:save2[value=$eip_2]" 
+				cancelOn="click then l:cancel2" message="l:load2" property="name">
+			</app:editinplace>
+			<app:message name="l:load2" args="{'name':'Test Passed'}">
+			</app:message>		
+			<app:script on="l:save2 then execute">
+			alert(this.data);
+			</app:script>		
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			Edit-in-Place (use validator and error position top)
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_3" saveOn="click then l:save3[value=$eip_3]" 
+				cancelOn="click then l:cancel3" errorPosition="top"
+				message="l:load3" property="date" validator="date">
+			</app:editinplace>
+			<app:message name="l:load3" args="{'date':'10/5/2007' }">
+			</app:message>		
+			<app:script on="l:save2 then execute">
+			alert(this.data);
+			</app:script>		
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Edit-in-Place (use error position bottom )
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_4" saveOn="click then l:save4[value=$eip_4]" 
+				cancelOn="click then l:cancel4"  validator="required" defaultValue="Joe Smith" 
+				errorPosition="bottom">
+			</app:editinplace>
+			<app:script on="l:save4 then execute">
+			alert(this.data);
+			</app:script>		
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Edit-in-Place (use custom classes)
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_5" saveOn="click then l:save5[value=$eip_5]" 
+				cancelOn="click then l:cancel5"   defaultValue="Joe Smith" buttonClassName="button"
+				editClassName="edit" defaultClassName="default">
+			</app:editinplace>
+			<app:script on="l:save5 then execute">
+			alert(this.data);
+			</app:script>		
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle">
+			Edit-in-Place (use custom error message)
+		</td>
+		<td class="result">
+			<app:editinplace type="text" id="eip_6" saveOn="click then l:save6[value=$eip_6]" 
+				cancelOn="click then l:cancel6" errorPosition="top" errorMessage="test passed"
+				validator="required" defaultValue="clear me to see error">
+			</app:editinplace>
+			<app:script on="l:save6 then execute">
+			alert(this.data);
+			</app:script>		
+
+		</td>
+	</tr>
+
+
+</table>
+
+
+
+</body>
+
+</html>

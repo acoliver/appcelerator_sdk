@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Appcelerator Platform SDK for Java" default="create" basedir=".">
+
+    <description>Appcelerator Platform SDK for Java</description>
+
+    <property file="${user.home}/.ant.properties"/>
+    <property file="build.properties"/>
+
+	<property name="dist.dir" value="dist/server"/>
+	<path id="classpath">
+		<fileset dir="dist/lib" includes="*.jar"/>
+	</path>
+	
+	<target name="clean">
+		<delete dir="stage"/>
+	</target>
+		
+	<target name="banner">
+		<echo>Appcelerator Platform SDK for Java</echo>
+		<echo>Licensed under the GNU GPL version 2</echo>
+		<echo>Please read LICENSE for more details on usage</echo>
+	</target>
+	
+	<target name="prompt.deploy.dir" unless="deploy.dir">
+		<echo>Deploy the Appcelerator Server</echo>
+		<input defaultvalue="deploy.dir" message="Where would you like to deploy?" addproperty="deploy.dir" />
+	</target>
+	<target name="deploy_server" depends="banner">
+		<antcall target="prompt.deploy.dir"/>
+		<available file="${deploy.dir}" type="dir" property="deploy.dir.exists" />
+		<fail unless="deploy.dir.exists">Directory ${deploy.dir} doesn't exist.</fail>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${dist.dir}" includes="*.war" />
+		</copy>
+	</target>
+	<target name="undeploy_server">
+		<available file="${deploy.dir}/appcelerator" type="dir" property="appcelerator.deploy.dir.exists"/>
+		<available file="${deploy.dir}/appcelerator.war" type="file" property="appcelerator.deploy.war.exists"/>
+		<antcall target="undeploy.war"/>
+		<antcall target="undeploy.dir"/>
+	</target>
+	<target name="undeploy.dir" if="appcelerator.deploy.dir.exists">
+		<delete dir="${deploy.dir}/appcelerator"/>
+	</target>
+	<target name="undeploy.war" if="appcelerator.deploy.war.exists">
+		<delete file="${deploy.dir}/appcelerator.war"/>
+	</target>
+	<target name="update" description="** updates an existing appcelerator project to this version of the sdk">
+		<echo>Updating an existing Appcelerator Java project.</echo>
+		<echo message=""/>
+		<input message="Where does the project exist?" addproperty="create.dir"/>
+		<available file="${create.dir}/build.properties" type="file" property="create.dir.exists" />
+		<fail unless="create.dir.exists">Directory ${create.dir} doesn't exist.</fail>
+		<property file ="${create.dir}/build.properties"/>
+		<echo>updating application ${app.name}</echo>
+
+		<input message="would you like to overwrite project specific src/web and build scripts including build.xml, build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?" validargs="y,n" addproperty="overwrite.projectspecific.input"/>
+		<condition property="overwrite.projectspecific">
+			<equals arg1="y" arg2="${overwrite.projectspecific.input}"/>
+		</condition> 
+
+		<input message="would you like to overwrite the lib, server, sample java, and platform web source?" validargs="y,n" addproperty="overwrite.plat.input"/>
+		<condition property="overwrite.plat">
+			<equals arg1="y" arg2="${overwrite.plat.input}"/>
+		</condition> 
+        <antcall target="do.update">
+            <param name="create.dir" value="${create.dir}"/>
+        </antcall>
+    </target>
+    <target name="do.update">
+		<antcall target="overwrite.projectspecific"/>
+		<antcall target="overwrite.plat"/>
+		<echo>congrats you are set</echo>
+	</target>
+	<target name="overwrite.plat" if="overwrite.plat">
+		<echo>overwriting platform at ${create.dir}</echo>
+		<delete>
+			<fileset dir="${create.dir}/lib/appcelerator"/>
+			<fileset dir="${create.dir}/server"/>
+			<fileset dir="${create.dir}/src/java" includes="SampleService.java"/>
+			<fileset dir="${create.dir}/src/web/modules"/>
+			<fileset dir="${create.dir}/src/web/js" includes="appcelerator*.*"/>
+		</delete>
+		<antcall target="create.silent.plat"/>
+	</target>
+	<target name="overwrite.projectspecific" if="overwrite.projectspecific">
+		<echo>overwriting projectspecific items</echo>
+		<antcall target="create.silent.projectspecific"/>
+	</target>
+	<target name="create.silent" depends="banner">
+		<fail unless="app.name" message="property ${app.name} is not defined"/>
+		<available file="${create.dir}" type="dir" property="create.dir.exists" />
+ 		<fail if="create.dir.exists">Directory ${create.dir} already exists. Please delete it to continue...</fail>
+		<antcall target="create.silent.plat"/>
+		<antcall target="create.silent.projectspecific"/>
+	</target>
+	<target name="create.silent.projectspecific" depends="banner">
+		<mkdir dir="${create.dir}" />
+		<mkdir dir="${create.dir}/lib/appcelerator" />
+		<mkdir dir="${create.dir}/src/java" />
+		<mkdir dir="${create.dir}/src/web" />
+		<copy todir="${create.dir}" filtering="true" overwrite="true">
+			<fileset dir="dist" includes="*.*"/>
+			<filterset>
+				<filter token="APPNAME" value="${app.name}"/>
+				<filter token="APPCELERTOR_DIR" value="${basedir}"/>
+			</filterset>
+		</copy>
+		<copy todir="${create.dir}" filtering="false" overwrite="true">
+			<fileset dir="dist" includes="src/**"/>
+		</copy>
+	</target>
+
+	<target name="create.silent.plat" depends="banner">
+		<mkdir dir="${create.dir}" />
+		<mkdir dir="${create.dir}/lib/appcelerator" />
+		<mkdir dir="${create.dir}/src/java" />
+		<mkdir dir="${create.dir}/src/web" />
+        <echo message="Copying ${basedir}/dist to ${create.dir}" />
+		<copy todir="${create.dir}" filtering="false" overwrite="true">
+			<fileset dir="${basedir}/dist/" includes="lib/**,server/**,src/web/js/**,src/web/modules/**,src/web/swf/**" excludes="${plat.excludes}"/>
+		</copy>
+	</target>
+	<target name="create" depends="banner" description="** Create a new Appcelerator for Java project">
+		<echo>Creating a new Appcelerator Java project.</echo>
+		<echo message=""/>
+		<input message="What would you like to name the project?" addproperty="app.name" />
+		<antcall target="confirm_projectdir" inheritRefs="true">
+			<param name="prompt_text" value="Where would you like to create?"/>
+			<param name="prompt_property" value="create.dir"/>
+			<param name="prompt_propertyfile" value="create.dir.properties"/>
+			<param name="prompt_default" value="${user.home}${file.separator}${app.name}"/>
+		</antcall>
+		<property file="create.dir.properties"/>
+		<antcall target="create.silent"/>
+	</target>
+	<target name="script" depends="">
+		<property name="app.name" value="myapp"/>
+		<antcall target="confirm_projectdir" inheritRefs="true">
+			<param name="prompt_text" value="Where would you like to create?"/>
+			<param name="prompt_property" value="create.dir"/>
+			<param name="prompt_propertyfile" value="create.dir.properties"/>
+			<param name="prompt_default" value="${user.home}${file.separator}${app.name}"/>
+		</antcall>
+		<property file="create.dir.properties"/>
+		<echo>${create.dir}</echo>
+	</target>
+	<target name="confirm_projectdir" depends="">
+	    <script language="ruby">
+			def getdir(prompt, default)
+				request =org.apache.tools.ant.input.InputRequest.new(prompt + "[#{default}]")
+				$project.inputHandler.handleInput(request)
+				result = request.input
+				dir=''
+				if result.nil? || result == "" || result=='/n'
+					dir=default
+				else
+					dir=result
+				end
+				if File.exists? dir
+					puts "file/directory already exists"
+					return nil
+				end
+				begin
+					Dir.mkdir dir
+					Dir.delete dir
+					return dir
+				rescue
+					puts "could not create directory"
+				end
+			end
+			dir =getdir($prompt_text, $prompt_default)
+			while dir.nil?
+				dir = getdir $prompt_text,$prompt_default
+			end
+			def propfile (name,value,file)
+				task = $project.createTask("propertyfile")
+				task.file= java.io.File.new file
+				entry = task.createEntry
+				entry.key=name
+				entry.value = value
+				task.execute
+			end
+			propfile($prompt_property,dir,$prompt_propertyfile)
+	    </script>
+	</target>
+	<target name="copy_script_jars" description="** copies the required script jars to ${ant.home}/lib">
+		<copy todir="${ant.home}/lib">
+			<fileset dir="dist/antlib" includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar"/>
+			<fileset dir="dist/lib/appcelerator" includes="commons-logging-1.0.4.jar"/>
+		</copy>
+	</target>
+	<target name="remove_script_jars">
+		<delete>
+			<fileset dir="${ant.home}/lib" 
+				includes="jruby.jar,asm-2.2.3.jar,asm-commons-2.2.3.jar,bsf.jar,backport-util-concurrent.jar,jline.jar,commons-logging-1.0.4.jar"/>
+		</delete>
+	</target>
+</project>

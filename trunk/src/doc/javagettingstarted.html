@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible"> 
+	<h2>Java</h2>
+	<p>
+	<a class="active" on="click then l:javagettingstarted[show=install] and add[class=active] or l:javagettingstarted[show!=install] then remove[class=active]">Installation</a> |
+	<a  on="click then l:javagettingstarted[show=client] and add[class=active] or l:javagettingstarted[show!=client] then remove[class=active]">Web Client</a> |
+	<a  on="click then l:javagettingstarted[show=service] and add[class=active] or l:javagettingstarted[show!=service] then remove[class=active]">Java Service</a> 
+	</p>
+
+	<div on="l:javagettingstarted[show=install] then effect[Appear] else effect[Fade]">
+		<h3>Prerequisites</h3>
+		<p>
+		It is assumed that you already have the following installed:
+		<ul>
+			<li><a href="http://tomcat.apache.org/" target="_blank">apache tomcat</a> 6.0 or higher (or another j2ee web container)
+			<li><a href="http://ant.apache.org" target="_blank">apache ant</a> 1.6.5 or higher
+			<li><a href="http://java.sun.com/" target="_blank">JDK</a> 1.5
+		</ul>
+		<span style="color:#FF0000;">NOTE: if you are using Leopard and ant 1.7.0 then you will need to download the full ant distribution (Leopard by default only installs a partial version of ant).</span>
+		</p>
+		<h3>Reference</h3>
+		<p>
+		In the documentation below, the following symbols will be used in lieu of concrete examples
+		<ul>
+			<li><tt>$TOMCAT_HOME</tt>: ex: /Applications/apache-tomcat-6.0.14
+			<li><tt>$HOME</tt>: ex: /Users/azuercher
+			<li><tt>$APP</tt>: ex: myapp
+			<li><tt>$APPDIR</tt>: ex: $HOME/projects/$APP
+		</ul>
+		</p>
+		
+		<h3>Get the Distribution</h3>
+		<p>
+		Download the java sdk distribution from <a href="http://www.appcelerator.org" target="_blank">http://www.appcelerator.org</a>
+		<ul>
+			<li>appcelerator_sdk_java_@VERSION@.zip - this is the distribution for creating your java services (which are deployed as appcelerator services and applications)
+		</ul>
+		<h3>Create a Project</h3>
+		unzip the distribution and get the initial jars (this is a one time thing)
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
+cd appcelerator_sdk_java_@VERSION@
+ant copy_script_jars</pre>
+		
+		now create your project (ex: $APP)
+		<pre class="command">ant create
+[input] What would you like to name the project?
+$APP
+[input] Where would you like to create?
+$APPDIR</pre>
+		this will create a project workspace for you with an eclipse project and ant build file. 
+	
+		<h3>Start the Web Container</h3>
+		set your <tt>deploy.dir</tt> in your <tt>$HOME/.ant.properties</tt> (this will be used later in deployment)
+		<pre class="command">deploy.dir=$TOMCAT_HOME/webapps</pre>
+		first lets begin by starting your web container
+		<pre class="command">cd $TOMCAT_HOME/bin
+./catalina.sh run</pre>
+
+		<h3>Build and Deploy the Solution</h3>
+			Lets build the distribution
+				<pre class="command">cd $APPDIR
+ant dist</pre>
+				This project will build a properly built war file that you can deploy with your services and the appcelerator framework in
+				<ul>
+					<li> stage/$APP.war
+				</ul>
+		Now you can deploy with the simple ant task (requires that you set <tt>deploy.dir</tt> in <tt>$HOME/.ant.properties</tt> from the above step)
+		<pre class="command">ant deploy</pre>
+	
+		<h3>Testing</h3>
+		At this point you may wish to test the sample service that is bundled with the distributilon.  Goto <a href="http://localhost:8080/$APP/servicetester.html" target="_blank">http://localhost:8080/$APP/servicetester.html</a> and use the following:
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.request
+		</ul>
+		You should see a log message in your web container and a response in your web browser with the following
+		<ul>
+			<li><b>message type</b>: remote:app.test.message.response
+			<li><b>data.message</b>: "I received from you: Hello,world"
+			<li><b>data.success</b>: "true"
+		</ul>
+
+		<h3>Updating the project</h3>
+		You can alternatively update your project to a new version of the sdk very simply.  Just extract the new sdk and run the update task.  Note that when you extract the zip, you will want to extract it to a different directory than where your older distribution exists.
+		<pre class="command">unzip appcelerator_sdk_java_@VERSION@.zip
+cd appcelerator_sdk_java_@VERSION@
+ant update</pre>
+		you will be prompted for the project directory of your previously created project (you'll want to give a relative or absolute path ex: <tt>$APPDIR</tt>
+		<pre class="command">
+[input] Where does the project exist?
+$APPDIR
+[echo] updating application $APP
+[input] would you like to overwrite project specific src/web and build scripts including build.xml, 
+build.properties, SampleService.java, index.html, appcelerator.xml and servicetester.html?(y,n)
+y
+[input] would you like to overwrite the lib, examples, server, sample java, test, doc and platform web source?(y,n)
+n</pre>
+		
+		<h3>Next Steps</h3>
+		You are now ready to proceed to creating your <a on="click then l:javagettingstarted[show=client]">Web Client</a>
+	</div>
+	<div on="l:javagettingstarted[show=client] then effect[Appear] else effect[Fade]" style="display:none">
+		<p>
+			<h3>Web Implementation</h3>
+			Once you have created the java project, your web source will exist in:
+			<ul>
+				<li><b>src/web</b>: directory where all your html exists
+				<li><b>src/web/appcelerator.xml</b>: defines the location and behaviour of the service broker
+				<li><b>examples/simple/src/web/index.html</b>: the sample source used for this demonstration
+			</ul>
+			
+			<h3>src/web/appcelerator.xml</h3>
+			You should not have to make any changes to this file
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator.xml@
+			</textarea>
+			
+			<h3>src/web/index.html</h3>
+			In the example below, you could modify the existing index.html to send a sample request to the server and display it in a div.  Note that the 
+			source for this is also available under examples/simple/src/web/index.html in your project directory.
+			<textarea name="code" class="xml:nocontrols">
+@index.html@
+			</textarea>
+			<h3>Next Steps</h3>
+			You are now ready to proceed to creating your <a on="click then l:javagettingstarted[show=service]">Java Service</a>
+			
+		</p>
+	</div>
+	<div on="l:javagettingstarted[show=service] then effect[Appear] else effect[Fade]" style="display:none">
+		<p>
+			<h3>Java Implementation</h3>
+			Once you have created the java project, the following file structure will exist:
+			<ul>
+				<li><b>src/java</b>: directory for your java source
+				<li><b>lib/appcelerator</b>: directory where you will provide your 3rd party jars
+				<li><b>appcelerator-services.xml</b>: a spring definition file for your service pojos
+			</ul>
+			To add a new service, simply define message handler methods in a class.  The key things for this are that
+			<ul>
+				<li>methods have the proper <tt>@Service</tt> annotation
+				<li>methods have the signature <tt>methodName (Message request, Message response)</tt>
+				<li>your class is defined as a bean in the appcelerator-service.xml spring file
+			</ul>
+			
+			<h3>src/java/ContactManager.java</h3>
+			You could create a new class ContactManager with the following source
+			<textarea name="code" class="xml:nocontrols">
+@ContactManager.java@
+			</textarea>
+			
+			<h3>appcelerator-services.xml</h3>
+			We now need to add an entry for our ContactManager class above (line 21)
+			<textarea name="code" class="xml:nocontrols">
+@appcelerator-services.xml@
+			</textarea>
+			
+			<h3>Next Steps</h3>
+			You are now ready to proceed to rebuilding and redeploying your app
+			<pre class="command">ant dist undeploy deploy</pre>
+			You may also want to restart tomcat
+		</p>
+	</div>
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+</body>
+
+</html>

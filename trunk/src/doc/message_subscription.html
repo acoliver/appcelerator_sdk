@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Message Subscription</h2>
+	<p>
+		There may be cases when you would like to directly map a message handler to a javascript function.  This may be usefull
+		for co-locating implementation in a central javascript file or for debugging for example.  Much like the <tt>$MQ</tt> function, you
+		can make use of the <tt>$MQL</tt> function to support this.
+	
+	</p>
+
+	<p>
+		Here's an example with a button:
+	</p>
+	<input type="button" id="mybutton" value="click me" on="click then l:customhandler[id=mybutton]">
+	<script>
+		$MQL('l:customhandler',function(type,msg,datatype,from)
+		{
+			var id = msg['id'];
+			alert('custom handler for '+id);
+		});
+	</script>
+	
+	<p>
+		In the above example, a message name <tt>l:customhandler</tt> is handled by an anonymous function provided as 
+		<tt>$MQL('l:customhandler',function(type,msg,datatype,from)</tt>.  The <tt>$MQL</tt> stands for Message Queue Listener and expects a function
+		with a signature of <tt>type,msg,datatype,from</tt>.  Here's the source:
+		
+	</p>
+	
+	<textarea name="code" class="xml:nocontrols">
+		<input type="button" id="mybutton" value="click me" on="click then l:customhandler[id=mybutton]">
+		<script>
+			$MQL('l:customhandler',function(type,msg,datatype,from)
+			{
+				var id = msg['id'];
+				alert('custom handler for '+id);
+			});
+		</script>
+	</textarea>
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>

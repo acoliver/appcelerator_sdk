@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<script type="text/javascript" src="../locale/en.js"></script>
+	
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Localization Tests </h3> 
+<p>
+	These tests exercise localization
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test (using langid)
+		</td>
+		<td class="result">	
+			<div langid="my.lang.key">
+				Test Failed
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test (using JS function)
+		</td>
+		<td class="result">	
+			<div id="localization" langid="my.lang.key">
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test (using JS function with formatting)
+		</td>
+		<td class="result">	
+			<div id="localization2" langid="my.lang.key">
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using Select
+		</td>
+		<td class="result">	
+			<select langid="my.dropdown"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using Select (clear initial)
+		</td>
+		<td class="result">	
+			<select langid="my.dropdown">
+				<option>Failed if you see this</option>
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using Select option (as string)
+		</td>
+		<td class="result">	
+			<select>
+				<option langid="my.lang.key">Failed if you see this</option>
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using Select option (as object)
+		</td>
+		<td class="result">	
+			<select>
+				<option langid="my.option">Failed if you see this</option>
+			</select>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using input
+		</td>
+		<td class="result">	
+			<input langid="my.lang.key"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using input (clear initial)
+		</td>
+		<td class="result">	
+			<input langid="my.lang.key" value="Test failed"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using input
+		</td>
+		<td class="result">	
+			<input langid="my.lang.key"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Localization Test using anchor
+		</td>
+		<td class="result">	
+			<a langid="my.lang.key" href="#">Test failed</a>
+		</td>
+	</tr>	
+    <tr>
+        <td class="test" valign="middle">
+            Localization using merged bundle
+        </td>
+        <td class="result"> 
+            <a langid="merge.lang.key" href="#">Test failed</a>
+        </td>
+    </tr>   
+
+</table>
+<app:script>
+$("localization").innerHTML = Appcelerator.Localization.get("my.lang.key");
+</app:script>
+<app:script>
+$("localization2").innerHTML = Appcelerator.Localization.getWithFormat('my.format.key',null,null,{'result':'passed'});
+</app:script>
+
+<script>
+Appcelerator.Compiler.beforeDocumentCompile(function()
+{
+    Appcelerator.Localization.updateLanguageBundle('en','English',{'merge.lang.key':'Passed'});
+});
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<div style="display:none">
+	
+	<!-- SERVICE REGISTRY REQUEST 
+	<app:script on="r:$appcelerator.service.list.request then execute after 2s">
+	$MQ('r:$appcelerator.service.list.response',{'count':6,'rows':[
+			{'request':'user.login.request','response':'user.login.response','doc':'This service processes user login requests','version':'1.0'},
+			{'request':'user.logout.request','response':'user.logout.response','doc':'This service processes user logout requests','version':'2.0'},
+			{'request':'user.roles.request','response':'user.roles.response','doc':'This service processes user role requests for security','version':'1.0'},
+			{'request':'search.user.request','response':'search.user.response','doc':'This service processes user search requests','version':'3.0'},
+			{'request':'delete.user.request','response':'delete.user.response','doc':'This service processes user delete requests','version':'1.0'},
+			{'request':'add.user.request','response':'add.user.response','doc':'This service processes add user requests','version':'1.0'}
+
+			]});
+	</app:script> -->
+
+	<!-- SERVER STATS REQUEST 
+	<app:script on="r:$appcelerator.server.stats.request then execute after 2s">
+	$MQ('r:$appcelerator.server.stats.response',{'start_time':'10/1/2007 10:01 AM','uptime':'5 hours 10 minutes 5 seconds','page_requests':'210','service_requests':'1300','avg_response_time':'200 ms', 'avg_message_size':'200 bytes',
+	'unique':'12','avg_request_visitor':18});
+	</app:script>
+	-->
+
+	<!-- GRAPH DATA FOR UNIQUE VISITORS 
+	<app:script on="r:$appcelerator.graph.visitors.request then execute after 2s"> $MQ('r:$appcelerator.graph.visitors.response',{'data':[{'name':'Mon','value':20},{'name':'Tues','value':42},{'name':'Wed','value':60},{'name':'Thurs','value':85},{'name':'Fri','value':120},{'name':'Sat','value':20},{'name':'Sun','value':15}]});
+	</app:script>
+	-->
+	
+	<!-- GRAPH DATA FOR PAGE VIEWS AND SERVICE REQUESTS
+	<app:script on="r:$appcelerator.graph.usage.request then execute after 2s"> $MQ('r:$appcelerator.graph.usage.response',{'data':[{'name':'Mon','value':'10,25'},{'name':'Tues','value':'25,83'},{'name':'Wed','value':'50,193'},{'name':'Thurs','value':'65,225'},{'name':'Fri','value':'102,250'},{'name':'Sat','value':'20,45'},{'name':'Sun','value':'10,25'}],'titles':[{'title':'Page Views'},{'title':'Service Request'}]});
+	</app:script>
+	-->
+
+	<!-- SERVICE BUNDLE DATA 
+	<app:script on="r:$appcelerator.servicebundle.query.request then execute after 2s"> $MQ('r:$appcelerator.servicebundle.query.response',{'count':3,'services':[{'name':'Timetrac','active':2,'status':'In-Active',
+	'releases':[{'release':1},{'release':2},{'release':3},{'release':4},{'release':5},{'release':6}]},
+	{'name':'Defect Tracking','active':5,'status':'Active',
+	'releases':[{'release':1},{'release':2},{'release':3},{'release':4},{'release':5}]},
+	{'name':'Unit Tester','active':1,'status':'In-Active',
+	'releases':[{'release':1},{'release':2},{'release':3}]}]});
+	</app:script>-->
+
+	<!-- EDIT SERVICE BUNDLE REQUEST/RESPONSE 
+	<app:script on="r:$appcelerator.servicebundle.edit.request then execute after 2s">
+	this.data.success=true;
+	this.data.status = this.data.service_bundle_status;
+	this.data.version = this.data.service_bundle_version;
+	this.data.name = this.data.service_bundle_name;
+	$MQ('r:$appcelerator.servicebundle.edit.response',this.data);
+	</app:script>-->
+
+	<!-- APP BUNDLE DATA
+	<app:script on="r:$appcelerator.appbundle.query.request then execute after 2s"> $MQ('r:$appcelerator.appbundle.query.response',{'count':3,'apps':[{'name':'Timetrac','active':2,'status':'In-Active',
+	'releases':[{'release':1},{'release':2},{'release':3},{'release':4},{'release':5},{'release':6}]},
+	{'name':'Defect Tracking','active':5,'status':'Active',
+	'releases':[{'release':1},{'release':2},{'release':3},{'release':4},{'release':5}]},
+	{'name':'Unit Tester','active':1,'status':'In-Active',
+	'releases':[{'release':1},{'release':2},{'release':3}]}]});
+	</app:script> -->
+
+	<!-- EDIT APP BUNDLE REQUEST/RESPONSE
+	<app:script on="r:$appcelerator.appbundle.edit.request then execute after 2s">
+	this.data.success=true;
+	this.data.status = this.data.app_bundle_status;
+	this.data.version = this.data.app_bundle_version;
+	this.data.name = this.data.app_bundle_name;
+	$MQ('r:$appcelerator.appbundle.edit.response',this.data);
+	</app:script> -->
+
+
+
+
+
+</div>
+
+
+</body>
+
+</html>

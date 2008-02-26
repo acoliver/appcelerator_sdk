@@ -1,0 +1,22 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+	<app:upload on="l:upload then submit and disable or r:$appcelerator.deployer.deploy.response then enable" service="$appcelerator.deployer.deploy.request">
+		<html:input type="file" name="file"/>
+		<html:input type="button" on="click then l:upload" value="Upload"/>
+	</app:upload>
+
+	<div on="l:upload then show or r:$appcelerator.deployer.deploy.response then hide" style="display:none">
+		<img src="images/indicator.gif"/> Deploying...
+	</div>
+
+	<div on="r:$appcelerator.deployer.deploy.response[success=true] then show or r:$appcelerator.deployer.deploy.response[success=true] then effect[fade] after 3s" style="display:none">
+		Deployment successful
+	</div>
+	
+	
+</body>
+</html>

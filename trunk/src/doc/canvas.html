@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<script type="text/javascript" src="js/appcelerator.js"></script>
+
+<link rel="stylesheet" type="text/css" href="css/SyntaxHighlighter.css" />
+<link rel="stylesheet" type="text/css" href="css/doc_content.css" />
+
+<script type="text/javascript" src="js/doc.js"></script>
+<script type="text/javascript" src="js/sh/shCore.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJScript.js"></script>
+<script type="text/javascript" src="js/sh/shBrushXml.js"></script>
+<script type="text/javascript" src="js/sh/shBrushCss.js"></script>
+<script type="text/javascript" src="js/sh/shBrushRuby.js"></script>
+<script type="text/javascript" src="js/sh/shBrushJava.js"></script>
+<script type="text/javascript" src="js/sh/shBrushPhp.js"></script>
+
+
+
+</head>
+<body style="visibility:hidden" on="l:app.compiled then visible">
+	<h2>Canvas</h2>
+
+	<!-- NAVIGATION -->
+	<p>
+	<a class="active" on="click then l:canvas[show=example] and add[class=active] or l:canvas[show!=example] then remove[class=active]">Example</a> |
+	<a  on="click then l:canvas[show=code] and add[class=active] or l:canvas[show!=code] then remove[class=active]">Code</a> |
+	<a  on="click then l:canvas[show=usage] and add[class=active] or l:canvas[show!=usage] then remove[class=active]">Usage</a> 
+
+	</p>
+
+	<!-- EXAMPLE -->
+	<div on="l:canvas[show=example] then show else hide">
+		canvas example placeholder
+	</div>
+
+	<!-- CODE -->
+	<div on="l:canvas[show=code] then show else hide" style="display:none">
+		<p>Here's the code:
+			<textarea name="code" class="xml:nocontrols">
+				canvas code placeholder
+			</textarea>	
+		</p>
+	</div>
+
+	<!-- USAGE -->
+	<div on="l:canvas[show=usage] then show else hide" style="display:none">
+		<p>
+			 Required Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term"></td>
+					  <td class="def"></td>
+					</tr>
+				</table>
+		</p>
+<!--		<p>
+			 Optional Options:
+				<table cellspacing="5px">
+					<tr>
+					  <td class="term"></td>
+					  <td class="def"></td>
+					</tr>
+				</table>
+		</p>
+-->
+	</div>	
+	
+	<script>
+		dp.SyntaxHighlighter.ClipboardSwf = 'js/sh/clipboard.swf';
+
+		dp.SyntaxHighlighter.HighlightAll('code');
+	</script>
+
+</body>
+
+</html>
