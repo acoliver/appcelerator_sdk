@@ -87,6 +87,12 @@ module Appcelerator
       save=false
       install=false
       
+      if config[:server]
+        OPTIONS[:server] = config[:server]
+      else
+        OPTIONS[:server] = ET_PHONE_HOME
+      end
+      
       if config[:username] and config[:password]
 
         # nothing required

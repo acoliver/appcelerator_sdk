@@ -122,7 +122,7 @@ public class ServiceDirectoryScanner implements Runnable
 	                    // new
 	                    try
 	                    {
-	                        entry = new Entry(file);
+	                        entry = new Entry(file,serviceDirectory);
 	                        services.put(name, entry);
 	                    }
 	                    catch (Exception ex)
@@ -190,14 +190,16 @@ public class ServiceDirectoryScanner implements Runnable
     {
         File sourceFile;
         File compiledFile;
+		File serviceDirectory;
         long modified;
         int count = 1;
         boolean errored;
         List<ServiceAdapter> registrations=new ArrayList<ServiceAdapter>();
         
-        Entry (File file) throws Exception
+        Entry (File file, File serviceDirectory) throws Exception
         {
             this.sourceFile = file;
+			this.serviceDirectory = serviceDirectory;
             this.modified=sourceFile.lastModified();
 			
 			String javaCode = Util.copyToString(this.sourceFile);
@@ -206,7 +208,9 @@ public class ServiceDirectoryScanner implements Runnable
 			{
 				File dir = file.getParentFile();
 				String pathName = javaPkg.replace('.',File.separatorChar);
-	            this.compiledFile = new File(file.getParentFile(), pathName + '/' + file.getName().replace(".java", ".class"));
+				File pkgDir = new File(file.getParentFile(),pathName);
+				pkgDir.mkdirs();
+	            this.compiledFile = new File(pkgDir, file.getName().replace(".java", ".class"));
 			}
 			else
 			{
@@ -223,7 +227,7 @@ public class ServiceDirectoryScanner implements Runnable
         public void compile() throws Exception
         {
             LOG.debug ("calling compile on "+sourceFile);
-            if (ServiceCompiler.compileJava(sourceFile, compiledFile.getParentFile(),new PrintWriter(System.err)))
+            if (ServiceCompiler.compileJava(sourceFile, serviceDirectory, new PrintWriter(System.err)))
             {
                 if (errored)
                 {

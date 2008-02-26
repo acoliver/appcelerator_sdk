@@ -22,6 +22,7 @@ require 'fileutils'
 require 'yaml'
 require 'open-uri'
 
+ET_PHONE_HOME = 'http://updatesite.appcelerator.org'
 OPTIONS = {}
 ARGS = []
 ACTION = []
@@ -73,7 +74,7 @@ def parse_options
           t = arg[1..-1].to_s
         end
         i = t.index('=')
-        key = i.nil? ? t : t[0,i].gsub('-','_')
+        key = (i.nil? ? t : t[0,i]).gsub('-','_')
         value = i.nil? ? nil : t[i+1..-1]
         entry = HELP[key.to_sym] || HELP[":#{key}".to_sym]
         if entry
@@ -96,7 +97,6 @@ def parse_options
 end
 
 parse_options
-ET_PHONE_HOME = OPTIONS[:server] || 'http://updatesite.appcelerator.org'
 
 #
 # execute the command

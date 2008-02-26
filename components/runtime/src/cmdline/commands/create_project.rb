@@ -52,26 +52,25 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
 
   service_entry = nil
   
-  # determine if we have the service the user is asking for
-  list = Appcelerator::Installer.fetch_distribution_list
-  list[:service].each do |svc|
-    if args[:service] == svc[:name]
-      service_entry = svc
-      break
+  Appcelerator::Installer.with_site_config(false) do |site_config|
+    installed = site_config[:installed]
+    if installed
+      c = installed[:service]
+      if c
+        c.each do |cm|
+            service_entry = cm if cm[:name] == args[:service]
+            break if service_entry
+        end
+      end
     end
   end
   
   if not service_entry
-    Appcelerator::Installer.with_site_config(false) do |site_config|
-      installed = site_config[:installed]
-      if installed
-        c = installed[:service]
-        if c
-          c.each do |cm|
-              service_entry = cm if cm[:name] == args[:service]
-              break if service_entry
-          end
-        end
+    list = Appcelerator::Installer.fetch_distribution_list
+    list[:service].each do |svc|
+      if args[:service] == svc[:name]
+        service_entry = svc
+        break
       end
     end
   end

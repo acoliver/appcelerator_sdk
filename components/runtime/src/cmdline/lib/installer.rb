@@ -83,7 +83,7 @@ module Appcelerator
     end
 
     def Installer.get_client
-      @@client = ServiceBrokerClient.new ET_PHONE_HOME, OPTIONS[:debug] unless @@client
+      @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug] unless @@client
       @@client
     end
 
@@ -102,7 +102,7 @@ module Appcelerator
     end
 
     def Installer.network_login(email,password,silent=false)
-      puts "Using network URL: #{ET_PHONE_HOME}" if OPTIONS[:debug]
+      puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
@@ -199,7 +199,7 @@ module Appcelerator
       pbar=nil
       dirname=nil
       uri = URI.parse(url)
-      home_uri = URI.parse(ET_PHONE_HOME)
+      home_uri = URI.parse(OPTIONS[:server])
       cookies = ''
         if same_host?(uri.host,home_uri.host) and uri.port == home_uri.port
         cookies = @@client.cookies.to_s
@@ -664,6 +664,7 @@ HELP
 
     def Installer.fetch_network_component(type,component,count=1,total=1)
       to_dir = Installer.get_component_directory(component)
+      puts "fetch network component from url: #{component[:url]}" if OPTIONS[:verbose]
       Installer.fetch_component(type,component[:name],component[:version],to_dir,component[:url],count,total)
       return to_dir,component[:name],component[:version],component[:checksum]
     end
@@ -730,7 +731,7 @@ HELP
         
         puts unless already_installed
         puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or already_installed)
-        puts "#{name} #{version} is already installed" if already_installed and not OPTIONS[:quiet]
+        puts "#{name} #{version} is already installed" if already_installed and not OPTIONS[:quiet] and not quiet_if_installed
         puts "NOTE: you can force a re-install with --force-update" if already_installed and OPTIONS[:verbose]
         
         return to_dir,name,version,checksum,already_installed
@@ -768,50 +769,57 @@ HELP
       
       count = 0
 
+      # check to see if within this session (only) if we've already installed this and if so, don't attempt
+      # to get it again
+      installed = @@installed_in_session.include? "#{found[:type]}_#{found[:name]}_#{found[:version]}"
+
       if not skip_dependencies
         Installer.get_and_install_dependencies(found,quiet_if_installed) do |d,idx,total|
           dc = Installer.get_installed_component(d) unless OPTIONS[:force_update]
           if not dc
-            dir,name,version,checksum=Installer.fetch_network_component d[:type],d,idx+1,total+1
+            t = total + (installed.nil? ? 1 : 0)
+            dir,name,version,checksum=Installer.fetch_network_component d[:type],d,idx+1,t
             Installer.add_installed_component(name,d[:type],version,checksum,quiet_if_installed)
           end
           count+=1
         end
       end
       
-      # check to see if within this session (only) if we've already installed this and if so, don't attempt
-      # to get it again
-      installed = @@installed_in_session.include? "#{found[:type]}_#{found[:name]}_#{found[:version]}"
-
       if found[:url].nil?
-        # this was installed locally and not remote
-        return Installer.get_release_directory(found[:type],found[:name],found[:version]),found[:name],found[:version],nil,true
+        fa = Installer.get_remote_component(found[:type],found[:name])
+        if not fa or fa.empty?
+          # this was installed locally and not remote
+          return Installer.get_release_directory(found[:type],found[:name],found[:version]),found[:name],found[:version],nil,true
+        end
+        found = sort_components(fa)
       end
-      
-      fnc = Installer.get_installed_component(found) unless (OPTIONS[:force_update] and not installed) or force
+
+      fnc = Installer.get_installed_component(found) unless (force and not installed) or (OPTIONS[:force_update] and not installed) 
       return Installer.fetch_network_component(type,found,count+1,count+1) unless fnc
       
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
       return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
     end
     
-    def Installer.get_component_from_config(type,name,version=nil)
+    def Installer.get_remote_component(type,name,version=nil)
       found = []
       with_site_config(false) do |site_config|
         distributions = site_config[:distributions]
         if distributions
-          c = distributions[type]
+          c = distributions[type] || distributions[type.to_sym]
           if c
             c.each do |cm|
-              if cm[:name]==name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
+              if cm[:name]==name and (cm[:type]==type.to_s or cm[:type]==type.to_sym) and ((!version.nil? and cm[:version]==version) or version.nil?)
                 found << cm
               end
             end
           end
         end
       end
-      c = get_installed_component({:name=>name,:type=>type,:version=>version})
-      found << c if c
+      found
+    end
+    
+    def Installer.sort_components(found)
       if not found.empty?
         found.sort! do |a,b|
           (a[:version]||0).to_f <=> (b[:version]||0).to_f
@@ -819,6 +827,13 @@ HELP
         return found.first
       end
       nil
+    end
+    
+    def Installer.get_component_from_config(type,name,version=nil)
+      found = get_remote_component(type,name,version)
+      c = get_installed_component({:name=>name,:type=>type,:version=>version})
+      found << c if c
+      sort_components(found)
     end
     
     def Installer.get_installed_component(found)
