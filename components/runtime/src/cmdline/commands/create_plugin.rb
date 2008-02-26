@@ -59,7 +59,8 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   
   src_dir = "#{dir}/src"
   FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
-  
+
+  FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
   Appcelerator::Installer.put "#{src_dir}/#{plugin_name}.rb", template
   
   template = File.read "#{template_dir}/plugin_Rakefile"
@@ -71,7 +72,8 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
     :type=>'plugin',
     :description=>"#{args[:name]} plugin",
     :release_notes=>"initial release",
-    :tags=> []
+    :tags=> [],
+    :licenses=>[]
   }
   
   Appcelerator::Installer.put "#{dir}/Rakefile", template

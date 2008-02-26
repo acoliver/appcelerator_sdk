@@ -38,6 +38,13 @@ end
 
 desc 'zip up the widget'
 task :zip do
+  build = YAML::load_file File.expand_path("#{File.dirname(__FILE__)}/build.yml")
+  if build[:license].nil? or build[:license].empty?
+    STDERR.puts "Before you can build the widget, you need to set the licensing type."
+    STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"
+    STDERR.puts "for more information."
+    exit 1
+  end
   src_dir = File.expand_path "#{File.dirname(__FILE__)}/src"
   FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
   Zip::ZipFile.open(ZIPFILE, Zip::ZipFile::CREATE) do |zipfile|

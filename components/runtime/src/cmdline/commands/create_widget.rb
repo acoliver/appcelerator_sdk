@@ -85,7 +85,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   template = File.read "#{template_dir}/widget_Rakefile"
   template.gsub! 'WIDGET', widget_name
   
-  build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release"}
+  build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release",:licenses=>[]}
   build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
   build_config[:tags] = []
 
@@ -95,6 +95,8 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   %w(css images doc js).each do |d|
     FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"
   end
+  
+  FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
   
   widget_example = File.read "#{template_dir}/widget_doc_example.md"
   widget_example.gsub! 'NAME', name
