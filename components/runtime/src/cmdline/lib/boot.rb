@@ -85,7 +85,6 @@ module Appcelerator
       username=nil
       password=nil
       save=false
-      install=false
       
       if config[:server]
         OPTIONS[:server] = config[:server]
@@ -185,11 +184,13 @@ module Appcelerator
         end
 
         save = true
-        install = true
       end
       
       # save the config
       Installer.save_config(username,password) if save
+      
+      # make sure we've got our initial admin pulled down
+      Installer.check_appadmin_installed
 
     end
     

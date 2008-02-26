@@ -51,7 +51,7 @@ Thread.new do
           begin
             debug = config[:debug] 
             flags = debug ? '--debug' : '--quiet'
-            IO.popen "appcelerator network:list #{flags}" do |io|
+            IO.popen "app network:list #{flags}" do |io|
               io.readlines
             end
           rescue

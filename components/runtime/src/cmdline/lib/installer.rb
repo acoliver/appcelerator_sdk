@@ -118,21 +118,24 @@ module Appcelerator
     def Installer.login(un=nil,pw=nil,exit_on_failure=false)
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
-      while true 
-        if username and password
-  			  break if Installer.network_login(username,password)
-  			  STDERR.puts "Invalid credentials, please try again..."
-  			  return false if exit_on_failure
-			  end
-        username = prompt_username
-        password = prompt_password
+
+      if not @@loggedin or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
+        while true 
+          if username and password
+    			  break if Installer.network_login(username,password)
+    			  STDERR.puts "Invalid credentials, please try again..."
+    			  return false if exit_on_failure
+  			  end
+          username = prompt_username
+          password = prompt_password
+        end
       end
       
       @@loggedin = true
       @@username = username
       @@password = password
       
-      puts "Logged in" if OPTIONS[:debug]
+      puts "Logged in" if OPTIONS[:verbose]
       
       Installer.save_config(@@username,@@password)
       
@@ -890,6 +893,22 @@ HELP
       config = get_project_config dir
       yield config
       save_project_config dir,config if save
+    end
+    
+    def Installer.check_appadmin_installed
+      config = {:name=>'appadmin',:type=>'appadmin'}
+      admin = Installer.get_installed_component config
+      if not admin
+        puts "Completing installation ... "
+        list = Installer.fetch_distribution_list
+        if list
+          a = list[:appadmin]
+          admin = Installer.sort_components(a) if a
+          if admin
+            Installer.install_component('appadmin','Admin','appadmin',false,nil,true,false)
+          end
+        end
+      end
     end
     
   end

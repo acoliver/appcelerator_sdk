@@ -38,5 +38,7 @@ task :default do
     end
     zipfile.add('build.yml','build.yml')
     zipfile.add('pre_flight.rb','pre_flight.rb')
+    zipfile.add('service.init.d','service.init.d')
+    zipfile.add('service.plist','service.plist')
   end
 end
