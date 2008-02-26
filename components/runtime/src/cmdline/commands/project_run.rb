@@ -38,6 +38,18 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
      :display=>'--server=servername',
      :help=>'server to use. for example: webrick',
      :value=>true
+  },
+  {
+     :name=>:port,
+     :display=>'--port=port',
+     :help=>'port to listen for requests. for example, 5000',
+     :value=>true
+  },
+  {
+    :name=>:scan_period,
+    :display=>'--scan-period=ms',
+    :help=>'scan period in milliseconds (defaults to 5000)',
+    :value=>true
   }
 ],nil) do |args,options|
   
@@ -61,12 +73,10 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         props=props.join(' ')
         sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
         cp = "#{servicesdir}"
-        #cp << "#{pwd}/stage/java/classes"
         cp << sep
         cp << "#{pwd}/output/classes" if File.exists?("#{pwd}/output/classes")
         cp << sep
         cp << jars.join(sep)
-        #TODO: add src/java to classpath after compile
         cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
         puts cmd if OPTIONS[:debug]
         event = {:project_dir=>pwd,:service=>'java'}
@@ -82,7 +92,9 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         begin
           server = ''
           server = options[:server] if options[:server]
+          port = options[:port] || 4000
           args = options[:args] || ''
+          args << " --port=#{port}"
           puts "#{pwd}/script/server #{server} #{args}" if OPTIONS[:verbose]
           system "#{pwd}/script/server #{server} #{args}"
         ensure
