@@ -57,98 +57,104 @@ Appcelerator.Widget.Search =
 	{
         var T = Appcelerator.Types;        
         return [{
-            name: 'request',
-            optional: false,
+			name: 'request',
+			optional: false,
 			type: T.messageSend,
-            description: "Request message being sent to search"
+			description: "Request message being sent to search"
         }, {
-            name: 'response',
-            optional: false,
+			name: 'response',
+			optional: false,
 			type: T.messageSend,
-            description: "Response message for search results"
+			description: "Response message for search results"
         }, {
-            name: 'selected',
-            optional: false,
+			name: 'selected',
+			optional: false,
 			type: T.messageSend,
-            description: "Message sent when the user has selected an option"
+			description: "Message sent when the user has selected an option"
         }, {
-            name: 'key',
-            optional: true,
-            defaultValue: 'key',
+			name: 'key',
+			optional: true,
+			defaultValue: 'key',
 			type: T.identifier,
-            description: "Parameter name used in the request for the query"
+			description: "Parameter name used in the request for the query"
         }, {
-            name: 'property',
-            optional: true,
-            defaultValue: 'result',
+			name: 'property',
+			optional: true,
+			defaultValue: 'result',
 			type: T.identifier,
-            description: "Property in the response used for the results"
+			description: "Property in the response used for the results"
         }, {
-            name: 'resultId',
-            optional: true,
-            defaultValue: 'id',
+			name: 'resultId',
+			optional: true,
+			defaultValue: 'id',
 			type: T.identifier,
-            description: "Property to use from the result to send selected message when using complex results"
+			description: "Property to use from the result to send selected message when using complex results"
         }, {
-            name: 'inputWidth',
-            optional: true,
-            defaultValue: '200',
+			name: 'inputWidth',
+			optional: true,
+			defaultValue: '200',
 			type: T.cssDimension,
-            description: "Width of the input field"
+			description: "Width of the input field"
         }, {
-            name: 'resultWidth',
-            optional: true,
-            defaultValue: '220',
+			name: 'resultWidth',
+			optional: true,
+			defaultValue: '220',
 			type: T.cssDimension,
-            description: "Width of the results"
+			description: "Width of the results"
         }, {
-            name: 'delay',
-            optional: true,
-            defaultValue: 200,
+			name: 'delay',
+			optional: true,
+			defaultValue: 200,
 			type: T.time,
-            description: "Delay before firing request message"
+			description: "Delay before firing request message"
         }, {
-            name: 'indicator',
-            optional: true,
+			name: 'indicator',
+			optional: true,
 			type: T.elementId,
-            description: "Indicator id to show or hide"
+			description: "Indicator id to show or hide"
         }, {
-            name: 'activeClass',
-            optional: true,
-            defaultValue: 'search_result_active',
+			name: 'activeClass',
+			optional: true,
+			defaultValue: 'search_result_active',
 			type: T.cssClass,
-            description: "Active class for selecting search results"
+			description: "Active class for selecting search results"
         }, {
-            name: 'inactiveClass',
-            optional: true,
-            defaultValue: 'search_result_inactive',
+			name: 'inactiveClass',
+			optional: true,
+			defaultValue: 'search_result_inactive',
 			type: T.cssClass,
-            description: "Inactive class for selecting search results"
+			description: "Inactive class for selecting search results"
         }, {
-            name: 'fieldset',
-            optional: true,
+			name: 'fieldset',
+			optional: true,
 			type: T.fieldset,
-            description: "Fieldset applied to the input element"
+			description: "Fieldset applied to the input element"
         }, {
-            name: 'class',
-            optional: true,
+			name: 'class',
+			optional: true,
 			type: T.cssClass,
-            description: "Class applied to the input element"
+			description: "Class applied to the input element"
         }, {
-            name: 'name',
-            optional: true,
+			name: 'name',
+			optional: true,
 			type: T.identifier,
-            description: "Name applied to the input element"
+			description: "Name applied to the input element"
         }, {
-            name: 'value',
-            optional: true,
-            description: "Value attribute applied to the input element"
+			 name: 'value',
+			 optional: true,
+			 description: "Value attribute applied to the input element"
    		}, {
-            name: 'on',
-            optional: true,
+			name: 'on',
+			optional: true,
 			type: T.onExpr,
-            description: "On attribute applied to the input element"
-        }];
+			description: "On attribute applied to the input element"
+		}, {
+			name: 'safariSearch',
+			defaultValue: true,
+			optional: true,
+			type: T.bool,
+			description: "Whether or not to use type search for Safari"
+	    }];
 	},
 	compileWidget: function(params)
 	{
@@ -417,8 +423,9 @@ Appcelerator.Widget.Search =
 		{
 			parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);		
 		}
+		
+		var inputType = (Appcelerator.Browser.isSafari && (parameters['safariSearch'] != "false")) ? 'search' : 'text';
 
-		var inputType = Appcelerator.Browser.isSafari? 'search' : 'text';
 		var html = '<div style="position: relative">';
 		html += '<table style="padding: 0; margin: 0" cellpadding="0" cellspacing="0"><tr><td><input autocomplete="off" type="'+inputType+'" id="'+element.id+'" style="width: '+parameters['inputWidth']+'px" ';
 		if (parameters['fieldset'])
