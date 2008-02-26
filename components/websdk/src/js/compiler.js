@@ -848,15 +848,16 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 		return action.apply({data:{}},args);
 	};
 	
-	var functionWrapper = delay > 0 ? (function() {
+	var functionWrapper = delay > 0 ? (function() 
+	{
 		var args = $A(arguments);
 		var a = function()
 		{
 			return logWrapper.apply(logWrapper,args);
 		};
-		a.delay(delay);
+		a.delay(delay/1000);
 	}) : logWrapper;
-	
+
 	Event.observe(element,event,functionWrapper,false);
 	
 	Appcelerator.Compiler.addTrash(element,function()

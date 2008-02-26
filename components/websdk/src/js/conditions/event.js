@@ -75,16 +75,19 @@ function(element,condition,action,elseAction,delay,ifCond)
 	{
 		return false;
 	}
+
 	if (elseAction)
 	{
 		throw "syntax error: 'else' action not supported on event conditions for: "+condition;
 	}
+
 	var stopEvent = false;
 	if (condition.charAt(condition.length-1)=='!')
 	{
 		stopEvent = true;
 		condition = condition.substring(0,condition.length-1);
 	}
+
 	var i = condition.indexOf('.');
 	var event = condition, target = element.id, children = false;
 	if (i > 0)
@@ -248,6 +251,7 @@ function(element,condition,action,elseAction,delay,ifCond)
 					return false;
 				};
 			}
+
 			Appcelerator.Compiler.addEventListener(target,event,f,delay);
 		}
 	}
@@ -255,8 +259,12 @@ function(element,condition,action,elseAction,delay,ifCond)
 });
 
 //handle the iPhone's originationchange event by dispatching our own custom event called orientationchange
-window.onorientationchange = function() {
-	var evt = document.createEvent("Events");
-	evt.initEvent('orientationchange', true, true); //true for can bubble, true for cancelable
-	document.body.dispatchEvent(evt);
+if (Appcelerator.Browser.isIPhone)
+{
+	window.onorientationchange = function() 
+	{
+		var evt = document.createEvent("Events");
+		evt.initEvent('orientationchange', true, true); //true for can bubble, true for cancelable
+		document.body.dispatchEvent(evt);
+	}
 }
