@@ -46,7 +46,9 @@ public class ServiceCompiler
     public static boolean compileJava (File serviceFile, File classDir, PrintWriter stderr)
     {
         if (LOG.isDebugEnabled()) LOG.debug("compiling java service file: "+serviceFile);
-        
+
+        classDir.mkdirs();
+
         URL[] urls = ClasspathUrlFinder.findClassPaths();
         StringBuilder cp=new StringBuilder();
         cp.append(System.getProperty("sun.boot.class.path"));

@@ -58,6 +58,7 @@ public class EchoService
     protected void processTest (Message request, Message response)
         throws Exception
     {
+		LOG.debug("received: "+request);
         String msg = request.getData().getString("message");
         response.getData().put("message", "I received from you: "+msg);
     }
@@ -76,6 +77,7 @@ public class EchoService
     protected void processTest2 (Message request, Message response)
         throws Exception
     {
+		LOG.debug("received: "+request);
         String msg = request.getData().getString("message");
         response.getData().put("message", "Message was: "+msg);
     }

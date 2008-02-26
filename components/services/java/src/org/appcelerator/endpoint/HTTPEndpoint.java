@@ -64,8 +64,10 @@ public class HTTPEndpoint
         
         Context root = new Context(server,"/",Context.SESSIONS);
         root.setSessionHandler(sh);
-        root.addServlet(new ServletHolder(new AjaxServiceTransportServlet()),"/-/servicebroker/*");
-        root.addServlet(new ServletHolder(new AjaxServiceTransportServlet()),"/servicebroker/*");
+		AjaxServiceTransportServlet servlet = new AjaxServiceTransportServlet();
+		servlet.setEmbeddedMode(true);
+		ServletHolder servletHolder = new ServletHolder(servlet);
+        root.addServlet(servletHolder,"/servicebroker/*");
         root.addServlet(new ServletHolder(new DispatcherServlet(resourceHandler)),"/*");
         
         server.setGracefulShutdown(2000);

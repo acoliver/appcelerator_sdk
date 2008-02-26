@@ -56,7 +56,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
 {
     private static final Log LOG = LogFactory.getLog(AjaxServiceTransportServlet.class);
     private static final long serialVersionUID = 1L;
-
+	private boolean embeddedMode;
     
     /* (non-Javadoc)
      * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
@@ -65,8 +65,25 @@ public class AjaxServiceTransportServlet extends HttpServlet
     public void init(ServletConfig config) throws ServletException
     {
         super.init(config);
-        AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+
+		if (this.embeddedMode)
+		{
+			AnnotationHelper.initializeAnnotationDBFromClasspath();
+		}
+		else
+		{
+	        AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+		}
     }
+
+	/**
+	 * called to indicate that the class path must be used when loading annotations instead
+	 * of WAR lib
+	 */
+	public void setEmbeddedMode(boolean embed)
+	{
+		this.embeddedMode = embed;
+	}
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

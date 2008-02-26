@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
 import org.scannotation.WarUrlFinder;
+import org.scannotation.ClasspathUrlFinder;
 
 /**
  * Utilities for managing and finding annotations. Uses Bill Burke's 
@@ -64,6 +65,14 @@ public class AnnotationHelper
             e.printStackTrace();
         }
     }
+
+	/**
+	 * called to initialize annotation DB from classpath
+	 */
+	public static void initializeAnnotationDBFromClasspath()
+	{
+        initializeAnnotationDB(ClasspathUrlFinder.findClassPaths());
+	}
     
     /**
      * initialize the annotation DB from Servlet classpath
@@ -92,7 +101,7 @@ public class AnnotationHelper
                 catch (NoClassDefFoundError ncd)
                 {
                     // this should be OK, just means that we don't have dependency
-                    LOG.info("Couldn't load @"+name.getSimpleName()+" from class: "+cn+". A dependency wasn't found: "+ncd.getMessage());
+                    LOG.debug("Couldn't load @"+name.getSimpleName()+" from class: "+cn+". A dependency wasn't found: "+ncd.getMessage());
                 }
                 catch (ClassNotFoundException e)
                 {

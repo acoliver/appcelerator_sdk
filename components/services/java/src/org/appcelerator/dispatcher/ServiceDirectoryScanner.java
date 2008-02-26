@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -37,6 +39,7 @@ import javassist.CtClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.appcelerator.util.Util;
 
 /**
  * This class is responsible for scanning a directory for Java based files which contain
@@ -105,60 +108,62 @@ public class ServiceDirectoryScanner implements Runnable
                     return name.endsWith(".java");
                 }
             });
-            
-            Set<String> current = new HashSet<String>(services.keySet());
-            
-            for (File file : files)
+
+			if (files!=null && files.length > 0)
             {
-                String name = file.getName();
-                Entry entry = services.get(name);
-                if (entry==null)
-                {
-                    // new
-                    try
-                    {
-                        entry = new Entry(file);
-                        services.put(name, entry);
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-                else
-                {
-                    // current
-                    current.remove(name);
-                }
-                
-                if (entry.requiresCompilation())
-                {
-                    try
-                    {
-                        entry.compile();
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                        services.remove(name);
-                    }
-                }
-            }
-            
-            if (!current.isEmpty())
-            {
-                // not found, they have been removed and need to be
-                // removed from registery
-                for (String name : current)
-                {
-                    Entry e = services.remove(name);
-                    for (ServiceAdapter a : e.registrations)
-                    {
-                        ServiceRegistry.unregisterService(a);
-                    }
-                }
-            }
-            
+	            Set<String> current = new HashSet<String>(services.keySet());
+
+	            for (File file : files)
+	            {
+	                String name = file.getName();
+	                Entry entry = services.get(name);
+	                if (entry==null)
+	                {
+	                    // new
+	                    try
+	                    {
+	                        entry = new Entry(file);
+	                        services.put(name, entry);
+	                    }
+	                    catch (Exception ex)
+	                    {
+	                        ex.printStackTrace();
+	                    }
+	                }
+	                else
+	                {
+	                    // current
+	                    current.remove(name);
+	                }
+
+	                if (entry.requiresCompilation())
+	                {
+	                    try
+	                    {
+	                        entry.compile();
+	                    }
+	                    catch (Exception ex)
+	                    {
+	                        ex.printStackTrace();
+	                        services.remove(name);
+	                    }
+	                }
+	            }
+
+	            if (!current.isEmpty())
+	            {
+	                // not found, they have been removed and need to be
+	                // removed from registery
+	                for (String name : current)
+	                {
+	                    Entry e = services.remove(name);
+	                    for (ServiceAdapter a : e.registrations)
+	                    {
+	                        ServiceRegistry.unregisterService(a);
+	                    }
+	                }
+	            }
+			}
             try
             {
                 Thread.sleep(scanInterval);
@@ -170,6 +175,16 @@ public class ServiceDirectoryScanner implements Runnable
         }
     }
     
+	private static final Pattern packagePattern = Pattern.compile("package (.*?);",Pattern.MULTILINE|Pattern.DOTALL);
+	private static String findPackage(String code)
+	{
+		Matcher matcher = packagePattern.matcher(code);
+		if (matcher.find())
+		{
+			return matcher.group(1);
+		}
+		return null;
+	}
     
     private static final class Entry
     {
@@ -184,7 +199,19 @@ public class ServiceDirectoryScanner implements Runnable
         {
             this.sourceFile = file;
             this.modified=sourceFile.lastModified();
-            this.compiledFile = new File(file.getParentFile(), file.getName().replace(".java", ".class"));
+			
+			String javaCode = Util.copyToString(this.sourceFile);
+			String javaPkg = ServiceDirectoryScanner.findPackage(javaCode);
+			if (javaPkg!=null)
+			{
+				File dir = file.getParentFile();
+				String pathName = javaPkg.replace('.',File.separatorChar);
+	            this.compiledFile = new File(file.getParentFile(), pathName + '/' + file.getName().replace(".java", ".class"));
+			}
+			else
+			{
+	            this.compiledFile = new File(file.getParentFile(), file.getName().replace(".java", ".class"));
+			}
             compile();
         }
         
@@ -195,7 +222,7 @@ public class ServiceDirectoryScanner implements Runnable
         
         public void compile() throws Exception
         {
-            System.err.println("calling compile on "+sourceFile);
+            LOG.debug ("calling compile on "+sourceFile);
             if (ServiceCompiler.compileJava(sourceFile, compiledFile.getParentFile(),new PrintWriter(System.err)))
             {
                 if (errored)
