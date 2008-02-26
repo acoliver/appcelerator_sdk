@@ -168,15 +168,17 @@ END_LICENSE
     zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
     Find.find("#{BUILD_DIR}/src/web") do |path|
       pathname = Pathname.new(path)
+      path_root = Pathname.new("#{BUILD_DIR}/src/web")
       if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
-        filename = pathname.relative_path_from(Pathname.new("#{BUILD_DIR}/src/web")).to_s
+        filename = pathname.relative_path_from(path_root).to_s
         zipfile.add(filename,path) if not filename =~ /^js(.*)\.js$/
       end
     end
     Find.find("#{BUILD_DIR}/src/common") do |path|
       pathname = Pathname.new(path)
+      path_root = Pathname.new("#{BUILD_DIR}/src/common")
       if not path.include? '.svn' and not path.include? '.DS_Store' and pathname.file?
-        filename = pathname.relative_path_from(Pathname.new("#{BUILD_DIR}/src/common")).to_s
+        filename = pathname.relative_path_from(path_root).to_s
         zipfile.add('common/' + filename,path)
       end
     end
@@ -184,15 +186,39 @@ END_LICENSE
 end
 
 task :test => [:default] do
-  test_stage_dir = "#{STAGE_DIR}/unittest"
-  widgets_path = "#{test_stage_dir}/widgets"
+  test_src_path = "#{BUILD_DIR}/test"
+  test_dst_path = "#{STAGE_DIR}/unittest"
+  widgets_src_path = "#{BUILD_DIR}/../widgets"
+  widgets_dst_path = "#{test_dst_path}/widgets"
   
-  FileUtils.cp_r("#{BUILD_DIR}/test", test_stage_dir)
-  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_stage_dir)
-  FileUtils.mkdir_p(widgets_path)
-  
-  Dir["#{BUILD_DIR}/../widgets/*/src/"].each do |file|
+  FileUtils.rm_r(test_dst_path, :verbose => VERBOSE) if File.exists? test_dst_path
+  cp_r(test_src_path, test_dst_path)
+  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_dst_path) # there's no svn garbage here
+  FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
+  cp_r("#{BUILD_DIR}/src/common",       "#{test_dst_path}/widgets/common")
+  cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
+
+  # copy all widgets (without building, because that is a pain)
+  Dir["#{widgets_src_path}/*/src/"].each do |file|
     name = file[/widgets\/([^\/]+)\/src/,1]
-    FileUtils.cp_r(file,"#{widgets_path}/#{name}")
+    cp_r(file,"#{widgets_dst_path}/#{name}")
+  end
+  
+end
+
+# copies everything except hidden directories
+def cp_r(src,dst)
+  src_root = Pathname.new(src)
+  FileUtils.mkdir_p(dst, :verbose => VERBOSE)
+  Dir["#{src}/**/**"].each do |abs_path|
+    src_path = Pathname.new(abs_path)
+    rel_path = src_path.relative_path_from(src_root)
+    dst_path = "#{dst}/#{rel_path.to_s}"
+    
+    if src_path.directory?
+      FileUtils.mkdir_p(dst_path, :verbose => VERBOSE)
+    elsif src_path.file?
+      FileUtils.cp(abs_path, dst_path, :verbose => VERBOSE)
+    end
   end
 end

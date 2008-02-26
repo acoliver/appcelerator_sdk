@@ -30,7 +30,7 @@ Appcelerator.Widget.register = function(moduleName,module,dynamic)
  */
 Appcelerator.Widget.registerWithJS = function (moduleName,module,js,jspath)
 {
-	Appcelerator.Core.registerModule(moduleName,module,js,jspath);
+	Appcelerator.Core.registerModuleWithJS(moduleName,module,js,jspath);
 };
 
 /**

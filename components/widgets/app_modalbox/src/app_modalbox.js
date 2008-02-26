@@ -97,7 +97,7 @@ Appcelerator.Widget.Modalbox =
             {
                Appcelerator.Compiler.destroy($(id));
             },
-            onShow: function()
+            afterLoad: function()
             {
                 Appcelerator.Compiler.dynamicCompile($(id));
             }
