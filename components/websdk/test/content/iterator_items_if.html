@@ -4,7 +4,12 @@
 </head>
 <body>
 	<app:iterator items="[1,2,3, #{content_file_number}]">
-		<html:span>#{iterator_value}, </html:span>
+	<app:if expr="false">
+		FAIL!
+		<else>
+			<html:span>#{iterator_value}, </html:span>
+		</else>
+	</app:if>
 	</app:iterator>
 	End Content File: #{content_file_number}
 </body>
