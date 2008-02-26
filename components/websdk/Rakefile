@@ -197,6 +197,7 @@ task :test => [:default] do
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
   cp_r("#{BUILD_DIR}/src/common",       "#{test_dst_path}/widgets/common")
   cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
+  cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_dst_path}/swf/")
 
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
