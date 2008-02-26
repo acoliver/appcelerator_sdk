@@ -1,8 +1,0 @@
-
-class <%=@name%> < Appcelerator::Service
-
-# example on how to setup a service
-# @Service 'test.request', :methodname, 'test.response'
-
-
-end

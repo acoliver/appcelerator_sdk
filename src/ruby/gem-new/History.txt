@@ -1,5 +1,0 @@
-== 2.0.2 / 2007-12-17-
-
-* maintenance release 
-  * see full list of release notes at http://www.appcelerator.com/release_notes_2.0.2.html 
-

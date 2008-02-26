@@ -1,8 +1,0 @@
-<appcelerator>
-    <logger>
-        <!-- Possible values are info, warn, error, or debug. Debug level logging may adversely impact performance. -->
-        <loglevel>error</loglevel>
-        <!-- Possible values are true or false. Autoflushing may adversely impact performance. -->
-        <autoflush>false</autoflush>
-    </logger>
-</appcelerator>
