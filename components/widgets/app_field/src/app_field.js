@@ -358,9 +358,9 @@ Appcelerator.Widget.Field =
 			}
 			
 			$MQL(message,
-				function(type, data, datatype, direction)
+				function(msgtype, data, datatype, direction)
 				{
-					$D('received message = '+direction+':'+type+',data='+Object.toJSON(data));
+					$D('received message = '+direction+':'+msgtype+',data='+Object.toJSON(data));
 					var value = property ? Object.getNestedProperty(data, property) : data;
 					
 					switch (type)
