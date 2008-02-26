@@ -86,10 +86,8 @@ module Appcelerator
       password=nil
       save=false
       
-      if config[:server]
-        OPTIONS[:server] = config[:server]
-      else
-        OPTIONS[:server] = ET_PHONE_HOME
+      if not OPTIONS[:server]
+        OPTIONS[:server] = config[:server] || ET_PHONE_HOME
       end
       
       if config[:username] and config[:password]
