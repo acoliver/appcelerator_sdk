@@ -266,7 +266,24 @@
 			</app:script>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-344 Message conditionals no longer function -->
+			Test message conditionals (guards on the message payload)
+        </td>
+        <td class="result">
 
+<div on="r:remote.message.response then show" style="display: none">Baseline</div>
+<div on="r:remote.message.response[success=true] then show" style="display: none;">Test Passed</div>
+<div on="r:remote.message.response[success=false] then show" style="display: none;">Test Failed</div>
+
+<app:message
+	on="l:app.compiled then execute"
+	name="r:remote.message.response"
+	args="{'success': true}"></app:message
+
+		</td>
+	</tr>
 </table>
 
 <app:statemachine id="test" initial="valid">
