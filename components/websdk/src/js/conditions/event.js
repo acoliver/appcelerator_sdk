@@ -16,7 +16,8 @@ Appcelerator.Compiler.Events =
 	'contextmenu',
 	'mousewheel',
 	'input',
-	'paste'
+	'paste',
+	'orientationchange'
 ];
 
 Appcelerator.Compiler.EventTargets =
@@ -142,6 +143,9 @@ function(element,condition,action,elseAction,delay,ifCond)
 		event = condition.substring(i+1);
 	}
 
+	// target the body with the iPhone's orientationchange event
+	if (event == 'orientationchange') target = document.body.id;
+
 	//
 	// be smart condition. if we attach change event to select - then include in the result
 	// the value and text properties of the option selected
@@ -249,3 +253,10 @@ function(element,condition,action,elseAction,delay,ifCond)
 	}
 	return true;
 });
+
+//handle the iPhone's originationchange event by dispatching our own custom event called orientationchange
+window.onorientationchange = function() {
+	var evt = document.createEvent("Events");
+	evt.initEvent('orientationchange', true, true); //true for can bubble, true for cancelable
+	document.body.dispatchEvent(evt);
+}
