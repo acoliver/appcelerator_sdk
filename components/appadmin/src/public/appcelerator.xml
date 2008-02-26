@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<appcelerator version="1.0" xmlns="http://www.appcelerator.org/config">
+    <servicebroker poll="false">@{rootPath}servicebroker</servicebroker>
+    <upload>@{rootPath}upload</upload>
+    <download>@{rootPath}download</download>
+    <proxy>@{rootPath}proxy</proxy>
+    <sessionid>appcelerator_appadmin_session</sessionid>
+</appcelerator>

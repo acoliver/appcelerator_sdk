@@ -23,7 +23,7 @@ require File.expand_path("#{BUILD_DIR}/build.rb")
 task :default => [:all] do
 end
 
-task :all => ["widget:all","service:all","websdk:all","installer:all","plugin:all"] do
+task :all => %w(widget:all service:all websdk:all installer:all plugin:all appadmin:all) do
 end
 
 namespace :installer do
@@ -148,6 +148,14 @@ namespace :plugin do
   task :java_spring do
     FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
       system "rake java:spring"
+    end
+  end
+end
+
+namespace :appadmin do
+  task :all do
+    FileUtils.cd("#{BUILD_DIR}/appadmin") do |d|
+      system "rake"
     end
   end
 end
