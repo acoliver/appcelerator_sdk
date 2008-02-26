@@ -779,13 +779,22 @@ Appcelerator.Core.onload(function()
         var match = re.exec(src);
         if(match) {
             match = match[2] || match[3];
-            Appcelerator.Core.script_count++;
-            Appcelerator.Core.remoteLoadScript(match, function() {
-                Appcelerator.Core.script_count--;
-                if(0 == Appcelerator.Core.script_count) {
-                    Appcelerator.Core.scriptWithDependenciesCallback();
-                }
-            }); 
+            //This is for some thing that prototype does.  Without it, 
+            //IE6 will crash
+            if (match == "//:") 
+            {
+                Appcelerator.Core.old_document_write(src);
+            }
+            else 
+            {
+                Appcelerator.Core.script_count++;
+                Appcelerator.Core.remoteLoadScript(match, function(){
+                    Appcelerator.Core.script_count--;
+                    if (0 == Appcelerator.Core.script_count) {
+                        Appcelerator.Core.scriptWithDependenciesCallback();
+                    }
+                });
+            }
         }
     };
 });
