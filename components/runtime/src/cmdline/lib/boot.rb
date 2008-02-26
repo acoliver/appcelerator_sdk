@@ -90,6 +90,8 @@ module Appcelerator
         OPTIONS[:server] = config[:server] || ET_PHONE_HOME
       end
       
+      return nil if OPTIONS[:no_remote]
+      
       if config[:username] and config[:password]
 
         # nothing required

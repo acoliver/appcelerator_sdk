@@ -102,6 +102,7 @@ module Appcelerator
     end
 
     def Installer.network_login(email,password,silent=false)
+      die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
@@ -112,10 +113,12 @@ module Appcelerator
     end
     
     def Installer.login_if_required
+      die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       Installer.login unless @@loggedin
     end
 
     def Installer.login(un=nil,pw=nil,exit_on_failure=false)
+      die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
 
@@ -519,7 +522,9 @@ HELP
     
     def Installer.find_dependencies_for(component)
       with_site_config(false) do |site_config|
-        members = site_config[:distributions][component[:type].to_sym]
+        distro = site_config[:distributions]
+        return nil unless distro
+        members = distro[component[:type].to_sym]
         return nil unless members
         members.each do |m|
           if m[:name]==component[:name]

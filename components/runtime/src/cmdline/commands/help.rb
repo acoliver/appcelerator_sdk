@@ -71,11 +71,10 @@ Appcelerator::CommandRegistry.registerCommand('help','gets help for all the supp
     puts
     puts "    Supported options:"
     HELP.keys.each do |k|
-        # n = a[:name]
         v = HELP[k]
         msg = v[:help]
         n = v[:display]
-        puts "      #{n}" + (" "*(20-n.length)) + "#{msg}"
+        puts "      #{n}" + (" "*(20-n.length)) + "#{msg}" if msg
     end
     if entry[:examples]
         puts 

@@ -39,6 +39,7 @@ HELP[:quiet] = {:display=>'--quiet',:help=>'be silent in printing any output',:v
 HELP[:force] = {:display=>'--force',:help=>'overwrite any existing files during installation',:value=>false}
 HELP[:force_update] = {:display=>'--force-update',:help=>'force download of components even if they exist in local cache',:value=>false}
 HELP[:args] = {:display=>'--args="args"',:help=>'arguments to pass to calling application',:value=>true}
+HELP[:no_remote] = {:display=>'--no-remote',:help=>nil,:value=>true}
 
 #
 # load all our core libraries in alpha order
