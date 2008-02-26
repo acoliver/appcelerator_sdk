@@ -97,7 +97,7 @@ module Appcelerator
 
         # nothing required
         
-      else  
+      elsif ACTION.to_s != 'network:login'  
 
         # first time user - we need to either allow them to signup or allow them to login
         
