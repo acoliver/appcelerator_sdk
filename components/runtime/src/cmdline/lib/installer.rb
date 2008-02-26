@@ -706,7 +706,7 @@ HELP
         case from
           when /^http:\/\//
             #FIXME
-            STDERR.puts "not yet supported"
+            STDERR.puts "not yet supported - download directly and then re-run with zipfile"
             exit 1
           when /\.zip$/
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
@@ -730,6 +730,7 @@ HELP
         
         puts unless already_installed
         puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or already_installed)
+        puts "#{name} #{version} is already installed" if already_installed and not OPTIONS[:quiet]
         puts "NOTE: you can force a re-install with --force-update" if already_installed and OPTIONS[:verbose]
         
         return to_dir,name,version,checksum,already_installed
