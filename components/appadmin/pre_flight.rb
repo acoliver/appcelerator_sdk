@@ -52,9 +52,14 @@ module Appcelerator
           FileUtils.cp_r initd.path, '/etc/init.d'
 
         when /(windows|win32)/
-          
-          #TODO
-          
+          result = ERB.new(File.read("#{File.dirname(__FILE__)}/service.bat")).result(binding)
+          bat = File.new("#{workingdir}/#{name}.bat", 'w+')
+          bat.write result
+          bat.close
+          system "net stop #{name} 2>NUL"
+          system "#{workingdir}/#{name}.bat"
+          system "sc config #{name} start=auto"
+          system "net start #{name}"
       end
     end
   end
