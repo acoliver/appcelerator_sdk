@@ -131,7 +131,7 @@ fi
 #
 if [ $upgrade -eq 1 ]
 then
-	echo "Appcelerator requires Ruby version 1.8.5 or greater."
+	echo "Appcelerator requires Ruby version 1.8.6 or greater."
 	echo
 	echo "Your system is running: `ruby --version`"
 	echo
