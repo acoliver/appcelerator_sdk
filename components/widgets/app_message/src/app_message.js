@@ -112,7 +112,10 @@ Appcelerator.Widget.Message =
 		var version = attributes['version'];
 		var on = attributes['on'];
 		
-		args = args ? String.unescapeXML(args) : null;
+		if (args)
+		{
+			args = String.unescapeXML(args).replace(/\n/g,'').replace(/\t/g,'');
+		}
 		
 		var interval = attributes['interval'];
 		
