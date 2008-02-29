@@ -518,6 +518,12 @@ Appcelerator.Widget.Datatable =
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
 		}
+		
+		if (!Object.isArray(array))
+		{
+			array = [array]
+		}
+		
 		parameterMap['array'] = array;
 		parameterMap['scope'] = scope;
 
