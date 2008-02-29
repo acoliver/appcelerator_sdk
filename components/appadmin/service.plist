@@ -8,6 +8,7 @@
    <true/>
    <key>ProgramArguments</key>
    <array>
+	  <string><%= rubypath %></string>
       <string><%= workingdir %>/script/server</string>
       <string>-p</string>
       <string><%= port %></string>
