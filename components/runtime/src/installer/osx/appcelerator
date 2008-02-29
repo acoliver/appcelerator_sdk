@@ -38,7 +38,8 @@ then
          chmod +x /Library/Appcelerator/appcelerator
          ln -fs /Library/Appcelerator/appcelerator /usr/bin/app
          chmod +x /usr/bin/app
-         open "http://www.appcelerator.org"
+         /usr/bin/app
+         open "http://127.0.0.1:9080"
          exit 0
     fi 
 fi

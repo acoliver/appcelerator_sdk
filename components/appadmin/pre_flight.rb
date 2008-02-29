@@ -25,10 +25,14 @@ module Appcelerator
     def AppAdmin.install_appadmin
 
       puts "Configuring admin server ... one moment"
-      rubypath = File.join(Config::CONFIG["bindir"], Config::CONFIG["ruby_install_name"])
+      rubypath = File.expand_path(File.join(Config::CONFIG["bindir"], Config::CONFIG["ruby_install_name"]))
       name = 'appcelerator'
       port = 9080 
-      workingdir = "#{File.dirname(__FILE__)}"
+      workingdir = File.expand_path "#{File.dirname(__FILE__)}"
+
+      %w(tmp log).each do |n|
+        FileUtils.mkdir_p "#{workingdir}/#{n}"
+      end
   
       case Config::CONFIG['target_os']
         when /darwin/
@@ -38,29 +42,46 @@ module Appcelerator
           output.write result
           output.close
           FileUtils.chmod 0755, "#{workingdir}/script/server"
+          FileUtils.chmod 0444, "#{File.expand_path(output.path)}"
           system "launchctl stop #{name} 2>/dev/null"
           system "launchctl unload #{File.expand_path(output.path)} 2>/dev/null"
           system "launchctl load #{File.expand_path(output.path)}"
+          Kernel::sleep 4
 
         when /linux/
           user = ENV['USER']
           result = ERB.new(File.read("#{File.dirname(__FILE__)}/service.init.d")).result(binding)
-          initd = File.new("#{workingdir}/appcelerator.init.d", 'w+')
+          require 'tempfile'
+          tf = Tempfile.new 'app'
+          initd = File.new(tf.path, 'w+')
           initd.write result
           initd.close
           FileUtils.chmod 0755, initd.path
           FileUtils.cp_r initd.path, '/etc/init.d'
+          tf.delete
+          system "/etc/init.d/appcelerator start"
 
         when /(windows|win32)/
           result = ERB.new(File.read("#{File.dirname(__FILE__)}/service.bat")).result(binding)
-          bat = File.new("#{workingdir}/#{name}.bat", 'w+')
+          batfile = File.expand_path(File.join(workingdir,"#{name}.bat"))
+          bat = File.new(batfile, 'w+')
           bat.write result
           bat.close
-          system "net stop #{name} 2>NUL"
-          system "#{workingdir}/#{name}.bat"
-          system "sc config #{name} start=auto"
-          system "net start #{name}"
+          FileUtils.cp "#{SCRIPTDIR}/sqlite3.dll", Config::CONFIG["bindir"]
+          FileUtils.cp "#{SCRIPTDIR}/sqlite3.exe", Config::CONFIG["bindir"]
+          AppAdmin.execute "net stop #{name} 2>NUL"
+          AppAdmin.execute "mongrel_rails service::remove -N #{name} 2>NUL"
+          AppAdmin.execute batfile
+          AppAdmin.execute "sc config #{name} start= auto DisplayName= \"Appcelerator Appcenter\""
+          AppAdmin.execute "sc description #{name} \"Appcelerator Appcenter is the admin project server for your local Appcelerator installation.\""
+          AppAdmin.execute "net start #{name}"
       end
+    end
+    
+    private 
+    
+    def AppAdmin.execute(cmd)
+      system cmd
     end
   end
 end

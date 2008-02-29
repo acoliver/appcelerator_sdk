@@ -1,6 +1,6 @@
 #!<%= rubypath %>
 #
-# Appcelerator Admin Server start/stop script
+# Appcelerator Appcenter Server start/stop script
 # <http://www.appcelerator.org>
 #
 #

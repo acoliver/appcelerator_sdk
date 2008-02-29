@@ -95,6 +95,9 @@ def parse_options
       ACTION << arg if ACTION.empty?        
     end
   end
+  if current
+   OPTIONS[current.to_sym]=true  
+  end
 end
 
 parse_options

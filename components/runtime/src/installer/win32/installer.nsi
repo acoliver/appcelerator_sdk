@@ -49,6 +49,7 @@ VIAddVersionKey LegalCopyright ""
 InstallDirRegKey HKLM "${REGKEY}" "DefaultPath"
 InstallDir "$PROGRAMFILES\Appcelerator"
 
+BrandingText "Nullsoft Installer"
 
 Icon "icon.ico"
 LicenseForceSelection radiobuttons
@@ -87,6 +88,7 @@ Section
   File *.txt
   File *.exe
   File *.dll
+  File *.zip
   File /r "commands"
   File /r "lib"
 
@@ -171,6 +173,7 @@ Section
   
   ReadRegStr $R0 HKLM "${RUBY_REGKEY}" "DefaultPath"
   
+  DetailPrint "Executing postflight installer script"
   ExecWait '"$R0\bin\rubyw.exe" "$INSTDIR\post-flight.rb" "$R0\bin\ruby.exe" "$INSTDIR"'
  
   ;Store installation folder
@@ -187,17 +190,24 @@ Section
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
+  ;run installation
+  DetailPrint "Installing Appcelerator Appcenter (admin console) ... this will take several seconds"
+  nsExec::Exec '"$INSTDIR\app.bat"'
+
+
 SectionEnd
 
 Function .onInstSuccess
 
   ; open our welcome page
-  StrCpy $0 "http://www.appcelerator.org"
+  StrCpy $0 "http://127.0.0.1:9080"
   Call openLinkNewWindow
 
 FunctionEnd
 
 Section "Uninstall"
+
+  nsExec::Exec "net stop appcelerator"
 
   Delete "$INSTDIR\ruby-installer.exe"
   Delete "$INSTDIR\Uninstall.exe"

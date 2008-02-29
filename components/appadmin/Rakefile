@@ -21,7 +21,7 @@
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
-ZIPFILE = File.expand_path "#{STAGE_DIR}/#{build_config[:type]}_#{build_config[:name]}_#{build_config[:version]}.zip"
+ZIPFILE = File.expand_path "#{STAGE_DIR}/#{build_config[:name]}_#{build_config[:version]}.zip"
 
 desc 'default build'
 task :default do
@@ -40,5 +40,6 @@ task :default do
     zipfile.add('pre_flight.rb','pre_flight.rb')
     zipfile.add('service.init.d','service.init.d')
     zipfile.add('service.plist','service.plist')
+    zipfile.add('service.bat','service.bat')
   end
 end

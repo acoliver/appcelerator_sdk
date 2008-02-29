@@ -21,7 +21,16 @@ BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
 
-task :default=> [:all] do
+task :default do
+end
+
+task :setup do
+  dir = Dir.glob(STAGE_DIR+'/appadmin_*.zip')
+  if dir.empty?
+    STDERR.puts "You must first build appadmin module. You can run `rake appadmin:all` to make this happen"
+    exit 1
+  end
+  APPADMIN_LOCATION = dir.first
 end
 
 task :all=> [:win32,:unix,:osx,:update] do
@@ -51,7 +60,7 @@ task :update do
 end
 
 desc 'build win32 installer'
-task :win32 do
+task :win32 => [:setup] do
   
   puts "==> Building Win32 Installer"
 
@@ -68,6 +77,7 @@ task :win32 do
     copy_dir "#{BUILD_DIR}/src/installer/win32", win32_dir
 
     FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", win32_dir
+    FileUtils.cp APPADMIN_LOCATION, "#{win32_dir}/appadmin.zip"
 
     FileUtils.cd(win32_dir) do
       system "makensis installer.nsi" if VERBOSE
@@ -87,7 +97,7 @@ task :win32 do
 end
 
 desc 'build unix installer'
-task :unix do
+task :unix => [:setup] do
    puts "==> Building Unix Installer"
    unix_dir = "#{STAGE_DIR}/installer/unix"
    clean_dir(unix_dir)
@@ -101,6 +111,7 @@ task :unix do
    FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
    FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
    FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", unix_dir
+   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
 
    FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
 
@@ -118,7 +129,7 @@ task :unix do
 end
 
 desc 'build osx installer'
-task :osx=> [:stage] do
+task :osx=> [:setup] do
   
   if not RUBY_PLATFORM =~ /darwin/
     STDERR.puts "Cannot compile Mac OSX installer on non-darwin based systems .... Will skip."
@@ -138,6 +149,8 @@ task :osx=> [:stage] do
     # dynamically make our list of files into the pmdoc before we build
     make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
     make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/06lib-contents.xml","#{osx_dir}/installer/lib"
+    
+    fix_paths "#{osx_dir}/installer/build/osx/installer.pmdoc","#{osx_dir}/installer/build/osx"
 
     index = File.read "#{osx_dir}/installer/build/osx/installer.pmdoc/index.xml"
 
@@ -155,7 +168,10 @@ task :osx=> [:stage] do
       f.close
     end
 
+    system "hdiutil eject /Volumes/Appcelerator 2>/dev/null"
+
     FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
+    FileUtils.cp APPADMIN_LOCATION, "#{osx_dir}/installer/appadmin.zip"
 
     # build the package structure
     if File.exists? "/Developer/Tools/packagemaker"
@@ -173,7 +189,6 @@ task :osx=> [:stage] do
     postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight",'w+'
     postflight.puts "#!/bin/sh"
     postflight.puts "/usr/bin/appcelerator '--postflight--'"
-    postflight.puts "open http://www.appcelerator.org"
     postflight.puts "exit 0"
     postflight.close
     FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight"
@@ -196,7 +211,7 @@ task :osx=> [:stage] do
       zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
     end
 
-    FileUtils.rm_rf osx_dir
+#    FileUtils.rm_rf osx_dir
     puts "Mac OSX Installer is now ready"
   end
   
@@ -232,3 +247,13 @@ def make_pkg_file(file,dir)
    f.close
 end
 
+
+def fix_paths(dir,path)
+  Dir["#{dir}/*-contents.xml"].each do |f|
+    c = File.read(f)
+    c.gsub!('/Users/jhaynie/Documents/workspace/appcelerator_sdk/build/installer',path)
+    nf = File.open(f,'w+')
+    nf.puts c
+    nf.close
+  end
+end

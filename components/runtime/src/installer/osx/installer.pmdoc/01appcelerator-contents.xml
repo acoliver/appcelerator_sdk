@@ -1,1 +1,4 @@
-<pkg-contents spec="1.12"><f n="appcelerator" o="jhaynie" g="staff" p="33188" pt="/Users/jhaynie/Documents/workspace/appcelerator_sdk/build/installer/appcelerator" m="false" t="file"/></pkg-contents>
+<pkg-contents spec="1.12">
+	<f n="appcelerator" o="root" g="admin" p="33188" pt="/Users/jhaynie/Documents/workspace/appcelerator_sdk/build/installer/appcelerator" m="false" t="file"/>
+	<f n="appadmin.zip" o="root" g="admin" p="33188" pt="/Users/jhaynie/Documents/workspace/appcelerator_sdk/build/installer/appadmin.zip" m="false" t="file"/>
+</pkg-contents>

@@ -124,6 +124,14 @@ FileUtils.chmod 0755, "#{bindir}/app"
   FileUtils.chmod_R 0777, "#{install_dir}/#{name}"
 end
 
+puts "Completing installation...."
+system "#{install_dir}/appcelerator"
+
+if RUBY_PLATFORM =~ /darwin/
+  Kernel.sleep 3
+  system "open http://127.0.0.1:9080"
+end
+
 puts "Installation successful! Enjoy."
 
 exit 0

@@ -42,7 +42,7 @@ def ask(q,mask=false)
   answer = ''
   while true
     ch = STDIN.getc
-    break if ch==10
+    break if ch==10 or nil
     answer << ch
   end
   system 'stty echo' rescue nil if mask

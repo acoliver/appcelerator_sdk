@@ -23,9 +23,104 @@ require 'fileutils'
 
 Signal.trap("INT") { puts; exit }
 
+REQUIRED_GEMS = %w(mongrel rubyzip sqlite3-ruby)
+
 MYFILE = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
 TARGET_DIR = File.expand_path File.dirname(MYFILE)
 UPDATE_DIR = File.join(TARGET_DIR,'updates')
+WIN32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
+GEM_CMD = WIN32 ? 'gem.bat' : 'gem'
+
+
+def is_gem_installed(gem)
+  installed = Gem.cache.search gem
+  return !installed.empty?
+end
+
+def check_required_gem(gem,array)
+  if not is_gem_installed gem
+    array << gem
+  end
+end
+
+def check_for_appadmin
+  file = File.expand_path File.join(TARGET_DIR,'appadmin.zip')
+  return nil if not File.exists? file
+
+  STDOUT.puts "Installing Appcenter (admin console) ... One moment."
+  cmd = "ruby \"#{TARGET_DIR}/console.rb\" install:appadmin \"#{file}\" --no-remote --force"
+  system cmd
+  STDOUT.puts "Installed ...."
+  
+  FileUtils.rm_rf file
+  exit 0
+end
+
+def check_for_initial
+  install_file = File.expand_path File.join(TARGET_DIR,'releases','.installed')
+  return nil if File.exists? install_file
+  
+  if not WIN32 and not system 'gem --version >/dev/null'
+    STDERR.puts "Appcelerator requires RubyGems to be installed and in your path."
+    STDERR.puts "Please re-install RubyGems and you will be able to re-run this."
+    STDERR.puts "If you have RubyGems already installed, please ensure that it's on your path"
+    exit 1
+  end
+  
+  # ensure we have the right gems installed
+  gems = []
+
+  require 'rubygems'
+
+  REQUIRED_GEMS.each do |gem|
+    check_required_gem gem,gems
+  end
+
+  check_required_gem 'mongrel_service',gems if WIN32
+  
+  if not gems.empty?
+    STDOUT.puts
+    STDOUT.puts "Appcelerator requires the following component#{gems.length > 1 ? 's' : ''}: \n"
+    STDOUT.puts
+    STDOUT.puts "  > " + gems.join("\n  > ")
+    STDOUT.puts
+    STDOUT.print "Attempt to auto-install? [Yn] "
+    c = STDIN.getc
+    if not [10,89,121].include? c
+      STDOUT.puts
+      STDOUT.puts "Cancelled!"
+      exit 1
+    end
+    
+    gems.each do |gem|
+      cmd = "#{GEM_CMD} install #{gem}"
+      if not WIN32
+        cmd = 'sudo ' + cmd
+      end
+      puts "Executing: #{cmd}"
+      system cmd
+
+      # NOTE: for some reason, gem doesn't exit with non-zero when unsuccessful
+      check_cmd = eval "%x[#{GEM_CMD} list #{gem}]"
+      
+      if not check_cmd =~ Regexp.new(gem)
+        STDERR.puts "Gem #{gem} doesn't look like it installed correctly."
+        exit 1
+      end
+    end
+    
+    STDOUT.puts "Dependencies have been successfully installed..."
+    STDOUT.puts
+    
+  end
+
+  # write out our file
+  FileUtils.mkdir_p File.join(TARGET_DIR,'releases')
+  f = File.new install_file,'w+'
+  f.puts Time.now.to_s
+  f.close
+  
+end
 
 def check_for_update
   if File.exists?(UPDATE_DIR) and File.directory?(UPDATE_DIR)
@@ -145,7 +240,9 @@ def check_for_update
   end
 end
 
+check_for_initial
 check_for_update
+check_for_appadmin
 
 if system "ruby \"#{TARGET_DIR}/console.rb\" #{ARGV.join(' ')}"
   exit 0

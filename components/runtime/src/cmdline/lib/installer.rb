@@ -41,15 +41,17 @@ module Appcelerator
       elsif ENV['HOMEDRIVE'] and ENV['HOMEPATH']
           "#{ENV['HOMEDRIVE']}:#{ENV['HOMEPATH']}"
       else
-          File.expand_path '~'
+          begin
+            File.expand_path '~'
+          rescue
+            File.expand_path '/'
+          end
       end
     end
 
     def Installer.load_config
       # load our config
-      config_dir = File.join(user_home,'.appc')
-      FileUtils.mkdir(config_dir) unless File.exists?(config_dir)
-      @@config_file = File.join(config_dir,'appcelerator.yml')
+      @@config_file = File.join(RELEASE_DIR,'login.yml')
       @@config = YAML::load_file(@@config_file) if File.exists?(@@config_file)
       @@config||={}
     end

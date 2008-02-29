@@ -125,6 +125,14 @@ Appcelerator.Widget.Iterator =
 				});
 				html+='</tr>';
 			}
+			
+			// this is in the case we pass in an object instead of 
+			// an array, make it an array of length one so we can iterate
+			if (!Object.isArray(array))
+			{
+				array = [array];
+			}
+			
 			for (var c = 0, len = array.length; c < len; c++)
 			{
 				var o = array[c];
