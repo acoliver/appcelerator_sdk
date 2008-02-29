@@ -120,6 +120,12 @@ def check_for_initial
   f.puts Time.now.to_s
   f.close
   
+  FileUtils.touch File.join(TARGET_DIR,'releases','config.yml')
+  FileUtils.chmod 0666, File.join(TARGET_DIR,'releases','config.yml')
+
+  FileUtils.touch File.join(TARGET_DIR,'releases','login.yml')
+  FileUtils.chmod 0666, File.join(TARGET_DIR,'releases','login.yml')
+  
 end
 
 def check_for_update

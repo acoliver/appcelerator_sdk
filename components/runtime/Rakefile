@@ -51,10 +51,13 @@ task :update do
   FileUtils.rm_rf zipfile
 
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    zipfile.add 'build.yml', "#{BUILD_DIR}/build.yml"
     Dir["#{update_dir}/**/**"].each do |f|
       name = f.gsub(update_dir+'/','')
       zipfile.add name,f
+    end
+    obj = {:type=>:update,:name=>:update,:version=>build_config[:version]}
+    zipfile.get_output_stream('build.yml') do |zf|
+      zf.puts obj.to_yaml
     end
   end
 end
