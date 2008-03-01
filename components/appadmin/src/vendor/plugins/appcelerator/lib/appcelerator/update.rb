@@ -51,6 +51,7 @@ Thread.new do
           begin
             debug = config[:debug] 
             flags = debug ? '--debug' : '--quiet'
+            flags += ' --ping'
             IO.popen "app network:list #{flags}" do |io|
               io.readlines
             end

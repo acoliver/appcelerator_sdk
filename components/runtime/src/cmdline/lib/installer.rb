@@ -48,6 +48,11 @@ module Appcelerator
           end
       end
     end
+    
+    def Installer.get_config
+      return @@config if @@config
+      load_config
+    end
 
     def Installer.load_config
       # load our config
@@ -443,12 +448,18 @@ HELP
       hash
     end
     
-    def Installer.fetch_distribution_list
+    def Installer.fetch_distribution_list(ping=false)
         return @@distributions if @@distributions
         login_if_required
         client = get_client
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
-        response = client.send('distribution.query.request')
+        config = get_config
+        args = {'ping'=>ping,'sid'=>config[:sid],'os'=>RUBY_PLATFORM}
+        response = client.send('distribution.query.request',args)
+        if config[:sid].nil? or config[:sid]!=response[:data]['sid']
+          config[:sid] = response[:data]['sid']
+          save_config
+        end
         @@distributions = convert_object(response[:data]['distributions'])
         with_site_config do |site_config|
           site_config[:distributions] = @@distributions

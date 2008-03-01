@@ -64,8 +64,15 @@ Appcelerator::CommandRegistry.registerCommand('network:list','query network for 
     :default=>nil,
     :type=>Appcelerator::Types::AnyType
   }
-],nil,nil) do |args,options|
-  list = Appcelerator::Installer.fetch_distribution_list
+],
+[
+  {
+     :name=>:ping,
+     :display=>'--ping',
+     :value=>false
+  },
+],nil) do |args,options|
+  list = Appcelerator::Installer.fetch_distribution_list options[:ping]
   if args[:type]
     l = list[args[:type]] || list[args[:type].to_sym]
     if l
