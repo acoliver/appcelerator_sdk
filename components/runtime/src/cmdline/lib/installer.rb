@@ -733,6 +733,14 @@ HELP
           pre_flight = File.join(to_dir,'pre_flight.rb')
           if File.exists?(pre_flight)
             puts "Found pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
+            $Installer = Hash.new
+            $Installer[:to_dir] = to_dir
+            $Installer[:name] = name
+            $Installer[:version] = version
+            $Installer[:checksum] = checksum
+            $Installer[:type] = type
+            $Installer[:from] = from
+            $Installer[:tx] = tx
             require pre_flight 
           end
 

@@ -55,10 +55,11 @@ task :update do
       name = f.gsub(update_dir+'/','')
       zipfile.add name,f
     end
-    obj = {:type=>:update,:name=>:update,:version=>build_config[:version]}
+    obj = {:type=>'update',:name=>'update',:version=>build_config[:version]}
     zipfile.get_output_stream('build.yml') do |zf|
       zf.puts obj.to_yaml
     end
+    zipfile.add 'pre_flight.rb',"#{BUILD_DIR}/pre_flight.rb"
   end
 end
 
@@ -214,7 +215,7 @@ task :osx=> [:setup] do
       zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
     end
 
-#    FileUtils.rm_rf osx_dir
+    FileUtils.rm_rf osx_dir
     puts "Mac OSX Installer is now ready"
   end
   

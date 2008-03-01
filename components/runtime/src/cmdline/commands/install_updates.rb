@@ -17,9 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to update installed components',nil,nil,[
-  'install:updates',
-]) do |args,options|
+Appcelerator::CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to update installed components',nil,nil,nil) do |args,options|
   
   puts "Checking for updates..." unless OPTIONS[:quiet]
 
@@ -50,6 +48,29 @@ Appcelerator::CommandRegistry.registerCommand(%w(install:updates install:update)
             end
           end
         end
+      end
+    end
+  end
+  
+  #
+  # this is a special case where we need to self-update the binary and related 
+  # files itself
+  #
+  build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
+  updates = list[:update]
+  if updates
+    update = Appcelerator::Installer.sort_components(updates)
+    local_version = Appcelerator::Project.to_version(build_config[:version])
+    remote_version = Appcelerator::Project.to_version(update[:version])
+    if local_version < remote_version or OPTIONS[:force_update]
+      if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
+        Appcelerator::Installer.install_component update[:type].to_sym,update[:type].to_s,update[:name],true,nil,true,false
+        updated << "#{update[:type]}_#{update[:name]}"
+        build_config[:version] = update[:version]
+        cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
+        cf.puts build_config.to_yaml
+        cf.close
+        count+=1
       end
     end
   end
