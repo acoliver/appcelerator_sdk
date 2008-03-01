@@ -6,8 +6,9 @@ Annotate your services with @Service,
     2) user session
     3) message name/type
 
-Add a service broker to your service,
+Add a service broker to your wsgi app,
 built with the service_broker_factory.
+(This is done automatically for projects generated for pylons)
 
 
 If you want to see what services are registered,

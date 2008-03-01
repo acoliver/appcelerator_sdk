@@ -24,7 +24,7 @@ require 'erb'
 
 module Appcelerator
   class Ruby 
-    def create_project(from_path,to_path,options,tx)
+    def create_project(from_path,to_path,config,tx)
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
       
       
@@ -66,7 +66,7 @@ module Appcelerator
       tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
       
       boot = File.read("#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator.rb")
-      boot.gsub!('0.0.0',options[:service_version])
+      boot.gsub!('0.0.0',config[:service_version])
       tx.put "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator.rb", boot
       
       true

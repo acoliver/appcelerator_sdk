@@ -25,15 +25,16 @@ module Appcelerator
       check_python_installed
       install_easy_install_if_needed
       install_pylons_if_needed
-      install_appcelerator_egg_if_needed from_path # TODO: need to check version too
+      install_appcelerator_egg_if_needed(from_path, config[:service_version])
       
       project_path = to_path
       project_name = config[:name]
       app_path = File.join to_path, project_name
       project_location = File.dirname to_path
       
+      assert( !(project_name.include?(' ') or project_name.include?(';')))
       FileUtils.cd project_location do
-        system("paster create -t pylons #{project_name}")
+        quiet_system("paster create -t pylons #{project_name}")
       end
       
       Appcelerator::Installer.copy tx, "#{from_path}/services", "#{app_path}/services", nil, true
@@ -41,7 +42,8 @@ module Appcelerator
       copy tx,"#{from_path}/pylons/appcelerator.xml", "#{project_path}/public/appcelerator.xml"
       
       copy tx,"#{from_path}/pylons/development.ini", "#{project_path}/development.ini" do |content|
-        content.gsub(/\$\{project(_logger)?\}/, project_name)
+        content.gsub!(/\$\{(project|package_logger)\}/, project_name)
+        content.gsub(/egg:Appcelerator#/, "egg:Appcelerator==#{config[:service_version]}#")
       end
       
       # shuffle into the new public dir
@@ -60,17 +62,52 @@ module Appcelerator
         root_directory=overroot)
     app = Cascade([appcelerator_static, static_app, javascripts_app, app])
 END_CODE
+        
         # could write a do-block to check and use indentation level
         content.sub(/\s+app = Cascade\(\[static_app, javascripts_app, app\]\)/, static_cascade)
       end
       
-      tx.rm "#{app_path}/public"
+      tx.rm "#{app_path}/public" # pylons makes this
+      tx.rm "#{project_path}/app" # appc create:project makes this
       
       true
     end
     
+    # UNTESTED!
+    def update_project(from_path,to_path,config,tx,from_version,to_version)
+      puts "Updating Python project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
+      install_appcelerator_egg_if_needed(from_path, config[:service_version])
+      
+      project_path = to_path
+      project_name = config[:name]
+      app_path = File.join to_path, project_name
+      project_location = File.dirname to_path
+      
+      edit tx, "#{project_path}/development.ini" do |content|
+        content.sub(/egg:Appcelerator==([^#]+)#/) do |match|
+          if $1 != from_version
+            puts "Upgrading from #{from_version} to #{to_version}, but project seemed to be version #{$1}, how odd."
+          end
+          "require('Appcelerator==#{to_version}')"
+        end
+      end
+      
+      true
+    end
+    
+    def run_server(path,config)
+      # do we want to fork/exec this?
+      FileUtils.cd path do
+        system('paster serve development.ini --reload')
+      end
+    end
+    
+    
+    #
+    # Helpers
+    #
     def quiet_system(cmd)
-      cmd += ' > /dev/null' if not OPTIONS[:verbose]
+      cmd += ' > /dev/null 2>&1' unless OPTIONS[:verbose]
       system(cmd)
     end
     
@@ -86,11 +123,15 @@ END_CODE
       tx.put(filename,content)
     end
     
+    def assert(test)
+      raise "Assertion Failed" unless test
+    end
+    
     #
     # Dependencies
     #
     def check_python_installed
-      if not system('python -V')
+      if not quiet_system('python -V')
         puts 'A python interpreter must be installed to use the appcelerator python sdk,'
         puts 'see http://www.python.org/download/ to download for your platform'
         exit 1
@@ -112,6 +153,7 @@ END_CODE
     end
     
     def install_pylons_if_needed
+      # this is taken care of by easy_install, but this gives the user a prompt
       if not quiet_system('python -c "import pylons"')
         confirm("Appcelerator:Python requires pylons to be installed before continuing. Install now? (Y)es, (N)o [Y]")
         
@@ -119,8 +161,9 @@ END_CODE
       end
     end
     
-    def install_appcelerator_egg_if_needed(dir)
-      if not quiet_system('python -c "import appcelerator"')
+    def install_appcelerator_egg_if_needed(dir,version)
+      appc_version_check = "python -c \"import appcelerator;from pkg_resources import require;require('Appcelerator==#{version}')\""
+      if not quiet_system(appc_version_check)
         quiet_system("easy_install #{dir}/module/")
       end
     end
