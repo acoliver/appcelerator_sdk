@@ -94,8 +94,7 @@ module Appcelerator
       end
       
       if not update or (update and not File.exists? "#{to_path}/.project")
-      ###FIXME add appcelerator nature
-      
+
         project=<<STR
 <projectDescription>
    <name>#{name}</name>
@@ -111,6 +110,7 @@ module Appcelerator
    </buildSpec>
    <natures>
       <nature>org.eclipse.jdt.core.javanature</nature>
+      <nature>org.appcelerator.ide.appceleratorNature</nature>      
    </natures>
 </projectDescription>
 STR
