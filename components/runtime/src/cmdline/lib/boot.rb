@@ -38,15 +38,19 @@ end
 def ask(q,mask=false)
   STDOUT.print "#{q} "
   STDOUT.flush
-  system 'stty -echo' rescue nil if mask
+  if mask and STDIN.isatty
+    system 'stty -echo' rescue nil
+  end
   answer = ''
   while true
     ch = STDIN.getc
     break if ch==10 or nil
     answer << ch
   end
-  system 'stty echo' rescue nil if mask
-  puts if mask
+  if mask and STDIN.isatty
+    system 'stty echo' rescue nil
+  end
+  puts if mask # newline after password
   answer
 end
 

@@ -22,6 +22,11 @@ module Appcelerator
   class Python
     def create_project(from_path,to_path,config,tx)
       
+      if File.exists? "#{to_path}/public/appcelerator.xml"
+        puts "A project already exists here, exiting"
+        return false
+      end
+      
       check_python_installed
       install_easy_install_if_needed
       install_pylons_if_needed
