@@ -65,7 +65,10 @@ module Appcelerator
         message_queue.compact!
         message_queue.each do |msg|
           if msg.response_type
-            output << "window.parent.$MQ('r:#{msg.response_type}', #{msg.response.to_json}, '#{msg.scope}');"
+            if not msg.response_type =~ /^[rl]:/
+              msg.response_type = "r:#{msg.response_type}"
+            end
+            output << "window.parent.$MQ('#{msg.response_type}', #{msg.response.to_json}, '#{msg.scope}');"
           end
         end
         output
