@@ -23,8 +23,8 @@ Object.extend(Appcelerator.Validator,
 	// DATE VALIDATION UTILS
 	//
 	dtCh:"/",
-	minYear:1900,
-	maxYear:2100,
+	minYear:1000,
+	maxYear:3000,
 	stripCharsInBag: function(s, bag)
 	{
 		var i;
