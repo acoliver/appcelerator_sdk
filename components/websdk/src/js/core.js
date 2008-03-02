@@ -602,7 +602,7 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
         }
     };
     
-    for (var i=0; i < js.length; i++)
+    var orderedLoad = function(i)
     {
         var file = js[i];
         var path = !Object.isUndefined(jspath) ? (jspath + '/' + file) : Appcelerator.ModulePath + moduleName + '/js/' + file;
@@ -643,7 +643,13 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
             }	
         }
         Appcelerator.Core.HeadElement.appendChild(script);
-    }
+        
+        if(i+1 < js.length)
+        {
+            orderedLoad.delay(0, i+1);
+        }
+    };
+    orderedLoad(0);
 };
 
 Appcelerator.Core.registerWidgetWithJS = Appcelerator.Core.registerModuleWithJS;
