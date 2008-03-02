@@ -81,19 +81,22 @@ Appcelerator.Widget.Stopwatch =
         html.push('<td><h3 id="' + element.id + '_clock">00:00 <span>00</span></h3></td>');
         if(parameters["show_button"] != "false") 
         {
+			var enableReset = "l:" + element.id + "_enable_reset";
+			var disableReset = "l:" + element.id + "_disable_reset";
             html.push('<td>');
             html.push('<div class="stopwatch_start">');
             html.push('<app:button width="100" on="click then script[Appcelerator.Widget.Stopwatch.start_stop(\'' 
-                    + element.id + '\')]">Start</app:button>');
+                    + element.id + '\')] and ' + disableReset + '">Start</app:button>');
             html.push('</div>');
             html.push('<div class="stopwatch_stop">');
             html.push('<app:button width="100" on="click then script[Appcelerator.Widget.Stopwatch.start_stop(\'' 
-                    + element.id + '\')] and l:' + element.id + '_reset">Stop</app:button>');
+                    + element.id + '\')] and ' + enableReset + '">Stop</app:button>');
             html.push('</div>');
             html.push('</td>');
             html.push('<td class="stopwatch_reset">');
             html.push('<app:button disabled="true" width="100" on="click then script[Appcelerator.Widget.Stopwatch.clear_time(\''
-                    + element.id + '\')] and disable or l:' + element.id + '_reset then enable">Reset</app:button>');
+                    + element.id + '\')] and disable or ' +  enableReset + ' then enable or ' 
+					+ disableReset + ' then disable">Reset</app:button>');
             html.push('</td>');
         }
         html.push('</tr></table>');

@@ -74,6 +74,12 @@ Appcelerator.Widget.Button =
 	{
 		return true;
 	},
+	//Helper function to check if the button is disabled.  Firefox, Safari and IE do different
+	//things
+	isEnabled: function(params)
+	{
+		return !(params['disabled'] == "true" || params['disabled'] == true);
+	},
 	compileWidget: function(parameters)
 	{
 		var id = parameters['id'];
@@ -92,7 +98,7 @@ Appcelerator.Widget.Button =
 		
 		button.onmouseover = function()
 		{
-			if (parameters['disabled'] != 'true')
+			if(Appcelerator.Widget.Button.isEnabled(parameters))
 			{
 				left.className = 'button_'+color+'_'+corner+'_left_over';
 				middle.className = 'button_'+color+'_'+corner+'_middle_over button_'+color+'_text';
@@ -108,7 +114,7 @@ Appcelerator.Widget.Button =
 		
 		button.onmouseout = function()
 		{
-			if (parameters['disabled'] != 'true')
+			if (Appcelerator.Widget.Button.isEnabled(parameters))
 			{
 				left.className = 'button_'+color+'_'+corner+'_left';
 				middle.className = 'button_'+color+'_'+corner+'_middle button_'+color+'_text';
@@ -124,7 +130,7 @@ Appcelerator.Widget.Button =
 		
 		button.onmousedown = function()
 		{
-			if (parameters['disabled'] != 'true')
+			if (Appcelerator.Widget.Button.isEnabled(parameters))
 			{
 				left.className = 'button_'+color+'_'+corner+'_left_press';
 				middle.className = 'button_'+color+'_'+corner+'_middle_press button_'+color+'_text';
@@ -140,7 +146,7 @@ Appcelerator.Widget.Button =
 
 		button.onmouseup = function()
 		{
-			if (parameters['disabled'] != 'true')
+			if (Appcelerator.Widget.Button.isEnabled(parameters))
 			{
 				left.className = 'button_'+color+'_'+corner+'_left_over';
 				middle.className = 'button_'+color+'_'+corner+'_middle_over button_'+color+'_text';
@@ -176,7 +182,7 @@ Appcelerator.Widget.Button =
 		var middle = $(id+'_middle');
 		var right = $(id+'_right');
 
-		parameters['disabled'] = '';
+		button.disabled = false;
 		left.className = 'button_'+color+'_'+corner+'_left';
 		middle.className = 'button_'+color+'_'+corner+'_middle button_'+color+'_text';
 		right.className = 'button_'+color+'_'+corner+'_right';
@@ -200,7 +206,7 @@ Appcelerator.Widget.Button =
 		var middle = $(id+'_middle');
 		var right = $(id+'_right');
 
-		parameters['disabled'] = 'true';
+		button.disabled = true;
 		left.className = 'button_'+color+'_'+corner+'_left_disabled';
 		middle.className = 'button_'+color+'_'+corner+'_middle_disabled button_'+color+'_text_disabled';
 		right.className = 'button_'+color+'_'+corner+'_right_disabled';
@@ -223,9 +229,9 @@ Appcelerator.Widget.Button =
 		{
 			icon = 'button_icon_' + parameters['icon'];
 		}
-
+		
 		var disabled = '';
-		if (parameters['disabled'] == 'true')
+		if (!Appcelerator.Widget.Button.isEnabled(parameters))
 		{
 			disabled = '_disabled';
 		}
@@ -242,6 +248,10 @@ Appcelerator.Widget.Button =
 		if (parameters['activators'])
 		{
 			html += ' activators="'+parameters['activators']+'"';
+		}
+		if('' != disabled)
+		{
+			html += ' disabled="true"';
 		}
         html += '>';
         
