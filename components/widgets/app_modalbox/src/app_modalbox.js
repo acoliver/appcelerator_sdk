@@ -122,4 +122,4 @@ Appcelerator.Widget.Modalbox =
 };
 
 Appcelerator.Core.loadModuleCSS("app:modalbox","modalbox.css")
-Appcelerator.Widget.registerWithJS('app:modalbox',Appcelerator.Widget.Modalbox,["modalbox.js"]);
+Appcelerator.Widget.registerWithJS('app:modalbox',Appcelerator.Widget.Modalbox,["modalbox.js", "patch.js"]);
