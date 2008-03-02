@@ -82,7 +82,7 @@ Appcelerator.Widget.Field =
                 {name: 'fieldDefaultClassName', optional: true, defaultValue: '', type: T.cssClass},
 				{name: 'fieldDefaultLangId', optional: true},
                 {name: 'parameters', optional: true},
-                {name: 'inline', optional: true, },
+                {name: 'inline', optional: true},
                 {name: 'name', optional: true},
                 {name: 'hash', optional: true},
                 {name: 'langid', optional: true},
