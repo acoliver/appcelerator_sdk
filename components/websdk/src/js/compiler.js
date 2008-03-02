@@ -879,26 +879,36 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
 {
     (function()
     {
-	    Event.observe(element,'focus',function()
+        if(element.type == 'checkbox')
 	    {
+	        // Safari is finicky
 	        element._validatorObserver = new Form.Element.Observer(
-	          element,
-	          .5,  
-	          function(element, value)
-	          {
-	            action(element,value);
-	          }
+	            element, 0.1, action
 	        );
-	    });
-	    Event.observe(element,'blur',function()
+	    }
+	    else
 	    {
-	        if (element._validatorObserver)
-	        {
-	            element._validatorObserver.stop();
-	            try { delete element._validatorObserver; } catch (e) { element._validatorObserver = null; }
-                action(element,Field.getValue(element));
-	        }
-	    });
+    	    Event.observe(element,'focus',function()
+    	    {
+    	        element._validatorObserver = new Form.Element.Observer(
+    	          element,
+    	          .5,  
+    	          function(element, value)
+    	          {
+    	            action(element,value);
+    	          }
+    	        );
+    	    });
+    	    Event.observe(element,'blur',function()
+    	    {
+    	        if (element._validatorObserver)
+    	        {
+    	            element._validatorObserver.stop();
+    	            try { delete element._validatorObserver; } catch (e) { element._validatorObserver = null; }
+                    action(element,Field.getValue(element));
+    	        }
+    	    });
+    	}
     }).defer();
     
     return element;
