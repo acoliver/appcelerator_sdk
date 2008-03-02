@@ -1300,7 +1300,9 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			if (outer)
 			{
                 outer.style.display='';
-			}			
+			}
+
+			if (Appcelerator.Browser.isIE6) Appcelerator.Browser.fixImageIssues.defer();
 		}
 	}
 	else
