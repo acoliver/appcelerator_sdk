@@ -102,8 +102,22 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         ensure
           Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
         end
+      when 'python'
+        event = {:project_dir=>pwd,:service=>'ruby'}
+        Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
+        begin
+          ini_file = options[:ini_file] || 'development.ini'
+          reload = options[:no_reload] ? '' :  '--reload'
+          port = options[:port] || 5000
+          args = options[:args] || ''
+          
+          puts "paster serve #{ini_file} #{reload} http_port=#{port} #{args}" if OPTIONS[:verbose]
+          system "paster serve #{ini_file} #{reload} http_port=#{port} #{args}"
+        ensure
+          Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
+        end        
     else
-      die "This command is only supported currently for Java and Ruby"
+      die "This command is currently only supported for Java, Ruby, Python"
     end  
   end
   
