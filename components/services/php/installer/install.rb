@@ -21,7 +21,11 @@
 module Appcelerator
   class Php
     def create_project(from_path,to_path,config,tx)
-      Appcelerator::Installer.copy(tx,from_path,"#{to_path}/public",["#{__FILE__}"])
+      Appcelerator::Installer.copy(tx,from_path,"#{to_path}/public",["#{__FILE__}",'build.yml','test_service.php'])
+      Appcelerator::Installer.copy(tx,"#{from_path}/test_service.php","#{to_path}/app/services")
+      %w(log script).each do |name|
+        FileUtils.rm_rf "#{to_path}/#{name}"
+      end
       true
     end
   end

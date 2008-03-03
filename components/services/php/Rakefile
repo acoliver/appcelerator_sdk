@@ -39,5 +39,6 @@ task :default do
     zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
     zipfile.add('appcelerator.xml',"#{BUILD_DIR}/installer/appcelerator.xml")
     zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
+    zipfile.add('test_service.php',"#{BUILD_DIR}/installer/test_service.php")
   end
 end
