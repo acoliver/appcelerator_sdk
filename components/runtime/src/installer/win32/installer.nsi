@@ -94,6 +94,7 @@ Section
 ;  File *.gem
   File /r "commands"
   File /r "lib"
+  File "rubyzip-0.9.1.gem"
 
   ; check to see if we have ruby installed
   nsExec::ExecToStack '"ruby" --version'
@@ -187,7 +188,7 @@ Section
   ReadEnvStr $0 COMSPEC
 
   ; attempt to install gem dependencies
-;  DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
+  DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\cgi_multipart_eof_fix-2.5.0.gem" -y --no-ri --no-rdoc' $R1
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\gem_plugin-0.2.3.gem" -y --no-ri --no-rdoc' $R1
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\windows-pr-0.8.0.gem" -y --no-ri --no-rdoc' $R1
@@ -196,21 +197,23 @@ Section
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\sqlite3-ruby-1.2.1-mswin32.gem" -y --no-ri --no-rdoc' $R1
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel-1.1.4-x86-mswin32-60.gem" -y --no-ri --no-rdoc' $R1
 ;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel_service-0.3.4-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install rubyzip -y --no-ri --no-rdoc' $R1
+
+
+  nsExec::Exec '"$0" /c $R0\bin\gem.bat install rubyzip-0.9.1.gem --no-ri --no-rdoc' $R1
 
   DetailPrint "Executing postflight installer script"
   ExecWait '"$R0\bin\rubyw.exe" "$INSTDIR\post-flight.rb" "$R0\bin\ruby.exe" "$INSTDIR"'
  
   ;run installation
-;  DetailPrint "Installing Appcelerator Appcenter (admin console) ... this will take several minutes (possibly)"
-;  nsExec::ExecToStack '"$R0\bin\ruby.exe" "$INSTDIR\appcelerator"'
-;  Pop $0
-;  Pop $1
-;
-;  IntCmp $0 1 DisplayError Finish
-;
-;  DisplayError:
-;  MessageBox MB_OK|MB_ICONEXCLAMATION "Error completing installation. The install program returned the following error:  $1"
+  DetailPrint "Finalizing the installation and checking dependencies ... this will take several minutes (possibly)"
+  nsExec::ExecToStack '"$R0\bin\ruby.exe" "$INSTDIR\appcelerator" --install'
+  Pop $0
+  Pop $1
+
+  IntCmp $0 1 DisplayError Finish
+
+  DisplayError:
+  MessageBox MB_OK|MB_ICONEXCLAMATION "Error completing installation. The install program returned the following error:  $1"
 
 
   Finish:
