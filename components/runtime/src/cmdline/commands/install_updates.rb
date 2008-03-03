@@ -29,16 +29,27 @@ Appcelerator::CommandRegistry.registerCommand(%w(install:updates install:update)
     installed = site_config[:installed]
     if installed
       installed.keys.each do |key|
-        entries = installed[key]
+        entries = installed[key] 
         entries.each do |entry|
           found = list[entry[:type].to_sym]
           if found
             found.each do |e|
               if e[:name] == entry[:name] and not updated.include? "#{entry[:type]}_#{entry[:name]}"
-                local_version = Appcelerator::Project.to_version(e[:version])
-                remote_version = Appcelerator::Project.to_version(entry[:version])
-                update = OPTIONS[:force_update] or (e[:version]==entry[:version] and e[:hashcode] != entry[:hashcode])
+                local_version = Appcelerator::Project.to_version(entry[:version])
+                remote_version = Appcelerator::Project.to_version(e[:version])
+                puts "local_version=#{local_version},remote_version=#{remote_version}" if OPTIONS[:debug]
+                puts "local_entry=#{entry.to_yaml}" if OPTIONS[:debug]
+                puts "remote_entry=#{e.to_yaml}" if OPTIONS[:debug]
+                puts if OPTIONS[:debug]
+                same_checksum = e[:checksum].to_s == entry[:checksum].to_s
+                same_version = local_version == remote_version
+                update = (same_version and same_checksum==false)
                 update = update ? local_version <= remote_version : remote_version > local_version
+                update = true if OPTIONS[:force_update]
+                puts "should updated? #{update}" if OPTIONS[:debug]
+                if update 
+                  next if Appcelerator::Installer.installed_this_session?(entry[:type],entry[:name],entry[:version])
+                end
                 count+=1 if update
                 if update and confirm "Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y'
                   Appcelerator::Installer.install_component entry[:type].to_sym,entry[:type].to_s,entry[:name],true,nil,true,false

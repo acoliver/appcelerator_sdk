@@ -769,6 +769,10 @@ HELP
         return to_dir,name,version,checksum,already_installed
     end
     
+    def Installer.installed_this_session?(type,name,version)
+      @@installed_in_session.include? "#{type}_#{name}_#{version}"
+    end
+    
     def Installer.add_installed_component(name,type,version,checksum,save=true)
       type = type.to_s
       with_site_config(save) do |site_config|

@@ -72,9 +72,9 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         end
         props=props.join(' ')
         sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
-        cp = "#{servicesdir}"
+        cp = "\"#{servicesdir}\""
         cp << sep
-        cp << "#{pwd}/output/classes" if File.exists?("#{pwd}/output/classes")
+        cp << "\"#{pwd}/output/classes\"" if File.exists?("#{pwd}/output/classes")
         cp << sep
         cp << jars.join(sep)
         cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"

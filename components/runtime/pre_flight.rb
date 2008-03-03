@@ -45,6 +45,7 @@ module Appcelerator
         
         Dir["#{from_dir}/**/**"].each do |file|
           next if excludes.include? file
+          next if File.directory? file
           target = file.gsub("#{from_dir}/",'')
           overwrite = File.exists? target
           if overwrite 
