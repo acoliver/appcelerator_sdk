@@ -45,6 +45,9 @@ then
          echo "chmod -R 0777 /Library/Appcelerator/updates" >> /tmp/appcelerator_installer.log
          chmod -R 0777 /Library/Appcelerator/updates
 
+         echo "chmod -R 0666 /Library/Appcelerator/build.yml" >> /tmp/appcelerator_installer.log
+         chmod -R 0666 /Library/Appcelerator/build.yml
+
          echo "chmod +x /Library/Appcelerator/appcelerator" >> /tmp/appcelerator_installer.log
          chmod +x /Library/Appcelerator/appcelerator
 
@@ -53,6 +56,9 @@ then
 
          echo "chmod +x /usr/bin/app" >> /tmp/appcelerator_installer.log
          chmod +x /usr/bin/app
+
+         echo "/usr/bin/app" >> /tmp/appcelerator_installer.log
+         /usr/bin/app --install 2>/dev/null
 
          echo "open http://www.appcelerator.org" >> /tmp/appcelerator_installer.log
          open "http://www.appcelerator.org"

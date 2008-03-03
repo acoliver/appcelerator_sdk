@@ -125,7 +125,7 @@ FileUtils.chmod 0755, "#{bindir}/app"
 end
 
 puts "Completing installation...."
-system "#{install_dir}/appcelerator"
+system "#{install_dir}/appcelerator --install 2>/dev/null"
 
 if RUBY_PLATFORM =~ /darwin/
   Kernel.sleep 3
