@@ -92,7 +92,7 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         begin
           server = ''
           server = options[:server] if options[:server]
-          port = options[:port] || 4000
+          port = options[:port] || 3000
           args = options[:args] || ''
           args << " --port=#{port}"
           puts "#{pwd}/script/server #{server} #{args}" if OPTIONS[:verbose]
