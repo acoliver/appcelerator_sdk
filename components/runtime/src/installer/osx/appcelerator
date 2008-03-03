@@ -27,19 +27,37 @@ if [ $UID -eq 0 ]
 then
     if [ "$1" == "--postflight--" ]
     then
-       # check to do the postflight install process for the macosx installer
+         echo "mkdir -p /Library/Appcelerator/releases" >> /tmp/appcelerator_installer.log
          mkdir -p /Library/Appcelerator/releases
+         
+         echo "mkdir -p /Library/Appcelerator/updates" >> /tmp/appcelerator_installer.log
          mkdir -p /Library/Appcelerator/updates
+
+         echo "chown -R root:admin /Library/Appcelerator" >> /tmp/appcelerator_installer.log
          chown -R root:admin /Library/Appcelerator
+
+         echo "chown -R root:admin /usr/bin/appcelerator" >> /tmp/appcelerator_installer.log
          chown -R root:admin /usr/bin/appcelerator
+
+         echo "chmod -R 0777 /Library/Appcelerator/releases" >> /tmp/appcelerator_installer.log
          chmod -R 0777 /Library/Appcelerator/releases
+
+         echo "chmod -R 0777 /Library/Appcelerator/updates" >> /tmp/appcelerator_installer.log
          chmod -R 0777 /Library/Appcelerator/updates
+
+         echo "chmod +x /Library/Appcelerator/appcelerator" >> /tmp/appcelerator_installer.log
          chmod +x /Library/Appcelerator/appcelerator
+
+         echo "ln -fs /Library/Appcelerator/appcelerator /usr/bin/app" >> /tmp/appcelerator_installer.log
          ln -fs /Library/Appcelerator/appcelerator /usr/bin/app
+
+         echo "chmod +x /usr/bin/app" >> /tmp/appcelerator_installer.log
          chmod +x /usr/bin/app
-         /usr/bin/app
-#         open "http://127.0.0.1:9080"
+
+         echo "open http://www.appcelerator.org" >> /tmp/appcelerator_installer.log
          open "http://www.appcelerator.org"
+
+         echo "exiting successfully!" >> /tmp/appcelerator_installer.log
          exit 0
     fi 
 fi
