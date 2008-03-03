@@ -57,6 +57,8 @@ Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b)
   require File.expand_path(file)
 end
 
+Appcelerator::PluginManager.loadPlugins
+
 def dequote(s)
   return nil unless s
   m = /^['"](.*)["']$/.match(s)

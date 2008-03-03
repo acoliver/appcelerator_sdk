@@ -206,7 +206,6 @@ module Appcelerator
         
         if not error
           Appcelerator::Boot.boot unless name=='help' or name.index('help:')
-          Appcelerator::PluginManager.loadPlugins argHash
           event = {:name=>name,:args=>argHash,:options=>opts}
           Appcelerator::PluginManager.dispatchEvent 'before_command',event
           info[:invoker].call(argHash,opts)

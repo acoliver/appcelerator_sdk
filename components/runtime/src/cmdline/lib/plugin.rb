@@ -47,8 +47,8 @@ module Appcelerator
         p.send :plugin_unregistered
       end
     end
-    def PluginManager.loadPlugins(args)
-      path = args[:path] || Dir.pwd
+    def PluginManager.loadPlugins
+      path = Dir.pwd
       if path 
         path = path.path if path.class==Dir
         if File.exists? path and File.exists? "#{path}/plugins"
