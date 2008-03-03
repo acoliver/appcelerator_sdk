@@ -63,7 +63,7 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         servicesdir = "#{pwd}/app/services"
 
         jars = Dir["#{pwd}/lib/**/**"].inject([]) do |jars,file|
-          jars << file if File.extname '.jar'
+          jars << "\"#{file}\"" if File.extname '.jar'
         end
         props=[]
         OPTIONS.each do |k,v|
@@ -82,7 +82,9 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         event = {:project_dir=>pwd,:service=>'java'}
         Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
         begin
-          system cmd
+          if not system cmd
+            STDERR.puts "Error executing: #{cmd}"
+          end
         ensure
           Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
         end
