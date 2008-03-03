@@ -75,3 +75,6 @@
 - :type: widget
   :name: app:validation
   :version: ">=1.0"
+- :type: widget
+  :name: app:yui_map
+  :version: ">=1.0"

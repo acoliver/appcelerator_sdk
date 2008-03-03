@@ -30,8 +30,7 @@ then
        # check to do the postflight install process for the macosx installer
          mkdir -p /Library/Appcelerator/releases
          mkdir -p /Library/Appcelerator/updates
-         chown -R root:admin /Library/Appcelerator/releases
-         chown -R root:admin /Library/Appcelerator/updates
+         chown -R root:admin /Library/Appcelerator
          chown -R root:admin /usr/bin/appcelerator
          chmod -R 0777 /Library/Appcelerator/releases
          chmod -R 0777 /Library/Appcelerator/updates
@@ -39,7 +38,8 @@ then
          ln -fs /Library/Appcelerator/appcelerator /usr/bin/app
          chmod +x /usr/bin/app
          /usr/bin/app
-         open "http://127.0.0.1:9080"
+#         open "http://127.0.0.1:9080"
+         open "http://www.appcelerator.org"
          exit 0
     fi 
 fi

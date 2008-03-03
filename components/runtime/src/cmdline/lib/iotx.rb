@@ -293,7 +293,7 @@ module Appcelerator
           b = Digest::MD5.hexdigest content
           return true if a==b
         end
-        f = File.open file,'w+'
+        f = File.open file,'wb'
         f.write content
         f.close
       end

@@ -59,6 +59,9 @@ module Appcelerator
       Installer.copy tx, temp1.path, "#{to_path}/config/build.properties"
       Installer.copy tx, temp2.path, "#{to_path}/build.xml"
       Installer.copy tx, "#{from_path}/appcelerator.xml", "#{to_path}/public"
+      
+      temp1.close
+      temp2.close
 
       tx.mkdir "#{to_path}/src/java"
       tx.mkdir "#{to_path}/src/war"

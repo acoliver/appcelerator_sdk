@@ -70,7 +70,20 @@ end
 # set up temp directory and delete it on exit
 #
 APP_TEMP_DIR=FileUtils.mkdir_p(File.join(ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP'] || '.',"appcelerator.#{rand(10000)}.#{$$}"))
-at_exit { FileUtils.rm_rf APP_TEMP_DIR }
+APP_TEMP_FILES = Array.new
+
+def recursive_deltree(dir)
+  APP_TEMP_FILES.each do |file|
+    file.close rescue nil
+  end
+  Dir["#{dir}/**/**"].each do |f|
+    FileUtils.rm_rf f
+  end
+  FileUtils.rm_rf dir
+  FileUtils.rmdir dir rescue nil
+end
+
+at_exit { recursive_deltree APP_TEMP_DIR unless OPTIONS[:debug] }
 
 if OPTIONS[:version]
   if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/

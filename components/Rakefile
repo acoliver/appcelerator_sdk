@@ -23,7 +23,7 @@ require File.expand_path("#{BUILD_DIR}/build.rb")
 task :default => [:all] do
 end
 
-task :all => %w(widget:all service:all appadmin:all websdk:all installer:all plugin:all) do
+task :all => %w(widget:all service:all websdk:all installer:all plugin:all) do
 end
 
 namespace :installer do

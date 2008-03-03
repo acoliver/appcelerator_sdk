@@ -43,15 +43,17 @@ f.close
 #
 # mongrel service on win32 not placing binary in Ruby bin - we do it for him
 #
-require 'rubygems'
-require 'fileutils'
-svc = Gem.cache.search('mongrel_service').first
-Gem.path.each do |path|
-  dir = File.join(path,'gems',File.basename(svc.loaded_from.gsub('.gemspec','')))
-  next unless File.exists? dir
-  bin = File.join(dir,'bin','mongrel_service.exe')
-  FileUtils.cp bin,File.dirname(RUBY_BIN)
-  break
-end
+
+#TODO: this is used by appadmin and commented out for now
+#require 'rubygems'
+#require 'fileutils'
+#svc = Gem.cache.search('mongrel_service').first
+#Gem.path.each do |path|
+#  dir = File.join(path,'gems',File.basename(svc.loaded_from.gsub('.gemspec','')))
+#  next unless File.exists? dir
+#  bin = File.join(dir,'bin','mongrel_service.exe')
+#  FileUtils.cp bin,File.dirname(RUBY_BIN)
+#  break
+#end
 
 

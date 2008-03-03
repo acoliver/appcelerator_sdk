@@ -25,12 +25,12 @@ task :default do
 end
 
 task :setup do
-  dir = Dir.glob(STAGE_DIR+'/appadmin_*.zip')
-  if dir.empty?
-    STDERR.puts "You must first build appadmin module. You can run `rake appadmin:all` to make this happen"
-    exit 1
-  end
-  APPADMIN_LOCATION = dir.first
+  # dir = Dir.glob(STAGE_DIR+'/appadmin_*.zip')
+  # if dir.empty?
+  #   STDERR.puts "You must first build appadmin module. You can run `rake appadmin:all` to make this happen"
+  #   exit 1
+  # end
+  # APPADMIN_LOCATION = dir.first
 end
 
 task :all=> [:win32,:unix,:osx,:update] do
@@ -81,7 +81,8 @@ task :win32 => [:setup] do
     copy_dir "#{BUILD_DIR}/src/installer/win32", win32_dir
 
     FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", win32_dir
-    FileUtils.cp APPADMIN_LOCATION, "#{win32_dir}/appadmin.zip"
+    FileUtils.cp "#{BUILD_DIR}/src/installer/win32/build.yml", win32_dir
+#    FileUtils.cp APPADMIN_LOCATION, "#{win32_dir}/appadmin.zip"
 
     FileUtils.cd(win32_dir) do
       system "makensis installer.nsi" if VERBOSE
@@ -115,7 +116,7 @@ task :unix => [:setup] do
    FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
    FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
    FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", unix_dir
-   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
+#   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
 
    FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
 
@@ -175,7 +176,8 @@ task :osx=> [:setup] do
     system "hdiutil eject /Volumes/Appcelerator 2>/dev/null"
 
     FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
-    FileUtils.cp APPADMIN_LOCATION, "#{osx_dir}/installer/appadmin.zip"
+#    FileUtils.cp APPADMIN_LOCATION, "#{osx_dir}/installer/appadmin.zip"
+    FileUtils.cp "#{BUILD_DIR}/src/installer/osx/build.yml", "#{osx_dir}/installer"
 
     # build the package structure
     if File.exists? "/Developer/Tools/packagemaker"

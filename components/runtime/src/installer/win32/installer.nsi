@@ -85,12 +85,13 @@ Section
   
   File "LICENSE"
   File "appcelerator"
+  File "build.yml"
   File *.rb
   File *.txt
   File *.exe
   File *.dll
-  File *.zip
-  File *.gem
+;  File *.zip
+;  File *.gem
   File /r "commands"
   File /r "lib"
 
@@ -186,30 +187,30 @@ Section
   ReadEnvStr $0 COMSPEC
 
   ; attempt to install gem dependencies
-  DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\cgi_multipart_eof_fix-2.5.0.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\gem_plugin-0.2.3.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\windows-pr-0.8.0.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\win32-service-0.5.2-mswin32.gem" -v "0.5.2" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\fastthread-1.0.1-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\sqlite3-ruby-1.2.1-mswin32.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel-1.1.4-x86-mswin32-60.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel_service-0.3.4-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install rubyzip -y --no-ri --no-rdoc' $R1
+;  DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\cgi_multipart_eof_fix-2.5.0.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\gem_plugin-0.2.3.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\windows-pr-0.8.0.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\win32-service-0.5.2-mswin32.gem" -v "0.5.2" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\fastthread-1.0.1-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\sqlite3-ruby-1.2.1-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel-1.1.4-x86-mswin32-60.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel_service-0.3.4-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install rubyzip -y --no-ri --no-rdoc' $R1
 
   DetailPrint "Executing postflight installer script"
   ExecWait '"$R0\bin\rubyw.exe" "$INSTDIR\post-flight.rb" "$R0\bin\ruby.exe" "$INSTDIR"'
  
   ;run installation
-  DetailPrint "Installing Appcelerator Appcenter (admin console) ... this will take several minutes (possibly)"
-  nsExec::ExecToStack '"$R0\bin\ruby.exe" "$INSTDIR\appcelerator"'
-  Pop $0
-  Pop $1
-
-  IntCmp $0 1 DisplayError Finish
-
-  DisplayError:
-  MessageBox MB_OK|MB_ICONEXCLAMATION "Error completing installation. The install program returned the following error:  $1"
+;  DetailPrint "Installing Appcelerator Appcenter (admin console) ... this will take several minutes (possibly)"
+;  nsExec::ExecToStack '"$R0\bin\ruby.exe" "$INSTDIR\appcelerator"'
+;  Pop $0
+;  Pop $1
+;
+;  IntCmp $0 1 DisplayError Finish
+;
+;  DisplayError:
+;  MessageBox MB_OK|MB_ICONEXCLAMATION "Error completing installation. The install program returned the following error:  $1"
 
 
   Finish:
@@ -219,15 +220,16 @@ SectionEnd
 Function .onInstSuccess
 
   ; open our welcome page
-  StrCpy $0 "http://127.0.0.1:9080"
+  ;StrCpy $0 "http://127.0.0.1:9080"
+  StrCpy $0 "http://www.appcelerator.org"
   Call openLinkNewWindow
 
 FunctionEnd
 
 Section "Uninstall"
 
-  nsExec::Exec "net stop appcelerator"
-  nsExec::Exec "mongrel_rails service::remove -N appcelerator"
+;  nsExec::Exec "net stop appcelerator"
+;  nsExec::Exec "mongrel_rails service::remove -N appcelerator"
 
   Delete "$INSTDIR\ruby-installer.exe"
   Delete "$INSTDIR\Uninstall.exe"

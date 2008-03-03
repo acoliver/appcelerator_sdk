@@ -241,7 +241,7 @@ module Appcelerator
               dirname = File.dirname(t.path)
               if url =~ /\.tgz$/
                 #FIXME - deal with windows or bundle in windows or something - or figure out how to do in ruby
-                system "tar xfz #{t.path} -C #{dirname}"
+                #system "tar xfz #{t.path} -C #{dirname}"
               elsif url =~ /\.zip$/ or f.content_type =~ /^application\/zip/
                 Installer.unzip dirname,t.path
                 FileUtils.rm_r t.path
@@ -257,6 +257,7 @@ module Appcelerator
     
     def Installer.unzip(dirname,path)
       require 'zip/zip'
+      puts "Extracting #{path} to #{dirname}" if OPTIONS[:debug]
       Zip::ZipFile::open(path) do |zf|
         zf.each do |e|
           fpath = File.join(dirname, e.name)
@@ -279,7 +280,9 @@ module Appcelerator
     end
     
     def Installer.tempfile(dir=APP_TEMP_DIR)
-      File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(100000)}")),"w+")
+      f = File.new(File.expand_path(File.join(dir,"#{$$}_#{rand(100000)}")),'wb')
+      APP_TEMP_FILES << f
+      f
     end
     
     def Installer.put(path,content,force=false)
@@ -922,19 +925,19 @@ HELP
     end
     
     def Installer.check_appadmin_installed
-      config = {:name=>'appadmin',:type=>'appadmin'}
-      admin = Installer.get_installed_component config
-      if not admin
-        puts "Completing installation ... "
-        list = Installer.fetch_distribution_list
-        if list
-          a = list[:appadmin]
-          admin = Installer.sort_components(a) if a
-          if admin
-            Installer.install_component('appadmin','Admin','appadmin',false,nil,true,false)
-          end
-        end
-      end
+      # config = {:name=>'appadmin',:type=>'appadmin'}
+      # admin = Installer.get_installed_component config
+      # if not admin
+      #   puts "Completing installation ... "
+      #   list = Installer.fetch_distribution_list
+      #   if list
+      #     a = list[:appadmin]
+      #     admin = Installer.sort_components(a) if a
+      #     if admin
+      #       Installer.install_component('appadmin','Admin','appadmin',false,nil,true,false)
+      #     end
+      #   end
+      # end
     end
     
   end
