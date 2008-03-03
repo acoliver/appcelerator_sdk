@@ -138,7 +138,7 @@ end
 check_for_initial
 #check_for_appadmin
 
-exit 0 if INSTALLING
+exit 0 if   INSTALLING
   
 
 if system "ruby \"#{TARGET_DIR}/console.rb\" #{ARGV.join(' ')}"
