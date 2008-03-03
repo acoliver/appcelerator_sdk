@@ -24,7 +24,7 @@ require 'fileutils'
 Signal.trap("INT") { puts; exit }
 
 #REQUIRED_GEMS = %w(mongrel rubyzip sqlite3-ruby)
-REQUIRED_GEMS = []
+REQUIRED_GEMS = %w(rubyzip)
 MYFILE = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
 TARGET_DIR = File.expand_path File.dirname(MYFILE)
 UPDATE_DIR = File.join(TARGET_DIR,'updates')
@@ -68,54 +68,54 @@ def check_for_initial
     exit 1
   end
   
-  # # ensure we have the right gems installed
-  # gems = []
-  # 
-  # require 'rubygems'
-  # 
-  # REQUIRED_GEMS.each do |gem|
-  #   check_required_gem gem,gems
-  # end
-  # 
-  # check_required_gem 'mongrel_service',gems if WIN32
-  # 
-  # if not gems.empty?
-  #   if not FORCE_INSTALL
-  #     STDOUT.puts
-  #     STDOUT.puts "Appcelerator requires the following component#{gems.length > 1 ? 's' : ''}: \n"
-  #     STDOUT.puts
-  #     STDOUT.puts "  > " + gems.join("\n  > ")
-  #     STDOUT.puts
-  #     STDOUT.print "Attempt to auto-install? [Yn] "
-  #     c = STDIN.getc
-  #     if not [10,89,121].include? c
-  #       STDOUT.puts
-  #       STDOUT.puts "Cancelled!"
-  #       exit 1
-  #     end
-  #   end
-  #   
-  #   gems.each do |gem|
-  #     cmd = "#{GEM_CMD} install #{gem} -y"
-  #     if not WIN32
-  #       cmd = 'sudo ' + cmd
-  #     end
-  #     puts "Executing: #{cmd}"
-  #     system cmd
-  # 
-  #     # NOTE: for some reason, gem doesn't exit with non-zero when unsuccessful
-  #     check_cmd = eval "%x[#{GEM_CMD} list #{gem}]"
-  #     
-  #     if not check_cmd =~ Regexp.new(gem)
-  #       STDERR.puts "Gem #{gem} doesn't look like it installed correctly."
-  #       exit 1
-  #     end
-  #   end
-  #   
-  #   STDOUT.puts "Dependencies have been successfully installed..."
-  #   STDOUT.puts
-  #   
-  # end
+  # ensure we have the right gems installed
+  gems = []
+  
+  require 'rubygems'
+  
+  REQUIRED_GEMS.each do |gem|
+    check_required_gem gem,gems
+  end
+  
+#  check_required_gem 'mongrel_service',gems if WIN32
+  
+  if not gems.empty?
+    if not FORCE_INSTALL and not INSTALLING
+      STDOUT.puts
+      STDOUT.puts "Appcelerator requires the following component#{gems.length > 1 ? 's' : ''}: \n"
+      STDOUT.puts
+      STDOUT.puts "  > " + gems.join("\n  > ")
+      STDOUT.puts
+      STDOUT.print "Attempt to auto-install? [Yn] "
+      c = STDIN.getc
+      if not [10,89,121].include? c
+        STDOUT.puts
+        STDOUT.puts "Cancelled!"
+        exit 1
+      end
+    end
+    
+    gems.each do |gem|
+      cmd = "#{GEM_CMD} install #{gem} -y"
+      if not WIN32
+        cmd = 'sudo ' + cmd
+      end
+      puts "Executing: #{cmd}"
+      system cmd
+  
+      # NOTE: for some reason, gem doesn't exit with non-zero when unsuccessful
+      check_cmd = eval "%x[#{GEM_CMD} list #{gem}]"
+      
+      if not check_cmd =~ Regexp.new(gem)
+        STDERR.puts "Gem #{gem} doesn't look like it installed correctly."
+        exit 1
+      end
+    end
+    
+    STDOUT.puts "Dependencies have been successfully installed..."
+    STDOUT.puts
+    
+  end
 
   # write out our file
   FileUtils.mkdir_p File.join(TARGET_DIR,'releases')
