@@ -28,7 +28,8 @@ setup(name='Appcelerator',
       install_requires=[
           'beaker>=0.8.1',
           'simplejson',
-          'elementtree'
+          'elementtree',
+          'pastescript'
       ],
       entry_points="""
 [paste.app_factory]
