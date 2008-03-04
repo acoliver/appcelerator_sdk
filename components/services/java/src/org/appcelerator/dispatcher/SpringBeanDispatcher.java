@@ -42,12 +42,15 @@ public class SpringBeanDispatcher implements BeanFactoryAware
     private static final Log LOG = LogFactory.getLog(SpringBeanDispatcher.class);
     private ListableBeanFactory factory;
     private static Object instance;
-    
+    private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
     
     @ServiceDispatcher
     public boolean dispatch (Message request, List<Message> responses)
     {
-        return ServiceRegistry.dispatch(request, responses);
+    	Object token = dispatchVisitor.startVisit(request, responses);
+        boolean result = ServiceRegistry.dispatch(request, responses);
+        dispatchVisitor.endVisit(token, request, responses);
+        return result;
     }
     
     @PostConstruct
@@ -89,4 +92,13 @@ public class SpringBeanDispatcher implements BeanFactoryAware
             throw new IllegalArgumentException("bean factory needs to have implemented ListableBeanFactory for SpringBeanDispatcher to work");
         }
     }
+
+	public DispatchVisitor getDispatchVisitor() {
+		return dispatchVisitor;
+	}
+
+	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
+		this.dispatchVisitor = dispatchVisitor;
+	}
+
 }
