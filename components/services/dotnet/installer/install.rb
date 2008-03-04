@@ -26,7 +26,7 @@ module Appcelerator
       sb_dir = public_dir + '/bin'
       
       tx.mkdir src_dir
-      tx.sb_dir
+      tx.mkdir sb_dir
       
       Appcelerator::Installer.copy(tx,from_path,src_dir,["#{__FILE__}",'appcelerator.xml'])
       Appcelerator::Installer.copy(tx,from_path + '/appcelerator.xml',public_dir)

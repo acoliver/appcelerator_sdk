@@ -41,6 +41,12 @@ module Appcelerator
         @bin_suffix = ''
       end
     end
+    
+    def found_no_python
+      STDERR.puts "I'm sorry, python was not found on your system. Please install it and re-try."
+      exit 1
+    end
+    
     attr_reader :python,:python_scripts_dir,:sudo,:bin_suffix
     
     def create_project(from_path,to_path,config,tx)
