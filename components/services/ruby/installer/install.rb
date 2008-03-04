@@ -32,18 +32,20 @@ module Appcelerator
       
       rails_gem_array = Gem.cache.search('rails')
       if rails_gem_array.empty?
-        die "Unable to create project. You must have Rails and all its dependencies installed first. Run 'gem install rails'."
+        die "Unable to create project! Run 'gem install rails' first."
       end
       
       rails_gem = rails_gem_array.last
       
-      if OPTIONS[:debug]
-        system("rails #{to_path} --skip #{OPTIONS[:args]}")
-      else
-        system("rails #{to_path} --skip -q #{OPTIONS[:args]}")
-      end
+      cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'rails' : 'rails.cmd'
       
-      env = File.read "#{to_path}/config/environment.rb"
+      if OPTIONS[:debug]
+        system "#{cmd} \"#{to_path}\" --skip"
+      else
+        system("#{cmd} \"#{to_path}\" --skip -q #{OPTIONS[:args]}")
+      end
+    
+      env = File.read File.expand_path("#{to_path}/config/environment.rb")
       if not env =~ /require 'appcelerator'/
         env << "\nrequire 'appcelerator'\n"
         tx.put "#{to_path}/config/environment.rb", env
