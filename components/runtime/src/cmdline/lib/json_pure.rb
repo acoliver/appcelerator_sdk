@@ -22,7 +22,7 @@ end
 # License includes the GNU General Public License (GPL), Version 2, so see the
 # file GPL as well.
 
-if not SBC_HAS_JSON and not defined?(JSON)
+if not SBC_HAS_JSON
   dir = "#{File.dirname(__FILE__)}"
   require "#{dir}/_json_pure_generator"
   require "#{dir}/_json_pure_parser"
