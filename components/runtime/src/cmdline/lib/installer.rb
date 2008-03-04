@@ -129,7 +129,7 @@ module Appcelerator
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
 
-      if not @@loggedin or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
+      if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
         while true 
           if username and password
     			  break if Installer.network_login(username,password)
@@ -839,6 +839,7 @@ HELP
     
     def Installer.get_remote_component(type,name,version=nil)
       found = []
+      Installer.fetch_distribution_list
       with_site_config(false) do |site_config|
         distributions = site_config[:distributions]
         if distributions
