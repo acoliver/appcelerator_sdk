@@ -106,13 +106,19 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         event = {:project_dir=>pwd,:service=>'ruby'}
         Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
         begin
+          if RUBY_PLATFORM =~ /(:?mswin|mingw)/
+            paster = Dir['C:/Python2*/Scripts/paster.exe'].last
+          else
+            paster = 'paster'
+          end
+          
           ini_file = options[:ini_file] || 'development.ini'
           reload = options[:no_reload] ? '' :  '--reload'
           port = options[:port] || 5000
           args = options[:args] || ''
           
-          puts "paster serve #{ini_file} #{reload} http_port=#{port} #{args}" if OPTIONS[:verbose]
-          system "paster serve #{ini_file} #{reload} http_port=#{port} #{args}"
+          puts "#{paster} serve #{ini_file} #{reload} http_port=#{port} #{args}" if OPTIONS[:verbose]
+          system "#{paster} serve #{ini_file} #{reload} http_port=#{port} #{args}"
         ensure
           Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
         end        

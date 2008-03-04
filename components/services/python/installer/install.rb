@@ -22,8 +22,26 @@ module Appcelerator
   class Python
     
     def initialize
-      @sudo = (RUBY_PLATFORM =~ /(:?mswin|mingw)/)? '' : 'sudo '
+      if on_windows
+        python_dir = Dir['C:/Python2*/'].last
+        if not python_dir or not File.exists?(File.join(python_dir,'python.exe'))
+          found_no_python
+        end
+        @python = File.join(python_dir,'python.exe')
+        @python_scripts_dir = File.join(python_dir, 'Scripts')+'/'
+        @sudo = ''
+        @bin_suffix = '.exe'
+      else
+        if not quiet_system('python -V')
+          found_no_python
+        end
+        @python = 'python'
+        @python_script_prefix = ''
+        @sudo = 'sudo '
+        @bin_suffix = ''
+      end
     end
+    attr_reader :python,:python_scripts_dir,:sudo,:bin_suffix
     
     def create_project(from_path,to_path,config,tx)
       
@@ -32,7 +50,6 @@ module Appcelerator
         return false
       end
       
-      check_python_installed
       install_easy_install_if_needed
       install_pylons_if_needed
       install_paster_if_needed
@@ -45,7 +62,7 @@ module Appcelerator
       
       assert( !(project_name.include?(' ') or project_name.include?(';')))
       FileUtils.cd project_location do
-        if not quiet_system("paster create -t pylons #{project_name}")
+        if not quiet_system("#{paster} create -t pylons #{project_name}")
           puts 'Unable to run "paster", this command creates the pylons project and ought to have been downloaded by the installer'
           return false
         end
@@ -109,19 +126,16 @@ END_CODE
       true
     end
     
-    def run_server(path,config)
-      # do we want to fork/exec this?
-      FileUtils.cd path do
-        system('paster serve development.ini --reload')
-      end
-    end
-    
-    
     #
     # Helpers
     #
+        
     def quiet_system(cmd)
-      cmd += ' > /dev/null 2>&1' unless OPTIONS[:verbose]
+      if OPTIONS[:verbose]
+        puts cmd
+      else
+        cmd += ' > /dev/null 2>&1'
+      end
       system(cmd)
     end
     
@@ -142,18 +156,30 @@ END_CODE
     end
     
     #
+    # Platform helpers
+    #
+    
+    def on_windows
+      RUBY_PLATFORM =~ /(:?mswin|mingw)/
+    end
+    
+    def easy_install
+      "#{sudo}#{python_scripts_dir}easy_install#{bin_suffix}"
+    end
+    
+    def check_easy_install
+      "#{python_scripts_dir}easy_install#{bin_suffix} --help"
+    end
+    
+    def paster
+      "#{python_scripts_dir}paster#{bin_suffix}"
+    end
+    
+    #
     # Dependencies
     #
-    def check_python_installed
-      if not quiet_system('python -V')
-        puts 'A python interpreter must be installed to use the appcelerator python sdk,'
-        puts 'see http://www.python.org/download/ to download for your platform'
-        exit 1
-      end
-    end
-        
     def install_easy_install_if_needed
-      if not quiet_system('easy_install --help')
+      if not quiet_system(check_easy_install)
         confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install now? (Y)es, (N)o [Y]")
         
         require 'open-uri'
@@ -162,29 +188,29 @@ END_CODE
         ez_file = Tempfile.new('ez_setup.py')
         ez_file.write(ez_setup_src)
         ez_file.close
-        quiet_system("#{@sudo}python #{ez_file.path}")
+        quiet_system("#{sudo}#{python} #{ez_file.path}")
       end
     end
     
     def install_pylons_if_needed
       # this is taken care of by easy_install, but this gives the user a prompt
-      if not quiet_system('python -c "import pylons"')
+      if not quiet_system("#{python} -c \"import pylons\"")
         confirm("Appcelerator:Python requires Pylons to be installed before continuing. Install now? (Y)es, (N)o [Y]")
-        quiet_system("#{@sudo}easy_install pylons")
+        quiet_system("#{easy_install} pylons")
       end
     end
     
     def install_paster_if_needed
-      if not quiet_system('paster')
+      if not quiet_system("#{paster}")
         confirm("Appcelerator:Python requires PasteScript to be installed before continuing. Install now? (Y)es, (N)o [Y]")
-        quiet_system("#{@sudo}easy_install pastescript")
+        quiet_system("#{easy_install} pastescript")
       end
     end
     
     def install_appcelerator_egg_if_needed(dir,version)
-      appc_version_check = "python -c \"import appcelerator;from pkg_resources import require;require('Appcelerator==#{version}')\""
+      appc_version_check = "#{python} -c \"import appcelerator;from pkg_resources import require;require('Appcelerator==#{version}')\""
       if not quiet_system(appc_version_check)
-        quiet_system("#{@sudo} easy_install #{dir}/module/")
+        quiet_system("#{easy_install} \"#{dir}/module/\"")
       end
     end
         
