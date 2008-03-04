@@ -19,7 +19,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 #
 # we need to check and see if we're in pre-flight mode
 #
@@ -58,7 +57,9 @@ then
          chmod +x /usr/bin/app
 
          echo "/usr/bin/app" >> /tmp/appcelerator_installer.log
-         /usr/bin/app --install 2>/dev/null
+         echo "PATH=$PATH" >> /tmp/appcelerator_installer.log
+         PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin
+         ruby /usr/bin/app --install >>/tmp/appcelerator_installer.log 2>&1
 
          echo "open http://www.appcelerator.org" >> /tmp/appcelerator_installer.log
          open "http://www.appcelerator.org"
