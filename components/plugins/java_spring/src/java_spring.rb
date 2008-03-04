@@ -8,7 +8,7 @@
 #
 class JavaSpring < Appcelerator::Plugin
     def before_add_plugin(event)
-      if event[:plugin_name] == 'java:spring'
+      if event[:name] == 'java:spring'
         
           version = event[:version]
           plugin_dir = event[:plugin_dir]
