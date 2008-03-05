@@ -30,8 +30,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.appcelerator.dispatcher.ServiceDirectoryScanner;
 import org.appcelerator.transport.AjaxServiceTransportServlet;
+import org.mortbay.jetty.MimeTypes;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.Context;
@@ -47,6 +51,9 @@ import org.mortbay.resource.Resource;
  */
 public class HTTPEndpoint
 {
+
+    private static final Log LOG = LogFactory.getLog(HTTPEndpoint.class);
+    
     private Server server;
     
     public HTTPEndpoint(int port, String webdir)
@@ -78,6 +85,7 @@ public class HTTPEndpoint
     {
         private static final long serialVersionUID = 1L;
         private final ResourceHandler resourceHandler;
+        private final MimeTypes mimeTypes = new MimeTypes();
         
         DispatcherServlet(ResourceHandler rh)
         {
@@ -97,6 +105,10 @@ public class HTTPEndpoint
             Resource resource=resourceHandler.getResource(path);
             if (resource.exists() && !resource.isDirectory())
             {
+               
+                response.setContentLength((int) resource.length());
+                response.setContentType(mimeTypes.getMimeByExtension(path).toString());
+
                 OutputStream out = response.getOutputStream();
                 InputStream in = resource.getInputStream();
                 byte buf[] = new byte[8096];
@@ -112,7 +124,7 @@ public class HTTPEndpoint
                     count+=c;
                 }
                 out.flush();
-                response.setContentLength(count);
+               
                 return;
             }
             
