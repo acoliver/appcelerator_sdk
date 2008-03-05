@@ -771,6 +771,15 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
 	return Appcelerator.Compiler.convertHtml(html, convertHtmlPrefix);
 };
 
+Appcelerator.Compiler.addIENameSpace = function (html)
+{
+	if (Appcelerator.Browser.isIE)
+	{
+		html = '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+	}
+};
+
+
 Appcelerator.Compiler.convertHtml = function (html, convertHtmlPrefix)
 {
 	// convert funky url-encoded parameters escaped
@@ -1166,7 +1175,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					
 					if (Appcelerator.Browser.isIE)
 					{
-						html = '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+						html = Appcelerator.Compiler.addIENameSpace(html);
 					}
 
 					added = true;

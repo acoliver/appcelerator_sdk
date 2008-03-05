@@ -172,7 +172,7 @@ Appcelerator.Widget.Iterator =
 		{
 			element.setAttribute('selectable',selectable);
 		}
-		element.innerHTML = html;
+		element.innerHTML = Appcelerator.Compiler.addIENameSpace(html);
 		Appcelerator.Compiler.dynamicCompile(element);
 	},
 	compileWidget: function(params) 
