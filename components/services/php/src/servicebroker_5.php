@@ -51,9 +51,9 @@
 	$files = searchdir($dir,-1,"FILES");
 	foreach ($files as $i => $value)
 	{
-		$tokens = split('[.]',$value);
-		$name = substr($tokens[0],strlen($dir)+1);
-		
+		$right = strrpos($value,'.');
+		$left = strlen($dir)+1;
+		$name = substr($value,$left,$right-$left);
 		if (stristr($name,'Service'))
 		{
 			$tokens = split('_',$name);
