@@ -26,13 +26,17 @@ module Appcelerator
       sb_dir = public_dir + '/bin'
       
       tx.mkdir src_dir
+      tx.mkdir public_dir
       tx.mkdir sb_dir
       
       Appcelerator::Installer.copy(tx,from_path,src_dir,["#{__FILE__}",'appcelerator.xml'])
       Appcelerator::Installer.copy(tx,from_path + '/appcelerator.xml',public_dir)
-      Appcelerator::Installer.copy(tx,src_dir + '/web.config',public_dir)
-      Appcelerator::Installer.copy(tx,src_dir + '/appcelerator-config.xml',sb_dir)
-      Appcelerator::Installer.copy(tx,src_dir + '/bin/Release/Appcelerator.dll',sb_dir)
+      Appcelerator::Installer.copy(tx,from_path + '/web.config',public_dir)
+      Appcelerator::Installer.copy(tx,from_path + '/ServiceBroker.app',public_dir)
+      
+      #Avoid funky "Error: Is a directory" error
+      Appcelerator::Installer.copy(tx,from_path + '/appcelerator-config.xml',sb_dir + '/appcelerator-config.xml')
+      Appcelerator::Installer.copy(tx,from_path + '/bin/Release/Appcelerator.dll',sb_dir + '/Appcelerator.dll')
       true
     end
   end
