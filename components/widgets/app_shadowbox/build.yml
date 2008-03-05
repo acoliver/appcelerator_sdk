@@ -1,0 +1,10 @@
+--- 
+:type: widget
+:name: app:shadowbox
+:version: 1.0
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
+:tags: [ dialog ]
+:description: "app:shadowbox wraps the Shadowbox library useful for viewing media in a modal dialog"
