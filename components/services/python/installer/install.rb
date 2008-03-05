@@ -139,7 +139,8 @@ END_CODE
     def quiet_system(cmd)
       if OPTIONS[:verbose]
         puts cmd
-      else
+      elsif not on_windows
+        # is there a windows equivalent of this?
         cmd += ' > /dev/null 2>&1'
       end
       system(cmd)
