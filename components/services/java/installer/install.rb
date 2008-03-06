@@ -123,7 +123,7 @@ STR
       end
     
       %w(templates script log).each do |name|
-        tx.rm "#{to_path}/#{name}"
+        tx.rm "#{to_path}/#{name}" if File.exists? "#{to_path}/#{name}"
       end
 
       Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"

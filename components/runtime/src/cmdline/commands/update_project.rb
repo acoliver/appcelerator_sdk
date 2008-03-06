@@ -104,15 +104,11 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
       
       if websdk_component
         new_websdk = nil
-        list[:websdk].each do |e|
-          version = Appcelerator::Project.to_version(e[:version])
-          if version > websdk_version
-            new_websdk = e
-            break
-          elsif version == websdk_version and OPTIONS[:force_update]
-            new_websdk = e
-            break
-          end
+        version = Appcelerator::Project.to_version(websdk_component[:version])
+        if version > websdk_version
+          new_websdk = websdk_component
+        elsif version == websdk_version and OPTIONS[:force_update]
+          new_websdk = websdk_component
         end
         
         if new_websdk
@@ -120,7 +116,7 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
             puts "Skipping ... websdk,#{new_websdk[:version]}" if OPTIONS[:verbose]
           else
             puts "Will update => websdk, #{new_websdk[:version]}" if OPTIONS[:verbose]
-            updates << new_websdk
+            updates << websdk_component
           end
         else
           if OPTIONS[:force_update]
@@ -136,27 +132,20 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
       service = config[:service]
       service_version = Appcelerator::Project.to_version(config[:service_version])
       service_component = Appcelerator::Installer.get_component_from_config(:service,service)
-      
       if service_component
         new_service = nil
-        list[:service].each do |e|
-          if e[:type] == 'service' and e[:name] == service
-            version = Appcelerator::Project.to_version(e[:version])
-            if version > service_version
-              new_service = e
-              break
-            elsif version == service_version and OPTIONS[:force_update]
-              new_service = e
-              break
-            end 
-          end
-        end
+        version = Appcelerator::Project.to_version(service_component[:version])
+        if version > service_version
+          new_service = service_component
+        elsif version == service_version and OPTIONS[:force_update]
+          new_service = service_component
+        end 
         if new_service
             if not confirm "Need to update: #{new_service[:name]} to #{new_service[:version]}. OK? [Yna] ",true,false,'y'
               puts "Skipping ... #{new_service[:name]},#{new_service[:version]}" if OPTIONS[:verbose]
             else
               puts "Will update => #{new_service[:name]}, #{new_service[:version]}" if OPTIONS[:verbose]
-              updates << new_service
+              updates << service_component
             end
         else
           if OPTIONS[:force_update]
@@ -190,7 +179,7 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
                 
                 when :websdk,'websdk'
                   project_config,props=Appcelerator::Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true)
-                  config[:websdk]=project_config[:websdk]
+                  config[:websdk]=websdk_component[:version]
                 
                 when :service,'service'
                   config[:service_version]=component[:version]

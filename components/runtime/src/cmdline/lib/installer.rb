@@ -859,9 +859,9 @@ HELP
     def Installer.sort_components(found)
       if not found.empty?
         found.sort! do |a,b|
-          (a[:version]||0).to_f <=> (b[:version]||0).to_f
+          Appcelerator::Project.to_version(a[:version]||0) <=> Appcelerator::Project.to_version(b[:version]||0)
         end
-        return found.first
+        return found.last
       end
       nil
     end
@@ -869,6 +869,7 @@ HELP
     def Installer.get_component_from_config(type,name,version=nil)
       found = get_remote_component(type,name,version)
       c = get_installed_component({:name=>name,:type=>type,:version=>version})
+      
       found << c if c
       sort_components(found)
     end
@@ -882,9 +883,17 @@ HELP
         if installed
           c = installed[type.to_sym]
           if c
+            items = []
             c.each do |cm|
-              return cm if cm[:name] == name and cm[:type]==type.to_s and ((!version.nil? and cm[:version]==version) or version.nil?)
+              if cm[:name] == name and cm[:type]==type.to_s
+                if version.nil?
+                  items.push cm
+                else
+                  return cm
+                end
+              end
             end
+            return sort_components(items)
           end
         end
       end
