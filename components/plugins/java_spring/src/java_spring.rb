@@ -98,7 +98,7 @@ class JavaSpring < Appcelerator::Plugin
           if not error
             require 'stringio'
             s = StringIO.new
-            doc.write s,3
+            doc.write s,-1
             s.flush
             s.rewind
             tx.put "#{project_dir}/config/web.xml",s.read
