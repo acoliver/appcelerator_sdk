@@ -11,9 +11,9 @@
     <description>myapp Build File</description>
 
     <property file="${user.home}/.ant.properties"/>
+	<import file="build-override.xml" optional="true"/>
     <property file="config/build.properties"/>
 	<property name="dist.dir" value="${stage.dir}"/>
-	<import file="build-override.xml" optional="true"/>
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
