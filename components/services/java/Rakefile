@@ -94,7 +94,7 @@ task :default do
           zipfile.add(filename,"#{java_dir}/dist/#{filename}")
         end
       end
-      zipfile.add('app/services/EchoService.java',"#{java_source}/org/appcelerator/test/EchoService.java")
+      zipfile.add('app/services/org/appcelerator/test/EchoService.java',"#{java_source}/org/appcelerator/test/EchoService.java")
     end
   end
   
