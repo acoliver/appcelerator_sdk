@@ -13,7 +13,7 @@
     <property file="${user.home}/.ant.properties"/>
     <property file="config/build.properties"/>
 	<property name="dist.dir" value="${stage.dir}"/>
-
+	<import file="build-override.xml" optional="true"/>
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
