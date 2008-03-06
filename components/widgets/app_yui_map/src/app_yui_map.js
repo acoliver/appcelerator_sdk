@@ -41,7 +41,7 @@ Appcelerator.Widget.AppYuiMap =
 	},
 	getDescription: function()
 	{
-		return 'yahoo DHTML Map Widget';
+		return 'Yahoo! DHTML Map (beta) Widget Wrapper.  Use this with your Yahoo! API key to quickly add a map to your application.';
 	},
 	getVersion: function()
 	{
@@ -201,7 +201,7 @@ Appcelerator.Widget.AppYuiMap =
 		if(!this.included) {
 			var yahooKey = params['api_key'];
 			Appcelerator.Core.queueRemoteLoadScriptWithDependencies(
-				"http://api.maps.yahoo.com/ajaxymap?v=3.7&appid=" + yahooKey, 
+				"http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=" + yahooKey, 
 				function() { Appcelerator.Widget.AppYuiMap.initializeMap(params);}
 			);	
 			included = true;
