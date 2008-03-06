@@ -96,12 +96,17 @@ class JavaSpring < Appcelerator::Plugin
           end
 
           if not error
-            require 'stringio'
-            s = StringIO.new
-            doc.write s,-1
-            s.flush
-            s.rewind
-            tx.put "#{project_dir}/config/web.xml",s.read
+            # require 'stringio'
+            # s = StringIO.new
+            # doc.write s,-1
+            # s.flush
+            # s.rewind
+            # tx.put "#{project_dir}/config/web.xml",s.read
+            f = File.new("#{event[:project_dir]}/tmp/web.xml.tmp", "w")
+            doc.write(f,-1)
+            f.flush
+            f.close
+            Appcelerator::Installer.copy tx,"#{event[:project_dir]}/tmp/web.xml.tmp","#{event[:project_dir]}/config/web.xml"
           end
       end
     end
