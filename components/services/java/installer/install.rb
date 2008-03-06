@@ -44,7 +44,7 @@ module Appcelerator
     private 
     def install(from_path,to_path,config,tx,update)
       Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties'])
-
+      
       # re-write the application name to be the name of the directory
       name = File.basename(to_path)
 
@@ -68,7 +68,8 @@ module Appcelerator
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
       tx.mkdir "#{to_path}/src/war/WEB-INF"
-      Installer.copy tx, "#{template_dir}/web.xml","#{to_path}/config"
+      Appcelerator::Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml")
+      # Installer.copy tx, "#{template_dir}/web.xml","#{to_path}/config"
       
       if not update or (update and not File.exists? "#{to_path}/.classpath")
         #
