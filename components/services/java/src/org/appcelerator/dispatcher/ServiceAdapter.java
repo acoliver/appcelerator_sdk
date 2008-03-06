@@ -34,6 +34,8 @@ public class ServiceAdapter
 {
     private final Object instance;
     private final Method method;
+    private Method premethod;
+    private Method postmethod;
     private final Service service;
     
     ServiceAdapter(Object i, Method m, Service s) throws Exception
@@ -41,8 +43,24 @@ public class ServiceAdapter
         this.instance = i;
         this.method = m;
         this.service = s;
-        
+        this.postmethod = getMethod(i,s.postmessage());
+        this.premethod = getMethod(i,s.premessage());
         this.method.setAccessible(true);
+    }
+    public static Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException {
+    	if (methodname==null || "".equals(methodname))
+    		return null;
+    	Class cl = i.getClass();
+    	Method method = cl.getMethod(methodname, Message.class,Message.class);
+    	return method;
+//    	Class[] args = new Class[] {Message.class,Message.class};
+//    	for (Method method : cl.getMethods())
+//        {
+//    		if (method.getParameterTypes().equals(args))
+//    			return method;
+//    		
+//        }
+//    	return null;
     }
     public boolean is(Class<? extends Object> clz, Method method, Service service)
     {
@@ -88,6 +106,8 @@ public class ServiceAdapter
     {
         try
         {
+        	if (premethod != null)
+        		premethod.invoke(this.instance,request,response);
             response.getData().put("success",true);
             switch(this.method.getParameterTypes().length)
             {
@@ -106,6 +126,8 @@ public class ServiceAdapter
                     throw new Exception("invalid service signature");
                 }
             }
+        	if (postmethod != null)
+        		postmethod.invoke(this.instance,request,response);
         }
         catch (Exception e)
         {

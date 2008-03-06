@@ -53,4 +53,6 @@ public @interface Service
      * @return
      */
     String version() default "1.0";
+    String premessage() default "";
+    String postmessage() default "";
 }
