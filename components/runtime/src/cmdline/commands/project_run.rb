@@ -82,9 +82,7 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
         event = {:project_dir=>pwd,:service=>'java'}
         Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
         begin
-          if not system cmd
-            STDERR.puts "Error executing: #{cmd}"
-          end
+          system cmd
         ensure
           Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
         end

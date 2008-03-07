@@ -39,7 +39,7 @@ end
 desc 'zip up the widget'
 task :zip do
   build = YAML::load_file File.expand_path("#{File.dirname(__FILE__)}/build.yml")
-  if build[:license].nil? or build[:license].empty?
+  if build[:licenses].nil? or build[:licenses].empty?
     STDERR.puts "Before you can build the widget, you need to set the licensing type."
     STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"
     STDERR.puts "for more information."

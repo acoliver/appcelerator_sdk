@@ -123,7 +123,7 @@ Appcelerator.Widget.WIDGET_CLASS_NAME =
 	buildWidget: function(element,parameters)
 	{
 		//TODO - this is optional, but usually is the HTML to replace for <NAME>
-		var html = 'Hello from the <tt>&lt;NAME&rt;</tt> widget!';
+		var html = 'Hello from the <tt>&lt;NAME&gt;</tt> widget!';
 		
 		return {
 			'presentation' : html,   // this is the HTML to replace for the contents <NAME>

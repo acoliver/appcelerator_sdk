@@ -39,9 +39,22 @@ Appcelerator.Widget.registerWithJS = function (moduleName,module,js,jspath)
  * @param {string} moduleName
  * @param {object} module object
  * @param {string} js file(s)
- * @since 2.1.0
+ * @deprecated use registerWidgetWithCommonJS
  */
 Appcelerator.Widget.registerModuleWithCommonJS = function(moduleName,module,js)
+{
+	Appcelerator.Core.registerModuleWithCommonJS(moduleName,module,js);
+};
+
+/**
+ * called to load a js file relative to the modules/common/js directory
+ *
+ * @param {string} moduleName
+ * @param {object} module object
+ * @param {string} js file(s)
+ * @since 2.1.0
+ */
+Appcelerator.Widget.registerWidgetWithCommonJS = function(moduleName,module,js)
 {
 	Appcelerator.Core.registerModuleWithCommonJS(moduleName,module,js);
 };
@@ -53,9 +66,23 @@ Appcelerator.Widget.registerModuleWithCommonJS = function(moduleName,module,js)
  * @param {object} module object
  * @param {string} js files(s)
  * @param {string} js path
- * @since 2.1.0
+ * @deprecated use registerWidgetWithJS
  */
 Appcelerator.Widget.registerModuleWithJS = function (moduleName,module,js,jspath)
+{
+	Appcelerator.Core.registerModuleWithJS(moduleName,module,js,jspath);
+};
+
+/**
+ * called to load a js file relative to the module js directory
+ *
+ * @param {string} moduleName
+ * @param {object} module object
+ * @param {string} js files(s)
+ * @param {string} js path
+ * @since 2.1.0
+ */
+Appcelerator.Widget.registerWidgetWithJS = function (moduleName,module,js,jspath)
 {
 	Appcelerator.Core.registerModuleWithJS(moduleName,module,js,jspath);
 };

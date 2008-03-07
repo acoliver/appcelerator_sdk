@@ -218,7 +218,7 @@ module Appcelerator
         cookies = @@client.cookies.to_s
       end
       puts "Session cookies: #{cookies}" if OPTIONS[:debug]
-      open(url,'Cookie'=>cookies,:content_length_proc => lambda {|t|
+      open(url,'Cookie'=>cookies,:proxy=>true,:content_length_proc => lambda {|t|
             if t && 0 < t
               if not OPTIONS[:quiet]
                 require "#{LIB_DIR}/progressbar"
