@@ -73,7 +73,7 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
     :description=>"#{args[:name]} plugin",
     :release_notes=>"initial release",
     :tags=> [],
-    :licenses=>[]
+    :license=>[]
   }
   
   Appcelerator::Installer.put "#{dir}/Rakefile", template
