@@ -229,110 +229,104 @@ Appcelerator.Util.ServiceBroker =
 	 * callback is an optional method to be called if the server responds with
 	 * the same requestid
 	 */
-    queue: function (msg, callback)
-    {
-    	if (!Appcelerator.Util.ServiceBroker.init)
-    	{
-    		$D(msg.type+' will be queued, not yet initialized');
-    		this.initQueue.push([msg,callback]);
-    		return;
-    	}
-    	
-        var type = msg['type'];
+	queue: function (msg, callback)
+	{
+		if (!Appcelerator.Util.ServiceBroker.init)
+		{
+			$D(msg.type+' will be queued, not yet initialized');
+			this.initQueue.push([msg,callback]);
+			return;
+		}
 
-        if (!type)
-        {
-            throw "type must be specified on the message";
-        }
+		var type = msg['type'];
+
+		if (!type)
+		{
+			throw "type must be specified on the message";
+		}
 
 		type = this.convertType(type);
-		
+
 		var scope = msg['scope'] || 'appcelerator';
 		var version = msg['version'] || '1.0';
 
-        // let the interceptors have at it
-        if (this.interceptors.length > 0)
-        {
-            var send = true;
-            for (var c = 0, len = this.interceptors.length; c < len; c++)
-            {
-                var interceptor = this.interceptors[c];
-                var func = interceptor['interceptQueue'];
-                if (func)
-                {
-                    var result = func.apply(interceptor, [msg,callback,type,scope,version]);
-                    if (this.DEBUG) $D(self.toString() + ' Invoked interceptor: ' + interceptor + ', returned: ' + result + ' for message: ' + type);
-                    if (result != null && !result)
-                    {
-                        send = false;
-                        break;
-                    }
-                }
-            }
+		// let the interceptors have at it
+		if (this.interceptors.length > 0)
+		{
+			var send = true;
+			for (var c = 0, len = this.interceptors.length; c < len; c++)
+			{
+				var interceptor = this.interceptors[c];
+				var func = interceptor['interceptQueue'];
+				if (func)
+				{
+					var result = func.apply(interceptor, [msg,callback,type,scope,version]);
+					if (this.DEBUG) $D(self.toString() + ' Invoked interceptor: ' + interceptor + ', returned: ' + result + ' for message: ' + type);
+					if (result != null && !result)
+					{
+						send = false;
+						break;
+					}
+				}
+			}
 
-            if (!send)
-            {
-                // allow the interceptor the ability to squash it
-                $D(this + ' interceptor squashed event: ' + msg['type']);
-                return;
-            }
-        }
+			if (!send)
+			{
+				// allow the interceptor the ability to squash it
+				$D(this + ' interceptor squashed event: ' + msg['type']);
+				return;
+			}
+		}
 
-        var a = type.indexOf(':');
+		var a = type.indexOf(':');
 
-        var dest = a != -1 ? type.substring(0, a) : 'local';
-        var name = a != -1 ? type.substring(a + 1) : type;
+		var dest = a != -1 ? type.substring(0, a) : 'local';
+		var name = a != -1 ? type.substring(a + 1) : type;
 
-        // replace the destination
-        msg['type'] = name;
+		// replace the destination
+		msg['type'] = name;
 
-        var data = (msg['data']) ? msg['data'] : {};
+		var data = (msg['data']) ? msg['data'] : {};
 
-        var json = null;
-        switch (typeof(data))
-        {
-            case 'object':
-            case 'array':
-                json = Object.toJSON(data);
-                break;
-            default:
-                json = data.toString();
-                break;
-        }
-        data.toString = function()
-        {
-            return json;
-        };
-
-        $D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
-
-        switch (dest)
-        {
-            case 'remote':
-            {
-                // send remote
-                if (this.messageQueue)
-                {
-                	  // in devmode, we don't actually send remote events
-                	  if (!this.devmode && !this.remoteDisabled)
-                	  {
-	                    // place in the outbound message queue for delivery
-	                    this.messageQueue.push([msg,callback,scope,version]);
-	
-	                    // the remote message can be forced to be sent immediate
-	                    // by setting this property, otherwise, it will be queued
-	                    this.startTimer(msg['immediate'] || false);
-	                 }
-                }
-                else
-                {
-                    $E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
-                }
+		if(Logger.debugEnabled)
+		{
+			var json = null;
+			switch (typeof(data))
+			{
+				case 'object':
+				case 'array':
+				json = Object.toJSON(data);
+				break;
+				default:
+				json = data.toString();
 				break;
 			}
-        }
+			Logger.debug(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
+		}
+
+		if(dest == 'remote')
+		{
+			// send remote
+			if (this.messageQueue)
+			{
+				// in devmode, we don't actually send remote events
+				if (!this.devmode && !this.remoteDisabled)
+				{
+					// place in the outbound message queue for delivery
+					this.messageQueue.push([msg,callback,scope,version]);
+
+					// the remote message can be forced to be sent immediate
+					// by setting this property, otherwise, it will be queued
+					this.startTimer(msg['immediate'] || false);
+				}
+			}
+			else
+			{
+				$E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
+			}
+		}
 		this.localMessageQueue.push([name,data,dest,scope,version]);
-    },
+	},
     dispatch: function (msg)
     {
 		var requestid = msg.requestid;
