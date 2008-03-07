@@ -108,5 +108,5 @@ Appcelerator.Widget.Shadowbox =
     }
 };
 
-Appcelerator.Core.loadModuleCSS("app:shadowbox","shadowbox.css")
+Appcelerator.Widget.loadWidgetCSS("app:shadowbox","shadowbox.css")
 Appcelerator.Widget.registerWithJS('app:shadowbox',Appcelerator.Widget.Shadowbox,["shadowbox-prototype.js", "shadowbox.js"]);

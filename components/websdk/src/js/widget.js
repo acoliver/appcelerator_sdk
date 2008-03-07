@@ -127,3 +127,11 @@ Appcelerator.Widget.queueRemoteLoadScriptWithDependencies = function(path, onloa
 	Appcelerator.Core.queueRemoteLoadScriptWithDependencies(path, onload);
 };
 
+
+/**
+ * dynamically load a widget specific CSS
+ */
+Appcelerator.Core.loadWidgetCSS = function(name,css)
+{
+	Appcelerator.Core.loadModuleCSS(name,css);
+}
