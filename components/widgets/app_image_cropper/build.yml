@@ -1,0 +1,14 @@
+--- 
+:tags: []
+
+:type: widget
+:release_notes: initial release
+:licenses: [ 1 ]
+
+:name: app:image_cropper
+:dependencies: 
+- :type: websdk
+  :name: websdk
+  :version: ">=2.1.1"
+:version: 1.0
+:description: app:image_cropper widget

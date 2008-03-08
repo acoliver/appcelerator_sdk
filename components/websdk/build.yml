@@ -1,7 +1,7 @@
 --- 
 :type: websdk
 :name: websdk
-:version: 2.1.0
+:version: 2.1.1
 :dependencies: 
 - :type: widget
   :name: app:box
