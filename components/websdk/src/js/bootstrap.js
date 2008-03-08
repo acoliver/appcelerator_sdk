@@ -161,6 +161,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isIE = (window.ActiveXObject);
 	Appcelerator.Browser.isIE6 = false;
 	Appcelerator.Browser.isIE7 = false;
+	Appcelerator.Browser.isIE8 = false;
 
 	if (Appcelerator.Browser.isIE)
 	{
@@ -168,6 +169,7 @@ Appcelerator.Parameters = $H({});
 		var version = parseFloat(arVersion[1]);
 		Appcelerator.Browser.isIE6 = version >= 6.0 && version < 7;
 		Appcelerator.Browser.isIE7 = version >= 7.0 && version < 8;
+		Appcelerator.Browser.isIE8 = version >= 8.0 && version < 9;
 	}
 	
 	if (Appcelerator.Browser.isSafari)
@@ -268,7 +270,7 @@ Appcelerator.Parameters = $H({});
 		}
 	}
 	Appcelerator.Browser.isBrowserSupported = false;
-	$w('Firefox IE6 IE7 Safari Camino Opera Webkit Seamonkey Prism Iceweasel Epiphany').each(function(name)
+	$w('Firefox IE6 IE7 IE8 Safari Camino Opera Webkit Seamonkey Prism Iceweasel Epiphany').each(function(name)
 	{
         if (Appcelerator.Browser['is'+name]===true)
         {
