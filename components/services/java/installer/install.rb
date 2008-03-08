@@ -58,7 +58,7 @@ module Appcelerator
       Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties'])
       
       # re-write the application name to be the name of the directory
-      name = get_property ("#{to_path}/config/build.properties","app.name")
+      name = get_property "#{to_path}/config/build.properties","app.name"
       if name.nil?
         name = File.basename(to_path)
       end
