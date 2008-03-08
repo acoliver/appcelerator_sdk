@@ -1926,7 +1926,18 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 			{
 				var expr = match[1];
 				var func = expr.toFunction();
-				return func.call(data);
+				var s = scope || {};
+				if (data)
+				{
+					for (var k in data)
+					{
+						if (Object.isString(k))
+						{
+							s[k] = data[k];
+						}
+					}
+				}
+				return func.call(s);
 			}
 			
 			if (scope)
