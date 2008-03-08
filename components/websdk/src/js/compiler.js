@@ -1173,11 +1173,14 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</'+parent_tag+'>';
 					}
 					
-					if (Appcelerator.Browser.isIE)
+					// add the XML namespace IE thing but only if you have what looks to
+					// be a widget that requires namespace - otherwise, it will causes issues like when
+					// you include a single <img> 
+					if (Appcelerator.Browser.isIE && html.indexOf('<app:') != -1)
 					{
 						html = Appcelerator.Compiler.addIENameSpace(html);
 					}
-
+					
 					added = true;
 					switch(position)
 					{

@@ -129,7 +129,7 @@ Appcelerator.Widget.AppImageCropper =
 				name: 'on',
 				optional: true,
 				description: 'on expression',
-				type: T.onExpr,
+				type: T.onExpr
 			},
 			{
 				name: 'minWidth',
@@ -226,13 +226,20 @@ Appcelerator.Widget.AppImageCropper =
 	 */
 	compileWidget: function(parameters)
 	{
-		this.buildCropper(parameters);
+		Appcelerator.Widget.AppImageCropper.buildCropper(parameters);
 	},
+	
 	buildCropper:function(parameters)
 	{
 		var id = parameters['id'];
 		var src = 'imagecropper_' + id;
 		var image = $(src);
+		
+		if (!image)
+		{
+			Logger.error('Error creating '+this.getName()+', could\'t find image with ID: '+src);
+			return;
+		}
 				
 		if (image._cropper)
 		{
@@ -245,7 +252,7 @@ Appcelerator.Widget.AppImageCropper =
 		{
 			if (image.getAttribute('init')=='true')
 			{
-				image.removeAttribute('init');
+				image.setAttribute('init','');
 			} 
 			else
 			{
@@ -266,7 +273,8 @@ Appcelerator.Widget.AppImageCropper =
 				}
 			});
 			options['onloadCoords'] = parameters['coordinates'] ? parameters['coordinates'].evalJSON() : null;
-			options['ratioDim'] = parameters['ratio'] ? parameters['ratio'].evalJSON() : null;
+			options['ratioDim'] = parameters['ratio'] ? parameters['ratio'].evalJSON() : {x:0,y:0};
+			
 			
 			if (parameters['preview'])
 			{ 
@@ -291,7 +299,18 @@ Appcelerator.Widget.AppImageCropper =
 			}
 			else
 			{
-				image._cropper = new Cropper.Img(src,options); 
+				if (Appcelerator.Browser.isSafari)
+				{
+					// safari doesn't work if the image isn't loaded
+					Event.observe(image,'load',function()
+					{
+						image._cropper = new Cropper.Img(src,options); 
+					});
+				}
+				else
+				{
+					image._cropper = new Cropper.Img(src,options); 
+				}
 			}
 		}
 	},
@@ -307,7 +326,7 @@ Appcelerator.Widget.AppImageCropper =
 		var src = parameters['src'];
 		var id = parameters['id'];
 		
-		var html = '<img ' + (src ? 'src="' + src + '" init="true"' : '') + ' id="imagecropper_'+id+'"/>';
+		var html = '<img ' + (src!=null ? 'src="' + src + '" init="true"' : '') + ' id="imagecropper_'+id+'"/>';
 		
 		return {
 			'presentation' : html,   // this is the HTML to replace for the contents <app:image_cropper>
