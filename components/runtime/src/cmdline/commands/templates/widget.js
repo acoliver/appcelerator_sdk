@@ -139,24 +139,24 @@ Appcelerator.Widget.WIDGET_CLASS_NAME =
 To load a custom widget CSS file - create a css file under the widget's css directory and 
 reference it here. For example:
   
-    Appcelerator.Core.loadModuleCSS('NAME','mystyles.css');
+    Appcelerator.Widget.loadWidgetCSS('NAME','mystyles.css');
 
 To load a widget that has widget JS dependencies, place your JS files under the widget's js
 directory and use registerWidgetWithJS. For example:
 
-    Appcelerator.Core.registerModuleWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js', 'b.js']);
+    Appcelerator.Widget.registerWidgetWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js', 'b.js']);
 
 You can require a common JS file (loaded under widgets/common/js) and load your widget once it's loaded.
 For example:
 
-	Appcelerator.Core.requireCommonJS('scriptaculous/builder.js',function()
+	Appcelerator.Widget.requireCommonJS('scriptaculous/builder.js',function()
 	{
-	    Appcelerator.Core.registerModuleWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js']);
+	    Appcelerator.Widget.registerWidgetWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js']);
 	});
 
 */
 
-Appcelerator.Core.registerModule('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME);
+Appcelerator.Widget.registerWidget('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME);
 
 
 

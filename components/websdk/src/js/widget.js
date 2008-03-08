@@ -105,7 +105,7 @@ Appcelerator.Widget.requireCommonCSS = function(name,onload)
  * loaded (or immediately if already loaded)
  *
  * @param {string} name of the common js
- * @param {function} onload function to callback upon load
+ * @param {function} onload function to callback upon loaded
  * @since 2.1.0
  */
 Appcelerator.Widget.requireCommonJS = function(name,onload)
@@ -131,7 +131,7 @@ Appcelerator.Widget.queueRemoteLoadScriptWithDependencies = function(path, onloa
 /**
  * dynamically load a widget specific CSS
  */
-Appcelerator.Core.loadWidgetCSS = function(name,css)
+Appcelerator.Widget.loadWidgetCSS = function(name,css)
 {
 	Appcelerator.Core.loadModuleCSS(name,css);
 }
