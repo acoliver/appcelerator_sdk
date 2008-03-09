@@ -1087,6 +1087,12 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			(function(){
 				var modAttr = moduleAttributes[i];
 				var value = element.getAttribute(modAttr.name) || modAttr.defaultValue;
+				// check and make sure the value isn't a function as what will happen in certain
+				// situations because of prototype's fun feature of attaching crap on to the Object prototype
+				if (Object.isFunction(value))
+				{
+					value = modAttr.defaultValue;
+				}
 				if (!value && !modAttr.optional)
 				{
 					Appcelerator.Compiler.handleElementException(element, null, 'required attribute "' + modAttr.name + '" not defined for ' + id);
