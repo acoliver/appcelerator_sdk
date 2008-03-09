@@ -354,6 +354,8 @@ Appcelerator.Compiler.checkLoadState = function (state)
  */
 Appcelerator.Compiler.dynamicCompile = function(element,notimeout,recursive)
 {
+	if (!element) return;
+	
     $D('dynamic compile called for '+element+' - id='+element.id);
     
     if (notimeout)
@@ -564,6 +566,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
  */
 Appcelerator.Compiler.destroy = function(element, recursive)
 {
+	if (!element) return;
 	recursive = recursive==null ? true : recursive;
 	
 	element.compiled = 0;
@@ -654,24 +657,23 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 };
 
 Appcelerator.Compiler.tagNamespaces = [];
-if (Appcelerator.Browser.isIE)
+for (var x=0;x<document.documentElement.attributes.length;x++)
 {
-    Appcelerator.Compiler.tagNamespaces.push('app');
-}
-else
-{
-    for (var x=0;x<document.documentElement.attributes.length;x++)
+    var attr = document.documentElement.attributes[x];
+    var name = attr.name;
+    var value = attr.value;
+    var idx = name.indexOf(':');
+    if (idx > 0)
     {
-        var attr = document.documentElement.attributes[x];
-        var name = attr.name;
-        var value = attr.value;
-        var idx = name.indexOf(':');
-        if (idx > 0)
-        {
-            Appcelerator.Compiler.tagNamespaces.push(name.substring(idx+1));
-        }
+        Appcelerator.Compiler.tagNamespaces.push(name.substring(idx+1));
     }
 }
+
+if (Appcelerator.Compiler.tagNamespaces.length == 0)
+{
+	Appcelerator.Compiler.tagNamespaces.push('app');
+}
+
 Appcelerator.Compiler.removeHtmlPrefix = function(html)
 {
     if (Appcelerator.Browser.isIE)
@@ -777,6 +779,7 @@ Appcelerator.Compiler.addIENameSpace = function (html)
 	{
 		html = '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
 	}
+	return html;
 };
 
 
