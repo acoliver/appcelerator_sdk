@@ -28,11 +28,11 @@ Appcelerator.Widget.Message =
 	},
 	getDescription: function()
 	{
-		return 'message widget';
+		return 'message widget for generating messages (either remote or local)';
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -105,6 +105,10 @@ Appcelerator.Widget.Message =
             $D('Message '+parameterMap['name']+' is not currently sending, cannot stop');
         }
     },
+	compileWidget: function(parameters)
+	{
+		Appcelerator.Widget.Message.sendMessage(parameters);
+	},
 	buildWidget: function(element, attributes)
 	{
 		var name = attributes['name'];
@@ -130,9 +134,10 @@ Appcelerator.Widget.Message =
 		}
 		else
 		{
-			Appcelerator.Widget.Message.sendMessage(parameters);
 			return {
-				'position' : Appcelerator.Compiler.POSITION_REMOVE
+				'position' : Appcelerator.Compiler.POSITION_REMOVE,
+				'compile': true,
+				'parameters': parameters
 			};
 		}
 	},
@@ -147,10 +152,11 @@ Appcelerator.Widget.Message =
 		var version = params.version;
 		var scope = params.scope;
 		var interval = params.interval;
+		var data = null;
 		
 		if (args && args != 'null')
         {
-            var data = Object.evalWithinScope(args, window);
+            data = Object.evalWithinScope(args, window);
         }
 
         if (interval == null || !params['timer']) $MQ(name, data, scope, version);      
@@ -164,8 +170,8 @@ Appcelerator.Widget.Message =
                 {
                     if (args && args != 'null')
                     {
-                    // re-evaluate each time so you can dynamically change data each interval
-                    data = Object.evalWithinScope(args, window);
+                    	// re-evaluate each time so you can dynamically change data each interval
+                    	data = Object.evalWithinScope(args, window);
                     }
                     $MQ(name, data, scope, version);
                 }, time);
