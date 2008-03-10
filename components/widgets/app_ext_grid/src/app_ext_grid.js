@@ -1,5 +1,5 @@
 
-Appcelerator.Module.AppExtGrid =
+Appcelerator.Widget.AppExtGrid =
 {
     getName: function()
     {
@@ -40,13 +40,14 @@ Appcelerator.Module.AppExtGrid =
 
     getAttributes: function()
     {
-        return [{name: 'on', optional: false, description: "Used to show grid"},
-				{name: 'property', optional: false, description: "array data property"},
-				{name: 'selectMessage', optional: true, description: "message to send on row selected"},
-				{name: 'height', optional: true, defaultValue:200, description: "height of grid"},
-				{name: 'width', optional: true, defaultValue:"auto", description: "width of grid"},
-				{name: 'stripeRows', optional: true, defaultValue:true, description: "alternate row color"},
-				{name: 'frame', optional: true, defaultValue:false, description: "place a border frame around grid"},
+		var T = Appcelerator.Types;
+        return [{name: 'on', optional: false, description: "Used to show grid", type: T.onExpr},
+				{name: 'property', optional: false, description: "array data property", type: T.identifier},
+				{name: 'selectMessage', optional: true, description: "message to send on row selected", type: T.messageSend},
+				{name: 'height', optional: true, defaultValue:200, description: "height of grid", type: T.number},
+				{name: 'width', optional: true, defaultValue:200, description: "width of grid", type: T.number},
+				{name: 'stripeRows', optional: true, defaultValue:true, description: "alternate row color", type: T.bool},
+				{name: 'frame', optional: true, defaultValue:false, description: "place a border frame around grid", type: T.bool},
 				{name: 'autoExpandColumn', optional: true, description: "column to expand to take up excess width"},
 				{name: 'title', optional: true, description: "grid title"}
 
@@ -76,7 +77,6 @@ Appcelerator.Module.AppExtGrid =
 		{
 			options['autoExpandColumn'] = params['autoExpandColumn'];
 		}
-		
 		// create the grid
 	    var grid = new Ext.grid.GridPanel(options);
 	
@@ -168,4 +168,4 @@ Appcelerator.Module.AppExtGrid =
 };
 Appcelerator.Widget.loadWidgetCommonCSS("app:extgrid","extjs/xtheme-gray.css");
 Appcelerator.Widget.loadWidgetCommonCSS("app:ext_grid","extjs/ext-all.css");
-Appcelerator.Widget.registerWidgetWithCommonJS('app:ext_grid',Appcelerator.Module.AppExtGrid,["extjs/ext-base.js","extjs/ext-all.js"]);
+Appcelerator.Widget.registerWidgetWithCommonJS('app:ext_grid',Appcelerator.Widget.AppExtGrid,["extjs/ext-base.js","extjs/ext-all.js"]);

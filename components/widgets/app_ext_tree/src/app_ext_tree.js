@@ -1,5 +1,5 @@
 
-Appcelerator.Module.AppExtTree =
+Appcelerator.Widget.AppExtTree =
 {
     getName: function()
     {
@@ -41,16 +41,17 @@ Appcelerator.Module.AppExtTree =
 
     getAttributes: function()
     {
-        return [{name: 'on', optional: false, description: "on expression for tree"},
-				{name: 'draggable', optional: true, defaultValue:false, description: "are tree items draggable"},
-				{name: 'droppable', optional: true, defaultValue:false, description: "can items be dropped into tree"},
-				{name: 'property', optional: false,  description: "array property for tree data"},
+	    var T = Appcelerator.Types;
+        return [{name: 'on', optional: false, description: "on expression for tree", type: T.onExpr},
+				{name: 'draggable', optional: true, defaultValue:false, description: "are tree items draggable", type: T.bool},
+				{name: 'droppable', optional: true, defaultValue:false, description: "can items be dropped into tree", type: T.bool},
+				{name: 'property', optional: false,  description: "array property for tree data", type: T.identifier},
 				{name: 'rootText', optional: true, defaultValue:'Root', description: "name of root node"},
 				{name: 'rootId', optional: true, defaultValue:'root_id', description: "id of root node"},
-				{name: 'selectMessage', optional: true,  description: "message to send when node is selected"},
+				{name: 'selectMessage', optional: true,  description: "message to send when node is selected", type: T.messageSend},
 				{name: 'width', optional: true,  description: "width of tree panel"},
-				{name: 'sendDataMessage', optional: true,  description: "Message name that contains tree data in its payload"},
-				{name: 'sendDataProperty', optional: true,  description: "property name for tree array data in its payload"},
+				{name: 'sendDataMessage', optional: true,  description: "Message name that contains tree data in its payload", type: T.messageSend},
+				{name: 'sendDataProperty', optional: true,  description: "property name for tree array data in its payload", type: T.identifer},
 				{name: 'height', optional: true,  description: "height of tree panel"}
 
 		];
@@ -176,6 +177,6 @@ Appcelerator.Module.AppExtTree =
 		};
     }
 };
-Appcelerator.Core.loadModuleCommonCSS("app:ext_tree","extjs/xtheme-gray.css");
-Appcelerator.Core.loadModuleCommonCSS("app:ext_tree","extjs/ext-all.css");
-Appcelerator.Core.registerModuleWithCommonJS('app:ext_tree',Appcelerator.Module.AppExtTree,["extjs/ext-base.js","extjs/ext-all.js"]);
+Appcelerator.Widget.loadWidgetCommonCSS("app:ext_tree","extjs/xtheme-gray.css");
+Appcelerator.Widget.loadWidgetCommonCSS("app:ext_tree","extjs/ext-all.css");
+Appcelerator.Widget.registerWidgetWithCommonJS('app:ext_tree',Appcelerator.Widget.AppExtTree,["extjs/ext-base.js","extjs/ext-all.js"]);
