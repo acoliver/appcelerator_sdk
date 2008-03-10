@@ -35,7 +35,7 @@ Appcelerator.Widget.Chart =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return 1.1;
 	},
 	getSpecVersion: function()
 	{
