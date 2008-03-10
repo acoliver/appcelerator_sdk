@@ -98,7 +98,14 @@ Appcelerator.Widget.Chart =
 				{name: 'precision', optional: true, defaultValue: '2', type: T.number},
 				{name: 'innerRadius', optional: true, defaultValue: '30', type: T.number},
 				{name: 'animation', optional: true, defaultValue: 'true', type: T.bool},
-				{name: 'oneBalloon', optional: true, defaultValue: 'false', type: T.bool}];
+				{name: 'oneBalloon', optional: true, defaultValue: 'false', type: T.bool},
+				{name: 'xAxisLabel', optional: true, defaultValue: ''},
+				{name: 'xAxisYPosition', optional: true, defaultValue: '0', type: T.number},
+				{name: 'xAxisXPosition', optional: true, defaultValue: '0', type: T.number},
+				{name: 'yAxisLabel', optional: true, defaultValue: ''},
+				{name: 'yAxisYPosition', optional: true, defaultValue: '0', type: T.number},
+				{name: 'yAxisXPosition', optional: true, defaultValue: '0', type: T.number},
+				{name: 'dataValueMax', optional: true, defaultValue: '0', type: T.number}];
 	},
 	buildWidget: function(element, parameters)
 	{
@@ -154,7 +161,7 @@ Appcelerator.Widget.Chart =
 		var brightness_step = parameterMap['brightness_step'];
 		var propertyName = parameterMap['property'];
 		var titlePropertyName = parameterMap['chartTitles'];
-	  	var textSize = parameterMap['textSize'];
+	 	var textSize = parameterMap['textSize'];
 	  	var fillAlpha = parameterMap['fillAlpha'];
 	  	var indicator = parameterMap['indicator'];
 		var marginTop = parameterMap['marginTop'];
@@ -167,12 +174,23 @@ Appcelerator.Widget.Chart =
 		var innerRadius = parameterMap['innerRadius'];
 		var radius = parameterMap['radius'];
 		var precision = parameterMap['precision'];
-		
+		var yAxisLabel = parameterMap['yAxisLabel'];
+		var xAxisLabel = parameterMap['xAxisLabel'];
+		var yAxisXPosition = parameterMap['yAxisXPosition'];
+		var yAxisYPosition = parameterMap['yAxisYPosition'];
+		var xAxisXPosition = parameterMap['xAxisXPosition'];
+		var xAxisYPosition = parameterMap['xAxisYPosition'];
+		var dataValueMax = parameterMap['dataValueMax'];
 		var animation = parameterMap['animation'];
 		
 		if (animation != 'false' && type.toLowerCase() == 'pie') animation = 2;
 		else if (animation != 'false' && type.toLowerCase() == 'bar') animation = 1;
 		else animation = 0;
+		
+		if (dataValueMax != '')
+		{
+			dataValueMax = Object.getNestedProperty(data,dataValueMax) || '';							
+		}
 		
 		if (barOrientation.toLowerCase() != "vertical" && barOrientation.toLowerCase() != "horizontal")
 		{
@@ -227,6 +245,36 @@ Appcelerator.Widget.Chart =
 				title = t_title;
 			}
 		}
+		
+		if (yAxisLabel != '')
+		{
+			var t_yAxisLabel = Object.getNestedProperty(data,yAxisLabel);
+			
+			if (t_yAxisLabel == null)
+			{
+				t_yAxisLabel = '*[No yAxisLabel]*';
+			}
+			
+			if (t_yAxisLabel != '*[No yAxisLabel]*')
+			{
+				yAxisLabel = t_yAxisLabel;
+			} else yAxisLabel = '';
+		} 
+		
+		if (xAxisLabel != '')
+		{
+			var t_xAxisLabel = Object.getNestedProperty(data,xAxisLabel);
+			
+			if (t_xAxisLabel == null)
+			{
+				t_xAxisLabel = '*[No xAxisLabel]*';
+			}
+			
+			if (t_xAxisLabel != '*[No xAxisLabel]*')
+			{
+				xAxisLabel = t_xAxisLabel;
+			} else xAxisLabel = '';
+		} 
 
 		var data_as_csv = Appcelerator.Widget.Chart.getDataAsCSV(array);
 		
@@ -334,7 +382,7 @@ Appcelerator.Widget.Chart =
 		} else if (type.toLowerCase() == "bar")
 		{
 			so = new SWFObject(Appcelerator.DocumentPath + "swf/amcolumn.swf", "chart_" + id, width, height, "8", "#FFFFFF");
-			so.addVariable("chart_settings", escape('<settings><type>' + barOrientation + '</type><width></width><height>' + g_height + '</height><data_type>csv</data_type><csv_separator>,</csv_separator><skip_rows>0</skip_rows><font>Arial</font><text_size>' + textSize + '</text_size><text_color>#000000</text_color><decimals_separator>.</decimals_separator><thousands_separator>,</thousands_separator><redraw>false</redraw><reload_data_interval>0</reload_data_interval><add_time_stamp>false</add_time_stamp><precision>2</precision><depth>' + thickness + '</depth><angle>'+angle+'</angle><export_image_file></export_image_file><column><type>' + chartMode + '</type><width>60</width><spacing>1</spacing><grow_time>'+animation+'</grow_time><grow_effect>strong</grow_effect><alpha>100</alpha><border_color>#FFFFFF</border_color><border_alpha></border_alpha><data_labels><![CDATA[]]></data_labels><data_labels_text_color></data_labels_text_color><data_labels_text_size></data_labels_text_size><data_labels_position></data_labels_position>' + stacked_balloon + '<link_target></link_target><gradient></gradient></column><line><connect></connect><width></width><alpha></alpha><fill_alpha>' + fillAlpha + '</fill_alpha><bullet></bullet><bullet_size></bullet_size><data_labels><![CDATA[{value}]]></data_labels><data_labels_text_color></data_labels_text_color><data_labels_text_size></data_labels_text_size><balloon_text><![CDATA[{value}]]></balloon_text><link_target></link_target></line><background><color>' + backgroundColor + '</color><alpha>100</alpha><border_color></border_color><border_alpha></border_alpha><file></file></background><plot_area><color></color><alpha></alpha><margins><left>'+marginLeft+'</left><top>'+marginTop+'</top><right>'+marginRight+'</right><bottom>'+marginBottom+'</bottom></margins></plot_area><grid><category><color>#000000</color><alpha>5</alpha><dashed>true</dashed><dash_length>5</dash_length></category><value><color>#000000</color><alpha>5</alpha><dashed>false</dashed><dash_length>5</dash_length><approx_count>10</approx_count></value></grid><values><category><enabled>true</enabled><frequency>1</frequency><rotate>' + rotateXAxisLabel + '</rotate><color></color><text_size>' + textSize + '</text_size></category><value><enabled>true</enabled><min>0</min><max></max><frequency>1</frequency><rotate>' + rotateYAxisLabel + '</rotate><skip_first>true</skip_first><skip_last>false</skip_last><color></color><text_size>' + textSize + '</text_size><unit></unit><unit_position>right</unit_position><integers_only></integers_only></value></values><axes><category><color>#000000</color><alpha>100</alpha><width>1</width><tick_length>7</tick_length></category><value><color>#000000</color><alpha>100</alpha><width>1</width><tick_length>7</tick_length></value></axes><balloon><enabled>true</enabled><color></color><alpha>80</alpha><text_color></text_color><text_size>' + textSize + '</text_size></balloon><legend><enabled>' + legend_enabled + '</enabled><x></x><y>' + Math.floor(height*0.1) + '</y><width></width><color>#FFFFFF</color><alpha>0</alpha><border_color>#000000</border_color><border_alpha>0</border_alpha><text_color></text_color><text_size>' + textSize + '</text_size><spacing>5</spacing><margins>0</margins><key><size>16</size><border_color></border_color></key></legend><strings><no_data></no_data><export_as_image></export_as_image><collecting_data></collecting_data></strings><labels><label><x>0</x><y>5</y><rotate></rotate><width></width><align>center</align><text_color></text_color><text_size>' + textSize + '</text_size><text><![CDATA[' + title + ']]></text></label></labels><graphs>' + chartTitles + '</graphs></settings>'));		
+			so.addVariable("chart_settings", escape('<settings><type>' + barOrientation + '</type><width></width><height>' + g_height + '</height><data_type>csv</data_type><csv_separator>,</csv_separator><skip_rows>0</skip_rows><font>Arial</font><text_size>' + textSize + '</text_size><text_color>#000000</text_color><decimals_separator>.</decimals_separator><thousands_separator>,</thousands_separator><redraw>false</redraw><reload_data_interval>0</reload_data_interval><add_time_stamp>false</add_time_stamp><precision>2</precision><depth>' + thickness + '</depth><angle>'+angle+'</angle><export_image_file></export_image_file><column><type>' + chartMode + '</type><width>60</width><spacing>1</spacing><grow_time>'+animation+'</grow_time><grow_effect>strong</grow_effect><alpha>100</alpha><border_color>#FFFFFF</border_color><border_alpha></border_alpha><data_labels><![CDATA[]]></data_labels><data_labels_text_color></data_labels_text_color><data_labels_text_size></data_labels_text_size><data_labels_position></data_labels_position>' + stacked_balloon + '<link_target></link_target><gradient></gradient></column><line><connect></connect><width></width><alpha></alpha><fill_alpha>' + fillAlpha + '</fill_alpha><bullet></bullet><bullet_size></bullet_size><data_labels><![CDATA[{value}]]></data_labels><data_labels_text_color></data_labels_text_color><data_labels_text_size></data_labels_text_size><balloon_text><![CDATA[{value}]]></balloon_text><link_target></link_target></line><background><color>' + backgroundColor + '</color><alpha>100</alpha><border_color></border_color><border_alpha></border_alpha><file></file></background><plot_area><color></color><alpha></alpha><margins><left>'+marginLeft+'</left><top>'+marginTop+'</top><right>'+marginRight+'</right><bottom>'+marginBottom+'</bottom></margins></plot_area><grid><category><color>#000000</color><alpha>5</alpha><dashed>true</dashed><dash_length>5</dash_length></category><value><color>#000000</color><alpha>5</alpha><dashed>false</dashed><dash_length>5</dash_length><approx_count>10</approx_count></value></grid><values><category><enabled>true</enabled><frequency>1</frequency><rotate>' + rotateXAxisLabel + '</rotate><color></color><text_size>' + textSize + '</text_size></category><value><enabled>true</enabled><min>0</min><max>'+dataValueMax+'</max><frequency>1</frequency><rotate>' + rotateYAxisLabel + '</rotate><skip_first>true</skip_first><skip_last>false</skip_last><color></color><text_size>' + textSize + '</text_size><unit></unit><unit_position>right</unit_position><integers_only></integers_only></value></values><axes><category><color>#000000</color><alpha>100</alpha><width>1</width><tick_length>7</tick_length></category><value><color>#000000</color><alpha>100</alpha><width>1</width><tick_length>7</tick_length></value></axes><balloon><enabled>true</enabled><color></color><alpha>80</alpha><text_color></text_color><text_size>' + textSize + '</text_size></balloon><legend><enabled>' + legend_enabled + '</enabled><x></x><y>' + Math.floor(height*0.1) + '</y><width></width><color>#FFFFFF</color><alpha>0</alpha><border_color>#000000</border_color><border_alpha>0</border_alpha><text_color></text_color><text_size>' + textSize + '</text_size><spacing>5</spacing><margins>0</margins><key><size>16</size><border_color></border_color></key></legend><strings><no_data></no_data><export_as_image></export_as_image><collecting_data></collecting_data></strings><labels><label><x>0</x><y>5</y><rotate></rotate><width></width><align>center</align><text_color></text_color><text_size>' + textSize + '</text_size><text><![CDATA[' + title + ']]></text></label>  <label><x>'+ yAxisXPosition +'</x><y>' + yAxisYPosition + '</y><rotate>true</rotate><width></width><align>center</align><text_color></text_color><text_size>' + textSize + '</text_size><text><![CDATA[' + yAxisLabel + ']]></text></label><label><x>'+xAxisXPosition+'</x><y>'+xAxisYPosition+'</y><rotate>false</rotate><width></width><align>center</align><text_color></text_color><text_size>' + textSize + '</text_size><text><![CDATA[' + xAxisLabel + ']]></text></label>  </labels><graphs>' + chartTitles + '</graphs></settings>'));		
 		} else if (type.toLowerCase() == "line")
 		{
 			so = new SWFObject(Appcelerator.DocumentPath + "swf/amline.swf", "chart_" + id, width, height, "8", "#FFFFFF");
