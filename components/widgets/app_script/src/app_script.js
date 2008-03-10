@@ -32,7 +32,7 @@ Appcelerator.Widget.Script =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -72,7 +72,7 @@ Appcelerator.Widget.Script =
 		var code = parameterMap['code'];
 		var script = code.toFunction(true);
 		if (script == true) return;
-		script.call({data:data||{},scope:scope,version:version});
+		script.call({data:data||{},scope:scope,version:version,type:type,datatype:datatype,direction:direction});
 	},
 	compileWidget: function(params)
 	{
