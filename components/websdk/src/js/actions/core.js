@@ -413,7 +413,7 @@ Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabl
 		suffix='}catch(xxx_){}';
 	}
 
-	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope,"1.0",'+customActionParams+'])' + suffix;
+	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope,this.version,'+customActionParams+',this.direction,this.type])' + suffix;
 };
 
 Appcelerator.Compiler.registerCustomAction('selectOption',

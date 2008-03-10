@@ -1016,8 +1016,16 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 				return f(args[0],args[1],args[2],args[3],args[4],args[5]);
 			case 7:
 				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+			case 8:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+			case 9:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8]);
+			case 10:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
+			case 11:
+				return f(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10]);
 			default:
-				throw "too many arguments - only 8 supported currently for method: "+name+", you invoked with "+args.length+", args was: "+Object.toJSON(args);
+				throw "too many arguments - only 11 supported currently for method: "+name+", you invoked with "+args.length+", args was: "+Object.toJSON(args);
 		}
 	}
 	if (element)
@@ -1286,23 +1294,24 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					var methodname = functions[c];
 					var method = module[methodname];
 					if (!method) throw "couldn't find method named: "+methodname+" for module = "+module;
-						(function()
+					(function()
+					{
+						var attachMethodName = functions[c];
+						var attachMethod = module[methodname];
+						var f = function(id,m,data,scope,version,customActionArguments,direction,type)
 						{
-							var attachMethodName = functions[c];
-							var attachMethod = module[methodname];
-							var f = function(id,m,data,scope,version,customActionArguments)
+							alert('function='+direction+',type='+type);
+							try
 							{
-								try
-								{
-									attachMethod(id,widgetParameters,data,scope,version,customActionArguments);
-								}
-								catch (e)
-								{
-									$E('Error executing '+attachMethodName+' in module '+module.getWidgetName()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
-								}
-							};
-							Appcelerator.Compiler.attachFunction(id,attachMethodName,f);
-						})();
+								attachMethod(id,widgetParameters,data,scope,version,customActionArguments);
+							}
+							catch (e)
+							{
+								$E('Error executing '+attachMethodName+' in module '+module.getWidgetName()+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+							}
+						};
+						Appcelerator.Compiler.attachFunction(id,attachMethodName,f);
+					})();
 				}
 			}
 			
@@ -2347,7 +2356,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
  */
 Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 {	
-	var f = (scope!=null) ? function() { action.call(scope); } : action;
+	var f = (scope!=null) ? function() { alert('before = '+action+',scope='+scope); action.call(scope); } : action;
 	
 	if (delay > 0)
 	{

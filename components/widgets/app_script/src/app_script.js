@@ -67,12 +67,12 @@ Appcelerator.Widget.Script =
             description: "May be used to execute the script's content."
         }];
 	},
-	execute: function(id,parameterMap,data,scope,version)
+	execute: function(id,parameterMap,data,scope,version,customdata,direction,type)
 	{
 		var code = parameterMap['code'];
 		var script = code.toFunction(true);
 		if (script == true) return;
-		script.call({data:data||{},scope:scope,version:version,type:type,datatype:datatype,direction:direction});
+		script.call({data:data||{},scope:scope,version:version,type:type,direction:direction});
 	},
 	compileWidget: function(params)
 	{
