@@ -1300,7 +1300,6 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 						var attachMethod = module[methodname];
 						var f = function(id,m,data,scope,version,customActionArguments,direction,type)
 						{
-							alert('function='+direction+',type='+type);
 							try
 							{
 								attachMethod(id,widgetParameters,data,scope,version,customActionArguments);
@@ -2356,7 +2355,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
  */
 Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 {	
-	var f = (scope!=null) ? function() { alert('before = '+action+',scope='+scope); action.call(scope); } : action;
+	var f = (scope!=null) ? function() { action.call(scope); } : action;
 	
 	if (delay > 0)
 	{
