@@ -8,7 +8,7 @@ our @EXPORT = ('Service');
 our %handlers = ();
 
 # load all service handlers
-my $search_path = catfile("$Bin", "Service", "*");
+my $search_path = catfile("$Bin", "..", "Service", "*");
 for my $service (glob($search_path)) {
     $service =~ s/\.[^.]*$//;
     $service =~ s/.*\///g;

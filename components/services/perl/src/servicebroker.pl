@@ -1,4 +1,12 @@
 #!/usr/bin/perl
+
+# we will need to load modules from the
+# parent directory -- outside of apache
+# docroot
+BEGIN {
+    push @INC, "..";
+}
+
 use CGI;
 use Digest::MD5 qw(md5);
 use Apache::Session::File;
@@ -26,7 +34,7 @@ $query->parse_params($ENV{'QUERY_STRING'});
 my $method = $ENV{'REQUEST_METHOD'};
 my $instance_id = $query->param("instanceid");
 my $auth = $query->param("auth");
-my $init = $query->param("init");
+my $init = $query->param("initial");
 
 my %header = ();
 my $response = "";
