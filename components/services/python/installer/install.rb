@@ -215,8 +215,9 @@ END_CODE
     end
     
     def install_appcelerator_egg_if_needed(dir,version)
-      appc_version_check = "#{python} -c \"import appcelerator;from pkg_resources import require;require('Appcelerator==#{version}')\""
+      appc_version_check = "#{python} -c \"from pkg_resources import require;require('Appcelerator==#{version}')\""
       if not quiet_system(appc_version_check)
+        puts "Installing new Appcelerator module"
         quiet_system("#{easy_install} \"#{dir}/module/\"")
       end
     end
