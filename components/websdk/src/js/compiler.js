@@ -1302,7 +1302,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 						{
 							try
 							{
-								attachMethod(id,widgetParameters,data,scope,version,customActionArguments);
+								attachMethod(id,widgetParameters,data,scope,version,customActionArguments,direction,type);
 							}
 							catch (e)
 							{
