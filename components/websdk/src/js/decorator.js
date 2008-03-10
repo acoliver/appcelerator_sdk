@@ -36,7 +36,7 @@ Object.extend(Appcelerator.Decorator,
                 {
                     if (!valid)
                     {
-                        Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '" style="position:relative;top:3px"/> ' + msg);
+                        Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '" style="margin: 3px 0 -3px 0"/> ' + msg);
 						Appcelerator.Compiler.dynamicCompile(div);
                     }
                     Element.setStyle(decId, {visibility:(valid ? 'hidden' : 'visible')});
@@ -65,7 +65,7 @@ Object.extend(Appcelerator.Decorator,
                 if (!valid)
                 {
                     // update the message if not valid
-                    Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '" style="position:relative;top:3px"/> ' + msg);
+                    Appcelerator.Compiler.setHTML(div,'<img src="' + Appcelerator.Decorator.invalidImage + '" style="margin: 3px 0 -3px 0"/> ' + msg);
 					Appcelerator.Compiler.dynamicCompile(div);
                 }
 
