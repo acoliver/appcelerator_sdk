@@ -31,7 +31,12 @@ module Appcelerator
         out_messages = ServiceBroker.send(in_message)
         message_queue.concat(out_messages)
       end
-      serialize(message_queue, session.session_id, response.body)
+      if request.content_type == 'application/json'
+        type = 'json'
+      else
+        type = 'xml'
+      end
+      serialize(message_queue, session.session_id, response.body, type)
     end
     
     # dispatch a message that was generated in some other way, like the upload_controller
@@ -40,22 +45,34 @@ module Appcelerator
       msg = Message.new(request, session, message_type, params, request_id, scope)
       msg.controller = controller
       message_queue = ServiceBroker.send(msg)
-      
+
       serialize(message_queue, session.session_id, response.body, type)
     end
     
     def self.extract_messages(request, session)
-      body = request.env['RAW_POST_DATA']
+      body = request.raw_post
       if body and body != ''
-        node = REXML::Document.new(body)
-        node.root.each_element('//message') do |message|
-          
-          request_id = message.attributes['requestid']
-          message_type = message.attributes['type']
-          scope = message.attributes['scope']
-          params = JSON.parse(message.text)
-          
-          yield Message.new(request, session, message_type, params, request_id, scope)
+        if request.content_type == 'application/json'
+          json = JSON.parse(body)
+          messages = json['request']['messages']
+          if messages
+            messages.each do |message|
+              request_id = message['requestid']
+              message_type = message['type']
+              scope = message['scope']
+              params = message['data']
+              yield Message.new(request, session, message_type, params, request_id, scope) 
+            end
+          end
+        elsif request.content_type == 'text/xml'
+          node = REXML::Document.new(body)
+          node.root.each_element('//message') do |message|
+            request_id = message.attributes['requestid']
+            message_type = message.attributes['type']
+            scope = message.attributes['scope']
+            params = JSON.parse(message.text)
+            yield Message.new(request, session, message_type, params, request_id, scope)
+          end
         end
       end
     end
@@ -81,6 +98,19 @@ module Appcelerator
           end
         end
         output
+      elsif type == 'json'
+        result = {}
+        result['sessionid'] = session_id
+        messages = Array.new
+        message_queue.compact!
+        message_queue.each do |msg|
+          if msg.response_type
+            messages.push({'requestid' => msg.request_id, 'direction' => 'OUTGOING', 'datatype' => 'JSON', 
+              'type' => msg.response_type, 'scope' => msg.scope, 'data' => msg.response})
+          end
+        end
+        result['messages'] = messages
+        output << result.to_json
       else
         output << '<?xml version="1.0" encoding="UTF-8"?>'
         output << "<messages version='1.0' sessionid='#{session_id}'>"

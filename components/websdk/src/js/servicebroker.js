@@ -301,7 +301,7 @@ Appcelerator.Util.ServiceBroker =
 				json = data.toString();
 				break;
 			}
-			Logger.debug(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
+			$D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
 		}
 
 		if(dest == 'remote')
@@ -1047,6 +1047,89 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 	}
 };
 
+Appcelerator.Util.ServiceBrokerMarshaller['application/json'] = 
+{
+	currentRequestId:1,
+	prepareMsg: function(msg)
+	{
+		var result = {};
+		result['requestid'] = this.currentRequestId++;
+		result['type'] = msg[0]['type'];
+		result['scope'] = msg[2];
+		result['version'] = msg[3];
+		result['datatype'] = 'JSON';
+		result['data'] = msg[0]['data'];
+		return result;
+	},
+	serialize: function(messageQueue,multiplex)
+	{
+		var json = {};
+        if (messageQueue.length > 0)
+        {
+			var request = {};
+
+	        var time = new Date();
+	        var timestamp = time.getTime();
+			var tz = time.getTimezoneOffset()/60;
+            var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
+			request['idle'] = idleMs;
+			request['timestamp'] = timestamp;
+			request['tz'] = tz;
+			request['version'] = '1.0';
+
+			request['messages'] = [];
+			if (multiplex)
+			{
+	            for (var c = 0,len = messageQueue.length; c < len; c++)
+	            {
+					request['messages'].push(this.prepareMsg(messageQueue[c]));
+	            }
+			}
+			else
+			{
+				request['messages'].push(this.prepareMsg(messageQueue[0]));
+			}
+			json['request'] = request;
+        }
+		return {
+			'postBody': Object.toJSON(json),
+			'contentType':'application/json'
+		};
+	},
+	deserialize: function(response,length,contentType)
+	{
+		if (response.status == 202)
+		{
+			return null;
+		}
+		if (contentType.indexOf('application/json')==-1)
+		{
+			$E(this+', invalid content type: '+contentType+', expected: application/json');
+			return null;
+		}
+		var msgs = [];
+		var result = response.responseText.evalJSON();
+        for (var c = 0; c < result['messages'].length; c++)
+        {
+			try
+			{
+				message = result['messages'][c];
+				var requestid = message['requestid'];
+				var type = message['type'];
+				var datatype = message['datatype'];
+				var scope = message['scope'] || 'appcelerator';
+				var data = message['data'];
+				$D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+				msgs.push({type:type,data:data,datatype:datatype,scope:scope,requestid:requestid});
+			}
+			catch (e)
+			{
+			   $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
+			}
+        }
+		return msgs;
+	}
+};
 
 function jsonParameterEncode (key, value, array)
 {
