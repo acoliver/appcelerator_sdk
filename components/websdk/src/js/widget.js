@@ -94,7 +94,7 @@ Appcelerator.Widget.registerWidgetWithJS = function (moduleName,module,js,jspath
  */
 Appcelerator.Widget.loadWidgetCommonCSS = function(moduleName,css)
 {
-	Appcelerator.Core.loadModuleCommonCSS = function(moduleName,css)
+	Appcelerator.Core.loadModuleCommonCSS (moduleName,css);
 };
 
 /**
