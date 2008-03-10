@@ -88,6 +88,16 @@ Appcelerator.Widget.registerWidgetWithJS = function (moduleName,module,js,jspath
 };
 
 /**
+ * load widget's css from widget/common
+ * @param {string} moduleName
+ * @param {string} css path
+ */
+Appcelerator.Widget.loadWidgetCommonCSS = function(moduleName,css)
+{
+	Appcelerator.Core.loadModuleCommonCSS = function(moduleName,css)
+};
+
+/**
  * dynamically load CSS from common CSS path and call onload once 
  * loaded (or immediately if already loaded)
  *
