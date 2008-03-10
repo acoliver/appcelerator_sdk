@@ -1,0 +1,14 @@
+--- 
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
+:type: widget
+:version: 1.0
+:description: ExtJS Grid Panel  
+:name: app:ext_grid
+:tags: [ExtJS, Grid]
+
+:release_notes: initial release
+:license: [1] 
+

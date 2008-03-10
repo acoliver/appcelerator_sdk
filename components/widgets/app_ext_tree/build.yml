@@ -1,0 +1,14 @@
+--- 
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
+:type: widget
+:version: 1.0
+:description: app:ext_tree widget
+:name: app:ext_tree
+:tags: [tree,ExtJS]
+
+:release_notes: initial release
+:licenses: [1]
+
