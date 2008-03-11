@@ -22,6 +22,8 @@ module Appcelerator
   class Perl
     def create_project(from_path,to_path,config,tx)
       Appcelerator::Installer.copy(tx,from_path,to_path, ['install.rb','build.yml'])
+      File.chmod(0755, "#{to_path}/public/servicebroker.pl")     
+      File.chmod(0755, "#{to_path}/public/proxy.pl")     
       tx.rm "#{to_path}/app"
       true
     end
