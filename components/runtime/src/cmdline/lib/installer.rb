@@ -200,7 +200,13 @@ module Appcelerator
       end
       a==b
     end
-    
+    def Installer.get_proxy
+      if !ENV['PROXY_HOST'].nil? and !ENV['PROXY_PORT'].nil?
+        return "http://#{ENV['PROXY_HOST']}:#{ENV['PROXY_PORT']}"
+      else
+        return false
+      end
+    end
     def Installer.http_fetch(name,url)
       puts "Attempting to fetch #{name} from #{url}" if OPTIONS[:debug]
       begin
@@ -218,7 +224,9 @@ module Appcelerator
         cookies = @@client.cookies.to_s
       end
       puts "Session cookies: #{cookies}" if OPTIONS[:debug]
-      open(url,'Cookie'=>cookies,:proxy=>true,:content_length_proc => lambda {|t|
+
+      proxy = Installer.get_proxy()
+      open(url,'Cookie'=>cookies,:proxy=>proxy,:content_length_proc => lambda {|t|
             if t && 0 < t
               if not OPTIONS[:quiet]
                 require "#{LIB_DIR}/progressbar"
@@ -727,7 +735,6 @@ HELP
         version = nil
         checksum = nil
         already_installed = false
-       
         case from
           when /^http:\/\//
             #FIXME

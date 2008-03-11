@@ -148,7 +148,7 @@ module Appcelerator
       #
       # send the POST
       #
-      res  = Net::HTTP.new(@url.host,@url.port).start do |http|
+      res  = get_http(@url.host,@url.port) do |http|
          http.post("/#{@upload}",query,headers);
       end
       
@@ -192,10 +192,8 @@ module Appcelerator
     # data => data payload as hash
     #
     def send(type,data={},scope='appcelerator')
-
       type = convert_type(type)
       json_data = json_encode(data)
-      
       #
       # build XML/JSON payload
       #
@@ -222,7 +220,7 @@ module Appcelerator
       #
       # send the POST
       #
-      res  = Net::HTTP.new(@url.host,@url.port).start do |http|
+      res  = get_http(@url.host,@url.port) do |http|
          http.request(req)
       end
       
@@ -290,20 +288,32 @@ module Appcelerator
       @sessionid = @cookies[@sessionname]
       reset_auth_token
     end
-    
+    def get_http(host,port)
+      if !ENV['PROXY_HOST'].nil? and !ENV['PROXY_PORT'].nil?
+        proxy_class = Net::HTTP::Proxy(ENV['PROXY_HOST'], ENV['PROXY_PORT'].to_i)
+        res = proxy_class.start(host,port) do  |http|
+          yield http
+        end
+        return res
+      else
+        res = Net::HTTP.start(host, port) do |http|
+            yield http
+        end
+        return res
+      end
+    end
     def reset_auth_token
       @auth = MD5::hexdigest "#{@sessionid}#{@instanceid}"
     end
-
     def bootstrap
-    
       #
       # get the appcelerator.xml file
       #
-      res = Net::HTTP.start(@url.host, @url.port) do |http|
+      
+      res = get_http(@url.host, @url.port) do |http|
         http.get("#{@url.path}/appcelerator.xml")
       end
-      
+
       xml = res.body
       
       if not xml or xml == '' or xml.nil?
@@ -332,15 +342,14 @@ module Appcelerator
       # get the sessionid cookiename
       sn = xml.match(/<sessionid>(.*?)<\/sessionid>/)
       @sessionname = sn[1]
-      
+       
       req = Net::HTTP::Get.new("/#{@servicebroker}?initial=1")
       req.set_content_type('text/xml')
       req['X-Requested-With'] = 'XMLHttpRequest'
 
-      response = Net::HTTP.start(@url.host,@url.port) do |http|
+      response = get_http(@url.host,@url.port) do |http|
         http.request(req)
       end
-      
       @instanceid = Time.now.to_i.to_s + "-" + (rand(1000)).to_s
       get_cookies(response)
     end
