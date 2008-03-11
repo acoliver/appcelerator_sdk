@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.annotation.Service;
+import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.annotation.ServiceDispatcher;
 import org.appcelerator.messaging.Message;
 
@@ -56,6 +57,17 @@ public class ServiceAnnotationDispatcher
             try
             {
                 ServiceRegistry.registerServiceMethods(serviceClass,false,null,null);
+            }
+            catch (Exception ex)
+            {
+                LOG.error("Error loading services from annotations in classpath",ex);
+            }
+        }
+        for (Class<? extends Object> serviceClass : AnnotationHelper.findAnnotation(Downloadable.class))
+        {
+            try
+            {
+				ServiceRegistry.registerDownloadableMethods(serviceClass,null,false);
             }
             catch (Exception ex)
             {

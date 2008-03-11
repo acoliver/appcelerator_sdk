@@ -13,9 +13,42 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+    	<servlet-name>downloadTransport</servlet-name>
+    	<servlet-class>org.appcelerator.transport.DownloadTransportServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+    	<servlet-name>uploadTransport</servlet-name>
+    	<servlet-class>org.appcelerator.transport.UploadTransportServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
+    	<servlet-name>proxyTransport</servlet-name>
+    	<servlet-class>org.appcelerator.transport.ProxyTransportServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet-mapping>
       <servlet-name>ajaxServiceTransport</servlet-name>
       <url-pattern>/servicebroker</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>proxyTransport</servlet-name>
+      <url-pattern>/proxy</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>downloadTransport</servlet-name>
+      <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>uploadTransport</servlet-name>
+      <url-pattern>/upload</url-pattern>
     </servlet-mapping>
 
 </web-app>

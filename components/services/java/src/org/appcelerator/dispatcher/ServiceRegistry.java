@@ -27,9 +27,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Service;
+import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
 
@@ -41,6 +45,7 @@ public class ServiceRegistry
 {
     private static final Log LOG = LogFactory.getLog(ServiceRegistry.class);
     private static final HashMap<String,Set<ServiceAdapter>> services=new HashMap<String,Set<ServiceAdapter>>();
+    private static final HashMap<String,DownloadableAdapter> downloadables=new HashMap<String,DownloadableAdapter>();
     
     /**
      * given a service type, return the services
@@ -51,6 +56,17 @@ public class ServiceRegistry
     public static Set<ServiceAdapter> getRegisteredServices (String type)
     {
         return services.get(type);
+    }
+
+    /**
+     * given a download name, return the services
+     * 
+     * @param type
+     * @return
+     */
+    public static DownloadableAdapter getRegisteredDownloadable (String name)
+    {
+        return downloadables.get(name);
     }
     
     /**
@@ -85,6 +101,50 @@ public class ServiceRegistry
            }
         }
     }
+
+    public static void registerDownloadableMethods (Class<? extends Object> serviceClass, Object instance, boolean unregisterIfFound) throws Exception
+    {
+        for (Method method : serviceClass.getDeclaredMethods())
+        {
+           Downloadable service = method.getAnnotation(Downloadable.class);
+           if (service!=null)
+           {
+               ServiceRegistry.registerDownloadable(service.name(),serviceClass,instance,method,service,unregisterIfFound);
+           }
+        }
+    }
+
+	/**
+	 * register a downloadable service
+	 */
+	public static void registerDownloadable (String name, Class<? extends Object> clazz, Object instance, 
+            Method method, Downloadable service, boolean unregisterIfFound)  throws Exception
+	{
+        if (LOG.isDebugEnabled()) LOG.debug("register download service for "+name+" -> "+clazz.getName()+"."+method.getName());
+		
+		DownloadableAdapter adapter = downloadables.get(name);
+		
+		if (adapter!=null)
+		{
+			if (unregisterIfFound)
+			{
+				downloadables.remove(name);
+			}
+			else
+			{
+				LOG.warn("duplicate download service detected for "+name+", class="+clazz);
+				return;
+			}
+		}
+		
+		if (instance==null)
+		{
+			instance = clazz.newInstance();
+		}
+		
+        adapter=new DownloadableAdapter(instance,method,service);
+		downloadables.put(name,adapter);
+	}
 
     /**
      * register a service
@@ -175,6 +235,20 @@ public class ServiceRegistry
                 }
             }
         }
+        return false;
+    }
+
+	/**
+	 * dispatch an incoming downloadable
+	 */
+    public static boolean dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
+    {
+        DownloadableAdapter adapter = ServiceRegistry.getRegisteredDownloadable(name);
+		if (adapter!=null)
+		{
+			adapter.dispatch(session,ticket,name,response);
+			return true;
+		}
         return false;
     }
 }

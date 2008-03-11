@@ -25,44 +25,31 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
- * Service annotation
+ * Downloadable is used for making a service support generic downloads.
+ *
+ * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Service
+public @interface Downloadable
 {
     /**
-     * service request name
+     * name of the download service
      * 
      * @return
      */
-    String request();
-    
-    /**
-     * service response name or null/empty string for no response
-     * 
-     * @return
-     */
-    String response() default "";
-    
-    /**
-     * service version (defaults to 1.0)
-     * 
-     * @return
-     */
-    String version() default "1.0";
+    String name();
 
 	/** 
-	 * method which will be invoked before the service is handled. 	the method must take two
-	 * parameters of Message type. The first is the incoming message, the second is the outgoing response.
+	 * method which will be invoked before the service is handled. 	the method must take four parameters:
+	 * HttpSession session, String ticket, String name, HttpServletResponse response
 	 */
-    String premessage() default "";
+	String premessage() default "";
 
 	/** 
-	 * method which will be invoked after the service is handled. the method must take two
-	 * parameters of Message type. The first is the incoming message, the second is the outgoing response.
+	 * method which will be invoked after the service is handled. 	the method must take four parameters:
+		 * HttpSession session, String ticket, String name, HttpServletResponse response
 	 */
-    String postmessage() default "";
+	String postmessage() default "";
 }

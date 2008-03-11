@@ -22,23 +22,27 @@ package org.appcelerator.dispatcher;
 
 import java.lang.reflect.Method;
 
-import org.appcelerator.annotation.Service;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
+
+import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.messaging.Message;
 
 /**
- * an adapter which wraps an object and specific @Service method which is
+ * an adapter which wraps an object and specific @Downloadable method which is
  * responsible for invoking the service using reflection and returning the
  * results from the invocation
  */
-public class ServiceAdapter
+public class DownloadableAdapter
 {
     private final Object instance;
     private final Method method;
     private Method premethod;
     private Method postmethod;
-    private final Service service;
+    private final Downloadable service;
     
-    ServiceAdapter(Object i, Method m, Service s) throws Exception
+    DownloadableAdapter(Object i, Method m, Downloadable s) throws Exception
     {
         this.instance = i;
         this.method = m;
@@ -56,7 +60,7 @@ public class ServiceAdapter
     	Class cl = i.getClass();
     	return cl.getMethod(methodname, Message.class, Message.class);
     }
-    public boolean is(Class<? extends Object> clz, Method method, Service service)
+    public boolean is(Class<? extends Object> clz, Method method, Downloadable service)
     {
         if (this.instance.getClass().equals(clz))
         {
@@ -69,9 +73,9 @@ public class ServiceAdapter
     }
     public boolean equals(Object obj)
     {
-        if (obj instanceof ServiceAdapter)
+        if (obj instanceof DownloadableAdapter)
         {
-            ServiceAdapter sa=(ServiceAdapter)obj;
+            DownloadableAdapter sa=(DownloadableAdapter)obj;
             return sa.instance.equals(instance) && 
                    sa.method.equals(method) &&
                    sa.service.equals(service);
@@ -83,10 +87,11 @@ public class ServiceAdapter
         return this.instance.hashCode() * this.method.hashCode() ^ service.hashCode();
     }
     /**
-     * return the service annotation for the service method
+     * return the downloadable annotation for the service method
+     *
      * @return
      */
-    public Service getService ()
+    public Downloadable getService ()
     {
         return this.service;
     }
@@ -96,41 +101,25 @@ public class ServiceAdapter
      * @param request
      * @param response
      */
-    public void dispatch (Message request, Message response)
+    public void dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
     {
         try
         {
         	if (premethod != null)
 			{
-        		premethod.invoke(this.instance,request,response);
+        		premethod.invoke(this.instance,session,ticket,name,response);
 			}
-            response.getData().put("success",true);
-            switch(this.method.getParameterTypes().length)
-            {
-                case 1:
-                {
-                    this.method.invoke(this.instance, request);
-                    break;
-                }
-                case 2:
-                {
-                    this.method.invoke(this.instance, request, response);
-                    break;
-                }
-                default:
-                {
-                    throw new Exception("invalid service signature");
-                }
-            }
+
+            this.method.invoke(this.instance,session,ticket,name,response);
+
         	if (postmethod != null)
 			{
-        		postmethod.invoke(this.instance,request,response);
+        		postmethod.invoke(this.instance,session,ticket,name,response);
 			}
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
-            response.getData().put("success",false);
-            response.getData().put("exception",e.getMessage());
+			try { response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); } catch (Exception ex ) { } 
         }
     }
 }
