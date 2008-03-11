@@ -1375,19 +1375,70 @@ Appcelerator.Compiler.parseOnAttribute = function(element)
 	return false;
 };
 
+Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
+{
+	var validx = -1;
+	if (searchString.indexOf('[') > -1 && searchString.indexOf(']')> -1)
+	{
+		var possibleValuePosition = searchString.indexOf(value);
+		if (possibleValuePosition > -1)
+		{
+			var in_left_bracket = false;
+			for (var i = possibleValuePosition; i > -1; i--)
+			{
+				if (searchString.charAt(i) == ']')
+				{
+					break;
+				}
+				if (searchString.charAt(i) == '[')
+				{
+					in_left_bracket = true;
+					break;
+				}
+			}
+			var in_right_bracket = false;
+			for (var i = possibleValuePosition; i < searchString.length; i++)
+			{
+				if (searchString.charAt(i) == '[')
+				{
+					break;
+				}
+				if (searchString.charAt(i) == ']')
+				{
+					in_right_bracket = true;
+					break;
+				}
+			}
+		
+			if (in_left_bracket && in_right_bracket)
+			{
+				validx = -1;
+			} else
+			{
+				validx = searchString.indexOf(value);
+			}
+		} else validx = possibleValuePosition;
+	}
+	else
+	{
+		validx = searchString.indexOf(value);		
+	}
+	return validx;
+};
+
 Appcelerator.Compiler.parseExpression = function(value)
 {
-    if (!Object.isString(value))
-    {
-        throw "value: "+value+" is not a string!";
-    }
-    value = value.gsub('\n',' ');
-    value = value.gsub('\r',' ');
-    value = value.gsub('\t',' ');
-    value = value.trim();
+	if (!Object.isString(value))
+	{
+	    throw "value: "+value+" is not a string!";
+	}
+	value = value.gsub('\n',' ');
+	value = value.gsub('\r',' ');
+	value = value.gsub('\t',' ');
+	value = value.trim();
 
-    var thens = [];
-    var ors = Appcelerator.Compiler.smartSplit(value,' or ');
+	var thens = [];
+	var ors = Appcelerator.Compiler.smartSplit(value,' or ');
 	
 	for (var c=0,len=ors.length;c<len;c++)
 	{
@@ -1400,23 +1451,8 @@ Appcelerator.Compiler.parseExpression = function(value)
 		var condition = expression.substring(0,thenidx);
 		var elseAction = null;
 		var nextstr = expression.substring(thenidx+6);
-		var elseidx = -1;
-		if (nextstr.indexOf('['))
-		{
-			var result = Appcelerator.Compiler.smartSplit(nextstr,'else');
-			if (result.length > 1)
-			{
-				elseidx = result[0].length;
-			}
-			else
-			{
-				elseidx = result[0].length+1;
-			}
-		}
-		else
-		{
-			elseidx = nextstr.indexOf('else');		
-		}
+		var elseidx = Appcelerator.Compiler.smartTokenSearch(nextstr, 'else');
+
 		var increment = 5;
 		if (elseidx == -1)
 		{
@@ -1437,6 +1473,7 @@ Appcelerator.Compiler.parseExpression = function(value)
 		var nextStr = elseAction || action;
 		var ifCond = null;
 		var ifIdx = nextStr.indexOf(' if expr[');
+
 		if (ifIdx!=-1)
 		{
 			var ifStr = nextStr.substring(ifIdx + 9);
@@ -1457,8 +1494,9 @@ Appcelerator.Compiler.parseExpression = function(value)
 			nextStr = ifStr.substring(endP+2);
 		}
 		
-		var delay = 0;
-		var afterIdx = nextStr.indexOf('after ');
+		var delay = 0;		
+		var afterIdx =  Appcelerator.Compiler.smartTokenSearch(nextstr, 'after '); 		
+
 		if (afterIdx!=-1)
 		{
 			var afterStr = nextStr.substring(afterIdx+6);
@@ -1480,7 +1518,6 @@ Appcelerator.Compiler.parseExpression = function(value)
 	}
 	return thens;
 };
-
  
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
