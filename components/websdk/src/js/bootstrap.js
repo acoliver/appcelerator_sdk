@@ -142,11 +142,11 @@ Appcelerator.Parameters = $H({});
     Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
     Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
 	
-    Appcelerator.Parameters.merge(window.location.href.toQueryParams());
+    Appcelerator.Parameters = Appcelerator.Parameters.merge(window.location.href.toQueryParams());
     
-	if (Appcelerator.Parameters['instanceid'])
+	if (Appcelerator.Parameters.get('instanceid'))
 	{
-		Appcelerator.instanceid = Appcelerator.Parameters['instanceid'];
+		Appcelerator.instanceid = Appcelerator.Parameters.get('instanceid');
 	}
 	else
 	{

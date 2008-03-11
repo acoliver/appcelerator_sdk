@@ -1,5 +1,5 @@
 
-var APPCELERATOR_DEBUG = window.location.href.indexOf('debug=1') > 0 || Appcelerator.Parameters['debug']=='1';
+var APPCELERATOR_DEBUG = window.location.href.indexOf('debug=1') > 0 || Appcelerator.Parameters.get('debug')=='1';
 
 var Logger = Class.create();
 $$l = Logger;
