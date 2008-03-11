@@ -10,7 +10,7 @@
            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
            http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-		   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.1.xsd">
+		   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
 	<bean id="springBeanDispatcher" class="org.appcelerator.dispatcher.SpringBeanDispatcher"></bean>
 	<context:annotation-config/>
