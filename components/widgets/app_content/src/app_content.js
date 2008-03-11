@@ -28,11 +28,11 @@ Appcelerator.Widget.Content =
 	},
 	getDescription: function()
 	{
-		return 'content widget';
+		return 'content widget support modularizing of code by breaking them into separate files which can be loaded either at load time or dynamically based on a message';
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -74,7 +74,10 @@ Appcelerator.Widget.Content =
 				{name: 'onload', optional: true, type: T.messageSend,
 				 description: "Fire this message when content file is loaded."},
 				{name: 'onfetch', optional: true, type: T.messageSend,
-				 description: "Fire this message when content file is fetched but before being loaded."}];
+				 description: "Fire this message when content file is fetched but before being loaded."},
+				{name:'useframe', optional: true, type: T.bool, 
+				 description: "Use a hidden iframe when fetching the content, instead of an Ajax request. This is normally not required."}
+		];
 	},
 	execute: function(id,parameterMap,data,scope)
 	{
@@ -82,20 +85,20 @@ Appcelerator.Widget.Content =
 		{
 			if (!$(id).fetched && !parameterMap['fetched'])
 			{
-				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
+				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameters['useframe']);
 				$(id).fetched = true;
 			}
 		}
 		else
 		{
-			Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch']);
+			Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameters['useframe']);
 		}
 	},
 	compileWidget: function(parameters)
 	{
 		if (!(parameters['lazy'] == 'true'))
 		{
-			Appcelerator.Widget.Content.fetch(parameters['id'],parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch']);
+			Appcelerator.Widget.Content.fetch(parameters['id'],parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch'],parameters['useframe']);
 			parameters['fetched'] = true;
 		}
 	},
@@ -109,45 +112,92 @@ Appcelerator.Widget.Content =
 			'compile' : true
 		};
 	},
-	fetch: function (target,src,args,onload,onfetch)
+	fetch: function (target,src,args,onload,onfetch,useframe)
 	{
         target = $(target);
         target.style.visibility='hidden';
 
-		Appcelerator.Util.IFrame.fetch(src,function(doc)
+		if (!useframe)
 		{
-			if (onfetch)
+			new Ajax.Request(src,
 			{
-				$MQ(onfetch,{'src':src,'args':args});
-			}
-			
-			var scope = target.getAttribute('scope') || target.scope;
-			doc.setAttribute('scope',scope);
-			doc.scope = scope;
-			Appcelerator.Compiler.getAndEnsureId(doc);
-			var state = Appcelerator.Compiler.createCompilerState();
-			var html = '<div>'+doc.innerHTML+'</div>';
-			if (args)
+				asynchronous:true,
+				method:'get',
+				onSuccess:function(resp)
+				{
+					if (onfetch)
+					{
+						$MQ(onfetch,{'src':src,'args':args});
+					}
+					var scope = target.getAttribute('scope') || target.scope;
+					var state = Appcelerator.Compiler.createCompilerState();
+					var html = resp.responseText;
+					var match = /<body[^>]*>([\s\S]*)?<\/body>/mg.exec(html);
+					if (match)
+					{
+						html = match[1];
+					}
+					html = Appcelerator.Compiler.addIENameSpace('<div>'+html+'</div>');
+					if (args)
+					{
+						// replace tokens in our HTML with our args
+						var t = Appcelerator.Compiler.compileTemplate(html);
+						html = t(args.evalJSON());
+					}
+					// turn off until we're done compiling
+					target.innerHTML = html;
+					state.onafterfinish=function()
+					{
+						 // turn it back on once we're done compiling
+					     target.style.visibility='visible';
+			             if (onload)
+			             {
+			                $MQ(onload,{'src':src,'args':args});
+			             }
+					};
+					Appcelerator.Compiler.compileElement(target.firstChild,state);
+					state.scanned=true;
+					Appcelerator.Compiler.checkLoadState(state);
+				}
+			});
+		}
+		else
+		{
+			Appcelerator.Util.IFrame.fetch(src,function(doc)
 			{
-				// replace tokens in our HTML with our args
-				var t = Appcelerator.Compiler.compileTemplate(html);
-				html = t(args.evalJSON());
-			}
-			// turn off until we're done compiling
-			target.innerHTML = html;
-			state.onafterfinish=function()
-			{
-				 // turn it back on once we're done compiling
-			     target.style.visibility='visible';
-	             if (onload)
-	             {
-	                $MQ(onload,{'src':src,'args':args});
-	             }
-			};
-			Appcelerator.Compiler.compileElement(target.firstChild,state);
-			state.scanned=true;
-			Appcelerator.Compiler.checkLoadState(state);
-		},true,true);
+				if (onfetch)
+				{
+					$MQ(onfetch,{'src':src,'args':args});
+				}
+
+				var scope = target.getAttribute('scope') || target.scope;
+				doc.setAttribute('scope',scope);
+				doc.scope = scope;
+				Appcelerator.Compiler.getAndEnsureId(doc);
+				var state = Appcelerator.Compiler.createCompilerState();
+				var html = '<div>'+doc.innerHTML+'</div>';
+				if (args)
+				{
+					// replace tokens in our HTML with our args
+					var t = Appcelerator.Compiler.compileTemplate(html);
+					html = t(args.evalJSON());
+				}
+				// turn off until we're done compiling
+				target.innerHTML = html;
+				state.onafterfinish=function()
+				{
+					 // turn it back on once we're done compiling
+				     target.style.visibility='visible';
+		             if (onload)
+		             {
+		                $MQ(onload,{'src':src,'args':args});
+		             }
+				};
+				Appcelerator.Compiler.compileElement(target.firstChild,state);
+				state.scanned=true;
+				Appcelerator.Compiler.checkLoadState(state);
+			},true,true);
+		}
 	}
 };
 

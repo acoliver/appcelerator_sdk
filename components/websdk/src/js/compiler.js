@@ -358,17 +358,7 @@ Appcelerator.Compiler.dynamicCompile = function(element,notimeout,recursive)
 	
     $D('dynamic compile called for '+element+' - id='+element.id);
     
-    if (notimeout)
-    {
-        Appcelerator.Compiler.doCompile(element,recursive);   
-    }
-    else
-    {
-        (function()
-        {
-            Appcelerator.Compiler.doCompile(element,recursive);
-        }).defer();
-    }
+    Appcelerator.Compiler.doCompile(element,recursive);   
 };
 
 Appcelerator.Compiler.doCompile = function(element,recursive)
@@ -522,15 +512,12 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 		element.style.originalDisplay = element.style.display || 'block';
 		
         state.pending+=1;
-		(function()
+		Appcelerator.Core.requireModule(name,function()
 		{
-			Appcelerator.Core.requireModule(name,function()
-			{
-				var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
-				state.pending-=1;
-				Appcelerator.Compiler.checkLoadState(state);
-			});
-		}).defer();
+			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+			state.pending-=1;
+			Appcelerator.Compiler.checkLoadState(state);
+		});
 	}	
 	else
 	{
@@ -2363,7 +2350,7 @@ Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 	}
 	else
 	{
-		f.defer();
+		f();
 	}
 };
 
