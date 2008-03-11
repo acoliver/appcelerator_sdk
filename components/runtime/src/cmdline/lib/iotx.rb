@@ -149,6 +149,20 @@ module Appcelerator
       record 'cp',*args
     end
     alias :copy :cp
+
+    def chmod(*args)
+      raise "Cannot use transaction since one has not yet been started" unless @operations
+      mode = args[0]
+      target = args[1]
+
+      if target.class == Array
+        target.each do |e|
+          cp(e,dest)
+        end
+        return
+      end
+      record 'chmod', *args
+    end
     
     def mkdir(*args)
       raise "Cannot use transaction since one has not yet been started" unless @operations
@@ -230,6 +244,18 @@ module Appcelerator
         FileUtils.rm_rf @state[:dest] 
       end
       true
+    end
+    def chmod_commit(recordonly, mode, target)
+      raise "#{target} must exist" unless File.exists?(target)
+      target = target.path if target.class == File
+      @state[:path] = target
+      @state[:mode] = File.stat(target).mode
+      trace "=> chmod #{target} to #{mode}"
+      File.chmod(mode, target) unless recordonly
+    end
+    def chmod_rollback
+      trace "=> rollback chmod #{state[:path]} to #{state[:mode]}"
+      File.chmod(state[:mode], state[:path])
     end
     def mkdir_commit(recordonly,path)
       @state[:exists] = File.exists? path
