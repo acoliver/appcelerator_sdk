@@ -85,13 +85,13 @@ Appcelerator.Widget.Content =
 		{
 			if (!$(id).fetched && !parameterMap['fetched'])
 			{
-				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameters['useframe']);
+				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
 				$(id).fetched = true;
 			}
 		}
 		else
 		{
-			Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameters['useframe']);
+			Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
 		}
 	},
 	compileWidget: function(parameters)
