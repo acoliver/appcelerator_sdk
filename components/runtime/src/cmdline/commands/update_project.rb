@@ -178,9 +178,8 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
                   Appcelerator::CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
                 
                 when :websdk,'websdk'
-                  project_config,props=Appcelerator::Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true)
-                  config[:websdk]=websdk_component[:version]
-                
+                  project_config,props=Appcelerator::Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
+                  config[:websdk]=component[:version]
                 when :service,'service'
                   config[:service_version]=component[:version]
                   service_dir = Appcelerator::Installer.get_component_directory(component)

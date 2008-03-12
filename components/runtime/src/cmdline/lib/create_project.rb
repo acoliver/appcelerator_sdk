@@ -20,7 +20,7 @@ require 'fileutils'
 
 module Appcelerator
   class Installer
-    def Installer.create_project(path,name,service,version,tx,update=false)
+    def Installer.create_project(path,name,service,version,tx,update=false,webcomponent=nil)
       
       puts "Creating new project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and not update
       puts "Updating project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and update
@@ -50,7 +50,7 @@ module Appcelerator
       Installer.save_project_config path,props unless update
 
       # install the web files
-      config = Installer.install_web_project(config,tx,update)
+      config = Installer.install_web_project(config,tx,update,webcomponent)
 
       props[:widgets] = config[:installed_widgets]
       props[:websdk] = config[:websdk]

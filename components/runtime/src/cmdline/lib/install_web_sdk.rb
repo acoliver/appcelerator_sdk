@@ -18,16 +18,20 @@
 #
 module Appcelerator
   class Installer
-    
-    def Installer.install_web_project(options,tx,update=false)
+
+    def Installer.install_web_project(options,tx,update=false,webcomponent=nil)
       
       raise "Invalid options, must specify :web option" unless options[:web]
       raise "Invalid options, must specify :javascript option" unless options[:javascript]
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk',true,tx,update
-
+      if update and !webcomponent.nil?
+        source_dir,name,web_version,checksum,already_installed = Installer.get_release_directory(webcomponent[:type],webcomponent[:name],webcomponent[:version]),webcomponent[:name],webcomponent[:version],webcomponent[:checksum],true
+      else
+        source_dir,name,web_version,checksum,already_installed = Appcelerator::Installer.install_component :websdk,'WebSDK','websdk',true,tx,update
+      end
+      
       options[:websdk] = web_version
       options[:installed_widgets] = []
 
