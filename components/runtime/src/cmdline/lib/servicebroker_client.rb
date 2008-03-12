@@ -113,7 +113,7 @@ module Appcelerator
     
 	  attr_reader :cookies
 	
-    def initialize(url,debug=false)
+    def initialize(url,debug=false,proxy_host=nil,proxy_port=nil)
       @url = URI.parse(url)
       @instanceid = nil
       @auth = nil
@@ -121,6 +121,8 @@ module Appcelerator
       @upload = nil
       @debug = debug
       @cookies = CookieJar.new
+      @proxy_host = proxy_host
+      @proxy_port = proxy_port
       bootstrap
     end
 
@@ -289,8 +291,8 @@ module Appcelerator
       reset_auth_token
     end
     def get_http(host,port)
-      if !ENV['PROXY_HOST'].nil? and !ENV['PROXY_PORT'].nil?
-        proxy_class = Net::HTTP::Proxy(ENV['PROXY_HOST'], ENV['PROXY_PORT'].to_i)
+      if !@proxy_host.nil? and !@proxy_port.nil?
+        proxy_class = Net::HTTP::Proxy(@proxy_host, @proxy_port.to_i)
         res = proxy_class.start(host,port) do  |http|
           yield http
         end

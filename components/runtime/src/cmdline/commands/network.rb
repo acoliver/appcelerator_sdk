@@ -94,3 +94,30 @@ Appcelerator::CommandRegistry.registerCommand('network:list','query network for 
     puts list.to_yaml unless OPTIONS[:quiet]
   end
 end
+Appcelerator::CommandRegistry.registerCommand('network:setproxy','set your proxy settings',
+[
+  {
+    :name=>'host',
+    :help=>'host for the proxy',
+    :required=>true,
+    :default=>nil,
+    :type=>Appcelerator::Types::AnyType
+  },
+  {
+    :name=>'port',
+    :help=>'port for the proxy',
+    :required=>false,
+    :default=>nil,
+    :type=>Appcelerator::Types::AnyType
+  }
+],nil,nil) do |args,options|
+  host = args[:host] || ask('Enter your proxy host: ',nil)
+  puts host
+  port = args[:port] || ask('Enter your proxy host: ',nil)
+  puts port
+  Appcelerator::Installer.save_proxy(args[:host], args[:port].to_i)
+end
+Appcelerator::CommandRegistry.registerCommand('network:clearproxy','clear your proxy settings',
+[],nil,nil) do |args,options|
+  Appcelerator::Installer.save_proxy(nil, nil)
+end

@@ -60,7 +60,14 @@ module Appcelerator
       @@config = YAML::load_file(@@config_file) if File.exists?(@@config_file)
       @@config||={}
     end
-    
+    def Installer.save_proxy(host, port)
+      @@config[:proxy_host]=host
+      @@config[:proxy_port]=port
+      f = File.open(@@config_file,'w+')
+      f.puts @@config.to_yaml
+      f.flush
+      f.close
+    end
     def Installer.forget_credentials
       Installer.load_config unless @@config
       @@config.delete :username
@@ -90,7 +97,7 @@ module Appcelerator
     end
 
     def Installer.get_client
-      @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug] unless @@client
+      @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], @@config[:proxy_host], @@config[:proxy_port] unless @@client
       @@client
     end
 
@@ -201,8 +208,8 @@ module Appcelerator
       a==b
     end
     def Installer.get_proxy
-      if !ENV['PROXY_HOST'].nil? and !ENV['PROXY_PORT'].nil?
-        return "http://#{ENV['PROXY_HOST']}:#{ENV['PROXY_PORT']}"
+      if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
+        return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
       else
         return false
       end
