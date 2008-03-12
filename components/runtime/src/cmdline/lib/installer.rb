@@ -202,10 +202,14 @@ module Appcelerator
       a==b
     end
     def Installer.get_client
+      if @@client
+        return @@client
+      end
       proxy = Installer.get_proxy()
       if proxy.nil? or proxy==""
-        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], @@config[:proxy_host], @@config[:proxy_port] unless @@client
+        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
+        puts "using proxy #{proxy}"
         uri = URI.parse (proxy)
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], uri.host, uri.port unless @@client
       end
@@ -241,8 +245,9 @@ module Appcelerator
       proxy = Installer.get_proxy()
       if proxy.nil? or proxy==""
         proxy = false
+      else
+        puts "using proxy #{proxy}"
       end
-      puts "proxy #{proxy}"
       open(url,'Cookie'=>cookies,:proxy=>proxy,:content_length_proc => lambda {|t|
             if t && 0 < t
               if not OPTIONS[:quiet]
