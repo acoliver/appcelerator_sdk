@@ -774,8 +774,6 @@ HELP
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
             checksum = Installer.checksum(from)
         else
-          puts "yip getting from dev network"
-          exit
           to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed,force,skip_dependencies)
         end
         

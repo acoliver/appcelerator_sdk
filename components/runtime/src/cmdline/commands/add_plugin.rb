@@ -63,10 +63,14 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
         end
 
         plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true,tx,force)
-
+        
+        if Appcelerator::Project.to_version(plugin[:version]) > Appcelerator::Project.to_version(version)
+          plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(plugin[:type],plugin[:name],plugin[:version]),plugin[:name],plugin[:version],plugin[:checksum],true
+        end
+        
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
-
+        
         event = {:name=>name,:version=>version,:plugin_dir=>plugin_dir,:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
         Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',event
 

@@ -81,8 +81,17 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   
   service = service_entry[:name]
   
+  puts "service #{service}"
+
+
+  servicecomponent = Appcelerator::Installer.get_component_from_config(:service,service)
+
   service_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component :service,'SOA Integration Point',service,true
   
+  if Appcelerator::Project.to_version(servicecomponent[:version]) > Appcelerator::Project.to_version(version)
+    service_dir,name,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version]),servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum],true
+  end
+
   if OPTIONS[:debug]
     puts "service_dir=#{service_dir}"
     puts "name=#{name}"
