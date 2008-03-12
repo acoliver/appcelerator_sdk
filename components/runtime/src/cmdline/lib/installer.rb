@@ -220,6 +220,8 @@ module Appcelerator
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
       elsif !ENV['http_proxy'].nil?
         return ENV['http_proxy']
+      elsif !ENV['HTTP_PROXY'].nil?
+        return ENV['HTTP_PROXY']
       else
         return nil
       end
