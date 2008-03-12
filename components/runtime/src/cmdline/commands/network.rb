@@ -112,10 +112,8 @@ Appcelerator::CommandRegistry.registerCommand('network:setproxy','set your proxy
   }
 ],nil,nil) do |args,options|
   host = args[:host] || ask('Enter your proxy host: ',nil)
-  puts host
   port = args[:port] || ask('Enter your proxy host: ',nil)
-  puts port
-  Appcelerator::Installer.save_proxy(args[:host], args[:port].to_i)
+  Appcelerator::Installer.save_proxy(host, port.to_i)
 end
 Appcelerator::CommandRegistry.registerCommand('network:clearproxy','clear your proxy settings',
 [],nil,nil) do |args,options|
