@@ -224,7 +224,7 @@ Function .onInstSuccess
 
   ; open our welcome page
   ;StrCpy $0 "http://127.0.0.1:9080"
-  StrCpy $0 "http://www.appcelerator.org"
+  StrCpy $0 "http://www.appcelerator.org/gettingstarted"
   Call openLinkNewWindow
 
 FunctionEnd

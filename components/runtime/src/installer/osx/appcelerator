@@ -61,8 +61,8 @@ then
          PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin
          ruby /usr/bin/app --install >>/tmp/appcelerator_installer.log 2>&1
 
-         echo "open http://www.appcelerator.org" >> /tmp/appcelerator_installer.log
-         open "http://www.appcelerator.org"
+         echo "open http://www.appcelerator.org/gettingstarted" >> /tmp/appcelerator_installer.log
+         open "http://www.appcelerator.org/gettingstarted"
 
          echo "exiting successfully!" >> /tmp/appcelerator_installer.log
          exit 0

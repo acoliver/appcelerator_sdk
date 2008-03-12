@@ -130,7 +130,7 @@ system "#{install_dir}/appcelerator --install 2>/dev/null"
 if RUBY_PLATFORM =~ /darwin/
   Kernel.sleep 3
 #  system "open http://127.0.0.1:9080"
-  system "open http://www.appcelerator.org"
+  system "open http://www.appcelerator.org/gettingstarted"
 end
 
 puts "Installation successful! Enjoy."
