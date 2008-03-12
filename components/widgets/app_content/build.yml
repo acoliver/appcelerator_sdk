@@ -1,7 +1,7 @@
 --- 
 :type: widget
 :name: app:content
-:version: 1.0
+:version: 1.0.1
 :dependencies: 
 - :type: websdk
   :version: ">=2.1"
