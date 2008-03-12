@@ -206,6 +206,7 @@ module Appcelerator
         return @@client
       end
       proxy = Installer.get_proxy()
+      puts "proxy: #{proxy}"
       if proxy.nil? or proxy==""
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
@@ -217,12 +218,16 @@ module Appcelerator
     end
     def Installer.get_proxy
       if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
+        puts "proxy in config: http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}" if OPTIONS[:debug]
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
       elsif !ENV['http_proxy'].nil? and !(ENV['http_proxy']=="")
+        puts "proxy in ENV['http_proxy']: #{ENV['http_proxy']}" if OPTIONS[:debug]
         return ENV['http_proxy']
       elsif !ENV['HTTP_PROXY'].nil? and !(ENV['HTTP_PROXY']=="")
+        puts "proxy in ENV['HTTP_PROXY']: #{ENV['HTTP_PROXY']}" if OPTIONS[:debug]
         return ENV['HTTP_PROXY']
       else
+        puts "proxy nil" if OPTIONS[:debug]
         return nil
       end
     end
@@ -752,6 +757,7 @@ HELP
       return to_dir,config[:name],config[:version]
     end
 
+# :websdk,'WebSDK','websdk',true,tx,update
     def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false)
 
         to_dir = nil
@@ -768,6 +774,8 @@ HELP
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
             checksum = Installer.checksum(from)
         else
+          puts "yip getting from dev network"
+          exit
           to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed,force,skip_dependencies)
         end
         
@@ -867,7 +875,6 @@ HELP
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
       return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
     end
-    
     def Installer.get_remote_component(type,name,version=nil)
       found = []
       Installer.fetch_distribution_list
