@@ -95,12 +95,6 @@ module Appcelerator
         ask_with_validation 'Password:','Invalid password. Must be greater than 4 characters', /[.\w\d_!@#\$%_-]{4,100}/, true
       end
     end
-
-    def Installer.get_client
-      @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], @@config[:proxy_host], @@config[:proxy_port] unless @@client
-      @@client
-    end
-
     def Installer.signup(email,firstname,lastname,password)
       client = get_client
       result = client.send 'account.signup.request', {'offline'=>true,'email'=>email,'password'=>password,'firstname'=>firstname,'lastname'=>lastname}
@@ -207,11 +201,23 @@ module Appcelerator
       end
       a==b
     end
+    def Installer.get_client
+      proxy = Installer.get_proxy()
+      if proxy.nil? or proxy==""
+        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], @@config[:proxy_host], @@config[:proxy_port] unless @@client
+      else
+        uri = URI.parse (proxy)
+        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], uri.host, uri.port unless @@client
+      end
+      @@client
+    end
     def Installer.get_proxy
       if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
+      elsif !ENV['http_proxy'].nil?
+        return ENV['http_proxy']
       else
-        return false
+        return nil
       end
     end
     def Installer.http_fetch(name,url)
@@ -233,6 +239,10 @@ module Appcelerator
       puts "Session cookies: #{cookies}" if OPTIONS[:debug]
 
       proxy = Installer.get_proxy()
+      if proxy.nil? or proxy==""
+        proxy = false
+      end
+      puts "proxy #{proxy}"
       open(url,'Cookie'=>cookies,:proxy=>proxy,:content_length_proc => lambda {|t|
             if t && 0 < t
               if not OPTIONS[:quiet]
