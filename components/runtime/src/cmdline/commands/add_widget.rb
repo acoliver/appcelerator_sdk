@@ -66,6 +66,10 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         
         widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true,tx,force)
 
+        if Appcelerator::Project.to_version(widget[:version]) > Appcelerator::Project.to_version(version)
+          widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(widget[:type],widget[:name],widget[:version]),widget[:name],widget[:version],widget[:checksum],true
+        end
+        
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
 
