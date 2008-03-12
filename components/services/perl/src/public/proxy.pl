@@ -15,7 +15,6 @@ $query->parse_params($ENV{'QUERY_STRING'});
 
 # decode url from base64, if necessary
 my $url = $query->param("url");
-#my $url = "http://www.google.com";
 if (!($url =~ m/:\/\//)) {
     $url = decode_base64($url);
 }
@@ -31,7 +30,6 @@ my @headers= (
 my $curl = WWW::Curl::Easy->new() or die "curl init failed!\n";
 $curl->setopt(CURLOPT_URL, $url);
 $curl->setopt(CURLOPT_HTTPHEADER, \@headers);
-#$curl->setopt(CURLOPT_RETURNTRANSFER, 1);
 $curl->setopt(CURLOPT_TIMEOUT, 10);
 $curl->setopt(CURLOPT_HEADER, 1);
 
@@ -70,5 +68,5 @@ foreach $line (split(/\n/, $header)) {
         print $line . "\n";
     }    
 }
-print "\n\n";
+print "\n";
 print $body;
