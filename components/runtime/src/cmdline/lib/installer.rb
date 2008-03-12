@@ -210,7 +210,7 @@ module Appcelerator
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
         puts "using proxy #{proxy}"
-        uri = URI.parse (proxy)
+        uri = URI.parse(proxy)
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], uri.host, uri.port unless @@client
       end
       @@client
@@ -218,9 +218,9 @@ module Appcelerator
     def Installer.get_proxy
       if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
-      elsif !ENV['http_proxy'].nil?
+      elsif !ENV['http_proxy'].nil? and !(ENV['http_proxy']=="")
         return ENV['http_proxy']
-      elsif !ENV['HTTP_PROXY'].nil?
+      elsif !ENV['HTTP_PROXY'].nil? and !(ENV['HTTP_PROXY']=="")
         return ENV['HTTP_PROXY']
       else
         return nil
