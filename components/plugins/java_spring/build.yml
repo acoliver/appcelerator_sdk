@@ -1,7 +1,7 @@
 --- 
 :type: plugin
 :name: java:spring
-:version: 1.3
+:version: 1.4
 :dependencies:
 -   :name: java
     :type: service
