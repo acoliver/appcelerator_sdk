@@ -117,6 +117,7 @@ module Appcelerator
         todoc.write(f,-1)
         f.flush
         f.close
+        PluginUtil.tidy(tmpoutfile,tmpoutfile)
         puts "#{tmpoutfile} to #{to}"
         Appcelerator::Installer.copy tx,tmpoutfile,to
       end
@@ -156,6 +157,7 @@ module Appcelerator
         todoc.write(f,-1)
         f.flush
         f.close
+        PluginUtil.tidy(tmpoutfile,tmpoutfile)
         Appcelerator::Installer.copy tx,tmpoutfile,to
       end
     end
@@ -306,6 +308,43 @@ module Appcelerator
         Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/lib","#{event[:project_dir]}/lib"
       end
     end
+    def PluginUtil.tidy(from,to)
+      if PluginUtil.load_tidy
+        # for a listing of options see http://tidy.sourceforge.net/docs/quickref.html
+        options = {'input-xml' => true,'output-xml' => true,:show_warnings => true, 'indent' => true, 'indent-cdata' => false,
+          'wrap' => 0}
+        xmlsrc = IO.readlines(from)
+        xml = Tidy.open(options) do |tidy|
+          # puts tidy.options.show_warnings
+          xml = tidy.clean(xmlsrc)
+          # puts tidy.errors
+          # puts tidy.diagnostics
+          xml
+        end
+      end
+      f = File.open to,'w'
+      f.write xml
+      f.close
+    end
+    def PluginUtil.load_tidy
+      begin
+        $:.push File.expand_path("../vendor", File.dirname(__FILE__))
+        require 'tidy'
+        case Config::CONFIG['target_os']
+          when /darwin/
+            Tidy.path = "/usr/lib/libtidy.dylib"
+            true
+          when /linux/
+            Tidy.path = "/usr/lib/libtidy.so"
+            true
+          when /(windows|win32)/
+            false
+        end
+      rescue LoadError => err
+        puts "could not load tidy: #{err}"
+        return false
+      end
+    end
   end
 end
  
@@ -326,5 +365,3 @@ Appcelerator::Installer.with_site_config(false) do |config|
     end
   end
 end
-
-
