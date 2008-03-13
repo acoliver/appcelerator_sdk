@@ -58,7 +58,7 @@ public class DownloadableAdapter
     		return null;
 		}
     	Class cl = i.getClass();
-    	return cl.getMethod(methodname, Message.class, Message.class);
+    	return cl.getMethod(methodname, HttpSession.class, String.class, String.class, HttpServletResponse.class);
     }
     public boolean is(Class<? extends Object> clz, Method method, Downloadable service)
     {

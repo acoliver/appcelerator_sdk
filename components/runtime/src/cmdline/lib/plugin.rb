@@ -255,7 +255,7 @@ module Appcelerator
         src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
         FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
         java_path_separator = separator
-        system "javac -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
+        system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
     end
     def PluginUtil.separator
       case Config::CONFIG['target_os']
