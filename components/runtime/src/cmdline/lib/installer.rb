@@ -206,7 +206,6 @@ module Appcelerator
         return @@client
       end
       proxy = Installer.get_proxy()
-      puts "proxy: #{proxy}"
       if proxy.nil? or proxy==""
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
