@@ -335,7 +335,7 @@ module Appcelerator
             Tidy.path = "/usr/lib/libtidy.dylib"
             true
           when /linux/
-            Tidy.path = "/usr/lib/libtidy.so"
+            Tidy.path = "/usr/lib/tidylib.so"
             true
           when /(windows|win32)/
             false
