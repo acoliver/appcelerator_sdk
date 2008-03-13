@@ -138,7 +138,7 @@ module Appcelerator
 
       fromdoc.root.elements.each("/web-app//context-param") do |fromcontextparam|
         paramname = PluginUtil.get_subelementtext(fromcontextparam,"param-name")
-        tocontextparam = PluginUtil.ensure_element_namedsubelment(todoc.root,"context-param","param-name",paramname,"param-value")
+        tocontextparam = PluginUtil.ensure_element_namedsubelment(todoc.root,"context-param","param-name",paramname,["param-value"])
         tocontextparam.get_elements("param-value")[0].text = fromcontextparam.get_elements("param-value")[0].text
         # puts "merged: #{tocontextparam}"
       end
@@ -147,6 +147,19 @@ module Appcelerator
         tolistener = PluginUtil.ensure_element_subelment(todoc.root,"listener","listener-class",listenerclass)
         tolistener.get_elements("listener-class")[0].text = listener.get_elements("listener-class")[0].text
         # puts "merged: #{tolistener}"
+      end
+      fromdoc.root.elements.each("/web-app//servlet") do |fromservlet|
+        servletname = PluginUtil.get_subelementtext(fromservlet,"servlet-name")
+        toservlet = PluginUtil.ensure_element_namedsubelment(todoc.root,"servlet","servlet-name",servletname,["servlet-class","load-on-startup"])
+        toservlet.get_elements("servlet-class")[0].text = fromservlet.get_elements("servlet-class")[0].text
+        toservlet.get_elements("load-on-startup")[0].text = fromservlet.get_elements("load-on-startup")[0].text
+        # puts "merged: #{toservlet}"
+      end
+      fromdoc.root.elements.each("/web-app//servlet-mapping") do |fromservletmapping|
+        servletname = PluginUtil.get_subelementtext(fromservletmapping,"servlet-name")
+        toservletmapping = PluginUtil.ensure_element_namedsubelment(todoc.root,"servlet-mapping","servlet-name",servletname,["url-pattern"])
+        toservletmapping.get_elements("url-pattern")[0].text = fromservletmapping.get_elements("url-pattern")[0].text
+        # puts "merged: #{toservletmapping}"
       end
       if not error
         backfile = "#{event[:project_dir]}/tmp/#{filename}.#{Time.new.to_i}"
@@ -189,7 +202,7 @@ module Appcelerator
       subelement = element.get_elements(subtag)[0]
       subelement.get_text
     end
-    def PluginUtil.ensure_element_namedsubelment(parentelement,name,sub_name,value,sub_value)
+    def PluginUtil.ensure_element_namedsubelment(parentelement,name,sub_name,value,sub_values)
       parentelement.each_element("//" +name) do |element|
         subelement = element.get_elements(sub_name)
         if !subelement.nil? && !subelement.empty?
@@ -203,7 +216,9 @@ module Appcelerator
       end
       newelement = parentelement.add_element(name)
       newelement.add_element(sub_name).text=value
-      newelement.add_element(sub_value)
+      sub_values.each do |sub_value|
+        newelement.add_element(sub_value)
+      end
       # puts "new: #{newelement}"
       return newelement
     end
@@ -335,7 +350,7 @@ module Appcelerator
             Tidy.path = "/usr/lib/libtidy.dylib"
             true
           when /linux/
-            Tidy.path = "/usr/lib/tidylib.so"
+            Tidy.path = "/usr/lib/libtidy.so"
             true
           when /(windows|win32)/
             false
@@ -365,3 +380,5 @@ Appcelerator::Installer.with_site_config(false) do |config|
     end
   end
 end
+
+
