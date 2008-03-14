@@ -108,11 +108,11 @@ module Appcelerator
       result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
     end
 
-    def Installer.network_login(email,password,silent=false,proxy=nil)
+    def Installer.network_login(email,password,silent=false)
       die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
-      client = get_client(proxy)
+      client = get_client
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       return result[:data]['success'] if result
@@ -132,7 +132,7 @@ module Appcelerator
       if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
         while true 
           if username and password
-    			  break if Installer.network_login(username,password,false,proxy)
+    			  break if Installer.network_login(username,password,false)
     			  STDERR.puts "Invalid credentials, please try again..."
     			  return false if exit_on_failure
   			  end
@@ -154,9 +154,18 @@ module Appcelerator
       @@loggedin
     end
     def Installer.prompt_proxy
+      envproxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
+      if !envproxy.nil? && !(envproxy == '')
+        yn = ask "Detected http_proxy environment variable #{envproxy}, do you want to use this? (Y)es or (N)o [Y]"
+        if ['y','Y',''].index(yn)
+          return nil
+        else
+          return ask('Proxy url (ex: http://myhost:3128):')
+        end
+      end
       yn = ask 'Are you using a proxy server? (Y)es or (N)o [Y]'
       if ['y','Y',''].index(yn)
-        proxy = ask('Proxy url (ex: http://myhost:3128):')
+        ask('Proxy url (ex: http://myhost:3128):')
       else
         nil
       end
@@ -209,11 +218,11 @@ module Appcelerator
       end
       a==b
     end
-    def Installer.get_client(pxy=nil)
+    def Installer.get_client
       if @@client
         return @@client
       end
-      proxy = pxy.nil? ? Installer.get_proxy() : pxy
+      proxy = Installer.get_proxy()
       if proxy.nil? or proxy==""
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
