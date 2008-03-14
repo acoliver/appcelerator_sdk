@@ -291,10 +291,12 @@ module Appcelerator
     def get_http(host,port)
       require 'uri'
       proxy = Installer.get_proxy
-      uri = URI.parse(proxy)
-      proxy_user, proxy_pass = uri.userinfo.split(/:/) if uri.userinfo
-      proxy_host = uri.host
-      proxy_port = uri.port
+      if !proxy.nil? && !(proxy=='')
+        uri = URI.parse(proxy)
+        proxy_user, proxy_pass = uri.userinfo.split(/:/) if uri.userinfo
+        proxy_host = uri.host
+        proxy_port = uri.port
+      end
       if !proxy_host.nil? && !(proxy_host=='')
         puts "proxy: #{proxy_host}, #{proxy_port}, #{proxy_user}, #{proxy_pass}"  if OPTIONS[:verbose]
         proxy_class = Net::HTTP::Proxy(proxy_host, proxy_port,proxy_user,proxy_pass)

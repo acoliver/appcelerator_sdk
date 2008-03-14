@@ -127,8 +127,8 @@ module Appcelerator
     end
     def Installer.get_proxy
       if !@@config[:proxy].nil?
-          puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
-          return @@config[:proxy]
+        puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
+        return @@config[:proxy]
       elsif !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
         puts "proxy in config: http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}" if OPTIONS[:debug]
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
@@ -140,7 +140,7 @@ module Appcelerator
         return ENV['HTTP_PROXY']
       else
         puts "proxy nil" if OPTIONS[:debug]
-        return nil,nil,nil
+        return nil
       end
     end
     def Installer.login(un=nil,pw=nil,exit_on_failure=false)
