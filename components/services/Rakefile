@@ -61,3 +61,9 @@ task :php do
     system "rake"
   end
 end
+
+task :zend do
+  FileUtils.cd("#{BUILD_DIR}/zend") do |d|
+    system "rake"
+  end
+end
