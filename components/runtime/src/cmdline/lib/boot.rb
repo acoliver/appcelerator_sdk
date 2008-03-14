@@ -132,9 +132,7 @@ module Appcelerator
         yn = ask 'Do you have an account? (Y)es or (N)o [Y]'
 
         if ['y','Y',''].index(yn)
-
     			Installer.login(username,password)
-
           puts "Welcome back ...."
           puts
                     
@@ -147,6 +145,7 @@ module Appcelerator
           puts "a little bit of information to get you signed up.  Here we go:"
           puts
           username = Installer.prompt_username 'Email'
+          proxy = Installer.prompt_proxy
           firstname = ask 'Firstname:'
           lastname = ask 'Lastname:'
           password = Installer.prompt_password
@@ -156,7 +155,7 @@ module Appcelerator
           puts "Signing you up .... one moment please."
           puts
           
-          result = Installer.signup(username,firstname,lastname,password)
+          result = Installer.signup(username,firstname,lastname,password,proxy)
           
           if not result['success']
             die "Signup failed. #{result['msg']}"

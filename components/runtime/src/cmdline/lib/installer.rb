@@ -60,9 +60,8 @@ module Appcelerator
       @@config = YAML::load_file(@@config_file) if File.exists?(@@config_file)
       @@config||={}
     end
-    def Installer.save_proxy(host, port)
-      @@config[:proxy_host]=host
-      @@config[:proxy_port]=port
+    def Installer.save_proxy(proxy)
+      @@config[:proxy]=proxy
       f = File.open(@@config_file,'w+')
       f.puts @@config.to_yaml
       f.flush
@@ -95,8 +94,8 @@ module Appcelerator
         ask_with_validation 'Password:','Invalid password. Must be greater than 4 characters', /[.\w\d_!@#\$%_-]{4,100}/, true
       end
     end
-    def Installer.signup(email,firstname,lastname,password)
-      client = get_client
+    def Installer.signup(email,firstname,lastname,password,proxy)
+      client = get_client(proxy)
       result = client.send 'account.signup.request', {'offline'=>true,'email'=>email,'password'=>password,'firstname'=>firstname,'lastname'=>lastname}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
@@ -109,11 +108,11 @@ module Appcelerator
       result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
     end
 
-    def Installer.network_login(email,password,silent=false)
+    def Installer.network_login(email,password,silent=false,proxy=nil)
       die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
-      client = get_client
+      client = get_client(proxy)
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       return result[:data]['success'] if result
@@ -125,20 +124,22 @@ module Appcelerator
       Installer.login unless @@loggedin
     end
 
-    def Installer.login(un=nil,pw=nil,exit_on_failure=false)
+    def Installer.login(un=nil,pw=nil,exit_on_failure=false,pxy=nil)
       die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
-
+      proxy = pxy.nil? ? get_proxy : pxy
       if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
         while true 
           if username and password
-    			  break if Installer.network_login(username,password)
+    			  break if Installer.network_login(username,password,false,proxy)
     			  STDERR.puts "Invalid credentials, please try again..."
     			  return false if exit_on_failure
   			  end
           username = prompt_username
           password = prompt_password
+          
+          Installer.save_proxy(Installer.prompt_proxy)
         end
       end
       
@@ -152,7 +153,14 @@ module Appcelerator
       
       @@loggedin
     end
-    
+    def Installer.prompt_proxy
+      yn = ask 'Are you using a proxy server? (Y)es or (N)o [Y]'
+      if ['y','Y',''].index(yn)
+        proxy = ask('Proxy url (ex: http://myhost:3128):')
+      else
+        nil
+      end
+    end
     def Installer.current_user
       #TODO: windows?
       require 'etc'
@@ -201,11 +209,11 @@ module Appcelerator
       end
       a==b
     end
-    def Installer.get_client
+    def Installer.get_client(pxy=nil)
       if @@client
         return @@client
       end
-      proxy = Installer.get_proxy()
+      proxy = pxy.nil? ? Installer.get_proxy() : pxy
       if proxy.nil? or proxy==""
         @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
       else
@@ -219,6 +227,9 @@ module Appcelerator
       if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
         puts "proxy in config: http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}" if OPTIONS[:debug]
         return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
+      elsif !@@config[:proxy].nil?
+          puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
+          return @@config[:proxy]
       elsif !ENV['http_proxy'].nil? and !(ENV['http_proxy']=="")
         puts "proxy in ENV['http_proxy']: #{ENV['http_proxy']}" if OPTIONS[:debug]
         return ENV['http_proxy']
