@@ -145,7 +145,7 @@ module Appcelerator
           puts "a little bit of information to get you signed up.  Here we go:"
           puts
           username = Installer.prompt_username 'Email'
-          proxy = Installer.prompt_proxy
+          Installer.prompt_proxy(true)
           firstname = ask 'Firstname:'
           lastname = ask 'Lastname:'
           password = Installer.prompt_password
@@ -155,7 +155,7 @@ module Appcelerator
           puts "Signing you up .... one moment please."
           puts
           
-          result = Installer.signup(username,firstname,lastname,password,proxy)
+          result = Installer.signup(username,firstname,lastname,password)
           
           if not result['success']
             die "Signup failed. #{result['msg']}"

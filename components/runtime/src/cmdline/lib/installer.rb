@@ -60,13 +60,6 @@ module Appcelerator
       @@config = YAML::load_file(@@config_file) if File.exists?(@@config_file)
       @@config||={}
     end
-    def Installer.save_proxy(proxy)
-      @@config[:proxy]=proxy
-      f = File.open(@@config_file,'w+')
-      f.puts @@config.to_yaml
-      f.flush
-      f.close
-    end
     def Installer.forget_credentials
       Installer.load_config unless @@config
       @@config.delete :username
@@ -94,8 +87,8 @@ module Appcelerator
         ask_with_validation 'Password:','Invalid password. Must be greater than 4 characters', /[.\w\d_!@#\$%_-]{4,100}/, true
       end
     end
-    def Installer.signup(email,firstname,lastname,password,proxy)
-      client = get_client(proxy)
+    def Installer.signup(email,firstname,lastname,password)
+      client = get_client
       result = client.send 'account.signup.request', {'offline'=>true,'email'=>email,'password'=>password,'firstname'=>firstname,'lastname'=>lastname}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
@@ -124,11 +117,36 @@ module Appcelerator
       Installer.login unless @@loggedin
     end
 
-    def Installer.login(un=nil,pw=nil,exit_on_failure=false,pxy=nil)
+    def Installer.get_client
+      if @@client
+        return @@client
+      else
+        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug] unless @@client
+      end
+      @@client
+    end
+    def Installer.get_proxy
+      if !@@config[:proxy].nil?
+          puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
+          return @@config[:proxy]
+      elsif !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
+        puts "proxy in config: http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}" if OPTIONS[:debug]
+        return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
+      elsif !ENV['http_proxy'].nil? and !(ENV['http_proxy']=="")
+        puts "proxy in ENV['http_proxy']: #{ENV['http_proxy']}" if OPTIONS[:debug]
+        return ENV['http_proxy']
+      elsif !ENV['HTTP_PROXY'].nil? and !(ENV['HTTP_PROXY']=="")
+        puts "proxy in ENV['HTTP_PROXY']: #{ENV['HTTP_PROXY']}" if OPTIONS[:debug]
+        return ENV['HTTP_PROXY']
+      else
+        puts "proxy nil" if OPTIONS[:debug]
+        return nil,nil,nil
+      end
+    end
+    def Installer.login(un=nil,pw=nil,exit_on_failure=false)
       die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
-      proxy = pxy.nil? ? get_proxy : pxy
       if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
         while true 
           if username and password
@@ -139,7 +157,7 @@ module Appcelerator
           username = prompt_username
           password = prompt_password
           
-          Installer.save_proxy(Installer.prompt_proxy)
+          Installer.prompt_proxy(true)
         end
       end
       
@@ -153,21 +171,42 @@ module Appcelerator
       
       @@loggedin
     end
-    def Installer.prompt_proxy
+    def Installer.save_proxy(proxy)
+      @@config[:proxy]=proxy
+      @@config[:proxy_host]=nil
+      @@config[:proxy_port]=nil
+      f = File.open(@@config_file,'w+')
+      f.puts @@config.to_yaml
+      f.flush
+      f.close
+    end
+    
+    def Installer.prompt_proxy(save=false)
       envproxy = ENV['HTTP_PROXY'] || ENV['http_proxy']
       if !envproxy.nil? && !(envproxy == '')
         yn = ask "Detected http_proxy environment variable #{envproxy}, do you want to use this? (Y)es or (N)o [Y]"
         if ['y','Y',''].index(yn)
+          if save
+            Installer.save_proxy(nil)
+          end
           return nil
         else
-          return ask('Proxy url (ex: http://myhost:3128):')
+          proxy = ask('Proxy url (ex: http://myuser:mypass@my.example.com:3128):')
+          if save
+            Installer.save_proxy(proxy)
+          end
+          return proxy
         end
       end
       yn = ask 'Are you using a proxy server? (Y)es or (N)o [Y]'
       if ['y','Y',''].index(yn)
-        ask('Proxy url (ex: http://myhost:3128):')
+        proxy = ask('Proxy url (ex: http://myuser:mypass@my.example.com:3128):')
+        if save
+          Installer.save_proxy(proxy)
+        end
+        return proxy
       else
-        nil
+        return nil
       end
     end
     def Installer.current_user
@@ -217,38 +256,6 @@ module Appcelerator
           return b =~ /localhost|127\.0\.0\.1|0\.0\.0\.0/
       end
       a==b
-    end
-    def Installer.get_client
-      if @@client
-        return @@client
-      end
-      proxy = Installer.get_proxy()
-      if proxy.nil? or proxy==""
-        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], nil, nil unless @@client
-      else
-        puts "using proxy #{proxy}"
-        uri = URI.parse(proxy)
-        @@client = ServiceBrokerClient.new OPTIONS[:server], OPTIONS[:debug], uri.host, uri.port unless @@client
-      end
-      @@client
-    end
-    def Installer.get_proxy
-      if !@@config[:proxy_host].nil? and !@@config[:proxy_port].nil?
-        puts "proxy in config: http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}" if OPTIONS[:debug]
-        return "http://#{@@config[:proxy_host]}:#{@@config[:proxy_port]}"
-      elsif !@@config[:proxy].nil?
-          puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
-          return @@config[:proxy]
-      elsif !ENV['http_proxy'].nil? and !(ENV['http_proxy']=="")
-        puts "proxy in ENV['http_proxy']: #{ENV['http_proxy']}" if OPTIONS[:debug]
-        return ENV['http_proxy']
-      elsif !ENV['HTTP_PROXY'].nil? and !(ENV['HTTP_PROXY']=="")
-        puts "proxy in ENV['HTTP_PROXY']: #{ENV['HTTP_PROXY']}" if OPTIONS[:debug]
-        return ENV['HTTP_PROXY']
-      else
-        puts "proxy nil" if OPTIONS[:debug]
-        return nil
-      end
     end
     def Installer.http_fetch(name,url)
       puts "Attempting to fetch #{name} from #{url}" if OPTIONS[:debug]

@@ -98,16 +98,19 @@ Appcelerator::CommandRegistry.registerCommand('network:setproxy','set your proxy
 [
   {
     :name=>'proxy',
-    :help=>'url for the proxy (ex: http://myhost:3128)',
+    :help=>'url for the proxy (ex: http://myuser:mypass@my.example.com:3128)',
     :required=>false,
     :default=>nil,
     :type=>Appcelerator::Types::AnyType
   }
 ],nil,nil) do |args,options|
-  proxy = args[:proxy] || Installer.prompt_proxy
-  Appcelerator::Installer.save_proxy(proxy)
+  if args[:proxy]
+    Appcelerator::Installer.save_proxy(args[:proxy])
+  else
+    Appcelerator::Installer.prompt_proxy(true)
+  end
 end
 Appcelerator::CommandRegistry.registerCommand('network:clearproxy','clear your proxy settings',
 [],nil,nil) do |args,options|
-  Appcelerator::Installer.save_proxy(nil, nil)
+  Appcelerator::Installer.save_proxy(nil)
 end
