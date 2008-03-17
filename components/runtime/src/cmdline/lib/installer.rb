@@ -444,7 +444,7 @@ HELP
         return do_cp_confirm(tx,from_path,to_path,force)
       end
       
-      Dir["#{from_path}/**/*"].each do |file|
+      Dir.glob("#{from_path}/**/*", File::FNM_DOTMATCH).each do |file|
         if excludes
           found = false
           excludes.each do |e|
