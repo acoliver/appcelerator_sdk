@@ -130,6 +130,12 @@ namespace :service do
     end
   end
 
+  task :zend do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      system "rake zend"
+    end
+  end
+
 end
 
 namespace :plugin do

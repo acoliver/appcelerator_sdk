@@ -4,5 +4,8 @@
 - :type: websdk
   :name: websdk
   :version: ">=2.1"
+- :type: runtime
+  :name: runtime
+  :version: ">=1.1"
 :version: 1.0.0
 :name: zend
