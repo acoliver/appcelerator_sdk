@@ -74,7 +74,8 @@ module Appcelerator
 
       Installer.copy tx, temp1.path, "#{to_path}/config/build.properties"
       Installer.copy tx, temp2.path, "#{to_path}/build.xml"
-      Installer.copy tx, "#{from_path}/appcelerator.xml", "#{to_path}/public"
+      Installer.copy tx, "#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml"
+      Installer.copy tx, "#{from_path}/build-override.xml", "#{to_path}/build-override.xml"
       
       temp1.close
       temp2.close

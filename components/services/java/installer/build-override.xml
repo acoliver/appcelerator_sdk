@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==================================================================== -->
+<!-- Project specific override for the java service                       -->
+<!-- ==================================================================== -->
+<project name="override" basedir=".">
+	<!-- these are lifecycle tasks to allow others to hook into the compile task -->
+	<target name="pre_compile" depends=""/>
+	<target name="post_compile" depends=""/>
+	<!-- these are lifecycle tasks to allow others to hook into the war task -->
+	<target name="pre_war" depends=""/>
+	<target name="post_war" depends=""/>
+</project>
