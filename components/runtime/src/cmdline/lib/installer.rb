@@ -425,6 +425,15 @@ HELP
       end
       true
     end
+    def Installer.remove_prev_jar(tx,name,dir)
+      Dir.foreach("#{dir}") do |file|
+        puts "checking #{name}-([0-9]\.)*.jar against '#{file}'"
+        if file =~ Regexp.new("#{name}-[0-9]*\.[0-9]*\.[0-9]*\.jar") or file =~ Regexp.new("#{name}-[0-9]*\.[0-9]*\.*\.jar") or file =~ Regexp.new("#{name}-[0-9].jar")or file == "#{name}.jar"
+           puts "removing " + File.expand_path(file, dir) 
+           tx.rm File.expand_path(file, dir)
+        end
+      end
+    end
     
     def Installer.copy(tx,from_path,to_path,excludes=nil,force=false)
       

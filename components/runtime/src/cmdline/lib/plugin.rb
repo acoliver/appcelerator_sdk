@@ -251,11 +251,13 @@ module Appcelerator
     def PluginUtil.compile(libdir,java_source, java_classes)
         PluginUtil.clean_dir(java_classes)
         FileUtils.mkdir_p java_classes
-        cp = Dir["#{libdir}/**/*.jar"].inject([]) {|a,f| a<<f }
         src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
         FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
         java_path_separator = separator
-        system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
+        FileUtils.cd("#{libdir}") do |dir|
+          cp = Dir["**/*.jar"].inject([]) {|a,f| a<<f }
+          system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
+        end
     end
     def PluginUtil.separator
       case Config::CONFIG['target_os']
@@ -298,12 +300,12 @@ module Appcelerator
         name = Appcelerator::PluginUtil.get_plugintype(event[:name])
         puts "building jar"
         jarfile = "#{event[:to_dir]}/appcelerator-plugin-#{name}.jar"
-        puts "#{jarfile}"
         Appcelerator::PluginUtil.clean_jar(jarfile)
         Appcelerator::PluginUtil.compile("#{event[:project_dir]}/lib","#{event[:plugin_dir]}/java","#{event[:to_dir]}/classes")
         Appcelerator::PluginUtil.jar(jarfile, "#{event[:to_dir]}/classes")
         Appcelerator::PluginUtil.clean_dir("#{event[:to_dir]}/classes")
-        Appcelerator::Installer.copy event[:tx],jarfile, "#{event[:project_dir]}/lib/appcelerator-plugin-#{name}.jar"
+        Appcelerator::Installer.remove_prev_jar(event[:tx],"appcelerator-plugin-#{name}","#{event[:project_dir]}/lib")
+        Appcelerator::Installer.copy(event[:tx],jarfile, "#{event[:project_dir]}/lib/appcelerator-plugin-#{name}-#{event[:version]}.jar")
       end
       if File.exist? "#{event[:plugin_dir]}/spring.xml"
         puts "merging spring"

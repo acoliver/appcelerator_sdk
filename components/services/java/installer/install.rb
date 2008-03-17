@@ -53,9 +53,20 @@ module Appcelerator
       rescue
       end
     end
+    def save_property(name,value,propertyfile)
+      begin
+        file = File.new propertyfile
+        props = Properties.new(file)
+        props.store(name,value)
+        props.save(propertyfile)
+      rescue
+      end
+    end
     private 
     def install(from_path,to_path,config,tx,update)
-      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties'])
+      Appcelerator::Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
+      Appcelerator::Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
+      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar'])
       
       # re-write the application name to be the name of the directory
       name = get_property "#{to_path}/config/build.properties","app.name"
@@ -64,10 +75,10 @@ module Appcelerator
       end
       temp1 = Installer.tempfile
       FileUtils.cp "#{from_path}/build.properties",temp1.path
+      save_property('service_version',config[:service_version],temp1.path)
+
       temp2 = Installer.tempfile
       FileUtils.cp "#{from_path}/build.xml",temp2.path
-      
-
       
       replace_app_name name,temp1.path
       replace_app_name name,temp2.path
@@ -145,7 +156,6 @@ STR
       end
 
       Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"
-      
       true
     end
     
@@ -161,30 +171,29 @@ STR
   end
 end
 class Properties < Hash
+    def initialize(filename=nil)
+      if !filename.nil?
+        load filename
+      end
+    end
     def load(properties_string)
         properties_string.each_line do |line|
             line.strip!
-
             if line[0] != ?# and line[0] != ?=
                 i = line.index('=')
 
                 if i
                     store(line[0..i - 1].strip, line[i + 1..-1].strip)
-                else
-                    store(line, '')
+                # else
+                #     store(line, '')
                 end
             end
         end
      end
 
-     def save
-         back = ''
-
-         for key in keys
-             back += "#{key}=#{fetch key}n" if key != nil and key != ''
-         end
-
-         back
+     def save(filename)
+       file = File.new(filename,"w+")
+       each_pair {|key,value| file.puts "#{key}=#{value}\n" }
     end
 end
 
