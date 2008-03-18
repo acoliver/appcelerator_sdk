@@ -75,7 +75,7 @@ module Appcelerator
       end
       temp1 = Installer.tempfile
       FileUtils.cp "#{from_path}/build.properties",temp1.path
-      save_property('service_version',config[:service_version],temp1.path)
+      # save_property('service_version',config[:service_version],temp1.path)
 
       temp2 = Installer.tempfile
       FileUtils.cp "#{from_path}/build.xml",temp2.path
