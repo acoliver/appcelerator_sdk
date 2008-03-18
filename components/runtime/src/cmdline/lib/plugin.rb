@@ -118,7 +118,7 @@ module Appcelerator
         f.flush
         f.close
         PluginUtil.tidy(tmpoutfile,tmpoutfile)
-        puts "#{tmpoutfile} to #{to}"
+        #puts "#{tmpoutfile} to #{to}"
         Appcelerator::Installer.copy tx,tmpoutfile,to
       end
     end

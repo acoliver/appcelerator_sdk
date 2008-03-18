@@ -20,7 +20,11 @@ class JavaSpring < Appcelerator::Plugin
   def before_add_plugin(event)
     if event[:name] == 'java:spring'
       event[:tx].rm Dir.glob("#{event[:project_dir]}/lib/spring-*.jar")
-      Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/templates/spring.xml","#{event[:project_dir]}/config/spring.xml"
+      if File.exists? "#{event[:project_dir]}/config/spring.xml"
+        Appcelerator::PluginUtil.merge_spring("#{event[:project_dir]}/config/spring.xml","#{event[:plugin_dir]}/templates/spring.xml",event[:tx],event)
+      else
+        Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/templates/spring.xml","#{event[:project_dir]}/config/spring.xml"
+      end
       Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/spring_license.txt", "#{event[:to_dir]}/spring_license.txt"
       Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/spring_notice.txt", "#{event[:to_dir]}/spring_notice.txt"
       Appcelerator::PluginUtil.install_java(event)

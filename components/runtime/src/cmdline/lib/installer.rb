@@ -430,7 +430,7 @@ HELP
       if exists
         Dir.foreach("#{dir}") do |file|
           # puts "checking #{name}-([0-9]\.)*.jar against '#{file}'"
-          if file =~ Regexp.new("#{name}-[0-9]*\.[0-9]*\.[0-9]*\.jar") or file =~ Regexp.new("#{name}-[0-9]*\.[0-9]*\.*\.jar") or file =~ Regexp.new("#{name}-[0-9].jar")or file == "#{name}.jar"
+          if file =~ Regexp.new("#{name}-[0-9]+.*.jar") or file == "#{name}.jar"
              # puts "removing " + File.expand_path(file, dir) 
              tx.rm File.expand_path(file, dir)
           end
@@ -871,7 +871,6 @@ HELP
     end
     
     def Installer.install_from_devnetwork(type,description,from,quiet_if_installed=false,force=false,skip_dependencies=false)
-
       puts "Install from Dev Network: #{type},#{from} (force=#{force}) " if OPTIONS[:verbose]
       
       found = Installer.get_component_from_config type,from
@@ -965,7 +964,7 @@ HELP
                 if version.nil?
                   items.push cm
                 else
-                  return cm
+                  items.push(cm)
                 end
               end
             end

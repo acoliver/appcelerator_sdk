@@ -66,7 +66,10 @@ module Appcelerator
     def install(from_path,to_path,config,tx,update)
       Appcelerator::Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
       Appcelerator::Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
-      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar'])
+      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar','build-override.xml'])
+      if update==false
+        Appcelerator::Installer.copy(tx,"#{from_path}/build-override.xml", "#{to_path}/build-override.xml")
+      end
       
       # re-write the application name to be the name of the directory
       name = get_property "#{to_path}/config/build.properties","app.name"
@@ -85,8 +88,6 @@ module Appcelerator
 
       Installer.copy tx, temp1.path, "#{to_path}/config/build.properties"
       Installer.copy tx, temp2.path, "#{to_path}/build.xml"
-      Installer.copy tx, "#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml"
-      Installer.copy tx, "#{from_path}/build-override.xml", "#{to_path}/build-override.xml"
       
       temp1.close
       temp2.close
@@ -96,8 +97,7 @@ module Appcelerator
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
       tx.mkdir "#{to_path}/src/war/WEB-INF"
-      Appcelerator::Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml")
-      # Installer.copy tx, "#{template_dir}/web.xml","#{to_path}/config"
+      Appcelerator::Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml") if update==false
       
       if not update or (update and not File.exists? "#{to_path}/.classpath")
         #
