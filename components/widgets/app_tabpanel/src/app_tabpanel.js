@@ -131,7 +131,7 @@ Appcelerator.Widget.Tabpanel =
         // set the tab spacing
         //
         var tabSpacing = params['tab_spacing'];
-        var renderedTabs = Element.getElementsByClassName(id, 'tabpanel_tab');
+        var renderedTabs = $$(id, 'tabpanel_tab');
         renderedTabs.each(function(myTab) 
         {
            myTab.style.marginRight = tabSpacing;
