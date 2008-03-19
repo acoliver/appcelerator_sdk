@@ -158,7 +158,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isOpera = (ua.indexOf('opera') > -1);
 	Appcelerator.Browser.isSafari = (ua.indexOf('safari') > -1);
 	Appcelerator.Browser.isSafari2 = false;
-	Appcelerator.Browser.isIE = (window.ActiveXObject);
+	Appcelerator.Browser.isIE = !!(window.ActiveXObject);
 	Appcelerator.Browser.isIE6 = false;
 	Appcelerator.Browser.isIE7 = false;
 	Appcelerator.Browser.isIE8 = false;
@@ -183,7 +183,7 @@ Appcelerator.Parameters = $H({});
 
 	Appcelerator.Browser.isGecko = !Appcelerator.Browser.isSafari && (ua.indexOf('gecko') > -1);
 	Appcelerator.Browser.isCamino = Appcelerator.Browser.isGecko && ua.indexOf('camino') > -1;
-	Appcelerator.Browser.isFirefox = Appcelerator.Browser.isGecko && (ua.indexOf('firefox') > -1 || ua.indexOf('minefield') > -1 || Appcelerator.Browser.isCamino || ua.indexOf('granparadiso'));
+	Appcelerator.Browser.isFirefox = Appcelerator.Browser.isGecko && (ua.indexOf('firefox') > -1 || Appcelerator.Browser.isCamino || ua.indexOf('minefield') > -1 || ua.indexOf('granparadiso') > -1 || ua.indexOf('bonecho') > -1);
 	Appcelerator.Browser.isIPhone = Appcelerator.Browser.isSafari && ua.indexOf('iphone') > -1;
 	Appcelerator.Browser.isMozilla = Appcelerator.Browser.isGecko && ua.indexOf('mozilla/') > -1;
 	Appcelerator.Browser.isWebkit = Appcelerator.Browser.isMozilla && Appcelerator.Browser.isGecko && ua.indexOf('applewebkit') > 0;
