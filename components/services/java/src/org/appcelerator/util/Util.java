@@ -1114,21 +1114,15 @@ public class Util
      */
     public static Document parse(InputStream in) throws Exception
     {
-        return builder.parse(in);
+        return builderfactory.newDocumentBuilder().parse(in);
     }
 
-    static DocumentBuilder builder;
+    
+    static DocumentBuilderFactory builderfactory;
 
     static
     {
-        try
-        {
-            builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        }
-        catch (ParserConfigurationException e)
-        {
-            e.printStackTrace();
-        }
+            builderfactory = DocumentBuilderFactory.newInstance();
     }
 
     /**
