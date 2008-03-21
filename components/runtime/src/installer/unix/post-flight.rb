@@ -111,8 +111,8 @@ FileUtils.mkdir_p "#{install_dir}/releases" unless File.exists? "#{install_dir}/
 FileUtils.mkdir_p "#{install_dir}/updates" unless File.exists? "#{install_dir}/updates"
 
 # set permissions
-FileUtils.chown_R 'root', 'admin', "#{install_dir}"
-FileUtils.chown_R 'root', 'admin', "#{bindir}/app"
+FileUtils.chown_R 'root', nil, "#{install_dir}"
+FileUtils.chown_R 'root', nil, "#{bindir}/app"
 
 # set execution bits
 FileUtils.chmod 0755, "#{install_dir}/appcelerator"
