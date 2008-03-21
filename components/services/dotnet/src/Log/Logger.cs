@@ -14,7 +14,7 @@ using System.Xml.XPath;
 
 namespace Appcelerator
 {
-    sealed class Logger
+    class Logger
     {
         private static readonly Logger instance = new Logger();
         private static LoggingLevel loggingLevel = LoggingLevel.ERROR;
