@@ -66,8 +66,13 @@ module Appcelerator
     def install(from_path,to_path,config,tx,update)
       Appcelerator::Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
       Appcelerator::Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
-      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar','build-override.xml'])
-      if update==false
+      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
+        'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
+      tx.mkdir "app/services"
+      Appcelerator::Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
+      Appcelerator::Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services/EchoService.java")
+      Appcelerator::Installer.copy(tx,"#{from_path}/appcelerator.xml", "#{to_path}/public/appcelerator.xml")
+      if update==false or update.nil?
         Appcelerator::Installer.copy(tx,"#{from_path}/build-override.xml", "#{to_path}/build-override.xml")
       end
       
