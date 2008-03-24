@@ -1,76 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ==================================================================== -->
-<!-- Appcelerator Project Build                                           -->	
-<!-- Do not change, instead modify build-override.xml                     -->	
+<!-- Appcelerator Project Build                                           -->
 <!-- ==================================================================== -->
 <project name="build-appcelerator" default="dist" basedir=".">
-<path id="classpath">
-	<fileset dir="${lib.dir}" includes="**/*.jar"/>
-</path>
-
-<target name="dist" depends="banner,clean,init,compile,war" 
-	description="* Builds the service and application deployment archives">
-</target>
-
-<target name="banner">
-	<echo>Appcelerator RIA Platform for Java</echo>
-	<echo>Licensed under the GNU GPL version 3 or later</echo>
-	<echo>Please see COPYING for more details on license requirements</echo>
-</target>
-
-<target name="compile" description="Compiles the Java code" 
-	depends="init,pre_compile,execute_compile,post_compile">
-</target>
-
-<target name="war" description="Builds the deployed war" 
-	depends="banner,execute_war">
-</target>
-
-<!-- these are lifecycle tasks to allow others to hook into the compile task -->
-<target name="execute_compile" description="Compiles the Java code" depends="init,pre_compile">
-	<mkdir dir="${stage.dir}/java/classes"/>
-	<mkdir dir="${stage.dir}/lib"/>
-	<javac debug="true" srcdir="app/services" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
-	<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
-	<jar destfile="${stage.dir}/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
-		<fileset dir="${stage.dir}/java/classes">
-			<include name="**/*"/>
-		</fileset>
-		<fileset dir="${src.java.dir}">
-			<exclude name="**/*.java"/>
-		</fileset>
-		<fileset dir="${basedir}">
-			<include name="build.properties"/>
-		</fileset>
-	</jar>
-</target>
-
-<!-- these are lifecycle tasks to allow others to hook into the war task -->
-<target name="execute_war" depends="banner,pre_war,compile,post_war">
-	<mkdir dir="${stage.dir}/war"/>
-	<copy todir="${stage.dir}/war">
-		<fileset dir="${web.dir}" includes="**/*"/>
-		<fileset dir="${src.war.dir}" includes="**/*"/>
-	</copy>
-	<copy todir="${stage.dir}/war/WEB-INF/classes">
-		<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml"/>
-	</copy> 
-	<copy todir="${stage.dir}/lib">
-		<fileset dir="${lib.dir}" includes="*.jar"/>
-		<fileset dir="${lib.dir}/compiler" includes="xerces-*.jar"/>
-		<fileset dir="${lib.dir}/compiler" includes="xml-apis-*.jar"/>
-	</copy>
-	<war destfile="${stage.dir}/${app.name}.war" webxml="config/web.xml">
-		<lib dir="${stage.dir}/lib" includes="*.jar" />
-		<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
-	</war>
-</target>
-
-<target name="clean">
-	<delete dir="${stage.dir}"/>
-</target>
-
-<target name="init">
-	<mkdir dir="${stage.dir}"/>
-</target>
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+	<target name="dist" depends="banner,clean,init,compile,war" description="* Builds the service and application deployment archives">
+	</target>
+	<target name="banner">
+		<echo>Appcelerator RIA Platform for Java</echo>
+		<echo>Licensed under the GNU GPL version 3 or later</echo>
+		<echo>Please see COPYING for more details on license requirements</echo>
+	</target>
+	<target name="compile" description="Compiles the Java code" depends="init,pre_compile,execute_compile,post_compile">
+	</target>
+	<target name="war" description="Builds the deployed war" depends="banner,execute_war">
+	</target>
+	<target name="execute_compile" description="Compiles the Java code" depends="init,pre_compile">
+		<mkdir dir="${stage.dir}/java/classes"/>
+		<mkdir dir="${stage.dir}/lib"/>
+		<javac debug="true" srcdir="app/services" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
+		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
+		<jar destfile="${stage.dir}/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
+			<fileset dir="${stage.dir}/java/classes">
+				<include name="**/*"/>
+			</fileset>
+			<fileset dir="${src.java.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="build.properties"/>
+			</fileset>
+		</jar>
+	</target>
+	<target name="execute_war" depends="banner,pre_war,compile,post_war">
+		<mkdir dir="${stage.dir}/war"/>
+		<copy todir="${stage.dir}/war">
+			<fileset dir="${web.dir}" includes="**/*"/>
+			<fileset dir="${src.war.dir}" includes="**/*"/>
+		</copy>
+		<copy todir="${stage.dir}/war/WEB-INF/classes">
+			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml"/>
+		</copy>
+		<antcall target="war_copylib"/>
+		<war destfile="${stage.dir}/${app.name}.war" webxml="config/web.xml">
+			<lib dir="${stage.dir}/lib" includes="*.jar"/>
+			<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
+		</war>
+	</target>
+	<target name="war_copylib">
+		<copy todir="${stage.dir}/lib">
+			<fileset dir="${lib.dir}" includes="*.jar"/>
+			<fileset dir="${lib.dir}/compiler" includes="xerces-*.jar"/>
+			<fileset dir="${lib.dir}/compiler" includes="xml-apis-*.jar"/>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="${stage.dir}"/>
+	</target>
+	<target name="init">
+		<mkdir dir="${stage.dir}"/>
+	</target>
+	<target name="pre_compile" depends="">
+		<input message="huh?"/>
+	</target>
+	
 </project>

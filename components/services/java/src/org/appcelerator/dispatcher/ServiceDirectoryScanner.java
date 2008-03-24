@@ -21,8 +21,8 @@
 package org.appcelerator.dispatcher;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -30,15 +30,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javassist.ClassPool;
 import javassist.CtClass;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.appcelerator.util.Util;
 
 /**
@@ -101,15 +100,10 @@ public class ServiceDirectoryScanner implements Runnable
     {
         while(running)
         {
-            File files[]=serviceDirectory.listFiles(new FilenameFilter()
-            {
-                public boolean accept(File dir, String name)
-                {
-                    return name.endsWith(".java");
-                }
-            });
+            ArrayList<File> files = new ArrayList<File>();
+            getSourceFiles(serviceDirectory, files);
 
-			if (files!=null && files.length > 0)
+			if (files!=null && files.size() > 0)
             {
 	            Set<String> current = new HashSet<String>(services.keySet());
 
@@ -174,6 +168,30 @@ public class ServiceDirectoryScanner implements Runnable
             }
         }
     }
+	public void getSourceFiles(ArrayList<File> files) 
+	{
+		getSourceFiles(serviceDirectory,files);
+	}
+	private void getSourceFiles(File directory,ArrayList<File> result) {
+		File [] files = directory.listFiles();
+		for (File file : files)
+		{
+ 			if (file.isDirectory())
+ 			{
+ 				LOG.debug("traversing "+file);
+ 				getSourceFiles(file,result);
+ 			}
+ 			else if (file.getName().endsWith(".java")) 
+	        {
+ 				result.add(file);
+ 				LOG.debug("added "+file);
+	        } 
+	        else
+	        {
+ 				LOG.debug("ignored "+file);
+	        }
+		}
+	}
     
 	private static final Pattern packagePattern = Pattern.compile("package (.*?);",Pattern.MULTILINE|Pattern.DOTALL);
 	private static String findPackage(String code)
@@ -203,19 +221,7 @@ public class ServiceDirectoryScanner implements Runnable
             this.modified=sourceFile.lastModified();
 			
 			String javaCode = Util.copyToString(this.sourceFile);
-			String javaPkg = ServiceDirectoryScanner.findPackage(javaCode);
-			if (javaPkg!=null)
-			{
-				File dir = file.getParentFile();
-				String pathName = javaPkg.replace('.',File.separatorChar);
-				File pkgDir = new File(file.getParentFile(),pathName);
-				pkgDir.mkdirs();
-	            this.compiledFile = new File(pkgDir, file.getName().replace(".java", ".class"));
-			}
-			else
-			{
-	            this.compiledFile = new File(file.getParentFile(), file.getName().replace(".java", ".class"));
-			}
+            this.compiledFile = new File(file.getParentFile(), file.getName().replace(".java", ".class"));
             compile();
         }
         
