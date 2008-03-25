@@ -62,7 +62,7 @@ public class ServiceCompiler
         }
         StringWriter errWriter=new StringWriter();
         StringBuffer buf = errWriter.getBuffer();
-        Main.compile("-source 1.5 -cp "+cp+" -d "+classDir+" "+serviceFile.getAbsolutePath(),new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
+        Main.compile("-source 1.5 -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
         stderr.print(buf.toString());
         stderr.flush();
         return buf.length() == 0;

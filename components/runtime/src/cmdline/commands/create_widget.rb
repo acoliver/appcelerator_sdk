@@ -17,25 +17,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widget project',[
+include Appcelerator
+CommandRegistry.registerCommand('create:widget','create a new widget project',[
   {
     :name=>'path',
     :help=>'path to directory where project should be created',
     :required=>true,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   },
   {
     :name=>'name',
     :help=>'name of the widget to create (such as app:my_widget)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'create:widget c:\tmp app:my_widget',
@@ -67,7 +68,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   
   dir = File.join(args[:path].path,widget_name)
   event = {:widget_dir=>dir,:name=>name}
-  Appcelerator::PluginManager.dispatchEvent 'before_create_widget',event
+  PluginManager.dispatchEvent 'before_create_widget',event
 
   FileUtils.mkdir_p(dir) unless File.exists?(dir)
   
@@ -80,7 +81,7 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   src_dir = "#{dir}/src"
   FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
   
-  Appcelerator::Installer.put "#{src_dir}/#{widget_name}.js", template
+  Installer.put "#{src_dir}/#{widget_name}.js", template
   
   template = File.read "#{template_dir}/widget_Rakefile"
   template.gsub! 'WIDGET', widget_name
@@ -89,8 +90,8 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
   build_config[:tags] = []
 
-  Appcelerator::Installer.put "#{dir}/Rakefile", template
-  Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
+  Installer.put "#{dir}/Rakefile", template
+  Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
   
   %w(css images doc js).each do |d|
     FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"
@@ -101,10 +102,10 @@ Appcelerator::CommandRegistry.registerCommand('create:widget','create a new widg
   widget_example = File.read "#{template_dir}/widget_doc_example.md"
   widget_example.gsub! 'NAME', name
   
-  Appcelerator::Installer.put "#{src_dir}/doc/example1.md", widget_example
+  Installer.put "#{src_dir}/doc/example1.md", widget_example
   
   #TODO: add compression and symbol stuff here to rake file and path
   
-  Appcelerator::PluginManager.dispatchEvent 'after_create_widget',event
+  PluginManager.dispatchEvent 'after_create_widget',event
   puts "Created Widget: #{name} in #{dir}" unless OPTIONS[:quiet]
 end

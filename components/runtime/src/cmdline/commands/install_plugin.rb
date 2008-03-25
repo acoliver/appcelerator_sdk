@@ -17,14 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand('install:plugin','install a plugin',[
+include Appcelerator
+CommandRegistry.registerCommand('install:plugin','install a plugin',[
   {
     :name=>'location',
     :help=>'path or URL to plugin file or name of a plugin from the network',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
     'install:plugin my:plugin',
@@ -35,10 +35,10 @@ Appcelerator::CommandRegistry.registerCommand('install:plugin','install a plugin
 ]) do |args,options|
 
     args[:location].split(',').uniq.each do |plugin|
-      to_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component :plugin,'Plugin',plugin.strip
+      to_dir,name,version,checksum,already_installed = Installer.install_component :plugin,'Plugin',plugin.strip
       comp = {:name=>name,:type=>:plugin,:version=>version}
-      component = Appcelerator::Installer.get_installed_component comp
-      Appcelerator::Installer.with_site_config(true) do |config|
+      component = Installer.get_installed_component comp
+      Installer.with_site_config(true) do |config|
         plugin_name = name.gsub(':','_')
         config[:onload]||=Array.new
         plugin_path = "#{to_dir}/#{plugin_name}.rb"

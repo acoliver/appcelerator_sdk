@@ -17,13 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a project',[
+include Appcelerator
+CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a project',[
   {
     :name=>'name',
     :help=>'name of the plugin to add (such as foo:plugin)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::AnyType
+    :type=>Types::AnyType
   },
   {
     :name=>'path',
@@ -31,11 +32,11 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
     :required=>false,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   }
 ],nil,[
   'add:plugin my:plugin',
@@ -49,32 +50,34 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
   
   FileUtils.cd(pwd) do 
     # this is used to make sure we're in a project directory
-    lang = Appcelerator::Project.get_service(pwd)
+    lang = Project.get_service(pwd)
     
     with_io_transaction(pwd,options[:tx]) do |tx|
       args[:name].split(',').uniq.each do |name|
         class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
         plugin_name = name.gsub ':', '_'
 
-        plugin = Appcelerator::Installer.get_component_from_config(:plugin,name,options[:version])
+        plugin = Installer.get_component_from_config(:plugin,name,options[:version])
 
         if not plugin
           die"Couldn't find plugin named: #{name}."
         end
 
-        plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.install_component(:plugin,'Plugin',name,true,tx,force)
+        plugin_dir,pluginname,version,checksum,already_installed = Installer.install_component(:plugin,'Plugin',name,true,tx,force)
         
-        if Appcelerator::Project.to_version(plugin[:version]) > Appcelerator::Project.to_version(version)
-          plugin_dir,pluginname,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(plugin[:type],plugin[:name],plugin[:version]),plugin[:name],plugin[:version],plugin[:checksum],true
+        if Project.to_version(plugin[:version]) > Project.to_version(version)
+          plugin_dir = Installer.get_release_directory(plugin[:type],plugin[:name],plugin[:version])
+          pluginname,version,checksum = plugin[:name],plugin[:version],plugin[:checksum]
+          already_installed = true
         end
         
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
         
         event = {:name=>name,:version=>version,:plugin_dir=>plugin_dir,:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
-        Appcelerator::PluginManager.dispatchEvent 'before_add_plugin',event
+        PluginManager.dispatchEvent 'before_add_plugin',event
 
-        config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
+        config = options[:project_config] || Installer.get_project_config(pwd)
         p = config[:plugins]
         if not p
           p = []
@@ -82,9 +85,9 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add pl
         end
         p.delete_if { |w| w[:name] == name } 
         p << {:name=>name,:version=>version}
-        Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
+        Installer.save_project_config(pwd,config) unless options[:no_save]
         
-        Appcelerator::PluginManager.dispatchEvent 'after_add_plugin',event
+        PluginManager.dispatchEvent 'after_add_plugin',event
         puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
     end

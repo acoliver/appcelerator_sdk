@@ -113,7 +113,7 @@ module Appcelerator
     end
     
     def Installer.login_if_required
-      die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
+      die "--no-remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       Installer.login unless @@loggedin
     end
 
@@ -125,6 +125,7 @@ module Appcelerator
       end
       @@client
     end
+    
     def Installer.get_proxy
       if !@@config[:proxy].nil?
         puts "proxy in config: #{@@config[:proxy]}" if OPTIONS[:debug]
@@ -143,6 +144,7 @@ module Appcelerator
         return nil
       end
     end
+    
     def Installer.login(un=nil,pw=nil,exit_on_failure=false)
       die "No remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       username = un.nil? ? @@config[:username] : un
@@ -171,6 +173,7 @@ module Appcelerator
       
       @@loggedin
     end
+    
     def Installer.save_proxy(proxy)
       @@config[:proxy]=proxy
       @@config[:proxy_host]=nil
@@ -209,6 +212,7 @@ module Appcelerator
         return nil
       end
     end
+    
     def Installer.current_user
       #TODO: windows?
       require 'etc'
@@ -425,13 +429,14 @@ HELP
       end
       true
     end
+    
     def Installer.remove_prev_jar(tx,name,dir)
       exists = File.exists? dir
       if exists
         Dir.foreach("#{dir}") do |file|
-          # puts "checking #{name}-([0-9]\.)*.jar against '#{file}'"
+          puts "checking #{name}-([0-9]\.)*.jar against '#{file}'" if OPTIONS[:verbose]
           if file =~ Regexp.new("#{name}-[0-9]+.*.jar") or file == "#{name}.jar"
-             # puts "removing " + File.expand_path(file, dir) 
+             puts "removing " + File.expand_path(file, dir) if OPTIONS[:verbose]
              tx.rm File.expand_path(file, dir)
           end
         end
@@ -596,8 +601,7 @@ HELP
       filesize = component[:filesize]
       
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        installed||={}
+        installed = site_config[:installed] || {}
         members = installed[type.to_sym]
         if members
           members.each do |member|
@@ -658,10 +662,10 @@ HELP
       
       # recursively resolve dependencies
       sweeps = 0
-      while sweeps < 10
+      while sweeps < 10 # we can only sweep once per finger
         count = 0
         dependencies.each do |d|
-          sweeps+=1
+          sweeps += 1
           depends = find_dependencies_for(d)
           next unless depends
           depends.each do |dd|
@@ -669,7 +673,7 @@ HELP
             next if checked.include?(dd[:name])
             next if @@installed_in_session.include? "#{dd[:type]}_#{dd[:name]}_#{dd[:version]}"
             dependencies << dd
-            count+=1
+            count += 1
             checked << dd[:name]
           end
         end
@@ -779,9 +783,9 @@ HELP
       puts "fetching into: #{to_dir} => #{url}" if OPTIONS[:debug]
       FileUtils.mkdir_p to_dir unless File.exists? to_dir
       event = {:to_dir=>to_dir,:from=>url,:type=>type,:name=>name,:version=>version}
-      Appcelerator::PluginManager.dispatchEvent 'before_install_component',event
+      PluginManager.dispatchEvent 'before_install_component',event
       Installer.http_fetch_into("(#{idx}/#{total}) #{name}",url,to_dir)
-      Appcelerator::PluginManager.dispatchEvent 'after_install_component',event
+      PluginManager.dispatchEvent 'after_install_component',event
     end
     
     def Installer.install_from_zipfile(type,description,from)
@@ -791,15 +795,15 @@ HELP
       end
       to_dir = Installer.get_release_directory(config[:type],config[:name],config[:version])
       event = {:to_dir=>to_dir,:from=>from,:type=>config[:type],:name=>config[:name],:from=>from,:version=>config[:version]}
-      Appcelerator::PluginManager.dispatchEvent 'before_install_component',event
+      PluginManager.dispatchEvent 'before_install_component',event
       Installer.unzip to_dir,from
-      Appcelerator::PluginManager.dispatchEvent 'after_install_component',event
+      PluginManager.dispatchEvent 'after_install_component',event
       return to_dir,config[:name],config[:version]
     end
 
-# :websdk,'WebSDK','websdk',true,tx,update
+    # :websdk,'WebSDK','websdk',true,tx,update
     def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false)
-
+        
         to_dir = nil
         name = nil
         version = nil
@@ -912,6 +916,7 @@ HELP
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
       return Installer.get_release_directory(fnc[:type],fnc[:name],fnc[:version]),fnc[:name],fnc[:version],fnc[:checksum],true
     end
+    
     def Installer.get_remote_component(type,name,version=nil)
       found = []
       Installer.fetch_distribution_list
@@ -934,7 +939,7 @@ HELP
     def Installer.sort_components(found)
       if not found.empty?
         found.sort! do |a,b|
-          Appcelerator::Project.to_version(a[:version]||0) <=> Appcelerator::Project.to_version(b[:version]||0)
+          Project.to_version(a[:version]||0) <=> Project.to_version(b[:version]||0)
         end
         return found.last
       end
@@ -961,11 +966,7 @@ HELP
             items = []
             c.each do |cm|
               if cm[:name] == name and cm[:type]==type.to_s
-                if version.nil?
-                  items.push cm
-                else
-                  items.push(cm)
-                end
+                items.push(cm)
               end
             end
             return sort_components(items)

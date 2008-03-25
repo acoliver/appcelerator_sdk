@@ -17,16 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand('install:appadmin','install app admin',[
+include Appcelerator
+CommandRegistry.registerCommand('install:appadmin','install app admin',[
   {
     :name=>'location',
     :help=>'path or URL to plugin file or name of a plugin from the network',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
-],nil,nil) do |args,options|
-  Appcelerator::Installer.install_component :appadmin,'Appcenter',args[:location]
+]) do |args,options|
+  Installer.install_component :appadmin,'Appcenter',args[:location]
 end
 

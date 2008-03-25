@@ -22,7 +22,7 @@ BUILD_DIR = "#{File.dirname(__FILE__)}"
 require File.expand_path("#{BUILD_DIR}/../../build.rb")
 build_config = load_config(BUILD_DIR)
 
-desc 'default build'
+desc 'default zend build'
 task :default do
 
   FileUtils.mkdir_p "#{STAGE_DIR}"

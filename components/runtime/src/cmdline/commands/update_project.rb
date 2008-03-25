@@ -17,46 +17,47 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('project:update','update project components',[
+include Appcelerator
+CommandRegistry.registerCommand('update:project','update project components',[
   {
     :name=>'path',
     :help=>'path of the project',
     :required=>false,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   }
 ],nil,[
   'update',
   'update ~/myproject'
-]) do |args,options|
+], :project) do |args,options|
   
   pwd = args[:path] || Dir.pwd
 
   FileUtils.cd(pwd) do 
 
     # this is used to make sure we're in a project directory
-    lang = Appcelerator::Project.get_service(pwd)
+    lang = Project.get_service(pwd)
 
     # determine if we have the service the user is asking for
-    list = Appcelerator::Installer.fetch_distribution_list
+    list = Installer.fetch_distribution_list
 
     puts "One moment, determining latest versions ..." if OPTIONS[:verbose]
 
     updates = []
 
-    Appcelerator::Installer.with_project_config(pwd,false) do |config|
+    Installer.with_project_config(pwd,false) do |config|
 
       config[:widgets].each do |widget|
-        widget_component = Appcelerator::Installer.get_component_from_config(:widget,widget[:name])
+        widget_component = Installer.get_component_from_config(:widget,widget[:name])
         update = false
         if widget_component
-          widget_version = Appcelerator::Project.to_version(widget[:version])
-          version = Appcelerator::Project.to_version(widget_component[:version])
+          widget_version = Project.to_version(widget[:version])
+          version = Project.to_version(widget_component[:version])
           if version > widget_version
             update = true
           elsif version == widget_version and OPTIONS[:force_update]
@@ -76,11 +77,11 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
       end
 
       config[:plugins].each do |plugin|
-        plugin_component = Appcelerator::Installer.get_component_from_config(:plugin,plugin[:name])
+        plugin_component = Installer.get_component_from_config(:plugin,plugin[:name])
         update = false
         if plugin_component
-          plugin_version = Appcelerator::Project.to_version(plugin[:version])
-          version = Appcelerator::Project.to_version(plugin_component[:version])
+          plugin_version = Project.to_version(plugin[:version])
+          version = Project.to_version(plugin_component[:version])
           if version > plugin_version
             update = true
           elsif version == plugin_version and OPTIONS[:force_update]
@@ -99,12 +100,12 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
         end
       end
 
-      websdk_version = Appcelerator::Project.to_version(config[:websdk])
-      websdk_component = Appcelerator::Installer.get_component_from_config(:websdk,'websdk')
+      websdk_version = Project.to_version(config[:websdk])
+      websdk_component = Installer.get_component_from_config(:websdk,'websdk')
       
       if websdk_component
         new_websdk = nil
-        version = Appcelerator::Project.to_version(websdk_component[:version])
+        version = Project.to_version(websdk_component[:version])
         if version > websdk_version
           new_websdk = websdk_component
         elsif version == websdk_version and OPTIONS[:force_update]
@@ -130,11 +131,11 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
       end
       
       service = config[:service]
-      service_version = Appcelerator::Project.to_version(config[:service_version])
-      service_component = Appcelerator::Installer.get_component_from_config(:service,service)
+      service_version = Project.to_version(config[:service_version])
+      service_component = Installer.get_component_from_config(:service,service)
       if service_component
         new_service = nil
-        version = Appcelerator::Project.to_version(service_component[:version])
+        version = Project.to_version(service_component[:version])
         if version > service_version
           new_service = service_component
         elsif version == service_version and OPTIONS[:force_update]
@@ -162,34 +163,36 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
       if not updates.empty?
         with_io_transaction(pwd) do |tx|
 
-          Appcelerator::Installer.with_project_config(pwd,true) do |config|
+          Installer.with_project_config(pwd,true) do |config|
             config[:last_updated] = Time.now
             event = {:project_dir=>pwd,:config=>config,:tx=>tx}
-            Appcelerator::PluginManager.dispatchEvent 'before_update_project',event
+            PluginManager.dispatchEvent 'before_update_project',event
             opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
             updates.each do |component|
               case component[:type]
+                
                 when :widget,'widget'
                   opts[:version] = component[:version]
-                  Appcelerator::CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
+                  CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
                   
                 when :plugin,'plugin'
                   opts[:version] = component[:version]
-                  Appcelerator::CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
+                  CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
                 
                 when :websdk,'websdk'
-                  project_config,props=Appcelerator::Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
-                  config[:websdk]=component[:version]
+                  project_config,props = Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
+                  config[:websdk] = component[:version]
+                  
                 when :service,'service'
-                  config[:service_version]=component[:version]
-                  service_dir = Appcelerator::Installer.get_component_directory(component)
-                  service_name = Appcelerator::Project.make_service_name(component[:name])
+                  config[:service_version] = component[:version]
+                  service_dir = Installer.get_component_directory(component)
+                  service_name = Project.make_service_name(component[:name])
                   script = File.join(service_dir,'install.rb')
                   puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
-                  project_config = Appcelerator::Project.get_config(pwd) 
+                  project_config = Project.get_config(pwd) 
                   project_config.merge!(config)
                   require script
-                  installer = eval "Appcelerator::#{service_name}.new"
+                  installer = Appcelerator.const_get(service_name).new
                   if installer.respond_to?(:update_project)
                     if installer.update_project(service_dir,pwd,project_config,tx,config[:service_version],component[:version])
                       puts "Updated service '#{component[:name]}' to #{component[:version]}"
@@ -202,14 +205,12 @@ Appcelerator::CommandRegistry.registerCommand('project:update','update project c
               else
               end
             end
-            Appcelerator::PluginManager.dispatchEvent 'after_update_project',event
+            PluginManager.dispatchEvent 'after_update_project',event
           end
         end
       else
         puts "Looks like everything is up-to-date. Cool!"
       end
     end
-    
   end
-  
 end

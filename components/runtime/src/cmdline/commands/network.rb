@@ -17,100 +17,60 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+include Appcelerator
+CommandRegistry.makeGroup(:network) do |group|
 
-Appcelerator::CommandRegistry.registerCommand('network:login','login to the Appcelerator network',
-[
-  {
-    :name=>'email',
-    :help=>'email address to use for login',
-    :required=>true,
-    :default=>nil,
-    :type=>Appcelerator::Types::AnyType
-  },
-  {
-    :name=>'password',
-    :help=>'password to use for login',
-    :required=>false,
-    :default=>nil,
-    :type=>Appcelerator::Types::AnyType
-  }
-],nil,nil) do |args,options|
-  
-  password = args[:password] || ask('Enter your password: ',true)
-  if Appcelerator::Installer.login(args[:email],password,true)
-    puts "Logged in! Welcome back." unless OPTIONS[:quiet]
-  end
-end
+  group.registerCommand('login','login to the Appcelerator network',
+  [
+    {
+      :name=>'email',
+      :help=>'email address to use for login',
+      :required=>true,
+      :default=>nil,
+      :type=>Types::AnyType
+    },
+    {
+      :name=>'password',
+      :help=>'password to use for login',
+      :required=>false,
+      :default=>nil,
+      :type=>Types::AnyType
+    }
+  ]) do |args,options|
 
-
-Appcelerator::CommandRegistry.registerCommand('network:logout','logout of the Appcelerator network',nil,nil,nil) do |args,options|
-  Appcelerator::Installer.forget_credentials
-  puts "You have been logged out.  See ya later!"
-end
-
-Appcelerator::CommandRegistry.registerCommand('network:list','query network for list of distributions',
-[
-  {
-    :name=>'type',
-    :help=>'type of component to list (widget,plugin,etc...)',
-    :required=>false,
-    :default=>nil,
-    :type=>Appcelerator::Types::AnyType
-  },
-  {
-    :name=>'name',
-    :help=>'name of component to list',
-    :required=>false,
-    :default=>nil,
-    :type=>Appcelerator::Types::AnyType
-  }
-],
-[
-  {
-     :name=>:ping,
-     :display=>'--ping',
-     :value=>false
-  },
-],nil) do |args,options|
-  list = Appcelerator::Installer.fetch_distribution_list options[:ping]
-  if args[:type]
-    l = list[args[:type]] || list[args[:type].to_sym]
-    if l
-      if args[:name]
-        l.each do |e|
-          if e[:name] == args[:name]
-            puts e.to_yaml unless OPTIONS[:quiet]
-            break
-          end
-        end
-      else
-        puts l.to_yaml unless OPTIONS[:quiet]
-      end
-    else
-      die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
-      exit 1
+    password = args[:password] || ask('Enter your password: ',true)
+    if Installer.login(args[:email],password,true)
+      puts "Logged in! Welcome back." unless OPTIONS[:quiet]
     end
-  else
-    puts list.to_yaml unless OPTIONS[:quiet]
   end
-end
-Appcelerator::CommandRegistry.registerCommand('network:setproxy','set your proxy settings',
-[
-  {
-    :name=>'proxy',
-    :help=>'url for the proxy (ex: http://myuser:mypass@my.example.com:3128)',
-    :required=>false,
-    :default=>nil,
-    :type=>Appcelerator::Types::AnyType
-  }
-],nil,nil) do |args,options|
-  if args[:proxy]
-    Appcelerator::Installer.save_proxy(args[:proxy])
-  else
-    Appcelerator::Installer.prompt_proxy(true)
+
+
+  group.registerCommand('logout','logout of the Appcelerator network',nil,nil,nil) do |args,options|
+    Installer.forget_credentials
+    puts "You have been logged out.  See ya later!"
   end
-end
-Appcelerator::CommandRegistry.registerCommand('network:clearproxy','clear your proxy settings',
-[],nil,nil) do |args,options|
-  Appcelerator::Installer.save_proxy(nil)
+
+
+  group.registerCommand('setproxy','set your proxy settings',
+  [
+    {
+      :name=>'proxy',
+      :help=>'url for the proxy (ex: http://myuser:mypass@my.example.com:3128)',
+      :required=>false,
+      :default=>nil,
+      :type=>Types::AnyType
+    }
+  ]) do |args,options|
+    
+    if args[:proxy]
+      Installer.save_proxy(args[:proxy])
+    else
+      Installer.prompt_proxy(true)
+    end
+  end
+  
+  group.registerCommand('clearproxy','clear your proxy settings') do |args,options|
+    Installer.save_proxy(nil)
+  end
+
 end

@@ -17,14 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand('install:service','install an SOA integration point',[
+include Appcelerator
+CommandRegistry.registerCommand('install:service','install an SOA integration point',[
   {
     :name=>'location',
     :help=>'path or URL to plugin file or name of a service integration from the network',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'install:service java',
@@ -34,7 +34,7 @@ Appcelerator::CommandRegistry.registerCommand('install:service','install an SOA 
 ]) do |args,options|
 
   args[:location].split(',').uniq.each do |service|
-    Appcelerator::Installer.install_component :service,'SOA Integration Point',service.strip
+    Installer.install_component :service,'SOA Integration Point',service.strip
   end
 
 end

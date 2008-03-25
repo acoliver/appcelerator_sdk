@@ -17,25 +17,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
+include Appcelerator
+CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
   {
     :name=>'path',
     :help=>'path to directory where plugin project should be created',
     :required=>true,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   },
   {
     :name=>'name',
     :help=>'name of the plugin to create (such as foo:bar)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'create:plugin ~/tmp foo:bar',
@@ -48,7 +49,7 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
 
   dir = File.join(args[:path].path,plugin_name)
   event = {:plugin_dir=>dir,:name=>args[:name]}
-  Appcelerator::PluginManager.dispatchEvent 'before_create_plugin',event
+  PluginManager.dispatchEvent 'before_create_plugin',event
 
   FileUtils.mkdir_p(dir) unless File.exists?(dir)
   
@@ -61,7 +62,7 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
   FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
 
   FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
-  Appcelerator::Installer.put "#{src_dir}/#{plugin_name}.rb", template
+  Installer.put "#{src_dir}/#{plugin_name}.rb", template
   
   template = File.read "#{template_dir}/plugin_Rakefile"
   template.gsub! 'PLUGIN', plugin_name
@@ -76,9 +77,9 @@ Appcelerator::CommandRegistry.registerCommand('create:plugin','create a new plug
     :licenses=>[]
   }
   
-  Appcelerator::Installer.put "#{dir}/Rakefile", template
-  Appcelerator::Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
+  Installer.put "#{dir}/Rakefile", template
+  Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
   
-  Appcelerator::PluginManager.dispatchEvent 'after_create_plugin',event
+  PluginManager.dispatchEvent 'after_create_plugin',event
   puts "Created Plugin: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]
 end

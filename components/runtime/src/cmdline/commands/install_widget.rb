@@ -17,14 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand('install:widget','install a widget',[
+include Appcelerator
+CommandRegistry.registerCommand('install:widget','install a widget',[
   {
     :name=>'location',
     :help=>'path or URL to widget file or name of the widget in the network',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'install:widget app:iterator',
@@ -34,6 +34,6 @@ Appcelerator::CommandRegistry.registerCommand('install:widget','install a widget
 ]) do |args,options|
 
   args[:location].split(',').uniq.each do |widget|
-    Appcelerator::Installer.install_component :widget,'Widget',widget.strip
+    Installer.install_component :widget,'Widget',widget.strip
   end
 end

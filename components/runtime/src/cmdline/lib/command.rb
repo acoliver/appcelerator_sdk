@@ -88,8 +88,20 @@ module Appcelerator
       
     end
     
+    class CommandGroup
+      attr_reader :name, :order
+      def initialize(name,order)
+        @name = name
+        @order = order
+      end
+      def registerCommand(name,help,args=nil,opts=nil,examples=nil,&callback)
+        CommandRegistry.registerCommand(name,help,args,opts,examples,self,&callback)
+      end
+    end
+    
     class CommandRegistry
       @@registry=Hash.new
+      @@groups=Hash.new
       
       def CommandRegistry.addOptions(opts=nil)
         if opts
@@ -99,30 +111,52 @@ module Appcelerator
         end
       end
       
-      def CommandRegistry.registerCommand(name,help,args,opts,examples,&callback)
-        case name.class.to_s
-          when 'Array'
-            name.each_with_index do |n,idx|
-              @@registry[n] = {
-                :args=>args,
-                :opts=>opts,
-                :examples=>examples,
-                :invoker=>callback,
-                :help=>help,
-                :alias=>idx > 0
-              } unless exists?(n)
-              CommandRegistry.addOptions(opts)
+      def CommandRegistry.makeGroup(name,order=nil)
+        name = name.to_sym
+        if @@groups[name]
+          group = @@groups[name]
+        else
+          order = 1000 if order == nil
+          group = CommandGroup.new(name,order)
+          @@groups[name] = group
+        end
+        yield group if block_given?
+        group
+      end
+      
+      def CommandRegistry.inferGroup(group, commandName)
+        # group can be a group, a name of a group, or nil (in which case a new group is created)
+        if not group.is_a? CommandGroup
+          group = @@groups[group.to_sym] if not group.nil?
+          if not group
+            groupName = commandName.split(':')[0].to_sym
+            group = @@groups[groupName]
+            if not group
+              group = CommandRegistry.makeGroup(groupName)
             end
-          when 'String'
-            @@registry[name] = {
-              :args=>args,
-              :opts=>opts,
-              :examples=>examples,
-              :invoker=>callback,
-              :help=>help,
-              :alias=>false
-            } unless exists?(name)
-            CommandRegistry.addOptions(opts)
+          end
+        end
+        group
+      end
+      
+      def CommandRegistry.registerCommand(name,help,args=nil,opts=nil,examples=nil,group=nil,&callback)
+        if name.is_a? Array
+          names = name
+        elsif name.is_a? String
+          names = [name]
+        end
+        
+        names.each_with_index do |name,idx|
+          @@registry[name] = {
+            :args=>args,
+            :opts=>opts,
+            :examples=>examples,
+            :invoker=>callback,
+            :help=>help,
+            :group=>CommandRegistry.inferGroup(group, name),
+            :alias=>idx > 0
+          } unless exists?(name)
+          CommandRegistry.addOptions(opts)
         end
       end
       
@@ -137,7 +171,9 @@ module Appcelerator
       end
       
       def CommandRegistry.each
-        @@registry.sort {|a,b| a[0]<=>b[0]}.each do |k,v|
+        @@registry.sort_by { |name,command|
+          [command[:group].order, command[:group].name.to_s, name]
+        }.each do |k,v|
           yield k,v unless v[:alias]
         end
       end
@@ -169,8 +205,7 @@ module Appcelerator
               next 
             end
             key = arg[:name].to_sym
-            value = args.nil? ? nil : args[index]
-            value=arg[:default] unless value
+            value = args[index] rescue arg[:default]
             type = arg[:type]
             typestr = type.to_s.split(':').last
             if type
@@ -196,7 +231,7 @@ module Appcelerator
                   die " *ERROR: Invalid argument value: #{value} for argument: #{key}. Must be of type: #{typestr}"
                 end
                 if arg[:conversion]
-                  value = eval "#{arg[:conversion]}.new.convert('#{value}')"
+                  value = arg[:conversion].new.convert(value)
                 end
               end
             end
@@ -219,9 +254,18 @@ module Appcelerator
       private 
 
       def CommandRegistry.isType?(type,value)
-        expr = "#{type}.new.is?('#{value}')"
-        result = eval expr
+        type.new.is?(value)
       end
 
+      # command groups (can be extended by plugins)
+      CommandRegistry.makeGroup(:add,       0)
+      CommandRegistry.makeGroup(:create,    1)
+      CommandRegistry.makeGroup(:help,      2)
+      CommandRegistry.makeGroup(:install,   3)
+      CommandRegistry.makeGroup(:list,      4)
+      CommandRegistry.makeGroup(:network,   5)
+      CommandRegistry.makeGroup(:project,   6)
+      CommandRegistry.makeGroup(:other,     7)
     end
+    
 end

@@ -17,34 +17,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('project:rollback','rollback project change (install, update)',[
+include Appcelerator
+CommandRegistry.registerCommand('rollback:project','rollback project change (install, update)',[
   {
     :name=>'path',
     :help=>'path of the project',
     :required=>false,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   }
 ],nil,[
   'rollback',
   'rollback ~/myproject'
-]) do |args,options|
-  
+], :project) do |args,options|
+
   pwd = File.expand_path(args[:path] || Dir.pwd)
 
   fail = false
-  
+
   FileUtils.cd(pwd) do 
     # this is used to make sure we're in a project directory
-    lang = Appcelerator::Project.get_service(pwd)
-    
+    lang = Project.get_service(pwd)
+  
     rollback_dir = "#{pwd}/tmp/rollback"
-    
+  
     if not File.exists?(rollback_dir)
       STDERR.puts "No rollbacks found for project at #{pwd}"
       fail = true
@@ -58,15 +59,16 @@ Appcelerator::CommandRegistry.registerCommand('project:rollback','rollback proje
 
       confirm "Are you sure you want to rollback changes? [yN] ",false,true,'n'
 
-      tx = Appcelerator::IOTransaction.new pwd,true,OPTIONS[:verbose]||OPTIONS[:debug]
+      tx = IOTransaction.new pwd,true,OPTIONS[:verbose]||OPTIONS[:debug]
       tx.rollback
 
       puts "Rollback complete...."
-      
+    
       FileUtils.rm_rf rollback_dir
     end
 
   end
-  
+
   die if fail
 end
+

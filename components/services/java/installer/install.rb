@@ -161,7 +161,10 @@ STR
         tx.rm "#{to_path}/#{name}" if File.exists? "#{to_path}/#{name}"
       end
 
-      Installer.copy tx, "#{from_path}/war.rb","#{to_path}/plugins/war.rb"
+      Dir["#{from_path}/plugins/*.rb"].each do |fpath|
+        fname = File.basename(fpath)
+        Installer.copy tx, fpath,"#{to_path}/plugins/#{fname}"
+      end
       true
     end
     

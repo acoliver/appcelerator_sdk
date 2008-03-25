@@ -17,13 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 class WARPlugin < Appcelerator::Plugin
-    def plugin_registered
-      # called when this plugin is loaded
-      Appcelerator::CommandRegistry.registerCommand('project:war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
-        event = {:project_dir=>Dir.pwd}
-        Appcelerator::PluginManager.dispatchEvent 'before_create_war',event
-        system "ant war"
-        Appcelerator::PluginManager.dispatchEvent 'after_create_war',event
+  
+  def plugin_registered
+
+    Appcelerator::CommandRegistry.registerCommand('project:war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
+      event = {:project_dir=>Dir.pwd}
+      Appcelerator::PluginManager.dispatchEvents('create_war',event) do
+        if not system("ant war")
+          puts "Could not find Apache Ant on your path. Please download and configure Ant so that we can run 'ant war' in this directory"
+        end
       end
     end
+  end
+  
 end

@@ -17,13 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('create:html','create a new html file',[
+include Appcelerator
+CommandRegistry.registerCommand('create:html','create a new html file',[
   {
     :name=>'name',
     :help=>'name of the HTML file',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'create:html test.html',
@@ -33,14 +34,14 @@ Appcelerator::CommandRegistry.registerCommand('create:html','create a new html f
   name = args[:name].gsub('.html','')
   
   # this is used to make sure we're in a project directory
-  lang = Appcelerator::Project.get_service
+  lang = Project.get_service
 
   with_io_transaction(Dir.pwd) do |tx|
     event = {:file=>"#{Dir.pwd}/public/#{name}.html", :service=>lang, :project_dir=> Dir.pwd}
-    Appcelerator::PluginManager.dispatchEvent 'before_create_html',event
+    PluginManager.dispatchEvent 'before_create_html',event
     template = File.read "#{File.dirname(__FILE__)}/templates/template.html"
     tx.put "#{Dir.pwd}/public/#{name}.html", template
-    Appcelerator::PluginManager.dispatchEvent 'after_create_html',event
+    PluginManager.dispatchEvent 'after_create_html',event
     puts "Created HTML file => #{Dir.pwd}/public/#{name}.html" unless OPTIONS[:quiet]
   end
 

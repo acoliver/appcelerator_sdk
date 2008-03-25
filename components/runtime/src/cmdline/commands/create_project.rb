@@ -17,32 +17,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand('create:project','create a new project',[
+include Appcelerator
+CommandRegistry.registerCommand('create:project','create a new project',[
   {
     :name=>'path',
     :help=>'path to directory where project should be created',
     :required=>true,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   },
   {
     :name=>'name',
     :help=>'name of the project to create (such as myproject)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   },
   {
     :name=>'service',
     :help=>'service-specific project to create (such as java)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'create:project ~/mypath test java',
@@ -52,7 +53,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
 
   service_entry = nil
   
-  Appcelerator::Installer.with_site_config(false) do |site_config|
+  Installer.with_site_config(false) do |site_config|
     installed = site_config[:installed]
     if installed
       c = installed[:service]
@@ -66,7 +67,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   end
   
   if not service_entry
-    list = Appcelerator::Installer.fetch_distribution_list
+    list = Installer.fetch_distribution_list
     list[:service].each do |svc|
       if args[:service] == svc[:name]
         service_entry = svc
@@ -84,12 +85,12 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   puts "service #{service}"
 
 
-  servicecomponent = Appcelerator::Installer.get_component_from_config(:service,service)
+  servicecomponent = Installer.get_component_from_config(:service,service)
 
-  service_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component :service,'SOA Integration Point',service,true
+  service_dir,name,version,checksum,already_installed = Installer.install_component :service,'SOA Integration Point',service,true
   
-  if Appcelerator::Project.to_version(servicecomponent[:version]) > Appcelerator::Project.to_version(version)
-    service_dir,name,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version]),servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum],true
+  if Project.to_version(servicecomponent[:version]) > Project.to_version(version)
+    service_dir,name,version,checksum,already_installed = Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version]),servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum],true
   end
 
   if OPTIONS[:debug]
@@ -109,7 +110,7 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
   # from and to directories
   from = service_dir
   to = File.expand_path(File.join(args[:path].path,args[:name]))
-  service_name = Appcelerator::Project.make_service_name(service)
+  service_name = Project.make_service_name(service)
   
   puts "Creating #{service_name} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
@@ -117,19 +118,19 @@ Appcelerator::CommandRegistry.registerCommand('create:project','create a new pro
 
   with_io_transaction(to) do |tx|
     event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],:service=>service,:version=>version,:tx=>tx}
-    Appcelerator::PluginManager.dispatchEvent 'before_create_project',event
+    PluginManager.dispatchEvent 'before_create_project',event
     
-    config, props = Appcelerator::Installer.create_project(to,args[:name],service,version,tx)
+    config, props = Installer.create_project(to,args[:name],service,version,tx)
   
     # now execute the install script
-    installer = eval "Appcelerator::#{service_name}.new"
+    installer = Appcelerator.const_get(service_name).new
     if installer.create_project(from,to,config,tx)
       puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
       success = true
     end
     
     event[:success]=success
-    Appcelerator::PluginManager.dispatchEvent 'after_create_project',event
+    PluginManager.dispatchEvent 'after_create_project',event
   end
 
   success

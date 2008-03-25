@@ -17,20 +17,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:plugin release:service release:websdk release:installer),
+include Appcelerator
+CommandRegistry.registerCommand(%w(release release:widget release:plugin release:service release:websdk release:installer),
 'release a component (plugin, service, etc)',[
   {
     :name=>'location',
     :help=>'path to packaged file to be released',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::FileType
+    :type=>Types::FileType
   }
 ],nil,
 [
   'release app_widget.zip'
-]) do |args,options|
+], :network) do |args,options|
 
   location = args[:location]
   
@@ -41,10 +41,10 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
   end
   
   # must be logged in
-  Appcelerator::Installer.login_if_required
+  Installer.login_if_required
   
   # get the config
-  config = Appcelerator::Installer.load_config
+  config = Installer.load_config
   
   apikey = config[:apikey]
 
@@ -62,7 +62,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
     end
   end
   
-  client = Appcelerator::Installer.get_client
+  client = Installer.get_client
   
   params = Hash.new
   params['file'] = File.open(location,'rb')
@@ -77,7 +77,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
     
     if response[:data]['invalid_key']
       config[:apikey] = nil
-      Appcelerator::Installer.save_config
+      Installer.save_config
     end
     
     die response[:data]['msg'] || 'Unknown response from server'
@@ -85,7 +85,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(release release:widget release:
   
   # save off the api key
   config[:apikey] = apikey
-  Appcelerator::Installer.save_config
+  Installer.save_config
   
   puts "Your release has been queued."
   

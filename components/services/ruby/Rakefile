@@ -38,6 +38,10 @@ task :default do
     end
     zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
     zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
+    Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
+      fname = File.basename(fpath)
+      zipfile.add("plugins/#{fname}",fpath)
+    end
   end
 end
 

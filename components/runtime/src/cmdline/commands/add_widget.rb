@@ -17,13 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
+include Appcelerator
+CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
   {
     :name=>'name',
     :help=>'name of the widget to add (such as app:my_widget)',
     :required=>true,
     :default=>nil,
-    :type=>Appcelerator::Types::AnyType
+    :type=>Types::AnyType
   },
   {
     :name=>'path',
@@ -31,11 +32,11 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
     :required=>false,
     :default=>nil,
     :type=>[
-      Appcelerator::Types::FileType,
-      Appcelerator::Types::DirectoryType,
-      Appcelerator::Types::AlphanumericType
+      Types::FileType,
+      Types::DirectoryType,
+      Types::AlphanumericType
     ],
-    :conversion=>Appcelerator::Types::DirectoryType
+    :conversion=>Types::DirectoryType
   }
 ],nil,[
   'add:widget app:message',
@@ -46,7 +47,7 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
   pwd = File.expand_path(args[:path] || Dir.pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
-  lang = Appcelerator::Project.get_service(pwd) unless options[:ignore_path_check]
+  lang = Project.get_service(pwd) unless options[:ignore_path_check]
   
   force = options[:force]
   force = false if force.nil?
@@ -58,26 +59,26 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
         widget_name = name.gsub ':', '_'
 
-        widget = Appcelerator::Installer.get_component_from_config(:widget,name,options[:version])
+        widget = Installer.get_component_from_config(:widget,name,options[:version])
 
         if not widget
           die "Couldn't find widget named: #{name}."
         end
         
-        widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.install_component(:widget,'Widget',name,true,tx,force)
+        widget_dir,name,version,checksum,already_installed = Installer.install_component(:widget,'Widget',name,true,tx,force)
 
-        if Appcelerator::Project.to_version(widget[:version]) > Appcelerator::Project.to_version(version)
-          widget_dir,name,version,checksum,already_installed = Appcelerator::Installer.get_release_directory(widget[:type],widget[:name],widget[:version]),widget[:name],widget[:version],widget[:checksum],true
+        if Project.to_version(widget[:version]) > Project.to_version(version)
+          widget_dir,name,version,checksum,already_installed = Installer.get_release_directory(widget[:type],widget[:name],widget[:version]),widget[:name],widget[:version],widget[:checksum],true
         end
         
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
 
         event = {:widget_name=>widget_name,:version=>version,:widget_dir=>widget_dir,:to_dir=>to_dir}
-        Appcelerator::PluginManager.dispatchEvent 'before_add_widget', event
-        Appcelerator::Installer.copy tx, widget_dir, to_dir
+        PluginManager.dispatchEvent 'before_add_widget', event
+        Installer.copy tx, widget_dir, to_dir
 
-        config = options[:project_config] || Appcelerator::Installer.get_project_config(pwd)
+        config = options[:project_config] || Installer.get_project_config(pwd)
         p = config[:widgets]
         if not p
           p = []
@@ -85,9 +86,9 @@ Appcelerator::CommandRegistry.registerCommand(%w(add:widget add:widgets),'add wi
         end
         p.delete_if { |w| w[:name] == name } 
         p << {:name=>name,:version=>version}
-        Appcelerator::Installer.save_project_config(pwd,config) unless options[:no_save]
+        Installer.save_project_config(pwd,config) unless options[:no_save]
 
-        Appcelerator::PluginManager.dispatchEvent 'after_add_widget',event
+        PluginManager.dispatchEvent 'after_add_widget',event
         puts "Installed #{name}" unless OPTIONS[:quiet] or options[:quiet]
       end
     end

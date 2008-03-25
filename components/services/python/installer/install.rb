@@ -17,44 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require File.dirname(__FILE__) + '/python_config.rb'
 
 module Appcelerator
   class Python
-    
-    def initialize
-      if on_windows
-        python_dir = Dir['C:/Python2*/'].last
-        if not python_dir or not File.exists?(File.join(python_dir,'python.exe'))
-          found_no_python
-        end
-        @python = File.join(python_dir,'python.exe')
-        @python_scripts_dir = File.join(python_dir, 'Scripts')+'/'
-        @sudo = ''
-        @bin_suffix = '.exe'
-      else
-        if not quiet_system('python -V')
-          found_no_python
-        end
-        @python = 'python'
-        @python_script_prefix = ''
-        @sudo = 'sudo '
-        @bin_suffix = ''
-      end
-    end
-    
-    def found_no_python
-      STDERR.puts "I'm sorry, python was not found on your system. Please install it and re-try."
-      exit 1
-    end
-    
-    attr_reader :python,:python_scripts_dir,:sudo,:bin_suffix
-    
+        
     def create_project(from_path,to_path,config,tx)
       
       if File.exists? "#{to_path}/public/appcelerator.xml"
         puts "A project already exists here, exiting"
         return false
       end
+      
+      @pyconfig = PythonConfig.new
       
       install_easy_install_if_needed
       install_pylons_if_needed
@@ -107,6 +82,11 @@ END_CODE
       tx.rm "#{app_path}/public" # pylons makes this
       tx.rm "#{project_path}/app" # appc create:project makes this
       
+      Dir["#{from_path}/plugins/*.rb"].each do |fpath|
+        fname = File.basename(fpath)
+        Installer.copy tx, fpath,"#{to_path}/plugins/#{fname}"
+      end
+      
       true
     end
     
@@ -135,16 +115,6 @@ END_CODE
     #
     # Helpers
     #
-        
-    def quiet_system(cmd)
-      if OPTIONS[:verbose]
-        puts cmd
-      elsif not on_windows
-        # is there a windows equivalent of this?
-        cmd += ' > /dev/null 2>&1'
-      end
-      system(cmd)
-    end
     
     def copy(tx,srcpath,dstpath)
       content = File.read(srcpath)
@@ -161,32 +131,12 @@ END_CODE
     def assert(test)
       raise "Assertion Failed" unless test
     end
-    
-    #
-    # Platform helpers
-    #
-    
-    def on_windows
-      RUBY_PLATFORM =~ /(:?mswin|mingw)/
-    end
-    
-    def easy_install
-      "#{sudo}#{python_scripts_dir}easy_install#{bin_suffix}"
-    end
-    
-    def check_easy_install
-      "#{python_scripts_dir}easy_install#{bin_suffix} --help"
-    end
-    
-    def paster
-      "#{python_scripts_dir}paster#{bin_suffix}"
-    end
-    
+        
     #
     # Dependencies
     #
     def install_easy_install_if_needed
-      if not quiet_system(check_easy_install)
+      if not quiet_system("#{easy_install} --help")
         confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install now? (Y)es, (N)o [Y]")
         
         require 'open-uri'
@@ -195,6 +145,8 @@ END_CODE
         ez_file = Tempfile.new('ez_setup.py')
         ez_file.write(ez_setup_src)
         ez_file.close
+        
+        sudo = on_windows ? '' : 'sudo '          
         quiet_system("#{sudo}#{python} #{ez_file.path}")
       end
     end
@@ -208,7 +160,7 @@ END_CODE
     end
     
     def install_paster_if_needed
-      if not quiet_system("#{paster}")
+      if not quiet_system(paster)
         confirm("Appcelerator:Python requires PasteScript to be installed before continuing. Install now? (Y)es, (N)o [Y]")
         quiet_system("#{easy_install} pastescript")
       end
@@ -221,7 +173,11 @@ END_CODE
         quiet_system("#{easy_install} \"#{dir}/module/\"")
       end
     end
-        
+    
+    require 'forwardable'
+    extend Forwardable
+    def_delegators :@pyconfig,   :python, :easy_install, :paster, :quiet_system, :on_windows
+
   end
 end
 

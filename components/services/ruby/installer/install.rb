@@ -51,7 +51,7 @@ module Appcelerator
         tx.put "#{to_path}/config/environment.rb", env
       end
       
-      Appcelerator::Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
+      Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
 
       projectname = File.basename(to_path)
       xml = File.read("#{from_path}/rails/public/appcelerator.xml")
@@ -70,6 +70,11 @@ module Appcelerator
       boot = File.read("#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator.rb")
       boot.gsub!('0.0.0',config[:service_version])
       tx.put "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator.rb", boot
+      
+      Dir["#{from_path}/plugins/*.rb"].each do |fpath|
+        fname = File.basename(fpath)
+        Installer.copy tx, fpath, "#{to_path}/plugins/#{fname}"
+      end
       
       true
     end

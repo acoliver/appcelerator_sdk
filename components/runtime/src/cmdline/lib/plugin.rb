@@ -29,24 +29,37 @@ module Appcelerator
   end  
   class PluginManager
     @@plugins = Array.new
+    
     def PluginManager.dispatchEvent(name,event)
       puts "--> event => #{name} with #{event.inspect}" if OPTIONS[:debug]
       @@plugins.each do |plugin|
         plugin.event name,event
       end
     end
+    
+    def PluginManager.dispatchEvents(nameSuffix,event)
+      PluginManager.dispatchEvent('before_'+nameSufffix,event)
+      begin
+        yield if block_given?
+      ensure
+        PluginManager.dispatchEvent('after_'+nameSufffix,event)
+      end
+    end
+    
     def PluginManager.addPlugin(p)
       @@plugins << p
       if p.respond_to? :plugin_registered
         p.send :plugin_registered
       end
     end
+    
     def PluginManager.removePlugin(p)
       @@plugins.remove p
       if p.respond_to? :plugin_unregistered
         p.send :plugin_unregistered
       end
     end
+    
     def PluginManager.loadPlugins
       path = Dir.pwd
       if path 
@@ -75,7 +88,7 @@ module Appcelerator
       p = []
       # scan and add all of our plugins
       Object::constants.each do |c|
-        cl = eval c
+        cl = Object.const_get(c)
         if cl.class == Class and cl.superclass==Appcelerator::Plugin
           p << cl.to_s
           Appcelerator::PluginManager.addPlugin(cl.new) 

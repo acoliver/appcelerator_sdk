@@ -17,14 +17,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-Appcelerator::CommandRegistry.registerCommand('install:websdk','install the web SDK',[
+include Appcelerator
+CommandRegistry.registerCommand('install:websdk','install the web SDK',[
   {
     :name=>'location',
     :help=>'path or URL to plugin file',
     :required=>false,
     :default=>nil,
-    :type=>Appcelerator::Types::StringType
+    :type=>Types::StringType
   }
 ],nil,[
   'install:websdk',
@@ -32,6 +32,6 @@ Appcelerator::CommandRegistry.registerCommand('install:websdk','install the web 
   'install:websdk http://aurl.com/websdk.zip'
 ]) do |args,options|
 
-  Appcelerator::Installer.install_component :websdk,'WebSDK',args[:location] || 'websdk'
+  Installer.install_component :websdk,'WebSDK',args[:location] || 'websdk'
   
 end

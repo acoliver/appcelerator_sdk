@@ -46,7 +46,16 @@ task :default do
         zipfile.add("#{filename}","#{stage_src}/#{filename}")
       end
     end
-    zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
+    Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
+      fname = File.basename(fpath)
+      zipfile.add("plugins/#{fname}",fpath)
+    end
+    Dir["#{BUILD_DIR}/installer/*.rb"].each do |fpath|
+      fname = File.basename(fpath)
+      zipfile.add(fname,fpath)
+    end
+    # needs to be copied into the project's plugins directory
+    zipfile.add('plugins/python_config.rb',"#{BUILD_DIR}/installer/python_config.rb")
     zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
   end
   FileUtils.rm_rf stage_src

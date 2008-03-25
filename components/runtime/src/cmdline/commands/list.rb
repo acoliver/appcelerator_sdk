@@ -17,26 +17,79 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+include Appcelerator
+CommandRegistry.makeGroup(:list) do |group|
 
-Appcelerator::CommandRegistry.registerCommand(%w(list:widgets list:widget),'list widgets locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'widget'
-end
+  group.registerCommand(%w(list:widgets list:widget),'list widgets installed locally') do |args,options|
+    Project.list_installed_components 'widget'
+  end
 
-Appcelerator::CommandRegistry.registerCommand(%w(list:services list:service),'list SOA integrations locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'service'
-end
+  group.registerCommand(%w(list:services list:service),'list SOA integrations installed locally') do |args,options|
+    Project.list_installed_components 'service'
+  end
 
-Appcelerator::CommandRegistry.registerCommand(%w(list:websdks list:websdk),'list web SDKs locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'websdk'
-end
+  group.registerCommand(%w(list:websdks list:websdk),'list web SDKs installed locally') do |args,options|
+    Project.list_installed_components 'websdk'
+  end
 
-Appcelerator::CommandRegistry.registerCommand(%w(list:plugins list:plugin),'list plugins locally installed',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'plugin'
-end
+  group.registerCommand(%w(list:plugins list:plugin),'list plugins installed locally') do |args,options|
+    Project.list_installed_components 'plugin'
+  end
 
-Appcelerator::CommandRegistry.registerCommand(%w(list:all list),'list all locally installed components',nil,nil,nil) do |args,options|
-  Appcelerator::Project.list_installed_components 'websdk' 
-  Appcelerator::Project.list_installed_components 'service'
-  Appcelerator::Project.list_installed_components 'plugin'
-  Appcelerator::Project.list_installed_components 'widget'
+  group.registerCommand(%w(list:all list),'list all components installed locally') do |args,options|
+    Project.list_installed_components 'websdk' 
+    Project.list_installed_components 'service'
+    Project.list_installed_components 'plugin'
+    Project.list_installed_components 'widget'
+  end
+
+  group.registerCommand('list:network','list all components available on the network',
+  [
+    {
+      :name=>'type',
+      :help=>'type of component to list (widget,plugin,etc...)',
+      :required=>false,
+      :default=>nil,
+      :type=>Types::AnyType
+    },
+    {
+      :name=>'name',
+      :help=>'name of component to list',
+      :required=>false,
+      :default=>nil,
+      :type=>Types::AnyType
+    }
+  ],
+  [
+    {
+       :name=>:ping,
+       :display=>'--ping',
+       :value=>false
+    },
+  ]) do |args,options|
+    
+    # TODO: format this output
+    
+    list = Installer.fetch_distribution_list options[:ping]
+    if args[:type]
+      l = list[args[:type]] || list[args[:type].to_sym]
+      if l
+        if args[:name]
+          l.each do |e|
+            if e[:name] == args[:name]
+              puts e.to_yaml unless OPTIONS[:quiet]
+              break
+            end
+          end
+        else
+          puts l.to_yaml unless OPTIONS[:quiet]
+        end
+      else
+        die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
+        exit 1 # WTF!?
+      end
+    else
+      puts list.to_yaml unless OPTIONS[:quiet]
+    end
+  end
 end
