@@ -59,32 +59,34 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
       when 'java'
         port = options[:port] || 4000
         scanperiod = options[:scan_period] || 5000
-        webdir = "#{pwd}/public"
-        servicesdir = "#{pwd}/app/services"
-
-        jars = Dir["#{pwd}/lib/**/**"].inject([]) do |jars,file|
-          jars << "\"#{file}\"" if File.extname '.jar'
-        end
-        props=[]
-        OPTIONS.each do |k,v|
-          props << "-#{k}=#{v}" if k.to_s[0,1]=='D'
-          props << "-#{k}" if k.to_s[0,1]=='X'
-        end
-        props=props.join(' ')
-        sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
-        cp = "\"#{servicesdir}\""
-        cp << sep
-        cp << "\"#{pwd}/output/classes\"" if File.exists?("#{pwd}/output/classes")
-        cp << sep
-        cp << jars.join(sep)
-        cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
-        puts cmd if OPTIONS[:debug]
-        event = {:project_dir=>pwd,:service=>'java'}
-        Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
-        begin
-          system cmd
-        ensure
-          Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
+        FileUtils.cd Dir.pwd do |dir|
+          webdir = "public"
+          servicesdir = "app/services"
+        
+          jars = Dir["lib/**/**"].inject([]) do |jars,file|
+            jars << "#{file}" if File.extname '.jar'
+          end
+          props=[]
+          OPTIONS.each do |k,v|
+            props << "-#{k}=#{v}" if k.to_s[0,1]=='D'
+            props << "-#{k}" if k.to_s[0,1]=='X'
+          end
+          props=props.join(' ')
+          sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
+          cp = "#{servicesdir}"
+          cp << sep
+          cp << "output/classes\"" if File.exists?("output/classes")
+          cp << sep
+          cp << jars.join(sep)
+          cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
+          puts cmd if OPTIONS[:debug]
+          event = {:project_dir=>pwd,:service=>'java'}
+          Appcelerator::PluginManager.dispatchEvent 'before_run_server',event
+          begin
+            system cmd
+          ensure
+            Appcelerator::PluginManager.dispatchEvent 'after_run_server',event
+          end
         end
       when 'ruby'
         event = {:project_dir=>pwd,:service=>'ruby'}
