@@ -51,7 +51,7 @@ public class ServiceCompiler
 
         URL[] urls = ClasspathUrlFinder.findClassPaths();
         StringBuilder cp=new StringBuilder();
-        cp.append(System.getProperty("sun.boot.class.path"));
+        cp.append("\""+System.getProperty("sun.boot.class.path")+"\"");
         cp.append(File.pathSeparatorChar);
         for (URL url : urls)
         {
