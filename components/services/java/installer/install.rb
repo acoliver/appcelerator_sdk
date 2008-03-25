@@ -70,7 +70,7 @@ module Appcelerator
         'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
       tx.mkdir "app/services/org/appcelerator/test"
       Appcelerator::Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
-      # Appcelerator::Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services/EchoService.java")
+      tx.rm "#{to_path}/app/services/EchoService.java" if File.exists? "#{to_path}/app/services/EchoService.java"
       Appcelerator::Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services//org/appcelerator/test/EchoService.java")
       Appcelerator::Installer.copy(tx,"#{from_path}/appcelerator.xml", "#{to_path}/public/appcelerator.xml")
       if update==false or update.nil?
