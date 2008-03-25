@@ -59,12 +59,13 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
       when 'java'
         port = options[:port] || 4000
         scanperiod = options[:scan_period] || 5000
+        sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
+        pathsep = RUBY_PLATFORM=~/win32/ ? '\\' : '/'
         FileUtils.cd Dir.pwd do |dir|
           webdir = "public"
           servicesdir = "app/services"
-        
           jars = Dir["lib/**/**"].inject([]) do |jars,file|
-            jars << "#{file}" if File.extname '.jar'
+            jars << "#{file}".gsub(/\//,pathsep) if File.extname '.jar'
           end
           props=[]
           OPTIONS.each do |k,v|
@@ -72,11 +73,12 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
             props << "-#{k}" if k.to_s[0,1]=='X'
           end
           props=props.join(' ')
-          sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
           cp = "#{servicesdir}"
           cp << sep
-          cp << "output/classes\"" if File.exists?("output/classes")
-          cp << sep
+          if File.exists?("output/classes")
+            cp << "output#{pathsep}classes" 
+            cp << sep
+          end
           cp << jars.join(sep)
           cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
           puts cmd if OPTIONS[:debug]
@@ -126,5 +128,4 @@ Appcelerator::CommandRegistry.registerCommand('project:run','run a project serve
       die "This command is currently only supported for Java, Ruby, Python"
     end  
   end
-  
 end
