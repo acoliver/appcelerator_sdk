@@ -147,7 +147,8 @@ module Appcelerator
 
       #
       # send the POST
-      #
+      #     
+      puts "Posting[path: #{@upload}, query: #{query}, headers: #{headers}]"  if OPTIONS[:verbose]
       res  = get_http(@url.host,@url.port) do |http|
          http.post("/#{@upload}",query,headers);
       end
@@ -220,6 +221,7 @@ module Appcelerator
       #
       # send the POST
       #
+      puts "Sending Post[req: #{req.inspect}]"  if OPTIONS[:verbose]
       res  = get_http(@url.host,@url.port) do |http|
          http.request(req)
       end
@@ -318,7 +320,7 @@ module Appcelerator
       #
       # get the appcelerator.xml file
       #
-      
+      puts "getting appcelerator.xml[path: #{@url.path}/appcelerator.xml]"  if OPTIONS[:verbose]
       res = get_http(@url.host, @url.port) do |http|
         http.get("#{@url.path}/appcelerator.xml")
       end
@@ -355,7 +357,7 @@ module Appcelerator
       req = Net::HTTP::Get.new("/#{@servicebroker}?initial=1")
       req.set_content_type('text/xml')
       req['X-Requested-With'] = 'XMLHttpRequest'
-
+      puts "Bootstrap[req: #{req.inspect}]" if OPTIONS[:verbose]
       response = get_http(@url.host,@url.port) do |http|
         http.request(req)
       end
