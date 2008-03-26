@@ -38,11 +38,11 @@ module Appcelerator
     end
     
     def PluginManager.dispatchEvents(nameSuffix,event)
-      PluginManager.dispatchEvent('before_'+nameSufffix,event)
+      PluginManager.dispatchEvent('before_'+nameSuffix,event)
       begin
         yield if block_given?
       ensure
-        PluginManager.dispatchEvent('after_'+nameSufffix,event)
+        PluginManager.dispatchEvent('after_'+nameSuffix,event)
       end
     end
     
