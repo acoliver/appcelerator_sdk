@@ -29,6 +29,7 @@ module Appcelerator
     def update_project(from_path,to_path,config,tx,from_version,to_version)
       puts "Updating java from #{from_version} to #{to_version}" if OPTIONS[:verbose]
       install(from_path,to_path,config,tx,true)
+      replace_jar_eclipse(to_version,to_path,tx)
       true
     end
 
@@ -123,6 +124,7 @@ module Appcelerator
           if dir =~ /^\//
             dir = dir[1..-1]
           end
+          dir = "lib/appcelerator-#{config[:service_version]}.jar" if dir=="lib/appcelerator.jar"
           classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
         end
       
@@ -167,7 +169,13 @@ STR
       end
       true
     end
-    
+    def replace_jar_eclipse(to_version,to_path, tx)
+      classpath = IO.readlines("#{to_path}/.classpath")
+      classpath.each do |line|
+        line.gsub!(/appcelerator-([0-9\.])*\.jar/,"appcelerator-#{to_version}.jar")
+      end
+      tx.put "#{to_path}/.classpath",classpath
+    end
     def replace_app_name(name,file)
       content = File.read file
       f = File.open file,'w+'
