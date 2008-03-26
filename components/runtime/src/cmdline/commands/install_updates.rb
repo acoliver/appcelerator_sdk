@@ -26,6 +26,34 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
   possible_updates = 0
   updated = []
   
+  #
+  # this is a special case where we need to self-update the binary and related 
+  # files itself
+  #
+  build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
+  updates = list[:update]
+  if updates and not updates.empty?
+    update = Installer.sort_components(updates)
+    local_version = Project.to_version(build_config[:version])
+    remote_version = Project.to_version(update[:version])
+    if local_version < remote_version or OPTIONS[:force_update]
+      possible_updates += 1
+      if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
+        Installer.install_component update[:type].to_sym,update[:type].to_s,update[:name],true,nil,true,false
+        updated << "#{update[:type]}_#{update[:name]}"
+        build_config[:version] = update[:version]
+        cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
+        cf.puts build_config.to_yaml
+        cf.close
+        puts "This program has been self-updated. Please run your command again."
+        exit 0
+      else
+        puts "You must self-update this program before updating any other components."
+        exit 0
+      end
+    end
+  end
+  
   Installer.with_site_config(false) do |site_config|
     installed = site_config[:installed]
     if installed
@@ -69,30 +97,7 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
       end
     end
   end
-  
-  #
-  # this is a special case where we need to self-update the binary and related 
-  # files itself
-  #
-  build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
-  updates = list[:update]
-  if updates
-    update = Installer.sort_components(updates)
-    local_version = Project.to_version(build_config[:version])
-    remote_version = Project.to_version(update[:version])
-    if local_version < remote_version or OPTIONS[:force_update]
-      possible_updates += 1
-      if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
-        Installer.install_component update[:type].to_sym,update[:type].to_s,update[:name],true,nil,true,false
-        updated << "#{update[:type]}_#{update[:name]}"
-        build_config[:version] = update[:version]
-        cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
-        cf.puts build_config.to_yaml
-        cf.close
-      end
-    end
-  end
-  
+
   if possible_updates == 0
     puts "No updates found. You're completely up-to-date." unless OPTIONS[:quiet]
   end
