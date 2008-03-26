@@ -64,7 +64,7 @@ Appcelerator.Widget.AppExtTree =
 		for(var i=0;i< nodes.length;i++)
 		{
 			array.push({id:nodes[i].id,parent:params['rootId'], order:i});
-			Appcelerator.Module.ExtTree.processChildren(nodes[i],array);
+			Appcelerator.Widget.ExtTree.processChildren(nodes[i],array);
 		}
 	 	return array;
 	},
@@ -74,13 +74,13 @@ Appcelerator.Widget.AppExtTree =
 		for(var i=0;i<child.length;i++)
 		{
 			array.push({id:child[i].id,parent:node.id,order:i});
-		    Appcelerator.Module.ExtTree.processChildren(child[i],array);
+		    Appcelerator.Widget.ExtTree.processChildren(child[i],array);
 		}	
 	},
 	
 	senddata: function(id,params,data,scope)
 	{
-		var json=Appcelerator.Module.ExtTree.treeToJSON(params);
+		var json=Appcelerator.Widget.ExtTree.treeToJSON(params);
 		var property = params['sendDataProperty'];
 		if (params['sendDataMessage'])
 		{
