@@ -201,8 +201,8 @@ module Appcelerator
           return proxy
         end
       end
-      yn = ask 'Are you using a proxy server? (Y)es or (N)o [Y]'
-      if ['y','Y',''].index(yn)
+      yn = ask 'Are you using a proxy server? (Y)es or (N)o [N]'
+      if ['y','Y'].index(yn)
         proxy = ask('Proxy url (ex: http://myuser:mypass@my.example.com:3128):')
         if save
           Installer.save_proxy(proxy)
