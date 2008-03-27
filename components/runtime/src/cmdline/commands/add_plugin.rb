@@ -65,7 +65,7 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
 
         plugin_dir,pluginname,version,checksum,already_installed = Installer.install_component(:plugin,'Plugin',name,true,tx,force)
         
-        if Project.to_version(plugin[:version]) > Project.to_version(version)
+        if Installer.should_update(plugin[:version], version)
           plugin_dir = Installer.get_release_directory(plugin[:type],plugin[:name],plugin[:version])
           pluginname,version,checksum = plugin[:name],plugin[:version],plugin[:checksum]
           already_installed = true
@@ -75,19 +75,15 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         tx.mkdir to_dir
         
         event = {:name=>name,:version=>version,:plugin_dir=>plugin_dir,:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
-        PluginManager.dispatchEvent 'before_add_plugin',event
+        PluginManager.dispatchEvents('add_plugin',event) do
 
-        config = options[:project_config] || Installer.get_project_config(pwd)
-        p = config[:plugins]
-        if not p
-          p = []
-          config[:plugins] = p
+          config = options[:project_config] || Installer.get_project_config(pwd)
+          plugins = config[:plugins] ||= []
+          
+          plugins.delete_if { |w| w[:name] == name }
+          plugins << {:name=>name,:version=>version}
+          Installer.save_project_config(pwd,config) unless options[:no_save]
         end
-        p.delete_if { |w| w[:name] == name } 
-        p << {:name=>name,:version=>version}
-        Installer.save_project_config(pwd,config) unless options[:no_save]
-        
-        PluginManager.dispatchEvent 'after_add_plugin',event
         puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
     end

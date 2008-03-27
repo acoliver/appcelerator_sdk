@@ -22,8 +22,10 @@ module Appcelerator
   class Installer
     def Installer.create_project(path,name,service,version,tx,update=false,webcomponent=nil)
       
-      puts "Creating new project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and not update
-      puts "Updating project at #{path} with name: #{name} for #{service}" if OPTIONS[:verbose] and update
+      if OPTIONS[:verbose] and not update
+        puts "Creating new project at #{path} with name: #{name} for #{service}"
+        puts "Updating project at #{path} with name: #{name} for #{service}"
+      end
       
       public_path="#{path}/public"
 

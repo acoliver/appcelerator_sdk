@@ -33,10 +33,9 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
   build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
   updates = list[:update]
   if updates and not updates.empty?
-    update = Installer.sort_components(updates)
-    local_version = Project.to_version(build_config[:version])
-    remote_version = Project.to_version(update[:version])
-    if local_version < remote_version or OPTIONS[:force_update]
+    update = Installer.most_recent_version(updates)
+    
+    if Installer.should_update(build_config[:version], update[:version])
       possible_updates += 1
       if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
         Installer.install_component update[:type].to_sym,update[:type].to_s,update[:name],true,nil,true,false
@@ -55,41 +54,37 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
   end
   
   Installer.with_site_config(false) do |site_config|
-    installed = site_config[:installed]
-    if installed
-      installed.keys.each do |key|
-        entries = installed[key] 
-        entries.each do |entry|
-          found = list[entry[:type].to_sym]
-          if found
-            found.each do |e|
-              if e[:name] == entry[:name] and not updated.include? "#{entry[:type]}_#{entry[:name]}"
-                local_version = Project.to_version(entry[:version])
-                remote_version = Project.to_version(e[:version])
-                
-                if OPTIONS[:debug]
-                  puts "local_version=#{local_version},remote_version=#{remote_version}"
-                  puts "local_entry=#{entry.to_yaml}"
-                  puts "remote_entry=#{e.to_yaml}"
-                  puts
-                end
-                                
-                remote_newer = (remote_version > local_version)
-                same_version = (local_version == remote_version)
-                same_checksum = (e[:checksum].to_s == entry[:checksum].to_s)
-                
-                update = remote_newer or (same_version and not same_checksum) or OPTIONS[:force_update]
-                
-                puts "should updated? #{update}" if OPTIONS[:debug]
+    installed = site_config[:installed] || {}
+    installed.keys.each do |key|
+      entries = installed[key] || []
+      entries.each do |entry|
+        found = list[entry[:type].to_sym] || []
+        found.each do |e|
+          if e[:name] == entry[:name] and not updated.include? "#{entry[:type]}_#{entry[:name]}"
+            
+            local_version = entry[:version]
+            remote_version = e[:version]
+            
+            if OPTIONS[:debug]
+              puts "local_version=#{local_version},remote_version=#{remote_version}"
+              puts "local_entry=#{entry.to_yaml}"
+              puts "remote_entry=#{e.to_yaml}"
+              puts
+            end
+            
+            same_checksum = (e[:checksum].to_s == entry[:checksum].to_s)
+            same_but_different = (local_version == remote_version and not same_checksum)
+            
+            update = Installer.should_update(local_version,remote_version) || same_but_different
+            
+            puts "should updated? #{update}" if OPTIONS[:debug]
 
-                if update and not Installer.installed_this_session?(entry[:type],entry[:name],entry[:version])
-                  
-                  possible_updates += 1
-                  if confirm("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y')
-                    Installer.install_component entry[:type].to_sym,entry[:type].to_s,entry[:name],true,nil,true,false
-                    updated << "#{entry[:type]}_#{entry[:name]}"
-                  end
-                end
+            if update and not Installer.installed_this_session?(entry[:type],entry[:name],entry[:version])
+              
+              possible_updates += 1
+              if confirm("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y')
+                Installer.install_component entry[:type].to_sym,entry[:type].to_s,entry[:name],true,nil,true,false
+                updated << "#{entry[:type]}_#{entry[:name]}"
               end
             end
           end

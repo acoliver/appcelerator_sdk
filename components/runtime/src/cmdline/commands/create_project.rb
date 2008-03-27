@@ -53,15 +53,14 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 
   service_entry = nil
   
+  # find the service in the local config (refactor this)
   Installer.with_site_config(false) do |site_config|
-    installed = site_config[:installed]
-    if installed
-      c = installed[:service]
-      if c
-        c.each do |cm|
-            service_entry = cm if cm[:name] == args[:service]
-            break if service_entry
-        end
+    installed = site_config[:installed] || {}
+    components = installed[:service] || []
+    components.each do |cm|
+      if cm[:name] == args[:service]
+        service_entry = cm
+        break
       end
     end
   end
@@ -82,15 +81,17 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   
   service = service_entry[:name]
   
-  puts "service #{service}"
+  puts "service #{service}" unless OPTIONS[:quiet]
 
 
   servicecomponent = Installer.get_component_from_config(:service,service)
 
   service_dir,name,version,checksum,already_installed = Installer.install_component :service,'SOA Integration Point',service,true
   
-  if Project.to_version(servicecomponent[:version]) > Project.to_version(version)
-    service_dir,name,version,checksum,already_installed = Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version]),servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum],true
+  if Installer.should_update(servicecomponent[:version], version)
+    service_dir = Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version])
+    name,version,checksum = servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum]
+    already_installed = true
   end
 
   if OPTIONS[:debug]

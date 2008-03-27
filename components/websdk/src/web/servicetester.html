@@ -167,7 +167,7 @@
                 <div style="float:right"><input type="button" value="Clear" on="click then clear[id=tracelog]"/></div>
                 <div>Message Trace Log</div>
                 <textarea id="tracelog" readonly="true" rows="8" scope="*"
-                   on="r:~.* then value[append=true,value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + this.data+'\n')]"></textarea>
+                   on="r:~.* then value[append=true,value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + Object.toJSON(this.data)+'\n')]"></textarea>
             </div>
     
         </form>

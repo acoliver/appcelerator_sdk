@@ -489,30 +489,6 @@ HELP
       true
     end
     
-    def Installer.load_site_config
-      return @@site_config if @@site_config
-      FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
-      @@site_config_file = "#{RELEASE_DIR}/config.yml"
-      @@site_config = YAML::load_file @@site_config_file if File.exists?(@@site_config_file)
-      @@site_config||={}
-      @@site_config
-    end
-    
-    def Installer.save_site_config
-      if @@site_config
-        FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
-        f = File.open @@site_config_file, 'w+'
-        f.puts @@site_config.to_yaml
-        f.close
-      end
-    end
-    
-    def Installer.with_site_config(save=true)
-      config = load_site_config
-      yield config
-      save_site_config if save
-    end
-
     def Installer.convert_object(object)
       case object.class.to_s
         when 'Hash'
@@ -534,7 +510,7 @@ HELP
     end
     
     def Installer.fetch_distribution_list(ping=false)
-        return @@distributions if @@distributions
+        return @@distributions if @@distributions # caching this
         login_if_required
         client = get_client
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
@@ -566,11 +542,9 @@ HELP
     def Installer.each_installed_component(type)
       with_site_config(false) do |site_config|
         installed = site_config[:installed] || {}
-        members = installed[type.to_sym]
-        if members
-          members.each do |member|
-            yield member[:name],member[:version]
-          end
+        members = installed[type.to_sym] || []
+        members.each do |member|
+          yield member[:name],member[:version]
         end
       end
     end
@@ -578,12 +552,10 @@ HELP
     def Installer.get_websdk
       with_site_config(false) do |site_config|
         installed = site_config[:installed] || {}
-        members = installed[:websdk]
-        if members
-          members.each do |member|
-            if member[:name] == 'websdk'
-              return member
-            end
+        members = installed[:websdk] || []
+        members.each do |member|
+          if member[:name] == 'websdk'
+            return member
           end
         end
       end
@@ -599,14 +571,11 @@ HELP
       
       with_site_config(false) do |site_config|
         installed = site_config[:installed] || {}
-        members = installed[type.to_sym]
-        if members
-          members.each do |member|
-            if member[:name] == name
-              v = member[:version]
-              if v == version and member[:checksum]==checksum
-                return true,component[:dependencies]
-              end
+        members = installed[type.to_sym] || []
+        members.each do |member|
+          if member[:name] == name
+            if member[:version]==version and member[:checksum]==checksum
+              return true,component[:dependencies]
             end
           end
         end
@@ -905,10 +874,12 @@ HELP
           # this was installed locally and not remote
           return Installer.get_release_directory(found[:type],found[:name],found[:version]),found[:name],found[:version],nil,true
         end
-        found = sort_components(fa)
+        found = most_recent_version(fa)
       end
 
-      fnc = Installer.get_installed_component(found) unless (force and not installed) or (OPTIONS[:force_update] and not installed) 
+      unless (force and not installed) or (OPTIONS[:force_update] and not installed)
+        fnc = Installer.get_installed_component(found)
+      end
       return Installer.fetch_network_component(type,found,count+1,count+1) unless fnc
       
       puts "#{fnc[:type]} #{fnc[:name]}, #{fnc[:version]} already installed - skipping..." if OPTIONS[:verbose]
@@ -919,25 +890,20 @@ HELP
       found = []
       Installer.fetch_distribution_list
       with_site_config(false) do |site_config|
-        distributions = site_config[:distributions]
-        if distributions
-          c = distributions[type] || distributions[type.to_sym]
-          if c
-            c.each do |cm|
-              if cm[:name]==name and (cm[:type]==type.to_s or cm[:type]==type.to_sym) and ((!version.nil? and cm[:version]==version) or version.nil?)
-                found << cm
-              end
-            end
-          end
+        distributions = site_config[:distributions] || {}
+        components = distributions[type] || distributions[type.to_sym] || []
+        
+        found = components.select do |cm|
+          cm[:name]==name and cm[:type].to_s==type.to_s and (version.nil? or cm[:version]==version)
         end
       end
       found
     end
     
-    def Installer.sort_components(found)
+    def Installer.most_recent_version(found)
       if not found.empty?
         found.sort! do |a,b|
-          Project.to_version(a[:version]||0) <=> Project.to_version(b[:version]||0)
+          compare_versions(a[:version],b[:version])
         end
         return found.last
       end
@@ -949,7 +915,7 @@ HELP
       c = get_installed_component({:name=>name,:type=>type,:version=>version})
       
       found << c if c
-      sort_components(found)
+      most_recent_version(found)
     end
     
     def Installer.get_installed_component(found)
@@ -957,19 +923,12 @@ HELP
       type = found[:type]
       version = found[:version]
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        if installed
-          c = installed[type.to_sym]
-          if c
-            items = []
-            c.each do |cm|
-              if cm[:name] == name and cm[:type]==type.to_s
-                items.push(cm)
-              end
-            end
-            return sort_components(items)
-          end
+        installed = site_config[:installed] || {}
+        components = installed[type.to_sym] || []
+        matching_components = components.select do |cm|
+          cm[:name] == name and cm[:type].to_s == type.to_s
         end
+        return most_recent_version(matching_components)
       end
       nil
     end
@@ -988,6 +947,37 @@ HELP
       md5
     end
     
+    
+    #
+    # Site Configuration (Things installed locally in the $APPCELERATOR/releases directory) 
+    #
+    def Installer.load_site_config
+      return @@site_config if @@site_config
+      FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
+      @@site_config_file = "#{RELEASE_DIR}/config.yml"
+      @@site_config = YAML::load_file @@site_config_file if File.exists?(@@site_config_file)
+      @@site_config||={}
+      @@site_config
+    end
+    
+    def Installer.save_site_config
+      if @@site_config
+        FileUtils.mkdir_p RELEASE_DIR unless File.exists? RELEASE_DIR
+        f = File.open @@site_config_file, 'w+'
+        f.puts @@site_config.to_yaml
+        f.close
+      end
+    end
+    
+    def Installer.with_site_config(save=true)
+      config = load_site_config
+      yield config if block_given?
+      save_site_config if save
+    end
+    
+    #
+    # Project Configuration (Things added to the current project)
+    #
     def Installer.get_project_config(dir)
       config = YAML::load_file "#{dir}/config/appcelerator.config" if File.exists? "#{dir}/config/appcelerator.config"
       config||={}
@@ -1012,6 +1002,25 @@ HELP
       save_project_config dir,config if save
     end
     
+    #
+    # Version Utils
+    #
+    def Installer.compare_versions(first, second)
+      return 0 unless (first and second)
+      first.split('.') <=> second.split('.')
+    end
+        
+    def Installer.should_update(local_version, remote_version)
+      case compare_versions(local_version, remote_version)
+        when 1
+          false # mine is newer
+        when 0
+          OPTIONS[:force_update] # both the same, are we forcing?
+        when -1
+          true # mine is older
+      end
+    end
+    
     def Installer.check_appadmin_installed
       # config = {:name=>'appadmin',:type=>'appadmin'}
       # admin = Installer.get_installed_component config
@@ -1020,7 +1029,7 @@ HELP
       #   list = Installer.fetch_distribution_list
       #   if list
       #     a = list[:appadmin]
-      #     admin = Installer.sort_components(a) if a
+      #     admin = Installer.most_recent_version(a) if a
       #     if admin
       #       Installer.install_component('appadmin','Admin','appadmin',false,nil,true,false)
       #     end

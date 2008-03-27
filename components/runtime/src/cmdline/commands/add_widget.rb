@@ -67,28 +67,25 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         
         widget_dir,name,version,checksum,already_installed = Installer.install_component(:widget,'Widget',name,true,tx,force)
 
-        if Project.to_version(widget[:version]) > Project.to_version(version)
-          widget_dir,name,version,checksum,already_installed = Installer.get_release_directory(widget[:type],widget[:name],widget[:version]),widget[:name],widget[:version],widget[:checksum],true
+        if Installer.should_update(widget[:version],version)
+          widget_dir = Installer.get_release_directory(widget[:type],widget[:name],widget[:version])
+          name,version,checksum = widget[:name],widget[:version],widget[:checksum]
+          already_installed = true
         end
         
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
 
         event = {:widget_name=>widget_name,:version=>version,:widget_dir=>widget_dir,:to_dir=>to_dir}
-        PluginManager.dispatchEvent 'before_add_widget', event
-        Installer.copy tx, widget_dir, to_dir
+        PluginManager.dispatchEvents('add_widget', event) do
+          Installer.copy tx, widget_dir, to_dir
 
-        config = options[:project_config] || Installer.get_project_config(pwd)
-        p = config[:widgets]
-        if not p
-          p = []
-          config[:widgets] = p
+          config = options[:project_config] || Installer.get_project_config(pwd)
+          widgets = config[:widgets] ||= []
+          widgets.delete_if { |w| w[:name] == name } 
+          widgets << {:name=>name,:version=>version}
+          Installer.save_project_config(pwd,config) unless options[:no_save]
         end
-        p.delete_if { |w| w[:name] == name } 
-        p << {:name=>name,:version=>version}
-        Installer.save_project_config(pwd,config) unless options[:no_save]
-
-        PluginManager.dispatchEvent 'after_add_widget',event
         puts "Installed #{name}" unless OPTIONS[:quiet] or options[:quiet]
       end
     end

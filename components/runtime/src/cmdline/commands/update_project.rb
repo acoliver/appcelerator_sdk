@@ -54,65 +54,40 @@ CommandRegistry.registerCommand('update:project','update project components',[
 
       config[:widgets].each do |widget|
         widget_component = Installer.get_component_from_config(:widget,widget[:name])
-        update = false
-        if widget_component
-          widget_version = Project.to_version(widget[:version])
-          version = Project.to_version(widget_component[:version])
-          if version > widget_version
-            update = true
-          elsif version == widget_version and OPTIONS[:force_update]
-            update = true
-          else
-            puts "Widget '#{widget[:name]}' is already up-to-date (#{widget_component[:version]})"
-          end
-        end
-        if update
+        
+        if widget_component and Installer.should_update(widget[:version], widget_component[:version])
+          
           if not confirm "Need to update: #{widget_component[:name]} to #{widget_component[:version]}. OK? [Yna] ",true,false,'y'
             puts "Skipping ... #{widget_component[:name]},#{widget_component[:version]}" if OPTIONS[:verbose]
           else 
             puts "Will update => #{widget_component[:name]}, #{widget_component[:version]}" if OPTIONS[:verbose]
             updates << widget_component
           end
+        else
+          puts "Widget '#{widget[:name]}' is already up-to-date (#{widget_component[:version]})"
         end
       end
 
       config[:plugins].each do |plugin|
-        plugin_component = Installer.get_component_from_config(:plugin,plugin[:name])
-        update = false
-        if plugin_component
-          plugin_version = Project.to_version(plugin[:version])
-          version = Project.to_version(plugin_component[:version])
-          if version > plugin_version
-            update = true
-          elsif version == plugin_version and OPTIONS[:force_update]
-            update = true
-          else
-            puts "Plugin '#{plugin[:name]}' is already up-to-date (#{plugin_component[:version]})"
-          end
-        end
-        if update
-          if not confirm "Need to update: #{plugin_component[:name]} to #{plugin_component[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... #{plugin_component[:name]},#{plugin_component[:version]}" if OPTIONS[:verbose]
+        current_plugin = Installer.get_component_from_config(:plugin,plugin[:name])
+        
+        if current_plugin and Installer.should_update(plugin[:version], current_plugin[:version])
+          
+          if not confirm "Need to update: #{current_plugin[:name]} to #{current_plugin[:version]}. OK? [Yna] ",true,false,'y'
+            puts "Skipping ... #{current_plugin[:name]},#{current_plugin[:version]}" if OPTIONS[:verbose]
           else 
-            puts "Will update => #{plugin_component[:name]}, #{plugin_component[:version]}" if OPTIONS[:verbose]
-            updates << plugin_component
+            puts "Will update => #{current_plugin[:name]}, #{current_plugin[:version]}" if OPTIONS[:verbose]
+            updates << current_plugin
           end
+        else
+          puts "Plugin '#{plugin[:name]}' is already up-to-date (#{current_plugin[:version]})" unless OPTIONS[:quiet]
         end
       end
 
-      websdk_version = Project.to_version(config[:websdk])
       websdk_component = Installer.get_component_from_config(:websdk,'websdk')
       
       if websdk_component
-        new_websdk = nil
-        version = Project.to_version(websdk_component[:version])
-        if version > websdk_version
-          new_websdk = websdk_component
-        elsif version == websdk_version and OPTIONS[:force_update]
-          new_websdk = websdk_component
-        end
-        
-        if new_websdk
+        if Installer.should_update(config[:websdk], websdk_component[:version])
           if not confirm "Need to update: 'websdk' to #{new_websdk[:version]}. OK? [Yna] ",true,false,'y'
             puts "Skipping ... websdk,#{new_websdk[:version]}" if OPTIONS[:verbose]
           else
@@ -131,23 +106,16 @@ CommandRegistry.registerCommand('update:project','update project components',[
       end
       
       service = config[:service]
-      service_version = Project.to_version(config[:service_version])
       service_component = Installer.get_component_from_config(:service,service)
-      if service_component
-        new_service = nil
-        version = Project.to_version(service_component[:version])
-        if version > service_version
-          new_service = service_component
-        elsif version == service_version and OPTIONS[:force_update]
-          new_service = service_component
-        end 
-        if new_service
-            if not confirm "Need to update: #{new_service[:name]} to #{new_service[:version]}. OK? [Yna] ",true,false,'y'
-              puts "Skipping ... #{new_service[:name]},#{new_service[:version]}" if OPTIONS[:verbose]
-            else
-              puts "Will update => #{new_service[:name]}, #{new_service[:version]}" if OPTIONS[:verbose]
-              updates << service_component
-            end
+      
+      if service_component  # TODO: refactor this "again"
+        if Installer.should_update(config[:service_version], service_component[:version])
+          if not confirm "Need to update: #{new_service[:name]} to #{new_service[:version]}. OK? [Yna] ",true,false,'y'
+            puts "Skipping ... #{new_service[:name]},#{new_service[:version]}" if OPTIONS[:verbose]
+          else
+            puts "Will update => #{new_service[:name]}, #{new_service[:version]}" if OPTIONS[:verbose]
+            updates << service_component
+          end
         else
           if OPTIONS[:force_update]
             if confirm "Re-install local update: #{service} to #{config[:service_version]}. OK? [Yna] ",true,false,'y'
@@ -180,9 +148,7 @@ CommandRegistry.registerCommand('update:project','update project components',[
                     CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
                 
                   when :websdk
-                    # TODO: make this not destroy all a person's images, index.html etc
-                    # we can't just create a project, we will copy the javascripts only
-                    project_config,props = Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
+                    Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
                     config[:websdk] = component[:version]
                   
                   when :service

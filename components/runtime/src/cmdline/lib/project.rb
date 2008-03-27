@@ -20,19 +20,6 @@
 module Appcelerator
   class Project
 
-    ###
-    # TODO: anything that uses this needs to be refactored to use Project.compare_version
-    ###
-    def Project.to_version(v)
-      return 0 unless v
-      v.to_s.gsub('.','').to_i
-    end
-    
-    def Project.compare_version(first, second)
-      return 0 unless (first and second)
-      first.split('.') <=> second.split('.')
-    end
-
     def Project.make_service_name(service)
       "#{service[0,1].upcase}#{service[1..-1]}"
     end
