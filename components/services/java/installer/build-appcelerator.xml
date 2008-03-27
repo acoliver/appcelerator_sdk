@@ -35,26 +35,14 @@
 		</jar>
 	</target>
 	<target name="execute_war" depends="banner,pre_war,compile,post_war">
-		<mkdir dir="${stage.dir}/war"/>
-		<copy todir="${stage.dir}/war">
+		<war destfile="${stage.dir}/${app.name}.war" webxml="config/web.xml">
+			<lib dir="${lib.dir}" includes="*.jar"/>
+			<lib dir="${lib.dir}/compiler" includes="xerces-*.jar,xml-apis-*.jar"/>
+			<lib dir="stage/lib" includes="*.jar"/>
 			<fileset dir="${web.dir}" includes="**/*"/>
 			<fileset dir="${src.war.dir}" includes="**/*"/>
-		</copy>
-		<copy todir="${stage.dir}/war/WEB-INF/classes">
-			<fileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml"/>
-		</copy>
-		<antcall target="war_copylib"/>
-		<war destfile="${stage.dir}/${app.name}.war" webxml="config/web.xml">
-			<lib dir="${stage.dir}/lib" includes="*.jar"/>
-			<fileset dir="${stage.dir}/war" includes="**/**" excludes="WEB-INF/web.xml"/>
+			<zipfileset dir="${config.dir}" includes="**/*" excludes="build.properties,appcelerator.config,web.xml" prefix="WEB-INF/classes"/>
 		</war>
-	</target>
-	<target name="war_copylib">
-		<copy todir="${stage.dir}/lib">
-			<fileset dir="${lib.dir}" includes="*.jar"/>
-			<fileset dir="${lib.dir}/compiler" includes="xerces-*.jar"/>
-			<fileset dir="${lib.dir}/compiler" includes="xml-apis-*.jar"/>
-		</copy>
 	</target>
 	<target name="clean">
 		<delete dir="${stage.dir}"/>
