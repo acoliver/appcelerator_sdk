@@ -71,58 +71,22 @@ fi
 #has_ruby=0
 
 #
-# oops, we don't have ruby installed on this system we'll try and use 
-# one of the popular package managers to install it and if we can't find one, 
-# we're going to make the user do it
+# oops, we don't have ruby installed on this system 
+# we're going to make the user do it to make sure they
+# get the right version
 #
 if [ $has_ruby -eq 0 ]
 then
-	upgrade=0
-	echo
-	echo "Appcelerator requires Ruby version 1.8.6 or greater."
-	echo
-	ag=`which apt-get 2>/dev/null`
-	if [ $? -eq 0 ]
-	then
-		echo "Appcelerator will now use apt-get to install Ruby"
-		echo
-		read -p "Continue [Yn]? " -n 1 a
-		if [ "$a" == "n" ]
-		then
-			echo
-			echo "Cancelled!"
-			echo
-			exit 1
-		fi
-		sudo apt-get install ruby irb rdoc
-	else
-		y=`which yum 2>/dev/null`
-		if [ $? -eq 0 ]
-		then
-			echo "Appcelerator will now use yum to install Ruby"
-			echo
-			read -p "Continue [Yn]? " -n 1 a
-			if [ "$a" == "n" ]
-			then
-				echo
-				echo "Cancelled!"
-				echo
-				exit 1
-			fi
-			sudo yum install ruby
-		else
-			echo "Not sure how to download Ruby - can't find a package manager"
-			echo "Tried to use apt-get and yum but neither seem to be found on your system."
-			echo 
-			echo "Please install Ruby from "
-			echo 
-			echo "    http://www.ruby-lang.org/en/downloads"
-			echo
-			echo "and then re-run the installer"
-			echo
-			exit 1
-		fi
-	fi
+  echo
+  echo "Appcelerator requires Ruby version 1.8.6 or greater."
+  echo
+  echo "Please install Ruby using your package managment sytem of choice"
+  echo "ex. ('yum', 'apt-get', 'yast', etc)"
+  echo
+  echo "If your distribution does not have Ruby, then see http://www.ruby-lang.org/en/downloads/"
+  echo "for instructions"
+  echo 
+  exit 1
 fi
 
 #
@@ -131,6 +95,7 @@ fi
 #
 if [ $upgrade -eq 1 ]
 then
+  echo
 	echo "Appcelerator requires Ruby version 1.8.6 or greater."
 	echo
 	echo "Your system is running: `ruby --version`"
@@ -138,6 +103,23 @@ then
 	echo "Please upgrade your Ruby installation and then re-run the installer"
 	echo
 	exit 1
+fi
+
+#
+# check to see if we have ruby gems installed
+#
+g=`which gem`
+if [[ ! $? -eq 0 ]]
+then
+  echo
+  echo "Appcelerator requires RubyGems"
+  echo
+  echo "Please install RubyGems using your package managment sytem of choice"
+  echo "ex. ('yum', 'apt-get', 'yast', etc)"
+  echo
+  echo "If your distribution does not have RubyGems, then see http://www.rubygems.org/"
+  echo 
+  exit 1
 fi
 
 # 
