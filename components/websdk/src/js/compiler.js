@@ -1960,6 +1960,12 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 				return Appcelerator.Compiler.getElementValue(elem,true);
 			}
 		}
+        else if(!isNaN(parseFloat(v))) 
+        {
+            //Assume that if they provided a number, they want the number back
+            //this is important because in IE window[1] returns the first iframe 
+            return v;
+        }
 		else
 		{
 			// determine if this is a dynamic javascript
