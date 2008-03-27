@@ -87,6 +87,20 @@ Appcelerator.Widget.Datatable =
                 {name: 'sortIndex', optional: true, defaultValue: -1, type: T.naturalNumber},
 				{name: 'stickySort', optional: true, defaultValue: true, type: T.bool}];
     },
+	formatShift1k: function(cell_value,column_property_name, row)
+	{
+		if (!isNaN(cell_value))
+			return parseInt(parseInt(cell_value)/1000);
+		else
+			return cell_value;
+	},
+	formatShift1000k: function(cell_value,column_property_name, row)
+	{
+		if (!isNaN(cell_value))
+			return parseInt(parseInt(cell_value)/1000000);
+		else
+			return cell_value;
+	},
 	createDataTable: function (id, pagination_direction)
 	{		
 		//list of on attributes to be parsed and evaluated at the end of create
