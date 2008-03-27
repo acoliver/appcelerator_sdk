@@ -46,7 +46,7 @@ end
 
 def check_for_appadmin
   file = File.expand_path File.join(TARGET_DIR,'appadmin.zip')
-  return nil if not File.exists? file
+  return nil unless File.exists? file
 
   STDOUT.puts "Installing Appcenter (admin console) ... One moment."
   cmd = "ruby \"#{TARGET_DIR}/console.rb\" install:appadmin \"#{file}\" --no-remote --force"

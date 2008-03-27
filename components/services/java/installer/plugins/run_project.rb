@@ -38,14 +38,14 @@ class RunJavaPlugin < Appcelerator::Plugin
       }
     ],[
       {
-         :name=>:port,
+         :name=>'port',
          :display=>'--port=port',
          :help=>'port to listen for requests.',
          :default=>4000,
          :value=>true
       },
       {
-        :name=>:scan_period,
+        :name=>'scan_period',
         :display=>'--scan-period=ms',
         :help=>'scan period in milliseconds.',
         :default=>5000,

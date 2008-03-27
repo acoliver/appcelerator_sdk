@@ -148,9 +148,9 @@ module Appcelerator
         
         names.each_with_index do |name,idx|
           @@registry[name] = {
-            :args=>args,
-            :opts=>opts,
-            :examples=>examples,
+            :args=>args || [],
+            :opts=>opts || [],
+            :examples=>examples || [],
             :invoker=>callback,
             :help=>help,
             :group=>CommandRegistry.inferGroup(group, name),
@@ -178,81 +178,104 @@ module Appcelerator
         end
       end
       
-      def CommandRegistry.execute(name,args=nil,opts=nil)
+      def CommandRegistry.execute(name,args=[],opts=nil)
 
-        info = @@registry[name]
+        command_info = @@registry[name]
 
-        if not info
-          if name=='help'
-            return false
-          else
+        if not command_info
+          if name != 'help'
             STDERR.puts " *ERROR: Unsupported command: #{name}" if name
             execute('help')
-            return false
           end
+          return false
         end
         
-        required_args = info[:args]
-        argHash = {}
-        error = false
+        begin
+          argHash = extractArgs(args, command_info[:args])
+          opts = extractOptionalArgs(opts, command_info[:opts])
         
-        if required_args
-          required_args.each_with_index do |arg,index|
-            next if error
-            if arg[:required] and (not args or args.length < index+1)
-              STDERR.puts " *ERROR: Required argument: #{arg[:name]} not found for command: #{name}"
-              error = true
-              next 
-            end
-            key = arg[:name].to_sym
-            value = args[index] rescue arg[:default]
-            type = arg[:type]
-            typestr = type.to_s.split(':').last
-            if type
-              if arg[:required] 
-                match = false
-                case type.class.to_s
-                  when 'String'
-                    match = isType?(type,value)
-                  when 'Class'
-                    match = isType?(type,value)
-                  when 'Array'
-                    type.each do |t|
-                      if isType?(t,value)
-                        match = true
-                        break
-                      end
-                    end
-                else
-                  match = type.is?(value)
-                  typestr = type.to_s
-                end
-                if not match
-                  die " *ERROR: Invalid argument value: #{value} for argument: #{key}. Must be of type: #{typestr}"
-                end
-                if arg[:conversion]
-                  value = arg[:conversion].new.convert(value)
-                end
-              end
-            end
-            argHash[key]=value
-          end
-        end
-        
-        if not error
-          Appcelerator::Boot.boot unless name=='help' or name.index('help:')
+          Boot.boot unless name=='help' or name.index('help:')
           event = {:name=>name,:args=>argHash,:options=>opts}
-          Appcelerator::PluginManager.dispatchEvent 'before_command',event
-          info[:invoker].call(argHash,opts)
-          Appcelerator::PluginManager.dispatchEvent 'after_command',event
-        else
+          PluginManager.dispatchEvents('command',event) do
+            command_info[:invoker].call(argHash,opts)
+          end
+        
+        rescue UserError
+          # may fail due to missing args or type problems
           execute('help',[name])
           false
         end
       end
+      
+      class UserError < StandardError
+      end
 
       private 
+      
+      def CommandRegistry.extractArgs(given_args, required_args)
+        result_args = {}
+        required_args.each_with_index do |argdef,index|
+          if argdef[:required] and given_args.length < index+1
+            STDERR.puts " *ERROR: Required argument: #{argdef[:name]} not found for"
+            raise UserError.new
+          end
 
+          value = given_args[index] || argdef[:default]          
+          value = typeCheckAndConvert(value, argdef)
+          
+          key = argdef[:name].to_sym          
+          result_args[key] = value
+        end
+        result_args
+      end
+      
+      def CommandRegistry.extractOptionalArgs(given_opts, optional_args)
+        result_opts = {}
+        optional_args.each do |optdef|
+          key = optdef[:name].to_sym
+          
+          value = given_opts[key] || optdef[:default]
+          value = typeCheckAndConvert(value, optdef)
+          
+          result_opts[key] = value
+        end
+        result_opts
+      end
+      
+      
+      def CommandRegistry.typeCheckAndConvert(value, argdef)
+        type = argdef[:type]
+        if type and argdef[:required]
+          match = false
+          case type.class.to_s
+            when 'String'
+              match = isType?(type,value)
+            when 'Class'
+              match = isType?(type,value)
+            when 'Array'
+              type.each do |t|
+                if isType?(t,value)
+                  match = true
+                  break
+                end
+              end
+          else
+            match = type.is?(value)
+          end
+          
+          if not match
+            typestr = type.to_s.split(':').last
+            STDERR.puts " *ERROR: Invalid argument value: #{value} for argument: #{argdef[:name]}. Must be of type: #{typestr}"
+            raise UserError.new
+          end
+          
+          if argdef[:conversion]
+            value = argdef[:conversion].new.convert(value)
+          end
+        end
+        return value
+      end
+      
       def CommandRegistry.isType?(type,value)
         type.new.is?(value)
       end

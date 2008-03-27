@@ -827,26 +827,29 @@ HELP
           # run pre_flight if it exists
           pre_flight = File.join(to_dir,'pre_flight.rb')
           if File.exists?(pre_flight)
-            puts "Found pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
-            $Installer = Hash.new
-            $Installer[:to_dir] = to_dir
-            $Installer[:name] = name
-            $Installer[:version] = version
-            $Installer[:checksum] = checksum
-            $Installer[:type] = type
-            $Installer[:from] = from
-            $Installer[:tx] = tx
+            puts "Running pre-flight file at #{pre_flight}" if OPTIONS[:verbose]
+            $Installer = {
+              :to_dir => to_dir,
+              :name => name,
+              :version => version,
+              :checksum => checksum,
+              :type => type,
+              :from => from,
+              :tx => tx
+            }
             require pre_flight 
           end
 
           Installer.add_installed_component(name,type,version,checksum)
+          
+          puts
+          puts "Installed #{description}: #{name},#{version}" unless OPTIONS[:quiet]
+        
+        else
+          puts "#{name} #{version} is already installed" unless OPTIONS[:quiet] or quiet_if_installed
+          puts "NOTE: you can force a re-install with --force-update" if OPTIONS[:verbose]  
         end
-        
-        puts unless already_installed
-        puts "Installed #{description}: #{name},#{version}" unless (OPTIONS[:quiet] or already_installed)
-        puts "#{name} #{version} is already installed" if already_installed and not OPTIONS[:quiet] and not quiet_if_installed
-        puts "NOTE: you can force a re-install with --force-update" if already_installed and OPTIONS[:verbose]
-        
+                
         return to_dir,name,version,checksum,already_installed
     end
     
@@ -857,9 +860,7 @@ HELP
     def Installer.add_installed_component(name,type,version,checksum,save=true)
       type = type.to_s
       with_site_config(save) do |site_config|
-        installed = site_config[:installed]
-        installed||={}
-        site_config[:installed] = installed
+        installed = site_config[:installed] ||= {}
         array = installed[type.to_sym]
         if array.nil?
           array=[]

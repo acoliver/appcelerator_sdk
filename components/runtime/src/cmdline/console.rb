@@ -67,7 +67,7 @@ end
 
 def parse_options
   current = nil
-  win32 = !(RUBY_PLATFORM=~/(windows|win32)/).nil?
+  win32 = RUBY_PLATFORM=~/(windows|win32)/
   ARGV.each do |arg|
     case arg
       when /^[-]{1,2}/
@@ -79,7 +79,7 @@ def parse_options
         i = t.index('=')
         key = (i.nil? ? t : t[0,i]).gsub('-','_')
         value = i.nil? ? nil : t[i+1..-1]
-        entry = HELP[key.to_sym] || HELP[":#{key}".to_sym]
+        entry = HELP[key.to_sym] || HELP[key]
         if entry
           if win32 and entry[:value]
 	    	    current = key 
@@ -102,7 +102,13 @@ def parse_options
   end
 end
 
+def sanitize_options
+  OPTIONS[:verbose] = true if OPTIONS[:debug]
+  OPTIONS[:quiet] = false if OPTIONS[:verbose]
+end
+
 parse_options
+sanitize_options
 
 #
 # execute the command

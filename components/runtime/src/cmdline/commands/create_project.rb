@@ -119,18 +119,21 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   with_io_transaction(to) do |tx|
     event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],:service=>service,:version=>version,:tx=>tx}
     PluginManager.dispatchEvent 'before_create_project',event
+    begin
     
-    config, props = Installer.create_project(to,args[:name],service,version,tx)
+      config, props = Installer.create_project(to,args[:name],service,version,tx)
   
-    # now execute the install script
-    installer = Appcelerator.const_get(service_name).new
-    if installer.create_project(from,to,config,tx)
-      puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
-      success = true
+      # now execute the install script
+      installer = Appcelerator.const_get(service_name).new
+      if installer.create_project(from,to,config,tx)
+        puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
+        success = true
+      end
+      
+    ensure
+      event[:success] = success
+      PluginManager.dispatchEvent 'after_create_project',event
     end
-    
-    event[:success]=success
-    PluginManager.dispatchEvent 'after_create_project',event
   end
 
   success
