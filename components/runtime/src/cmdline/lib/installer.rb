@@ -556,8 +556,7 @@ HELP
     
     def Installer.each_installed_component_type
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        installed||={}
+        installed = site_config[:installed] || {}
         installed.keys.each do |key|
           yield key.to_s
         end
@@ -566,8 +565,7 @@ HELP
     
     def Installer.each_installed_component(type)
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        installed||={}
+        installed = site_config[:installed] || {}
         members = installed[type.to_sym]
         if members
           members.each do |member|
@@ -579,8 +577,7 @@ HELP
     
     def Installer.get_websdk
       with_site_config(false) do |site_config|
-        installed = site_config[:installed]
-        installed||={}
+        installed = site_config[:installed] || {}
         members = installed[:websdk]
         if members
           members.each do |member|

@@ -68,7 +68,7 @@ class RunRubyPlugin < Appcelerator::Plugin
       args = options[:args]
       args << " --port=#{port}"
       
-      cmd = "#{pwd}/script/server #{server} #{args}"
+      cmd = "ruby \"#{pwd}/script/server\" #{server} #{args}"
       puts cmd if OPTIONS[:verbose]
         
       event = {:project_dir=>pwd,:service=>'ruby'}

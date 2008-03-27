@@ -55,6 +55,7 @@ class RunJavaPlugin < Appcelerator::Plugin
     nil,
     :project) do |args,options|
 
+      pwd = File.expand_path(args[:path] || Dir.pwd)
       port = options[:port]
       scanperiod = options[:scan_period]
       sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
@@ -78,8 +79,8 @@ class RunJavaPlugin < Appcelerator::Plugin
           cp << sep
         end
         cp << jars.join(sep)
-        cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} #{webdir} #{servicesdir} #{scanperiod}"
-        puts cmd if OPTIONS[:debug]
+        cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} \"#{webdir}\" \"#{servicesdir}\" #{scanperiod}"
+        puts cmd if OPTIONS[:verbose]
         
         event = {:project_dir=>pwd,:service=>'java'}
         PluginManager.dispatchEvents('run_server',event) do
