@@ -126,32 +126,33 @@ Section
   IntCmp $R5 6 noinstall noinstall
   
   install:
+  ; Uncomment the following lines to re-enable downloads 
+  ;    of ruby from the internet.  We decided to bundle to 
+  ;    avoid issues related to getting ruby through a proxy
+  
   ; download from the internet
 
   ; these are our different mirrors we will randomly select from
-  Push "http://rubyforge.rubyuser.de/rubyinstaller/ruby186-26.exe"
-  Push "http://files.rubyforge.mmmultiworks.com/rubyinstaller/ruby186-26.exe"
-  Push "http://rubyforge-files.ruby-forum.com/rubyinstaller/ruby186-26.exe"
-  Push "http://files.rubyforge.vm.bytemark.co.uk/rubyinstaller/ruby186-26.exe"
-  Push "http://rubyforge.iasi.roedu.net/files/rubyinstaller/ruby186-26.exe"
-  Push 5
-  Push "$INSTDIR/ruby-installer.exe"
-  Call DownloadFromRandomMirror
-  Pop $0
-  StrCmp $0 "cancel" 0 +3
-  MessageBox MB_OK "Download canceled"
-  Goto DownloadFailed
-  StrCmp $0 "success" 0 +2
+  ; Push "http://rubyforge.rubyuser.de/rubyinstaller/ruby186-26.exe"
+  ; Push "http://files.rubyforge.mmmultiworks.com/rubyinstaller/ruby186-26.exe"
+  ; Push "http://rubyforge-files.ruby-forum.com/rubyinstaller/ruby186-26.exe"
+  ; Push "http://files.rubyforge.vm.bytemark.co.uk/rubyinstaller/ruby186-26.exe"
+  ; Push "http://rubyforge.iasi.roedu.net/files/rubyinstaller/ruby186-26.exe"
+  ; Push 5
+  ; Push "$INSTDIR/ruby-installer.exe"
+  ; Call DownloadFromRandomMirror
+  ; Pop $0
+  ; StrCmp $0 "cancel" 0 +3
+  ; MessageBox MB_OK "Download canceled"
+  ; Goto DownloadFailed
+  ; StrCmp $0 "success" 0 +2
   Goto DownloadComplete
-  MessageBox MB_OK "Error $0"
+  ; MessageBox MB_OK "Error $0"
 
   DownloadFailed:
   Quit
   
   DownloadComplete:
-
-  ; if you want to embed it instead
-  ; File "ruby-installer.exe"
 
   DetailPrint "The ruby install will take a few moments, please wait..."
   SetDetailsView show
