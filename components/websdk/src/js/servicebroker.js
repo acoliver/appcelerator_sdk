@@ -396,7 +396,7 @@ Appcelerator.Util.ServiceBroker =
             for (var c = 0, len = this.interceptors.length; c < len; c++)
             {
                 var interceptor = this.interceptors[c];
-                var func = interceptor['interceptSendToListener'];
+                var func = interceptor.interceptSendToListener;
                 if (func)
                 {
                     var result = func.apply(interceptor, [listener,type,msg,datatype,from,scope]);
@@ -418,7 +418,7 @@ Appcelerator.Util.ServiceBroker =
         //
         // check the scope function before we continue
         //
-        var scopeCheckFunc = listener['acceptScope'];
+        var scopeCheckFunc = listener.acceptScope;
         if (scopeCheckFunc)
         {
         	if (!scopeCheckFunc(scope))
@@ -431,7 +431,7 @@ Appcelerator.Util.ServiceBroker =
 		var stat = Appcelerator.Util.Performance.createStat();
         try
         {
-            listener['onMessage'].apply(listener, [type,msg,datatype,from,scope]);
+            listener.onMessage.apply(listener, [type,msg,datatype,from,scope]);
         }
         catch (e)
         {
@@ -556,7 +556,7 @@ Appcelerator.Util.ServiceBroker =
 							{
 								for (var c=0;c<msgs.length;c++)
 								{
-		                            self.dispatch(msgs[c]);
+								  self.localMessageQueue.push([msgs[c].type,msgs[c].data,'remote',msgs[c].scope,msgs[c].version||'1.0']);
 								}
 							}
 						}
@@ -706,7 +706,7 @@ Appcelerator.Util.ServiceBroker =
 			var queue = this.localMessageQueue; 
 			if (queue && queue.length)
 			{
-				var message = queue[queue.length-1];
+				var message = queue[0];
 				var name = message[0];
 				var data = message[1];
 				var dest = message[2];
