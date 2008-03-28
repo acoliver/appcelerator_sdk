@@ -29,32 +29,32 @@ end
 namespace :installer do
   
   task :all do 
-    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      system "rake all"
+    FileUtils.cd(File.expand_path("#{BUILD_DIR}/runtime")) do |d|
+      call_rake " all"
     end
   end
 
   task :win32 do
     FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      system "rake win32"
+      call_rake " win32"
     end
   end
 
   task :unix do
     FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      system "rake unix"
+      call_rake " unix"
     end
   end
 
   task :osx do
     FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      system "rake osx"
+      call_rake " osx"
     end
   end
 
   task :update do
     FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      system "rake update"
+      call_rake " update"
     end
   end
     
@@ -64,13 +64,13 @@ namespace :websdk do
 
   task :all do
     FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-      system "rake"
+      call_rake ""
     end
   end
   
   task :test do
     FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-      system "rake test"
+      call_rake " test"
     end
   end
 
@@ -80,7 +80,7 @@ namespace :widget do
   
   task :all do
     FileUtils.cd("#{BUILD_DIR}/widgets") do |d|
-      system "rake"
+      call_rake ""
     end
   end
 
@@ -90,49 +90,49 @@ namespace :service do
   
   task :all do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake"
+      call_rake " all"
     end
   end
 
   task :java do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake java"
+      call_rake " java"
     end
   end
 
   task :python do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake python"
+      call_rake " python"
     end
   end
 
   task :dotnet do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake dotnet"
+      call_rake " dotnet"
     end
   end
 
   task :ruby do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake ruby"
+      call_rake " ruby"
     end
   end
 
   task :perl do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake perl"
+      call_rake " perl"
     end
   end
 
   task :php do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake php"
+      call_rake " php"
     end
   end
 
   task :zend do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
-      system "rake zend"
+      call_rake " zend"
     end
   end
 
@@ -141,19 +141,19 @@ end
 namespace :plugin do
   task :all do
     FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      system "rake"
+      call_rake ""
     end
   end
 
   task :java do
     FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      system "rake java:all"
+      call_rake " java:all"
     end
   end
 
   task :java_spring do
     FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      system "rake java:spring"
+      call_rake " java:spring"
     end
   end
 end
@@ -161,7 +161,7 @@ end
 namespace :appadmin do
   task :all do
     FileUtils.cd("#{BUILD_DIR}/appadmin") do |d|
-      system "rake"
+      call_rake ""
     end
   end
 end

@@ -85,14 +85,14 @@ task :win32 => [:setup] do
 #    FileUtils.cp APPADMIN_LOCATION, "#{win32_dir}/appadmin.zip"
 
     FileUtils.cd(win32_dir) do
-      system "makensis installer.nsi" if VERBOSE
-      system "makensis -Oinstaller.log installer.nsi" unless VERBOSE
+      call_command "makensis installer.nsi" if VERBOSE
+      call_command "makensis -Oinstaller.log installer.nsi" unless VERBOSE
       FileUtils.cp_r "installer.exe", "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
     end
 
     FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip" 
     Zip::ZipFile.open("#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-  	  zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
+      zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
       zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/win32/build.yml"
     end
 
@@ -103,39 +103,42 @@ end
 
 desc 'build unix installer'
 task :unix => [:setup] do
-   puts "==> Building Unix Installer"
-   unix_dir = "#{STAGE_DIR}/installer/unix"
-   clean_dir(unix_dir)
-   build_config = load_config(BUILD_DIR+'/src/installer/unix')
-   FileUtils.mkdir_p unix_dir 
-   
-   copy_dir "#{BUILD_DIR}/src/cmdline", unix_dir 
-   copy_dir "#{BUILD_DIR}/src/installer/unix", unix_dir 
-   
-   FileUtils.rm_r "#{unix_dir}/maker"
-   FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
-   FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
-   FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", unix_dir
-#   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
+  if is_win32
+    STDERR.puts "Cannot compile unix on win32 based systems .... Will skip."
+  else
+    puts "==> Building Unix Installer"
+    unix_dir = "#{STAGE_DIR}/installer/unix"
+    clean_dir(unix_dir)
+    build_config = load_config(BUILD_DIR+'/src/installer/unix')
+    FileUtils.mkdir_p unix_dir 
 
-   FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
+    copy_dir "#{BUILD_DIR}/src/cmdline", unix_dir 
+    copy_dir "#{BUILD_DIR}/src/installer/unix", unix_dir 
 
-   system "#{BUILD_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{BUILD_DIR}/src/installer/unix/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
-   FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+    FileUtils.rm_r "#{unix_dir}/maker"
+    FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
+    FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
+    FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", unix_dir
+    #   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
 
-  FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip" 
-  Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-	  zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
-    zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/unix/build.yml"
+    FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
+
+    system "#{BUILD_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{BUILD_DIR}/src/installer/unix/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
+    FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+
+    FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip" 
+    Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
+      zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+      zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/unix/build.yml"
+    end
+
+    FileUtils.rm_rf unix_dir
+    puts "Unix Installer is now ready"
   end
-
-   FileUtils.rm_rf unix_dir
-   puts "Unix Installer is now ready"
 end
 
 desc 'build osx installer'
 task :osx=> [:setup] do
-  
   if not RUBY_PLATFORM =~ /darwin/
     STDERR.puts "Cannot compile Mac OSX installer on non-darwin based systems .... Will skip."
   else
@@ -184,9 +187,9 @@ task :osx=> [:setup] do
       STDERR.puts "ERROR: Cannot build Mac OSX Installer using xcode version < 3.0. Please upgrade to the latest xcode."
       exit 1
     elsif File.exists? "/Developer/usr/bin/packagemaker"
-    	system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
+      system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
     else
-  	  STDERR.puts "ERROR: Couldn't find xcode packagemaker"
+      STDERR.puts "ERROR: Couldn't find xcode packagemaker"
       exit 1
     end
 
@@ -213,7 +216,7 @@ task :osx=> [:setup] do
 
     FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 
     Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-  	  zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
+      zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
       zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
     end
 

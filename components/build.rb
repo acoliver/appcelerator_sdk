@@ -112,12 +112,44 @@ def dofiles(dir)
 end
 
 def build_subdir(dir)
-  Dir["#{dir}/*"].each do |dir|
-    next unless File.directory? dir
-    FileUtils.cd(dir) do |d|
-      next unless File.file? "#{d}/Rakefile"
-      system "rake"
+  Dir["#{dir}/*"].each do |subdir|
+    next unless File.directory? subdir
+    FileUtils.cd(subdir) do |d|
+      rakefile = File.expand_path("Rakefile")
+      next unless File.file? "#{rakefile}"
+      result = call_rake
     end
+  end
+  exit
+end
+
+def call_rake(args="")
+  call_command "rake #{args} --trace"
+end
+def is_win32
+  RUBY_PLATFORM =~/win32/
+end
+def is_unix
+  !is_win32
+end
+def to_path(file)
+  if is_win32
+    file.gsub(/\//,'\\')
+  else
+    file
+  end
+end
+def call_command(cmd)
+  if is_win32
+    cmd= "cmd.exe /c #{cmd}"
+    result = system(cmd)
+    if !result
+      puts "failed running #{cmd}"
+      puts "#{$2}"
+    end
+    result
+  else
+    system cmd
   end
 end
 

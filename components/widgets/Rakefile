@@ -34,7 +34,7 @@ task :default => [:stage] do
     next unless File.directory?(dir)
     name = File.basename(dir)
     FileUtils.cd(dir) do |d|
-      system "rake"
+      call_rake
       FileUtils.cp_r "#{name}.zip", "#{widget_dir}/#{name}.zip"
       widgets << name
     end

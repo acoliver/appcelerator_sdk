@@ -22,7 +22,7 @@ require File.expand_path("#{File.dirname(__FILE__)}/../build.rb")
 def build_plugin(name)
   FileUtils.cd(name) do |dir|
 		puts "==> Building #{dir}"
-		system 'rake'
+		call_rake
 	  fn = "#{dir}.zip"
 		if File.exists?(fn)
 			FileUtils.cp fn,"#{STAGE_DIR}/plugin_#{fn}"

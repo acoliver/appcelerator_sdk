@@ -24,13 +24,13 @@ build_config = load_config(BUILD_DIR)
 
 desc 'default java build'
 task :default do
-  java_dir = "#{STAGE_DIR}/java"
+  java_dir = File.expand_path "#{STAGE_DIR}/java"
   java_classes = File.expand_path "#{java_dir}/classes"
-  java_source = "#{BUILD_DIR}/src"
+  java_source = File.expand_path "#{BUILD_DIR}/src"
   
   clean_dir(java_dir)
   
-  FileUtils.mkdir_p java_classes
+  FileUtils.mkdir_p to_path(java_classes)
   FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
   FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
 
@@ -55,34 +55,37 @@ task :default do
   
   puts "Compiling Java files..." if VERBOSE
    
-  cp = Dir["#{BUILD_DIR}/lib/**/*.jar"].inject([]) {|a,f| a<<f }
-  src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
-  src.delete_if {|f| f =~ /EchoService.java$/ }
-  
-#  FileUtils.cp_r "#{java_source}/org/appcelerator/test/EchoService.java", ""
-  
+  cp = Dir["#{BUILD_DIR}/lib/**/*.jar"].inject([]) {|a,f| a<<to_path(f) }
+  FileUtils.cd(java_source) do
+    src = Dir["**/*.java"].inject([]) {|a,f| a<<to_path(f) }
+    src.delete_if {|f| f =~ /EchoService.java$/ }
+
+    FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
+    call_command "javac -verbose -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{to_path(java_classes)}"
+  end
   f = File.open "#{java_dir}/dist/build.yml", 'w+'
   f.puts build_config.to_yaml
   f.close
-   
-  FileUtils.mkdir_p "#{java_dir}/classes" unless File.exists? "#{java_dir}/classes"
-  system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_dir}/classes"
-   
-  FileUtils.mkdir_p "#{java_dir}/dist/lib" unless File.exists? "#{java_dir}/dist/lib"
+  java_dist = File.expand_path "#{java_dir}/dist/lib"
+  FileUtils.mkdir_p "#{java_dist}" unless File.exists? "#{java_dist}"
   FileUtils.cd(java_classes) do
      cl = []
 
-     Find.find(java_classes) do |path|
-      f = File.expand_path path
-      next if File.directory?(f)
-      fn = f.gsub(java_classes+'/','')
-      cl << fn
+ #    Find.find(java_classes) do |path|
+ #     f = File.expand_path path
+ #     next if File.directory?(f)
+ #     fn = f.gsub(java_classes+'/','')
+ #     cl << fn
+ #    end
+     jar_file = File.expand_path("appcelerator.jar","#{java_dist}")
+     if is_win32
+       call_command "jar cvf #{jar_file} ."
+      else
+       system "jar cvf #{jar_file} ." if VERBOSE
+       system "jar cvf #{jar_file} . >/dev/null" unless VERBOSE
      end
-     
-     system "jar cvf #{java_dir}/dist/lib/appcelerator.jar ." if VERBOSE
-     system "jar cvf #{java_dir}/dist/lib/appcelerator.jar . >/dev/null" unless VERBOSE
   
-     zipfile = "#{STAGE_DIR}/service_java_#{build_config[:version]}.zip"
+     zipfile = File.expand_path "#{STAGE_DIR}/service_java_#{build_config[:version]}.zip"
      FileUtils.rm_rf zipfile
      
      excludes = %w(lib/optional/spring-2.5.1.jar lib/optional/ant-1.7.0.jar lib/optional/cglib-2.1.3.jar lib/optional/junit.jar)
@@ -97,6 +100,5 @@ task :default do
       zipfile.add('app/services/org/appcelerator/test/EchoService.java',"#{java_source}/org/appcelerator/test/EchoService.java")
     end
   end
-  
   FileUtils.rm_rf java_dir
 end

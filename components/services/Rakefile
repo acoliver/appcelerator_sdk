@@ -40,7 +40,7 @@ end
 
 task :dotnet do
   FileUtils.cd("#{BUILD_DIR}/dotnet") do |d|
-    system "rake"
+    sys "rake"
   end
 end
 
