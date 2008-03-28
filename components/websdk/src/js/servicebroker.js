@@ -304,6 +304,8 @@ Appcelerator.Util.ServiceBroker =
 			$D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
 		}
 
+		this.localMessageQueue.push([name,data,dest,scope,version]);
+
 		if(dest == 'remote')
 		{
 			// send remote
@@ -325,7 +327,6 @@ Appcelerator.Util.ServiceBroker =
 				$E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
 			}
 		}
-		this.localMessageQueue.push([name,data,dest,scope,version]);
 	},
     dispatch: function (msg)
     {
