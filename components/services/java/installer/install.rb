@@ -174,7 +174,7 @@ STR
       classpath.each do |line|
         line.gsub!(/appcelerator-([0-9\.])*\.jar/,"appcelerator-#{to_version}.jar")
       end
-      tx.put "#{to_path}/.classpath",classpath
+      tx.put "#{to_path}/.classpath",classpath.join("")
     end
     def replace_app_name(name,file)
       content = File.read file

@@ -44,6 +44,10 @@ public class SpringBeanDispatcher implements BeanFactoryAware
     private static Object instance;
     private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
     
+    public SpringBeanDispatcher() 
+    {
+    	LOG.info("SpringBeanDispatcher created");
+    }
     @ServiceDispatcher
     public boolean dispatch (Message request, List<Message> responses)
     {
@@ -99,6 +103,7 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 	}
 
 	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
+    	LOG.info("setting dispatchVisitor="+dispatchVisitor);
 		this.dispatchVisitor = dispatchVisitor;
 	}
 
