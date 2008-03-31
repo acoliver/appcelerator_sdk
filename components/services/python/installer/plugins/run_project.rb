@@ -63,7 +63,7 @@ class RunPythonPlugin < Appcelerator::Plugin
          :display=>'--no-reload',
          :help=>'don\'t reload app when source files change',
          :default=>nil,
-         :value=>true
+         :value=>false
       },
       {
          :name=>:args,

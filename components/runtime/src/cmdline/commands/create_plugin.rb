@@ -46,40 +46,40 @@ CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
   
   class_name = args[:name].gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
   plugin_name = args[:name].gsub ':', '_'
-
   dir = File.join(args[:path].path,plugin_name)
+  
   event = {:plugin_dir=>dir,:name=>args[:name]}
-  PluginManager.dispatchEvent 'before_create_plugin',event
-
-  FileUtils.mkdir_p(dir) unless File.exists?(dir)
+  PluginManager.dispatchEvent('create_plugin',event) do
+    
+    FileUtils.mkdir_p(dir) unless File.exists?(dir)
+    
+    template_dir = "#{File.dirname(__FILE__)}/templates"
+    
+    template = File.read "#{template_dir}/plugin.rb"
+    template.gsub! 'ExamplePlugin', class_name
+    
+    src_dir = "#{dir}/src"
+    FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
+    
+    FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
+    Installer.put "#{src_dir}/#{plugin_name}.rb", template
+    
+    template = File.read "#{template_dir}/plugin_Rakefile"
+    template.gsub! 'PLUGIN', plugin_name
+    
+    build_config = {
+      :name=>args[:name],
+      :version=>1.0,
+      :type=>'plugin',
+      :description=>"#{args[:name]} plugin",
+      :release_notes=>"initial release",
+      :tags=> [],
+      :licenses=>[]
+    }
+    
+    Installer.put "#{dir}/Rakefile", template
+    Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
+  end
   
-  template_dir = "#{File.dirname(__FILE__)}/templates"
-
-  template = File.read "#{template_dir}/plugin.rb"
-  template.gsub! 'ExamplePlugin', class_name
-  
-  src_dir = "#{dir}/src"
-  FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
-
-  FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
-  Installer.put "#{src_dir}/#{plugin_name}.rb", template
-  
-  template = File.read "#{template_dir}/plugin_Rakefile"
-  template.gsub! 'PLUGIN', plugin_name
-  
-  build_config = {
-    :name=>args[:name],
-    :version=>1.0,
-    :type=>'plugin',
-    :description=>"#{args[:name]} plugin",
-    :release_notes=>"initial release",
-    :tags=> [],
-    :licenses=>[]
-  }
-  
-  Installer.put "#{dir}/Rakefile", template
-  Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
-  
-  PluginManager.dispatchEvent 'after_create_plugin',event
   puts "Created Plugin: #{args[:name]} in #{dir}" unless OPTIONS[:quiet]
 end

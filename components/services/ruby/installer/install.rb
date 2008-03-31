@@ -22,20 +22,14 @@ require 'md5'
 require 'socket'
 require 'erb'
 
+include Appcelerator
 module Appcelerator
   class Ruby 
     def create_project(from_path,to_path,config,tx)
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
       
-      
-      ## FIXME: need to ensure that json and other base libraries are installed
-      
-      rails_gem_array = Gem.cache.search('rails')
-      if rails_gem_array.empty?
-        die "Unable to create project! Run 'gem install rails' first."
-      end
-      
-      rails_gem = rails_gem_array.last
+      rails_gem = get_rails_gem
+      return false unless rails_gem
       
       cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'rails' : 'rails.cmd'
       
@@ -77,6 +71,36 @@ module Appcelerator
       end
       
       true
+    end
+    
+    def get_rails_gem
+      rails_gem_array = Gem.cache.search('rails')
+      if rails_gem_array.empty?
+        STDERR.puts 'Rails must be installed to create a project.'
+        if not OPTIONS[:quiet] and confirm 'Install Ruby on Rails now? [Yn]',true,false,'y'
+          if RUBY_PLATFORM=~/(windows|win32)/
+            sudo = ''
+          else
+            sudo = 'sudo '
+            puts 'Installing ruby gems requires you to be root'
+          end
+          puts 'Installing Rails'
+          rails_installed = system "#{sudo}gem install rails"
+          puts 'Installing JSON'
+          json_installed = system "#{sudo}gem install json"
+          
+          if rails_installed and json_installed
+            puts 'Dependencies installed, please re-run your command'
+          else
+            puts 'Error when installing gem dependencies. Ask someone on http://appcelerator.org about this problem'
+          end
+          return nil
+        else
+          return nil
+        end
+      end
+      
+      rails_gem_array.last
     end
   end
 end

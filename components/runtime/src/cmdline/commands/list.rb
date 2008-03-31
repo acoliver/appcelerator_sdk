@@ -68,25 +68,37 @@ CommandRegistry.makeGroup(:list) do |group|
     },
   ]) do |args,options|
     
-    # TODO: format this output
+    list = Installer.fetch_distribution_list(options[:ping])
     
-    list = Installer.fetch_distribution_list options[:ping]
+    puts
+    puts "The following #{type} versions are available remotely:"
+    puts
+    
+    components = from_each(Installer, :each_remote_component, type, ping)
+    Project.list_components(components)
+    
+    puts ' ' * 10 + 'No #{type}s available' if components.empty?
+    puts
+    
+    # TODO: format this output
+    #
+    # logic: if no type, list it all
+    
     if args[:type]
-      l = list[args[:type]] || list[args[:type].to_sym]
+      l = list[args[:type].to_sym]
       if l
         if args[:name]
           l.each do |e|
             if e[:name] == args[:name]
-              puts e.to_yaml unless OPTIONS[:quiet]
+              components = e.to_yaml
               break
             end
           end
         else
-          puts l.to_yaml unless OPTIONS[:quiet]
+          components = l.to_yaml
         end
       else
         die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
-        exit 1 # WTF!?
       end
     else
       puts list.to_yaml unless OPTIONS[:quiet]

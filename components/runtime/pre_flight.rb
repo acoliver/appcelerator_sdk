@@ -56,8 +56,11 @@ module Appcelerator
 			      overwrite = true
 			    end
 			    if overwrite
-	          FileUtils.mkdir_p File.dirname(file) unless File.exists? File.dirname(file)
-	          FileUtils.cp_r file,File.expand_path(SCRIPTDIR+'/'+target)
+			      src = file
+			      dst = File.expand_path(SCRIPTDIR+'/'+target)
+			      dstdir = File.dirname dst
+	          FileUtils.mkdir_p(dstdir)
+	          FileUtils.cp_r(src,dst)
 	        end
         end
         

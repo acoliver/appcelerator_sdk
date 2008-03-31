@@ -216,7 +216,7 @@ module Appcelerator
         result_args = {}
         required_args.each_with_index do |argdef,index|
           if argdef[:required] and given_args.length < index+1
-            STDERR.puts " *ERROR: Required argument: #{argdef[:name]} not found for"
+            STDERR.puts " *ERROR: Required argument: #{argdef[:name]} not found"
             raise UserError.new
           end
 

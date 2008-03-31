@@ -26,15 +26,28 @@ CommandRegistry.registerCommand('install:service','install an SOA integration po
     :default=>nil,
     :type=>Types::StringType
   }
-],nil,[
+],[
+  {
+     :name=>:version,
+     :display=>'--version=X.X.X',
+     :value=>true
+  }
+],[
   'install:service java',
   'install:service service_java_1.0.zip',
   'install:service http://myurl/service_java.zip',
   'install:service java,ruby'
 ]) do |args,options|
 
-  args[:location].split(',').uniq.each do |service|
-    Installer.install_component :service,'SOA Integration Point',service.strip
+  stuff = args[:location].split(',').uniq
+  stuff.each do |service|
+    component = {
+      :type => :service,
+      :name => service.strip,
+      :version => options[:version],
+      :description => 'SOA Integration Point'
+    }
+    Installer.install_component(component)
   end
 
 end

@@ -549,6 +549,14 @@ HELP
       end
     end
     
+    def Installer.each_remote_component(type, ping=false)
+      list = Installer.fetch_distribution_list(ping)
+      members = list[type] || []
+      members.each do |member|
+        yield member[:name],member[:version]
+      end
+    end
+    
     def Installer.get_websdk
       with_site_config(false) do |site_config|
         installed = site_config[:installed] || {}
@@ -768,7 +776,22 @@ HELP
     end
 
     # :websdk,'WebSDK','websdk',true,tx,update
-    def Installer.install_component(type,description,from,quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false)
+    def Installer.install_component(type,description=nil,from=nil,quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false)
+        
+        # 
+        if type.is_a? Hash
+          component = type
+          type = component[:type]
+          description = component[:description]
+          from = component[:name]
+          version = component[:version]
+          
+          # these are install options
+          #quiet_if_installed = component[:quiet_if_installed]
+          #tx = component[:tx]
+          #force = component[:force]
+          #skip_dependencies = component[:skip_dependencies]
+        end
         
         to_dir = nil
         name = nil
@@ -784,6 +807,9 @@ HELP
             to_dir,name,version = Installer.install_from_zipfile(type,description,from)
             checksum = Installer.checksum(from)
         else
+          #if component
+          #  Installer.install_from_devnetwork(component, nil) # nil will be install options
+          #end
           to_dir,name,version,checksum,already_installed = Installer.install_from_devnetwork(type,description,from,quiet_if_installed,force,skip_dependencies)
         end
         
@@ -1007,7 +1033,7 @@ HELP
     #
     def Installer.compare_versions(first, second)
       return 0 unless (first and second)
-      first.split('.') <=> second.split('.')
+      first.to_s.split('.') <=> second.to_s.split('.')
     end
         
     def Installer.should_update(local_version, remote_version)

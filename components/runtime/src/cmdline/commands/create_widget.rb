@@ -21,9 +21,8 @@ include Appcelerator
 CommandRegistry.registerCommand('create:widget','create a new widget project',[
   {
     :name=>'path',
-    :help=>'path to directory where project should be created',
+    :help=>'path to directory where widget should be created',
     :required=>true,
-    :default=>nil,
     :type=>[
       Types::FileType,
       Types::DirectoryType,
@@ -35,7 +34,6 @@ CommandRegistry.registerCommand('create:widget','create a new widget project',[
     :name=>'name',
     :help=>'name of the widget to create (such as app:my_widget)',
     :required=>true,
-    :default=>nil,
     :type=>Types::StringType
   }
 ],nil,[
@@ -68,44 +66,44 @@ CommandRegistry.registerCommand('create:widget','create a new widget project',[
   
   dir = File.join(args[:path].path,widget_name)
   event = {:widget_dir=>dir,:name=>name}
-  PluginManager.dispatchEvent 'before_create_widget',event
+  PluginManager.dispatchEvents('create_widget',event) do
+    
+    FileUtils.mkdir_p(dir) unless File.exists?(dir)
+    
+    template_dir = "#{File.dirname(__FILE__)}/templates"
+    
+    template = File.read "#{template_dir}/widget.js"
+    template.gsub! 'WIDGET_CLASS_NAME', class_name
+    template.gsub! 'NAME', name
+    
+    src_dir = "#{dir}/src"
+    FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
+    
+    Installer.put "#{src_dir}/#{widget_name}.js", template
+    
+    template = File.read "#{template_dir}/widget_Rakefile"
+    template.gsub! 'WIDGET', widget_name
+  
+    build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release",:licenses=>[]}
+    build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
+    build_config[:tags] = []
 
-  FileUtils.mkdir_p(dir) unless File.exists?(dir)
+    Installer.put "#{dir}/Rakefile", template
+    Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
   
-  template_dir = "#{File.dirname(__FILE__)}/templates"
-
-  template = File.read "#{template_dir}/widget.js"
-  template.gsub! 'WIDGET_CLASS_NAME', class_name
-  template.gsub! 'NAME', name
+    %w(css images doc js).each do |d|
+      FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"
+    end
   
-  src_dir = "#{dir}/src"
-  FileUtils.mkdir_p(src_dir) unless File.exists?(src_dir)
+    FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
   
-  Installer.put "#{src_dir}/#{widget_name}.js", template
+    widget_example = File.read "#{template_dir}/widget_doc_example.md"
+    widget_example.gsub! 'NAME', name
   
-  template = File.read "#{template_dir}/widget_Rakefile"
-  template.gsub! 'WIDGET', widget_name
+    Installer.put "#{src_dir}/doc/example1.md", widget_example
   
-  build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release",:licenses=>[]}
-  build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
-  build_config[:tags] = []
-
-  Installer.put "#{dir}/Rakefile", template
-  Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
-  
-  %w(css images doc js).each do |d|
-    FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"
+    #TODO: add compression and symbol stuff here to rake file and path
   end
   
-  FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme"
-  
-  widget_example = File.read "#{template_dir}/widget_doc_example.md"
-  widget_example.gsub! 'NAME', name
-  
-  Installer.put "#{src_dir}/doc/example1.md", widget_example
-  
-  #TODO: add compression and symbol stuff here to rake file and path
-  
-  PluginManager.dispatchEvent 'after_create_widget',event
   puts "Created Widget: #{name} in #{dir}" unless OPTIONS[:quiet]
 end

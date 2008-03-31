@@ -17,11 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+include Appcelerator
 module Appcelerator
   class Java
 
     #
-    # this method is called when a project:update command is ran on an existing
+    # this method is called when a project:update command is run on an existing
     # project.  NOTE: from_version and to_version *might* be the same in the case
     # we're forcing and re-install.  they could be different if moving from one
     # version to the next
@@ -34,13 +35,14 @@ module Appcelerator
     end
 
     # 
-    # this method is called when a create:project command is ran.  NOTE: this
+    # this method is called when a create:project command is run.  NOTE: this
     # command *might* be called instead of update_project in the case the user
     # ran --force-update on an existing project using create:project
     #
     def create_project(from_path,to_path,config,tx)
       install(from_path,to_path,config,tx,false)
     end
+    
     def get_property(propertyfile,property)
       begin
         props = Properties.new
@@ -54,6 +56,7 @@ module Appcelerator
       rescue
       end
     end
+    
     def save_property(name,value,propertyfile)
       begin
         file = File.new propertyfile
@@ -63,19 +66,20 @@ module Appcelerator
       rescue
       end
     end
-    private 
+    
+    private
     def install(from_path,to_path,config,tx,update)
-      Appcelerator::Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
-      Appcelerator::Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
-      Appcelerator::Installer.copy(tx,from_path,to_path,["#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
+      Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
+      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
+      Installer.copy(tx,from_path,to_path, [ "#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
         'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
-      tx.mkdir "app/services/org/appcelerator/test"
-      Appcelerator::Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
+      tx.mkdir "#{to_path}/app/services/org/appcelerator/test"
+      Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
       tx.rm "#{to_path}/app/services/EchoService.java" if File.exists? "#{to_path}/app/services/EchoService.java"
-      Appcelerator::Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services//org/appcelerator/test/EchoService.java")
-      Appcelerator::Installer.copy(tx,"#{from_path}/appcelerator.xml", "#{to_path}/public/appcelerator.xml")
+      Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services/org/appcelerator/test/EchoService.java")
+      Installer.copy(tx,"#{from_path}/appcelerator.xml", "#{to_path}/public/appcelerator.xml")
       if update==false or update.nil?
-        Appcelerator::Installer.copy(tx,"#{from_path}/build-override.xml", "#{to_path}/build-override.xml")
+        Installer.copy(tx,"#{from_path}/build-override.xml", "#{to_path}/build-override.xml")
       end
       
       # re-write the application name to be the name of the directory
@@ -104,9 +108,9 @@ module Appcelerator
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
       tx.mkdir "#{to_path}/src/war/WEB-INF"
-      Appcelerator::Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml") if update==false
+      Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml") if update==false
       
-      if not update or (update and not File.exists? "#{to_path}/.classpath")
+      if not update or not File.exists? "#{to_path}/.classpath"
         #
         # create an Eclipse .project/.classpath file      
         #
