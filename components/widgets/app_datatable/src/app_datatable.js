@@ -421,9 +421,9 @@ Appcelerator.Widget.Datatable =
 				var astr = Object.getNestedProperty(a,column_property_name);
 				var bstr = Object.getNestedProperty(b,column_property_name);
 				if (bstr)
-					bstr = bstr.toLowerCase();
+					bstr = bstr.toString().toLowerCase();
 				if (astr)
-					astr = astr.toLowerCase();
+					astr = astr.toString().toLowerCase();
 			    return (parameterMap['sortBy'][column_property_name] == true) ? (bstr < astr) - (astr < bstr) : (astr < bstr) - (bstr < astr);
 		  };
 			array.sort(compareString);
