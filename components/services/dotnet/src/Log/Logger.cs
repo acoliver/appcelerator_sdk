@@ -11,6 +11,7 @@ using Appcelerator;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
+using System.Configuration;
 
 namespace Appcelerator
 {
@@ -69,34 +70,28 @@ namespace Appcelerator
 
         private static void setupLogFile()
         {
-            String bin = AppDomain.CurrentDomain.BaseDirectory + @"\bin";
-            String logFileLocation = bin + @"\appcelerator.log";
-            String xmlsettingsFileLocation = bin + @"\appcelerator-config.xml";
+            //APPSDK-403: Read the logging settings from the ConfigurationManager (which reads them from web.config)
+            String logFileLocation = ConfigurationManager.AppSettings["LogLocation"];
+            String logLevelSetting = ConfigurationManager.AppSettings["LogLevel"];
+            String autoFlushSetting = ConfigurationManager.AppSettings["AutoFlushLog"];            
 
             //Set append to true so we automatically create a new file when needed but append otherwise
             writer = new StreamWriter(logFileLocation, true);
 
             try
             {
-                XmlDocument settings = new XmlDocument();
-                settings.Load(xmlsettingsFileLocation);
-
-                XPathNodeIterator autoIter = settings.CreateNavigator().Select("//logger/autoflush");
-                XPathNodeIterator loglevelIter = settings.CreateNavigator().Select("//logger/loglevel");
-                autoIter.MoveNext();
-                loglevelIter.MoveNext();
 
                 bool autoflush = false;
                 try
                 {
-                    autoflush = autoIter.Current.ValueAsBoolean;
+                    autoflush = Boolean.Parse(autoFlushSetting);
                 }
                 catch { autoflush = false; }
                 writer.AutoFlush = autoflush;
 
                 try
                 {
-                    Logger.Instance.LoggingLevel = StringToLoggingLevel(loglevelIter.Current.Value);
+                    Logger.Instance.LoggingLevel = StringToLoggingLevel(logLevelSetting);
                 }
                 catch { Logger.Instance.LoggingLevel = LoggingLevel.ERROR; }
             }
