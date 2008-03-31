@@ -1,0 +1,29 @@
+<html xmlns:app="http://www.appcelerator.org">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>test</title>
+		<script type="text/javascript" src="javascripts/appcelerator-debug.js"></script>
+	</head>
+<body style="margin:0;padding:0;overflow:hidden;" scroll="no">
+	<div style="position:relative;height:100%;width:100%;">
+		<app:split_box mode="horizontal" background="#ffffcc" backgroundHover="#ccc" handleOnHover="true">
+			<html:div width="10%" style="background-color:#ffffcc;height:100%;">
+				hello
+			</html:div>
+			<html:div width="90%">
+				<html:div style="position:relative;height:100%;width:100%;">
+					<app:split_box mode="vertical" livedragging="false">
+						<html:div height="20%">
+							Top panel goes here
+						</html:div>
+						<html:div height="80%" style="background-color:#eee;height:100%">
+							This would be text
+						</html:div>
+					</app:split_box>
+				</html:div>
+			</html:div>
+		</app:split_box>
+	</div>
+	
+</body>
+</html>
