@@ -1,0 +1,10 @@
+--- 
+:type: widget
+:name: app:imagetransition
+:version: '1.0'
+:dependencies: 
+- :type: websdk
+  :version: ">=2.1"
+  :name: websdk
+:tags: [ logic ]
+:description: "app:imagetransition is a control for transition from one image to another"

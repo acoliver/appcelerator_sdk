@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Image Transition Widget </h3> 
+<p>
+	These tests exercise the imagetransition widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Appear Transition
+		</td>
+		<td class="result" >
+			<app:imagetransition on="l:image then execute" property="image" width="150" height="150" initial="../images/sfgate.jpg" id="transition_test"></app:imagetransition>
+			<app:script>
+				window.transition_count = 0;
+				setInterval(function()
+				{
+					if (window.transition_count % 2 == 0)
+					{
+						$MQ('l:image', {image: '../images/tree.jpg'});
+					}
+					else
+					{
+						$MQ('l:image', {image: '../images/sfgate.jpg'});
+					}
+					window.transition_count++;
+				}, 3000);
+			</app:script>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
