@@ -27,13 +27,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.Downloadable;
+import org.appcelerator.annotation.Service;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
 
@@ -44,16 +44,19 @@ import org.appcelerator.messaging.MessageUtils;
 public class ServiceRegistry
 {
     private static final Log LOG = LogFactory.getLog(ServiceRegistry.class);
-    private static final HashMap<String,Set<ServiceAdapter>> services=new HashMap<String,Set<ServiceAdapter>>();
-    private static final HashMap<String,DownloadableAdapter> downloadables=new HashMap<String,DownloadableAdapter>();
-    
+    private final HashMap<String,Set<ServiceAdapter>> services=new HashMap<String,Set<ServiceAdapter>>();
+    private final HashMap<String,DownloadableAdapter> downloadables=new HashMap<String,DownloadableAdapter>();
+    private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
+
+    private static ServiceRegistry instance = new ServiceRegistry();
+    public static ServiceRegistry getInstance() {return instance;}
     /**
      * given a service type, return the services
      * 
      * @param type
      * @return
      */
-    public static Set<ServiceAdapter> getRegisteredServices (String type)
+    public Set<ServiceAdapter> getRegisteredServices (String type)
     {
         return services.get(type);
     }
@@ -64,7 +67,7 @@ public class ServiceRegistry
      * @param type
      * @return
      */
-    public static DownloadableAdapter getRegisteredDownloadable (String name)
+    public DownloadableAdapter getRegisteredDownloadable (String name)
     {
         return downloadables.get(name);
     }
@@ -74,7 +77,7 @@ public class ServiceRegistry
      * 
      * @param adapter
      */
-    public static void unregisterService (ServiceAdapter adapter)
+    public void unregisterService (ServiceAdapter adapter)
     {
         String type = adapter.getService().request();
         Set<ServiceAdapter> set = services.get(type);
@@ -90,26 +93,26 @@ public class ServiceRegistry
         adapter=null;
     }
     
-    public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance) throws Exception
+    public void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance, String dispatcher) throws Exception
     {
         for (Method method : serviceClass.getDeclaredMethods())
         {
            Service service = method.getAnnotation(Service.class);
            if (service!=null)
            {
-               instance = ServiceRegistry.registerService(service.request(),serviceClass,instance,method,service,unregisterIfFound,registrations);
+               instance = registerService(service.request(),serviceClass,instance,method,service,unregisterIfFound,registrations,dispatcher);
            }
         }
     }
 
-    public static void registerDownloadableMethods (Class<? extends Object> serviceClass, Object instance, boolean unregisterIfFound) throws Exception
+    public void registerDownloadableMethods (Class<? extends Object> serviceClass, Object instance, boolean unregisterIfFound) throws Exception
     {
         for (Method method : serviceClass.getDeclaredMethods())
         {
            Downloadable service = method.getAnnotation(Downloadable.class);
            if (service!=null)
            {
-               ServiceRegistry.registerDownloadable(service.name(),serviceClass,instance,method,service,unregisterIfFound);
+               registerDownloadable(service.name(),serviceClass,instance,method,service,unregisterIfFound);
            }
         }
     }
@@ -117,7 +120,7 @@ public class ServiceRegistry
 	/**
 	 * register a downloadable service
 	 */
-	public static void registerDownloadable (String name, Class<? extends Object> clazz, Object instance, 
+	public void registerDownloadable (String name, Class<? extends Object> clazz, Object instance, 
             Method method, Downloadable service, boolean unregisterIfFound)  throws Exception
 	{
         if (LOG.isDebugEnabled()) LOG.debug("register download service for "+name+" -> "+clazz.getName()+"."+method.getName());
@@ -157,11 +160,11 @@ public class ServiceRegistry
      * @return
      * @throws Exception
      */
-    public static Object registerService(String type, Class<? extends Object> clazz, Object instance, 
+    public Object registerService(String type, Class<? extends Object> clazz, Object instance, 
             Method method, Service service, boolean unregisterIfFound,
-            List<ServiceAdapter> registrations) throws Exception
+            List<ServiceAdapter> registrations, String dispatcher) throws Exception
     {
-        if (LOG.isDebugEnabled()) LOG.debug("register service for "+type+" -> "+clazz.getName()+"."+method.getName());
+        LOG.debug("attemping to register service for "+type+" -> "+clazz.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
         
         Set<ServiceAdapter> adapters = services.get(type);
         if (adapters==null)
@@ -171,13 +174,14 @@ public class ServiceRegistry
                 instance = clazz.newInstance();
             }
             adapters = new HashSet<ServiceAdapter>();
-            ServiceAdapter adapter=new ServiceAdapter(instance,method,service);
+            ServiceAdapter adapter=new ServiceAdapter(instance,method,service,dispatcher);
             if (registrations!=null)
             {
                 registrations.add(adapter);
             }
             adapters.add(adapter);
             services.put(type, adapters);
+            LOG.debug("added new service for "+type+" -> "+clazz.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
             return instance;
         }
         
@@ -189,6 +193,7 @@ public class ServiceRegistry
                 if (unregisterIfFound)
                 {
                     adapters.remove(adapter);
+                    LOG.debug("removing existing service for "+type+" -> "+adapter);
                     break;
                 }
                 return null;
@@ -199,7 +204,8 @@ public class ServiceRegistry
         {
             instance = clazz.newInstance();
         }
-        ServiceAdapter adapter=new ServiceAdapter(instance,method,service);
+        ServiceAdapter adapter=new ServiceAdapter(instance,method,service, dispatcher);
+        LOG.debug("adding service for "+type+" -> "+adapter);
         adapters.add(adapter);
         if (registrations!=null)
         {
@@ -208,9 +214,10 @@ public class ServiceRegistry
         return instance;
     }
     
-    public static boolean dispatch (Message request, List<Message> responses)
+    public boolean dispatch (Message request, List<Message> responses)
     {
-        Set<ServiceAdapter> adapters = ServiceRegistry.getRegisteredServices(request.getType());
+    	Object token = this.dispatchVisitor.startVisit(request, responses);
+        Set<ServiceAdapter> adapters = getRegisteredServices(request.getType());
         if (adapters!=null && !adapters.isEmpty())
         {
             for (ServiceAdapter adapter : adapters)
@@ -226,24 +233,27 @@ public class ServiceRegistry
                         response.setType(adapter.getService().response());
                         hasResponse = true;
                     }
+                    if (LOG.isDebugEnabled()) LOG.debug("dispatching to "+adapter);
                     adapter.dispatch(request, response);
                     if (hasResponse)
                     {
                         responses.add(response);
                     }
+                    this.dispatchVisitor.endVisit(token, request, responses);
                     return true;
                 }
             }
         }
+        this.dispatchVisitor.endVisit(token, request, responses);
         return false;
     }
 
 	/**
 	 * dispatch an incoming downloadable
 	 */
-    public static boolean dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
+    public boolean dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
     {
-        DownloadableAdapter adapter = ServiceRegistry.getRegisteredDownloadable(name);
+        DownloadableAdapter adapter = getRegisteredDownloadable(name);
 		if (adapter!=null)
 		{
 			adapter.dispatch(session,ticket,name,response);
@@ -251,4 +261,13 @@ public class ServiceRegistry
 		}
         return false;
     }
+	public DispatchVisitor getDispatchVisitor() {
+		return dispatchVisitor;
+	}
+
+	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
+    	LOG.debug("setting dispatchVisitor="+dispatchVisitor);
+		this.dispatchVisitor = dispatchVisitor;
+	}
+
 }

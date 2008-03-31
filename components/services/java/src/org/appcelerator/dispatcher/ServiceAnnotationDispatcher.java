@@ -20,15 +20,12 @@
  */
 package org.appcelerator.dispatcher;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.Downloadable;
+import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceDispatcher;
-import org.appcelerator.messaging.Message;
 
 /**
  * Utility class which will auto-register all @Service method implementations in the 
@@ -43,6 +40,7 @@ public class ServiceAnnotationDispatcher
      * 
      * @return
      */
+    @ServiceDispatcher
     public static Object createDispatcher()
     {
         return new ServiceAnnotationDispatcher();
@@ -56,7 +54,8 @@ public class ServiceAnnotationDispatcher
         {
             try
             {
-                ServiceRegistry.registerServiceMethods(serviceClass,false,null,null);
+	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+serviceClass);
+                ServiceRegistry.getInstance().registerServiceMethods(serviceClass,false,null,null,"serviceAnnotation");
             }
             catch (Exception ex)
             {
@@ -67,18 +66,13 @@ public class ServiceAnnotationDispatcher
         {
             try
             {
-				ServiceRegistry.registerDownloadableMethods(serviceClass,null,false);
+	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+serviceClass);
+	            ServiceRegistry.getInstance().registerDownloadableMethods(serviceClass,null,false);
             }
             catch (Exception ex)
             {
                 LOG.error("Error loading services from annotations in classpath",ex);
             }
         }
-    }
-    
-    @ServiceDispatcher
-    public boolean dispatch (Message request, List<Message> responses)
-    {
-        return ServiceRegistry.dispatch(request, responses);
     }
 }

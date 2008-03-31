@@ -37,12 +37,13 @@ public class ServiceAdapter
     private Method premethod;
     private Method postmethod;
     private final Service service;
-    
-    ServiceAdapter(Object i, Method m, Service s) throws Exception
+    private String dispatcher;
+    ServiceAdapter(Object i, Method m, Service s, String dispatcher) throws Exception
     {
         this.instance = i;
         this.method = m;
         this.service = s;
+        this.dispatcher = dispatcher;
         this.postmethod = getMethod(i,s.postmessage());
         this.premethod = getMethod(i,s.premessage());
         this.method.setAccessible(true);
@@ -132,5 +133,8 @@ public class ServiceAdapter
             response.getData().put("success",false);
             response.getData().put("exception",e.getMessage());
         }
+    }
+    public String toString() {
+    	return "ServiceAdapter[type="+service.request()+",dispatcher="+dispatcher+"]";
     }
 }

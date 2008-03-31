@@ -142,6 +142,7 @@ public class MessageUtils
     {
         Message responseMessage = new Message(message);
         responseMessage.setDirection(MessageDirection.OUTGOING);
+        responseMessage.setData(new JSONMessageDataObject());
         return responseMessage;
     }
 

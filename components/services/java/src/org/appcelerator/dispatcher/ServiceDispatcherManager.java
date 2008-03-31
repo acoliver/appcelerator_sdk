@@ -36,9 +36,20 @@ public class ServiceDispatcherManager
     
     private static final List<ServiceDispatcherAdapter> dispatchers = new ArrayList<ServiceDispatcherAdapter>();
     
-    static
-    {
-        for (Class<? extends Object> dispatcher : AnnotationHelper.findAnnotation(ServiceDispatcher.class))
+    static boolean initalized = false;
+    public static final void intialize()
+	{
+    	if (initalized)
+    		return;
+    	Class<? extends Object>[] dispatchers =AnnotationHelper.findAnnotation(ServiceDispatcher.class); 
+    	intialize(dispatchers);
+	}
+    public static final void intialize(Class<? extends Object>[] dispatchersin)
+	{
+    	if (initalized)
+    		return;
+    	initalized = true;
+        for (Class<? extends Object> dispatcher : dispatchersin)
         {
             for (Method method : dispatcher.getMethods())
             {
@@ -50,6 +61,7 @@ public class ServiceDispatcherManager
                         Object instance = m.invoke(null);
                         if (instance!=null)
                         {
+            	            if (LOG.isDebugEnabled()) LOG.debug("adding services for dispatcher => "+instance);
                             dispatchers.add(new ServiceDispatcherAdapter(instance,method));
                         }
                     }
@@ -84,11 +96,6 @@ public class ServiceDispatcherManager
                 init.invoke(this.instance);
             }
         }
-        
-        public boolean call(Message request,List<Message> responses) throws Exception
-        {
-            return (Boolean)method.invoke(instance, request, responses);
-        }
     }
     
     /**
@@ -102,13 +109,7 @@ public class ServiceDispatcherManager
      */
     public static boolean dispatch (Message request, List<Message> responses) throws Exception
     {
-        for (ServiceDispatcherAdapter dispatcher : dispatchers)
-        {
-            if (dispatcher.call(request, responses))
-            {
-                return true;
-            }
-        }
-        return false;
+    	intialize();
+    	return ServiceRegistry.getInstance().dispatch(request, responses);
     }
 }

@@ -153,7 +153,7 @@ public class ServiceDirectoryScanner implements Runnable
 	                    Entry e = services.remove(name);
 	                    for (ServiceAdapter a : e.registrations)
 	                    {
-	                        ServiceRegistry.unregisterService(a);
+	                    	ServiceRegistry.getInstance().unregisterService(a);
 	                    }
 	                }
 	            }
@@ -256,7 +256,7 @@ public class ServiceDirectoryScanner implements Runnable
             {
                 for (ServiceAdapter a : registrations)
                 {
-                    ServiceRegistry.unregisterService(a);
+                	ServiceRegistry.getInstance().unregisterService(a);
                 }
                 
                 // clear our registrations
@@ -279,7 +279,7 @@ public class ServiceDirectoryScanner implements Runnable
             
             try
             {
-                ServiceRegistry.registerServiceMethods(clz,true,registrations,null);
+            	ServiceRegistry.getInstance().registerServiceMethods(clz,true,registrations,null,"directoryScanner");
             }
             catch (Exception ex)
             {

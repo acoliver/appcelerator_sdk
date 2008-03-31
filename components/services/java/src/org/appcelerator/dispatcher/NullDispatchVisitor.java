@@ -22,15 +22,22 @@ package org.appcelerator.dispatcher;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.appcelerator.messaging.Message;
 
 public class NullDispatchVisitor implements DispatchVisitor
 {
+	Log LOG = LogFactory.getLog(NullDispatchVisitor.class);
+	public NullDispatchVisitor() {
+		LOG.debug("NullDispatchVisitor created");
+	}
 	public void endVisit(Object obj, Message request, List<Message> responses) 
 	{
 	}
 	public Object startVisit(Message request, List<Message> responses) 
 	{
+		
 		return null;
 	}
 }

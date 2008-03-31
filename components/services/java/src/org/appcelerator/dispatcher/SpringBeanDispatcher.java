@@ -20,14 +20,9 @@
  */
 package org.appcelerator.dispatcher;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.ServiceDispatcher;
-import org.appcelerator.messaging.Message;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -41,30 +36,17 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 {
     private static final Log LOG = LogFactory.getLog(SpringBeanDispatcher.class);
     private ListableBeanFactory factory;
-    private static Object instance;
-    private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
+    private static Object instance = new SpringBeanDispatcher();
     
-    public SpringBeanDispatcher() 
+    private SpringBeanDispatcher() 
     {
-    	LOG.info("SpringBeanDispatcher created");
+    	LOG.debug("SpringBeanDispatcher created");
     }
+    
     @ServiceDispatcher
-    public boolean dispatch (Message request, List<Message> responses)
-    {
-    	Object token = dispatchVisitor.startVisit(request, responses);
-        boolean result = ServiceRegistry.dispatch(request, responses);
-        dispatchVisitor.endVisit(token, request, responses);
-        return result;
-    }
-    
-    @PostConstruct
-    public void create()
-    {
-        instance = this;
-    }
-    
     public static Object createDispatcher()
     {
+    	LOG.debug("SpringBeanDispatcher createDispatcher");
         return instance;
     }
 
@@ -76,8 +58,8 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 	        try
 	        {
 	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+name);
-	            ServiceRegistry.registerServiceMethods(bean.getClass(), true, null, bean);
-				ServiceRegistry.registerDownloadableMethods(bean.getClass(), bean, true);
+	            ServiceRegistry.getInstance().registerServiceMethods(bean.getClass(), true, null, bean,"springBean");
+	            ServiceRegistry.getInstance().registerDownloadableMethods(bean.getClass(), bean, true);
 	        }
 	        catch (Exception e)
 	        {
@@ -98,13 +80,7 @@ public class SpringBeanDispatcher implements BeanFactoryAware
         }
     }
 
-	public DispatchVisitor getDispatchVisitor() {
-		return dispatchVisitor;
-	}
-
-	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
-    	LOG.info("setting dispatchVisitor="+dispatchVisitor);
-		this.dispatchVisitor = dispatchVisitor;
-	}
-
+	//no op for backwards compatibility
+	public DispatchVisitor getDispatchVisitor() {return null;}
+	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {}
 }
