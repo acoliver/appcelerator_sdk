@@ -1,0 +1,20 @@
+<html xmlns:app="http://www.appcelerator.org">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>&lt;app:music_player&gt; widget test</title>
+		<script type="text/javascript" src="javascripts/appcelerator-debug.js"></script>
+	</head>
+<body>
+	<app:music_player src="http://www.archive.org/download/Behind/SyncFilmicoBehind.mp3" 
+		on="l:load then load[this.data.src] or l:stop then stop or l:start then start or l:pan then pan[100] or l:volume then volume[20]">
+	</app:music_player>
+	
+	<div>
+		<input type="button" on="click then l:start" value="Start"/>
+		<input type="button" on="click then l:stop" value="Stop"/>
+		<input type="button" on="click then l:pan" value="Pan"/>
+		<input type="button" on="click then l:volume" value="Volume"/>
+		<input type="button" on="click then l:load[src='http://www.archive.org/download/Behind/SyncFilmicoBehind.mp3']" value="Load"/>
+	</div>
+</body>
+</html>
