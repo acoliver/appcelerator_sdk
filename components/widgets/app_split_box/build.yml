@@ -1,0 +1,14 @@
+--- 
+:tags: [ uicontrol, layout ]
+
+:type: widget
+:release_notes: initial release
+:licenses: [ 1 ]
+
+:name: app:split_box
+:dependencies: 
+- :type: websdk
+  :name: websdk
+  :version: ">=2.1"
+:version: 1.0
+:description: app:split_box widget supports either horizontal or vertical split box views
