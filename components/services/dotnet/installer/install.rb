@@ -35,7 +35,6 @@ module Appcelerator
       Appcelerator::Installer.copy(tx,from_path + '/ServiceBroker.app',public_dir)
       
       #Avoid funky "Error: Is a directory" error
-      Appcelerator::Installer.copy(tx,from_path + '/appcelerator-config.xml',sb_dir + '/appcelerator-config.xml')
       Appcelerator::Installer.copy(tx,from_path + '/bin/Release/Appcelerator.dll',sb_dir + '/Appcelerator.dll')
       true
     end
