@@ -71,6 +71,7 @@ module Appcelerator
       @listeners = []
       @before_filters = []
       @after_filters = []
+      @registrations = []
     end
     
     def clear_listeners
@@ -131,9 +132,29 @@ module Appcelerator
         instance.handle(msg,method_name,response_type)
       end
       
+      @registrations << method_name.to_s
+      
 		  ServiceBroker.register_listener(message_type, proc)
       proc
 	  end
+	  
+	  def autoload_services
+	    re = Regexp.new "#{self.class.name}#"
+      cn = self.class.name.underscore.gsub('_service','')
+
+	    self.public_methods.each do |m|
+	      next if @registrations.include? m
+	      meth = method(m)
+	      next if meth.arity > 0
+	      next if m =~ /\?$/
+	      methstr = meth.to_s
+	      next unless methstr =~ re
+	      name = "#{cn}.#{m.underscore.gsub('_','.')}"
+	      self.register "#{name}.request", m, "#{name}.response"
+      end
+
+	    @registrations = nil
+    end
 	  
 	end
   
