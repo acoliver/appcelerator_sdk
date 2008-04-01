@@ -7,7 +7,7 @@
 :version: 1.0
 :description: ExtJS Grid Panel  
 :name: app:ext_grid
-:tags: [ExtJS, Grid]
+:tags: [ ExtJS, Grid ]
 
 :release_notes: initial release
 :license: [1] 
