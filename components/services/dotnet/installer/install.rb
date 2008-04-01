@@ -31,6 +31,7 @@ module Appcelerator
       
       Appcelerator::Installer.copy(tx,from_path,src_dir,["#{__FILE__}",'appcelerator.xml'])
       Appcelerator::Installer.copy(tx,from_path + '/appcelerator.xml',public_dir)
+      Appcelerator::Installer.copy(tx,from_path + '/TestService.dll',public_dir + "/../app/services/")
       Appcelerator::Installer.copy(tx,from_path + '/web.config',public_dir)
       Appcelerator::Installer.copy(tx,from_path + '/ServiceBroker.app',public_dir)
       
