@@ -30,6 +30,7 @@ CommandRegistry.registerCommand('install:service','install an SOA integration po
   {
      :name=>:version,
      :display=>'--version=X.X.X',
+     :help=>'version of the service to install',
      :value=>true
   }
 ],[
@@ -41,13 +42,7 @@ CommandRegistry.registerCommand('install:service','install an SOA integration po
 
   stuff = args[:location].split(',').uniq
   stuff.each do |service|
-    component = {
-      :type => :service,
-      :name => service.strip,
-      :version => options[:version],
-      :description => 'SOA Integration Point'
-    }
-    Installer.install_component(component)
+    Installer.require_component(:service, service.strip, options[:version])
   end
 
 end

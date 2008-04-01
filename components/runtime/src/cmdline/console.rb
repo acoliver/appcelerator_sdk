@@ -41,24 +41,6 @@ HELP[:force_update] = {:display=>'--force-update',:help=>'force download of comp
 HELP[:args] = {:display=>'--args="args"',:help=>'arguments to pass to calling application',:value=>true}
 HELP[:no_remote] = {:display=>'--no-remote',:help=>nil,:value=>true}
 
-#
-# load all our core libraries in alpha order
-#
-Dir["#{SCRIPTDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
-  next if file=~/^_/ # don't auto-load _ files
-  puts "Loading library: #{file}" if OPTIONS[:debug]
-  require File.expand_path(file)
-end
-
-#
-# load all our libraries in alpha order
-#
-Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
-  require File.expand_path(file)
-end
-
-Appcelerator::PluginManager.loadPlugins
-
 def dequote(s)
   return nil unless s
   m = /^['"](.*)["']$/.match(s)
@@ -107,9 +89,29 @@ def sanitize_options
   OPTIONS[:quiet] = false if OPTIONS[:verbose]
 end
 
+
+# main
+
 parse_options
 sanitize_options
 
+#
+# load all our core libraries in alpha order
+#
+Dir["#{SCRIPTDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
+  next if file=~/^_/ # don't auto-load _ files
+  puts "Loading library: #{file}" if OPTIONS[:debug]
+  require File.expand_path(file)
+end
+
+#
+# load all our user commands in alpha order
+#
+Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
+  require File.expand_path(file)
+end
+
+Appcelerator::PluginManager.loadPlugins
 #
 # execute the command
 #

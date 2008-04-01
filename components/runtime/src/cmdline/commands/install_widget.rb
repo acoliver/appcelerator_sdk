@@ -26,14 +26,22 @@ CommandRegistry.registerCommand('install:widget','install a widget',[
     :default=>nil,
     :type=>Types::StringType
   }
-],nil,[
+],[
+  {
+    :name=>'version',
+    :display=>'--version=X.X.X',
+    :help=>'version of the plugin to add',
+    :value=>true
+  }
+],[
   'install:widget app:iterator',
   'install:widget app:iterator,app:template,app:box',
   'install:widget my_widget.zip,your_widget.zip',
   'install:widget http://myurl.com/foo_widget.zip'
 ]) do |args,options|
 
-  args[:location].split(',').uniq.each do |widget|
-    Installer.install_component :widget,'Widget',widget.strip
+  widget_names = args[:location].split(',').uniq
+  widget_names.each do |widget|
+    Installer.require_component(:widget, widget.strip, options[:version])
   end
 end

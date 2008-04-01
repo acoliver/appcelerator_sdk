@@ -230,7 +230,7 @@ module Appcelerator
       end
       
       def CommandRegistry.extractOptionalArgs(given_opts, optional_args)
-        result_opts = {}
+        result_opts = given_opts || {}
         optional_args.each do |optdef|
           key = optdef[:name].to_sym
           

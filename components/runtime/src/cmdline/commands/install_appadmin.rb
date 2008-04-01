@@ -26,7 +26,16 @@ CommandRegistry.registerCommand('install:appadmin','install app admin',[
     :default=>nil,
     :type=>Types::StringType
   }
+], [
+  {
+    :name=>'version',
+    :display=>'--version=X.X.X',
+    :help=>'version of the admin tool to install',
+    :value=>true
+  }
 ]) do |args,options|
-  Installer.install_component :appadmin,'Appcenter',args[:location]
+  
+  Installer.require_component(:appadmin, args[:location], options[:version])
+  
 end
 

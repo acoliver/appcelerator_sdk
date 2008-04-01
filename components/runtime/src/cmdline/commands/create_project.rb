@@ -50,75 +50,39 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   'create:project C:\mydir myproject ruby'
 ]) do |args,options|
 
-
-  service_entry = nil
+  service_name = args[:service]
+  service = Installer.require_component(:service, service_name, options[:version])
   
-  # find the service in the local config (refactor this)
-  Installer.with_site_config(false) do |site_config|
-    installed = site_config[:installed] || {}
-    components = installed[:service] || []
-    components.each do |cm|
-      if cm[:name] == args[:service]
-        service_entry = cm
-        break
-      end
-    end
-  end
+  die "Couldn't find a service named '#{service_name}'." unless service
   
-  if not service_entry
-    list = Installer.fetch_distribution_list
-    list[:service].each do |svc|
-      if args[:service] == svc[:name]
-        service_entry = svc
-        break
-      end
-    end
-  end
+  puts "Using service ''#{service_name}'" unless OPTIONS[:quiet]
   
-  if not service_entry
-    die "Couldn't find a service named #{args[:service]}."
-  end
-  
-  service = service_entry[:name]
-  
-  puts "service #{service}" unless OPTIONS[:quiet]
-
-
-  servicecomponent = Installer.get_component_from_config(:service,service)
-
-  service_dir,name,version,checksum,already_installed = Installer.install_component :service,'SOA Integration Point',service,true
-  
-  if Installer.should_update(servicecomponent[:version], version)
-    service_dir = Installer.get_release_directory(servicecomponent[:type],servicecomponent[:name],servicecomponent[:version])
-    name,version,checksum = servicecomponent[:name],servicecomponent[:version],servicecomponent[:checksum]
-    already_installed = true
-  end
-
   if OPTIONS[:debug]
-    puts "service_dir=#{service_dir}"
-    puts "name=#{name}"
-    puts "version=#{version}"
-    puts "checksum=#{checksum}"
-    puts "already_installed=#{already_installed}"
+    puts "service_dir=#{service[:dir]}"
+    puts "name=#{service[:name]}"
+    puts "version=#{service[:version]}"
+    puts "checksum=#{service[:checksum]}"
   end
+  
+  from = service[:dir]
+  to = File.expand_path(File.join(args[:path].path,args[:name]))
   
   # find the installer script
-  script = File.join(service_dir,'install.rb')
+  script = File.join(from,'install.rb')
    
   # load the create script for the version+language
   require script
 
   # from and to directories
-  from = service_dir
-  to = File.expand_path(File.join(args[:path].path,args[:name]))
-  service_name = Project.make_service_name(service)
+  service_name = Project.make_service_name(service[:name])
   
-  puts "Creating #{service_name} project #{version} from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{service[:name]} project #{service[:version]} from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
   success = false
 
   with_io_transaction(to) do |tx|
-    event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],:service=>service,:version=>version,:tx=>tx}
+    event = {:project_dir=>to,:service_dir=>from,:name=>args[:name],
+             :service=>service[:name],:version=>service[:version],:tx=>tx}
     PluginManager.dispatchEvent 'before_create_project',event
     begin
     

@@ -38,7 +38,9 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
     if Installer.should_update(build_config[:version], update[:version])
       possible_updates += 1
       if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
-        Installer.install_component update[:type].to_sym,update[:type].to_s,update[:name],true,nil,true,false
+        
+        Installer.install_component(update[:type].to_sym, update[:name])
+        
         updated << "#{update[:type]}_#{update[:name]}"
         build_config[:version] = update[:version]
         cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
@@ -79,11 +81,12 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
             
             puts "should updated? #{update}" if OPTIONS[:debug]
 
-            if update and not Installer.installed_this_session?(entry[:type],entry[:name],entry[:version])
+            if update and not Installer.installed_this_session? entry
               
               possible_updates += 1
               if confirm("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y')
-                Installer.install_component entry[:type].to_sym,entry[:type].to_s,entry[:name],true,nil,true,false
+                Installer.install_component(entry)
+                #,true,nil,true,false
                 updated << "#{entry[:type]}_#{entry[:name]}"
               end
             end

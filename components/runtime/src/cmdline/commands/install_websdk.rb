@@ -26,12 +26,19 @@ CommandRegistry.registerCommand('install:websdk','install the web SDK',[
     :default=>nil,
     :type=>Types::StringType
   }
-],nil,[
+],[
+  {
+    :name=>'version',
+    :display=>'--version=X.X.X',
+    :help=>'version of the sdk to install',
+    :value=>true
+  }
+],[
   'install:websdk',
   'install:websdk ~/tmp/websdk.zip',
   'install:websdk http://aurl.com/websdk.zip'
 ]) do |args,options|
 
-  Installer.install_component :websdk,'WebSDK',args[:location] || 'websdk'
+  Installer.require_component(:websdk, args[:location] || 'websdk', options[:version])
   
 end

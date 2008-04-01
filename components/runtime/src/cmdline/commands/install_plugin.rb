@@ -26,7 +26,14 @@ CommandRegistry.registerCommand('install:plugin','install a plugin',[
     :default=>nil,
     :type=>Types::StringType
   }
-],nil,[
+],[
+  {
+    :name=>'version',
+    :display=>'--version=X.X.X',
+    :help=>'version of the plugin to install',
+    :value=>true
+  }
+],[
     'install:plugin my:plugin',
     'install:plugin my:plugin,your:plugin',
     'install:plugin http://www.mydir.com/aplugin.zip',
@@ -35,12 +42,12 @@ CommandRegistry.registerCommand('install:plugin','install a plugin',[
 ]) do |args,options|
 
     args[:location].split(',').uniq.each do |plugin|
-      to_dir,name,version,checksum,already_installed = Installer.install_component :plugin,'Plugin',plugin.strip
-      comp = {:name=>name,:type=>:plugin,:version=>version}
-      component = Installer.get_installed_component comp
-      Installer.with_site_config(true) do |config|
+      
+      component = Installer.require_component(:plugin,plugin.strip,options[:version])
+      
+      Installer.with_site_config do |config|
         plugin_name = name.gsub(':','_')
-        config[:onload]||=Array.new
+        config[:onload] ||= []
         plugin_path = "#{to_dir}/#{plugin_name}.rb"
         config[:onload].delete_if { |e| e[:name]==plugin_name }
         config[:onload] << {:name=>plugin_name, :path=>plugin_path}

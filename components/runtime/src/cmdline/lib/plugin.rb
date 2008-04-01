@@ -61,6 +61,7 @@ module Appcelerator
     end
     
     def PluginManager.loadPlugins
+      PluginManager.preloadPlugins
       path = Dir.pwd
       if path 
         path = path.path if path.class==Dir
@@ -98,7 +99,27 @@ module Appcelerator
       name = 'plugin' + (p.length > 1 ? 's' : '')
       puts "--> Loading #{name}: #{p.join(',')}" if show
     end
+    
+    def PluginManager.preloadPlugins
+      Appcelerator::Installer.with_site_config(false) do |config|
+        onload = config[:onload]
+        if onload
+          onload.each do |l|
+            next unless l.class == Hash
+            path = l[:path]
+            next unless File.exists? path
+            name = path.gsub('.rb','')
+            begin
+              require name
+            rescue => e
+              STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
+            end
+          end
+        end
+      end
+    end
   end
+  
   class PluginUtil
     def PluginUtil.merge_spring (to,from,tx,event)
       filename ="spring.xml"
@@ -135,9 +156,11 @@ module Appcelerator
         Appcelerator::Installer.copy tx,tmpoutfile,to
       end
     end
+    
     def PluginUtil.get_plugintype(name)
       name.sub(/.*:(.*)/, '\1')
     end
+    
     def PluginUtil.merge_webxml (to,from,tx,event)
       error = false
       filename = "web.xml"
@@ -187,6 +210,7 @@ module Appcelerator
         Appcelerator::Installer.copy tx,tmpoutfile,to
       end
     end
+    
     def PluginUtil.ensure_element_subelment(parentelement,name,sub_name,value)
       parentelement.each_element("//" +name) do |element|
         subelement = element.get_elements(sub_name)
@@ -204,6 +228,7 @@ module Appcelerator
       # puts "new: #{newelement}"
       return newelement
     end
+    
     def PluginUtil.ensure_simple_element(element,name)
       element.each_element(name) do |element|
         return element
@@ -215,6 +240,7 @@ module Appcelerator
       subelement = element.get_elements(subtag)[0]
       subelement.get_text
     end
+    
     def PluginUtil.ensure_element_namedsubelment(parentelement,name,sub_name,value,sub_values)
       parentelement.each_element("//" +name) do |element|
         subelement = element.get_elements(sub_name)
@@ -235,12 +261,14 @@ module Appcelerator
       # puts "new: #{newelement}"
       return newelement
     end
+    
     def PluginUtil.ensure_element(element,name,key,value)
       element.each_element_with_attribute(key,value,1,name) do |element|
         return element
       end
       return element.add_element(name,{key=>value})
     end
+    
     def PluginUtil.ensure_simple_element(element,name)
       element.each_element(name) do |element|
         return element
@@ -253,14 +281,17 @@ module Appcelerator
         File.delete(file)
       end
     end
+    
     def PluginUtil.clean_dir(dir)
       FileUtils.rm_r dir if File.exists?(dir)
     end
+    
     def PluginUtil.jar(destfile, dir)
       FileUtils.cd(dir) do |dir|
         system "jar cf #{destfile} ."
       end
     end
+    
     def PluginUtil.compile(libdir,java_source, java_classes)
         PluginUtil.clean_dir(java_classes)
         FileUtils.mkdir_p java_classes
@@ -272,6 +303,7 @@ module Appcelerator
           system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
         end
     end
+    
     def PluginUtil.separator
       case Config::CONFIG['target_os']
         when /darwin/
@@ -282,11 +314,13 @@ module Appcelerator
           return ";"
       end
     end
+    
     def PluginUtil.merge_attributes(from, to)
       from.attributes.each_attribute do |attribute|
         to.attributes.add(attribute.clone)
       end
     end
+    
     def PluginUtil.merge_bean (frombean, tobean)
       PluginUtil.merge_attributes(frombean,tobean)
       frombean.elements.each("property") do |fromproperty|
@@ -294,6 +328,7 @@ module Appcelerator
         PluginUtil.merge_property(fromproperty,toproperty)
       end
     end
+    
     def PluginUtil.merge_property(fromproperty, toproperty)
       PluginUtil.merge_attributes(fromproperty,toproperty)
       fromproperty.each_element("map") do |frommap|
@@ -301,6 +336,7 @@ module Appcelerator
         PluginUtil.merge_map(frommap,tomap)
       end
     end
+    
     def PluginUtil.merge_map(frommap,tomap)
       PluginUtil.merge_attributes(frommap,tomap)
       frommap.each_element("entry") do |fromentry|
@@ -308,6 +344,7 @@ module Appcelerator
         PluginUtil.merge_attributes(fromentry,toentry)
       end
     end
+    
     def PluginUtil.install_java (event)
       if File.exist? "#{event[:plugin_dir]}/java"
         name = Appcelerator::PluginUtil.get_plugintype(event[:name])
@@ -338,6 +375,7 @@ module Appcelerator
         Appcelerator::Installer.copy event[:tx],"#{event[:plugin_dir]}/lib","#{event[:project_dir]}/lib"
       end
     end
+    
     def PluginUtil.tidy(from,to)
       if PluginUtil.load_tidy
         # for a listing of options see http://tidy.sourceforge.net/docs/quickref.html
@@ -377,23 +415,3 @@ module Appcelerator
     end
   end
 end
- 
-
-Appcelerator::Installer.with_site_config(false) do |config|
-  onload = config[:onload]
-  if onload
-    onload.each do |l|
-      next unless l.class == Hash
-      path = l[:path]
-      next unless File.exists? path
-      name = path.gsub('.rb','')
-      begin
-        require name
-      rescue => e
-        STDERR.puts "Error loading plugin: #{name}.  Error: #{e}"
-      end
-    end
-  end
-end
-
-

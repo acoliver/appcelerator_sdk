@@ -58,19 +58,15 @@ module Appcelerator
       puts "The following #{type} versions are locally installed:"
       puts
       
-      components = from_each(Installer, :each_installed_component, type)
-      Project.list_components(components)
+      components = Installer.installed_components(type)
+      components.each do |cm|
+        puts "          >  #{cm[:name].ljust(32)} [#{cm[:version]}]"
+      end
       
-      puts ' ' * 10 + 'No #{type}s installed' if components.empty?
+      puts "          No #{type}s installed" if components.empty?
       puts
     end
-        
-    def Project.list_components(components)
-      components(type) do |name,version|
-        puts "          >  name.ljust(20)} [#{version}]"
-      end      
-    end
-    
+            
     # this may be a ruby builtin somewhere, used to turn generators into arrays
     def Project.from_each(obj, meth, *args)
       result = []

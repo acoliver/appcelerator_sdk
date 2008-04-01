@@ -21,19 +21,19 @@ include Appcelerator
 module Appcelerator
   class Installer
 
-    def Installer.install_web_project(options,tx,update=false,webcomponent=nil)
+    def Installer.install_web_project(options,tx,update=false,sdk=nil)
       
       raise "Invalid options, must specify :web option" unless options[:web]
       raise "Invalid options, must specify :javascript option" unless options[:javascript]
       raise "Invalid options, must specify :images option" unless options[:images]
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
-      if update and not webcomponent.nil?
-        source_dir = Installer.get_release_directory(webcomponent[:type],webcomponent[:name],webcomponent[:version])
-        name,web_version,checksum,already_installed = webcomponent[:name],webcomponent[:version],webcomponent[:checksum],true
-      else
-        source_dir,name,web_version,checksum,already_installed = Installer.install_component( :websdk,'WebSDK','websdk',true,tx,update)
+      if sdk.nil?
+        sdk = Installer.require_component(:websdk, :websdk, nil,
+                                          :tx=>tx, :force=>update)
       end
+      source_dir = Installer.get_component_directory(sdk)
+      web_version = sdk[:version]
       
       options[:websdk] = web_version
       options[:installed_widgets] = []
@@ -49,7 +49,7 @@ module Appcelerator
           Installer.copy(tx, "#{source_dir}/images/.", options[:images])
           Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), options[:web])
           
-          widgets = Installer.find_dependencies_for({:name=>'websdk',:type=>'websdk'}) || []
+          widgets = Installer.find_dependencies_for(sdk) || []
           # install our widgets
           widgets.each do |widget|
             add_widget_options = {

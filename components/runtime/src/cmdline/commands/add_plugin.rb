@@ -38,56 +38,51 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
     ],
     :conversion=>Types::DirectoryType
   }
-],nil,[
+],[
+  {
+    :name=>'version',
+    :display=>'--version=X.X.X',
+    :help=>'version of the plugin to add',
+    :value=>true
+  }
+],[
   'add:plugin my:plugin',
   'add:plugins my:plugin,your:plugin',
   'add:plugin my:plugin ~/myproject'
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  force = options[:force]
-  force = false if force.nil?
+  plugin_names = args[:name].split(',').uniq
+  config = options[:project_config] || Installer.get_project_config(pwd)
+  plugins = config[:plugins] ||= []
   
   FileUtils.cd(pwd) do 
-    # this is used to make sure we're in a project directory
-    lang = Project.get_service(pwd)
+    # make sure we're in a project directory, unless passing option to skip this test
+    Project.get_service(pwd) unless options[:ignore_path_check]
     
     with_io_transaction(pwd,options[:tx]) do |tx|
-      args[:name].split(',').uniq.each do |name|
+      
+      plugin_names.each do |name|
         class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
         plugin_name = name.gsub ':', '_'
 
-        plugin = Installer.get_component_from_config(:plugin,name,options[:version])
-
-        if not plugin
-          die"Couldn't find plugin named: #{name}."
-        end
-
-        plugin_dir,pluginname,version,checksum,already_installed = Installer.install_component(:plugin,'Plugin',name,true,tx,force)
+        plugin = Installer.require_component(:plugin,name,options[:version],
+          :force=>options[:force], :quiet_if_installed=>true, :tx=>tx)
         
-        if Installer.should_update(plugin[:version], version)
-          plugin_dir = Installer.get_release_directory(plugin[:type],plugin[:name],plugin[:version])
-          pluginname,version,checksum = plugin[:name],plugin[:version],plugin[:checksum]
-          already_installed = true
-        end
+        die "Couldn't find plugin named: #{name}." unless plugin
         
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
         
-        event = {:name=>name,:version=>version,:plugin_dir=>plugin_dir,:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
+        event = {:name=>name,:version=>version,:plugin_dir=>plugin[:dir],:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
         PluginManager.dispatchEvents('add_plugin',event) do
-
-          config = options[:project_config] || Installer.get_project_config(pwd)
-          plugins = config[:plugins] ||= []
-          
-          plugins.delete_if { |w| w[:name] == name }
-          plugins << {:name=>name,:version=>version}
-          Installer.save_project_config(pwd,config) unless options[:no_save]
+          plugins.delete_if { |w| w[:name] == name } 
+          plugins << {:name=>name,:version=>version}        
         end
         puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
+      
+      Installer.save_project_config(pwd,config) unless options[:no_save]
     end
-    
   end
-  
 end

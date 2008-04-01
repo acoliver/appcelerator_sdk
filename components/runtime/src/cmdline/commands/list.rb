@@ -66,42 +66,60 @@ CommandRegistry.makeGroup(:list) do |group|
        :display=>'--ping',
        :value=>false
     },
+    {
+       :name=>:format,
+       :display=>'--format=yaml',
+       :default=>'yaml',
+       :value=>true,
+    },
   ]) do |args,options|
     
-    list = Installer.fetch_distribution_list(options[:ping])
+    ping = options[:ping]
+    type = args[:type]
+    name = args[:name]
     
-    puts
-    puts "The following #{type} versions are available remotely:"
-    puts
+    list = Installer.fetch_distribution_list(ping)
     
-    components = from_each(Installer, :each_remote_component, type, ping)
-    Project.list_components(components)
-    
-    puts ' ' * 10 + 'No #{type}s available' if components.empty?
-    puts
-    
-    # TODO: format this output
-    #
-    # logic: if no type, list it all
-    
-    if args[:type]
-      l = list[args[:type].to_sym]
-      if l
-        if args[:name]
-          l.each do |e|
-            if e[:name] == args[:name]
-              components = e.to_yaml
-              break
-            end
-          end
-        else
-          components = l.to_yaml
-        end
-      else
-        die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
-      end
+    if opts[:format] == 'yaml'
+      puts 'blah'
     else
-      puts list.to_yaml unless OPTIONS[:quiet]
+      puts
+      puts "The following #{type} versions are available remotely:"
+      puts
+    
+      components = from_each(Installer, :each_remote_component, type, ping)
+      Project.list_components(components)
+    
+      puts ' ' * 10 + 'No #{type}s available' if components.empty?
+      puts
     end
+      # 
+      #   # TODO: format this output
+      #   #
+      #   # logic: if no type, list it all
+      #   
+      #   begin
+      #     
+      #   
+      #   if args[:type]
+      #     l = list[args[:type].to_sym]
+      #     if l
+      #       if args[:name]
+      #         l.each do |e|
+      #           if e[:name] == args[:name]
+      #             components = e.to_yaml
+      #             break
+      #           end
+      #         end
+      #       else
+      #         components = l.to_yaml
+      #       end
+      #     else
+      #       die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
+      #     end
+      #   else
+      #     puts list.to_yaml unless OPTIONS[:quiet]
+      #   end
+      # end
   end
 end
