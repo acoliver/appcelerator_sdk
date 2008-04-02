@@ -85,7 +85,7 @@ CommandRegistry.makeGroup(:list) do |group|
       showYaml(list, args)
     
     else # human format
-      type = args[:type].gsub(/s$/,'').to_sym
+      type = args[:type].gsub(/s$/,'').to_sym if args[:type]
       name = args[:name]
       if type
         if name
