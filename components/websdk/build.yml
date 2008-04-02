@@ -1,7 +1,7 @@
 --- 
 :type: websdk
 :name: websdk
-:version: 2.1.1
+:version: 2.1.2
 :dependencies: 
 - :type: widget
   :name: app:box
@@ -20,9 +20,6 @@
   :version: ">=1.0"
 - :type: widget
   :name: app:datatable
-  :version: ">=1.0"
-- :type: widget
-  :name: app:download
   :version: ">=1.0"
 - :type: widget
   :name: app:editinplace
@@ -52,9 +49,6 @@
   :name: app:panel
   :version: ">=1.0"
 - :type: widget
-  :name: app:progressbar
-  :version: ">=1.0"
-- :type: widget
   :name: app:script
   :version: ">=1.0"
 - :type: widget
@@ -64,9 +58,6 @@
   :name: app:statemachine
   :version: ">=1.0"
 - :type: widget
-  :name: app:template
-  :version: ">=1.0"
-- :type: widget
   :name: app:tooltip
   :version: ">=1.0"
 - :type: widget
@@ -74,7 +65,4 @@
   :version: ">=1.0"
 - :type: widget
   :name: app:validation
-  :version: ">=1.0"
-- :type: widget
-  :name: app:yui_map
   :version: ">=1.0"

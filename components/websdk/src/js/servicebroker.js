@@ -987,7 +987,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
         }
 		return {
 			'postBody': xml,
-			'contentType':'text/xml;charset=UTF-8'
+			'contentType':'text/xml'
 		};
 	},
 	deserialize: function(response,length,contentType)
@@ -996,9 +996,9 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 		{
 			return null;
 		}
-		if (contentType.indexOf('text/xml')==-1)
+		if (contentType.indexOf('text/xml')==-1 && contentType.indexOf('application/xml')==-1)
 		{
-			$E(this+', invalid content type: '+contentType+', expected: text/xml');
+			$E(this+', invalid content type: '+contentType+', expected: text/xml or application/xml');
 			return null;
 		}
 		var xml = response.responseXML;
@@ -1272,7 +1272,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] =
         }
 		return {
 			'postBody': xml,
-			'contentType':'application/x-www-form-urlencoded;charset=UTF-8'
+			'contentType':'application/x-www-form-urlencoded'
 		};
 	},
 	deserialize: function(response,length,contentType)
