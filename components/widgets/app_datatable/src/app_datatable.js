@@ -107,7 +107,7 @@ Appcelerator.Widget.Datatable =
 		var on_array = [];
 
 		var parameterMap = $(id).parameterMap;
-		
+		var needRecompile=false;
 		var scope = parameterMap['scope'];
 		
 		//Valid values are 'client', 'server', and 'off'
@@ -174,6 +174,13 @@ Appcelerator.Widget.Datatable =
 		{
 			var header_info = header_array[x];
 			var formatterFunction = eval(header_array[x]['formatter']);
+			var on = header_array[x]['on'];
+			var onTemplate = null;
+			if (on)
+			{
+				needRecompile=true;
+				header_info.onTemplate = new Template('on="'+on+'"');
+			}
 			if (formatterFunction) {
 				header_info.formatterFunction = formatterFunction;
 			}
@@ -278,14 +285,19 @@ Appcelerator.Widget.Datatable =
 				//Get the column property needed to figure out what column from the current array item we need
 				var column_property_name = header_array[h]['property'];
 				var formatterFunction = header_array[h]['formatterFunction'];
-				
+				var onTemplate = header_array[h]['onTemplate'];
+				cell_on="";
+				if (onTemplate) 
+				{
+					cell_on = onTemplate.evaluate(array[xrun]);
+				}
 				var cell_value = (Object.getNestedProperty(array[xrun],column_property_name)||'');
 				if (formatterFunction) {
 					cell_value = formatterFunction(cell_value,column_property_name, array[xrun]);
 				} else {
 					cell_value.toString().escapeHTML();
 				}
-				var td ='<td align="' + header_array[h]['align'] + '" class="' + cell_class + '"><span>' + cell_value +'</span></td>';
+				var td ='<td align="' + header_array[h]['align'] +'" '+ cell_on+ '" class="' + cell_class + '"><span>' + cell_value +'</span></td>';
 				table_data_content += td;
 			}
 			table_data_content += '</tr>';
@@ -310,6 +322,8 @@ Appcelerator.Widget.Datatable =
 		}
 		
 		Appcelerator.Compiler.setHTML(id,html);
+		if (needRecompile)
+			Appcelerator.Compiler.dynamicCompile($(id));
 
 		if (pagination == 'true')
 		{
