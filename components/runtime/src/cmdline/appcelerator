@@ -44,6 +44,18 @@ def check_required_gem(gem,array)
   end
 end
 
+def add_to_path(dir)
+  profiles = %w(~/.bash_profile ~/.profile ~/.tcshrc ~/.cshrc)
+  profiles.each do |p|
+    path = File.expand_path(p)
+    if File.exists?(path)
+      f = open(path, 'a')
+      f << "\n export PATH=$PATH:${dir}" # is this just a bashism?
+      break
+    end
+  end  
+end
+
 def check_for_appadmin
   file = File.expand_path File.join(TARGET_DIR,'appadmin.zip')
   return nil unless File.exists? file
@@ -137,6 +149,7 @@ end
 
 check_for_initial
 #check_for_appadmin
+add_to_path(TARGET_DIR)
 
 exit 0 if   INSTALLING
   

@@ -39,7 +39,7 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
       possible_updates += 1
       if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
         
-        Installer.install_component(update[:type].to_sym, update[:name])
+        Installer.require_component(update[:type].to_sym, update[:name], nil)
         
         updated << "#{update[:type]}_#{update[:name]}"
         build_config[:version] = update[:version]
@@ -85,8 +85,7 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
               
               possible_updates += 1
               if confirm("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y')
-                Installer.install_component(entry)
-                #,true,nil,true,false
+                Installer.require_component(entry[:type],entry[:type],entry[:version])
                 updated << "#{entry[:type]}_#{entry[:name]}"
               end
             end

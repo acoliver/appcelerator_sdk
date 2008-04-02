@@ -19,6 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$APP_CMD=/usr/bin/app
+$APPC_CMD=/usr/bin/appcelerator
+$INSTALL_DIR=/Library/Appcelerator
+
 #
 # we need to check and see if we're in pre-flight mode
 #
@@ -26,40 +30,43 @@ if [ $UID -eq 0 ]
 then
     if [ "$1" == "--postflight--" ]
     then
-         echo "mkdir -p /Library/Appcelerator/releases" >> /tmp/appcelerator_installer.log
-         mkdir -p /Library/Appcelerator/releases
+         echo "mkdir -p $INSTALL_DIR/releases" >> /tmp/appcelerator_installer.log
+         mkdir -p $INSTALL_DIR/releases
          
-         echo "mkdir -p /Library/Appcelerator/updates" >> /tmp/appcelerator_installer.log
-         mkdir -p /Library/Appcelerator/updates
+         echo "mkdir -p $INSTALL_DIR/updates" >> /tmp/appcelerator_installer.log
+         mkdir -p $INSTALL_DIR/updates
 
-         echo "chown -R root:admin /Library/Appcelerator" >> /tmp/appcelerator_installer.log
-         chown -R root:admin /Library/Appcelerator
+         echo "chmod -R 0777 $INSTALL_DIR/releases" >> /tmp/appcelerator_installer.log
+         chmod -R 0777 $INSTALL_DIR/releases
 
-         echo "chown -R root:admin /usr/bin/appcelerator" >> /tmp/appcelerator_installer.log
-         chown -R root:admin /usr/bin/appcelerator
+         echo "chmod -R 0777 $INSTALL_DIR/updates" >> /tmp/appcelerator_installer.log
+         chmod -R 0777 $INSTALL_DIR/updates
 
-         echo "chmod -R 0777 /Library/Appcelerator/releases" >> /tmp/appcelerator_installer.log
-         chmod -R 0777 /Library/Appcelerator/releases
+         echo "chmod -R 0666 $INSTALL_DIR/build.yml" >> /tmp/appcelerator_installer.log
+         chmod -R 0666 $INSTALL_DIR/build.yml
 
-         echo "chmod -R 0777 /Library/Appcelerator/updates" >> /tmp/appcelerator_installer.log
-         chmod -R 0777 /Library/Appcelerator/updates
+         echo "chmod +x $INSTALL_DIR/appcelerator" >> /tmp/appcelerator_installer.log
+         chmod +x $INSTALL_DIR/appcelerator
 
-         echo "chmod -R 0666 /Library/Appcelerator/build.yml" >> /tmp/appcelerator_installer.log
-         chmod -R 0666 /Library/Appcelerator/build.yml
+         if ["$2" == "--have-root--"]
+         then
+              echo "chown -R root:admin $INSTALL_DIR" >> /tmp/appcelerator_installer.log
+              chown -R root:admin $INSTALL_DIR
 
-         echo "chmod +x /Library/Appcelerator/appcelerator" >> /tmp/appcelerator_installer.log
-         chmod +x /Library/Appcelerator/appcelerator
+              echo "chown -R root:admin $APPC_CMD" >> /tmp/appcelerator_installer.log
+              chown -R root:admin $APPC_CMD
 
-         echo "ln -fs /Library/Appcelerator/appcelerator /usr/bin/app" >> /tmp/appcelerator_installer.log
-         ln -fs /Library/Appcelerator/appcelerator /usr/bin/app
+              echo "ln -fs $INSTALL_DIR/appcelerator $APP_CMD" >> /tmp/appcelerator_installer.log
+              ln -fs $INSTALL_DIR/appcelerator $APP_CMD
 
-         echo "chmod +x /usr/bin/app" >> /tmp/appcelerator_installer.log
-         chmod +x /usr/bin/app
+              echo "chmod +x $APP_CMD" >> /tmp/appcelerator_installer.log
+              chmod +x $APP_CMD
+         fi
 
-         echo "/usr/bin/app" >> /tmp/appcelerator_installer.log
+         echo "$INSTALL_DIR/app" >> /tmp/appcelerator_installer.log
          echo "PATH=$PATH" >> /tmp/appcelerator_installer.log
-         PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin
-         ruby /usr/bin/app --install >>/tmp/appcelerator_installer.log 2>&1
+         PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin:$INSTALL_DIR
+         ruby $INSTALL_DIR/app --install >>/tmp/appcelerator_installer.log 2>&1
 
          echo "open http://www.appcelerator.org/gettingstarted" >> /tmp/appcelerator_installer.log
          open "http://www.appcelerator.org/gettingstarted"
@@ -69,5 +76,5 @@ then
     fi 
 fi
 
-/Library/Appcelerator/appcelerator $*
+$INSTALL_DIR/appcelerator $*
 exit $?

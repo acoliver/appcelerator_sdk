@@ -51,11 +51,12 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 ]) do |args,options|
 
   service_name = args[:service]
-  service = Installer.require_component(:service, service_name, options[:version])
+  service = Installer.require_component(:service, service_name, options[:version],
+              :quiet_if_installed=>true)
   
   die "Couldn't find a service named '#{service_name}'." unless service
   
-  puts "Using service ''#{service_name}'" unless OPTIONS[:quiet]
+  puts "Using service '#{service_name}'" unless OPTIONS[:quiet]
   
   if OPTIONS[:debug]
     puts "service_dir=#{service[:dir]}"
@@ -86,7 +87,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
     PluginManager.dispatchEvent 'before_create_project',event
     begin
     
-      config, props = Installer.create_project(to,args[:name],service,version,tx)
+      config, props = Installer.create_project(to,args[:name],service,service[:version],tx)
   
       # now execute the install script
       installer = Appcelerator.const_get(service_name).new

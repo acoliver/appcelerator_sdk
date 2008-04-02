@@ -29,8 +29,9 @@ module Appcelerator
       raise "Invalid options, must specify :widgets option" unless options[:widgets]
 
       if sdk.nil?
-        sdk = Installer.require_component(:websdk, :websdk, nil,
-                                          :tx=>tx, :force=>update)
+        sdk = Installer.require_component(:websdk, 'websdk', nil,
+                                          :tx=>tx, :force=>update,
+                                          :quiet_if_installed=>true)
       end
       source_dir = Installer.get_component_directory(sdk)
       web_version = sdk[:version]
@@ -55,6 +56,7 @@ module Appcelerator
             add_widget_options = {
               :version=>widget[:version],
               :quiet=>true,
+              :quiet_if_installed=>true,
               :tx=>tx,
               :ignore_path_check=>true,
               :no_save=>true

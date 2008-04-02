@@ -551,14 +551,6 @@ HELP
       components || []
     end
 
-    def Installer.each_remote_component(type, ping=false)
-      list = Installer.fetch_distribution_list(ping)
-      members = list[type] || []
-      members.each do |member|
-        yield member[:name],member[:version]
-      end
-    end
-
     def Installer.get_websdk
       with_site_config(false) do |site_config|
         installed = site_config[:installed] || {}
@@ -754,7 +746,8 @@ HELP
       component = Installer.get_build_from_zip zip_path
       
       die "Invalid package file #{zip_path}. Missing build.yml" unless component
-      die "Expected component of type '#{type}' in zipfile, found '#{component[:type]}'" unless type == component[:type]
+      # this is strict, probably won't catch any blunders
+      #die "Expected component of type '#{type}' in zipfile, found '#{component[:type]}'" unless type == component[:type]
       
       component[:checksum] = Installer.checksum(zip_path)
       dir = component[:dir] = Installer.get_component_directory(component)
@@ -793,13 +786,13 @@ HELP
       elsif OPTIONS[:no_remote]
         # user doesn't want to connect to the network
         component = get_component(:local, component_info)
-        component[:dir] = get_component_directory(component)
         die "No remote has been specified and you need to go to the Dev Network for content." unless component
         
       else
         # the name isn't a resource, we will ping the update server eventually
         if version.nil?
           # user doesn't care about version, give them the latest
+          component_info[:name] = component_info[:name].to_s
           remote = get_current_remote_component(component_info)
           local = get_current_installed_component(component_info)
           
@@ -826,7 +819,8 @@ HELP
           end
         end
       end
-              
+      
+      component[:dir] = get_component_directory(component)     
       component
     end
     
@@ -854,6 +848,9 @@ HELP
     end
     
     def Installer.skip_install(component, options)
+      if options.length == 1
+        raise
+      end
       puts "#{component[:name]} #{component[:version]} is already installed" unless OPTIONS[:quiet] or options[:quiet_if_installed]
       puts "NOTE: you can force a re-install with --force-update" if OPTIONS[:verbose]      
     end

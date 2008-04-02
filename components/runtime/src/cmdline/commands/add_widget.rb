@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
         widget_name = name.gsub ':', '_'
         
-        widget = Installer.require_component(:widget, name, options[:version])
+        widget = Installer.require_component(:widget, name, options[:version], options)
         
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir
@@ -78,7 +78,7 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 
           widgets = config[:widgets] ||= []
           widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>name,:version=>version}
+          widgets << {:name=>name,:version=>widget[:version]}
         end
         puts "Installed #{name}" unless OPTIONS[:quiet] or options[:quiet]
       end

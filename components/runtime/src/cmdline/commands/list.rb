@@ -69,7 +69,8 @@ CommandRegistry.makeGroup(:list) do |group|
     {
        :name=>:format,
        :display=>'--format=yaml',
-       :default=>'yaml',
+       :help=>'format for printing results, human-readable by default, can also be yaml',
+       :default=>'',
        :value=>true,
     },
   ]) do |args,options|
@@ -80,46 +81,59 @@ CommandRegistry.makeGroup(:list) do |group|
     
     list = Installer.fetch_distribution_list(ping)
     
-    if opts[:format] == 'yaml'
-      puts 'blah'
-    else
-      puts
-      puts "The following #{type} versions are available remotely:"
-      puts
+    if options[:format] == 'yaml'
+      showYaml(list, args)
     
-      components = from_each(Installer, :each_remote_component, type, ping)
-      Project.list_components(components)
-    
-      puts ' ' * 10 + 'No #{type}s available' if components.empty?
-      puts
+    else # human format
+      type = args[:type].gsub(/s$/,'').to_sym
+      name = args[:name]
+      if type
+        if name
+          components = Installer.get_remote_components(args)
+          listComponents(type, components)
+        else
+          listComponents(type, list[type])
+        end
+      else
+        list.each do |ty,components|
+          listComponents(ty, components)
+        end
+      end
     end
-      # 
-      #   # TODO: format this output
-      #   #
-      #   # logic: if no type, list it all
-      #   
-      #   begin
-      #     
-      #   
-      #   if args[:type]
-      #     l = list[args[:type].to_sym]
-      #     if l
-      #       if args[:name]
-      #         l.each do |e|
-      #           if e[:name] == args[:name]
-      #             components = e.to_yaml
-      #             break
-      #           end
-      #         end
-      #       else
-      #         components = l.to_yaml
-      #       end
-      #     else
-      #       die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
-      #     end
-      #   else
-      #     puts list.to_yaml unless OPTIONS[:quiet]
-      #   end
-      # end
   end
 end
+
+def listComponents(type, components)
+  puts
+  puts "The following #{type} versions are available remotely:"
+  puts
+
+  components.each do |cm|
+    puts "          >  #{cm[:name].ljust(32)} [#{cm[:version]}]"
+  end
+
+  puts ' ' * 10 + 'No #{type}s available' if components.empty?
+  puts
+end
+
+def showYaml(list, args)
+  if args[:type]
+    l = list[args[:type].to_sym]
+    if l
+      if args[:name]
+        l.each do |e|
+          if e[:name] == args[:name]
+            puts e.to_yaml
+          end
+        end
+      else
+        puts l.to_yaml
+      end
+    else
+      die "Couldn't find component type: '#{args[:type]}'" unless OPTIONS[:quiet]
+    end
+  else
+    puts list.to_yaml unless OPTIONS[:quiet]
+  end
+end
+
