@@ -174,12 +174,12 @@ Appcelerator.Widget.Datatable =
 		{
 			var header_info = header_array[x];
 			var formatterFunction = eval(header_array[x]['formatter']);
-			var on = header_array[x]['on'];
+			var onheader = header_array[x]['cellon'];
 			var onTemplate = null;
-			if (on)
+			if (onheader)
 			{
 				needRecompile=true;
-				header_info.onTemplate = new Template('on="'+on+'"');
+				header_info.onTemplate = new Template('on="'+onheader+'"');
 			}
 			if (formatterFunction) {
 				header_info.formatterFunction = formatterFunction;
@@ -297,7 +297,7 @@ Appcelerator.Widget.Datatable =
 				} else {
 					cell_value.toString().escapeHTML();
 				}
-				var td ='<td align="' + header_array[h]['align'] +'" '+ cell_on+ '" class="' + cell_class + '"><span>' + cell_value +'</span></td>';
+				var td ='<td align="' + header_array[h]['align'] +'" '+ cell_on+ ' class="' + cell_class + '"><span>' + cell_value +'</span></td>';
 				table_data_content += td;
 			}
 			table_data_content += '</tr>';
@@ -594,6 +594,7 @@ Appcelerator.Widget.Datatable =
 				}
 				//Header's 'on' attribute, compile it later
 				header_object['on'] =  element_children[i].getAttribute('on')||''; 
+				header_object['cellon'] =  element_children[i].getAttribute('cellon')||''; 
 				//Header's class attribute
 				header_object['class'] = element_children[i].className||''; 
 				//Header property to let us know what data to get from the array	
