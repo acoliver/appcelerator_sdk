@@ -21,7 +21,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if [ $UID -ne 0 ]
+uid=`id -u`
+
+if [ $uid -ne 0 ]
 then
     echo
     echo "Appcelerator tastes best when installed with root privileges."
@@ -32,10 +34,9 @@ fi
 #
 # we need to ensure that we have ruby on this system
 #
-r=`which ruby`
 upgrade=1
 has_ruby=0
-
+r=`which ruby`
 #
 # we have ruby, we need to make sure we're at least 1.8.6 or greater
 #
@@ -106,7 +107,7 @@ fi
 # check to see if we have ruby gems installed
 #
 g=`which gem`
-if [[ ! $? -eq 0 ]]
+if [ $? -ne 0 ]
 then
   echo
   echo "Appcelerator requires RubyGems"
