@@ -90,9 +90,13 @@ CommandRegistry.makeGroup(:list) do |group|
       if type
         if name
           components = Installer.get_remote_components(args)
-          listComponents(type, components)
         else
-          listComponents(type, list[type])
+          components = list[type] || []
+        end
+        if components.empty?
+          raise UserError.new("Couldn't find component type: '#{args[:type]}'")
+        else
+          listComponents(type, components)
         end
       else
         list.each do |ty,components|
@@ -107,7 +111,8 @@ def listComponents(type, components)
   puts
   puts "The following #{type} versions are available remotely:"
   puts
-
+  
+  components ||= []  
   components.each do |cm|
     puts "          >  #{cm[:name].ljust(32)} [#{cm[:version]}]"
   end

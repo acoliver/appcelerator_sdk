@@ -105,7 +105,10 @@ module Appcelerator
     end
 
     def Installer.network_login(email,password,silent=false)
-      die "--no-remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
+      if OPTIONS[:no_remote]
+        # special exit value for external tools (like the ide)
+        die("--no-remote has been specified and you need to go to the Dev Network for content.", 2)
+      end
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
@@ -116,7 +119,6 @@ module Appcelerator
     end
     
     def Installer.login_if_required
-      die "--no-remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
       Installer.login unless @@loggedin
     end
 
@@ -148,7 +150,9 @@ module Appcelerator
     end
 
     def Installer.login(un=nil,pw=nil,exit_on_failure=false)
-      die "--no-remote has been specified and you need to go to the Dev Network for content." if OPTIONS[:no_remote]
+      if OPTIONS[:no_remote]
+        die("--no-remote has been specified and you need to go to the Dev Network for content.", 2)
+      end
       username = un.nil? ? @@config[:username] : un
       password = pw.nil? ? @@config[:password] : pw
       if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
@@ -797,8 +801,6 @@ HELP
           local = get_current_installed_component(component_info)
           
           if local.nil? or should_update(local[:version],remote[:version])
-            p 'remote',remote
-            p 'compinf',component_info
             component = install_from_devnetwork(remote, options)
             finish_install(component, options)
           else

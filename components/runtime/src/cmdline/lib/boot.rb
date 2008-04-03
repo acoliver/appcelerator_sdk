@@ -19,10 +19,10 @@
 #
 require 'yaml'
 
-def die(msg=nil)
-  STDERR.puts msg unless nil
+def die(msg=nil, exit_value=1)
+  STDERR.puts msg unless msg.nil?
   STDERR.flush
-  exit 1
+  exit exit_value
 end
 
 def ask_with_validation(q,msg,regexp,mask=false)

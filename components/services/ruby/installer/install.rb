@@ -72,19 +72,30 @@ module Appcelerator
       true
     end
     
+    def check_dependencies(component)
+      get_rails_gem
+    end
+    
+    def missing_gem? gemname
+      Gem.cache.search(gemname).empty?
+    end
+    
     def get_rails_gem
-      gems = %w(rails json_pure sqlite3-ruby)
+      missing_gems = []
       
-      missing_gem = false
-      gems.each do |g|
-        if Gem.cache.search(g).empty?
-          missing_gem = true
-        end
+      if missing_gem? 'rails'
+        missing_gems << 'rails'
+      end
+      if missing_gem? 'json' and missing_gem? 'json_pure'
+        missing_gems << 'json_pure'
+      end
+      if missing_gem? 'sqlite3-ruby'
+        missing_gems << 'sqlite3-ruby'
       end
       
-      if missing_gem
-        STDERR.puts 'Rails (+json,sqlite3) must be installed to create a project.'
-        if not OPTIONS[:quiet] and confirm 'Install Ruby on Rails now? [Yn]',true,false,'y'
+      if not missing_gems.empty?
+        STDERR.puts 'Rails, json, and sqlite3 must be installed to create a project.'
+        if not OPTIONS[:quiet] and confirm 'Install dependencies now? [Yn]',true,false,'y'
           
           if RUBY_PLATFORM=~/(windows|win32)/
             exec = 'gem.bat'
@@ -92,7 +103,7 @@ module Appcelerator
             exec = 'sudo gem'
           end
           
-          gems.each do |gem|
+          missing_gems.each do |gem|
             cmd = "#{exec} install #{gem} -y"
             puts cmd
             if not system(cmd)
@@ -100,9 +111,7 @@ module Appcelerator
             end
           end
           
-          puts 'Dependencies installed'
-          rails_gem_array = Gem.cache.search('rails')
-          
+          die 'Dependencies installed, please re-run your command'
         else
           die 'Not installing.'
         end

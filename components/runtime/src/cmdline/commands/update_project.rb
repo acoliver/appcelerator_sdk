@@ -88,6 +88,7 @@ CommandRegistry.registerCommand('update:project','update project components',[
       
       if websdk_component
         if Installer.should_update(config[:websdk], websdk_component[:version])
+          new_websdk = websdk_component
           if not confirm "Need to update: 'websdk' to #{new_websdk[:version]}. OK? [Yna] ",true,false,'y'
             puts "Skipping ... websdk,#{new_websdk[:version]}" if OPTIONS[:verbose]
           else

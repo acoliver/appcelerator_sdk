@@ -75,14 +75,14 @@ puts 'Appcelerator RIA Platform Installer'.center(80)
 puts '*' * 80
 puts
 
-install_dir='/usr/local/appcelerator'
-
 #
 # on osx, we install in the same place as osx 
 # installer so we can be consistent
 #
 if RUBY_PLATFORM =~ /darwin/
   install_dir='/Library/Appcelerator'
+else
+  install_dir='/opt/appcelerator'
 end
 
 def permissions_fail!

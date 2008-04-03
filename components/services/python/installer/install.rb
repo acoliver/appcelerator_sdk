@@ -28,14 +28,7 @@ module Appcelerator
         puts "A project already exists here, exiting"
         return false
       end
-      
-      @pyconfig = PythonConfig.new
-      
-      install_easy_install_if_needed
-      install_pylons_if_needed
-      install_paster_if_needed
-      install_appcelerator_egg_if_needed(from_path, config[:service_version])
-      
+            
       project_path = to_path
       project_name = config[:name]
       app_path = File.join to_path, project_name
@@ -131,10 +124,22 @@ END_CODE
     def assert(test)
       raise "Assertion Failed" unless test
     end
-        
+    
+    
     #
     # Dependencies
     #
+    
+    def check_dependencies(component)
+      @pyconfig = PythonConfig.new
+      
+      install_easy_install_if_needed
+      install_pylons_if_needed
+      install_paster_if_needed
+      p component
+      install_appcelerator_egg_if_needed(component[:dir], component[:version])
+    end
+    
     def install_easy_install_if_needed
       if not quiet_system("#{easy_install} --help")
         confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install now? (Y)es, (N)o [Y]")

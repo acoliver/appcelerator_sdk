@@ -175,8 +175,8 @@ module Appcelerator
 
         if not command_info
           if name != 'help'
+            execute('help', [], :show_commands=>false)
             STDERR.puts " *ERROR: Unsupported command: #{name}" if name
-            execute('help')
           end
           return false
         end
@@ -191,9 +191,14 @@ module Appcelerator
             command_info[:invoker].call(argHash,opts)
           end
         
-        rescue UserError
-          # may fail due to missing args or type problems
+        rescue UserError => e
+          # commands may fail due to missing args or type problems
           execute('help',[name])
+          
+          puts
+          puts ' *ERROR: ' + e.message.to_s
+          puts
+          
           false
         end
       end
@@ -207,8 +212,7 @@ module Appcelerator
         result_args = {}
         required_args.each_with_index do |argdef,index|
           if argdef[:required] and given_args.length < index+1
-            STDERR.puts " *ERROR: Required argument: #{argdef[:name]} not found"
-            raise UserError.new
+            raise UserError.new("Required argument: #{argdef[:name]} not found")
           end
 
           value = given_args[index] || argdef[:default]          
@@ -256,8 +260,7 @@ module Appcelerator
           
           if not match
             typestr = type.to_s.split(':').last
-            STDERR.puts " *ERROR: Invalid argument value: #{value} for argument: #{argdef[:name]}. Must be of type: #{typestr}"
-            raise UserError.new
+            raise UserError.new("Invalid argument value: #{value} for argument: #{argdef[:name]}. Must be of type: #{typestr}")
           end
           
           if argdef[:conversion]

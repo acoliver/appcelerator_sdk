@@ -20,11 +20,11 @@ require 'fileutils'
 
 module Appcelerator
   class Installer
-    def Installer.create_project(path,name,service,version,tx,update=false,webcomponent=nil)
+    def Installer.create_project(path,name,service_name,service_version,tx,update=false,webcomponent=nil)
       
       if OPTIONS[:verbose] and not update
-        puts "Creating new project at #{path} with name: #{name} for #{service}"
-        puts "Updating project at #{path} with name: #{name} for #{service}"
+        puts "Creating new project at #{path} with name: #{name} for #{service_name}"
+        puts "Updating project at #{path} with name: #{name} for #{service_name}"
       end
       
       public_path="#{path}/public"
@@ -38,15 +38,15 @@ module Appcelerator
       copy tx, "#{template_dir}/README", "#{path}/README"
       
       config=Appcelerator::Project.get_config(path)
-      config[:name]=name
-      config[:service_version]=version
-      config[:service]=service
+      config[:name] = name
+      config[:service_version] = service_version
+      config[:service] = service_name
       
       # write out our main configuration file
       props = {
         :installed=>Time.now,
-        :service=>service,
-        :service_version=>version,
+        :service=>service_name,
+        :service_version=>service_version,
         :plugins=>[]
       }
       Installer.save_project_config path,props unless update

@@ -43,22 +43,18 @@ CommandRegistry.registerCommand('create:widget','create a new widget project',[
   
   name = args[:name]
   
-  if not name =~ /^app:/
-    die "Widgets must begin with app:"
-  end
-  
   if not name =~ /^app:[\w\d]+[_][\w\d_]+$/
-    STDERR.puts
-    STDERR.puts "ERROR: Invalid widget name"
-    STDERR.puts
-    STDERR.puts "User-defined widgets must start with app: and must contain at "
-    STDERR.puts "least one underscore symbol separated by an alphanumeric word/letter"
-    STDERR.puts
-    STDERR.puts "  > app:my_widget"
-    STDERR.puts "  > app:my_widget_2"
-    STDERR.puts "  > app:a_really_cool_widget"
-    STDERR.puts
-    exit 1
+    message = <<-ERROR_MESSAGE
+Invalid widget name
+
+User-defined widgets must start with app: and must contain at
+least one underscore symbol separated by an alphanumeric word/letter
+
+  > app:my_widget
+  > app:my_widget_2
+  > app:a_really_cool_widget
+ERROR_MESSAGE
+    raise UserError.new(message)
   end
   
   class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }

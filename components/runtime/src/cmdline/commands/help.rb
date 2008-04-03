@@ -20,7 +20,7 @@
 include Appcelerator
 CommandRegistry.makeGroup(:help) do |group|
   
-  group.registerCommand('help','get help for all the supported commands',[
+  group.registerCommand('help','get help for supported commands',[
     {
       :name=>'command',
       :help=>'get help for a specific command',
@@ -30,14 +30,6 @@ CommandRegistry.makeGroup(:help) do |group|
     }
   ]) do |args,options|
     
-    success = true
-    
-    entry = CommandRegistry.find(args[:command])
-    if args[:command] and not entry
-      STDERR.puts " *ERROR: Invalid command: #{args[:command]}"
-      success=false
-    end
-    
     puts 
     puts 'Appcelerator RIA Platform'.center(80)
     puts 
@@ -45,6 +37,9 @@ CommandRegistry.makeGroup(:help) do |group|
     puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
     puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
     puts
+    
+    entry = CommandRegistry.find(args[:command])
+    invalid_command = (args[:command] and not entry)
     
     if entry
       puts 
@@ -66,8 +61,8 @@ CommandRegistry.makeGroup(:help) do |group|
       
       puts
       puts "    Supported options:"
-      options = HELP.values + entry[:opts]
-      options.each do |opt|
+      opts = HELP.values + entry[:opts]
+      opts.each do |opt|
         puts "      #{opt[:display].ljust(20)} #{opt[:help]}"
       end
       
@@ -78,7 +73,9 @@ CommandRegistry.makeGroup(:help) do |group|
           puts "      #{example}"
         end
       end
+    
     else
+      # if we're not helping with a specific command
       puts "    Usage:"
       puts
       puts "        #{SCRIPTNAME} -h/--help"
@@ -91,40 +88,40 @@ CommandRegistry.makeGroup(:help) do |group|
       puts
       puts "    For supported commands, use:"
       puts
-      puts "        #{SCRIPTNAME} help:commands"
+      puts "        #{SCRIPTNAME} help"
       puts
       puts "    For command-specific help, use:"
       puts
       puts "        #{SCRIPTNAME} help [command]"
-    end
-    puts
-    success
-  end
-
-  group.registerCommand('help:commands','get information on all the supported commands') do |args,options|
-    puts 
-    puts 'Appcelerator RIA Platform'.center(80)
-    puts 
-    puts "  This program comes with ABSOLUTELY NO WARRANTY; for details type "
-    puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
-    puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
-    puts
-    puts "    Supported commands:"
-    puts
-    currentGroup = nil
-
-    CommandRegistry.each do |name,entry|
-      help = entry[:help]
-      group = entry[:group]
+      puts
       
-      # space between groups
-      puts if currentGroup and currentGroup != group
-      puts "       #{name.ljust(20)}#{help}"
-      currentGroup = group
-    end
-    true
-  end
+      if options[:show_commands] != false
+        # show these only if the user _typed_ "app help",
+        # not if some command they typed was invalid
+        puts
+        puts "    Supported commands:"
+        puts
+        currentGroup = nil
 
+        CommandRegistry.each do |name,entry|
+          help = entry[:help]
+          group = entry[:group]
+
+          # space between groups
+          puts if currentGroup and currentGroup != group
+          puts "       #{name.ljust(20)}#{help}"
+          currentGroup = group
+        end
+      end
+    end
+    puts
+    
+    if invalid_command
+      raise UserError.new("Invalid command: #{args[:command]}")
+    else
+      true
+    end
+  end
 
   group.registerCommand('help:license','get license details for this software') do |args,options|
     license = File.expand_path "#{File.dirname(__FILE__)}/templates/COPYING"
