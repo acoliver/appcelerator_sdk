@@ -136,7 +136,6 @@ END_CODE
       install_easy_install_if_needed
       install_pylons_if_needed
       install_paster_if_needed
-      p component
       install_appcelerator_egg_if_needed(component[:dir], component[:version])
     end
     
