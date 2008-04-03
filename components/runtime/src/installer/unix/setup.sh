@@ -22,8 +22,7 @@
 #
 
 uid=`id -u`
-
-if [ $uid -ne 0 ]
+if [ $uid -ne 0 ];
 then
     echo
     echo "Appcelerator tastes best when installed with root privileges."
@@ -40,7 +39,7 @@ r=`which ruby`
 #
 # we have ruby, we need to make sure we're at least 1.8.6 or greater
 #
-if [ $? -eq 0 ]
+if [ $? -eq 0 ];
 then
    has_ruby=1
    v=`ruby --version | cut -c 6-10`
@@ -73,7 +72,7 @@ fi
 # we're going to make the user do it to make sure they
 # get the right version
 #
-if [ $has_ruby -eq 0 ]
+if [ $has_ruby -eq 0 ];
 then
   echo
   echo "Appcelerator requires Ruby version 1.8.6 or greater."
@@ -91,7 +90,7 @@ fi
 # check to see if we need to upgrade our ruby and if so, notify the user and make 
 # them do it for us
 #
-if [ $upgrade -eq 1 ]
+if [ $upgrade -eq 1 ];
 then
   echo
 	echo "Appcelerator requires Ruby version 1.8.6 or greater."
@@ -107,7 +106,7 @@ fi
 # check to see if we have ruby gems installed
 #
 g=`which gem`
-if [ $? -ne 0 ]
+if [ $? -ne 0 ];
 then
   echo
   echo "Appcelerator requires RubyGems"
