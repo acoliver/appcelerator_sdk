@@ -21,15 +21,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
-#
-# only run as root when installing
-#
 if [ $UID -ne 0 ]
 then
-	echo "This installer requires root access to install Appcelerator"
-	echo "Please re-run the installer as a root"
-	exit 1
+    echo
+    echo "Appcelerator tastes best when installed with root privileges."
+    echo "Please re-run with 'sudo' or install into a directory you can write to."
+    echo
 fi
 
 #

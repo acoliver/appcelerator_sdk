@@ -48,8 +48,7 @@ then
          echo "chmod +x $INSTALL_DIR/appcelerator" >> /tmp/appcelerator_installer.log
          chmod +x $INSTALL_DIR/appcelerator
 
-         if ["$2" == "--have-root--"]
-         then
+         # things that require root
               echo "chown -R root:admin $INSTALL_DIR" >> /tmp/appcelerator_installer.log
               chown -R root:admin $INSTALL_DIR
 
@@ -61,7 +60,7 @@ then
 
               echo "chmod +x $APP_CMD" >> /tmp/appcelerator_installer.log
               chmod +x $APP_CMD
-         fi
+         # end things that require root
 
          echo "$INSTALL_DIR/app" >> /tmp/appcelerator_installer.log
          echo "PATH=$PATH" >> /tmp/appcelerator_installer.log

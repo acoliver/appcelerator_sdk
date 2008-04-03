@@ -29,7 +29,6 @@ module Appcelerator
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
       
       rails_gem = get_rails_gem
-      return false unless rails_gem
       
       cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'rails' : 'rails.cmd'
       
@@ -74,33 +73,42 @@ module Appcelerator
     end
     
     def get_rails_gem
-      rails_gem_array = Gem.cache.search('rails')
-      if rails_gem_array.empty?
-        STDERR.puts 'Rails must be installed to create a project.'
-        if not OPTIONS[:quiet] and confirm 'Install Ruby on Rails now? [Yn]',true,false,'y'
-          if RUBY_PLATFORM=~/(windows|win32)/
-            sudo = ''
-          else
-            sudo = 'sudo '
-            puts 'Installing ruby gems requires you to be root'
-          end
-          puts 'Installing Rails'
-          rails_installed = system "#{sudo}gem install rails"
-          puts 'Installing JSON'
-          json_installed = system "#{sudo}gem install json"
-          
-          if rails_installed and json_installed
-            puts 'Dependencies installed, please re-run your command'
-          else
-            puts 'Error when installing gem dependencies. Ask someone on http://appcelerator.org about this problem'
-          end
-          return nil
-        else
-          return nil
+      gems = %w(rails json_pure sqlite3-ruby)
+      
+      missing_gem = false
+      gems.each do |g|
+        if Gem.cache.search(g).empty?
+          missing_gem = true
         end
       end
       
-      rails_gem_array.last
+      if missing_gem
+        STDERR.puts 'Rails (+json,sqlite3) must be installed to create a project.'
+        if not OPTIONS[:quiet] and confirm 'Install Ruby on Rails now? [Yn]',true,false,'y'
+          
+          if RUBY_PLATFORM=~/(windows|win32)/
+            exec = 'gem.bat'
+          else
+            exec = 'sudo gem'
+          end
+          
+          gems.each do |gem|
+            cmd = "#{exec} install #{gem} -y"
+            puts cmd
+            if not system(cmd)
+              die "Unable to install required ruby gems"
+            end
+          end
+          
+          puts 'Dependencies installed'
+          rails_gem_array = Gem.cache.search('rails')
+          
+        else
+          die 'Not installing.'
+        end
+      end
+      
+      Gem.cache.search('rails').last
     end
   end
 end
