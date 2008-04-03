@@ -102,15 +102,7 @@ module Appcelerator
     class CommandRegistry
       @@registry=Hash.new
       @@groups=Hash.new
-      
-      def CommandRegistry.addOptions(opts=nil)
-        if opts
-          opts.each do |opt|
-            HELP[opt[:name].to_sym] = opt
-          end
-        end
-      end
-      
+            
       def CommandRegistry.makeGroup(name,order=nil)
         name = name.to_sym
         if @@groups[name]
@@ -156,7 +148,6 @@ module Appcelerator
             :group=>CommandRegistry.inferGroup(group, name),
             :alias=>idx > 0
           } unless exists?(name)
-          CommandRegistry.addOptions(opts)
         end
       end
       
@@ -178,7 +169,7 @@ module Appcelerator
         end
       end
       
-      def CommandRegistry.execute(name,args=[],opts=nil)
+      def CommandRegistry.execute(name,args=[],opts={})
 
         command_info = @@registry[name]
 
@@ -230,7 +221,7 @@ module Appcelerator
       end
       
       def CommandRegistry.extractOptionalArgs(given_opts, optional_args)
-        result_opts = given_opts || {}
+        result_opts = given_opts.clone
         optional_args.each do |optdef|
           key = optdef[:name].to_sym
           

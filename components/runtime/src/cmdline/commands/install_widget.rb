@@ -30,7 +30,7 @@ CommandRegistry.registerCommand('install:widget','install a widget',[
   {
     :name=>'version',
     :display=>'--version=X.X.X',
-    :help=>'version of the plugin to add',
+    :help=>'version of the widget to add',
     :value=>true
   }
 ],[

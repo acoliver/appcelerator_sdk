@@ -29,15 +29,15 @@ CommandRegistry.makeGroup(:help) do |group|
       :type=>Types::AlphanumericType
     }
   ]) do |args,options|
-
+    
     success = true
-  
+    
     entry = CommandRegistry.find(args[:command])
     if args[:command] and not entry
       STDERR.puts " *ERROR: Invalid command: #{args[:command]}"
       success=false
     end
-  
+    
     puts 
     puts 'Appcelerator RIA Platform'.center(80)
     puts 
@@ -45,7 +45,7 @@ CommandRegistry.makeGroup(:help) do |group|
     puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
     puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
     puts
-  
+    
     if entry
       puts 
       puts "    #{args[:command]} => #{entry[:help]}"
@@ -55,29 +55,28 @@ CommandRegistry.makeGroup(:help) do |group|
       puts "    Usage:"
       puts "      #{SCRIPTNAME} #{args[:command]} #{astr}"
       puts
+      
       if entry[:args]
         puts "    Supported arguments:"
-        entry[:args].each do |a|
-            n = a[:name]
-            msg = a[:help]
-            msg<<'  (optional)' unless a[:required]
-            puts "      #{n}" + (" "*(20-n.length)) + "#{msg}"
+        entry[:args].each do |arg|
+          optional = arg[:required] ? '' : '(optional)'
+          puts "      #{arg[:name].ljust(20)} #{arg[:help]} #{optional}"
         end
       end
+      
       puts
       puts "    Supported options:"
-      HELP.keys.each do |k|
-          v = HELP[k]
-          msg = v[:help]
-          name = v[:display]
-          puts "      #{name.ljust(20)}#{msg}" if msg
+      options = HELP.values + entry[:opts]
+      options.each do |opt|
+        puts "      #{opt[:display].ljust(20)} #{opt[:help]}"
       end
-      if entry[:examples]
-          puts 
-          puts "    Examples:"
-          entry[:examples].each do |example|
-              puts "      #{example}"
-          end
+      
+      unless entry[:examples].empty?
+        puts 
+        puts "    Examples:"
+        entry[:examples].each do |example|
+          puts "      #{example}"
+        end
       end
     else
       puts "    Usage:"
@@ -118,6 +117,7 @@ CommandRegistry.makeGroup(:help) do |group|
       help = entry[:help]
       group = entry[:group]
       
+      # space between groups
       puts if currentGroup and currentGroup != group
       puts "       #{name.ljust(20)}#{help}"
       currentGroup = group
