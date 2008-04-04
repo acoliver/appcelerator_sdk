@@ -8,7 +8,7 @@
   :name: websdk
   :version: ">=2.1"
 :name: app:as_flexflow
-:tags: [flex,photo]
+:tags: [ flex , photo ]
 
-:description: app:as_flexflow widget
+:description: app:as_flexflow widget provides a coverflow-like graphic functionality
 :version: 1.0
