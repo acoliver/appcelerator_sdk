@@ -844,7 +844,7 @@ HELP
       
       description = Installer.describe_component(component[:type], component[:name])
       puts
-      puts "Installed #{description}: #{component[:name]},#{component[:version]}" unless OPTIONS[:quiet]
+      puts "Installed #{component[:name]} #{component[:version]}" unless OPTIONS[:quiet]
     end
     
     def Installer.skip_install(component, options)
