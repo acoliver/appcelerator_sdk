@@ -203,9 +203,6 @@ module Appcelerator
         end
       end
       
-      class UserError < StandardError
-      end
-
       private 
       
       def CommandRegistry.extractArgs(given_args, required_args)

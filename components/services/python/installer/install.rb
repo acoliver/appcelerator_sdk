@@ -141,7 +141,7 @@ END_CODE
     
     def install_easy_install_if_needed
       if not quiet_system("#{easy_install} --help")
-        confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install now? (Y)es, (N)o [Y]")
+        confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install? [Yn]")
         
         require 'open-uri'
         require 'tempfile'
@@ -150,7 +150,7 @@ END_CODE
         ez_file.write(ez_setup_src)
         ez_file.close
         
-        sudo = on_windows ? '' : 'sudo '          
+        sudo = on_windows ? '' : 'sudo '         
         quiet_system("#{sudo}#{python} #{ez_file.path}")
       end
     end
@@ -158,14 +158,14 @@ END_CODE
     def install_pylons_if_needed
       # this is taken care of by easy_install, but this gives the user a prompt
       if not quiet_system("#{python} -c \"import pylons\"")
-        confirm("Appcelerator:Python requires Pylons to be installed before continuing. Install now? (Y)es, (N)o [Y]")
+        confirm("Appcelerator:Python requires Pylons to be installed before continuing. Install now? [Yn]")
         quiet_system("#{easy_install} pylons")
       end
     end
     
     def install_paster_if_needed
       if not quiet_system(paster)
-        confirm("Appcelerator:Python requires PasteScript to be installed before continuing. Install now? (Y)es, (N)o [Y]")
+        confirm("Appcelerator:Python requires PasteScript to be installed before continuing. Install now? [Yn]")
         quiet_system("#{easy_install} pastescript")
       end
     end
@@ -173,7 +173,7 @@ END_CODE
     def install_appcelerator_egg_if_needed(dir,version)
       appc_version_check = "#{python} -c \"from pkg_resources import require;require('Appcelerator==#{version}')\""
       if not quiet_system(appc_version_check)
-        puts "Installing new Appcelerator module"
+        puts "Installing new Appcelerator module" unless OPTIONS[:quiet]
         quiet_system("#{easy_install} \"#{dir}/module/\"")
       end
     end

@@ -56,7 +56,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   
   die "Couldn't find a service named '#{service_name}'." unless service
   
-  puts "Using service '#{service_name}'" unless OPTIONS[:quiet]
+  puts "Using service #{service[:name]} #{service[:version]}" unless OPTIONS[:quiet]
   
   if OPTIONS[:debug]
     puts "service_dir=#{service[:dir]}"

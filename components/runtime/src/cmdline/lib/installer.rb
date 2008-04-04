@@ -277,10 +277,10 @@ module Appcelerator
       dirname=nil
       uri = URI.parse(url)
       home_uri = URI.parse(OPTIONS[:server])
-      cookies = ''
-      if same_host?(uri.host,home_uri.host) and uri.port == home_uri.port
-        cookies = @@client.cookies.to_s
-      end
+      # workaround!
+      #if same_host?(uri.host,home_uri.host) and uri.port == home_uri.port
+      cookies = @@client.cookies.to_s
+      
       puts "Session cookies: #{cookies}" if OPTIONS[:debug]
 
       proxy = Installer.get_proxy()
@@ -343,7 +343,7 @@ module Appcelerator
           FileUtils.mkdir_p(File.dirname(fpath))
           puts "extracting ... #{fpath}" if OPTIONS[:debug]
           if File.file?(fpath) 
-            confirm("Overwrite [#{fpath}]? (Y)es,(N)o,(A)ll [Y]") if not OPTIONS[:quiet] and not OPTIONS[:force]
+            confirm("Overwrite [#{fpath}]? (Y)es,(N)o,(A)ll [Y]") unless OPTIONS[:quiet] or OPTIONS[:force]
             FileUtils.rm_rf(fpath)
           end
           zf.extract(e, fpath) 
@@ -500,27 +500,7 @@ HELP
       end
       true
     end
-    
-    def Installer.convert_object(object)
-      case object.class.to_s
-        when 'Hash'
-          return convert_hash_to_symbol_keys(object)
-        when 'Array'
-          return object.inject([]) do |array,value|
-            array << convert_object(value)
-          end
-      end
-      object
-    end
-    
-    def Installer.convert_hash_to_symbol_keys(hash)
-      hash.each do |key,value|
-        hash.delete key
-        hash[key.to_sym]=convert_object(value)
-      end
-      hash
-    end
-    
+        
     def Installer.fetch_distribution_list(ping=false)
         return @@distributions if @@distributions # caching this
         login_if_required
@@ -533,7 +513,7 @@ HELP
           config[:sid] = response[:data]['sid']
           save_config
         end
-        @@distributions = convert_object(response[:data]['distributions'])
+        @@distributions = response[:data]['distributions'].keys_to_sym
         with_site_config do |site_config|
           site_config[:distributions] = @@distributions
         end
@@ -793,31 +773,49 @@ HELP
         die "No remote has been specified and you need to go to the Dev Network for content." unless component
         
       else
-        # the name isn't a resource, we will ping the update server eventually
+        # the name isn't a resource
         if version.nil?
           # user doesn't care about version, give them the latest
           component_info[:name] = component_info[:name].to_s
           remote = get_current_remote_component(component_info)
           local = get_current_installed_component(component_info)
           
-          if local.nil? or should_update(local[:version],remote[:version])
+          if (local.nil? and remote)
+            # first install
             component = install_from_devnetwork(remote, options)
             finish_install(component, options)
-          else
+                        
+          elsif should_update(local[:version],remote[:version])
+            # upgrading
+            if confirm("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]", true, false)
+              component = install_from_devnetwork(remote, options)
+              finish_install(component, options)
+            else
+              # user is resisting upgrading
+              component = local
+              skip_install(component, options)              
+            end
+          
+          elsif local # if we have this cached
             component = local
             skip_install(component, options)
+          
+          else
+            raise UserError.new("Component was not found locally or remotely")
           end
         else
           # user wants a specific version, try to use local
           local = get_installed_components(component_info).last
           
-          if local
+          if local and not OPTIONS[:force_update]
+            # this is the only case were we don't hit the network
             component = local
             skip_install(component, options)
           else
             remote = get_remote_components(component_info).last
             component = install_from_devnetwork(remote, options)
             finish_install(component, options)
+            #raise UserError.new("Component was not found locally or remotely")
           end
         end
       end
@@ -850,9 +848,6 @@ HELP
     end
     
     def Installer.skip_install(component, options)
-      if options.length == 1
-        raise
-      end
       puts "#{component[:name]} #{component[:version]} is already installed" unless OPTIONS[:quiet] or options[:quiet_if_installed]
       puts "NOTE: you can force a re-install with --force-update" if OPTIONS[:verbose]      
     end
@@ -962,12 +957,20 @@ HELP
         type = component_info[:type].to_sym
         version = component_info[:version]
 
-        components = all_components[type]
-        components.select do |cm|
+        components = all_components[type] || []
+        matching_components = components.select do |cm|
           cm[:name] == name and (version.nil? or cm[:version] == version)
-        end      
-      rescue
-        []
+        end
+        
+        if matching_components.empty? and location == :remote and component_info[:version]
+          # only try to get an exact version if we can't find it normally
+          [get_exact_remote_component(component_info)]
+        else
+          matching_components
+        end
+      rescue StandardError => e
+        p e if OPTIONS[:debug]
+        [] # odd cases, when there are no services installed locally, etc
       end
     end
 
@@ -1000,9 +1003,16 @@ HELP
 
     
     
-    
     def Installer.get_exact_remote_component(component_info)
-      get_components(:remote, component_info)
+      message = {'sid'=>get_config[:sid],'os'=>RUBY_PLATFORM,'name'=>component_info[:name],'version'=>component_info[:version]}
+      response = get_client.send('distribution.release.request', message)[:data]
+      if response['success']
+        component = response['release'].keys_to_sym
+        component[:type] = component[:type].to_sym
+        component
+      else
+        die 'Sorry, that version isn\'t available'
+      end
     end
     
     
@@ -1110,6 +1120,10 @@ HELP
       # end
     end
   end
+  
+  class UserError < StandardError
+  end
+  
 end
 
 #
@@ -1154,5 +1168,20 @@ class Hash
       result[k] = self[k]
     end
     result
+  end
+  def keys_to_sym
+    result = {}
+    each do |k,v|
+      result[k.to_sym] = v.keys_to_sym rescue v
+    end
+    result
+  end
+end
+
+class Array
+  def keys_to_sym
+    map do |v|
+      v.keys_to_sym rescue v
+    end
   end
 end
