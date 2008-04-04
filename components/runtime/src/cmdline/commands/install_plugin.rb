@@ -46,9 +46,9 @@ CommandRegistry.registerCommand('install:plugin','install a plugin',[
       component = Installer.require_component(:plugin,plugin.strip,options[:version])
       
       Installer.with_site_config do |config|
-        plugin_name = name.gsub(':','_')
+        plugin_name = component[:name].gsub(':','_')
         config[:onload] ||= []
-        plugin_path = "#{to_dir}/#{plugin_name}.rb"
+        plugin_path = "#{component[:dir]}/#{plugin_name}.rb"
         config[:onload].delete_if { |e| e[:name]==plugin_name }
         config[:onload] << {:name=>plugin_name, :path=>plugin_path}
       end

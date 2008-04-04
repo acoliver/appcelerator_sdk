@@ -74,12 +74,12 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
         tx.mkdir to_dir
         
-        event = {:name=>name,:version=>version,:plugin_dir=>plugin[:dir],:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
+        event = {:name=>name,:version=>plugin[:version],:plugin_dir=>plugin[:dir],:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
         PluginManager.dispatchEvents('add_plugin',event) do
           plugins.delete_if { |w| w[:name] == name } 
-          plugins << {:name=>name,:version=>version}        
+          plugins << {:name=>name,:version=>plugin[:version]}        
         end
-        puts "Added Plugin: #{name}, #{version} to project: #{to_dir}" unless OPTIONS[:quiet]
+        puts "Added Plugin: #{name}, #{plugin[:version]} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
       
       Installer.save_project_config(pwd,config) unless options[:no_save]
