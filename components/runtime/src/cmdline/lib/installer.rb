@@ -1090,7 +1090,7 @@ HELP
     #
     def Installer.compare_versions(first, second)
       return 0 unless (first and second)
-      first.to_s.split('.') <=> second.to_s.split('.')
+      first.to_s.split('.').map {|n| n.to_i} <=> second.to_s.split('.').map {|n| n.to_i}
     end
         
     def Installer.should_update(local_version, remote_version)
