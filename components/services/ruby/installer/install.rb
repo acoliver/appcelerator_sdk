@@ -87,7 +87,11 @@ module Appcelerator
         missing_gems << 'rails'
       end
       if missing_gem? 'json' and missing_gem? 'json_pure'
-        missing_gems << 'json_pure'
+        if RUBY_PLATFORM =~ /(windows|win32)/
+          missing_gems << 'json_pure'
+        else
+          missing_gems << 'json'
+        end
       end
       if missing_gem? 'sqlite3-ruby'
         missing_gems << 'sqlite3-ruby'

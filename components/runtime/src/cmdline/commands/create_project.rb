@@ -83,12 +83,13 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 
   service_installer = Appcelerator.const_get(service_name).new
   if service_installer.respond_to? :check_dependencies
-    case service_installer.method :check_dependencies
-      # yuck!
+    case service_installer.method(:check_dependencies).arity
       when 0
         service_installer.check_dependencies
       when 1
         service_installer.check_dependencies(service)
+      else
+        raise "Service #{service[:name]} has method 'check_dependencies' but it requires more than one argument"
     end
   end
 

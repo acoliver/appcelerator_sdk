@@ -61,13 +61,15 @@ def parse_options
         i = t.index('=')
         key = (i.nil? ? t : t[0,i]).gsub('-','_')
         value = i.nil? ? nil : t[i+1..-1]
-        entry = HELP[key.to_sym] || HELP[key]
-
-        if win32 and entry and entry[:value]
-    	    current = key 
-    	    next
+        
+        if win32
+          if current # an option directly after another
+    	      OPTIONS[current.to_sym] = true
+    	    end
+    	    current = key
+    	  else
+    	    OPTIONS[key.to_sym]=dequote(value)||true
         end
-        OPTIONS[key.to_sym]=dequote(value)||true
     else
       if win32 and current
         OPTIONS[current.to_sym]=dequote(arg)
