@@ -130,7 +130,7 @@ public class ServiceDirectoryScanner implements Runnable
 	                    current.remove(name);
 	                }
 
-	                if (entry.requiresCompilation())
+	                if (entry != null && entry.requiresCompilation())
 	                {
 	                    try
 	                    {
