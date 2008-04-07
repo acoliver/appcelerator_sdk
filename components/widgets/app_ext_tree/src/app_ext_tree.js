@@ -11,7 +11,7 @@ Appcelerator.Widget.AppExtTree =
     },
     getVersion: function()
     {
-        return 1.1;
+        return 1.2;
     },
     getSpecVersion: function()
     {
@@ -36,7 +36,7 @@ Appcelerator.Widget.AppExtTree =
 
 	getActions: function()
 	{
-		return ['execute','senddata'];
+		return ['execute','senddata', 'select'];
 	},	
 
     getAttributes: function()
@@ -52,7 +52,8 @@ Appcelerator.Widget.AppExtTree =
 				{name: 'width', optional: true,  description: "width of tree panel"},
 				{name: 'sendDataMessage', optional: true,  description: "Message name that contains tree data in its payload", type: T.messageSend},
 				{name: 'sendDataProperty', optional: true,  description: "property name for tree array data in its payload", type: T.identifer},
-				{name: 'height', optional: true,  description: "height of tree panel"}
+				{name: 'height', optional: true,  description: "height of tree panel"},
+                {name: 'lines', optional: true, description: "show tree lines", defaultValue: true, type: T.bool}
 
 		];
     },
@@ -77,7 +78,6 @@ Appcelerator.Widget.AppExtTree =
 		    Appcelerator.Widget.ExtTree.processChildren(child[i],array);
 		}	
 	},
-	
 	senddata: function(id,params,data,scope)
 	{
 		var json=Appcelerator.Widget.ExtTree.treeToJSON(params);
@@ -86,6 +86,14 @@ Appcelerator.Widget.AppExtTree =
 		{
 			$MQ(params['sendDataMessage'], {'rows':json});
 		}
+	},
+	select: function(id,params,data,scope) 
+	{
+	    var id = params['id'];
+	    var tree = params['tree'];
+	    var treeNode = tree.getNodeById(data.id);
+	    var nodePath = treeNode.getPath();
+	    tree.expandPath(nodePath);
 	},
 	execute: function(id,params,data,scope)
 	{
@@ -119,7 +127,7 @@ Appcelerator.Widget.AppExtTree =
 		treeOptions['root'] = root;
 		treeOptions['enableDD'] = (params['draggable'] == "true")?true:false;
 		treeOptions['animate'] = true;
-		treeOptions['lines'] = true;
+		treeOptions['lines'] = (params['lines'] == true || params['lines'] == 'true') ? true : false;
 		treeOptions['selModel'] = new Ext.tree.DefaultSelectionModel();
 		treeOptions['containerScroll'] = true;
 
