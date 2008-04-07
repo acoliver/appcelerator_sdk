@@ -22,3 +22,6 @@ in the tree.
 The "expandable" attribute determines whether the + or - icons are displayed for the node
 The "children" attribute should be null or it should be an array of children tree nodes that follow the 
 same model (i.e., text, id, expandable, and children)
+
+*Note* Care should be taken to ensure that all nodes ahve a unique id.  Unique id's will be assigned
+automatically if no id parameter is provided.

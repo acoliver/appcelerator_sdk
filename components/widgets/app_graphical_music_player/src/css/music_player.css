@@ -1,0 +1,80 @@
+.music_player {
+  background: url(../images/bg.png) no-repeat;
+  width: 675px;
+  height: 80px;
+  position: relative;
+}
+
+.button_bg {
+  background: url(../images/button_bg.png) no-repeat;
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  width: 159px;
+  height: 45px;
+}
+
+.play_button {
+  background: url(../images/play.png) no-repeat;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  top: 7px;
+  left: 63px;
+  cursor: pointer;
+}
+.stop_button {
+  background: url(../images/stop.png) no-repeat;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  top: 7px;
+  left: 63px;
+  cursor: pointer;
+}
+.pause_button {
+  background: url(../images/pause.png) no-repeat;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  top: 7px;
+  left: 63px;
+  cursor: pointer;
+}
+.prev_button {
+  background: url(../images/prev.png) no-repeat;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  top: 7px;
+  left: 10px;
+  cursor: pointer;
+}
+.next_button {
+  background: url(../images/next.png) no-repeat;
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  top: 7px;
+  left: 115px;
+  cursor: pointer;
+}
+
+.window {
+  background: url(../images/window.png) no-repeat;
+  width: 302px;
+  height: 64px;
+  position: absolute;
+  top: 5px;
+  left: 190px;
+}
+
+.window table td {
+    vertical-align: center;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    width: 302px;
+    height: 64px;
+}

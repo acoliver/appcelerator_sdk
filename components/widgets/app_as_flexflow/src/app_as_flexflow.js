@@ -23,7 +23,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	 */
 	getVersion: function()
 	{
-		return 1.0;
+		return 1.1;
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the
@@ -106,7 +106,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	 */
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute', 'select'];
 	},
 	execute: function(id,parameters,data,scope,version)
 	{
@@ -125,16 +125,42 @@ Appcelerator.Widget.AppAsFlexflow =
 	        if(typeof FABridge[bridge_name] != "undefined") {
         	    var bridge = FABridge[bridge_name].root();
         	    bridge.setDataProvider(images);
-        	    $MQ(parameters['click_message'], {
-                    'index': 0,
-                    'image': Appcelerator.Widget.AppAsFlexflow.flows[id][0]["image"],
-                    'label': Appcelerator.Widget.AppAsFlexflow.flows[id][0]["label"]
-                });
+                var data = Appcelerator.Widget.AppAsFlexflow.flows[id][0];
+                data.index = 0;
+        	    $MQ(parameters['click_message'], data);
         	    clearInterval(interval);
     	    }
     	    
         }, 500);
 	},	
+	/**
+	 * Call this function to select a particular cover.  
+	 * The widget performs selection based by matching the id, image, or label attributes
+	 * of the data playload
+	 */
+	select: function(id,parameters,data,scope,version)
+	{
+	    var bridge_name = id + "_bridge";
+	    var bridge = FABridge[bridge_name].root();
+	    
+	    var covers = Appcelerator.Widget.AppAsFlexflow.flows[id];
+	    for(var i = 0, length = covers.length; i < length; i++) 
+	    {
+	        var selected = -1;
+	        if(data['id'] == covers[i].id || data['image'] == covers[i].image || data['label'] == covers[i].label) 
+	        {
+	            selected = i;
+	        } 
+	        
+	        if(selected != -1) {
+	            bridge.getCfc().setSelectedIndex(i);
+	            var data = covers[i];
+                data.index = i;
+                $MQ(id + "_select", data);
+	            break;
+	        }
+	    }
+	},
 	/**
 	 * this method will be called after the widget has been built, the content replaced and available
 	 * in the DOM and when it is ready to be compiled.
@@ -153,11 +179,9 @@ Appcelerator.Widget.AppAsFlexflow =
             bridge.setMaxImageHeight(parameters['img_height']); 
             bridge.getCfc().addEventListener("click", function() {
                 var index = bridge.getCfc().getSelectedIndex();
-                $MQ(parameters['click_message'], {
-                    'index': index,
-                    'image': Appcelerator.Widget.AppAsFlexflow.flows[id][index]["image"],
-                    'label': Appcelerator.Widget.AppAsFlexflow.flows[id][index]["label"]
-                });
+                var data = Appcelerator.Widget.AppAsFlexflow.flows[id][index];
+                data.index = index;
+                $MQ(parameters['click_message'], data);
             });         
         });
 	},
@@ -178,8 +202,10 @@ Appcelerator.Widget.AppAsFlexflow =
 	    
 	    var box_height = parseInt(parameters['img_height']) + 100;
 		var html = [];
+		html.push('<div style="position:relative" id="' + id + '">')
 		html.push('<div style="position:absolute; color:white;top:20px;text-align:center;width:100%" id="' + element.id + '_label" ');
-		html.push('on="' + parameters['click_message'] + ' then hide and value[label] and effect[appear]"');
+		html.push('on="' + parameters['click_message'] + ' then hide and value[label] and effect[appear] or l:' 
+		        + element.id + '_select then hide and value[label] and effect[appear]"');
 		html.push('></div>');
 		html.push('<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"');
         html.push('id="' + element.id + '" width="100%" height="' + box_height + '"');
@@ -200,6 +226,7 @@ Appcelerator.Widget.AppAsFlexflow =
         html.push('    flashvars="bridgeName=' + bridge_name + '">');
         html.push('  </embed>');
         html.push('</object>');
+        html.push('</div>');
 		
 		return {
 			'presentation' : html.join(' '),   // this is the HTML to replace for the contents <app:as_flexflow>

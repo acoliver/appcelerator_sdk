@@ -145,7 +145,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 	}	    
     
     Sound.onSoundComplete = function(object_id) {
-        Sound.instances[object_id].onSoundComplete;
+        Sound.instances[object_id].onSoundComplete();
     }   
     
 	Sound.prototype.onID3 = function(){
