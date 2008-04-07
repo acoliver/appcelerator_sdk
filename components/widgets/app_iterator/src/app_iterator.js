@@ -128,7 +128,7 @@ Appcelerator.Widget.Iterator =
          	// this is in the case we pass in an object instead of 
 			// an array, make it an array of length one so we can iterate
 			// !Object.isArray(array) fails in some cases so we don't use it (it's poorly implemented)
-			if (array[0] == undefined)
+			if (array.length != 0 && array[0] == undefined)
 			{
 				array = [array];
 			}
