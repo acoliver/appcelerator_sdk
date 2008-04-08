@@ -119,12 +119,12 @@ CommandRegistry.registerCommand('update:project','update project components',[
           end
         else
           if OPTIONS[:force_update]
-            if confirm "Re-install local update: #{service} to #{config[:service_version]}. OK? [Yna] ",true,false,'y'
-              puts "Will re-install => #{service}, #{config[:service_version]}" if OPTIONS[:verbose]
+            if confirm "Re-install local update: #{service_name} to #{config[:service_version]}. OK? [Yna] ",true,false,'y'
+              puts "Will re-install => #{service_name}, #{config[:service_version]}" if OPTIONS[:verbose]
               updates << service_component
             end
           else
-            puts "Service '#{service}' is already up-to-date (#{config[:service_version]})"
+            puts "Service '#{service_name}' is already up-to-date (#{config[:service_version]})"
           end
         end
       end
@@ -153,6 +153,8 @@ CommandRegistry.registerCommand('update:project','update project components',[
                     config[:websdk] = component[:version]
                   
                   when :service
+                    Installer.require_component(:service, component[:name], component[:version], opts)
+                    
                     config[:service_version] = component[:version]
                     service_dir = Installer.get_component_directory(component)
                     service_name = Project.make_service_name(component[:name])
