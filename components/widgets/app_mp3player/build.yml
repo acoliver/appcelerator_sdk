@@ -6,5 +6,5 @@
 - :type: websdk
   :version: ">=2.1"
   :name: websdk
-:tags: [ audio ]
+:tags: [ audio, mp3, flash ]
 :description: "app:mp3player is a flash based mp3 player"
