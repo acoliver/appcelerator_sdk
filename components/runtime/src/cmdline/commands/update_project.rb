@@ -106,15 +106,15 @@ CommandRegistry.registerCommand('update:project','update project components',[
         end
       end
       
-      service = config[:service]
-      service_component = Installer.get_component_from_config(:service,service)
+      service_name = config[:service]
+      service_component = Installer.get_component_from_config(:service,service_name)
       
-      if service_component  # TODO: refactor this "again"
+      if service_component
         if Installer.should_update(config[:service_version], service_component[:version])
-          if not confirm "Need to update: #{new_service[:name]} to #{new_service[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... #{new_service[:name]},#{new_service[:version]}" if OPTIONS[:verbose]
+          if not confirm "Need to update: #{service_name} to #{service_component[:version]}. OK? [Yna] ",true,false,'y'
+            puts "Skipping ... #{service_name},#{service_component[:version]}" if OPTIONS[:verbose]
           else
-            puts "Will update => #{new_service[:name]}, #{new_service[:version]}" if OPTIONS[:verbose]
+            puts "Will update => #{service_name}, #{service_component[:version]}" if OPTIONS[:verbose]
             updates << service_component
           end
         else

@@ -770,22 +770,26 @@ HELP
       elsif OPTIONS[:no_remote]
         # user doesn't want to connect to the network
         component = get_component(:local, component_info)
-        die "No remote has been specified and you need to go to the Dev Network for content." unless component
+        die "--no-remote has been specified and you need to go to the Dev Network for content." unless component
         
       else
         # the name isn't a resource
         if version.nil?
           # user doesn't care about version, give them the latest
           component_info[:name] = component_info[:name].to_s
-          remote = get_current_remote_component(component_info)
-          local = get_current_installed_component(component_info)
+          begin
+            remote = get_current_remote_component(component_info)
+            local = get_current_installed_component(component_info)
+          rescue SocketError => e
+            #
+          end
           
           if (local.nil? and remote)
             # first install
             component = install_from_devnetwork(remote, options)
             finish_install(component, options)
                         
-          elsif should_update(local[:version],remote[:version])
+          elsif remote and should_update(local[:version],remote[:version])
             # upgrading
             if confirm("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]", true, false)
               component = install_from_devnetwork(remote, options)
@@ -801,7 +805,9 @@ HELP
             skip_install(component, options)
           
           else
-            raise UserError.new("Component was not found locally or remotely")
+            msg = 'Component was not found locally or remotely'
+            msg += ' (no network connection available)' if e
+            raise UserError.new(msg)
           end
         else
           # user wants a specific version, try to use local
@@ -812,10 +818,13 @@ HELP
             component = local
             skip_install(component, options)
           else
-            remote = get_remote_components(component_info).last
-            component = install_from_devnetwork(remote, options)
-            finish_install(component, options)
-            #raise UserError.new("Component was not found locally or remotely")
+            begin
+              remote = get_remote_components(component_info).last
+              component = install_from_devnetwork(remote, options)
+              finish_install(component, options)
+            rescue SocketError => e
+              raise UserError.new("Component was not found locally or remotely (no network connection available)")
+            end
           end
         end
       end
@@ -938,7 +947,11 @@ HELP
     def Installer.get_component_from_config(type,name,version=nil)
       
       component_info = {:name=>name,:type=>type,:version=>version}
-      remote = get_remote_components(component_info)
+      begin
+        remote = get_remote_components(component_info)
+      rescue SocketError => e
+        remote = []
+      end
       local = get_installed_components(component_info)
       
       most_recent_version(remote + local)
