@@ -26,18 +26,20 @@ include Appcelerator
 module Appcelerator
   class Ruby 
     def create_project(from_path,to_path,config,tx)
+
       puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
       
       rails_gem = get_rails_gem
       
-      cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'rails' : 'rails.cmd'
-      
-      if OPTIONS[:debug]
-        system "#{cmd} \"#{to_path}\" --skip"
-      else
-        system("#{cmd} \"#{to_path}\" --skip -q #{OPTIONS[:args]}")
+      if not OPTIONS[:migrate]
+        cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'rails' : 'rails.cmd'
+        if OPTIONS[:debug]
+          system "#{cmd} \"#{to_path}\" --skip"
+        else
+          system("#{cmd} \"#{to_path}\" --skip -q #{OPTIONS[:args]}")
+        end
       end
-    
+
       env = File.read File.expand_path("#{to_path}/config/environment.rb")
       if not env =~ /require 'appcelerator'/
         env << "\nrequire 'appcelerator'\n"
