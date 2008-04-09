@@ -55,7 +55,7 @@ if defined?(RAILS_ROOT)
         instance.instance.autoload_services
     end
     
-    Appcelerator::Service.autoload_controllers_as_services
+#    Appcelerator::Service.autoload_controllers_as_services
     
     puts "=> Appcelerator loaded"
 
