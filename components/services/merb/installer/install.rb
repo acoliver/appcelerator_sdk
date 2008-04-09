@@ -34,45 +34,38 @@ module Appcelerator
       end
       
       merb_gem_array = merb_gem_array.last
+
+      win32 = (RUBY_PLATFORM=~/(:?mswin|mingw|win32)/)  #TODO: move this into core
+      cmd =  win32 ? 'merb-gen.cmd' : 'merb-gen'
+      cmdargs = ''
       
-      cmd = (RUBY_PLATFORM=~/(windows|win32)/).nil? ? 'merb-gen' : 'merb-gen.cmd'
+      if OPTIONS[:quiet] and not win32
+        cmdargs = ' > /dev/null 2>&1'
+      end
       
-      # if OPTIONS[:debug]
-      #   system "#{cmd} \"#{to_path}\" --skip"
-      # else
-      #   system("#{cmd} \"#{to_path}\" --skip -q #{OPTIONS[:args]}")
-      # end
-      #     
-      # env = File.read File.expand_path("#{to_path}/config/environment.rb")
-      # if not env =~ /require 'appcelerator'/
-      #   env << "\nrequire 'appcelerator'\n"
-      #   tx.put "#{to_path}/config/environment.rb", env
-      # end
-      # 
-      # Installer.copy tx, "#{from_path}/rails/.", "#{to_path}", nil, true
-      # 
-      # projectname = File.basename(to_path)
-      # xml = File.read("#{from_path}/rails/public/appcelerator.xml")
-      # if rails_gem.version.to_s.to_f > 1.2
-      #   xml.gsub!(/SESSIONID/,"_#{projectname}_session")
-      # else
-      #   xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
-      # end
-      # 
-      # tx.put "#{to_path}/public/appcelerator.xml", xml
-      # 
-      # secret_auth_key = Digest::MD5.hexdigest(Time.new.to_s + self.inspect + IPSocket.getaddress(Socket::gethostname).to_s)       
-      # result = ERB.new(File.read("#{from_path}/rails/app/controllers/service_broker_controller.rb")).result(binding)
-      # tx.put "#{to_path}/app/controllers/service_broker_controller.rb", result
-      # 
-      # boot = File.read("#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator.rb")
-      # boot.gsub!('0.0.0',config[:service_version])
-      # tx.put "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator.rb", boot
-      # 
-      # Dir["#{from_path}/plugins/*.rb"].each do |fpath|
-      #   fname = File.basename(fpath)
-      #   Installer.copy tx, fpath, "#{to_path}/plugins/#{fname}"
-      # end
+      projectname = File.basename(to_path)
+      
+      FileUtils.cd(File.dirname(to_path)) do
+        puts "Running: #{cmd} app #{projectname} #{cmdargs} in directory: #{File.dirname(to_path)}" if OPTIONS[:verbose]
+        system "#{cmd} app #{projectname} #{cmdargs}"
+      end
+
+      Installer.copy tx, "#{from_path}/merb/.", "#{to_path}", nil, true
+
+      init = File.read "#{to_path}/config/init.rb"
+      init.gsub!('# c[:session_id_key] = \'_session_id\'',"c[:session_id_key] = '_#{projectname}_session_id'")
+      if not init =~ /appcelerator/
+        init.gsub!('Merb::BootLoader.after_app_loads do',"dependencies 'appcelerator'\n\nMerb::BootLoader.after_app_loads do")
+      end
+      tx.put "#{to_path}/config/init.rb", init
+      
+      xml = File.read("#{from_path}/merb/public/appcelerator.xml")
+      xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
+      tx.put "#{to_path}/public/appcelerator.xml", xml
+      
+      boot = File.read("#{from_path}/merb/lib/appcelerator.rb")
+      boot.gsub!('0.0.0',config[:service_version].to_s)
+      tx.put "#{to_path}/lib/appcelerator.rb", boot
       
       true
     end
