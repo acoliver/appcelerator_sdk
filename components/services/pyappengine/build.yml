@@ -1,0 +1,8 @@
+--- 
+:type: service
+:dependencies: 
+- :type: websdk
+  :name: websdk
+  :version: ">=2.1"
+:name: pyappengine
+:version: 1.0.0
