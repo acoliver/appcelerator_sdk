@@ -38,9 +38,15 @@ task :python do
   end
 end
 
+task :pyappengine do
+  FileUtils.cd("#{BUILD_DIR}/pyappengine") do |d|
+    system "rake"
+  end
+end
+
 task :dotnet do
   FileUtils.cd("#{BUILD_DIR}/dotnet") do |d|
-    sys "rake"
+    system "rake"
   end
 end
 

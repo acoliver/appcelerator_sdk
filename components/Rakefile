@@ -106,6 +106,12 @@ namespace :service do
     end
   end
 
+  task :pyappengine do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      call_rake " pyappengine"
+    end
+  end
+
   task :dotnet do
     FileUtils.cd("#{BUILD_DIR}/services") do |d|
       call_rake " dotnet"

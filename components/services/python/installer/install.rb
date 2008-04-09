@@ -23,12 +23,7 @@ module Appcelerator
   class Python
         
     def create_project(from_path,to_path,config,tx)
-      
-      if File.exists? "#{to_path}/public/appcelerator.xml"
-        puts "A project already exists here, exiting"
-        return false
-      end
-            
+                  
       project_path = to_path
       project_name = config[:name]
       app_path = File.join to_path, project_name

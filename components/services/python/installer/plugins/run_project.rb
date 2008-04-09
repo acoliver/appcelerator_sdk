@@ -86,7 +86,7 @@ class RunPythonPlugin < Appcelerator::Plugin
       cmd = "#{config.paster} serve \"#{ini_file}\" #{reload} http_port=#{port} #{args}"
       puts cmd if OPTIONS[:verbose]
       
-      event = {:project_dir=>pwd,:service=>'ruby'}
+      event = {:project_dir=>pwd,:service=>'python'}
       PluginManager.dispatchEvents('run_server',event) do
         if not system(cmd)
           puts 'The "paster" command was not found or failed with an error. Please check that Paste (http://pythonpaste.org/) is installed and on your PATH.'
