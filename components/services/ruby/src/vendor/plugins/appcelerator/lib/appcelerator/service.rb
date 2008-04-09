@@ -152,8 +152,53 @@ module Appcelerator
 	      name = "#{cn}.#{m.underscore.gsub('_','.')}"
 	      self.register "#{name}.request", m, "#{name}.response"
       end
-
+      
 	    @registrations = nil
+    end
+    
+    def Service.autoload_controllers_as_services
+      require 'app/controllers/application'
+#      load_controller(Application,name)
+      Dir["#{RAILS_ROOT}/app/controllers/*_controller.rb"].each do |file|
+        name = File.basename(file).gsub('.rb','')
+        next if name =~ /(proxy|upload|service_broker)_controller/
+        require name
+        controller = eval(name.camelize)
+        load_controller(controller,name)
+      end
+    end
+    
+    private
+    
+    def Service.load_controller(controller,service_name)
+      load_target_methods(controller,'controller') do |message_type,method_name,method,response_type|
+        proc = ServiceProc.new do |msg|
+          c = controller.new
+          new_req = msg.request.clone
+          new_resp = msg.response.clone
+          new_req.parameters = msg.params.clone
+          c.assign_shortcuts(new_req,new_resp)
+          c.method(method_name).call
+        end
+        ServiceBroker.register_listener(message_type, proc)
+      end
+    end
+    
+    def Service.load_target_methods(obj,type,registrations=nil)
+	    re = Regexp.new "#{obj.name}#"
+      cn = obj.name.underscore.gsub("_#{type}",'')
+	    obj.public_methods.each do |m|
+	      next if registrations and registrations.include? m
+	      meth = obj.method(m)
+	      puts "m=#{m}, #{meth}"
+	      next if meth.arity > 0
+	      next if m =~ /\?$/
+	      next if m =~ /^to_/
+	      methstr = meth.to_s
+	      next unless methstr =~ re
+	      name = "#{cn}.#{m.underscore.gsub('_','.')}"
+	      yield "#{name}.request", m, "#{name}.response"
+      end
     end
 	  
 	end
@@ -177,8 +222,12 @@ module Appcelerator
     end
     
     def to_s
+      begin
         service = Object.const_get(service_name).instance
         "#{message_type} -> #{service.before_filters} #{service_name}.#{method_name} #{service.after_filters} -> #{response_type}"
+      rescue
+        "#{message_type} -> #{service_name}"
+      end
     end
     
     def eql?(other)

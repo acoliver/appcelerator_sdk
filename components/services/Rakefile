@@ -73,3 +73,9 @@ task :zend do
     system "rake"
   end
 end
+
+task :merb do
+  FileUtils.cd("#{BUILD_DIR}/merb") do |d|
+    system "rake"
+  end
+end

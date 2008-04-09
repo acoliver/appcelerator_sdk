@@ -55,6 +55,8 @@ if defined?(RAILS_ROOT)
         instance.instance.autoload_services
     end
     
+    Appcelerator::Service.autoload_controllers_as_services
+    
     puts "=> Appcelerator loaded"
 
     if not %w(console irb runner about destroy generate performance plugin process).include? File.basename($0)
