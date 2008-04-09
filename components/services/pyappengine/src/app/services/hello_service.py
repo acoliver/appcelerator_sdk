@@ -2,9 +2,15 @@
 from appcelerator import Service
 import logging
 
+
 @Service(request='app.test.message.request', response='app.test.message.response')
 def hello(params, session, msgtype):
-    logging.info('got into the service handler')
+    message = params.get('message', 'World')
+    return {'message': 'I received from you: %s'%message, 'success': 'true'}
+
+
+@Service(request='app.test.encode.request', response='app.test.encode.response')
+def encode(params, session, msgtype):
     message = params.get('message', 'Cloud Computing')
     encoding = params.get('encoding', 'zip')
     try:
