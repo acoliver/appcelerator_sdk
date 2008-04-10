@@ -1,4 +1,3 @@
-
 Appcelerator.Widget.AppAsFlexflow =
 {
     flows: {}, 
@@ -23,7 +22,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	 */
 	getVersion: function()
 	{
-		return 1.1;
+		return "1.0.1";
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the
@@ -98,6 +97,11 @@ Appcelerator.Widget.AppAsFlexflow =
 			type: Appcelerator.Types.naturalNumber,
 			defaultValue: 300,
             description: "Then name of the message sent when the flex flow is clicked"
+        }, {
+            name: 'label_position',
+            optional: true,
+            defaultValue: 'top',
+            description: "Where the label goes"
         }];
 	},
 	/**
@@ -113,7 +117,6 @@ Appcelerator.Widget.AppAsFlexflow =
         var bridge_name = id + "_bridge";
         var photos = data[parameters["property"]];
         Appcelerator.Widget.AppAsFlexflow.flows[id] = photos;
-        
         var images = [];
         for(var i = 0, length = photos.length; i < length; i++) 
         {
@@ -127,17 +130,13 @@ Appcelerator.Widget.AppAsFlexflow =
         	    bridge.setDataProvider(images);
                 var data = Appcelerator.Widget.AppAsFlexflow.flows[id][0];
                 data.index = 0;
-        	    $MQ(parameters['click_message'], data);
+                
+				$(id + "_label").innerHTML = data.label;
         	    clearInterval(interval);
     	    }
     	    
         }, 500);
 	},	
-	/**
-	 * Call this function to select a particular cover.  
-	 * The widget performs selection based by matching the id, image, or label attributes
-	 * of the data playload
-	 */
 	select: function(id,parameters,data,scope,version)
 	{
 	    var bridge_name = id + "_bridge";
@@ -177,12 +176,16 @@ Appcelerator.Widget.AppAsFlexflow =
             bridge.setBgColor(0x000000);
             bridge.setMaxImageWidth(parameters['img_width']);
             bridge.setMaxImageHeight(parameters['img_height']); 
+            
             bridge.getCfc().addEventListener("click", function() {
                 var index = bridge.getCfc().getSelectedIndex();
                 var data = Appcelerator.Widget.AppAsFlexflow.flows[id][index];
                 data.index = index;
-                $MQ(parameters['click_message'], data);
-            });         
+				$(id + "_label").innerHTML = data.label;
+                setTimeout( function() {
+					$MQ(parameters['click_message'], data);
+				}, 1100);
+            }); 
         });
 	},
 	/**
@@ -202,22 +205,28 @@ Appcelerator.Widget.AppAsFlexflow =
 	    
 	    var box_height = parseInt(parameters['img_height']) + 100;
 		var html = [];
-		html.push('<div style="position:relative" id="' + id + '">')
-		html.push('<div style="position:absolute; color:white;top:20px;text-align:center;width:100%" id="' + element.id + '_label" ');
-		html.push('on="' + parameters['click_message'] + ' then hide and value[label] and effect[appear] or l:' 
-		        + element.id + '_select then hide and value[label] and effect[appear]"');
-		html.push('></div>');
+		html.push('<div style="position:relative; background-color: black;" id="' + id + '">');
+		
+		if("top" == parameters['label_position']) {    
+    		html.push('<div style="background-color: black; color:white;padding-top:7px; position:absolute; top: -11px; text-align:center;width:100%"><span id="' + element.id + '_label" ');
+    		html.push('on="' + parameters['click_message'] + ' then hide and value[label] and show if expr[this.data.label] or l:' 
+    		        + element.id + '_select then hide and value[label] and show"');
+    		html.push('></span></div>');
+		}
+		
 		html.push('<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"');
-        html.push('id="' + element.id + '" width="100%" height="' + box_height + '"');
+        html.push('id="flow_object_' + element.id + '" width="100%" height="' + box_height + '"');
         html.push('codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">');
-        html.push('  <param name="movie" value="FlexFlow.swf" />');
+        html.push('  <param name="movie" value="' + Appcelerator.WidgetPath + 'app_as_flexflow/swf/FlexFlow.swf" />');
         html.push('  <param name="flashvars" value="bridgeName=' + bridge_name + '"/>');
         html.push('  <param name="quality" value="high" />');
         html.push('  <param name="allowScriptAccess" value="sameDomain" />');
+        html.push('  <param name="wmode" value="transparent" />');
         html.push('  <embed src="' + Appcelerator.WidgetPath + 'app_as_flexflow/swf/FlexFlow.swf" quality="high"');
         html.push('    width="100%" height="' + box_height + '" name="' + bridge_name + '" ');
         html.push('    align="middle"');
         html.push('    play="true"');
+        html.push('    wmode="transparent"');
         html.push('    loop="false"');
         html.push('    quality="high"');
         html.push('    allowScriptAccess="sameDomain"');
@@ -226,8 +235,16 @@ Appcelerator.Widget.AppAsFlexflow =
         html.push('    flashvars="bridgeName=' + bridge_name + '">');
         html.push('  </embed>');
         html.push('</object>');
-        html.push('</div>');
+        
+        if("bottom" == parameters['label_position']) {    
+    		html.push('<div style="color:white;position:relative;bottom:56px;text-align:center;width:100%"><span id="' + element.id + '_label" ');
+    		html.push('on="' + parameters['click_message'] + ' then hide and value[label] and show if expr[this.data.label] or l:' 
+    		        + element.id + '_select then hide and value[label] and show"');
+    		html.push('></span></div>');
+		}
 		
+		
+        html.push('</div>');
 		return {
 			'presentation' : html.join(' '),   // this is the HTML to replace for the contents <app:as_flexflow>
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,  // usually the default, could be POSITION_REMOVE to remove <app:as_flexflow> entirely
