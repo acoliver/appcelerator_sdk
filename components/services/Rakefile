@@ -38,7 +38,7 @@ task :python do
   end
 end
 
-task :pyappengine do
+task :appengine do
   FileUtils.cd("#{BUILD_DIR}/pyappengine") do |d|
     system "rake"
   end

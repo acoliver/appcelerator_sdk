@@ -6,5 +6,5 @@
     <download>@{rootPath}download</download>
     <proxy>@{rootPath}proxy</proxy>
     <sessionid>__projectname___session_id</sessionid>
-    <language>pyappengine</language>
+    <language>appengine</language>
 </appcelerator>

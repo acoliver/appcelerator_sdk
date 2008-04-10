@@ -26,7 +26,7 @@ desc 'default google-appengine-python build'
 task :default do
 
   FileUtils.mkdir_p "#{STAGE_DIR}"
-  zipfile = "#{STAGE_DIR}/service_pyappengine_#{build_config[:version]}.zip"
+  zipfile = "#{STAGE_DIR}/service_appengine_#{build_config[:version]}.zip"
   FileUtils.rm_rf zipfile
   
   src_dir = "#{BUILD_DIR}/src"
@@ -51,7 +51,8 @@ task :default do
       next if filename[0,1] == '.'
       zipfile.add("plugins/#{filename}",fpath)
     end
-
+    
+    zipfile.add('plugins/python_config.rb', "#{BUILD_DIR}/../python/installer/python_config.rb")
     zipfile.add('install.rb', "#{BUILD_DIR}/installer/install.rb")
     zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
   end

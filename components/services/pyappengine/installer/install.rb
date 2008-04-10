@@ -18,7 +18,7 @@
 #
 
 module Appcelerator
-  class Pyappengine
+  class Appengine
         
     def create_project(from_path,to_path,config,tx)
       

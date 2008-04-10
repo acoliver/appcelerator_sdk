@@ -56,6 +56,14 @@ module Appcelerator
       system(cmd)
     end
     
+    def PythonConfig.add_python_to_path
+      config = PythonConfig.new
+      if config.on_windows
+        # python doesn't seem to put itself on the path on windows
+        ENV['PATH'] += ';'+File.dirname(config.python)
+      end
+    end
+    
     # probably expensive, caching this
     def find_windows_pythons
       require 'win32/registry'

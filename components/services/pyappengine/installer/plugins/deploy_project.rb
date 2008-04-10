@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require File.dirname(__FILE__) + '/python_config.rb'
+
 include Appcelerator
 class DeployAppEnginePythonPlugin < Appcelerator::Plugin
   
@@ -39,11 +41,22 @@ class DeployAppEnginePythonPlugin < Appcelerator::Plugin
       port = options[:port]
       args = options[:args]
       project_dir = Dir.pwd
+
+      cmd_name = 'appcfg.py'
+      config = PythonConfig.new
+      if config.on_windows
+        path = ENV['PATH']
+        path.match(/;([^;]*google_appengine[^;]*)/)
+        cmd_path = File.join($1,cmd_name)
+        run_cmd = "#{config.python} \"#{cmd_path}\""
+      else
+        run_cmd = cmd_name
+      end
       
-      cmd = "appcfg.py update \"#{project_dir}\" #{args}"
+      cmd = "#{run_cmd} update \"#{project_dir}\" #{args}"
       puts cmd if OPTIONS[:verbose]
       
-      event = {:project_dir=>project_dir ,:service=>'pyappengine'}
+      event = {:project_dir=>project_dir ,:service=>'appengine'}
       PluginManager.dispatchEvents('deploy_project',event) do
         if not system(cmd)
           puts 'The "appcfg.py" command was not found or failed with an error. Please check that the Google App Engine is installed and that the "appcfg.py" command is on your PATH.'

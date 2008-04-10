@@ -4,5 +4,5 @@
 - :type: websdk
   :name: websdk
   :version: ">=2.1"
-:name: pyappengine
+:name: appengine
 :version: 1.0.0

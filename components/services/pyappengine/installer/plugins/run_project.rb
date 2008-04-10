@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require File.dirname(__FILE__) + '/python_config.rb'
+
 include Appcelerator
 class RunAppEnginePythonPlugin < Appcelerator::Plugin
   
@@ -47,10 +49,21 @@ class RunAppEnginePythonPlugin < Appcelerator::Plugin
       args = options[:args]
       project_dir = Dir.pwd
       
-      cmd = "dev_appserver.py \"#{project_dir}\" --port=#{port} #{args}"
+      cmd_name = 'dev_appserver.py'
+      config = PythonConfig.new
+      if config.on_windows
+        path = ENV['PATH']
+        path.match(/;([^;]*google_appengine[^;]*)/)
+        cmd_path = File.join($1,cmd_name)
+        run_cmd = "#{config.python} \"#{cmd_path}\""
+      else
+        run_cmd = cmd_name
+      end
+      
+      cmd = "#{run_cmd} \"#{project_dir}\" --port=#{port} #{args}"
       puts cmd if OPTIONS[:verbose]
     
-      event = {:project_dir=>project_dir ,:service=>'pyappengine'}
+      event = {:project_dir=>project_dir ,:service=>'appengine'}
       PluginManager.dispatchEvents('run_server',event) do
         if not system(cmd)
           puts 'The "dev_appserver.py" command was not found or failed with an error. Please check that the Google App Engine is installed and that the "dev_appserver.py" command is on your PATH.'
