@@ -27,8 +27,18 @@ import sys
 import simplejson as json
 try:
     from xml.etree import ElementTree
+    ElementTree.fromstring('<test></test>') # force loading expat, may fail
 except ImportError:
     from elementtree import ElementTree
+    from elementtree import SimpleXMLTreeBuilder
+    # more work arounding for the xmlpath
+    def fromstring(text):
+        parser = SimpleXMLTreeBuilder.TreeBuilder()
+        parser.feed(text)
+        return parser.close()
+    
+    ElementTree.fromstring = fromstring
+        
 
 
 class ServiceDispatcher(object):
