@@ -1,11 +1,11 @@
-.music_player {
+.app_graphical_music_player {
   background: url(../images/bg.png) no-repeat;
   width: 675px;
   height: 80px;
   position: relative;
 }
 
-.button_bg {
+.app_graphical_music_player .button_bg {
   background: url(../images/button_bg.png) no-repeat;
   position: absolute;
   top: 16px;
@@ -14,7 +14,7 @@
   height: 45px;
 }
 
-.play_button {
+.app_graphical_music_player .play_button {
   background: url(../images/play.png) no-repeat;
   height: 32px;
   width: 32px;
@@ -23,7 +23,7 @@
   left: 63px;
   cursor: pointer;
 }
-.stop_button {
+.app_graphical_music_player .stop_button {
   background: url(../images/stop.png) no-repeat;
   height: 32px;
   width: 32px;
@@ -32,7 +32,7 @@
   left: 63px;
   cursor: pointer;
 }
-.pause_button {
+.app_graphical_music_player .pause_button {
   background: url(../images/pause.png) no-repeat;
   height: 32px;
   width: 32px;
@@ -41,7 +41,7 @@
   left: 63px;
   cursor: pointer;
 }
-.prev_button {
+.app_graphical_music_player .prev_button {
   background: url(../images/prev.png) no-repeat;
   height: 32px;
   width: 32px;
@@ -50,7 +50,7 @@
   left: 10px;
   cursor: pointer;
 }
-.next_button {
+.app_graphical_music_player .next_button {
   background: url(../images/next.png) no-repeat;
   height: 32px;
   width: 32px;
@@ -60,7 +60,29 @@
   cursor: pointer;
 }
 
-.window {
+.app_graphical_music_player .slider_box 
+{
+    background: url(../images/slider_box_bg.png) no-repeat;
+    height: 20px;
+    width: 161px;
+    position: absolute;
+    right: 0px;
+    top: 27px;
+}
+
+.app_graphical_music_player .slider_box .slider 
+{
+    position: relative;
+    padding-left: 10px;
+}
+.app_graphical_music_player .slider .slider_handle
+{
+    background: url(../images/slider_dot.png) no-repeat;
+    height: 20px;
+    width: 20px; 
+}
+
+.app_graphical_music_player .window {
   background: url(../images/window.png) no-repeat;
   width: 302px;
   height: 64px;
@@ -69,7 +91,7 @@
   left: 190px;
 }
 
-.window table td {
+.app_graphical_music_player .window table td {
     vertical-align: center;
     text-align: center;
     color: white;
@@ -77,4 +99,62 @@
     font-weight: bold;
     width: 302px;
     height: 64px;
+}
+
+.AGMP_transparent .app_graphical_music_player
+{
+    width: 100%;
+    background: transparent;
+}
+
+.AGMP_transparent .app_graphical_music_player .window 
+{
+    margin: auto;
+    position: static;
+    left: 0;
+    top: 0;
+    background: transparent;
+    width: 500px;
+}
+
+.AGMP_transparent .app_graphical_music_player .button_bg
+{
+    background: transparent;
+}
+
+.AGMP_transparent .app_graphical_music_player .play_button
+{
+    background: url(../images/black_theme_play.png) no-repeat;
+    height: 38px;
+    width: 38px;
+    top: 5px;
+}
+
+.AGMP_transparent .app_graphical_music_player .prev_button
+{
+    background: url(../images/black_theme_back.png) no-repeat;
+    height: 38px;
+    width: 38px;
+    top: 5px;
+}
+
+.AGMP_transparent .app_graphical_music_player .next_button
+{
+    background: url(../images/black_theme_forward.png) no-repeat;
+    height: 38px;
+    width: 38px;
+    top: 5px;
+}
+.AGMP_transparent .app_graphical_music_player .stop_button
+{
+    background: url(../images/black_theme_stop.png) no-repeat;
+    height: 38px;
+    width: 38px;
+    top: 5px;
+}
+
+.AGMP_transparent .app_graphical_music_player .window table td
+{
+    font-size: 45px;font-weight: bold;font-family: Tahoma, sans-serif;
+    width: 500px;
 }
