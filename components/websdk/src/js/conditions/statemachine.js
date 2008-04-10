@@ -268,7 +268,8 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 	if (m)
 	{
 		var different = false;
-		
+		var old_state = 'state_'+m.activeState;
+				
 		for (var s in m.states)
 		{
 			if (s.startsWith('state_'))
@@ -281,16 +282,13 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 					{
 						m.states[s] = on_off;
 						m.activeState = on_off ? s.substring(6) : null;
-						different = true;
-						$D('setting '+statemachine+'['+state+']=>'+on_off+', current='+old+',m.activeState='+m.activeState);
+						different = old_state == s ? false : true;
 					}
 				}
 				else if (on_off!=null && on_off==true)
 				{
 					// you can only have one state active
 					m.states[s]=false;
-					different=true;
-					$D('setting '+statemachine+'['+s.substring(6)+']=>false');
 				}
 			}
 		}
