@@ -4,7 +4,7 @@
   :version: ">=2.1.1"
   :name: websdk
 :type: widget
-:version: 1.0
+:version: 1.2
 :description: app:ext_tree widget
 :name: app:ext_tree
 :tags: [ tree, extjs, layout ]

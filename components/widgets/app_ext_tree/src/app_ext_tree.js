@@ -36,7 +36,7 @@ Appcelerator.Widget.AppExtTree =
 
 	getActions: function()
 	{
-		return ['execute','senddata', 'select'];
+		return ['execute','senddata', 'select', 'select_no_fire'];
 	},	
 
     getAttributes: function()
@@ -65,7 +65,7 @@ Appcelerator.Widget.AppExtTree =
 		for(var i=0;i< nodes.length;i++)
 		{
 			array.push({id:nodes[i].id,parent:params['rootId'], order:i});
-			Appcelerator.Widget.ExtTree.processChildren(nodes[i],array);
+			Appcelerator.Module.ExtTree.processChildren(nodes[i],array);
 		}
 	 	return array;
 	},
@@ -75,12 +75,13 @@ Appcelerator.Widget.AppExtTree =
 		for(var i=0;i<child.length;i++)
 		{
 			array.push({id:child[i].id,parent:node.id,order:i});
-		    Appcelerator.Widget.ExtTree.processChildren(child[i],array);
+		    Appcelerator.Module.ExtTree.processChildren(child[i],array);
 		}	
 	},
+	
 	senddata: function(id,params,data,scope)
 	{
-		var json=Appcelerator.Widget.ExtTree.treeToJSON(params);
+		var json=Appcelerator.Module.ExtTree.treeToJSON(params);
 		var property = params['sendDataProperty'];
 		if (params['sendDataMessage'])
 		{
@@ -89,11 +90,26 @@ Appcelerator.Widget.AppExtTree =
 	},
 	select: function(id,params,data,scope) 
 	{
-	    var id = params['id'];
 	    var tree = params['tree'];
 	    var treeNode = tree.getNodeById(data.id);
-	    var nodePath = treeNode.getPath();
-	    tree.expandPath(nodePath);
+		if(treeNode) {
+		    var nodePath = treeNode.getPath();
+		    tree.selectPath(nodePath);
+		    tree.expandPath(nodePath);
+		}
+	},
+	select_no_fire: function(id,params,data,scope) 
+	{
+        var tree = params['tree'];
+	    if (params['selectMessage'])
+		{
+			tree.getSelectionModel().purgeListeners();
+		}
+        Appcelerator.Widget.AppExtTree.select(id, params,data,scope);
+        if (params['selectMessage'])
+		{
+			tree.getSelectionModel().on('selectionchange', params['select_function']);
+		}
 	},
 	execute: function(id,params,data,scope)
 	{
@@ -116,10 +132,10 @@ Appcelerator.Widget.AppExtTree =
 		var Tree = Ext.tree;
 		// set the root node
 		var root = new Tree.AsyncTreeNode({
-		text: params['rootText'],
-		draggable:false,
-		children:data[params['property']],
-		id:params['root_id']
+            text: params['rootText'],
+            draggable:false,
+            children:data[params['property']],
+            id:params['root_id']
 		});
 
 		var treeOptions = {};
@@ -149,7 +165,6 @@ Appcelerator.Widget.AppExtTree =
 		else
 		{
 			 treeOptions['dropConfig'] = {allowContainerDrop:false};
-			
 		}
 		var tree = new Tree.TreePanel(treeOptions);
 
@@ -158,12 +173,12 @@ Appcelerator.Widget.AppExtTree =
 		
 		if (params['selectMessage'])
 		{
-			tree.getSelectionModel().on('selectionchange', 
-				function(tree,node) 
-				{
-					$MQ(params['selectMessage'],{'id':node.id,'text':node.text});
-				}
-			);
+		    params['select_function'] = function(tree,node) 
+			{
+				$MQ(params['selectMessage'],{'id':node.id,'text':node.text});
+			};
+			
+			tree.getSelectionModel().on('selectionchange', params['select_function']);
 			
 		}
 		params['tree'] = tree;
