@@ -924,7 +924,7 @@ HELP
         end
       end
 
-      if not installed and not force
+      if not installed or force
         component = Installer.fetch_network_component(component_info,count+1,count+1)
       else
         component = component_info
