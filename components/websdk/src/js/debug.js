@@ -1,33 +1,42 @@
 
 var APPCELERATOR_DEBUG = window.location.href.indexOf('debug=1') > 0 || Appcelerator.Parameters.get('debug')=='1';
+var log4javascript_threshold = Appcelerator.Parameters.get('log4javascript');
 
 var Logger = Class.create();
 $$l = Logger;
 var _logAppender = null;
 var _logEnabled = true;
-
-if (typeof(log4javascript)!='undefined')
+Logger.toLevel = function(value, logger) 
 {
-	log4javascript.setEnabled(APPCELERATOR_DEBUG);
+	if (!value)
+		return log4javascript.Level.INFO;
+	value = value.toUpperCase();
+	if (value==log4javascript.Level.INFO.toString())
+		return log4javascript.Level.INFO;
+	else if (value==log4javascript.Level.WARN.toString())
+		return log4javascript.Level.WARN;
+	else if (value==log4javascript.Level.ERROR.toString())
+		return log4javascript.Level.ERROR;
+	else if (value==log4javascript.Level.FATAL.toString())
+		return log4javascript.Level.FATAL;
+	else if (value==log4javascript.Level.TRACE.toString())
+		return log4javascript.Level.TRACE;
+	else if (value==log4javascript.Level.DEBUG.toString())
+		return log4javascript.Level.DEBUG;
 
-	var _log = log4javascript.getLogger("main");
-	if (APPCELERATOR_DEBUG)
-	{
-	    _logAppender = new log4javascript.PopUpAppender();
-	}
-	if (_logAppender != null)
-	{
-	    var _popUpLayout = new log4javascript.PatternLayout("%d{HH:mm:ss} %-5p - %m%n");
-	    _logAppender.setLayout(_popUpLayout);
-	    _log.addAppender(_logAppender);
-	    _logAppender.setThreshold(APPCELERATOR_DEBUG ? log4javascript.Level.DEBUG : log4javascript.Level.WARN);
-	}
-	Logger.infoEnabled = _logEnabled && _logAppender;
-	Logger.warnEnabled = _logEnabled && _logAppender;
-	Logger.errorEnabled = _logEnabled && _logAppender;
-	Logger.fatalEnabled = _logEnabled && _logAppender;
-	Logger.traceEnabled = _logEnabled && APPCELERATOR_DEBUG && _logAppender;
-	Logger.debugEnabled = _logEnabled && APPCELERATOR_DEBUG && _logAppender;
+	return logger.getLevel();
+}
+
+if (log4javascript_threshold && log4javascript_threshold!='')
+{
+	_log = log4javascript.getDefaultLogger();
+	var Level = Logger.toLevel(log4javascript_threshold, _log);
+	Logger.infoEnabled = log4javascript.Level.INFO.isGreaterOrEqual(Level);
+	Logger.warnEnabled = log4javascript.Level.WARN.isGreaterOrEqual(Level);
+	Logger.errorEnabled = log4javascript.Level.ERROR.isGreaterOrEqual(Level);
+	Logger.fatalEnabled = log4javascript.Level.FATAL.isGreaterOrEqual(Level);
+	Logger.traceEnabled = log4javascript.Level.TRACE.isGreaterOrEqual(Level);
+	Logger.debugEnabled = log4javascript.Level.DEBUG.isGreaterOrEqual(Level);
 }
 else
 {
