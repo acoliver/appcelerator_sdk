@@ -1136,6 +1136,32 @@ HELP
     end
   end
   
+  def Installer.selfupdate
+    list = Installer.fetch_distribution_list
+    build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
+    updates = list[:update]
+    if updates and not updates.empty?
+      update = Installer.most_recent_version(updates)
+
+      if Installer.should_update(build_config[:version], update[:version])
+        if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
+
+          Installer.require_component(update[:type].to_sym, update[:name], nil)
+
+          build_config[:version] = update[:version]
+          cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
+          cf.puts build_config.to_yaml
+          cf.close
+          puts "This program has been self-updated. Please run your command again."
+          exit 0
+        else
+          puts "You must self-update this program before updating any other components."
+          exit 0
+        end
+      end
+    end
+  end
+  
   class UserError < StandardError
   end
   
