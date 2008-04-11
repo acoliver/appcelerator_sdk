@@ -568,10 +568,9 @@ Appcelerator.Util.ServiceBroker =
             	if (transport.status == 400)
             	{
                     var cl = transport.getResponseHeader("X-Failed-Retry");
-										
                     if (!cl)
                     {
-												$MQ('l:failed.authentication');
+                        self.queue({type:'l:appcelerator.servicebroker.failed',data:{}});
                         Logger.warn("Failed authentication");
 			  			return;
                     }
