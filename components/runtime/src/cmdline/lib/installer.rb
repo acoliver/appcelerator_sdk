@@ -410,9 +410,9 @@ module Appcelerator
           when /\Aq\z/i
             STDOUT.puts "aborting from copy #{from}"
             raise SystemExit
-          when /\An\z/i then return :skip
-          when /\Ay\z/i then return :force
-          else
+          when /\An\z/i
+            return :skip
+          when /\Ah\z/i
             STDOUT.puts <<-HELP
 Y - yes, overwrite
 n - no, do not overwrite -- skip copy of this file
@@ -422,6 +422,8 @@ q - quit, abort command
 d - diff, show the differences between the old and the new
 h - help, show this help
 HELP
+          else
+            return :force
         end
       end
     end
@@ -791,7 +793,7 @@ HELP
                         
           elsif remote and should_update(local[:version],remote[:version])
             # upgrading
-            if confirm("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]", true, false)
+            if options[:force_update] or confirm("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]", true, false)
               component = install_from_devnetwork(remote, options)
               finish_install(component, options)
             else
@@ -857,7 +859,7 @@ HELP
     end
     
     def Installer.skip_install(component, options)
-      puts "#{component[:name]} #{component[:version]} is already installed" unless OPTIONS[:quiet] or options[:quiet_if_installed]
+      puts "#{component[:name]} #{component[:version]} is already installed" unless OPTIONS[:quiet] or options[:quiet] or options[:quiet_if_installed]
       puts "NOTE: you can force a re-install with --force-update" if OPTIONS[:verbose]      
     end
     
