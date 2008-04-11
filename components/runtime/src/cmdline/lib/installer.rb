@@ -992,7 +992,7 @@ HELP
     def Installer.get_component(location, component_info)
       components = get_components(location, component_info)
       if component_info[:version]
-        components.last
+        components.last # there should only be one component per version
       else
         most_recent_version(components)
       end
@@ -1136,21 +1136,22 @@ HELP
     end
   end
   
-  def Installer.selfupdate
-    list = Installer.fetch_distribution_list
-    build_config = YAML::load_file File.expand_path("#{SCRIPTDIR}/build.yml")
-    updates = list[:update]
-    if updates and not updates.empty?
-      update = Installer.most_recent_version(updates)
-
+  def Installer.selfupdate(version)
+    
+    build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
+    cm = {:type=>:update, :name=>'update', :version=>version}
+    update = Installer.get_component(:remote, cm)
+    
+    if update
+      
       if Installer.should_update(build_config[:version], update[:version])
         if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
 
-          Installer.require_component(update[:type].to_sym, update[:name], nil)
+          Installer.require_component(update[:type].to_sym, update[:name], version)
 
           build_config[:version] = update[:version]
-          cf = File.open "#{SCRIPTDIR}/build.yml",'w+'
-          cf.puts build_config.to_yaml
+          cf = File.open("#{SCRIPTDIR}/build.yml",'w+')
+          cf.puts(build_config.to_yaml)
           cf.close
           puts "This program has been self-updated. Please run your command again."
           exit 0
@@ -1158,6 +1159,8 @@ HELP
           puts "You must self-update this program before updating any other components."
           exit 0
         end
+      elsif version
+        puts "You can't update to an previous version of the command-line tool"
       end
     end
   end

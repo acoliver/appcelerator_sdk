@@ -168,8 +168,6 @@ CommandRegistry.registerCommand('update:project','update project components',[
                       if installer.update_project(service_dir,pwd,project_config,tx,config[:service_version],component[:version])
                         puts "Updated service '#{component[:name]}' to #{component[:version]}"
                       end
-                    else
-                      puts "The #{service_name} service provides special updating functionality" if OPTIONS[:verbose]
                     end
                 else
                   puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]

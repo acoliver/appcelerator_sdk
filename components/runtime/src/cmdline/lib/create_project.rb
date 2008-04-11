@@ -22,9 +22,12 @@ module Appcelerator
   class Installer
     def Installer.create_project(path,name,service_name,service_version,tx,update=false,webcomponent=nil)
       
-      if OPTIONS[:verbose] and not update
-        puts "Creating new project at #{path} with name: #{name} for #{service_name}"
-        puts "Updating project at #{path} with name: #{name} for #{service_name}"
+      if OPTIONS[:verbose]
+        if update
+          puts "Updating project at #{path} with name: #{name} for #{service_name}"
+        else
+          puts "Creating new project at #{path} with name: #{name} for #{service_name}"
+        end
       end
       
       public_path="#{path}/public"
@@ -37,7 +40,7 @@ module Appcelerator
       copy tx, "#{template_dir}/COPYING", "#{path}/COPYING"
       copy tx, "#{template_dir}/README", "#{path}/README"
       
-      config=Appcelerator::Project.get_config(path)
+      config = Appcelerator::Project.get_config(path)
       config[:name] = name
       config[:service_version] = service_version
       config[:service] = service_name
