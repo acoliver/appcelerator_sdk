@@ -965,6 +965,34 @@ Appcelerator.Compiler.registerCustomAction('value',
 	}
 });
 
+Appcelerator.Compiler.registerCustomAction('bind',
+{
+	metadata:
+    {
+        requiresParameters: false,
+		description: "Sets the value to all elements with the same fieldset to the data from the payload"
+    },
+	parseParameters: function (id,action,params)
+	{
+		return params;
+	},
+	build: function(id,action,parameters)
+	{
+		var element = $(id);
+		var fieldset = element.getAttribute('fieldset');
+		
+		if (!fieldset || fieldset == '')
+		{
+			throw "syntax error: element has no field set attribute "  + element;
+		}
+		
+		var key = parameters;
+		
+		var code = 'Appcelerator.Compiler.updateFieldsetValues("'+fieldset+'",this.data,"'+key+'")';
+		return code;
+	}
+});
+
 var GenericActionFunction = Class.create();
 Object.extend(GenericActionFunction.prototype,
 {

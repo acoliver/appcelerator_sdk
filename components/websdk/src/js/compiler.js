@@ -1885,6 +1885,11 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote)
  */
 Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 {
+	if (Appcelerator.Compiler.getTagname(elem) != 'input')
+	{
+		return null;
+	}
+
 	local = local==null ? true : local;
 	dequote = (dequote==null) ? false : dequote;
 	var type = elem.getAttribute('type') || 'text';
@@ -2513,6 +2518,122 @@ Appcelerator.Compiler.addFieldSet = function(element,excludeSelf)
 	}
 	return null;
 };
+
+Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)
+{
+	var data = Object.getNestedProperty(values, key, null);
+	if (!data)
+	{
+		data = values;
+	}
+	
+	if (fieldset)
+	{
+		var fields = Appcelerator.Compiler.fieldSets[fieldset];
+		if (fields && fields.length > 0)
+		{
+			for (var c=0,len=fields.length;c<len;c++)
+			{
+				var fieldid = fields[c];
+				var field = $(fieldid);
+				var name = field.name || field.getAttribute('name') || fieldid;
+				var val = Object.getNestedProperty(data, name, null);
+				if (val)
+				{
+					Appcelerator.Compiler.setElementValue(field, val);
+				}
+			}
+		}
+	}
+}
+
+Appcelerator.Compiler.setElementValue = function (element, value)
+{
+	var revalidate;
+
+	if (element && value)
+	{
+		switch (Appcelerator.Compiler.getTagname(element))
+		{
+			case 'input':
+			{
+				var type = element.getAttribute('type') || 'text';
+				switch (type)
+				{
+					case 'password':
+					case 'hidden':
+					case 'text':
+					{
+						revalidate = true;
+						element.value = value;
+						break;
+					}
+					case 'button':
+					case 'submit':
+					{
+						element.value = value;
+						break;
+					}
+					case 'checkbox':
+					{
+						revalidate = true;
+						if (value == true || value == 'true')
+						{
+							element.checked = true;
+						}
+						else
+						{
+							element.checked = false;
+						}
+						break;
+					}
+				}
+				break;
+			}
+			case 'textarea':
+			{
+				revalidate = true;
+				element.value = value;
+				break;
+			}
+			case 'div':
+			case 'span':
+			case 'p':
+			case 'h1':
+			case 'h2':
+			case 'h3':
+			case 'h4':
+			case 'h5':
+			case 'td':
+			case 'code':
+			case 'li':
+			case 'blockquote':
+			{
+				element.innerHTML = value;
+				break;
+			}
+			case 'a':
+			{
+				element.href = value;
+				break;
+			}
+			case 'img':
+			{
+				element.src = value;
+				break;
+			}
+			default:
+			{
+				throw "syntax error: " + element +' not supported for bind action';
+			}
+		}
+	}
+	
+	if (revalidate)
+	{
+		Appcelerator.Compiler.executeFunction(element, "revalidate");
+	}
+}
 
 Appcelerator.Compiler.CSSAttributes = 
 [

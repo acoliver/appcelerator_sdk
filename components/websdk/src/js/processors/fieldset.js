@@ -1,7 +1,7 @@
 // 
 // register our fieldsets
 // 
-Appcelerator.Compiler.registerAttributeProcessor(['textarea','input','select'],'fieldset',
+Appcelerator.Compiler.registerAttributeProcessor('*','fieldset',
 {
 	handle: function(element,attribute,value)
 	{
