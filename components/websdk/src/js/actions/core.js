@@ -661,7 +661,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var params = parameters;
 		var append = false;
 		var valueExpr = parameters;
-		
+		var form = false;
 		if (parameters.charAt(0)=='"' || parameters.charAt(0)=="'")
 		{
 			valueHtml = parameters;
@@ -856,6 +856,70 @@ Appcelerator.Compiler.registerCustomAction('value',
 				variable = 'src';
 				break;
 			}
+			case 'form':
+			{
+				//Guarantee that the form will not auto-submit when someone hits enter by adding 1 display:none text field
+				var new_input_id = id+'_no_submit';
+				if (!$(new_input_id)) {
+					var new_input = document.createElement('input');
+					new_input.id = new_input_id;
+					new_input.type = 'text';
+					new_input.style.display = 'none';
+					new_input.name = 'no_submit_guarantee';
+					element.appendChild(new_input);					
+				}
+
+				//Set form to true so we clear html var below -- we deligate to subsequent calls to handleCondition
+				form = true;
+
+				//e.g. value[bar]
+				var elementCondition = 'value['+parameters+']';
+				//find the matching clause (in case the form has several actions in its on expression); e.g. r:foo
+				var clause = this.findMatchingFormClause(element,elementCondition);
+
+				var descendants = element.descendants();
+				for (var c = 0; c < descendants.length; c++)
+				{					
+					var child = descendants[c];
+
+					//need an id to handle the condition later and probably need one anyway so make sure it's there
+					Appcelerator.Compiler.getAndEnsureId(child);
+					var child_parameter = '';
+					switch(Appcelerator.Compiler.getTagname(child))
+					{
+						 case 'select':
+						 case 'textarea':
+						 case 'input':
+						 {
+							  child_parameter = child.getAttribute('name') || child.id || ''
+								break;
+						 }
+						 default:
+						 {
+								/*
+								 * We don't look for an id as the value to read out on normal elements since divs, spans, etc.
+								 * may have ids for styling, etc. but we do not want to overwrite text for labels etc.
+								 * For divs, spans, etc. we require the name attribute if they are to be populated with data
+								 * without their own explicit on expression (that is when the on expression is on a form tag).
+							   */
+								child_parameter = child.getAttribute('name') || '';
+						 }
+					}
+					
+					if (child_parameter != '') 
+					{
+						//e.g. value[bar.idx]
+						var condition = 'value['+parameters + '.' + child_parameter+']';						
+						//the current child element is the one we want to handle the condition on
+						clause[0] = child;
+						//the condition to handle for this child element
+						clause[2] = condition;
+
+						Appcelerator.Compiler.handleCondition.apply(this, clause);
+					}
+				}
+				break;
+			}
 			default:
 			{
 				throw "syntax error: " + element.nodeName+' not supported for value action';
@@ -867,17 +931,37 @@ Appcelerator.Compiler.registerCustomAction('value',
 		$D('built expression=> '+ elementHtml + '.' + variable + '=' + valueHtml + expression + suffix);
 
 		var html = '';
-		if (append)
+		if (!form)
 		{
-			html = 'var value_' + element.id+' = ' + elementHtml + '.' + variable + ';'
-			html += elementHtml + '.' + variable + ' = value_'+element.id+' + ' + valueHtml + expression;
+			if (append)
+			{
+				html = 'var value_' + element.id+' = ' + elementHtml + '.' + variable + ';'
+				html += elementHtml + '.' + variable + ' = value_'+element.id+' + ' + valueHtml + expression;
+			}
+			else
+			{
+				html = elementHtml + '.' + variable + '=' + valueHtml + expression;
+			}
+			html += suffix;
 		}
-		else
-		{
-			html = elementHtml + '.' + variable + '=' + valueHtml + expression;
-		}
-		html += suffix;
 		return html;
+	},
+	findMatchingFormClause: function(element, params)
+	{
+		//iterate over the clauses and find the appropriate clause to return 
+		//(the one with the appropriate action being handled by the cal for registerCustomAction('value'))
+		var clauses = Appcelerator.Compiler.parseExpression(element.getAttribute('on'));
+
+		for (var i = 0; i < clauses.length; i++)
+		{
+			var condition = clauses[i][2];
+			if (condition == params)
+			{
+				return clauses[i];
+			} 
+		}
+
+		return [];
 	}
 });
 
