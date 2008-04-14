@@ -873,9 +873,9 @@ Appcelerator.Compiler.registerCustomAction('value',
 				form = true;
 
 				//e.g. value[bar]
-				var elementCondition = 'value['+parameters+']';
+				var elementAction = 'value['+parameters+']';
 				//find the matching clause (in case the form has several actions in its on expression); e.g. r:foo
-				var clause = this.findMatchingFormClause(element,elementCondition);
+				var clause = this.findMatchingFormClause(element,elementAction);
 
 				var descendants = element.descendants();
 				for (var c = 0; c < descendants.length; c++)
@@ -909,11 +909,11 @@ Appcelerator.Compiler.registerCustomAction('value',
 					if (child_parameter != '') 
 					{
 						//e.g. value[bar.idx]
-						var condition = 'value['+parameters + '.' + child_parameter+']';						
+						var action = 'value['+parameters + '.' + child_parameter+']';						
 						//the current child element is the one we want to handle the condition on
 						clause[0] = child;
 						//the condition to handle for this child element
-						clause[2] = condition;
+						clause[2] = action;
 
 						Appcelerator.Compiler.handleCondition.apply(this, clause);
 					}
