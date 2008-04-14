@@ -2610,22 +2610,6 @@ Appcelerator.Compiler.setElementValue = function (element, value)
 				}
 				break;
 			}
-			case 'div':
-			case 'span':
-			case 'p':
-			case 'h1':
-			case 'h2':
-			case 'h3':
-			case 'h4':
-			case 'h5':
-			case 'td':
-			case 'code':
-			case 'li':
-			case 'blockquote':
-			{
-				element.innerHTML = value;
-				break;
-			}
 			case 'a':
 			{
 				element.href = value;
@@ -2638,11 +2622,12 @@ Appcelerator.Compiler.setElementValue = function (element, value)
 			}
 			default:
 			{
-				throw "syntax error: " + element +' not supported for bind action';
+				element.innerHTML = value;
+				break;
 			}
 		}
 	}
-	
+
 	if (revalidate)
 	{
 		Appcelerator.Compiler.executeFunction(element, "revalidate");
