@@ -1,7 +1,7 @@
 --- 
 :type: widget
 :name: app:datatable
-:version: 1.2
+:version: 1.2.1
 :dependencies: 
 - :type: websdk
   :version: ">=2.1"

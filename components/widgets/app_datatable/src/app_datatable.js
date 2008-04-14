@@ -534,10 +534,9 @@ Appcelerator.Widget.Datatable =
 		$D('excuting datatable for '+id);
 		//Data property
 		var params = $(id).parameterMap||parameterMap;
-		var propertyName = parameterMap['property'];
-		var stickySort = parameterMap['stickySort'];
-		var lastSortIndex = params['lastSortIndex'] || parameterMap['sortIndex'];
-		lastSortIndex = parseInt(lastSortIndex);
+		var propertyName = parameterMap.property;
+		var stickySort = parameterMap.stickySort||true;
+		var lastSortIndex = params.lastSortIndex;
 		var array;
 		$(id).position = 0;
 		$(id).initialLoad = true;
