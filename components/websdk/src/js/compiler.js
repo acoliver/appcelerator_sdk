@@ -2596,6 +2596,20 @@ Appcelerator.Compiler.setElementValue = function (element, value)
 				element.value = value;
 				break;
 			}
+			case 'select':
+			{
+				var options = element.options;
+
+				for (var i = 0; i<options.length;i++)
+				{
+					if (options[i].value == value)
+					{
+						element.selectedIndex = i;
+						break;
+					}
+				}
+				break;
+			}
 			case 'div':
 			case 'span':
 			case 'p':
