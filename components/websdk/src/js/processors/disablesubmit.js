@@ -1,6 +1,4 @@
-// 
-// register our fieldsets
-// 
+
 Appcelerator.Compiler.registerAttributeProcessor('form','disablesubmit',
 {
 	handle: function(element,attribute,value)
