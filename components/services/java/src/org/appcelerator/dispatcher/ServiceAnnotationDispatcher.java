@@ -55,7 +55,7 @@ public class ServiceAnnotationDispatcher
             try
             {
 	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+serviceClass);
-                ServiceRegistry.getInstance().registerServiceMethods(serviceClass,false,null,null,"serviceAnnotation");
+                ServiceRegistry.registerServiceMethods(serviceClass,false,null,null,"serviceAnnotation");
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ public class ServiceAnnotationDispatcher
             try
             {
 	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+serviceClass);
-	            ServiceRegistry.getInstance().registerDownloadableMethods(serviceClass,null,false);
+	            ServiceRegistry.registerDownloadableMethods(serviceClass,null,false);
             }
             catch (Exception ex)
             {

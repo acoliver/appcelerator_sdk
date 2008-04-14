@@ -58,8 +58,8 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 	        try
 	        {
 	            if (LOG.isDebugEnabled()) LOG.debug("attempting to register => "+name);
-	            ServiceRegistry.getInstance().registerServiceMethods(bean.getClass(), true, null, bean,"springBean");
-	            ServiceRegistry.getInstance().registerDownloadableMethods(bean.getClass(), bean, true);
+	            ServiceRegistry.registerServiceMethods(bean.getClass(), true, null, bean,"springBean");
+	            ServiceRegistry.registerDownloadableMethods(bean.getClass(), bean, true);
 	        }
 	        catch (Exception e)
 	        {

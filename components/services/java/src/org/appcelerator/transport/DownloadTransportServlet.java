@@ -58,7 +58,7 @@ public class DownloadTransportServlet extends HttpServlet
             return;
         }
         
-		boolean handled = ServiceRegistry.getInstance().dispatch(request.getSession(), ticket, name, response);
+		boolean handled = ServiceRegistry.dispatch(request.getSession(), ticket, name, response);
 		
 		if (!handled)
 		{

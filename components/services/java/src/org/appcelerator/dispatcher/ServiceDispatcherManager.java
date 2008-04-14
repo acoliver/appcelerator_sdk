@@ -110,6 +110,6 @@ public class ServiceDispatcherManager
     public static boolean dispatch (Message request, List<Message> responses) throws Exception
     {
     	intialize();
-    	return ServiceRegistry.getInstance().dispatch(request, responses);
+    	return ServiceRegistry.dispatch(request, responses);
     }
 }
