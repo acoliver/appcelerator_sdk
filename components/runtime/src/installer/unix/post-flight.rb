@@ -61,7 +61,7 @@ def add_to_path(dir)
   puts 'Adding app command to path:'
   if confirm("Append '#{addition.strip}' to '#{filename}'? [Yn] ", false)
     f = open(filename,'a')
-    f << '\n' << addition << '\n'
+    f << "\n" << addition << "\n"
     f.close 
     puts 'Added to path'
   else
