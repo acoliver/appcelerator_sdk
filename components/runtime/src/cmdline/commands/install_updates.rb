@@ -56,7 +56,7 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
             if update and not Installer.installed_this_session? entry
               
               possible_updates += 1
-              if confirm("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]",true,false,'y')
+              if confirm_yes("Update #{entry[:type]} '#{entry[:name]}' from #{e[:version]} to #{entry[:version]} ? [Yna]")
                 Installer.require_component(entry[:type],entry[:type],entry[:version])
                 updated << "#{entry[:type]}_#{entry[:name]}"
               end

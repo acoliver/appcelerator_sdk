@@ -179,6 +179,10 @@ module Appcelerator
 
       @@loggedin
     end
+    
+    def Installer.logged_in
+      @@loggedin
+    end
 
     def Installer.save_proxy(proxy)
       @@config[:proxy]=proxy
@@ -779,11 +783,11 @@ HELP
         if version.nil?
           # user doesn't care about version, give them the latest
           component_info[:name] = component_info[:name].to_s
+          local = get_current_installed_component(component_info)
           begin
             remote = get_current_remote_component(component_info)
-            local = get_current_installed_component(component_info)
           rescue SocketError => e
-            #
+            # if we have no internet connection, just use local version
           end
           
           if (local.nil? and remote)
@@ -793,7 +797,7 @@ HELP
                         
           elsif remote and should_update(local[:version],remote[:version])
             # upgrading
-            if options[:force_update] or confirm("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]", true, false)
+            if options[:force_update] or confirm_yes("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
               component = install_from_devnetwork(remote, options)
               finish_install(component, options)
             else
@@ -811,12 +815,13 @@ HELP
             msg += ' (no network connection available)' if e
             raise UserError.new(msg)
           end
-        else
-          # user wants a specific version, try to use local
+        
+        else # user wants a specific version, try to use local
+          
           local = get_installed_components(component_info).last
           
           if local and not OPTIONS[:force_update]
-            # this is the only case were we don't hit the network
+            # user asks for an installed version, no network hit
             component = local
             skip_install(component, options)
           else
@@ -853,7 +858,6 @@ HELP
 
       Installer.add_installed_component(component)
       
-      description = Installer.describe_component(component[:type], component[:name])
       puts
       puts "Installed #{component[:name]} #{component[:version]}" unless OPTIONS[:quiet]
     end
@@ -883,12 +887,12 @@ HELP
       @@installed_this_session.include? "#{cm[:type]}_#{cm[:name]}_#{cm[:version]}"
     end
     
-    def Installer.describe_component(type,name)
-      case type
+    def Installer.describe_component(component)
+      case component[:type]
       when :service
-        'SOA Integration Point'
+        'Service'
       when :plugin
-        name+' Plugin'
+        component[:name]+' Plugin'
       when :widget
         'Widget'
       when :websdk
@@ -903,6 +907,8 @@ HELP
     def Installer.install_from_devnetwork(component_info, options={})
       force = options[:force].nil? ? OPTIONS[:force_update] : options[:force]
       quiet_if_installed = options[:quiet_if_installed]
+      
+      Installer.selfupdate(nil, options)
 
       puts "Install from Dev Network: #{component_info[:type]},#{component_info[:name]},#{component_info[:version]} (force=#{force}) " if OPTIONS[:verbose]
       
@@ -945,20 +951,7 @@ HELP
       end
       nil
     end
-    
-    def Installer.get_component_from_config(type,name,version=nil)
       
-      component_info = {:name=>name,:type=>type,:version=>version}
-      begin
-        remote = get_remote_components(component_info)
-      rescue SocketError => e
-        remote = []
-      end
-      local = get_installed_components(component_info)
-      
-      most_recent_version(remote + local)
-    end
-    
     def Installer.get_components(location, component_info)
       case location
       when :remote
@@ -1007,16 +1000,27 @@ HELP
     end
     
     def Installer.get_current_installed_component(component_info)
+      component_info = component_info.clone
       component_info[:version] = nil
       most_recent_version(get_installed_components(component_info))
     end
     
     def Installer.get_current_remote_component(component_info)
+      component_info = component_info.clone
       component_info[:version] = nil
       most_recent_version(get_remote_components(component_info))
     end
-
     
+    def Installer.get_current_available_component(component_info)
+      local = get_current_installed_component(component_info)
+      begin
+        remote = get_current_remote_component(component_info)
+        return most_recent_version([remote, local])
+      rescue SocketError => e
+        # maybe we're disconnected
+        return get_current_installed_component(component_info)
+      end
+    end
     
     def Installer.get_exact_remote_component(component_info)
       message = {'sid'=>get_config[:sid],'os'=>RUBY_PLATFORM,'name'=>component_info[:name],'version'=>component_info[:version]}
@@ -1118,51 +1122,38 @@ HELP
           true # mine is older
       end
     end
-    
-    def Installer.check_appadmin_installed
-      # config = {:name=>'appadmin',:type=>'appadmin'}
-      # admin = Installer.get_current_installed_component config
-      # if not admin
-      #   puts "Completing installation ... "
-      #   list = Installer.fetch_distribution_list
-      #   if list
-      #     a = list[:appadmin]
-      #     admin = Installer.most_recent_version(a) if a
-      #     if admin
-      #       Installer.install_component(:appadmin,'appadmin')
-      #     end
-      #   end
-      # end
-    end
-  end
   
-  def Installer.selfupdate(version)
     
-    build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
-    cm = {:type=>:update, :name=>'update', :version=>version}
-    update = Installer.get_component(:remote, cm)
+    def Installer.selfupdate(version=nil,options={})
     
-    if update
+      build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
+      cm = {:type=>:update, :name=>'update', :version=>version}
+      update = Installer.get_component(:remote, cm)
+    
+      if update
       
-      if Installer.should_update(build_config[:version], update[:version])
-        if confirm "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]",true,false,'y'
+        if Installer.should_update(build_config[:version], update[:version])
+          if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
-          Installer.require_component(update[:type].to_sym, update[:name], version)
+            update_component = Installer.fetch_network_component(component_info,1,1)
+            finish_install(update_component, options)
 
-          build_config[:version] = update[:version]
-          cf = File.open("#{SCRIPTDIR}/build.yml",'w+')
-          cf.puts(build_config.to_yaml)
-          cf.close
-          puts "This program has been self-updated. Please run your command again."
+            build_config[:version] = update[:version]
+            cf = File.open("#{SCRIPTDIR}/build.yml",'w+')
+            cf.puts(build_config.to_yaml)
+            cf.close
+            puts "This program has been self-updated. Please run your command again."
+          else
+            puts "You must self-update this program before updating any other components."
+          end
           exit 0
+        elsif version
+          die "You can't update to an previous version of the command-line tool"
         else
-          puts "You must self-update this program before updating any other components."
-          exit 0
+          return build_config[:version]
         end
-      elsif version
-        puts "You can't update to an previous version of the command-line tool"
       end
-    end
+    end    
   end
   
   class UserError < StandardError

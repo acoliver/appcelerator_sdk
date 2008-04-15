@@ -79,13 +79,23 @@ ERROR_MESSAGE
     
     template = File.read "#{template_dir}/widget_Rakefile"
     template.gsub! 'WIDGET', widget_name
-  
-    build_config = {:name=>name,:version=>1.0,:type=>'widget',:description=>"#{args[:name]} widget",:release_notes=>"initial release",:licenses=>[]}
-    build_config[:dependencies] = [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}]
-    build_config[:tags] = []
-
+    
+    build_yaml = {
+      :name=>name,
+      :version=>1.0,
+      :type=>'widget',
+      :description=>"#{args[:name]} widget",
+      :release_notes=>"initial release",
+      :licenses=>[],
+      :dependencies => [{:type=>'websdk',:version=>'>=2.1',:name=>'websdk'}],
+      :tags => []
+    }.to_yaml
+    
+    build_yaml.gsub!(/(\n\s*:tags:)/,
+    "\n# Tags should be a comma-separated list of identifiers, like: [happy, tasty, ajaxy]\\1")
+    
     Installer.put "#{dir}/Rakefile", template
-    Installer.put "#{dir}/build.yml", build_config.to_yaml.to_s
+    Installer.put "#{dir}/build.yml", build_yaml
   
     %w(css images doc js).each do |d|
       FileUtils.mkdir_p "#{src_dir}/#{d}" unless File.exists? "#{src_dir}/#{d}"

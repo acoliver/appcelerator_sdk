@@ -156,7 +156,7 @@ For example:
 
 */
 
-Appcelerator.Widget.registerWidget('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME);
+Appcelerator.Widget.register('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME);
 
 
 

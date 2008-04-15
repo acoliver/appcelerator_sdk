@@ -63,11 +63,10 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
       
       widget_names = args[:name].split(',').uniq
       widget_names.each do |name|
-        
-        class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
-        widget_name = name.gsub ':', '_'
-        
+                
         widget = Installer.require_component(:widget, name, options[:version], options)
+        class_name = widget[:name].gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
+        widget_name = widget[:name].gsub ':', '_'
         
         to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
         tx.mkdir to_dir

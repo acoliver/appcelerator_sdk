@@ -26,5 +26,8 @@ CommandRegistry.registerCommand('selfupdate','update the command-line tools',[],
     :value=>true
   }
 ]) do |args,options|
-  Installer.selfupdate(options[:version])
+  version = Installer.selfupdate(options[:version], options)
+  if version
+    puts "Your app command is up-to-date (#{version})"
+  end
 end

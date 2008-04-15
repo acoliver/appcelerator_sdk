@@ -42,143 +42,113 @@ CommandRegistry.registerCommand('update:project','update project components',[
 
     # this is used to make sure we're in a project directory
     lang = Project.get_service(pwd)
-
-    # determine if we have the service the user is asking for
-    list = Installer.fetch_distribution_list
-
+    
     puts "One moment, determining latest versions ..." if OPTIONS[:verbose]
 
     updates = []
 
     Installer.with_project_config(pwd,false) do |config|
-
-      config[:widgets].each do |widget|
-        widget_component = Installer.get_component_from_config(:widget,widget[:name])
-        
-        if widget_component and Installer.should_update(widget[:version], widget_component[:version])
-          
-          if not confirm "Need to update: #{widget_component[:name]} to #{widget_component[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... #{widget_component[:name]},#{widget_component[:version]}" if OPTIONS[:verbose]
-          else 
-            puts "Will update => #{widget_component[:name]}, #{widget_component[:version]}" if OPTIONS[:verbose]
-            updates << widget_component
-          end
-        else
-          puts "Widget '#{widget[:name]}' is already up-to-date (#{widget_component[:version]})"
-        end
-      end
-
-      config[:plugins].each do |plugin|
-        current_plugin = Installer.get_component_from_config(:plugin,plugin[:name])
-        
-        if current_plugin and Installer.should_update(plugin[:version], current_plugin[:version])
-          
-          if not confirm "Need to update: #{current_plugin[:name]} to #{current_plugin[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... #{current_plugin[:name]},#{current_plugin[:version]}" if OPTIONS[:verbose]
-          else 
-            puts "Will update => #{current_plugin[:name]}, #{current_plugin[:version]}" if OPTIONS[:verbose]
-            updates << current_plugin
-          end
-        else
-          puts "Plugin '#{plugin[:name]}' is already up-to-date (#{current_plugin[:version]})" unless OPTIONS[:quiet]
-        end
-      end
-
-      websdk_component = Installer.get_component_from_config(:websdk,'websdk')
       
-      if websdk_component
-        if Installer.should_update(config[:websdk], websdk_component[:version])
-          new_websdk = websdk_component
-          if not confirm "Need to update: 'websdk' to #{new_websdk[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... websdk,#{new_websdk[:version]}" if OPTIONS[:verbose]
-          else
-            puts "Will update => websdk, #{new_websdk[:version]}" if OPTIONS[:verbose]
-            updates << websdk_component
-          end
-        else
-          if OPTIONS[:force_update]
-            if confirm "Re-install local update: websdk to #{config[:websdk]}. OK? [Yna] ",true,false,'y'
-              updates << websdk_component
-            end
-          else
-            puts "Web SDK is already up-to-date (#{config[:websdk]})"
-          end
-        end
-      end
+      websdk_component = {
+        :type => :websdk,
+        :name => 'websdk',
+        :version => config[:websdk]
+      }
+      service_component = {
+        :type => :service,
+        :name => config[:service],
+        :version => config[:service_version]
+      }
       
-      service_name = config[:service]
-      service_component = Installer.get_component_from_config(:service,service_name)
+      project_websdk = Installer.get_component(:local, websdk_component)
+      project_service = Installer.get_component(:local, service_component)
+            
+      ask_to_update(config[:widgets], updates, :widget)
+      ask_to_update(config[:plugins], updates, :plugin)
+      ask_to_update([project_websdk, project_service], updates)
+    end  
       
-      if service_component
-        if Installer.should_update(config[:service_version], service_component[:version])
-          if not confirm "Need to update: #{service_name} to #{service_component[:version]}. OK? [Yna] ",true,false,'y'
-            puts "Skipping ... #{service_name},#{service_component[:version]}" if OPTIONS[:verbose]
-          else
-            puts "Will update => #{service_name}, #{service_component[:version]}" if OPTIONS[:verbose]
-            updates << service_component
-          end
-        else
-          if OPTIONS[:force_update]
-            if confirm "Re-install local update: #{service_name} to #{config[:service_version]}. OK? [Yna] ",true,false,'y'
-              puts "Will re-install => #{service_name}, #{config[:service_version]}" if OPTIONS[:verbose]
-              updates << service_component
-            end
-          else
-            puts "Service '#{service_name}' is already up-to-date (#{config[:service_version]})"
-          end
-        end
-      end
       
-      if not updates.empty?
-        with_io_transaction(pwd) do |tx|
+    if not updates.empty?
+      with_io_transaction(pwd) do |tx|
 
-          Installer.with_project_config(pwd,true) do |config|
-            config[:last_updated] = Time.now
-            event = {:project_dir=>pwd,:config=>config,:tx=>tx}
-            PluginManager.dispatchEvents('update_project',event) do
-              opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
-              updates.each do |component|
-                case component[:type].to_sym
+        Installer.with_project_config(pwd,true) do |config|
+          config[:last_updated] = Time.now
+          event = {:project_dir=>pwd,:config=>config,:tx=>tx}
+          PluginManager.dispatchEvents('update_project',event) do
+            opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
+            updates.each do |component|
+              case component[:type].to_sym
+              
+                when :widget
+                  opts[:version] = component[:version]
+                  CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
                 
-                  when :widget
-                    opts[:version] = component[:version]
-                    CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
-                  
-                  when :plugin
-                    opts[:version] = component[:version]
-                    CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
+                when :plugin
+                  opts[:version] = component[:version]
+                  CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
+              
+                when :websdk
+                  Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
+                  config[:websdk] = component[:version]
                 
-                  when :websdk
-                    Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
-                    config[:websdk] = component[:version]
+                when :service
+                  Installer.require_component(:service, component[:name], component[:version], opts)
                   
-                  when :service
-                    Installer.require_component(:service, component[:name], component[:version], opts)
-                    
-                    config[:service_version] = component[:version]
-                    service_dir = Installer.get_component_directory(component)
-                    service_name = Project.make_service_name(component[:name])
-                    script = File.join(service_dir,'install.rb')
-                    puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
-                    project_config = Project.get_config(pwd) 
-                    project_config.merge!(config)
-                    require script
-                    installer = Appcelerator.const_get(service_name).new
-                    if installer.respond_to?(:update_project)
-                      if installer.update_project(service_dir,pwd,project_config,tx,config[:service_version],component[:version])
-                        puts "Updated service '#{component[:name]}' to #{component[:version]}"
-                      end
+                  config[:service_version] = component[:version]
+                  service_dir = Installer.get_component_directory(component)
+                  service_name = Project.make_service_name(component[:name])
+                  script = File.join(service_dir,'install.rb')
+                  puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
+                  project_config = Project.get_config(pwd) 
+                  project_config.merge!(config)
+                  require script
+                  installer = Appcelerator.const_get(service_name).new
+                  if installer.respond_to?(:update_project)
+                    if installer.update_project(service_dir,pwd,project_config,tx,config[:service_version],component[:version])
+                      puts "Updated service '#{component[:name]}' to #{component[:version]}"
                     end
-                else
-                  puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]
-                end
+                  end
+              else
+                puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]
               end
             end
           end
         end
+      end
+    else
+      if Installer.logged_in
+        puts 'Looks like everything is up-to-date. Cool!'
       else
-        puts "Looks like everything is up-to-date. Cool!"
+        puts 'Could not connect to Developer Network, you may be missing updates'
+        puts 'This project has up-to-date versions of everything you have installed locally'
       end
     end
   end
+end
+
+def ask_to_update(components, updates, type=nil)
+  components.each do |project_cm|
+    
+    project_cm[:type] = type if type
+    current = Installer.get_current_available_component(project_cm)
+    if current and Installer.should_update(project_cm[:version], current[:version])
+      
+      if OPTIONS[:force_update] or confirm_yes "There is a newer version of '#{project_cm[:name]}' (yours: #{project_cm[:version]}, available: #{current[:version]})  Install? [Yna]"
+        puts "Will update to => #{project_cm[:name]} #{current[:version]}" if OPTIONS[:verbose]
+        updates << current
+      else
+        puts "Skipping ... #{project_cm[:name]} #{project_cm[:version]}" if OPTIONS[:verbose]
+      end
+    elsif OPTIONS[:force_update]
+      if confirm_yes "Re-install local version (#{project_cm[:name]} #{project_cm[:version]}). OK? [Yna] "
+        puts "Will re-install => #{project_cm[:name]}, #{project_cm[:version]}" if OPTIONS[:verbose]
+        updates << project_cm
+      end
+    else
+      description = Installer.describe_component(project_cm)
+      puts "#{description} #{project_cm[:name]} is already up-to-date (#{project_cm[:version]})"
+    end
+  end
+  updates
 end

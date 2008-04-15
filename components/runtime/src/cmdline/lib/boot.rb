@@ -44,7 +44,7 @@ def ask(q,mask=false)
   answer = ''
   while true
     ch = STDIN.getc
-    break if ch==10 or nil
+    break if ch==10
     answer << ch
   end
   if mask and STDIN.isatty
@@ -64,6 +64,10 @@ def confirm(q,canforce=true,die_if_fails=true,default='y')
       return false
     end
     true
+end
+
+def confirm_yes(q)
+  confirm(q,true,false,'y')
 end
 
 #
@@ -205,9 +209,6 @@ module Appcelerator
       # save the config
       Installer.save_config(username,password) if save
       
-      # make sure we've got our initial admin pulled down
-      Installer.check_appadmin_installed
-
     end
     
   end
