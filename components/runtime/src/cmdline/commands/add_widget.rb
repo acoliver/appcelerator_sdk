@@ -77,7 +77,7 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 
           widgets = config[:widgets] ||= []
           widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>name,:version=>widget[:version]}
+          widgets << {:name=>widget[:name],:version=>widget[:version]}
         end
         puts "Added #{widget[:name]} #{widget[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
