@@ -105,8 +105,6 @@ module Appcelerator
     end
 
     def Installer.network_login(email,password,silent=false)
-      #TODO: add this magic hook to the ide, to make the flow more natural
-      #puts "__MAGIC__|request_devnet_credentials|__MAGIC__" if OPTIONS[:subprocess]
       if OPTIONS[:no_remote]
         # special exit value for external tools (like the ide)
         die("--no-remote has been specified and you need to go to the Dev Network for content.", 2)
@@ -1137,7 +1135,7 @@ HELP
         if Installer.should_update(build_config[:version], update[:version])
           if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
-            update_component = Installer.fetch_network_component(component_info,1,1)
+            update_component = Installer.fetch_network_component(update,1,1)
             finish_install(update_component, options)
 
             build_config[:version] = update[:version]
