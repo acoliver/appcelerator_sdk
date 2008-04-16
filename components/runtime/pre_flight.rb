@@ -21,6 +21,17 @@
 module Appcelerator
   module Update
     class Patch
+      def Patch.crc32(c)
+          r = 0xFFFFFFFF
+          c.each_byte do |b|
+              r ^= b
+              8.times do
+                r = (r>>1) ^ (0xEDB88320 * (r & 1))
+              end
+          end
+          r ^ 0xFFFFFFFF
+      end
+      
       def Patch.install
         from_dir = $Installer[:to_dir]
 
@@ -29,16 +40,7 @@ module Appcelerator
   		  STDOUT.flush
 
         require 'digest/md5'
-        def crc32(c)
-            r = 0xFFFFFFFF
-            c.each_byte do |b|
-                r ^= b
-                8.times do
-                  r = (r>>1) ^ (0xEDB88320 * (r & 1))
-                end
-            end
-            r ^ 0xFFFFFFFF
-        end
+
         
         # these are files that can't be patched
         excludes = %W(#{from_dir}/build.yml #{from_dir}/pre_flight.rb #{from_dir}/appcelerator)
@@ -49,8 +51,8 @@ module Appcelerator
           target = file.gsub("#{from_dir}/",'')
           overwrite = File.exists? target
           if overwrite 
-            old_checksum = crc32 File.read(file)
-			      new_checksum = crc32 File.read(target)           
+            old_checksum = crc32( File.read(file) )
+			      new_checksum = crc32( File.read(target) )          
 			      overwrite = old_checksum!=new_checksum
 			    else
 			      overwrite = true
