@@ -100,7 +100,7 @@ def check_for_initial
       cmd = "#{GEM_CMD} install #{gem} -y"
       if not WIN32
         cmd = 'sudo ' + cmd
-        puts "__MAGIC__|require_password|Please enter your password to install required Ruby Gems|__MAGIC__" if subprocess
+        puts "__MAGIC__|ask|Please enter your password to install required Ruby Gems|true|__MAGIC__" if subprocess
       end
       puts "Executing: #{cmd}"
       system cmd

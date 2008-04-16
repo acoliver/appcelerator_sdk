@@ -20,6 +20,8 @@
 #
 require 'fileutils'
 
+Signal.trap("INT") { puts; exit }
+
 def ask(q)
   STDOUT.print "#{q} "
   STDOUT.flush

@@ -55,9 +55,9 @@ task :update do
       name = f.gsub(update_dir+'/','')
       zipfile.add name,f
     end
-    obj = {:type=>'update',:name=>'update',:version=>build_config[:version]}
+    config = {:type=>'update',:name=>'update',:version=>build_config[:version]}
     zipfile.get_output_stream('build.yml') do |zf|
-      zf.puts obj.to_yaml
+      zf.puts config.to_yaml
     end
     zipfile.add 'pre_flight.rb',"#{BUILD_DIR}/pre_flight.rb"
   end
@@ -74,26 +74,28 @@ task :win32 => [:setup] do
     puts
     win32_dir = "#{STAGE_DIR}/installer/win32"
     clean_dir(win32_dir)
-    FileUtils.mkdir_p win32_dir 
-    build_config = load_config(BUILD_DIR+'/src/installer/win32')
-
+    FileUtils.mkdir_p win32_dir
+    
+    config = YAML::load_file(BUILD_DIR+'/src/installer/win32/build.yml')
+    version = config[:version] = build_config[:version]
+    
     copy_dir "#{BUILD_DIR}/src/cmdline", win32_dir
     copy_dir "#{BUILD_DIR}/src/installer/win32", win32_dir
 
     FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", win32_dir
-    FileUtils.cp "#{BUILD_DIR}/src/installer/win32/build.yml", win32_dir
-#    FileUtils.cp APPADMIN_LOCATION, "#{win32_dir}/appadmin.zip"
+    build_yaml = File.join(win32_dir,'build.yml')
+    dump_yaml(config, build_yaml)    
 
     FileUtils.cd(win32_dir) do
       call_command "makensis installer.nsi" if VERBOSE
       call_command "makensis -Oinstaller.log installer.nsi" unless VERBOSE
-      FileUtils.cp_r "installer.exe", "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
+      FileUtils.cp_r "installer.exe", "#{STAGE_DIR}/installer_win32_#{version}.exe"
     end
 
-    FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip" 
-    Zip::ZipFile.open("#{STAGE_DIR}/installer_win32_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-      zipfile.add "installer_win32_#{build_config[:version]}.exe","#{STAGE_DIR}/installer_win32_#{build_config[:version]}.exe"
-      zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/win32/build.yml"
+    FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{version}.zip" 
+    Zip::ZipFile.open("#{STAGE_DIR}/installer_win32_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
+      zipfile.add "installer_win32_#{version}.exe","#{STAGE_DIR}/installer_win32_#{version}.exe"
+      zipfile.add("build.yml", build_yaml)
     end
 
     FileUtils.rm_rf win32_dir
@@ -109,7 +111,10 @@ task :unix => [:setup] do
     puts "==> Building Unix Installer"
     unix_dir = "#{STAGE_DIR}/installer/unix"
     clean_dir(unix_dir)
-    build_config = load_config(BUILD_DIR+'/src/installer/unix')
+    
+    config = YAML::load_file(BUILD_DIR+'/src/installer/unix/build.yml')
+    version = config[:version] = build_config[:version]
+    
     FileUtils.mkdir_p unix_dir 
 
     copy_dir "#{BUILD_DIR}/src/cmdline", unix_dir 
@@ -119,17 +124,19 @@ task :unix => [:setup] do
     FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
     FileUtils.rm_r "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
     FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", unix_dir
-    #   FileUtils.cp APPADMIN_LOCATION, "#{unix_dir}/appadmin.zip"
+    build_yaml = File.join(unix_dir,'build.yml')
+    dump_yaml(config, build_yaml)    
+    
 
     FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
 
     system "#{BUILD_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{BUILD_DIR}/src/installer/unix/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
-    FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
+    FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{version}.run"
 
-    FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip" 
-    Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-      zipfile.add "installer_unix_#{build_config[:version]}.run","#{STAGE_DIR}/installer_unix_#{build_config[:version]}.run"
-      zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/unix/build.yml"
+    FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{version}.zip" 
+    Zip::ZipFile.open("#{STAGE_DIR}/installer_unix_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
+      zipfile.add "installer_unix_#{version}.run","#{STAGE_DIR}/installer_unix_#{version}.run"
+      zipfile.add("build.yml", build_yaml)
     end
 
     FileUtils.rm_rf unix_dir
@@ -145,7 +152,9 @@ task :osx=> [:setup] do
     puts "==> Building Mac OSX Installer"
     osx_dir = "#{STAGE_DIR}/installer/osx"
     name = "Appcelerator"
-    build_config = load_config(BUILD_DIR+'/src/installer/osx')
+    
+    config = YAML::load_file(BUILD_DIR+'/src/installer/osx/build.yml')
+    version = config[:version] = build_config[:version]
 
     clean_dir(osx_dir)
     FileUtils.mkdir_p osx_dir 
@@ -179,8 +188,8 @@ task :osx=> [:setup] do
     system "hdiutil eject /Volumes/Appcelerator 2>/dev/null"
 
     FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
-#    FileUtils.cp APPADMIN_LOCATION, "#{osx_dir}/installer/appadmin.zip"
-    FileUtils.cp "#{BUILD_DIR}/src/installer/osx/build.yml", "#{osx_dir}/installer"
+    build_yaml = File.join(osx_dir,'build.yml')
+    dump_yaml(config, build_yaml)
 
     # build the package structure
     if File.exists? "/Developer/Tools/packagemaker"
@@ -211,13 +220,13 @@ task :osx=> [:setup] do
     system "hdiutil eject /Volumes/Appcelerator"
     system "hdiutil convert #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage -format UDBZ -o #{osx_dir}/Appcelerator.dmg"
 
-    FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg" rescue nil
-    system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg #{osx_dir}/Appcelerator.dmg"
+    FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{version}.dmg" rescue nil
+    system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{version}.dmg #{osx_dir}/Appcelerator.dmg"
 
-    FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip" 
-    Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{build_config[:version]}.zip", Zip::ZipFile::CREATE) do |zipfile|
-      zipfile.add "installer_osx_#{build_config[:version]}.dmg","#{STAGE_DIR}/installer_osx_#{build_config[:version]}.dmg"
-      zipfile.add 'build.yml',"#{BUILD_DIR}/src/installer/osx/build.yml"
+    FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{version}.zip" 
+    Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
+      zipfile.add "installer_osx_#{version}.dmg","#{STAGE_DIR}/installer_osx_#{version}.dmg"
+      zipfile.add("build.yml", build_yaml)
     end
 
     FileUtils.rm_rf osx_dir
@@ -265,4 +274,11 @@ def fix_paths(dir,path)
     nf.puts c
     nf.close
   end
+end
+
+def dump_yaml(config, filename)
+  f = File.open(filename,'w')
+  f.puts(config.to_yaml)
+  f.flush
+  f.close
 end
