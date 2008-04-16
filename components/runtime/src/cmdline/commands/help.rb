@@ -61,7 +61,7 @@ CommandRegistry.makeGroup(:help) do |group|
       
       puts
       puts "    Supported options:"
-      opts = HELP.values + entry[:opts]
+      opts = GLOBAL_OPTS.values + entry[:opts]
       opts.each do |opt|
         puts "      #{opt[:display].ljust(20)} #{opt[:help]}"
       end

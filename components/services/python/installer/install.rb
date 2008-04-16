@@ -135,7 +135,7 @@ END_CODE
     end
     
     def install_easy_install_if_needed
-      if not quiet_system("#{easy_install} --help")
+      if not @pyconfig.easy_install_installed?
         confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install? [Yn]")
         
         require 'open-uri'
@@ -145,8 +145,12 @@ END_CODE
         ez_file.write(ez_setup_src)
         ez_file.close
         
-        sudo = on_windows ? '' : 'sudo '         
-        quiet_system("#{sudo}#{python} #{ez_file.path}")
+        if on_windows
+          quiet_system("#{python} #{ez_file.path}")
+        else
+          puts "__MAGIC__|require_password|Please enter your password to install the python easy_install tool|__MAGIC__" if OPTIONS[:subprocess]
+          quiet_system("sudo #{python} #{ez_file.path}")
+        end
       end
     end
     

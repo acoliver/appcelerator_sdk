@@ -95,18 +95,20 @@ def check_for_initial
       end
     end
     
+    subprocess = (ARGV.include? == '--subprocess')
     gems.each do |gem|
       cmd = "#{GEM_CMD} install #{gem} -y"
       if not WIN32
         cmd = 'sudo ' + cmd
+        puts "__MAGIC__|require_password|Please enter your password to install required Ruby Gems|__MAGIC__" if subprocess
       end
       puts "Executing: #{cmd}"
       system cmd
   
       # NOTE: for some reason, gem doesn't exit with non-zero when unsuccessful
-      check_cmd = eval "%x[#{GEM_CMD} list #{gem}]"
+      check_cmd = %x[#{GEM_CMD} list #{gem}]
       
-      if not check_cmd =~ Regexp.new(gem)
+      if not check_cmd =~ Regexp.new('\s'+gem+'\s')
         STDERR.puts "Gem #{gem} doesn't look like it installed correctly."
         exit 1
       end
@@ -136,7 +138,6 @@ def check_for_initial
 end
 
 check_for_initial
-#check_for_appadmin
 
 if INSTALLING
   exit 0
@@ -146,5 +147,5 @@ end
 if system "ruby \"#{TARGET_DIR}/console.rb\" #{ARGV.join(' ')}"
   exit 0
 else
-  exit 1
+  exit $?.exitstatus
 end

@@ -36,6 +36,7 @@ def ask_with_validation(q,msg,regexp,mask=false)
 end
 
 def ask(q,mask=false)
+  puts "__MAGIC__|ask|#{q}|#{mask}|__MAGIC__" if OPTIONS[:subprocess]
   STDOUT.print "#{q} "
   STDOUT.flush
   if mask and STDIN.isatty
@@ -117,7 +118,7 @@ module Appcelerator
 
         # nothing required
         
-      elsif ACTION.to_s != 'network:login'  
+      elsif ACTION != 'network:login'  
 
         # first time user - we need to either allow them to signup or allow them to login
         

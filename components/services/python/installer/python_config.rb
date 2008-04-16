@@ -34,7 +34,18 @@ module Appcelerator
       if on_windows
         find_latest_script 'easy_install.exe'
       else
+        puts "__MAGIC__|require_password|Please enter your password to install required python libraries|__MAGIC__" if OPTIONS[:subprocess]
         'sudo easy_install'
+      end
+    end
+    
+    def easy_install_installed?
+      if on_windows
+        File.exists?(find_latest_script('easy_install.exe'))
+      else
+        # this could check that a file exists more efficiently that actually running it,
+        # like using the system path plus File.exists?
+        quiet_system('easy_install --help')
       end
     end
     

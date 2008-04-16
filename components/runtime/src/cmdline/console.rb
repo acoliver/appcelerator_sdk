@@ -22,24 +22,51 @@ require 'fileutils'
 require 'yaml'
 require 'open-uri'
 
+Signal.trap("INT") { puts; exit }
+
 ET_PHONE_HOME = 'http://updatesite.appcelerator.org'
 OPTIONS = {}
 ARGS = []
-ACTION = []
 SCRIPTNAME = 'app'
 SCRIPTDIR = File.dirname(__FILE__)
 LIB_DIR = "#{SCRIPTDIR}/lib"
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
+OPTIONS[:subprocess] = (ARGV.include? '--subprocess') # bootstrapping
 
-HELP = Hash.new
-HELP[:server] = {:display=>'--server=url',:help=>'set location of distribution server. url must be: http://host[:port]',:value=>true}
-HELP[:verbose] = {:display=>'--verbose',:help=>'print verbose output as the command is processed',:value=>false}
-HELP[:debug] = {:display=>'--debug',:help=>'print very verbose debug output as the command is processed',:value=>false}
-HELP[:quiet] = {:display=>'--quiet',:help=>'be silent in printing any output',:value=>false}
-HELP[:force] = {:display=>'--force',:help=>'overwrite any existing files during installation',:value=>false}
-HELP[:force_update] = {:display=>'--force-update',:help=>'force download of components even if they exist in local cache',:value=>false}
-HELP[:args] = {:display=>'--args="args"',:help=>'arguments to pass to calling application',:value=>true}
-HELP[:no_remote] = {:display=>'--no-remote',:help=>nil,:value=>false}
+GLOBAL_OPTS = {
+  :verbose => {
+      :display => '--verbose',
+      :help    => 'print verbose output as the command is processed',
+      :value   => false},
+  :debug => {
+      :display => '--debug',
+      :help    => 'print very verbose debug output as the command is processed',
+      :value   => false},
+  :quiet => {
+      :display => '--quiet',
+      :help    => 'be silent in printing any output',
+      :value   => false},
+  :force => {
+      :display => '--force',
+      :help    => 'overwrite any existing files during installation',
+      :value   => false},
+  :force_update => {
+      :display => '--force-update',
+      :help    => 'force download of components even if they exist in local cache',
+      :value   => false},
+  :args => {
+      :display => '--args="args"',
+      :help    => 'arguments to pass to calling application',
+      :value   => true},
+  :server => {
+      :display => '--server=url',
+      :help    => 'set location of distribution server. url must be: http://host[:port]',
+      :value   => true},
+  :no_remote => {
+      :display => '--no-remote',
+      :help    => 'avoid making network connections, may disable some commands',
+      :value   => false}
+}
 
 def dequote(s)
   return nil unless s
@@ -47,41 +74,38 @@ def dequote(s)
   m ? m[1] : s
 end
 
-def parse_options
+def parse_options_windows
+  # thank you for spliting on spaces and equals-signs, cmd.exe
   current = nil
-  win32 = RUBY_PLATFORM=~/(windows|win32)/
   ARGV.each do |arg|
-    case arg
-      when /^[-]{1,2}/
-        if arg.to_s[1,1]=='-'
-          t = arg[2..-1].to_s
-        else
-          t = arg[1..-1].to_s
-        end
-        i = t.index('=')
-        key = (i.nil? ? t : t[0,i]).gsub('-','_')
-        value = i.nil? ? nil : t[i+1..-1]
-        
-        if win32
-          if current # an option directly after another
-    	      OPTIONS[current.to_sym] = true
-    	    end
-    	    current = key
-    	  else
-    	    OPTIONS[key.to_sym]=dequote(value)||true
-        end
+    if arg =~ /^--?(.+)$/
+      key = $1.gsub('-','_').to_sym # first matched group of the regex
+    
+      OPTIONS[key] = true if key
+      current = key
     else
-      if win32 and current
-        OPTIONS[current.to_sym]=dequote(arg)
+      if current and (not GLOBAL_OPTS[current] or GLOBAL_OPTS[current][:value] == true)
+        # only do this is the option is unknown, or known and requires a value
+        OPTIONS[current] = dequote(arg)
         current = nil
-        next
+      else
+        ARGS << arg
       end
-      ARGS << arg unless ACTION.empty?
-      ACTION << arg if ACTION.empty?        
     end
   end
-  if current
-   OPTIONS[current.to_sym]=true  
+end
+
+def parse_options_unix
+  ARGV.each do |arg|
+    if arg =~ /^--?([^=]+)(=(.+))?$/
+      
+      value = $3 # matching group after the equals-sign
+      key = $1.gsub('-','_').to_sym # matching group between the dash(es) and equals-sign
+      
+	    OPTIONS[key] = dequote(value) || true
+    else
+      ARGS << arg
+    end
   end
 end
 
@@ -93,7 +117,14 @@ end
 
 # main
 
-parse_options
+# The person running us as a subprocess is probably the IDE,
+# in which case we assume that he knows how to chop up a commandline
+if RUBY_PLATFORM=~/(windows|win32)/ and not OPTIONS[:subprocess]
+  parse_options_windows
+else
+  parse_options_unix
+end
+ACTION = ARGS.shift
 sanitize_options
 
 #
@@ -116,7 +147,7 @@ Appcelerator::PluginManager.loadPlugins
 #
 # execute the command
 #
-if Appcelerator::CommandRegistry.execute(ACTION.first,ARGS,OPTIONS)
+if Appcelerator::CommandRegistry.execute(ACTION,ARGS,OPTIONS)
   # indicate a 0 return code so that automated scripts can determine if command succeeded or failed
   exit 0
 else

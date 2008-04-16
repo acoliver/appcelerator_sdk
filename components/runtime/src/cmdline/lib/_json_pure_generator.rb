@@ -9,7 +9,7 @@
 
 
 module JSON
-  MAP = {
+  map = {
     "\x0" => '\u0000',
     "\x1" => '\u0001',
     "\x2" => '\u0002',
@@ -50,7 +50,7 @@ module JSON
   # Convert a UTF8 encoded Ruby string _string_ to a JSON string, encoded with
   # UTF16 big endian characters as \u????, and return it.
   def utf8_to_json(string) # :nodoc:
-    string = string.gsub(/["\\\/\x0-\x1f]/) { |c| MAP[c] }
+    string = string.gsub(/["\\\/\x0-\x1f]/) { |c| JSON.map[c] }
     string.gsub!(/(
                     (?:
                       [\xc2-\xdf][\x80-\xbf]    |
