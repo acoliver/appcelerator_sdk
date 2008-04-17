@@ -943,7 +943,8 @@ HELP
     end
       
     def Installer.most_recent_version(components)
-      if not components.empty?
+      if components and not components.empty?
+        components.compact!
         components.sort! do |a,b|
           compare_versions(a[:version],b[:version])
         end
@@ -1018,7 +1019,7 @@ HELP
         return most_recent_version([remote, local])
       rescue SocketError => e
         # maybe we're disconnected
-        return get_current_installed_component(component_info)
+        return local
       end
     end
     

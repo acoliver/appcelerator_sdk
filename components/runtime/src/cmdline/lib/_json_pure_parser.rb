@@ -9,70 +9,69 @@
 
 require 'strscan'
 
-module JsonConst
-  string                = /" ((?:[^\x0-\x1f"\\] |
-                              \\["\\\/bfnrt] |
-                              \\u[0-9a-fA-F]{4} |
-                              \\[\x20-\xff])*)
-                          "/nx
-  integer               = /(-?0|-?[1-9]\d*)/
-  float                 = /(-?
-                            (?:0|[1-9]\d*)
-                            (?:
-                              \.\d+(?i:e[+-]?\d+) |
-                              \.\d+ |
-                              (?i:e[+-]?\d+)
-                            )
-                            )/x
-  nan                   = /NaN/
-  infinity              = /Infinity/
-  minus_infinity        = /-Infinity/
-  object_open           = /\{/
-  object_close          = /\}/
-  array_open            = /\[/
-  array_close           = /\]/
-  pair_delimiter        = /:/
-  collection_delimiter  = /,/
-  _true                  = /true/
-  _false                 = /false/
-  null                  = /null/
-  ignore                = %r(
-    (?:
-     //[^\n\r]*[\n\r]| # line comments
-     /\*               # c-style comments
-     (?:
-      [^*/]|        # normal chars
-      /[^*]|        # slashes that do not start a nested comment
-      \*[^/]|       # asterisks that do not end this comment
-      /(?=\*/)      # single slash before this comment's end 
-     )*
-       \*/               # the End of this comment
-       |[ \t\r\n]+       # whitespaces: space, horicontal tab, lf, cr
-    )+
-  )mx
-
-  unparsed = Object.new
-  
-  # Unescape characters in strings.
-  unescape_map = Hash.new { |h, k| h[k] = k.chr }
-  unescape_map.update({
-    ?"  => '"',
-    ?\\ => '\\',
-    ?/  => '/',
-    ?b  => "\b",
-    ?f  => "\f",
-    ?n  => "\n",
-    ?r  => "\r",
-    ?t  => "\t",
-    ?u  => nil, 
-  })
-end
 
 module JSON
   module Pure
     # This class implements the JSON parser that is used to parse a JSON string
     # into a Ruby data structure.
     class Parser < StringScanner
+      
+      @@string                = /" ((?:[^\x0-\x1f"\\] |
+                                  \\["\\\/bfnrt] |
+                                  \\u[0-9a-fA-F]{4} |
+                                  \\[\x20-\xff])*)
+                              "/nx
+      @@integer               = /(-?0|-?[1-9]\d*)/
+      @@float                 = /(-?
+                                (?:0|[1-9]\d*)
+                                (?:
+                                  \.\d+(?i:e[+-]?\d+) |
+                                  \.\d+ |
+                                  (?i:e[+-]?\d+)
+                                )
+                                )/x
+      @@nan                   = /NaN/
+      @@infinity              = /Infinity/
+      @@minus_infinity        = /-Infinity/
+      @@object_open           = /\{/
+      @@object_close          = /\}/
+      @@array_open            = /\[/
+      @@array_close           = /\]/
+      @@pair_delimiter        = /:/
+      @@collection_delimiter  = /,/
+      @@_true                  = /true/
+      @@_false                 = /false/
+      @@null                  = /null/
+      @@ignore                = %r(
+        (?:
+         //[^\n\r]*[\n\r]| # line comments
+         /\*               # c-style comments
+         (?:
+          [^*/]|        # normal chars
+          /[^*]|        # slashes that do not start a nested comment
+          \*[^/]|       # asterisks that do not end this comment
+          /(?=\*/)      # single slash before this comment's end 
+         )*
+           \*/               # the End of this comment
+           |[ \t\r\n]+       # whitespaces: space, horicontal tab, lf, cr
+        )+
+      )mx
+
+      @@unparsed = Object.new
+
+      # Unescape characters in strings.
+      @@unescape_map = Hash.new { |h, k| h[k] = k.chr }
+      @@unescape_map.update({
+        ?"  => '"',
+        ?\\ => '\\',
+        ?/  => '/',
+        ?b  => "\b",
+        ?f  => "\f",
+        ?n  => "\n",
+        ?r  => "\r",
+        ?t  => "\t",
+        ?u  => nil, 
+      })
 
       # Creates a new JSON::Pure::Parser instance for the string _source_.
       #
@@ -111,11 +110,11 @@ module JSON
         obj = nil
         until eos?
           case
-          when scan(JsonConst.object_open)
+          when scan(@@object_open)
             obj and raise ParserError, "source '#{peek(20)}' not in JSON!"
             @current_nesting = 1
             obj = parse_object
-          when scan(JsonConst.array_open)
+          when scan(@@array_open)
             obj and raise ParserError, "source '#{peek(20)}' not in JSON!"
             @current_nesting = 1
             obj = parse_array
@@ -132,10 +131,10 @@ module JSON
       private
 
       def parse_string
-        if scan(JsonConst.string)
+        if scan(@@string)
           return '' if self[1].empty?
           self[1].gsub(%r((?:\\[\\bfnrt"/]|(?:\\u(?:[A-Fa-f\d]{4}))+|\\[\x20-\xff]))n) do |c|
-            if u = JsonConst.unescape_map[c[1]]
+            if u = @@unescape_map[c[1]]
               u
             else # \uXXXX
               bytes = ''
@@ -148,7 +147,7 @@ module JSON
             end
           end
         else
-          JsonConst.unparsed
+          @@unparsed
         end
       rescue Iconv::Failure => e
         raise GeneratorError, "Caught #{e.class}: #{e}"
@@ -156,36 +155,36 @@ module JSON
 
       def parse_value
         case
-        when scan(JsonConst.float)
+        when scan(@@float)
           Float(self[1])
-        when scan(JsonConst.integer)
+        when scan(@@integer)
           Integer(self[1])
-        when scan(JsonConst._true)
+        when scan(@@_true)
           true
-        when scan(JsonConst._false)
+        when scan(@@_false)
           false
-        when scan(JsonConst.null)
+        when scan(@@null)
           nil
-        when (string = parse_string) != JsonConst.unparsed
+        when (string = parse_string) != @@unparsed
           string
-        when scan(JsonConst.array_open)
+        when scan(@@array_open)
           @current_nesting += 1
           ary = parse_array
           @current_nesting -= 1
           ary
-        when scan(JsonConst.object_open)
+        when scan(@@object_open)
           @current_nesting += 1
           obj = parse_object
           @current_nesting -= 1
           obj
-        when @allow_nan && scan(JsonConst.nan)
+        when @allow_nan && scan(@@nan)
           NaN
-        when @allow_nan && scan(JsonConst.infinity)
+        when @allow_nan && scan(@@infinity)
           Infinity
-        when @allow_nan && scan(JsonConst.minus_infinity)
+        when @allow_nan && scan(@@minus_infinity)
           MinusInfinity
         else
-          JsonConst.unparsed
+          @@unparsed
         end
       end
 
@@ -196,23 +195,23 @@ module JSON
         delim = false
         until eos?
           case
-          when (value = parse_value) != JsonConst.unparsed
+          when (value = parse_value) != @@unparsed
             delim = false
             result << value
-            skip(JsonConst.ignore)
-            if scan(JsonConst.collection_delimiter)
+            skip(@@ignore)
+            if scan(@@collection_delimiter)
               delim = true
-            elsif match?(JsonConst.array_close)
+            elsif match?(@@array_close)
               ;
             else
               raise ParserError, "expected ',' or ']' in array at '#{peek(20)}'!"
             end
-          when scan(JsonConst.array_close)
+          when scan(@@array_close)
             if delim
               raise ParserError, "expected next element in array at '#{peek(20)}'!"
             end
             break
-          when skip(JsonConst.ignore)
+          when skip(@@ignore)
             ;
           else
             raise ParserError, "unexpected token in array at '#{peek(20)}'!"
@@ -228,19 +227,19 @@ module JSON
         delim = false
         until eos?
           case
-          when (string = parse_string) != JsonConst.unparsed
-            skip(JsonConst.ignore)
-            unless scan(JsonConst.pair_delimiter)
+          when (string = parse_string) != @@unparsed
+            skip(@@ignore)
+            unless scan(@@pair_delimiter)
               raise ParserError, "expected ':' in object at '#{peek(20)}'!"
             end
-            skip(JsonConst.ignore)
-            unless (value = parse_value).equal? JsonConst.unparsed
+            skip(@@ignore)
+            unless (value = parse_value).equal? @@unparsed
               result[string] = value
               delim = false
-              skip(JsonConst.ignore)
-              if scan(JsonConst.collection_delimiter)
+              skip(@@ignore)
+              if scan(@@collection_delimiter)
                 delim = true
-              elsif match?(JsonConst.object_close)
+              elsif match?(@@object_close)
                 ;
               else
                 raise ParserError, "expected ',' or '}' in object at '#{peek(20)}'!"
@@ -248,7 +247,7 @@ module JSON
             else
               raise ParserError, "expected value in object at '#{peek(20)}'!"
             end
-          when scan(JsonConst.object_close)
+          when scan(@@object_close)
             if delim
               raise ParserError, "expected next name, value pair in object at '#{peek(20)}'!"
             end
@@ -258,7 +257,7 @@ module JSON
               result = klass.json_create(result)
             end
             break
-          when skip(JsonConst.ignore)
+          when skip(@@ignore)
             ;
           else
             raise ParserError, "unexpected token in object at '#{peek(20)}'!"
@@ -273,5 +272,3 @@ module JSON
     p.parse
   end
 end
-
-
