@@ -76,7 +76,7 @@ public class ServiceRegistry
      */
     public static void unregisterService (ServiceAdapter adapter)
     {
-        String type = adapter.getService().request();
+        String type = adapter.getRequest();
         Set<ServiceAdapter> set = services.get(type);
         if (set!=null)
         {
@@ -104,7 +104,7 @@ public class ServiceRegistry
            if (instance == null)
                instance = serviceClass.newInstance();
 
-           MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, new ServiceDescription(serviceAnnotation));
+           MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
            ServiceRegistry.registerService(adapter, unregisterIfFound);
 
            if (registrations != null)
@@ -168,7 +168,7 @@ public class ServiceRegistry
 	 */
 	public static boolean registerService(ServiceAdapter adapter, boolean unregisterIfFound) throws Exception {
 
-		String type = adapter.getService().request();
+		String type = adapter.getRequest();
 		
 		Set<ServiceAdapter> adapters = services.get(type);
 		
@@ -200,15 +200,15 @@ public class ServiceRegistry
         {
             for (ServiceAdapter adapter : adapters)
             {
-                String version = adapter.getService().version();
+                String version = adapter.getVersion();
                 if (version == null || version.equals("") || version.equals(request.getVersion()))
                 {
                     Message response = null;
                     boolean hasResponse = false;
-                    if (adapter.getService().response()!=null)
+                    if (adapter.getResponse() !=null)
                     {
                         response = MessageUtils.createResponseMessage(request);
-                        response.setType(adapter.getService().response());
+                        response.setType(adapter.getResponse());
                         hasResponse = true;
                     }
                     adapter.dispatch(request, response);

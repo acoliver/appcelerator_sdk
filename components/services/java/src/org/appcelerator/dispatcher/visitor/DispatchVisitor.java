@@ -18,26 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.appcelerator.dispatcher;
+package org.appcelerator.dispatcher.visitor;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.appcelerator.messaging.Message;
 
-public class NullDispatchVisitor implements DispatchVisitor
+public interface DispatchVisitor 
 {
-	Log LOG = LogFactory.getLog(NullDispatchVisitor.class);
-	public NullDispatchVisitor() {
-		LOG.debug("NullDispatchVisitor created");
-	}
-	public void endVisit(Object obj, Message request, List<Message> responses) 
-	{
-	}
-	public Object startVisit(Message request, List<Message> responses) 
-	{
-		
-		return null;
-	}
+	public Object startVisit(Message request, List<Message> responses);
+	
+	public void endVisit(Object obj, Message request, List<Message> responses);
 }

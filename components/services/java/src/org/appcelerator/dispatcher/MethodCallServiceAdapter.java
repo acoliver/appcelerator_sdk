@@ -22,6 +22,7 @@ package org.appcelerator.dispatcher;
 
 import java.lang.reflect.Method;
 
+import org.appcelerator.annotation.Service;
 import org.appcelerator.messaging.Message;
 
 /**
@@ -29,120 +30,115 @@ import org.appcelerator.messaging.Message;
  * responsible for invoking the service using reflection and returning the
  * results from the invocation
  */
-public class MethodCallServiceAdapter implements ServiceAdapter
+public class MethodCallServiceAdapter extends ServiceAdapter
 {
     private final Object instance;
     private final Method method;
+    private Class serviceClass;
+
     private Method premethod;
     private Method postmethod;
-    final ServiceDescription service;
-    
-    public MethodCallServiceAdapter(Object i, Method m, ServiceDescription s) throws Exception
+
+    public MethodCallServiceAdapter(Object i, Method m, Service service) throws Exception
     {
         this.instance = i;
         this.method = m;
-        this.service = s;
-        this.postmethod = getMethod(i,s.postmessage());
-        this.premethod = getMethod(i,s.premessage());
+        this.serviceClass = i.getClass();
+
+        this.postmethod = getMethod(i,service.postmessage());
+        this.premethod = getMethod(i,service.premessage());
         this.method.setAccessible(true);
+
+        this.request = service.request();
+        this.response = service.response();
+        this.version = service.version();
+
     }
-    public static Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
-	{
-    	if (methodname==null || "".equals(methodname))
-		{
-    		return null;
-		}
-    	Class cl = i.getClass();
-    	return cl.getMethod(methodname, Message.class, Message.class);
+    public Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
+    {
+        if (methodname==null || "".equals(methodname))
+        {
+            return null;
+        }
+        return serviceClass.getMethod(methodname, Message.class, Message.class);
     }
 
     public boolean is(ServiceAdapter sa)
     {
-    	if (!(sa instanceof MethodCallServiceAdapter))
-    		return false;
-    	
-    	MethodCallServiceAdapter adapter = (MethodCallServiceAdapter) sa;
-    	Class clz = sa.getClass();
-    	Method method = adapter.getMethod();
-    	Class serviceClz = adapter.getService().getClass();
-    	
-        if (instance.getClass().equals(clz)
-        	&& method.equals(method)
-        	&& service.getClass().equals(serviceClz)) {
-        	return true;
-        }
-        
+        if (!(sa instanceof MethodCallServiceAdapter))
+            return false;
+
+        MethodCallServiceAdapter target = (MethodCallServiceAdapter) sa;
+        if (this.method.equals(target.method))
+            return true;
+
         return false;
     }
+
     /* (non-Javadoc)
-	 * @see org.appcelerator.dispatcher.ServiceAdapter#equals(java.lang.Object)
-	 */
+     * @see org.appcelerator.dispatcher.ServiceAdapter#equals(java.lang.Object)
+     */
     public boolean equals(Object obj)
     {
         if (obj instanceof MethodCallServiceAdapter)
         {
-            MethodCallServiceAdapter sa=(MethodCallServiceAdapter)obj;
+            MethodCallServiceAdapter sa=(MethodCallServiceAdapter) obj;
             return sa.instance.equals(instance) && 
-                   sa.method.equals(method) &&
-                   sa.service.equals(service);
+            sa.method.equals(method) &&
+            super.equals(obj);
         }
         return false;
     }
+    
     /* (non-Javadoc)
-	 * @see org.appcelerator.dispatcher.ServiceAdapter#hashCode()
-	 */
+     * @see org.appcelerator.dispatcher.ServiceAdapter#hashCode()
+     */
     public int hashCode()
     {
-        return this.instance.hashCode() * this.method.hashCode() ^ service.hashCode();
+        return this.instance.hashCode() * this.method.hashCode() ^ super.hashCode();
     }
-    /**
-     * return the service annotation for the service method
-     * @return
-     */
-    public ServiceDescription getService ()
-    {
-        return this.service;
-    }
+
     /**
      * Return the method object for this service adapter
      * @return
      */
     public Method getMethod() {
-    	return this.method;
+        return this.method;
     }
+
     /* (non-Javadoc)
-	 * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
-	 */
+     * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
+     */
     public void dispatch (Message request, Message response)
     {
         try
         {
-        	if (premethod != null)
-			{
-        		premethod.invoke(this.instance,request,response);
-			}
+            if (premethod != null)
+            {
+                premethod.invoke(this.instance,request,response);
+            }
             response.getData().put("success",true);
             switch(this.method.getParameterTypes().length)
             {
-                case 1:
-                {
-                    this.method.invoke(this.instance, request);
-                    break;
-                }
-                case 2:
-                {
-                    this.method.invoke(this.instance, request, response);
-                    break;
-                }
-                default:
-                {
-                    throw new Exception("invalid service signature");
-                }
+            case 1:
+            {
+                this.method.invoke(this.instance, request);
+                break;
             }
-        	if (postmethod != null)
-			{
-        		postmethod.invoke(this.instance,request,response);
-			}
+            case 2:
+            {
+                this.method.invoke(this.instance, request, response);
+                break;
+            }
+            default:
+            {
+                throw new Exception("invalid service signature");
+            }
+            }
+            if (postmethod != null)
+            {
+                postmethod.invoke(this.instance,request,response);
+            }
         }
         catch (Exception e)
         {

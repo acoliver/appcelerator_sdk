@@ -23,6 +23,7 @@ package org.appcelerator.dispatcher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.ServiceDispatcher;
+import org.appcelerator.dispatcher.visitor.DispatchVisitor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;

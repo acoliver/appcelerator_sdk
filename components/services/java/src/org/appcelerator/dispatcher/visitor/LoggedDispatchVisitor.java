@@ -1,4 +1,4 @@
-package org.appcelerator.dispatcher;
+package org.appcelerator.dispatcher.visitor;
 
 import java.util.List;
 
