@@ -39,7 +39,7 @@ $PARAMS = array_merge($_GET, $_POST);
 $method = $_SERVER['REQUEST_METHOD'];
 $instanceid = $PARAMS['instanceid'];
 $auth = $PARAMS['auth'];
-$init = $PARAMS['init'];
+$init = $PARAMS['initial'];
 
 if ($init=='1')
 {
