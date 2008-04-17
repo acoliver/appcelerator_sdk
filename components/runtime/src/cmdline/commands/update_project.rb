@@ -60,8 +60,8 @@ CommandRegistry.registerCommand('update:project','update project components',[
         :version => config[:service_version]
       }
       
-      project_websdk = Installer.get_component(:local, websdk_component)
-      project_service = Installer.get_component(:local, service_component)
+      project_websdk = Installer.get_component(:local, websdk_component) || websdk_component
+      project_service = Installer.get_component(:local, service_component) || service_component
             
       ask_to_update(config[:widgets], updates, :widget)
       ask_to_update(config[:plugins], updates, :plugin)
