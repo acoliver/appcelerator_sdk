@@ -37,13 +37,24 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Pure Java implementation of ServiceBroker client
+ * Pure Java implementation of ServiceBroker client. For example, you can use the
+ * client to send and receive service broker messages remotely:
+ *
+ * <code>
+ *
+ * URL url = new URL("http://localhost:8080/foobar");
+ * ServiceBrokerClient client = new ServiceBrokerClient(url);
+ * IMessageDataObject data = MessageUtils.createMessageDataObject();
+ * data.put("message", "hello,world");
+ * Message response = client.send("app.test.message.request",data);
+ * System.err.println(response);
+ *
+ * </code>
  * 
- * @author Jeff Haynie
+ * @author Jeff Haynie <jhaynie@appcelerator.com>
  */
 public class ServiceBrokerClient 
 {
-
 	private URL url;
 	private boolean connected;
 	private URL serviceBrokerURL;
@@ -57,12 +68,54 @@ public class ServiceBrokerClient
 	{
 	}
 
-        public void setUrl( URL url )
-        {
-        	this.url = url;
-		this.connected = false;
-        }
+	public ServiceBrokerClient ( URL url )
+	{
+		this.url = url;
+	}
 
+	/**
+	 * set the root URL to the remote service broker to use 
+	 */
+    public void setUrl( URL url )
+    {
+        this.url = url;
+		this.connected = false;
+    }
+
+	/**
+	 * return the root URL to the remote service broker being used 
+	 */
+	public URL getUrl ()
+	{
+		return this.url;
+	}
+
+    /**
+	 * disconnect from remote client
+     */	
+	public void disconnect ()
+	{
+		this.cookieName = null;
+		this.sessionId = null;
+		this.instanceId = null;
+		this.authToken = null;
+		this.auid = null;
+		this.connected = false;
+	}
+ 
+	/**
+	 * returns true if remotely connected or false if not
+	 */
+    public boolean isConnected ()
+    {
+		return this.connected;
+	}
+
+	/**
+	 * send a remote message to connected service broker. Will automatically connect
+	 * if not connected.  You can pass null as 2nd argument for data if you don't have any
+	 * data payload.
+	 */
 	public Message send (String type, IMessageDataObject data) throws Exception
 	{
 		if (!connected)
@@ -74,7 +127,6 @@ public class ServiceBrokerClient
 		{
 			data = MessageUtils.createMessageDataObject();
 		}
-		
 		 
 		HttpURLConnection http = (HttpURLConnection)serviceBrokerURL.openConnection();
 		
@@ -105,29 +157,23 @@ public class ServiceBrokerClient
 		Message message = MessageUtils.fromXML((Element)respXML.getDocumentElement().getFirstChild(), null);
 		return message;
 	}
-	
-	private String suck (InputStream in) throws Exception
-	{
-		byte buf [] = new byte[4096];
-		StringBuilder str = new StringBuilder();
-		while ( true )
-		{
-			int c = in.read(buf);
-			if (c < 0)
-			{
-				break;
-			}
-			str.append(new String(buf,0,c));
-		}
-		return str.toString();
-	}
-	
+
+	/**
+	 * connect remotely
+	 */
 	private void connect () throws Exception
 	{
+		if (null == this.url)
+		{
+			throw new IllegalStateException("not yet connected");
+		}
+
+		this.connected = false;
+
 		URL u = new URL(url.toExternalForm()+"appcelerator.xml");
 		HttpURLConnection http = (HttpURLConnection)u.openConnection();
 		http.connect();
-		String result = suck(http.getInputStream());
+		String result = Util.copyToString(http.getInputStream());
 		
 		Pattern pattern = Pattern.compile("<servicebroker(.*)?>(.*)</servicebroker>");
 		Matcher matcher = pattern.matcher(result);
@@ -159,33 +205,14 @@ public class ServiceBrokerClient
 				this.auid = matcher.group(1);
 			}
 		}
-
 		
 		this.instanceId = String.valueOf(System.currentTimeMillis());
 		this.authToken = Util.calcMD5(this.sessionId+this.instanceId);
 		
 		this.serviceBrokerURL = new URL(sbURL.toExternalForm()+"?instanceid="+this.instanceId+"&auth="+this.authToken+"&ts="+System.currentTimeMillis()+"&maxwait="+Long.MAX_VALUE);
-		connected = true;
+		this.connected = true;
 	}
 
-	public void run()
-	{
-		try {
-			URL url = new URL("http://localhost:8080/ptt_at_ajaxworld/");
-			ServiceBrokerClient client = new ServiceBrokerClient();
-                        client.setUrl( url );
-			IMessageDataObject data = MessageUtils.createMessageDataObject();
-			data.put("message", "hello,world");
-			Message response = client.send("app.test.message.request",data);
-			System.err.println(response);
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			System.exit(1);
-		}		
-	}
-	
 	/**
 	 * @param args
 	 */
@@ -206,6 +233,5 @@ public class ServiceBrokerClient
 			ex.printStackTrace();
 			System.exit(1);
 		}
-
 	}    
 }
