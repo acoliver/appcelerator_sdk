@@ -587,13 +587,10 @@ Appcelerator.Util.ServiceBroker =
 						pending=true;
 						
 						var instructions = transportHandler.prepare(self,false,body,contentType);
-						var url = instructions.url;
-						var method = instructions.method;
-						var postBody = instructions.postBody;
-						var contentType = instructions.contentType;
+						var newURL = instructions.url;
 
 						// increment count as a failsafe guard to prevent this from happening too many times
-						self.sendRequest(url,method,postBody,contentType,marshaller,transportHandler,count+1);
+						self.sendRequest(newURL,method,body,contentType,marshaller,transportHandler,count+1);
 						return;
 					}
             	}
