@@ -21,9 +21,15 @@
 package org.appcelerator.dispatcher;
 
 import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
+import java.util.Iterator;
+
+import net.sf.json.JSONObject;
 
 import org.appcelerator.annotation.Service;
+import org.appcelerator.annotation.ServiceProperty;
 import org.appcelerator.messaging.Message;
+import org.appcelerator.messaging.MessageUtils;
 
 /**
  * an adapter which wraps an object and specific @Service method which is
@@ -52,8 +58,8 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         this.request = service.request();
         this.response = service.response();
         this.version = service.version();
-
     }
+
     public Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
     {
         if (methodname==null || "".equals(methodname))
@@ -66,11 +72,15 @@ public class MethodCallServiceAdapter extends ServiceAdapter
     public boolean is(ServiceAdapter sa)
     {
         if (!(sa instanceof MethodCallServiceAdapter))
+		{
             return false;
+		}
 
         MethodCallServiceAdapter target = (MethodCallServiceAdapter) sa;
         if (this.method.equals(target.method))
+		{
             return true;
+		}
 
         return false;
     }
@@ -102,9 +112,38 @@ public class MethodCallServiceAdapter extends ServiceAdapter
      * Return the method object for this service adapter
      * @return
      */
-    public Method getMethod() {
+    public Method getMethod() 
+	{
         return this.method;
     }
+
+	private Object getParameterFromProperty(Message request, Class clz, Annotation annotations[])
+	{
+		ServiceProperty prop = null;
+		
+		if (annotations!=null)
+		{
+			for (int c=0;c<annotations.length;c++)
+			{
+				if (ServiceProperty.class.equals(annotations[c].annotationType()))
+				{
+					prop = (ServiceProperty)annotations[c];
+					break;
+				}
+			}
+		}
+		
+		if (null != prop)
+		{
+			JSONObject obj = MessageUtils.getJSONObjectData(request);
+			JSONObject value = (JSONObject)obj.get(prop.name());
+			return JSONObject.toBean( value, clz );
+		}
+		else
+		{
+			return JSONObject.toBean( MessageUtils.getJSONObjectData(request), clz );
+		}
+	}
 
     /* (non-Javadoc)
      * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
@@ -117,31 +156,74 @@ public class MethodCallServiceAdapter extends ServiceAdapter
             {
                 premethod.invoke(this.instance,request,response);
             }
+
             response.getData().put("success",true);
-            switch(this.method.getParameterTypes().length)
+			
+			Class types[]  = this.method.getParameterTypes();
+			Annotation annotations[][] = this.method.getParameterAnnotations();
+			Object returnValue = null;
+			
+            switch(types.length)
             {
-            case 1:
-            {
-                this.method.invoke(this.instance, request);
-                break;
+	            case 1:
+	            {
+					// first see if the parameter is a message
+					if (Message.class.equals(types[0]))
+					{
+		                returnValue = this.method.invoke(this.instance, request);
+					}
+					else
+					{
+						// this must be a automapping javabean
+						returnValue = this.method.invoke(this.instance, getParameterFromProperty(request,types[0],annotations[0]));
+					}
+	                break;
+	            }
+	            case 2:
+	            {
+					// first see if the parameters are messages
+					if (Message.class.equals(types[0]) && Message.class.equals(types[1]))
+					{
+		                returnValue = this.method.invoke(this.instance, request, response);
+						break;
+					}
+	            }
+	            default:
+	            {
+					Object args [] = new Object[types.length];
+					for (int c=0;c<types.length;c++)
+					{
+						if (Message.class.equals(types[c]))
+						{
+							args[c] = request;
+						}
+						else
+						{
+							args[c] = getParameterFromProperty(request,types[c],annotations[c]);
+						}
+					}
+					returnValue = this.method.invoke(this.instance, args);
+	            }
             }
-            case 2:
-            {
-                this.method.invoke(this.instance, request, response);
-                break;
-            }
-            default:
-            {
-                throw new Exception("invalid service signature");
-            }
-            }
+
             if (postmethod != null)
             {
                 postmethod.invoke(this.instance,request,response);
             }
+
+			if (returnValue != null && false == Void.class.equals(returnValue.getClass()))
+			{
+				JSONObject jsonObject = JSONObject.fromObject(returnValue);
+				for (Iterator iter = jsonObject.keys(); iter.hasNext();)
+				{
+					String key = (String)iter.next();
+					response.getData().put(key,jsonObject.get(key));
+				}
+			}
         }
         catch (Exception e)
         {
+			e.printStackTrace();
             response.getData().put("success",false);
             response.getData().put("exception",e.getMessage());
         }

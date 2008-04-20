@@ -144,36 +144,26 @@ public class AjaxServiceTransportServlet extends HttpServlet
         //
         if (!validate(req, resp))
         {
-            LOG.error("security validation failed for request="+req+" from "+req.getRemoteAddr());
+            LOG.warn("security validation failed for request="+req+" from "+req.getRemoteAddr());
             return;
         }
         
         String type = req.getContentType();
         int idx = type.indexOf(';');
-        
-        if (idx < 0)
+
+		if (idx > 0)
         {
-            // if no specific encoding, default to UTF-8
-            type = type + ";charset=UTF-8";
-        }
-        else
-        {
-            // if we have 2 ; -- trim
-            idx = type.indexOf(';',idx+1);
-            if (idx > 0)
-            {
-                type = type.substring(0,idx);
-            }
+            type = type.substring(0,idx);
         }
         
         try
         {
             // decode the incoming request
-            ArrayList<Message> requests=new ArrayList<Message>();
-            ArrayList<Message> responses=new ArrayList<Message>();
+            ArrayList<Message> requests=new ArrayList<Message>(1);
+            ArrayList<Message> responses=new ArrayList<Message>(1);
             
             ServiceMarshallerManager.decode(type, req.getInputStream(), requests);
-            
+
             if (requests.isEmpty())
             {
                 // no incoming messages, just return accepted header

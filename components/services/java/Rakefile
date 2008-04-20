@@ -61,7 +61,7 @@ task :default do
     src.delete_if {|f| f =~ /EchoService.java$/ }
 
     FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
-    call_command "javac -verbose -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{to_path(java_classes)}"
+    call_command "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{to_path(java_classes)}"
   end
   f = File.open "#{java_dir}/dist/build.yml", 'w+'
   f.puts build_config.to_yaml

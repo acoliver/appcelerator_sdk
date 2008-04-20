@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
  */
 public class XMLJSONMarshaller
 {
-    @ServiceMarshaller(contentTypes="text/xml;charset=UTF-8",direction=ServiceMarshaller.Direction.DECODE)
+    @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.DECODE)
     public void decode (InputStream input, List<Message> messages) throws Exception
     {
         // parse the incoming XML
@@ -64,7 +64,7 @@ public class XMLJSONMarshaller
         }
     }
     
-    @ServiceMarshaller(contentTypes="text/xml;charset=UTF-8",direction=ServiceMarshaller.Direction.ENCODE)
+    @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.ENCODE)
     public String encode (List<Message> messages, OutputStream out) throws Exception
     {
         // use the first message as a reference for the instanceid and sessiondid

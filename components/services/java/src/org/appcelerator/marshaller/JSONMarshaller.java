@@ -32,12 +32,12 @@ import org.appcelerator.messaging.Message;
  */
 public class JSONMarshaller
 {
-    @ServiceMarshaller(contentTypes="text/json;charset=UTF-8",direction=ServiceMarshaller.Direction.DECODE)
+    @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.DECODE)
     public void decode (InputStream input, List<Message> messages)
     {
     }
     
-    @ServiceMarshaller(contentTypes="text/json;charset=UTF-8",direction=ServiceMarshaller.Direction.ENCODE)
+    @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.ENCODE)
     public String encode (List<Message> messages, OutputStream in)
     {
         return null;

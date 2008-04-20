@@ -23,10 +23,11 @@ package org.appcelerator.messaging;
 import java.util.Collection;
 import java.util.Set;
 
-import org.appcelerator.json.JSONArray;
-import org.appcelerator.json.JSONException;
-import org.appcelerator.json.JSONObject;
-import org.appcelerator.json.JSONString;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
+import net.sf.json.JSONNull;
 import org.appcelerator.model.IModelObject;
 import org.appcelerator.util.DateUtil;
 
@@ -37,6 +38,11 @@ import org.appcelerator.util.DateUtil;
  */
 public class JSONMessageDataObject implements IMessageDataObject, JSONString
 {
+	/**
+	 * internal JSON NULL value
+	 */
+	public static final JSONNull JSONNULL = JSONNull.getInstance();
+	
     /**
      * internal empty boolean list (JSONMessageEmptyDataList) for use in default "opt" cases
      */
@@ -346,13 +352,13 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
             }
             else if (value instanceof IModelObject)
             {
-                jsonObject.put(key, JSONObject.createBean((IModelObject)value));
+                jsonObject.put(key, JSONObject.fromObject((IModelObject)value));
             }
             else
             {
                 if (value == null)
                 {
-                    value = JSONObject.NULL;
+                    value = JSONNULL;
                 }
                 else if (value instanceof java.util.Date)
                 {
@@ -360,11 +366,11 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
                 }
                 else if (value instanceof IMessageDataObject)
                 {
-                    value = new JSONObject(((IMessageDataObject)value).toDataString());
+                    value = JSONObject.fromObject(((IMessageDataObject)value).toDataString());
                 }
                 else if (value instanceof IMessageDataList)
                 {
-                    value = new JSONArray(((IMessageDataList)value).toDataString());
+                    value = JSONArray.fromObject(((IMessageDataList)value).toDataString());
                 }
                 else if (value instanceof IMessageDataString)
                 {
@@ -762,7 +768,7 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
     {
         try
         {
-            return jsonObject.getFloat(key);
+            return Float.valueOf(jsonObject.getString(key));
         }
         catch (Exception ex)
         {
@@ -775,7 +781,7 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
      */
     public float optFloat(String key)
     {
-        return jsonObject.optFloat(key);
+		return optFloat(key,0);
     }
 
     /* (non-Javadoc)
@@ -783,7 +789,15 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
      */
     public float optFloat(String key, float defaultValue)
     {
-        return jsonObject.optFloat(key,defaultValue);
+		try
+		{
+			String value = jsonObject.optString(key);
+			return Float.valueOf(value);
+		}
+		catch (Exception ex)
+		{
+		}
+		return defaultValue;
     }
     
     /**

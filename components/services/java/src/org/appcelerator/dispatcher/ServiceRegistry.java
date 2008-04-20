@@ -97,19 +97,24 @@ public class ServiceRegistry
            Service serviceAnnotation = method.getAnnotation(Service.class);
            
            if (serviceAnnotation == null)
+		   {
                continue;
+		   }
 
            if (LOG.isDebugEnabled()) LOG.debug("register service for "+serviceAnnotation.request()+" -> "+serviceClass.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
 
            if (instance == null)
+		   {
                instance = serviceClass.newInstance();
+		   }
 
            MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
            ServiceRegistry.registerService(adapter, unregisterIfFound);
 
            if (registrations != null)
-               registrations.add(adapter);
-
+		   {
+    		  registrations.add(adapter);
+		   }
         }
     }
 
@@ -176,13 +181,15 @@ public class ServiceRegistry
 			adapters = new HashSet<ServiceAdapter>();
 		
 		// check for duplicates in the set of adapters
-		for (ServiceAdapter possibleDuplicate : adapters) {
-			
-			if (possibleDuplicate.is(adapter) && unregisterIfFound) {
+		for (ServiceAdapter possibleDuplicate : adapters) 
+		{
+			if (possibleDuplicate.is(adapter) && unregisterIfFound) 
+			{
 				adapters.remove(adapter);
 				break;
-				
-			} else if (possibleDuplicate.is(adapter)) {
+			} 
+			else if (possibleDuplicate.is(adapter)) 
+			{
 				return false;
 			}
 		}

@@ -24,9 +24,18 @@ import java.util.List;
 
 import org.appcelerator.messaging.Message;
 
+/**
+ * interface that implements visitor pattern for hooking into dispatching of services
+ */
 public interface DispatchVisitor 
 {
+	/**
+	 * called before the dispatch happens
+	 */
 	public Object startVisit(Message request, List<Message> responses);
 	
+	/**
+	 * called after the dispatch happens
+	 */
 	public void endVisit(Object obj, Message request, List<Message> responses);
 }

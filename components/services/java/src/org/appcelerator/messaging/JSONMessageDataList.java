@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import org.appcelerator.json.JSONArray;
-import org.appcelerator.json.JSONObject;
-import org.appcelerator.json.JSONString;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONString;
 
 /**
  * JSONMessageDataList is a JSON-based implementation of IMessageDataList.
@@ -80,7 +80,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
      */
     public int size()
     {
-        return jsonArray.length();
+        return jsonArray.size();
     }
 
     /**
@@ -215,7 +215,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
      */
     public boolean add(T o)
     {
-        jsonArray.put(o);
+        jsonArray.add(o);
         return true;
     }
 
@@ -410,7 +410,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
         Object object = jsonArray.opt(index);
         T returnObject;
 
-        if (JSONObject.NULL.equals(object))
+        if (JSONMessageDataObject.JSONNULL.equals(object))
         {
             returnObject = null;
         }
@@ -622,7 +622,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
 
         for (int index = fromIndex; index < toIndex; ++index)
         {
-            jsonArray.put(this.jsonArray.opt(index));
+            jsonArray.add(this.jsonArray.opt(index));
         }
 
         return new JSONMessageDataList<T>(jsonArray);

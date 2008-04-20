@@ -26,11 +26,15 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.appcelerator.json.JSONException;
-import org.appcelerator.json.JSONObject;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONNull;
+
 import org.appcelerator.util.DateUtil;
 import org.appcelerator.util.TimeFormat;
 import org.appcelerator.util.Util;
+import org.appcelerator.messaging.JSONMessageDataObject;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -169,12 +173,16 @@ public class MessageUtils
         {
             jsonData = (String) data;
         }
+		else if (data instanceof JSONMessageDataObject)
+		{
+			return ((JSONMessageDataObject)data).getJSONObject();
+		}
         else
         {
-            throw new IllegalArgumentException("unhandled class type for JSON " + message);
+            throw new IllegalArgumentException("unhandled class type for JSON " + data.getClass() + " for => " + message);
         }
 
-        return new JSONObject(jsonData);
+        return JSONObject.fromObject(jsonData);
     }
 
     /**
@@ -184,7 +192,7 @@ public class MessageUtils
      */
     public static Object getMessageDataNullValue()
     {
-        return JSONObject.NULL;
+        return JSONNull.getInstance();
     }
     
     /**
@@ -198,7 +206,7 @@ public class MessageUtils
     {
         try
         {
-            return new JSONMessageDataObject(new JSONObject(jsonStringData));
+            return new JSONMessageDataObject(JSONObject.fromObject(jsonStringData));
         }
         catch (JSONException ex)
         {
@@ -218,7 +226,7 @@ public class MessageUtils
         String jsonStringData = Util.getNodeContent(element);
         try
         {
-            return new JSONMessageDataObject(new JSONObject(jsonStringData));
+            return new JSONMessageDataObject(JSONObject.fromObject(jsonStringData));
         }
         catch (JSONException ex)
         {

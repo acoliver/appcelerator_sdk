@@ -94,6 +94,10 @@ public class ServiceMarshallerManager
         {
             decoder.call(input,messages);
         }
+		else
+		{
+			throw new Exception("no deserializer for "+contentType);
+		}
     }
     
     public static String encode (String contentType, List<Message> messages, OutputStream output) throws Exception
@@ -103,6 +107,9 @@ public class ServiceMarshallerManager
         {
             return (String)decoder.call(messages,output);
         }
-        return null;
+		else
+		{
+			throw new Exception("no serialized for "+contentType);
+		}
     }
 }
