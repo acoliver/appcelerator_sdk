@@ -499,14 +499,14 @@ Appcelerator.Util.ServiceBroker =
 		var postBody = instructions.postBody;
 		var contentType = instructions.contentType;
 
-		this.sendRequest(url,method,postBody,contentType,marshaller);
+		this.sendRequest(url,method,postBody,contentType,marshaller,transportHandler);
 		
 		if (!this.multiplex && this.messageQueue.length > 0)
 		{
 			this.deliver.defer();
 		}
 	},
-	sendRequest: function(url,method,body,contentType,marshaller,count)
+	sendRequest: function(url,method,body,contentType,marshaller,transportHandler,count)
 	{
 	    count = (count || 0) + 1;
 	    
@@ -516,6 +516,7 @@ Appcelerator.Util.ServiceBroker =
 		  return;
 		}
         var self = this;
+		var pending = false;
 		
         new Ajax.Request(url,
         {
@@ -565,15 +566,36 @@ Appcelerator.Util.ServiceBroker =
             },
             onFailure: function (transport, json)
             {
+				//
+				// 400 in this case means security check failed
+				//
             	if (transport.status == 400)
             	{
-                    var cl = transport.getResponseHeader("X-Failed-Retry");
-                    if (!cl)
-                    {
+					if (pending)
+					{
                         self.queue({type:'l:appcelerator.servicebroker.failed',data:{}});
                         Logger.warn("Failed authentication");
 			  			return;
-                    }
+					}
+					else
+					{
+						// we're going to retry on a 400 (authentication error) to resend
+						// the request - in this case, we need to re-serialize/prepare the 
+						// request again since most likely our cookie has changed and we need
+						// to re-calculate the security token
+						
+						pending=true;
+						
+						var instructions = transportHandler.prepare(self,false,body,contentType);
+						var url = instructions.url;
+						var method = instructions.method;
+						var postBody = instructions.postBody;
+						var contentType = instructions.contentType;
+
+						// increment count as a failsafe guard to prevent this from happening too many times
+						self.sendRequest(url,method,postBody,contentType,marshaller,transportHandler,count+1);
+						return;
+					}
             	}
 				if (transport.status == 406)
 				{
