@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 # This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
@@ -15,22 +17,22 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#!/usr/bin/perl
 
 # we will need to load modules from the
 # parent directory -- outside of apache
 # docroot
 BEGIN {
     push @INC, "..";
+    push @INC, "../lib";
 }
 
 use CGI;
+
 use Digest::MD5 qw(md5);
 use Apache::Session::File;
-use XML::Simple;
-use JSON::Any;
 use Data::Dumper;
-use AppceleratorService;
+use Appcelerator::Service;
+use Appcelerator::Message;
 
 $shared_secret = "";
 $tmpdir = "/tmp/";
@@ -39,6 +41,7 @@ $query = new CGI;
 
 # preserve the post data
 my $postdata = $query->param('POSTDATA');
+my $content_type = $ENV{'CONTENT_TYPE'};
 
 # CGI.pm does not automatically parse the
 # query string for POST requests. :(
@@ -75,10 +78,10 @@ if ($init eq "1") {
     $header{'-status'} = "400 Bad Request";
     $response .= "Invalid request\n";
 
-} elsif ($method eq "GET") {
+} elsif ($method eq "GET") { # GET not supported, return no messages
     $header{'-type'} = "text/xml; charset=utf-8";
-    $response .= "<?xml version='1.0' encoding='UTF-8'?>\n";
-    $response .= "<messages version='1.0' sessionid='$sessionid'/>\n";
+    $responses = [];
+    $response .= Appcelerator::Message->serialize($contentType, $responses);
 
 } elsif ($method ne "POST") {
     $header{'-type'} = "text/plain";
@@ -86,79 +89,41 @@ if ($init eq "1") {
     $response .= "Invalid method\n";
 
 } else {
-    $header{'-type'} = "text/xml; charset=utf-8";
+    $header{'-type'} = $content_type;
     $header{'-Pragma'} = "no-cache";
     $header{'-Expires'} = "now";
     $header{'-Cache-control'} = "no-cache, no-store, private, must-revalidate";
-    $response .= get_responses($postdata, $sessionid);
+
+    $messages = Appcelerator::Message->deserialize($content_type, $postdata);
+    $responses = get_responses($messages, $sessionid);
+    $response .= Appcelerator::Message->serialize($content_type, $responses, $sessionid);
 }
 
 print $query->header(%header);
 print $response;
 
 sub get_responses {
-    my $xml = shift;
+    my $requests = shift;
     my $sessionid = shift;
 
-    my $xmlsimple = new XML::Simple(forcearray=>1);
-    my $in = $xmlsimple->XMLin($xml);
-    
-    my @responses = ();
-    foreach my $message (@{$in->{'message'}}) {
-        push @responses, @{handle_request($message)};
-    }
+    my $responses = [];
+    foreach my $request (@{$requests}) {
 
-    my $out_arr = {
-        version => '1.0',
-        sessionid => $sessionid,
-        message => \@responses
-    };
-    
-    my $xmlsimple_out = new XML::Simple(KeepRoot=>1,
-                                     ForceArray=>1,
-                                     RootName=>'messages' );
-    my $out = $xmlsimple_out->XMLout($out_arr);
+        my @handlers = Appcelerator::Service::get_handlers($request);
+        LISTENER: for my $service (@handlers) {
 
-    return $out;
-}
+            my $type = $service->response_type();
+            my $id = $request->requestid();
+            my $scope = $request->scope();
+            my $version = $service->version();
+            my $response = new Appcelerator::Message($type, $id, $scope, {}, $version);
 
-sub handle_request {
-    my $message = $_[0];
-    my $responses = ();
-    my $j = JSON::Any->new;
+            $service->execute({-request => $request,
+                              -response => $response,
+                              -session => $session});
 
-    # Some other parameter we may want to use later...
-    my %tresponse = ();
-    $tresponse{'requestid'} = $message->{'requestid'};
-    $tresponse{'direction'} = 'OUTGOING';
-    $tresponse{'datatype'} = 'JSON';
-
-    # $message->{'scope'};
-    # $message->{'version'};
-    # $message->{'type'};
-    # $message->{'requestid'};
-
-    my $type = $message->{'type'};
-    my $payload = $j->decode($message->{'content'});
-
-    my @handlers = AppceleratorService::get_handlers($type);
-    LISTENER: for my $listener (@handlers) {
-
-        # get an associative array representing or json message payload
-        my %result = $listener->execute($payload, $session, $type);
-
-        # check for no response 
-        if (not defined $listener->response_type()) {
-            next LISTENER;
+            push @{$responses}, $response;
         }
-
-        # make the response
-        my %response = %tresponse; # copy the template response
-        if (not defined %result) { %result = (); }
-        $response{'content'} = $j->encode(\%result);
-        $response{'type'} = $listener->response_type();
-
-        push @$responses, \%response;
     }
 
     return $responses;
@@ -199,7 +164,7 @@ sub bad_request() {
     my $shared_secret = shift;
     my $sessionid = shift;
 
-    if ( (not defined $instance_id) || (not defined $auth) ) {
+    if ( (not defined $instance_id) or (not defined $auth) ) {
         return 1;
     }
 

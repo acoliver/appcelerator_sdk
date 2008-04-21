@@ -1,5 +1,5 @@
 # This file is part of Appcelerator.
-#
+
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 # For more information, please visit http://www.appcelerator.org 
 #
@@ -16,22 +16,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package AppceleratorService;
+package Appcelerator::Service;
 use strict;
 use FindBin qw($Bin);
 use File::Spec::Functions qw(catfile);
+use Data::Dumper;
 
 use base 'Exporter';
 our @EXPORT = ('Service');
 our %handlers = ();
 
 # load all service handlers
-my $search_path = catfile("$Bin", "..", "Service", "*");
+my $search_path = catfile("$Bin", "..", "Services", "*");
 for my $service (glob($search_path)) {
     $service =~ s/\.[^.]*$//;
     $service =~ s/.*\///g;
-    eval("use Service::$service");
+    eval("use Services::$service");
 }
+
 
 sub new {
     my $class = shift;
@@ -40,6 +42,7 @@ sub new {
     $self->{"_request"} = shift;
     $self->{"_response"} = shift;
     $self->{"_handler"} = shift;
+    $self->{"_version"} = shift;
 
     bless ($self, $class);
     return $self;
@@ -47,6 +50,7 @@ sub new {
 
 sub request_type { my $self = shift; return $self->{"_request"}; }
 sub response_type { my $self = shift; return $self->{"_response"}; }
+sub version { my $self = shift; return $self->{"_version"}; }
 sub execute { 
     my $self = shift; 
     my $handler = $self->{"_handler"};
@@ -64,30 +68,37 @@ sub add_handler {
 }
 
 sub get_handlers {
-	my $request = shift;
-	
-	if (not defined $handlers{$request}) {
+	my $message = shift;
+    my $type = $message->type();
+    my $version = $message->version();
+ 
+    my @to_ret = ();
+	if (not defined $handlers{$message->type()}) {
 		return ();
 	}
 
-	return @{$handlers{$request}};
+    for my $service (@{$handlers{$type}}) {
+        if (not defined $service-version() or not($service->version()) or $service->version eq $version) {
+            push @to_ret, $service;
+        }
+    }
+
+	return @to_ret;
 }
 
 
 ## Called statically to make this class aware
 ## of a service method
 sub Service {
-    my $request = shift;
-    my $response = shift;
-    my $method = shift;
+    my ($request, $response, $method, $version) = @_;
 
 	my $package = *{$method}{PACKAGE};
 	my $name = *{$method}{NAME};
 
 	my $my_handler;
 	eval ("use $package;");
-	eval ('$my_handler = new ' . "$package(\"$request\", \"$response\", \"$name\");");
-	AppceleratorService::add_handler($request, $my_handler);
+	eval ('$my_handler = new ' . "$package(\"$request\", \"$response\", \"$name\", \"$version\");");
+	Appcelerator::Service::add_handler($request, $my_handler);
 }
 
 1;

@@ -15,21 +15,24 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-package Service::HelloService;
-use AppceleratorService;
-use base 'AppceleratorService';
+
+package Services::HelloService;
+use Appcelerator::Service;
+use base 'Appcelerator::Service';
 use strict;
 
 Service("app.test.message.request", "app.test.message.response", *hello);
-sub hello {
+sub hello { 
     my $self = shift;
-    my $ptr = shift;
-    my $session = shift;
-    my $message = shift;
+    my $args = shift;
 
-    my %data = %$ptr;
-    return (message => "I received from you: $data{'message'}", success =>
-"true");
+    my $request = $args->{'-request'};
+    my $response = $args->{'-response'};
+    my $session = $args->{'-session'};
+
+    my $message = $request->data()->{'message'};
+    $response->data()->{'message'} = "I received from you: $message";
+    $response->data()->{'success'} = "true";
 }
 
 1;
