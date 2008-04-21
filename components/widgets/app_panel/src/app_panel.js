@@ -136,6 +136,12 @@ Appcelerator.Widget.Panel =
             optional: true,
             type: T.cssClass,
             description: 'Additional classes for the dialog'
+        }, {
+            name: 'style',
+            optional: true,
+            type: T.cssClass,
+            defaultValue: "",
+            description: 'in-line styles for the dialog'
         }];
     },
     toggle: function(id,parameters,data,scope,version) 
@@ -307,7 +313,7 @@ Appcelerator.Widget.Panel =
         {
             userClassName = parameters['userClass'];
         }
-        divTop.push('<div class="app_panel ' + panelStyle + ' ' + userClassName + '" id="' + element.id + '"');
+        divTop.push('<div class="app_panel ' + panelStyle + ' ' + userClassName + '" id="' + element.id + '" style="' + parameters['style'] + '"');
         
         if(typeof parameters['on'] != 'undefined')
         {
