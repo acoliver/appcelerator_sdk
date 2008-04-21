@@ -56,7 +56,7 @@ Appcelerator.Widget.Modalbox =
     },
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute','close'];
 	},	
 
     getAttributes: function()
@@ -104,6 +104,11 @@ Appcelerator.Widget.Modalbox =
         },params);
 
 		Modalbox.show(params['html'],options);
+	},
+	
+	close: function(id,params,data,scope) 
+	{
+	    Modalbox.hide();
 	},
 	
     buildWidget: function(element,parameters)
