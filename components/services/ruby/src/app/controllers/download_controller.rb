@@ -3,7 +3,7 @@ class DownloadController < ApplicationController
 
   def index
     request_id = Time.now
-    message_type = params['type'] || 'group.list.request'
+    message_type = params['type']
     scope = params['scope'] || 'appcelerator'
     @callback = params['error'] || 'r:appcelerator.download.error'
     result = Appcelerator::Dispatcher.dispatch_message(request, response, session, message_type, params, request_id, scope, self, 'array')
