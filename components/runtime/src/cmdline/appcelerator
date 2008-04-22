@@ -143,8 +143,8 @@ if INSTALLING
   exit 0
 end
   
-
-if system "ruby \"#{TARGET_DIR}/console.rb\" #{ARGV.join(' ')}"
+args = ['ruby', TARGET_DIR+'/console.rb'] + ARGV
+if exec *args
   exit 0
 else
   exit $?.exitstatus

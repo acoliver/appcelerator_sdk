@@ -195,9 +195,9 @@ module Appcelerator
           # commands may fail due to missing args or type problems
           execute('help',[name])
           
-          puts
-          puts ' *ERROR: ' + e.message.to_s
-          puts
+          STDERR.puts
+          STDERR.puts ' *ERROR: ' + e.message.to_s
+          STDERR.puts
           
           false
         end
