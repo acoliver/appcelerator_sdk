@@ -1,5 +1,6 @@
 
 from appcelerator import Service
+from app.models import *
 import logging
 
 
