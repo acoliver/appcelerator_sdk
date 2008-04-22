@@ -25,29 +25,50 @@ import cgi
 import urllib2 as urllib
 
 import simplejson as json
+
 try:
     from xml.etree import ElementTree
+    ElementTree.fromstring('<test></test>') # force loading expat, may fail
 except ImportError:
     from elementtree import ElementTree
+    from elementtree import SimpleXMLTreeBuilder
+    # more work arounding for the xmlpath
+    def fromstring(text):
+        parser = SimpleXMLTreeBuilder.TreeBuilder()
+        parser.feed(text)
+        return parser.close()
+    
+    ElementTree.fromstring = fromstring
 
-log = logging.getLogger(__name__)
+
 
 class ServiceDispatcher(object):
     " wsgi app that handles all appcelerator messages "
-    def __init__(self):
-        self.services_loaded = False
-        
+    
+    # the inital request comes as an empty form-encoded message
+    KNOWN_MIMETYPES = ['text/xml', 'application/json', 'application/x-www-form-urlencoded']
+    services_loaded = False
+            
     def __call__(self, environ, start_response):
         if not self.services_loaded:
-            self.load_services()
+            _load_services()
             self.services_loaded = True
         
         session = environ['beaker.session']
-        # there are docs that claim i can do this, but...
-        #session = environ['paste.session.factory']()
         
-        mimetype = environ.get('CONTENT_TYPE', 'text/xml')
+        mimetype = environ.get('CONTENT_TYPE','')
+        if mimetype:
+            mimetype = mimetype.split(';')[0]
+        else:
+            mimetype = 'text/xml'
         
+        input = get_input(environ)
+        
+        if mimetype not in self.KNOWN_MIMETYPES:
+            logging.error('Unhandled MimeType: '+mimetype)
+            start_response('406 Not Acceptable', [])
+            return
+            
         start_response('200 OK', [
             ('Content-Type', mimetype+'; charset=utf-8'),
             ('Pragma', 'no-cache'),
@@ -55,85 +76,57 @@ class ServiceDispatcher(object):
             ('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
         ])
         
-        input = get_input(environ)
+        #
+        # The old-style, xml-wrapped protocol
         if mimetype.startswith('text/xml'):
             yield "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messages version='1.0' sessionid='%s'>"%session.id
             if input:
-                req = ElementTree.fromstring(input)
-                for r in self.respond_xml(self.handle_xml(session, req)):
-                    yield r
+                messages = self.extract_messages_from_xml(input)
+                for rsp in self.handle_messages(session, messages):
+                    payload = json.dumps(rsp['data'])
+                    yield (
+"<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(rsp['incoming']['requestid'], rsp['type'], payload)
+                    )
             yield "</messages>"
+        
+        #
+        # The new-style, all-json protocol
         elif mimetype.startswith('application/json'):
             if input:
                 messages = json.loads(input)['request']['messages']
-                responses = list(self.respond_json(self.handle_json(session, messages)))
+                responses = [
+                    {'direction': 'OUTGOING',
+                     'datatype': 'JSON',
+                     'requestid': rsp['incoming']['requestid'],
+                     'type': rsp['type'],
+                     'data': rsp['data']}
+                    for rsp
+                    in self.handle_messages(session, messages)
+                ]
             else:
                 responses = []
+            
             yield json.dumps({'sessionid': session.id, 'messages': responses})
     
-    def handle_xml(self, session, req):
-        " parse an incoming message or batch and pass to MessageBroker"
+    def extract_messages_from_xml(self, input):
+        req = ElementTree.fromstring(input)
         for msg in req.getchildren():
-            msgtype = msg.get('type')
-            reqid = msg.get('requestid')
-            payload = json.loads(msg.text)
-            
-            responses = ServiceBroker.send(msgtype, payload, session)
-            for responsetype,result in responses:
-                yield responsetype,result,reqid
-
-    def handle_json(self, session, messages):
-        " parse an incoming message or batch and pass to MessageBroker"
-        for msg in messages:
-            msgtype = msg['type']
-            reqid = msg['requestid']
-            payload = msg['data']
-
-            responses = ServiceBroker.send(msgtype, payload, session)
-            for responsetype,result in responses:
-                yield responsetype,result,reqid
-        
-    def respond_xml(self, responses=[]):
-        " take results of messages sends and build response for client"
-        for rsptype,rsp,reqid in responses:
-            payload = json.dumps(rsp) # should we escape XML entities?
-            yield ( 
-      "<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(reqid, rsptype, payload)
-            )
-
-    def respond_json(self, responses=[]):
-        " take results of messages sends and build response for client"
-        for rsptype,rsp,reqid in responses:
-            yield {'requestid': reqid, 'direction': 'OUTGOING', 'datatype': 'JSON', 'type': rsptype, 'data': rsp}
-
-    def load_services(self):
-        " if we are running with a pylons app, load files in 'services' directory"
-        import os
-            
-        try:
-            import pylons.config
-            project_dir = pylons.config['pylons.paths']['root']
-            if not project_dir:
-                print 'Pylons is installed, but app is not inited, services will not be loaded'
-                return
-        except ImportError:
-            print 'Unable to import pylons.config, services will not be automatically loaded'
-            return
-        
-        project_name = os.path.basename(project_dir)
-        services_dir = os.path.join(project_dir,'services')
-        services = [f[:-3] for f in os.listdir(services_dir) if f.endswith('.py')]
-        
-        for service in services:
-            import_stmt = 'import %s.services.%s'%(project_name, service)
-            print import_stmt
-            exec import_stmt in {}
-
-
-class CrossDomainProxy(object):
+            yield {
+                'type': msg.get('type'),
+                'requestid': msg.get('requestid'),
+                'data': json.loads(msg.text)
+            }
     
-    def __init__(self, suppressed_headers):
-        self.suppressed_headers = suppressed_headers
+    def handle_messages(self, session, messages):
+        " parse an incoming message or batch and pass to MessageBroker"
+        for message in messages:
+            for response in ServiceBroker.send(message, session):
+                yield response
+
+
+class _default_CrossDomainProxy(object):
+    
+    SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')    
     
     def __call__(self, environ, start_response):
         fields = cgi.parse_qs(environ['QUERY_STRING'])
@@ -148,26 +141,51 @@ class CrossDomainProxy(object):
             proxied_request = urllib.urlopen(url)
             
             headers = [header for header in proxied_request.headers.items()
-                       if header[0].lower() not in self.suppressed_headers]
+                       if header[0].lower() not in self.SUPPRESSED_HEADERS]
             
             start_response('200 OK', headers)
             return [proxied_request.read()]
+
+
+class _appengine_CrossDomainProxy(object):
+    
+    SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')    
+    
+    def __call__(self, environ, start_response):
+        fields = cgi.parse_qs(environ['QUERY_STRING'])
+        url = fields.get('url', None)
+        if not url:
+            start_response('400 Bad Request', [])
+            return []
+        else:
+            url = url[0]
+            if '://' not in url:
+                url = urllib.unquote(url)
+            proxied_request = urlfetch.fetch(url)
+            
+            headers = [header for header in proxied_request.headers.items()
+                       if header[0].lower() not in self.SUPPRESSED_HEADERS]
+            
+            start_response('200 OK', headers)
+            return [proxied_request.content]
 
 
 def service_broker_factory(global_config, **local_conf):
     " factory for building a new service broker that implements the Appcelerator protocol"
     return ServiceDispatcher()
 
-SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')
 def cross_domain_proxy_factory(global_config, **local_conf):
     " factory for building a new proxy to bounce requests to non-local domains "
-    return CrossDomainProxy(SUPPRESSED_HEADERS)
+    return CrossDomainProxy()
 
 
 def get_input(environ):
     # http://trac.edgewall.org/ticket/5697#comment:1
-    content_len = int(environ.get('CONTENT_LENGTH', '0'))
-    return environ['wsgi.input'].read(content_len)
+    try:
+        content_len = int(environ['CONTENT_LENGTH'])
+        return environ['wsgi.input'].read(content_len)
+    except:
+        return environ['wsgi.input'].read()
 
 
 class InMemoryServiceBroker(object):
@@ -185,16 +203,19 @@ class InMemoryServiceBroker(object):
         try:
             self.listeners[msgtype] = [l for l in self.listeners[msgtype] if l != listener]
         except KeyError:
-            print 'no listeners for %s found'%msgtype
+            logging.warn('no listeners for %s found'%msgtype)
 
-    def send(self, msgtype, data, session):
+    def send(self, message, session):
         """ send a message to all listeners registered for that message type,
             yield tuples of (responsetype, listenerResult)
         """
+        msgtype = message['type']
+        data = message['data']
+        
         try:
             listeners = self.listeners[msgtype]
         except KeyError:
-            print 'no listeners for [%s] message'%msgtype
+            logging.warn('no listeners for [%s] message'%msgtype)
             return
         
         for listener in listeners:
@@ -204,10 +225,9 @@ class InMemoryServiceBroker(object):
                 if not result:
                     result = {}
                 if listener.responsetype:
-                    yield listener.responsetype, result
+                    yield {'type': listener.responsetype, 'data': result, 'incoming': message}
                 else:
-                    # TODO: should log
-                    print 'no response for [%s -> %s] service'%(msgtype, listener.func_name)
+                    logging.info('no response for [%s -> %s] service'%(msgtype, listener.func_name))
             except:
                 traceback.print_exc()
 
@@ -233,7 +253,7 @@ def Service(request, response):
             def listener(data, session, msgtype):
                 return func(data, session, msgtype)
         else:
-            print 'bad number of arguments for @Service annotated function, should be from 0 to 3'
+            logging.error('bad number of arguments for @Service annotated function, should be from 0 to 3')
         
         listener.responsetype = response
         listener.func_name = func.func_name
@@ -241,4 +261,90 @@ def Service(request, response):
         return listener
     return _
 
+
+
+
+
+def _pylons_load_services():
+    " if we are running with a pylons app, load files in 'services' directory"
+    import os
+    import os.path as p
+        
+    try:
+        import pylons.config
+        project_dir = pylons.config['pylons.paths']['root']
+        if not project_dir:
+            logging.info('Pylons is installed, but app is not inited, services will not be loaded')
+            return
+    except ImportError:
+        logging.warn('Unable to import pylons.config, services will not be automatically loaded')
+        return
+    
+    project_name = p.basename(project_dir)
+    services_dir = p.join(project_dir,'services')
+    services = [f[:-3] for f in os.listdir(services_dir) if f.endswith('.py')]
+    
+    for service in services:
+        import_stmt = 'import %s.services.%s'%(project_name, service)
+        logging.info(import_stmt)
+        exec import_stmt in {}
+
+def _appengine_load_services():
+    " if we are running on appengine, load files in 'app/services' directory"
+    import os
+    import os.path as p
+    services_dir = p.join(p.dirname(p.dirname(__file__)), 'app', 'services')
+    
+    if not p.exists(services_dir):
+        logging.warning('Unable to locate service directory, services will not be automatically loaded')
+        return
+    
+    services = [f[:-3] for f in os.listdir(services_dir) if f.endswith('.py')]
+    
+    for service in services:
+        import_stmt = 'import app.services.'+service
+        logging.info(import_stmt)
+        exec import_stmt in {}
+    
+
+
+class DatastoreJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, db.Model):
+            v = vars(obj)
+            v['__key__'] = str(obj.key())
+            obj = v
+        elif hasattr(obj, 'isoformat'):
+            obj = obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
+
+
+def _json_decoder_hook(obj):
+    if hasattr(obj, '__key__'):
+        db_obj = db.get(db.Key(obj['__key__']))
+        if db_obj:
+            _update_model(db_obj, obj)
+            return db_obj
+    return obj
+
+def _update_model(old, new):
+    for k,v in vars(new).items():
+        setattr(old, k, v)
+
+
+# Is this IoC?
+try:
+    from google.appengine.ext import db
+    import datetime
+    # ok, we must be running on appengine, use our customizations
+    _JsonEncoder = DatastoreJsonEncoder
+    _decoder_hook = _json_decoder_hook
+    _load_services = _appengine_load_services
+    CrossDomainProxy = _appengine_CrossDomainProxy
+except ImportError:
+    # no appengine, using the standard stuff
+    _JsonEncoder = json.JSONEncoder
+    _decoder_hook = None
+    _load_services = _pylons_load_services
+    CrossDomainProxy = _default_CrossDomainProxy
 

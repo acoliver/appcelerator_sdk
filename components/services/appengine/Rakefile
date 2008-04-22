@@ -31,6 +31,7 @@ task :default do
   
   src_dir = "#{BUILD_DIR}/src"
   lib_dir = "#{BUILD_DIR}/lib"
+  py_dir  = "#{BUILD_DIR}/../python/src/module/appcelerator"
   
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
     
@@ -44,6 +45,12 @@ task :default do
       filename = f.to_s
       next if File.basename(filename[0,1]) == '.'
       zipfile.add("project/#{filename}","#{lib_dir}/#{filename}")
+    end
+    
+    dofiles(py_dir) do |f|
+      filename = f.to_s
+      next if File.basename(filename[0,1]) == '.'
+      zipfile.add("project/appcelerator/#{filename}","#{py_dir}/#{filename}")
     end
     
     Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
