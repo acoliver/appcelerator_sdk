@@ -24,7 +24,6 @@ import logging
 import cgi
 import urllib2 as urllib
 
-
 import simplejson as json
 try:
     from xml.etree import ElementTree
@@ -47,24 +46,32 @@ class ServiceDispatcher(object):
         # there are docs that claim i can do this, but...
         #session = environ['paste.session.factory']()
         
+        mimetype = environ.get('CONTENT_TYPE', 'text/xml')
+        
         start_response('200 OK', [
-            ('Content-Type', 'text/xml; charset=utf-8'),
+            ('Content-Type', mimetype+'; charset=utf-8'),
             ('Pragma', 'no-cache'),
             ('Cache-Control', 'no-cache, no-store, private, must-revalidate'),
             ('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
         ])
-        yield "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messages version='1.0' sessionid='%s'>"%session.id
         
         input = get_input(environ)
-        
-        if input:
-            req = ElementTree.fromstring(input)
-            for r in self.respond(self.handle(session, req)):
-                yield r
-        
-        yield "</messages>"
+        if mimetype.startswith('text/xml'):
+            yield "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messages version='1.0' sessionid='%s'>"%session.id
+            if input:
+                req = ElementTree.fromstring(input)
+                for r in self.respond_xml(self.handle_xml(session, req)):
+                    yield r
+            yield "</messages>"
+        elif mimetype.startswith('application/json'):
+            if input:
+                messages = json.loads(input)['request']['messages']
+                responses = list(self.respond_json(self.handle_json(session, messages)))
+            else:
+                responses = []
+            yield json.dumps({'sessionid': session.id, 'messages': responses})
     
-    def handle(self, session, req):
+    def handle_xml(self, session, req):
         " parse an incoming message or batch and pass to MessageBroker"
         for msg in req.getchildren():
             msgtype = msg.get('type')
@@ -74,14 +81,30 @@ class ServiceDispatcher(object):
             responses = ServiceBroker.send(msgtype, payload, session)
             for responsetype,result in responses:
                 yield responsetype,result,reqid
+
+    def handle_json(self, session, messages):
+        " parse an incoming message or batch and pass to MessageBroker"
+        for msg in messages:
+            msgtype = msg['type']
+            reqid = msg['requestid']
+            payload = msg['data']
+
+            responses = ServiceBroker.send(msgtype, payload, session)
+            for responsetype,result in responses:
+                yield responsetype,result,reqid
         
-    def respond(self, responses=[]):
+    def respond_xml(self, responses=[]):
         " take results of messages sends and build response for client"
         for rsptype,rsp,reqid in responses:
             payload = json.dumps(rsp) # should we escape XML entities?
             yield ( 
       "<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(reqid, rsptype, payload)
             )
+
+    def respond_json(self, responses=[]):
+        " take results of messages sends and build response for client"
+        for rsptype,rsp,reqid in responses:
+            yield {'requestid': reqid, 'direction': 'OUTGOING', 'datatype': 'JSON', 'type': rsptype, 'data': rsp}
 
     def load_services(self):
         " if we are running with a pylons app, load files in 'services' directory"
