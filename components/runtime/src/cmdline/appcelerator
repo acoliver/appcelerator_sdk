@@ -95,7 +95,7 @@ def check_for_initial
       end
     end
     
-    subprocess = (ARGV.include? == '--subprocess')
+    subprocess = (ARGV.include? '--subprocess')
     gems.each do |gem|
       cmd = "#{GEM_CMD} install #{gem} -y"
       if not WIN32
