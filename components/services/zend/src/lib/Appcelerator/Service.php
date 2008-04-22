@@ -33,6 +33,20 @@ final class Appcelerator_Service {
         return $this->response;
     }
 
+    public function createResponseMessage($request, $service) {
+
+        if (is_null($service->getResponseType())) {
+            return null;
+        }
+
+        Zend_Loader::loadClass('Appcelerator_Message');
+        $response = $request->copy();
+        $response->setDirection("OUTGOING");
+        $response->setData(array());
+        return $response; 
+    }
+
+
     public function dispatch (&$request,&$response) {
         $this->method->invoke($this->instance, $request, $response);
     }
@@ -130,17 +144,25 @@ final class Appcelerator_Service {
     }
 
     public static function getServices($request) {
-    
+        $services = array();
+
         if (is_null(Appcelerator_Service::$services)) {
             Appcelerator_Service::$services = array();
             Appcelerator_Service::crawlServices();
         }
         
-        if (!array_key_exists($request, Appcelerator_Service::$services)) {
-            return array();
+        if (!array_key_exists($request->getType(), Appcelerator_Service::$services)) {
+            return $services;
         }
 
-        return Appcelerator_Service::$services[$request];
+        foreach(Appcelerator_Service::$services[$request] as $service) {
+            if (is_null($service->getVersion())
+             || is_null($request->getVersion())
+             || strcmp($request->getVersion(), $service.getVersion()) == 0) {
+                $services[] = $service;
+        }
+
+        return $services;
     }
 
 }
