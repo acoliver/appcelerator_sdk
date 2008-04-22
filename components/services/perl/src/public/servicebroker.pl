@@ -21,9 +21,10 @@
 # we will need to load modules from the
 # parent directory -- outside of apache
 # docroot
+use File::Spec;
 BEGIN {
-    push @INC, "..";
-    push @INC, "../lib";
+    push @INC, File::Spec->catfile("..", "app");
+    push @INC, File::Spec->catfile("..", "lib");
 }
 
 use CGI;
