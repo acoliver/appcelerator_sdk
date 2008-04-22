@@ -34,7 +34,6 @@ module Appcelerator
       if on_windows
         find_latest_script 'easy_install.exe'
       else
-        puts "__MAGIC__|require_password|Please enter your password to install required python libraries|__MAGIC__" if OPTIONS[:subprocess]
         'sudo easy_install'
       end
     end
@@ -63,6 +62,9 @@ module Appcelerator
       elsif not on_windows
         # is there a windows equivalent of this?
         cmd += ' > /dev/null 2>&1'
+      end
+      if cmd =~ /^sudo / and OPTIONS[:subprocess]
+        puts "__MAGIC__|ask|Please enter your password to install required python libraries|true|__MAGIC__"
       end
       system(cmd)
     end

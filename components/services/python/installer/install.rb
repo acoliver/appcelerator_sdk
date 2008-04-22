@@ -148,7 +148,7 @@ END_CODE
         if on_windows
           quiet_system("#{python} #{ez_file.path}")
         else
-          puts "__MAGIC__|require_password|Please enter your password to install the python easy_install tool|__MAGIC__" if OPTIONS[:subprocess]
+          puts "__MAGIC__|ask|Please enter your password to install the python easy_install tool|true|__MAGIC__" if OPTIONS[:subprocess]
           quiet_system("sudo #{python} #{ez_file.path}")
         end
       end
