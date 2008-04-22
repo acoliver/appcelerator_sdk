@@ -36,10 +36,14 @@ def ask_with_validation(q,msg,regexp,mask=false)
 end
 
 def ask(q,mask=false)
-  puts "__MAGIC__|ask|#{q}|#{mask}|__MAGIC__" if OPTIONS[:subprocess]
-  STDOUT.print "#{q} "
+  if OPTIONS[:subprocess]
+    STDOUT.puts "__MAGIC__|ask|#{q}|#{mask}|__MAGIC__"
+  else
+    STDOUT.print "#{q} "
+  end
   STDOUT.flush
-  if mask and STDIN.isatty
+  mask = mask and STDIN.isatty and not OPTIONS[:subprocess]
+  if mask
     system 'stty -echo' rescue nil
   end
   answer = ''
@@ -48,7 +52,7 @@ def ask(q,mask=false)
     break if ch==10
     answer << ch
   end
-  if mask and STDIN.isatty
+  if mask
     system 'stty echo' rescue nil
   end
   puts if mask # newline after password
