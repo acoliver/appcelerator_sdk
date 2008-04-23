@@ -66,7 +66,6 @@ final class Appcelerator_Request {
             $message->setVersion($node->getAttribute('version')); 
             $message->setRequestid($node->getAttribute('requestid')); 
             $message->setDataType($node->getAttribute('datatype')); 
-            $message->setVersion($node->getAttribute('version')); 
             $message->setDirection("INCOMMING");
             $message->setData(Zend_Json::decode($cdata,true)); 
             $this->requests[] = $message;
@@ -87,7 +86,6 @@ final class Appcelerator_Request {
            $message->setVersion($smessage['version']); 
            $message->setRequestid($smessage['requestid']); 
            $message->setDataType($smessage['datatype']); 
-           $message->setVersion($smessage['version']); 
            $message->setDirection("INCOMMING");
            $message->setData($smessage['data']); 
            $this->requests[] = $message;
