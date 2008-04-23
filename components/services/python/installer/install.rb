@@ -29,7 +29,12 @@ module Appcelerator
       app_path = File.join to_path, project_name
       project_location = File.dirname to_path
       
-      assert( !(project_name.include?(' ') or project_name.include?(';')))
+      dependencies = %w(simplejson beaker paste python)
+      if dependencies.include?(project_name) or project_name.include?(' ') or project_name.include?(';')
+        puts "Invalid project name, must not contain spaces, semicolons, or be one of: #{dependencies}"
+        return false
+      end
+      
       FileUtils.cd project_location do
         if not quiet_system("#{paster} create -t pylons #{project_name}")
           puts 'Unable to run "paster", this command creates the pylons project and ought to have been downloaded by the installer'
@@ -115,11 +120,7 @@ END_CODE
       content = yield(content)
       tx.put(filename,content)
     end
-    
-    def assert(test)
-      raise "Assertion Failed" unless test
-    end
-    
+        
     
     #
     # Dependencies
