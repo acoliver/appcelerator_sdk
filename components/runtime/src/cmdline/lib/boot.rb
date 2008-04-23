@@ -20,7 +20,7 @@
 require 'yaml'
 
 def die(msg=nil, exit_value=1)
-  STDERR.puts msg unless msg.nil?
+  STDERR.puts " *ERROR: #{msg}" unless msg.nil?
   STDERR.flush
   exit exit_value
 end
@@ -94,7 +94,7 @@ end
 
 at_exit { recursive_deltree APP_TEMP_DIR unless OPTIONS[:debug] }
 
-if OPTIONS[:version]
+if OPTIONS[:version] and ACTION
   if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/
     die "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
   end

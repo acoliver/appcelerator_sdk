@@ -174,7 +174,11 @@ module Appcelerator
         command_info = @@registry[name]
 
         if not command_info
-          if name != 'help'
+          if name.nil?
+            build_yaml = File.expand_path("#{SCRIPTDIR}/build.yml")
+            version = YAML::load_file(build_yaml)[:version] rescue 'unknown version'
+            puts "Appcelerator Command-Line #{version}"
+          elsif name != 'help'
             execute('help', [], :show_commands=>false)
             STDERR.puts " *ERROR: Unsupported command: #{name}" if name
           end
