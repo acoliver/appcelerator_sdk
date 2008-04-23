@@ -1030,6 +1030,9 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	}
 };
 
+
+
+
 /**
  * called by compiler to compile a widget
  *
@@ -1038,6 +1041,9 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
  * @param {name} name of the widget which can override what the element actually is
  * @return {string} compiled code or null if none generated
  */
+Appcelerator.Compiler.customConditionsForWidget = [];
+Appcelerator.Compiler.customConditionObservers = {};
+ 
 Appcelerator.Compiler.compileWidget = function(element,state,name)
 {
 	name = name || Appcelerator.Compiler.getTagname(element);
@@ -1115,6 +1121,23 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			}
 		}
 
+        // grab any custom conditions before attempting to parse on attributes
+        if(module.getCustomConditions)
+        {
+            Appcelerator.Compiler.customConditionObservers[id] = {};
+            var customConditions = module.getCustomConditions();
+            Appcelerator.Compiler.customConditionsForWidget.clear();
+            for(var i = 0; i < customConditions.length; i++) 
+            {
+                var custCond = customConditions[i];
+                Appcelerator.Compiler.customConditionsForWidget.push(
+                {
+                    'name': custCond,
+                    'func': Appcelerator.Compiler.widgetCustomFunctionCallback(custCond)
+                });
+            }
+        }
+        
         //
         // parse on attribute
         //
@@ -1343,6 +1366,38 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	return compiledCode;
 };
 
+Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
+{
+    return function (element, condition, action, elseAction, delay, ifCond) 
+    { 
+        var id = element.id;
+        var actionParams = Appcelerator.Compiler.parameterRE.exec(condition);
+        var type = (actionParams ? actionParams[1] : condition);
+        var params = actionParams ? actionParams[2] : null;
+        if(type == custCond)
+        {
+            var entry = 
+            {
+                'action': action,
+                'delay': delay,
+                'elseAction': elseAction,
+                'ifCond': ifCond,
+                'params': params
+            }
+            
+            if(Appcelerator.Compiler.customConditionObservers[id][custCond])
+            {
+                Appcelerator.Compiler.customConditionObservers[id][custCond].push(entry);
+            }
+            else 
+            {
+                Appcelerator.Compiler.customConditionObservers[id][custCond] = [entry];
+            }
+            return true;
+        }
+        return false;
+    }
+}
 Appcelerator.Compiler.determineScope = function(element)
 {
 	var scope = element.getAttribute('scope');
@@ -1538,6 +1593,40 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	}
 };
 
+Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data) 
+{
+    var ok = true;
+    var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
+    
+    if (actionParams)
+    {
+    	for (var c=0,len=actionParams.length;c<len;c++)
+    	{
+    		var p = actionParams[c];
+    		var not_cond = p.key.charAt(p.key.length-1) == '!';
+    		var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
+    		var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
+		
+    		// added x to eval $args
+    		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
+    		if (not_cond)
+    		{
+    			if (v == x)
+    			{
+    				ok = false;
+    				break;
+    			}
+    		}
+    		else if (null == v || v != x)
+    		{
+    			ok = false;
+    			break;
+    		}
+    	}
+    }
+    return ok;
+};
+
 /*
  * Conditions trigger the execution of on expressions,
  * customConditions is a list of parsers that take the left-hand-side
@@ -1559,12 +1648,22 @@ Appcelerator.Compiler.registerCustomCondition = function(metadata, condition)
 
 Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAction,delay,ifCond)
 {
-    $D('handleCondition called for '+element.id);
+    $D('handleCondition called for '+ element);
+    //first loop through custom actions defined by the widget 
+    for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++) 
+    {
+        var condFunction = Appcelerator.Compiler.customConditionsForWidget[f].func;
+        var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
+ 		if (processed)
+ 		{
+ 			return true;
+ 		}
+    }
+    
 	for (var f=0;f<Appcelerator.Compiler.customConditions.length;f++)
 	{
 		var condFunction = Appcelerator.Compiler.customConditions[f];
 		var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
-        $D(element.id+' processed='+processed);
  		if (processed)
  		{
  			return true;

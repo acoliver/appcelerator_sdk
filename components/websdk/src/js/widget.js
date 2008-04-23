@@ -144,4 +144,34 @@ Appcelerator.Widget.queueRemoteLoadScriptWithDependencies = function(path, onloa
 Appcelerator.Widget.loadWidgetCSS = function(name,css)
 {
 	Appcelerator.Core.loadModuleCSS(name,css);
-}
+};
+
+/**
+ * fire an custom condition from within the widget.  
+ */
+Appcelerator.Widget.fireCustomCondition = function(id, name, data)
+{
+    var entries = Appcelerator.Compiler.customConditionObservers[id][name];
+    if(entries) 
+    {
+        for(var i = 0; i < entries.length; i++) 
+        {   
+            var entry = entries[i];
+            params = entry.params;
+            var actionParams = params ? Appcelerator.Compiler.getParameters(params,false) : null;
+        	var paramsStr = (actionParams) ? Object.toJSON(actionParams) : null;
+            var ok = Appcelerator.Compiler.parseConditionCondition(paramsStr, data);
+            
+            var actionFunc;
+            if (ok)
+        	{
+        	    actionFunc = Appcelerator.Compiler.makeConditionalAction(id,entry.action,entry.ifCond,data);
+        	}
+        	else if (elseaction)
+        	{
+        	    actionFunc = Appcelerator.Compiler.makeConditionalAction(id,entry.elseAction,entry.ifCond,data);
+        	}
+            Appcelerator.Compiler.executeAfter(actionFunc,entry.delay);
+        }
+    }
+};
