@@ -733,8 +733,13 @@ HELP
     end
     
     def Installer.install_from_zipfile(type,zip_path)
-      component = Installer.get_build_from_zip zip_path
-      
+
+      begin
+        component = Installer.get_build_from_zip zip_path
+      rescue Zip::ZipError => msg
+        die "Could not install #{zip_path}: #{msg}"
+      end
+
       die "Invalid package file #{zip_path}. Missing build.yml" unless component
       # this is strict, probably won't catch any blunders
       #die "Expected component of type '#{type}' in zipfile, found '#{component[:type]}'" unless type == component[:type]
