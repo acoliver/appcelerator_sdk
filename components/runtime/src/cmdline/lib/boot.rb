@@ -95,7 +95,7 @@ end
 at_exit { recursive_deltree APP_TEMP_DIR unless OPTIONS[:debug] }
 
 if OPTIONS[:version] and ACTION
-  if not OPTIONS[:version] =~ /[0-9]\.[0-9](\.[0-9])?/
+  if not OPTIONS[:version] =~ /[0-9]+\.[0-9]+(\.[0-9]+)?/
     die "Invalid version format. Must be in the format: X.X.X such as 2.0.1"
   end
 end

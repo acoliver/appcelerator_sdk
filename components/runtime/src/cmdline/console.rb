@@ -239,10 +239,10 @@ Appcelerator::PluginManager.loadPlugins
 #
 # execute the command
 #
-if Appcelerator::CommandRegistry.execute(ACTION,ARGS,OPTIONS)
-  # indicate a 0 return code so that automated scripts can determine if command succeeded or failed
-  exit 0
-else
+if Appcelerator::CommandRegistry.execute(ACTION,ARGS,OPTIONS) == false
+  # tell parent process that something went wrong
   exit 1
+else
+  exit 0
 end
 
