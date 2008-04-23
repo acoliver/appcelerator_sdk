@@ -14,7 +14,9 @@ final class Appcelerator_Request {
     private $responses;
 
     public function __construct($request, $sessionid) {
+        Zend_Loader::loadClass('Zend_Json');
         Zend_Loader::loadClass('Appcelerator_Message');
+        Zend_Loader::loadClass('Appcelerator_Service');
 
         $this->request = $request;
         $this->contentType = $request->getHeader("Content-Type"); 
@@ -35,9 +37,9 @@ final class Appcelerator_Request {
 
         // POST request, parse pmessages
         if (stripos($this->contentType, "application/json") !== FALSE) {
-            decodeJSON($request->getRawBody());
+            $this->decodeJSON($request->getRawBody());
         } else {
-            decodeXML($request->getRawBody());
+            $this->decodeXML($request->getRawBody());
         }
     }
     private function decodeXML($input) {
@@ -48,28 +50,32 @@ final class Appcelerator_Request {
         $this->timezoneOffset = $dom->documentElement->getAttribute("tz");
 
         $nodes = $dom->documentElement->childNodes;
-        if ($node->nodeType == XML_ELEMENT_NODE) {
+        foreach ($nodes as $node) {
 
-           $cdata = '';
-           foreach ($node->childNodes as $child)
-           {
-               $cdata = $cdata . $child->nodeValue;
-           }
+            if ($node->nodeType != XML_ELEMENT_NODE) { continue; }
 
-           $message = new Appcelerator_Message();
-           $message->setType($node->getAttribute('type')); 
-           $message->setScope($node->getAttribute('scope')); 
-           $message->setVersion($node->getAttribute('version')); 
-           $message->setRequestid($node->getAttribute('requestid')); 
-           $message->setDataType($node->getAttribute('datatype')); 
-           $message->setVersion($node->getAttribute('version')); 
-           $message->setDirection("INCOMMING");
-           $message->setData(Zend_Json::decode($cdata,true)); 
-           $this->requests[] = $message;
+            $cdata = '';
+            foreach ($node->childNodes as $child)
+            {
+                $cdata = $cdata . $child->nodeValue;
+            }
+
+            $message = new Appcelerator_Message();
+            $message->setType($node->getAttribute('type')); 
+            $message->setScope($node->getAttribute('scope')); 
+            $message->setVersion($node->getAttribute('version')); 
+            $message->setRequestid($node->getAttribute('requestid')); 
+            $message->setDataType($node->getAttribute('datatype')); 
+            $message->setVersion($node->getAttribute('version')); 
+            $message->setDirection("INCOMMING");
+            $message->setData(Zend_Json::decode($cdata,true)); 
+            $this->requests[] = $message;
         }
     }
     private function decodeJSON($input) {
         $request = Zend_Json::decode($input, true);
+        $request = $request['request'];
+
         $this->timestamp = $request['timestamp']; 
         $this->timezoneOffset = $request['tz']; 
 
@@ -93,7 +99,7 @@ final class Appcelerator_Request {
             $services = Appcelerator_Service::getServices($request);
 
             foreach ($services as $handler) {
-                $response = $handler->createResponseMessage($request);
+                $response = $handler->createResponseMessage($request, $handler);
                 $handler->dispatch($request, $response);
 
                 // if there is no response type, the response message
@@ -107,27 +113,27 @@ final class Appcelerator_Request {
     }
 
     public function getResponseText() {
-        Zend_Loader::loadClass('Zend_Json');
-
         // POST request, parse pmessages
         if (stripos($this->contentType, "application/json") !== FALSE) {
-            return getJSONResponse();
+            return $this->getJSONResponse();
         } else {
-            return getXMLResponse();
+            return $this->getXMLResponse();
         }
     }
     public function getXMLResponse() {
-        $response = new DOMDocument();
+        $dom = new DOMDocument("1.0", "UTF-8");
 
-        $messagesElement = $responseDom->createElement('messages');
+        $messagesElement = $dom->createElement('messages');
         $messagesElement->setAttribute('version','1.0');
-        $messagesElement->setAttribute('timestamp', $timestamp);
-        $messagesElement->setAttribute('tz', $this->timezoneOffset);
+
+        //$messagesElement->setAttribute('timestamp', $timestamp);
+        //$messagesElement->setAttribute('tz', $this->timezoneOffset);
+
         if (!is_null($this->sessionid))
         {
             $messagesElement->setAttribute('sessionid',$this->sessionid);
         }
-        $response->appendChild($messagesElement);
+        $dom->appendChild($messagesElement);
 
         foreach($this->responses as $response) {
             $message = $dom->createElement('message');
@@ -137,14 +143,17 @@ final class Appcelerator_Request {
             $message->setAttribute('direction', $response->getDirection());
             $message->setAttribute('scope', $response->getScope());
             $message->setAttribute('version', $response->getVersion());
+
             $cdata = $dom->createCDATASection(Zend_Json::encode($response->getData()));
             $message->appendChild($cdata);
+
             $messagesElement->appendChild($message);
         }
 
-        return "<?xml version='1.0' encoding='UTF-8'?>\n" . $response->saveXML();
+        return $dom->saveXML();
     }
-    public function getJSONResponse {
+
+    public function getJSONResponse() {
         $out = array(
            'version' => '1.0',
            'encoding' => 'UTF-8', 
@@ -157,33 +166,34 @@ final class Appcelerator_Request {
         }
 
         foreach($this->responses as $response) {
-            $message = array()
-            $message['type'] = $response->getType());
-            $message['requestid'] = $response->getRequestid());
-            $message['datatype'] = $response->getDatatype());
-            $message['direction'] = $response->getDirection());
-            $message['scope'] = $response->getScope());
-            $message['version'] = $response->getVersion());
-            $message['data'] = $response->getData());
+            $message = array();
+            $message['type'] = $response->getType();
+            $message['requestid'] = $response->getRequestid();
+            $message['datatype'] = $response->getDatatype();
+            $message['direction'] = $response->getDirection();
+            $message['scope'] = $response->getScope();
+            $message['version'] = $response->getVersion();
+            $message['data'] = $response->getData();
             $out['messages'][] = $message; 
         }
 
         return Zend_Json::encode($out);
     }
 
-    private function getTimezoneOffset() {
+    public function getTimezoneOffset() {
         return $this->timezoneOffset;
     }
-    private function getTimestamp() {
+    public function getTimestamp() {
         return $this->timestamp;
     }
-    private function getContentType() {
+    public function getContentType() {
         return $this->contentType;
     }
-    private function isInvalidMethod() {
-        return $this->invalidRequest;
+    public function isInvalidMethod() {
+        return $this->invalidMethod;
     }
-    private function getResponses() {
+    public function getResponses() {
         return $this->responses;
     }
+}
 ?>

@@ -5,7 +5,7 @@ final class Appcelerator_Message {
     private $requestid;
     private $instanceid;
     private $type;
-    private $data;
+    public $data;
     private $direction;
     private $datatype;
     private $timestamp;
@@ -16,7 +16,7 @@ final class Appcelerator_Message {
 
     public function __construct() { } 
 
-    public function copy($copy) {
+    public function copy() {
         $copy = new Appcelerator_Message();
         $copy->setType($this->getType());
         $copy->setScope($this->getScope());
@@ -25,9 +25,9 @@ final class Appcelerator_Message {
         $copy->setInstanceid($this->getInstanceid());
         $copy->setDataType($this->getDataType());
         $copy->setVersion($this->getVersion());
-        $copy->setDirection($this->setDirection());
-        $copy->setTimestamp($this->setTimestamp());
-        $copy->setTimezoneOffset($this->setTimezoneOffset());
+        $copy->setDirection($this->getDirection());
+        $copy->setTimestamp($this->getTimestamp());
+        $copy->setTimezoneOffset($this->getTimezoneOffset());
         $copy->setData(array($this->getData()));
         return $copy;
     }

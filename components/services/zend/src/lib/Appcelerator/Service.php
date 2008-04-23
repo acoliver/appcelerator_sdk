@@ -41,6 +41,7 @@ final class Appcelerator_Service {
 
         Zend_Loader::loadClass('Appcelerator_Message');
         $response = $request->copy();
+        $response->setType($service->getResponseType());
         $response->setDirection("OUTGOING");
         $response->setData(array());
         return $response; 
@@ -155,11 +156,12 @@ final class Appcelerator_Service {
             return $services;
         }
 
-        foreach(Appcelerator_Service::$services[$request] as $service) {
+        foreach(Appcelerator_Service::$services[$request->getType()] as $service) {
             if (is_null($service->getVersion())
              || is_null($request->getVersion())
-             || strcmp($request->getVersion(), $service.getVersion()) == 0) {
+             || strcmp($request->getVersion(), $service->getVersion()) == 0) {
                 $services[] = $service;
+            }
         }
 
         return $services;
