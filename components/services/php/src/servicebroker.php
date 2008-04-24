@@ -131,7 +131,7 @@ function searchdir ( $path , $maxdepth = -1 , $mode = "FULL" , $d = 0 )
     {
         while ( false !== ( $file = readdir ( $handle ) ) )
         {
-            if ( $file != '.' && $file != '..' )
+            if ( $file != '.' && $file != '..' && strpos($file, ".") !== 0)
             {
                 $file = $path . $file ;
                 if ( ! is_dir ( $file ) ) { if ( $mode != "DIRS" ) { $dirlist[] = $file ; } }
@@ -150,8 +150,13 @@ function searchdir ( $path , $maxdepth = -1 , $mode = "FULL" , $d = 0 )
 
 function getServiceMetadata($str)
 {
+
     $matches = array();
     preg_match("/@Service[\s]*\([\s]*request[\s]*=(.*)?[\s]*[,]{0,1}[\s]*(response[\s]*=[\s]*(.*)?)+[,]{0,1}". "(version[\s]*=[\s]*([0-9]+[.]{0,1}[0-9]*)){0,1}\)/U", $str, $matches);
+
+    if (count($matches) == 0)
+        return FALSE;
+
     $array = array();
     $array['request']=$matches[1];
     $array['response']=isset($matches[3]) ? $matches[3] : '';

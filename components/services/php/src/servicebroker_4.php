@@ -162,6 +162,10 @@
                     }
 
                     $metadata = getServiceMetaData($comment);
+
+                    if ($metadata === FALSE) // could not parse metadata
+                        continue;
+
                     $request = $metadata['request'];
                     $adapter = new ServiceAdapter($instance,$method,$metadata);
                     registerService($request,$adapter,$services);
@@ -352,7 +356,6 @@
             $handler->dispatch($request,$response);
         }
     }
-    
 
     // do le serialization
     $responseText = getResponseText($content_type, $responses, $sessionid);

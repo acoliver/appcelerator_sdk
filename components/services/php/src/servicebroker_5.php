@@ -79,6 +79,10 @@
                     {
                         $comment = $rm->getDocComment();
                         $metadata = getServiceMetadata($comment);
+
+                        if ($metadata === FALSE) // could not parse metadata
+                            continue;
+
                         $request = $metadata['request'];
                         $adapter = new ServiceAdapter($instance,$rm,$metadata);
                         registerService($request,$adapter,$services);
