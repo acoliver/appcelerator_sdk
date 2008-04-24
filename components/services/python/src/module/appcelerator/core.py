@@ -311,28 +311,29 @@ def _appengine_load_services():
 class DatastoreJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, db.Model):
-            v = vars(obj)
-            v['__key__'] = str(obj.key())
-            obj = v
-        elif hasattr(obj, 'isoformat'):
-            obj = obj.isoformat()
-        elif isinstance(obj, users.User):   
-            v = vars(obj) 
-            obj = v
+            result = {}
+            for name,value in obj._properties.iteritems():
+                result[name] = getattr(obj, name)
             
-        return obj
+            result['__key__'] = str(obj.key())
+            return result
+            
+        elif hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+            
+        elif isinstance(obj, users.User):   
+            return {
+                'nickname': obj.nickname(),
+                'email': obj.email()
+            }
+    
 
 def _json_decoder_hook(obj):
     if hasattr(obj, '__key__'):
-        db_obj = db.get(db.Key(obj['__key__']))
-        if db_obj:
-            _update_model(db_obj, obj)
-            return db_obj
+        obj['__key__'] = db.Key(obj['__key__'])
+    # it would be nice if datetimes came through too, but might be surprising
     return obj
 
-def _update_model(old, new):
-    for k,v in vars(new).items():
-        setattr(old, k, v)
 
 
 # Is this IoC?
