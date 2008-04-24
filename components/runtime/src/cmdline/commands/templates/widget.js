@@ -178,6 +178,14 @@ For example:
 	    Appcelerator.Widget.registerWidgetWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js']);
 	});
 
+If you need two or more common JS files located under widgets/common/js then just pass an array to the above function.
+For example:
+
+	Appcelerator.Widget.requireCommonJS(['scriptaculous/builder.js', 'extjs/ext-base.js'],function()
+	{
+	    Appcelerator.Widget.registerWidgetWithJS('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME,['a.js']);
+	});
+
 */
 
 Appcelerator.Widget.register('NAME',Appcelerator.Widget.WIDGET_CLASS_NAME);
