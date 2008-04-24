@@ -123,6 +123,10 @@ final class Appcelerator_Service {
                     . "(response[\s]*=[\s]*(.*)?)+[,]{0,1}"
                     . "(version[\s]*=[\s]*([0-9]+[.]{0,1}[0-9]*)){0,1}\)/U",
                      $comment, $matches);
+    
+        // don't register methods without valid service annotations
+        if (count($matches) == 0)
+            return;
 
         $request = $matches[1];
 	    $response = isset($matches[3]) ? $matches[3] : '';
