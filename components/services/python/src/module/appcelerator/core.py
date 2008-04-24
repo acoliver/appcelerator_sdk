@@ -83,7 +83,7 @@ class ServiceDispatcher(object):
             if input:
                 messages = self.extract_messages_from_xml(input)
                 for rsp in self.handle_messages(session, messages):
-                    payload = json.dumps(rsp['data'])
+                    payload = json.dumps(rsp['data'], cls=_JsonEncoder)
                     yield (
 "<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(rsp['incoming']['requestid'], rsp['type'], payload)
                     )
@@ -93,7 +93,7 @@ class ServiceDispatcher(object):
         # The new-style, all-json protocol
         elif mimetype.startswith('application/json'):
             if input:
-                messages = json.loads(input)['request']['messages']
+                messages = json.loads(input, object_hook=_decoder_hook)['request']['messages']
                 responses = [
                     {'direction': 'OUTGOING',
                      'datatype': 'JSON',
@@ -106,7 +106,7 @@ class ServiceDispatcher(object):
             else:
                 responses = []
             
-            yield json.dumps({'sessionid': session.id, 'messages': responses})
+            yield json.dumps({'sessionid': session.id, 'messages': responses}, cls=_JsonEncoder)
     
     def extract_messages_from_xml(self, input):
         req = ElementTree.fromstring(input)
@@ -114,7 +114,7 @@ class ServiceDispatcher(object):
             yield {
                 'type': msg.get('type'),
                 'requestid': msg.get('requestid'),
-                'data': json.loads(msg.text)
+                'data': json.loads(msg.text, object_hook=_decoder_hook)
             }
     
     def handle_messages(self, session, messages):
@@ -316,8 +316,11 @@ class DatastoreJsonEncoder(json.JSONEncoder):
             obj = v
         elif hasattr(obj, 'isoformat'):
             obj = obj.isoformat()
-        return json.JSONEncoder.default(self, obj)
-
+        elif isinstance(obj, users.User):   
+            v = vars(obj) 
+            obj = v
+            
+        return obj
 
 def _json_decoder_hook(obj):
     if hasattr(obj, '__key__'):
@@ -335,6 +338,7 @@ def _update_model(old, new):
 # Is this IoC?
 try:
     from google.appengine.ext import db
+    from google.appengine.api import users
     import datetime
     # ok, we must be running on appengine, use our customizations
     _JsonEncoder = DatastoreJsonEncoder
