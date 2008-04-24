@@ -1125,7 +1125,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
         if(module.getCustomConditions)
         {
             Appcelerator.Compiler.customConditionObservers[id] = {};
-            var customConditions = module.getCustomConditions();
+            var customConditions = module.getConditions();
             Appcelerator.Compiler.customConditionsForWidget.clear();
             for(var i = 0; i < customConditions.length; i++) 
             {

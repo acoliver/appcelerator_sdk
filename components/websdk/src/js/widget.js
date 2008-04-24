@@ -149,7 +149,7 @@ Appcelerator.Widget.loadWidgetCSS = function(name,css)
 /**
  * fire an custom condition from within the widget.  
  */
-Appcelerator.Widget.fireCustomCondition = function(id, name, data)
+Appcelerator.Widget.fireWidgetCondition = function(id, name, data)
 {
     var entries = Appcelerator.Compiler.customConditionObservers[id][name];
     if(entries) 
