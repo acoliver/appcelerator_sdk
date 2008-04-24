@@ -80,6 +80,30 @@ Appcelerator.Widget.WIDGET_CLASS_NAME =
 		//TODO
 		return [];
 	},
+	
+	/**
+	 * return an array of condition names for the custom conditions the widget supports in
+	 * the widget's on expression.
+	 */
+	getConditions: function()
+	{
+	    /*
+	      TODO: you can define a condition that can be used in the widgets on expression
+	      by returning the name of the condition here.  For instance, if this method returns
+	      
+	          ['close'];
+	          
+	      then the on expresson 'on="close then l:closed"' is valid. You can fire one of 
+	      these conditions by using:
+	      
+	          Appcelerator.Widget.fireWidgetCondition(<widget_id>, <condition_name>, <payload>);
+	          
+	      This feature removes the need to specify special attributes such as 'closeMessage'
+	    */
+	    
+	    return [];
+	},
+	
 	/**
 	 * return an array of function names for the actions the widget supports in the widget's 
 	 * on expression.
