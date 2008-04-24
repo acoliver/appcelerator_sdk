@@ -1122,7 +1122,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 		}
 
         // grab any custom conditions before attempting to parse on attributes
-        if(module.getCustomConditions)
+        if(module.getConditions)
         {
             Appcelerator.Compiler.customConditionObservers[id] = {};
             var customConditions = module.getConditions();
