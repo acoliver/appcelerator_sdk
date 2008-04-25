@@ -39,12 +39,14 @@ session_start();
 $sessionid = session_id();
 
 $PARAMS = array_merge($_GET, $_POST);
-$content_type = $_SERVER['CONTENT_TYPE'];
 $method = $_SERVER['REQUEST_METHOD'];
 
 $instanceid = null;
 $auth = null;
 $init = null;
+$content_type = null;
+
+if (isset($_SERVER['CONTENT_TYPE'])) $content_type = $_SERVER['CONTENT_TYPE'];
 if (isset($PARAMS['instanceid'])) $instanceid = $PARAMS['instanceid'];
 if (isset($PARAMS['auth'])) $auth = $PARAMS['auth'];
 if (isset($PARAMS['initial'])) $init = $PARAMS['initial'];
