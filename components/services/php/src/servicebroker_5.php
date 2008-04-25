@@ -144,7 +144,7 @@
     function getRequestsFromJSON($input)
     {
         $request = json_decode($input, true);
-        $request = $request['request'];
+        //$request = $request['request'];
 
         $timestamp = $request['timestamp'];
         $tz = $request['tz'];

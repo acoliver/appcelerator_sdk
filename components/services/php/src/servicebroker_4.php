@@ -190,7 +190,7 @@
     {
         global $json;
         $request = get_object_vars($json->decode($input));
-        $request = get_object_vars($request['request']);
+        //$request = get_object_vars($request['request']);
 
         $timestamp = $request['timestamp'];
         $tz = $request['tz'];
