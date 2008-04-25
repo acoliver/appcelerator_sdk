@@ -1946,7 +1946,6 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote)
 	elem = $(elem);
 	dequote = (dequote==null) ? true : dequote;
 	
-	$E('tag name: ' + Appcelerator.Compiler.getTagname(elem));
 	switch(Appcelerator.Compiler.getTagname(elem))
 	{
 		case 'input':
