@@ -73,7 +73,7 @@ final class Appcelerator_Request {
     }
     private function decodeJSON($input) {
         $request = Zend_Json::decode($input, true);
-        $request = $request['request'];
+        //$request = $request['request'];
 
         $this->timestamp = $request['timestamp']; 
         $this->timezoneOffset = $request['tz']; 
