@@ -312,9 +312,14 @@ class DatastoreJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, db.Model):
             result = {}
+            result["__id__"] = obj.key().id()
             for name,value in obj._properties.iteritems():
                 result[name] = getattr(obj, name)
-            
+                
+            for name,value in vars(obj).iteritems():
+                if not name.startswith('_'):
+                    result[name] = getattr(obj, name)
+                
             result['__key__'] = str(obj.key())
             return result
             
