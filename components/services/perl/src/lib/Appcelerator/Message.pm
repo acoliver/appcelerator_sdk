@@ -75,7 +75,7 @@ sub deserializeJSON {
     my $requests = $j->decode($input);
     my $messages = [];
 
-    for my $jsonmessage (@{$requests->{'request'}->{'messages'}}) {
+    for my $jsonmessage (@{$requests->{'messages'}}) {
         my $type = $jsonmessage->{'type'};
         my $requestid = $jsonmessage->{'requestid'};
         my $scope = $jsonmessage->{'scope'};
