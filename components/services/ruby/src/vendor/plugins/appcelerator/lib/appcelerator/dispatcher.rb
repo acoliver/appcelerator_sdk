@@ -54,7 +54,12 @@ module Appcelerator
       if body and body != ''
         if request.content_type == 'application/json'
           json = JSON.parse(body)
-          messages = json['request']['messages']
+          
+          if json['request'].nil?
+            messages = json['messages']
+          else
+            messages = json['request']['messages']
+
           if messages
             messages.each do |message|
               request_id = message['requestid']
