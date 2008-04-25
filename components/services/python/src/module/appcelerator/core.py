@@ -270,6 +270,7 @@ def Service(request, response):
                 return func(data, session, msgtype)
         else:
             logging.error('bad number of arguments for @Service annotated function, should be from 0 to 3')
+            return
         
         listener.responsetype = response
         listener.func_name = func.func_name
