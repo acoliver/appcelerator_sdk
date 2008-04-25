@@ -82,7 +82,7 @@ class ServiceDispatcher(object):
             yield "<?xml version=\"1.0\" encoding=\"UTF-8\"?><messages version='1.0' sessionid='%s'>"%session.id
             if input:
                 messages = self.extract_messages_from_xml(input)
-                for rsp in self.handle_messages(session, messages):
+                for rsp in self.handle_messages(messages, session, {}):
                     payload = json.dumps(rsp['data'], cls=_JsonEncoder)
                     yield (
 "<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(rsp['incoming']['requestid'], rsp['type'], payload)
@@ -93,7 +93,14 @@ class ServiceDispatcher(object):
         # The new-style, all-json protocol
         elif mimetype.startswith('application/json'):
             if input:
-                messages = json.loads(input, object_hook=_decoder_hook)['request']['messages']
+                payload = json.loads(input, object_hook=_decoder_hook)
+                options = {
+                    'request': payload['request'],
+                    'environ': environ
+                }
+                
+                messages = payload['request']['messages']
+                results = self.handle_messages(messages, session, options)
                 responses = [
                     {'direction': 'OUTGOING',
                      'datatype': 'JSON',
@@ -101,7 +108,7 @@ class ServiceDispatcher(object):
                      'type': rsp['type'],
                      'data': rsp['data']}
                     for rsp
-                    in self.handle_messages(session, messages)
+                    in results
                 ]
             else:
                 responses = []
@@ -117,10 +124,10 @@ class ServiceDispatcher(object):
                 'data': json.loads(msg.text, object_hook=_decoder_hook)
             }
     
-    def handle_messages(self, session, messages):
+    def handle_messages(self, messages, session, options):
         " parse an incoming message or batch and pass to MessageBroker"
         for message in messages:
-            for response in ServiceBroker.send(message, session):
+            for response in ServiceBroker.send(message, session, options):
                 yield response
 
 
@@ -205,7 +212,7 @@ class InMemoryServiceBroker(object):
         except KeyError:
             logging.warn('no listeners for %s found'%msgtype)
 
-    def send(self, message, session):
+    def send(self, message, session, options):
         """ send a message to all listeners registered for that message type,
             yield tuples of (responsetype, listenerResult)
         """
@@ -220,7 +227,7 @@ class InMemoryServiceBroker(object):
         
         for listener in listeners:
             try:
-                result = listener(data, session, msgtype)
+                result = listener(data, session, msgtype, **options)
                 
                 if not result:
                     result = {}
@@ -239,18 +246,27 @@ def Service(request, response):
     " decorator to expose a service that can be dispatched to by the Appcelerator message broker"
     def _(func):
         arity = func.func_code.co_argcount
-    
+        has_kwargs = func.func_code.co_flags & 8
+                
         if arity == 0:
-            def listener(data, session, msgtype):
-                return func()
+            def listener(data, session, msgtype, **options):
+                if has_kwargs:
+                    return func(data, **options)
+                return func(data)
         elif arity == 1:
-            def listener(data, session, msgtype):
+            def listener(data, session, msgtype, **options):
+                if has_kwargs:
+                    return func(data, **options)
                 return func(data)
         elif arity == 2:
-            def listener(data, session, msgtype):
+            def listener(data, session, msgtype, **options):
+                if has_kwargs:
+                    return func(data, session, **options)
                 return func(data, session)
         elif arity == 3:
-            def listener(data, session, msgtype):
+            def listener(data, session, msgtype, **options):
+                if has_kwargs:
+                    return func(data, session, msgtype, **options)
                 return func(data, session, msgtype)
         else:
             logging.error('bad number of arguments for @Service annotated function, should be from 0 to 3')
@@ -312,7 +328,8 @@ class DatastoreJsonEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, db.Model):
             result = {}
-            result["__id__"] = obj.key().id()
+            result['__id__'] = obj.key().id()
+            result['__key__'] = str(obj.key())
             for name,value in obj._properties.iteritems():
                 result[name] = getattr(obj, name)
                 
@@ -320,9 +337,8 @@ class DatastoreJsonEncoder(json.JSONEncoder):
                 if not name.startswith('_'):
                     result[name] = getattr(obj, name)
                 
-            result['__key__'] = str(obj.key())
             return result
-            
+        
         elif hasattr(obj, 'isoformat'):
             return obj.isoformat()
             
