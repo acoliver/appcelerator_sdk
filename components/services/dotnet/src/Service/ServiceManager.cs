@@ -1,5 +1,5 @@
 /*
- * Autho Amro Mousa
+ * Author Amro Mousa
  * Contact: amousa@appcelerator.com
  */
 using System;
@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Web;
 using System.Web.SessionState;
 using System.IO;
+using System.Xml.XPath;
+using NetServ.Net.Json;
 
 namespace Appcelerator
 {
@@ -159,19 +161,40 @@ namespace Appcelerator
         /// <param name="broker">The ServiceBroker handling the request</param>
         /// <param name="details">The RequestDetails from the request</param>
         /// <returns></returns>
-        public List<Message> ParseIncomingMessages(System.Xml.XPath.XPathNodeIterator iter, HttpContext context, ServiceBroker broker, RequestDetails details)
+        public List<Message> ParseIncomingMessages(HttpContext context, ServiceBroker broker, RequestDetails details, String content_type)
         {
             List<Message> messages = new List<Message>();
-
-            while (iter.MoveNext())
+            switch (content_type)
             {
-                Message m = new Message(iter.Current.OuterXml, context.Session, broker, details);
-                m.Direction = MessageDirection.INCOMING;
-                messages.Add(m);
+                case ServiceBroker.APPLICATION_JSON:
+                    using (StreamReader request_reader = new StreamReader(context.Request.InputStream))
+                    {
+                        StringReader requestJSON = new StringReader(request_reader.ReadToEnd());
+                        JsonParser parser = new JsonParser(requestJSON, true);
+                        JsonArray messageArray = (JsonArray)parser.ParseObject()["data"];
+
+                        foreach (JsonObject jsonMessage in messageArray)
+                        {
+                            Message m = new Message(jsonMessage, context.Session, broker, details);
+                            m.Direction = MessageDirection.INCOMING;
+                            messages.Add(m);
+                        }
+                    }
+                    break;
+                case ServiceBroker.XML_JSON:
+                    XPathDocument doc = new XPathDocument(context.Request.InputStream);
+                    XPathNodeIterator iter = doc.CreateNavigator().Select("//message");
+
+                    while (iter.MoveNext())
+                    {
+                        Message m = new Message(iter.Current, context.Session, broker, details);
+                        m.Direction = MessageDirection.INCOMING;
+                        messages.Add(m);
+                    }
+                    break;
             }
 
             Logger.Instance.Debug("Parsed " + messages.Count + " incoming message(s)");
-
             return messages;
         }
 

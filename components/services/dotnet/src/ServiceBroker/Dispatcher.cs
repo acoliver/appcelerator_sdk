@@ -1,5 +1,5 @@
 /*
- * Autho Amro Mousa
+ * Author Amro Mousa
  * Contact: amousa@appcelerator.com
  */
 using System;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.SessionState;
+using System.Globalization;
 
 namespace Appcelerator
 {
@@ -50,29 +51,82 @@ namespace Appcelerator
         }
 
         //Send all messages queued for this session
-        public String GetQueuedMessages(String session_id)
+        public String GetQueuedMessages(String session_id, String content_type)
         {
             GuaranteeSessionMapped(session_id);
-
-            String outgoing_messages = "";
-
             Logger.Instance.Debug("Returning " + id_queue[session_id].Count + " queued messages for Session ID: " + session_id);
 
-            outgoing_messages += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-            outgoing_messages += "<messages version='1.0' sessionid='" + session_id + "'>";
+            String outgoing_messages = getResponseHeader(content_type, session_id);
 
             while (id_queue[session_id].Count > 0)
             {
                 lock (padlock)
                 {
                     Message message = id_queue[session_id].Dequeue();
-                    outgoing_messages += message.GetMessageXML();
+                    switch (content_type)
+                    {
+                        case ServiceBroker.APPLICATION_JSON:
+                            outgoing_messages += message.GetMessageJSON();
+                            break;
+                        case ServiceBroker.XML_JSON:
+                            outgoing_messages += message.GetMessageXML();
+                            break;
+                    }
                 }
             }
 
-            outgoing_messages += "</messages>";
-
+            outgoing_messages += getResponseFooter(content_type);
             return outgoing_messages;
+        }
+
+        private string getResponseFooter(String content_type)
+        {
+            String footer = "";
+            switch (content_type)
+            {
+                case ServiceBroker.APPLICATION_JSON:
+                    footer = "</messages>";
+                    break;
+                case ServiceBroker.XML_JSON:
+                    footer = "]}";
+                    break;
+            }
+            return footer;
+        }
+
+        private string getResponseHeader(String content_type, String session_id)
+        {
+            String time = DateTime.Now.ToString("s");
+            String xml_header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            String date = getISO8601TimeStamp();
+            xml_header += "<messages version='1.0' sessionid='" + session_id + "'>";
+
+            /* 
+             JSON Response schema:
+                      version: the version of the Appcelerator protocol
+                      encoding: the text encoding of the message (generally UTF-8)
+                      sessionid: (optional) the session id of the current session
+                      time: the timestamp of this response in ISO 8601 format with timezone specified
+                      messages: (an array of objects conforming to the message schema below
+            */
+            String json_header = "{version:'1.1',encoding:'UTF-8',sessionid:'" + session_id + "',time:'" + time+"',messages:[";
+            String header = "";
+
+            switch (content_type)
+            {
+                case ServiceBroker.APPLICATION_JSON:
+                    header = xml_header;
+                    break;
+                case ServiceBroker.XML_JSON:
+                    header = json_header;
+                    break;
+            }
+            return header;
+        }
+
+        public String getISO8601TimeStamp()
+        {
+            return DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", DateTimeFormatInfo.InvariantInfo);
         }
 
         private void GuaranteeSessionMapped(String session_id)

@@ -1,5 +1,5 @@
 /*
- * Autho Amro Mousa
+ * Author Amro Mousa
  * Contact: amousa@appcelerator.com
  */
 using System;
@@ -30,10 +30,10 @@ namespace Appcelerator
 
         private ServiceBroker servicebroker;
 
-        public Message(String msgXML, HttpSessionState session, ServiceBroker servicebroker, RequestDetails details)
+        public Message(XPathNavigator msgXML, HttpSessionState session, ServiceBroker servicebroker, RequestDetails details)
         {
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(msgXML);
+            doc.LoadXml(msgXML.OuterXml);
             XmlElement msg = doc.DocumentElement;
             requestid = msg.GetAttribute("requestid");
             type = msg.GetAttribute("type").ToLower();
@@ -45,6 +45,20 @@ namespace Appcelerator
             this.session = session;
             this.servicebroker = servicebroker;
         }
+
+        public Message(JsonObject message, HttpSessionState session, ServiceBroker servicebroker, RequestDetails details)
+        {
+            requestid = ((JsonString)message["requestid"]).Value;
+            type = ((JsonString)message["type"]).Value;
+            scope = ((JsonString)message["scope"]).Value;
+            version = ((JsonString)message["version"]).Value;
+            json = (JsonObject)message["data"];
+            sessionid = session.SessionID;
+            requestdetails = details;
+            this.session = session;
+            this.servicebroker = servicebroker;
+        }
+
 
         public Message(HttpSessionState session, ServiceBroker servicebroker)
         {
@@ -62,12 +76,26 @@ namespace Appcelerator
 
         public String GetMessageXML()
         {
-            String xml = "";
-
-            xml += "<message direction='"+direction.ToString()+"' type='"+type+"' datatype='"+dataType.ToString()+"' scope='"+scope+"' version='"+version+"'>";
+            String xml = "<message direction='"+direction.ToString()+"' type='"+type+"' datatype='"+dataType.ToString()+"' scope='"+scope+"' version='"+version+"'>";
             xml += "<![CDATA[" + Payload + "]]>";
             xml += "</message>";
             return xml;
+        }
+
+        public string GetMessageJSON()
+        {
+            /*
+              Message schema:
+                  type: the message type
+                  version: the version of the service to access
+                  scope: the scope of this message
+                  requestid: the id of this request
+                  data: a JSON object containing the data payload
+             */
+            String json = "{type:'"+type+"',version:'"+version+"',scope:'"+scope+"',data:";
+            json += Payload;
+            json += "}";
+            return json;
         }
 
         public String Type

@@ -1,5 +1,5 @@
 /*
- * Autho Amro Mousa
+ * Author Amro Mousa
  * Contact: amousa@appcelerator.com
  */
 

@@ -1,5 +1,5 @@
 /*
- * Autho Amro Mousa
+ * Author Amro Mousa
  * Contact: amousa@appcelerator.com
  */
 using System;
@@ -16,6 +16,8 @@ namespace Appcelerator
 {
     public class ServiceBroker : IHttpHandler, IRequiresSessionState
     {
+        public const String APPLICATION_JSON = "foo";
+        public const String XML_JSON = "xml/json";
         private Dispatcher dispatcher = Dispatcher.Instance;
         private ServiceManager serviceManager;
         private Logger logger;
@@ -31,6 +33,7 @@ namespace Appcelerator
             String session_id = context.Session.SessionID;
             HttpResponse response = context.Response;
             HttpRequest request = context.Request;
+            String content_type = request.ContentType;
 
             response.ContentType = "text/xml;charset=UTF-8";
             response.Expires = 0;
@@ -42,22 +45,19 @@ namespace Appcelerator
 
             String response_text = "";
 
-            logger.Debug("Received HTTP Reqest of type: " + request.HttpMethod);
+            logger.Debug("Received HTTP Reqest of type: " + request.HttpMethod +" with content_type of " + content_type);
             switch (request.HttpMethod)
             {
                 case "GET": // Send waiting message(s) to client [from queue]
-                    response_text = dispatcher.GetQueuedMessages(session_id);
+                    response_text = dispatcher.GetQueuedMessages(session_id,content_type);
                     break;
                 case "POST": // Dispatch incoming message(s) and send waiting message(s) to client [[from queue]
-                    XPathDocument doc = new XPathDocument(request.InputStream);
-                    XPathNodeIterator iter = doc.CreateNavigator().Select("//message");
-
-                    RequestDetails requestdetails = new RequestDetails(doc.CreateNavigator().OuterXml);
-                    List<Message> incomingMessages = serviceManager.ParseIncomingMessages(iter, context, this, requestdetails);
+                    RequestDetails requestdetails = new RequestDetails(request.InputStream,content_type);
+                    List<Message> incomingMessages = serviceManager.ParseIncomingMessages(context, this, requestdetails, content_type);
 
                     //Dispatch each incoming message from the list here once dispatcher, listeners are both done
                     dispatcher.Dispatch(incomingMessages, serviceManager,request,response,context.Session, this);
-                    response_text = dispatcher.GetQueuedMessages(session_id);
+                    response_text = dispatcher.GetQueuedMessages(session_id,content_type);
                     break;
             }
 
