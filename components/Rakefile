@@ -170,13 +170,6 @@ namespace :plugin do
   end
 end
 
-namespace :appadmin do
-  task :all do
-    FileUtils.cd("#{BUILD_DIR}/appadmin") do |d|
-      call_rake ""
-    end
-  end
-end
 
 #
 # this is a nolan special
