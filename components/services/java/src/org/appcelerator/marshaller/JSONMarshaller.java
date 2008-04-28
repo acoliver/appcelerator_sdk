@@ -21,7 +21,6 @@
 package org.appcelerator.marshaller;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -40,7 +39,6 @@ import org.appcelerator.messaging.MessageDataObjectException;
 import org.appcelerator.messaging.MessageDataType;
 import org.appcelerator.messaging.MessageDirection;
 import org.appcelerator.messaging.MessageUtils;
-import org.appcelerator.util.Util;
 
 /**
  * Marshaller for encoding and decoding incoming/outgoing JSON messages.
@@ -121,7 +119,6 @@ public class JSONMarshaller
         float timezoneOffset = MessageUtils.getTimezoneOffset();
         
         // use the first message as a reference for the instanceid and sessiondid
-        // :(
         Message m = messages.get(0);
         String sessionid = m.getSessionid();
         String instanceid = m.getInstanceid();
