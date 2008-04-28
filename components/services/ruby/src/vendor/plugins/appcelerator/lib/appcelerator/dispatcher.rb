@@ -59,7 +59,8 @@ module Appcelerator
             messages = json['messages']
           else
             messages = json['request']['messages']
-
+          end
+          
           if messages
             messages.each do |message|
               request_id = message['requestid']

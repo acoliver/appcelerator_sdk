@@ -18,31 +18,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-BUILD_DIR = "#{File.dirname(__FILE__)}" 
-require File.expand_path("#{BUILD_DIR}/../../build.rb")
-build_config = load_config(BUILD_DIR)
-
-desc 'default merb build'
-task :default do
-
-  FileUtils.mkdir_p "#{STAGE_DIR}"
-  zipfile = "#{STAGE_DIR}/service_merb_#{build_config[:version]}.zip"
-  FileUtils.rm_rf zipfile
-
-  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    dofiles("#{BUILD_DIR}/src") do |f|
-      filename = f.to_s
-      if not filename == '.'
-        zipfile.add("merb/#{filename}","#{BUILD_DIR}/src/#{filename}")
+#
+# this collector is responsible for collecting app.start and app.stop
+# events
+#
+# NOTE: no privacy or payload information is actual transmitted or 
+# stored by the agent
+#
+module Appcelerator
+  class AppCollector
+    def initialize
+      @data = {}
+    end
+    def process(data)
+      if data['type'] == 'app.start' or data['type'] == 'app.stop'
+        @data['appid'] = data['appid']
+        @data['data'] = data['data']
+        @data['type'] = data['type']
+        return true
       end
     end
-    zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
-    zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
-    Dir["#{BUILD_DIR}/../common/ruby/agent/**/*.rb"].each do |fpath|
-      i = fpath.index('agent/')
-      fname = fpath[i..-1]
-      zipfile.add("merb/lib/appcelerator/#{fname}",fpath)
+    def key
+      'app'
+    end
+    def collect
+      return nil if @data.empty?
+      data = {}.merge @data
+      @data.clear
+      data
     end
   end
 end
 
+Appcelerator::Collector.instance.add(Appcelerator::AppCollector.new)

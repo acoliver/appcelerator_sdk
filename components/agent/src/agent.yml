@@ -1,0 +1,6 @@
+---
+    :port: 4098
+    :bind: 127.0.0.1
+    :interval: 10
+    :systemid: "F4F34A0A-83B9-444A-929E-76843885AEFD"
+    :server: "http://localhost:3000/agent"

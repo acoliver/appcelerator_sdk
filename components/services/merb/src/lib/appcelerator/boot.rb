@@ -73,13 +73,17 @@ if defined?(Merb::Config)
         instance.instance.autoload_services
     end
     
-    puts ' ~ Appcelerator loaded and ready'
-
+    # load the agent
+    require File.dirname(__FILE__)+'/agent/client'
+    
     if Merb.environment == 'development'
       puts ' ~ Registered services.... '
       puts
       puts Appcelerator::ServiceBroker.diagnostics
       puts
     end
+
+    puts ' ~ Appcelerator loaded and ready'
+
 end
 

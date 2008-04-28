@@ -22,6 +22,8 @@
 require 'json'
 
 if defined?(RAILS_ROOT)
+  # only run this if we're in the server and not one of the console programs
+  if not %w(console irb runner about destroy generate performance plugin process).include? File.basename($0)
     def model_name(name)
       name.to_s.gsub(/[::]{2}/,'.').split('.').collect {|token| token.underscore }.join('.')
     end
@@ -55,16 +57,15 @@ if defined?(RAILS_ROOT)
         instance.instance.autoload_services
     end
     
-#    Appcelerator::Service.autoload_controllers_as_services
+    # load the agent
+    require File.dirname(__FILE__)+'/agent/client'
     
-    puts "=> Appcelerator loaded"
-
-    if not %w(console irb runner about destroy generate performance plugin process).include? File.basename($0)
-      if ENV['RAILS_ENV'] != 'production'
-          puts '=> Registered services.... '
-          puts Appcelerator::ServiceBroker.diagnostics
-          puts
-      end
+    if ENV['RAILS_ENV'] != 'production'
+        puts '=> Registered services.... '
+        puts Appcelerator::ServiceBroker.diagnostics
+        puts
     end
+    puts '=> Appcelerator loaded'
+  end
 end
 

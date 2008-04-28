@@ -42,6 +42,11 @@ task :default do
       fname = File.basename(fpath)
       zipfile.add("plugins/#{fname}",fpath)
     end
+    Dir["#{BUILD_DIR}/../common/ruby/agent/**/*.rb"].each do |fpath|
+      i = fpath.index('agent/')
+      fname = fpath[i..-1]
+      zipfile.add("rails/vendor/plugins/appcelerator/lib/appcelerator/#{fname}",fpath)
+    end
   end
 end
 
