@@ -35,6 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.dispatcher.ServiceDirectoryScanner;
 import org.appcelerator.transport.AjaxServiceTransportServlet;
+import org.appcelerator.transport.DownloadTransportServlet;
+import org.appcelerator.transport.ProxyTransportServlet;
+import org.appcelerator.transport.UploadTransportServlet;
 import org.mortbay.jetty.MimeTypes;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ResourceHandler;
@@ -71,11 +74,23 @@ public class HTTPEndpoint
         
         Context root = new Context(server,"/",Context.SESSIONS);
         root.setSessionHandler(sh);
-		AjaxServiceTransportServlet servlet = new AjaxServiceTransportServlet();
-		servlet.setEmbeddedMode(true);
-		ServletHolder servletHolder = new ServletHolder(servlet);
-        root.addServlet(servletHolder,"/servicebroker/*");
         root.addServlet(new ServletHolder(new DispatcherServlet(resourceHandler)),"/*");
+
+        AjaxServiceTransportServlet servicebroker = new AjaxServiceTransportServlet();
+		servicebroker.setEmbeddedMode(true);
+        root.addServlet(new ServletHolder(servicebroker),"/servicebroker/*");
+        
+        ProxyTransportServlet proxy = new ProxyTransportServlet();
+        proxy.setEmbeddedMode(true);
+        root.addServlet(new ServletHolder(proxy),"/proxy/*");
+        
+        DownloadTransportServlet download = new DownloadTransportServlet();
+        download.setEmbeddedMode(true);
+        root.addServlet(new ServletHolder(download),"/download/*");
+        
+        UploadTransportServlet upload = new UploadTransportServlet();
+        upload.setEmbeddedMode(true);
+        root.addServlet(new ServletHolder(upload),"/upload/*");
         
         server.setGracefulShutdown(2000);
         server.setStopAtShutdown(true);

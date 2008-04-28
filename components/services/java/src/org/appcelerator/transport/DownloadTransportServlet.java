@@ -22,6 +22,7 @@ package org.appcelerator.transport;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.dispatcher.ServiceRegistry;
 
 /**
@@ -41,7 +43,35 @@ public class DownloadTransportServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(DownloadTransportServlet.class);
+    private boolean embeddedMode;
+    
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
+    @Override
+    public void init(ServletConfig config) throws ServletException
+    {
+        super.init(config);
 
+        if (this.embeddedMode)
+        {
+            AnnotationHelper.initializeAnnotationDBFromClasspath();
+        }
+        else
+        {
+            AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+        }
+    }
+
+    /**
+     * called to indicate that the class path must be used when loading annotations instead
+     * of WAR lib
+     */
+    public void setEmbeddedMode(boolean embed)
+    {
+        this.embeddedMode = embed;
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {

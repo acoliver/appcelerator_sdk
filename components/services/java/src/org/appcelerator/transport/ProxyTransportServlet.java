@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.util.Base64;
 import org.appcelerator.util.Util;
 
@@ -54,6 +56,35 @@ public class ProxyTransportServlet extends HttpServlet
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(ProxyTransportServlet.class);
 
+    private boolean embeddedMode;
+    
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
+    @Override
+    public void init(ServletConfig config) throws ServletException
+    {
+        super.init(config);
+
+        if (this.embeddedMode)
+        {
+            AnnotationHelper.initializeAnnotationDBFromClasspath();
+        }
+        else
+        {
+            AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+        }
+    }
+
+    /**
+     * called to indicate that the class path must be used when loading annotations instead
+     * of WAR lib
+     */
+    public void setEmbeddedMode(boolean embed)
+    {
+        this.embeddedMode = embed;
+    }
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {

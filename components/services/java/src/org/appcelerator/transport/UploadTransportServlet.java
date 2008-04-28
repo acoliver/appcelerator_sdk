@@ -45,6 +45,7 @@ import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageDataType;
 import org.appcelerator.messaging.MessageDirection;
 import org.appcelerator.messaging.MessageUtils;
+import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.dispatcher.ServiceDispatcherManager;
 import org.appcelerator.util.TimeUtil;
 
@@ -64,6 +65,34 @@ public class UploadTransportServlet extends HttpServlet
     private File tempDirectory;
     private int maxFileSize = Integer.MAX_VALUE;
     
+    private boolean embeddedMode;
+    
+    /* (non-Javadoc)
+     * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+     */
+    @Override
+    public void init(ServletConfig config) throws ServletException
+    {
+        super.init(config);
+
+        if (this.embeddedMode)
+        {
+            AnnotationHelper.initializeAnnotationDBFromClasspath();
+        }
+        else
+        {
+            AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+        }
+    }
+
+    /**
+     * called to indicate that the class path must be used when loading annotations instead
+     * of WAR lib
+     */
+    public void setEmbeddedMode(boolean embed)
+    {
+        this.embeddedMode = embed;
+    }
     
     public int getMaxFileSize()
     {
