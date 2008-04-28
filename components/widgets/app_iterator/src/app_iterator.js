@@ -174,12 +174,7 @@ Appcelerator.Widget.Iterator =
 			element.setAttribute('selectable',selectable);
 		}
 
-		var elementChildren = Appcelerator.Compiler.getElementChildren(element);
-		for (var i=0,len=elementChildren.length;i<len;i++)
-		{
-		    Appcelerator.Compiler.destroy(elementChildren[i], true);
-		}
-		
+        Appcelerator.Compiler.destroyContent(element);
 		element.innerHTML = Appcelerator.Compiler.addIENameSpace(html);
 		Appcelerator.Compiler.dynamicCompile(element);
 	},

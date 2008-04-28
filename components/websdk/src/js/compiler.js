@@ -618,6 +618,15 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 	}
 };
 
+Appcelerator.Compiler.destroyContent = function(element)
+{
+	var elementChildren = Appcelerator.Compiler.getElementChildren(element);
+	for (var i=0,len=elementChildren.length;i<len;i++)
+	{
+	    Appcelerator.Compiler.destroy(elementChildren[i], true);
+	}    
+};
+
 Appcelerator.Compiler.addTrash = function(element,trash)
 {
 	if (!element.trashcan)
@@ -2651,6 +2660,19 @@ Appcelerator.Compiler.addFieldSet = function(element,excludeSelf)
 		return fieldset;
 	}
 	return null;
+};
+
+Appcelerator.Compiler.removeFieldSet = function(element)
+{
+	var fieldsetName = element.getAttribute('fieldset');
+	if (fieldsetName)
+	{
+		var fieldset = Appcelerator.Compiler.fieldSets[fieldsetName];
+		if (fieldset)
+		{
+			fieldset.remove(element.id);
+		}
+	}
 };
 
 Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)

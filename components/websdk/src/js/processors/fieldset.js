@@ -11,7 +11,12 @@ Appcelerator.Compiler.registerAttributeProcessor('*','fieldset',
 			// our reference
 			//
 			Appcelerator.Compiler.addFieldSet(element,false);
-		}		
+
+			Appcelerator.Compiler.addTrash(element, function()
+			{
+			    Appcelerator.Compiler.removeFieldSet(element);
+			});
+		}
 	},
 	metadata:
 	{
