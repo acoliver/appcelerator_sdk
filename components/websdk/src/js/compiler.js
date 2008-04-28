@@ -544,6 +544,19 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	}
 };
 
+Appcelerator.Compiler.getElementChildren = function (element)
+{
+    var elementChildren = [];
+	for (var i = 0, length = element.childNodes.length; i < length; i++)
+	{
+	    if (element.childNodes[i].nodeType == 1)
+	    {
+    	     elementChildren.push(element.childNodes[i]);
+    	}
+	}
+	return elementChildren;
+}
+
 /**
  * method should be called to clean up any listeners or internally added stuff
  * the compiler places into the element 
@@ -887,18 +900,16 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
 	    }
 	    else
 	    {
-    	    Event.observe(element,'focus',function()
+	        element._focusChangeListener = function()
     	    {
-    	        element._validatorObserver = new Form.Element.Observer(
-    	          element,
-    	          .5,  
-    	          function(element, value)
-    	          {
+    	        element._validatorObserver = new Form.Element.Observer(element,.5,function(element, value)
+                {
     	            action(element,value);
-    	          }
-    	        );
-    	    });
-    	    Event.observe(element,'blur',function()
+    	        });
+    	    };
+    	    Event.observe(element,'focus',element._focusChangeListener);
+
+	        element._blurChangeListener = function()
     	    {
     	        if (element._validatorObserver)
     	        {
@@ -906,12 +917,35 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
     	            try { delete element._validatorObserver; } catch (e) { element._validatorObserver = null; }
                     action(element,Field.getValue(element));
     	        }
-    	    });
+    	    };
+    	    Event.observe(element,'blur',element._blurChangeListener);
     	}
     }).defer();
     
     return element;
 };
+
+Appcelerator.Compiler.removeChangeListener = function (element)
+{
+    (function()
+    {
+        if (element._focusChangeListener)
+        {
+            Event.stopObserving(element, 'focus', element._focusChangeListener);
+            try { delete element._focusChangeListener; } catch (e) { element._focusChangeListener = null; }
+        }
+        if (element._blurChangeListener)
+        {
+            Event.stopObserving(element, 'blur', element._blurChangeListener);
+            try { delete element._blurChangeListener; } catch (e) { element._blurChangeListener = null; }
+        }
+        if (element._validatorObserver)
+        {
+            element._validatorObserver.stop();
+            try { delete element._validatorObserver; } catch (e) { element._validatorObserver = null; }
+        }
+    }).defer();
+}
 
 Appcelerator.Compiler.ElementFunctions = {};
 

@@ -112,6 +112,7 @@ Appcelerator.Compiler.registerAttributeProcessor(['textarea','input','select'],'
 			
 			Appcelerator.Compiler.addTrash(element, function()
 			{
+			    Appcelerator.Compiler.removeChangeListener(element);
 				validationListeners = null;
 			});
 			

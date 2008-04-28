@@ -32,7 +32,7 @@ Appcelerator.Widget.Modaldialog =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -111,6 +111,12 @@ Appcelerator.Widget.Modaldialog =
 		
 		var overlay = $('overlay');
 		var overlaydata = $('overlay_data');
+
+		var elementChildren = Appcelerator.Compiler.getElementChildren(overlaydata);
+		for (var i=0,len=elementChildren.length;i<len;i++)
+		{
+		    Appcelerator.Compiler.destroy(elementChildren[i], true);
+		}
 		
 		overlaydata.innerHTML = html;
 
