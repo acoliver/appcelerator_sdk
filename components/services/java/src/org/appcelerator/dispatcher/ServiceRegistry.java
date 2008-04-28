@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.annotation.Service;
+import org.appcelerator.dispatcher.visitor.DispatchVisitor;
+import org.appcelerator.dispatcher.visitor.NullDispatchVisitor;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
 
@@ -46,7 +48,10 @@ public class ServiceRegistry
     private static final Log LOG = LogFactory.getLog(ServiceRegistry.class);
     private static final HashMap<String,Set<ServiceAdapter>> services = new HashMap<String,Set<ServiceAdapter>>();
     private static final HashMap<String,DownloadableAdapter> downloadables = new HashMap<String,DownloadableAdapter>();
-    
+    private static ServiceRegistry instance = new ServiceRegistry();
+    private ServiceRegistry() {}
+    public static ServiceRegistry getInstance() {return instance;}
+    private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
     /**
      * given a service type, return the services
      * 
@@ -202,6 +207,7 @@ public class ServiceRegistry
 
     public static boolean dispatch (Message request, List<Message> responses)
     {
+    	Object token = instance.dispatchVisitor.startVisit(request, responses);
         Set<ServiceAdapter> adapters = ServiceRegistry.getRegisteredServices(request.getType());
         if (adapters!=null && !adapters.isEmpty())
         {
@@ -223,10 +229,12 @@ public class ServiceRegistry
                     {
                         responses.add(response);
                     }
+                    instance.dispatchVisitor.endVisit(token, request, responses);
                     return true;
                 }
             }
         }
+        instance.dispatchVisitor.endVisit(token, request, responses);
         return false;
     }
 
@@ -243,4 +251,10 @@ public class ServiceRegistry
 		}
         return false;
     }
+	public DispatchVisitor getDispatchVisitor() {
+		return dispatchVisitor;
+	}
+	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
+		this.dispatchVisitor = dispatchVisitor;
+	}
 }

@@ -108,8 +108,11 @@ module Appcelerator
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
       tx.mkdir "#{to_path}/src/war/WEB-INF"
-      Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml") if update==false
-      
+      if update==false
+        Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml")
+      else
+        Appcelerator::PluginUtil.merge_webxml("#{to_path}/config/web.xml","#{from_path}/templates/web.xml",tx,nil,to_path)
+      end
       if not update or not File.exists? "#{to_path}/.classpath"
         #
         # create an Eclipse .project/.classpath file      

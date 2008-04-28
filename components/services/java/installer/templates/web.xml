@@ -1,54 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-      version="2.5">
-
-    <display-name>Appcelerator RIA Application</display-name>
-
-    <servlet>
-    	<servlet-name>ajaxServiceTransport</servlet-name>
-    	<servlet-class>org.appcelerator.transport.AjaxServiceTransportServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-    	<servlet-name>downloadTransport</servlet-name>
-    	<servlet-class>org.appcelerator.transport.DownloadTransportServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-    	<servlet-name>uploadTransport</servlet-name>
-    	<servlet-class>org.appcelerator.transport.UploadTransportServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet>
-    	<servlet-name>proxyTransport</servlet-name>
-    	<servlet-class>org.appcelerator.transport.ProxyTransportServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-      <servlet-name>ajaxServiceTransport</servlet-name>
-      <url-pattern>/servicebroker</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>proxyTransport</servlet-name>
-      <url-pattern>/proxy</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>downloadTransport</servlet-name>
-      <url-pattern>/download</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-      <servlet-name>uploadTransport</servlet-name>
-      <url-pattern>/upload</url-pattern>
-    </servlet-mapping>
-
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	<display-name>Appcelerator RIA Application</display-name>
+	<servlet>
+		<servlet-name>ajaxServiceTransport</servlet-name>
+		<servlet-class>org.appcelerator.transport.AjaxServiceTransportServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<init-param>
+			<param-name>validate</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>downloadTransport</servlet-name>
+		<servlet-class>org.appcelerator.transport.DownloadTransportServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>uploadTransport</servlet-name>
+		<servlet-class>org.appcelerator.transport.UploadTransportServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<servlet-name>proxyTransport</servlet-name>
+		<servlet-class>org.appcelerator.transport.ProxyTransportServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ajaxServiceTransport</servlet-name>
+		<url-pattern>/servicebroker</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>proxyTransport</servlet-name>
+		<url-pattern>/proxy</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>downloadTransport</servlet-name>
+		<url-pattern>/download</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>uploadTransport</servlet-name>
+		<url-pattern>/upload</url-pattern>
+	</servlet-mapping>
 </web-app>

@@ -25,9 +25,10 @@ import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONString;
-import net.sf.json.JSONNull;
+
 import org.appcelerator.model.IModelObject;
 import org.appcelerator.util.DateUtil;
 

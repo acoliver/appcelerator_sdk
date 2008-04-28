@@ -57,6 +57,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
     private static final Log LOG = LogFactory.getLog(AjaxServiceTransportServlet.class);
     private static final long serialVersionUID = 1L;
 	private boolean embeddedMode;
+	private boolean performValidation = true;
     
     /* (non-Javadoc)
      * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
@@ -65,6 +66,11 @@ public class AjaxServiceTransportServlet extends HttpServlet
     public void init(ServletConfig config) throws ServletException
     {
         super.init(config);
+        String validate = config.getInitParameter("validate");
+        if (validate!=null && !validate.equals(""))
+        {
+        	performValidation = Boolean.parseBoolean(validate);
+        }
 
 		if (this.embeddedMode)
 		{
@@ -112,6 +118,10 @@ public class AjaxServiceTransportServlet extends HttpServlet
     private boolean validate(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
+    	if (!performValidation) 
+    	{
+    		return true;
+    	}
         HttpSession session = request.getSession();
         String instanceid = request.getParameter("instanceid");
         String auth = request.getParameter("auth");

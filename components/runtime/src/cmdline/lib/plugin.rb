@@ -161,10 +161,11 @@ module Appcelerator
       name.sub(/.*:(.*)/, '\1')
     end
     
-    def PluginUtil.merge_webxml (to,from,tx,event)
+    def PluginUtil.merge_webxml (to,from,tx,event,project_dir=nil)
       error = false
       filename = "web.xml"
       require "rexml/document"
+      project_dir = event[:project_dir] if project_dir.nil?
 
       tofile = File.read to
       todoc = REXML::Document.new(tofile)
@@ -189,6 +190,14 @@ module Appcelerator
         toservlet = PluginUtil.ensure_element_namedsubelment(todoc.root,"servlet","servlet-name",servletname,["servlet-class","load-on-startup"])
         toservlet.get_elements("servlet-class")[0].text = fromservlet.get_elements("servlet-class")[0].text
         toservlet.get_elements("load-on-startup")[0].text = fromservlet.get_elements("load-on-startup")[0].text
+        fromservlet.elements.each("//init-param") do |frominitparam|
+          paramname = PluginUtil.get_subelementtext(frominitparam,"param-name")
+          if !paramname.nil? && paramname!=""
+            # puts "adding init param #{paramname} for servlet #{servletname}"
+            toinitparam = PluginUtil.ensure_element_namedsubelment(toservlet,"init-param","param-name",paramname,["param-value"])
+            toinitparam.get_elements("param-value")[0].text = frominitparam.get_elements("param-value")[0].text
+          end
+        end
         # puts "merged: #{toservlet}"
       end
       fromdoc.root.elements.each("/web-app//servlet-mapping") do |fromservletmapping|
@@ -198,8 +207,8 @@ module Appcelerator
         # puts "merged: #{toservletmapping}"
       end
       if not error
-        backfile = "#{event[:project_dir]}/tmp/#{filename}.#{Time.new.to_i}"
-        tmpoutfile = "#{event[:project_dir]}/tmp/#{filename}"
+        backfile = "#{project_dir}/tmp/#{filename}.#{Time.new.to_i}"
+        tmpoutfile = "#{project_dir}/tmp/#{filename}"
         FileUtils.cp(to,"#{backfile}")
         puts "writing file"
         f = File.new(tmpoutfile, "w")
