@@ -428,7 +428,6 @@ Appcelerator.Util.ServiceBroker =
         }
         
         $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
-		var stat = Appcelerator.Util.Performance.createStat();
         try
         {
             listener.onMessage.apply(listener, [type,msg,datatype,from,scope]);
@@ -437,7 +436,6 @@ Appcelerator.Util.ServiceBroker =
         {
             $E("Unhandled Exception dispatching:" + type + ", " + msg + ", to listener:" + listener + ", " + Object.getExceptionDetail(e));
         }
-		Appcelerator.Util.Performance.endStat(stat,type,from);
         return true;
     },
 
@@ -732,6 +730,7 @@ Appcelerator.Util.ServiceBroker =
 				var dest = message[2];
 				var scope = message[3];
 				var version = message[4];
+				var stat = Appcelerator.Util.Performance.createStat();
 				
 				switch (dest)
 				{
@@ -788,6 +787,7 @@ Appcelerator.Util.ServiceBroker =
 						break;
 					}
 				}
+				Appcelerator.Util.Performance.endStat(stat,name,dest);
 				
 				queue.remove(message);
 			}
