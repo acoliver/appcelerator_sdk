@@ -61,6 +61,15 @@ class RunJavaPlugin < Appcelerator::Plugin
       sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
       pathsep = RUBY_PLATFORM=~/win32/ ? '\\' : '/'
       FileUtils.cd Dir.pwd do |dir|
+        
+        # test to make sure we have java on our path
+        nullout = RUBY_PLATFORM=~/win32/ ? 'NUL' : '/dev/null'
+        
+        if not system "java -version 2>#{nullout}"
+          puts "Failed to find java, you need to have java installed and on your path."
+          exit 1
+        end
+        
         webdir = "public"
         servicesdir = "app/services"
         jars = Dir["lib/**/**"].inject([]) do |jars,file|
@@ -84,9 +93,7 @@ class RunJavaPlugin < Appcelerator::Plugin
         
         event = {:project_dir=>pwd,:service=>'java'}
         PluginManager.dispatchEvents('run_server',event) do
-          if not system(cmd)
-            puts "Failed to launch jetty, you need to have java installed and on your path."
-          end
+          system(cmd)
         end
       end
     end

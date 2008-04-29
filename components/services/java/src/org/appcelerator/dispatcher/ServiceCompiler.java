@@ -23,6 +23,7 @@ package org.appcelerator.dispatcher;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.StringTokenizer;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -62,7 +63,18 @@ public class ServiceCompiler
         }
         StringWriter errWriter=new StringWriter();
         StringBuffer buf = errWriter.getBuffer();
-        Main.compile("-source 1.5 -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
+
+		// calculate the source version to use with the compiler. we support a new custom system 
+		// property called java.compiler.version which can be set to specifically use a different version
+		// otherwise we default to the same version that we're running on
+		String version = System.getProperty("java.compiler.version",System.getProperty("java.version"));
+		StringTokenizer tok = new StringTokenizer(version,".");
+		StringBuilder ver = new StringBuilder();
+		ver.append(tok.nextToken());
+		ver.append(".");
+		ver.append(tok.nextToken());
+		
+        Main.compile("-source " + ver + " -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
         stderr.print(buf.toString());
         stderr.flush();
         return buf.length() == 0;
