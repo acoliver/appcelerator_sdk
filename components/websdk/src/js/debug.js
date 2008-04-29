@@ -105,9 +105,7 @@ function $D()
 {
     if (Logger.debugEnabled)
     {
-        var args = $A(arguments);
-        var msg = (args.length > 1) ? args.join(" ") : args[0];
-        Logger.debug(msg);
+        Logger.debug(Logger.buildMessage(arguments));
     }
 }
 
@@ -115,12 +113,31 @@ function $E()
 {
     if (Logger.errorEnabled)
     {
-        var args = $A(arguments);
-        var msg = (args.length > 1) ? args.join(" ") : args[0];
-        Logger.error(msg);
+        Logger.error(Logger.buildMessage(arguments));
     }
 }
 
+// prettier debug output
+Logger.buildMessage = function(args)
+{
+    args = $A(args)
+    for(var i = 0; i<args.length; i++)
+    {
+        var arg = args[i];
+        if(arg)
+        {
+            if(args[i].constructor == Object)
+            {   // for simple objects
+                args[i] = Object.toJSON(args[i]);
+            }
+            else
+            {   // for dom elements, builtin types, etc
+                args[i] = args[i].toString();
+            }
+        }
+    }
+    return args.join('');
+}
 
 if(typeof err == 'undefined') {
     var err = {

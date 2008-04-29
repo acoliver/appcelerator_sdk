@@ -11,6 +11,9 @@ Appcelerator.Util.DateTime =
     ONE_MONTH: 18748800000, // this is rough an assumes 31 days
     ONE_YEAR: 31536000000,
 	
+	/**
+	 * Convert a duration from the format: "2y 3w 5d 27m 13s" into milliseconds
+	 */
 	timeFormat: function (value)
 	{
 		var str = '';

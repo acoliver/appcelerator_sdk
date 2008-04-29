@@ -4,17 +4,7 @@
 //
 Appcelerator.Compiler.SelectableGroups = {};
 
-Appcelerator.Compiler.addContainerProcessor(
-{
-	process: function(element,container)
-	{
-		var v = element.getAttribute('selectable');
-		if (v)
-		{
-			container.setAttribute('selectable',v);
-		}
-	}
-});
+Appcelerator.Compiler.retainedWidgetAttributes.push('selectable');
 
 Appcelerator.Compiler.wireSelectable = function(element,value)
 {

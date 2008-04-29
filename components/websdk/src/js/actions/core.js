@@ -66,16 +66,13 @@ Appcelerator.Compiler.registerCustomAction('hidden',
 	}
 });
 
-/** TODO: for effect extensibility, we need to provide a method like
- 		 Appcelerator.Compiler.addEffect(function(element,options) {
- 		 	// your code here
- 		 });
- 		 that also adds to this list and to the 'Effect' and 'Effect.Methods' objects
-*/
-Appcelerator.Compiler.effects = $w(
-	'fade appear grow shrink fold blindUp blindDown slideUp slideDown '+
-	'pulsate shake puff squish switchOff dropOut morph highlight'
-);
+// get the effects 
+Appcelerator.Compiler.effects = $H(Effect).select(function(kv) {
+    var name = kv[0];
+    var val = kv[1];
+    var lowerName = name.charAt(0).toLowerCase() + name.substring(1);
+    return Effect.Methods[lowerName] || val.superclass == Effect.Base;
+}).pluck('0');
 
 Appcelerator.Compiler.registerCustomAction('effect',
 {
@@ -915,7 +912,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 						//the condition to handle for this child element
 						clause[2] = action;
 
-						Appcelerator.Compiler.handleCondition.apply(this, clause);
+						Appcelerator.Compiler.handleCondition.call(this, clause);
 					}
 				}
 				break;
@@ -928,7 +925,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 		
 		var suffix = revalidate ? '; Appcelerator.Compiler.executeFunction(' + elementHtml +',"revalidate");' : '';
 		
-		$D('built expression=> '+ elementHtml + '.' + variable + '=' + valueHtml + expression + suffix);
+		$D('built expression=> ', elementHtml, '.', variable, '=', valueHtml, expression, suffix);
 
 		var html = '';
 		if (!form)

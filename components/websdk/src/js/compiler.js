@@ -328,6 +328,31 @@ Appcelerator.Compiler.delegateToContainerProcessors = function(element,container
 	return container;
 };
 
+/**
+ * List of attributes to copy from the original <app:widget_name> element
+ * onto the <div> that replaces that widget.
+ *
+ * Needed for the 'bind' action and 'selectable' attribute.
+ */
+Appcelerator.Compiler.retainedWidgetAttributes = ['name'];
+Appcelerator.Compiler.addContainerProcessor(
+{
+	process: function(element,container)
+	{
+	    var attrs = Appcelerator.Compiler.retainedWidgetAttributes;
+	    for(var i = 0; i < attrs.length; i++)
+	    {
+	        var attr = attrs[i];
+    		var v = element.getAttribute(attr);
+    		if (v)
+    		{
+    			container.setAttribute(attr,v);
+    		}
+    	}
+	}
+});
+
+
 Appcelerator.Compiler.checkLoadState = function (state)
 {
 	if (state.pending==0 && state.scanned)
@@ -356,7 +381,7 @@ Appcelerator.Compiler.dynamicCompile = function(element,notimeout,recursive)
 {
 	if (!element) return;
 	
-    $D('dynamic compile called for '+element+' - id='+element.id);
+    $D('dynamic compile called for ',element,' - id=',element.id);
     
     Appcelerator.Compiler.doCompile(element,recursive);   
 };
@@ -583,7 +608,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 			}
 			catch(e)
 			{
-				// gulp
+				$E(e);
 			}
 		}
 		try
@@ -592,7 +617,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 		}
 		catch(e)
 		{
-			// yummy!
+			$E(e);
 		}
 	}
 	
@@ -611,6 +636,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 					}
 					catch(e) 
 					{
+					    $E(e);
 					}
 				}
 			}
@@ -1318,6 +1344,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			}
             
 			var compileId = id;
+			var fieldset = element.getAttribute('fieldset');
 			
 			//
 			// remove element
@@ -1329,12 +1356,17 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 				Element.remove(element);
 			}
 			
-			if (added && outer && !$(id))
+			if (outer)
 			{
-				// set outer div only if widget id was not used in presentation
-				Appcelerator.Compiler.setElementId(outer, id);
-				compileId = id;
-				widgetParameters['id']=id;
+    			if (added && !$(id))
+    			{
+    				// set outer div only if widget id was not used in presentation
+    				Appcelerator.Compiler.setElementId(outer, id);
+    				compileId = id;
+    				widgetParameters['id']=id;
+    			}
+			    outer.widget = module;
+                outer.widgetParameters = widgetParameters;
 			}
 			
 			// 
@@ -1365,6 +1397,11 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 						Appcelerator.Compiler.attachFunction(id,attachMethodName,f);
 					})();
 				}
+			}
+			
+			if(fieldset && !instructions.ignoreFieldset)
+			{
+			    Appcelerator.Compiler.addFieldSet(outer, false, fieldset);
 			}
 			
             //
@@ -1463,7 +1500,7 @@ Appcelerator.Compiler.determineScope = function(element)
 
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
-    $D('parseOnAttribute '+element.id);
+    $D('parseOnAttribute ',element.id);
 	var on = element.getAttribute('on');
 	if (on && Object.isString(on))
 	{
@@ -1620,14 +1657,14 @@ Appcelerator.Compiler.parseExpression = function(value)
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	var clauses = Appcelerator.Compiler.parseExpression(value);
-	$D('expression has '+clauses.length+' expression for '+element.id);
+	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
 	for(var i = 0; i < clauses.length; i++) 
 	{
 		var clause = clauses[i];
-        $D('compiling expression for '+element.id+' => condition=['+clause[1]+'], action=['+clause[2]+'], elseAction=['+clause[3]+'], delay=['+clause[4]+'], ifCond=['+clause[5]+']');
+        $D('compiling expression for ',element.id,' => condition=[',clause[1],'], action=[',clause[2],'], elseAction=[',clause[3],'], delay=[',clause[4],'], ifCond=[',clause[5],']');
 
         clause[0] = element;
-        var handled = Appcelerator.Compiler.handleCondition.apply(this, clause);
+        var handled = Appcelerator.Compiler.handleCondition.call(this, clause);
 		
         if (!handled)
         {
@@ -1673,13 +1710,11 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 /*
  * Conditions trigger the execution of on expressions,
  * customConditions is a list of parsers that take the left-hand-side
- * of an on expression (before the 'then') and registers event listeners
+ * of an on expression (before the 'then') and register event listeners
  * to be called when the condition is true.
  * 
  * Parsers registered with registerCustomCondition are called in order
  * until one of them successfully parses the condition and returns true.
- * 
- * Successful parses result in calls to either Event.observe or to $MQL
  */
 Appcelerator.Compiler.customConditions = [];
 
@@ -1689,14 +1724,15 @@ Appcelerator.Compiler.registerCustomCondition = function(metadata, condition)
 	Appcelerator.Compiler.customConditions.push(condition);
 };
 
-Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAction,delay,ifCond)
+Appcelerator.Compiler.handleCondition = function(clause)
 {
-    $D('handleCondition called for '+ element);
+    var element = clause[0];
+    $D('handleCondition called for ',element);
     //first loop through custom actions defined by the widget 
     for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++) 
     {
         var condFunction = Appcelerator.Compiler.customConditionsForWidget[f].func;
-        var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
+        var processed = condFunction.apply(condFunction,clause);
  		if (processed)
  		{
  			return true;
@@ -1706,7 +1742,7 @@ Appcelerator.Compiler.handleCondition = function(element,condition,action,elseAc
 	for (var f=0;f<Appcelerator.Compiler.customConditions.length;f++)
 	{
 		var condFunction = Appcelerator.Compiler.customConditions[f];
-		var processed = condFunction.apply(condFunction,[element,condition,action,elseAction,delay,ifCond]);
+		var processed = condFunction.apply(condFunction,clause);
  		if (processed)
  		{
  			return true;
@@ -1733,7 +1769,7 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 	// action that can be subscribed to
 	// 
 	var action = Object.clone(callback);
-	action.build = function(id,action,params)	
+	action.build = function(id,action,params)
 	{
 		return [
 			'try {',
@@ -1936,7 +1972,7 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 						{
 							continue;					
 						}
-						var newvalue = Appcelerator.Compiler.getInputFieldValue(field,true,local);
+						var newvalue = Appcelerator.Compiler.getElementValue(field,true,local);
 						var valuetype = typeof(newvalue);
 						if (newvalue!=null && (valuetype=='object' || newvalue.length > 0 || valuetype=='boolean'))
 						{
@@ -1984,37 +2020,48 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
  * @param {boolean} dequote should we automatically dequote value
  * @return {string} value from element
  */
-Appcelerator.Compiler.getElementValue = function (elem, dequote)
+Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
 {
-	elem = $(elem);
-	dequote = (dequote==null) ? true : dequote;
-	
-	switch(Appcelerator.Compiler.getTagname(elem))
-	{
-		case 'input':
-		{
-			return Appcelerator.Compiler.getInputFieldValue(elem,true);
-		}
-		case 'img':
-		{
-			return elem.src;
-		}
-		case 'form':
-		{
-			//TODO
-			return '';
-		}
-		default:
-		{
-			// allow the element to set the value otherwise use the
-			// innerHTML of the component
-			if (elem.value != undefined)
-			{
-				return elem.value;
-			}
-			return elem.innerHTML;
-		}
-	}
+    elem = $(elem);
+    dequote = (dequote==null) ? true : dequote;
+    
+    var widget = elem.widget
+    if (widget)
+    {
+        if(elem.widget.getValue)
+        {
+            return elem.widget.getValue(elem.id, elem.widgetParameters);
+        }
+    }
+    else
+    {
+        switch (Appcelerator.Compiler.getTagname(elem))
+        {
+            case 'input':
+            {
+                return Appcelerator.Compiler.getInputFieldValue(elem,true,local);
+            }
+            case 'img':
+            {
+                return elem.src;
+            }
+            case 'form':
+            {
+                //TODO
+                return '';
+            }
+            default:
+            {
+                // allow the element to set the value otherwise use the
+                // innerHTML of the component
+                if (elem.value != undefined)
+                {
+                    return elem.value;
+                }
+                return elem.innerHTML;
+            }
+        }
+    }
 };
 
 /**
@@ -2027,7 +2074,7 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote)
  */
 Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 {
-    var tagname = Appcelerator.Compiler.getTagname(elem);
+	var tagname = Appcelerator.Compiler.getTagname(elem);
 	if (tagname != 'input' && tagname != 'textarea')
 	{
 		return null;
@@ -2638,12 +2685,14 @@ Appcelerator.Compiler.fieldSets = {};
  *
  * @param {element} element to add to fieldset
  * @param {boolean} excludeself
+ * @param {string}  optional name for the fieldset, overrides attribute on element
+ *
  * @return {string} fieldset name or null if none found
  */ 
-Appcelerator.Compiler.addFieldSet = function(element,excludeSelf)
+Appcelerator.Compiler.addFieldSet = function(element,excludeSelf,fieldsetName)
 {
 	excludeSelf = (excludeSelf==null) ? false : excludeSelf;
-	var fieldsetName = element.getAttribute('fieldset');
+	fieldsetName = fieldsetName || element.getAttribute('fieldset');
 	if (fieldsetName)
 	{
 		var fieldset = Appcelerator.Compiler.fieldSets[fieldsetName];
@@ -2654,7 +2703,7 @@ Appcelerator.Compiler.addFieldSet = function(element,excludeSelf)
 		}
 		if (false == excludeSelf)
 		{
-			$D('adding = '+element.id+' to field = '+fieldsetName+', values='+Object.toJSON(fieldset));
+			$D('adding = ',element.id,' to field = ',fieldsetName,', values=',fieldset);
 			fieldset.push(element.id);
 		}
 		return fieldset;
@@ -2705,89 +2754,107 @@ Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)
 
 Appcelerator.Compiler.setElementValue = function (element, value)
 {
-	var revalidate;
+    var revalidate;
 
-	if (element && value)
-	{
-		switch (Appcelerator.Compiler.getTagname(element))
-		{
-			case 'input':
-			{
-				var type = element.getAttribute('type') || 'text';
-				switch (type)
-				{
-					case 'password':
-					case 'hidden':
-					case 'text':
-					{
-						revalidate = true;
-						element.value = value;
-						break;
-					}
-					case 'button':
-					case 'submit':
-					{
-						element.value = value;
-						break;
-					}
-					case 'checkbox':
-					{
-						revalidate = true;
-						if (value == true || value == 'true')
-						{
-							element.checked = true;
-						}
-						else
-						{
-							element.checked = false;
-						}
-						break;
-					}
-				}
-				break;
-			}
-			case 'textarea':
-			{
-				revalidate = true;
-				element.value = value;
-				break;
-			}
-			case 'select':
-			{
-				var options = element.options;
+    if (element && value)
+    {
+        var widget = element.widget;
+        if (widget)
+        {
+            if (widget.setValue)
+            {
+                try
+                {
+                    widget.setValue(element.id, element.widgetParameters, value);
+                }
+                catch(e)
+                {
+                    $E(e);
+                }
+            }
+        }
+        else
+        {
+            switch (Appcelerator.Compiler.getTagname(element))
+            {
+                case 'input':
+                {
+                    var type = element.getAttribute('type') || 'text';
+                    switch (type)
+                    {
+                        case 'password':
+                        case 'hidden':
+                        case 'text':
+                        {
+                            revalidate = true;
+                            element.value = value;
+                            break;
+                        }
+                        case 'button':
+                        case 'submit':
+                        {
+                            element.value = value;
+                            break;
+                        }
+                        case 'checkbox':
+                        {
+                            revalidate = true;
+                            if (value == true || value == 'true')
+                            {
+                                element.checked = true;
+                            }
+                            else
+                            {
+                                element.checked = false;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 'textarea':
+                {
+                    revalidate = true;
+                    element.value = value;
+                    break;
+                }
+                case 'select':
+                {
+                    var options = element.options;
 
-				for (var i = 0; i<options.length;i++)
-				{
-					if (options[i].value == value)
-					{
-						element.selectedIndex = i;
-						break;
-					}
-				}
-				break;
-			}
-			case 'a':
-			{
-				element.href = value;
-				break;
-			}
-			case 'img':
-			{
-				element.src = value;
-				break;
-			}
-			default:
-			{
-				element.innerHTML = value;
-				break;
-			}
-		}
-	}
+                    for (var i = 0; i<options.length;i++)
+                    {
+                        if (options[i].value == value)
+                        {
+                            element.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 'a':
+                {
+                    element.href = value;
+                    break;
+                }
+                case 'img':
+                {
+                    element.src = value;
+                    break;
+                }
+                default:
+                {
+                    element.innerHTML = value;
+                    break;
+                }
+            }
+        }
+    }
 
-	if (revalidate)
-	{
-		Appcelerator.Compiler.executeFunction(element, "revalidate");
-	}
+    if (revalidate)
+    {
+        Appcelerator.Compiler.executeFunction(element, "revalidate");
+    }
 }
 
 Appcelerator.Compiler.CSSAttributes = 

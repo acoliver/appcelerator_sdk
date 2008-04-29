@@ -7,7 +7,7 @@ if (typeof(Appcelerator.Util)!='undefined' && typeof($$AU)=='undefined')
 	$$AD = Appcelerator.Decorator;
 	$$AR = Appcelerator.Core;
 	$$AM = Appcelerator.Module;
-	$$AL = Appcelerator.Localizationl;
+	$$AL = Appcelerator.Localization;
 	$$AF = Appcelerator.Config;
 	$$AB = Appcelerator.Browser;
 }
