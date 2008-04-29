@@ -1323,8 +1323,8 @@ public class URLUtil
         //
 
         //
-        // The .aero domain is reserved for members of the air-transport industry and is sponsored by Société
-        // Internationale de Télécommunications Aéronautiques (SITA).
+        // The .aero domain is reserved for members of the air-transport industry and is sponsored by Societe
+        // Internationale de Telecommunications Aronautiques (SITA).
         //
         TLDS.add("aero");
         //
@@ -1333,7 +1333,7 @@ public class URLUtil
         TLDS.add("biz");
         //
         // The .cat domain is reserved for the Catalan linguistic and cultural community and is sponsored
-        // by Fundació puntCat
+        // by Fundacio puntCat
         //
         TLDS.add("cat");
         //
