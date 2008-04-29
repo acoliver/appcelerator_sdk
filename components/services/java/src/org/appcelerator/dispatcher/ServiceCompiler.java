@@ -66,13 +66,8 @@ public class ServiceCompiler
 
 		// calculate the source version to use with the compiler. we support a new custom system 
 		// property called java.compiler.version which can be set to specifically use a different version
-		// otherwise we default to the same version that we're running on
-		String version = System.getProperty("java.compiler.version",System.getProperty("java.version"));
-		StringTokenizer tok = new StringTokenizer(version,".");
-		StringBuilder ver = new StringBuilder();
-		ver.append(tok.nextToken());
-		ver.append(".");
-		ver.append(tok.nextToken());
+		// otherwise we default to 1.5
+		String ver = System.getProperty("java.compiler.version","1.5");
 		
         Main.compile("-source " + ver + " -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
         stderr.print(buf.toString());
