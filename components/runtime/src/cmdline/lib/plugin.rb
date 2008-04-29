@@ -353,6 +353,14 @@ module Appcelerator
         PluginUtil.merge_attributes(fromentry,toentry)
       end
     end
+    def Plugin.replace_jar_eclipse(to_version,to_path, tx,name)
+      classpath = IO.readlines("#{to_path}/.classpath")
+      classpath.each do |line|
+        puts "checking appcelerator-plugin-#{name}-([0-9\.])*\.jar in #{line}"
+        line.gsub!(/appcelerator-plugin-#{name}-([0-9\.])*\.jar/,"appcelerator-plugin-#{name}-#{to_version}.jar")
+      end
+      tx.put "#{to_path}/.classpath",classpath.join("")
+    end
     
     def PluginUtil.install_java (event)
       if File.exist? "#{event[:plugin_dir]}/java"
@@ -365,6 +373,7 @@ module Appcelerator
         Appcelerator::PluginUtil.clean_dir("#{event[:to_dir]}/classes")
         Appcelerator::Installer.remove_prev_jar(event[:tx],"appcelerator-plugin-#{name}","#{event[:project_dir]}/lib")
         Appcelerator::Installer.copy(event[:tx],jarfile, "#{event[:project_dir]}/lib/appcelerator-plugin-#{name}-#{event[:version]}.jar")
+        Plugin.replace_jar_eclipse(event[:version],event[:project_dir],event[:tx],name)
       end
       if File.exist? "#{event[:plugin_dir]}/spring.xml"
         puts "merging spring"
