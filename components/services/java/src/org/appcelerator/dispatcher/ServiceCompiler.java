@@ -69,9 +69,11 @@ public class ServiceCompiler
 		// otherwise we default to 1.5
 		String ver = System.getProperty("java.compiler.version","1.5");
 		
-        Main.compile("-source " + ver + " -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
+        boolean success = Main.compile("-source " + ver + " -cp "+cp+" -d "+classDir+" \""+serviceFile.getAbsolutePath()+"\"",new PrintWriter(System.out,true),new PrintWriter(errWriter,true));
+
         stderr.print(buf.toString());
         stderr.flush();
-        return buf.length() == 0;
+        
+        return success;
     }
 }
