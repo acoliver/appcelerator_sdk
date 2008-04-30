@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> History tests </h3> 
+<p>
+    These tests exercise cross-browser history capabilities.
+</p>
+
+<table width="90%">
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Condition
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#test1">Click to add to history</a>
+            <div on="history:test1 then show and script[window.test1=true] else hide" style="display:none">Test Passed, now hit the back button</div>
+            <div on="history:test2 then show if expr[window.test1]" style="display:none">Test Passed, Yes!</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Action
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <div on="history:test2 then show" style="display:none">Test Passed</div>
+            <app:message name="l:history.test2"></app:message>
+            <app:script on="l:history.test2 then history[test2]"></app:script>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

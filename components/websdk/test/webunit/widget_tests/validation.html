@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:35%;
+}
+input[type=text]
+{
+	width:40%;
+	border:1px solid #ccc;
+	padding:3px;
+	font-size:12px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Validation Widget </h3> 
+<p>
+	These tests exercise the validation widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic Validation (all three fields are required)
+		</td>
+		<td class="result" >
+			<div>
+				<input type="text" id="validation_test1_1" value="sample text" validator="required"/>
+			</div>
+			<div>
+				<input type="text" id="validation_test1_2" value="sample text" validator="required"/>
+			</div>
+			<div>
+				<input type="text" id="validation_test1_3" value="sample text" validator="required"/>
+			</div>
+
+			<app:validation on="valid then l:validation1.test[valid=true] else l:validation1.test[valid=false]">
+				<members>
+					 validation_test1_1 validation_test1_2 validation_test1_3
+				</members>
+			</app:validation>
+
+			<div on="l:validation1.test[valid=true] then show else hide" style="display: none; padding: 20px">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Different validators (all in validation)
+		</td>
+		<td class="result" >
+			<div>
+				<input type="text" id="test2_1"  validator="date" decorator="date"/>
+			</div>
+			<div>
+				<input type="text" id="test2_2"  validator="number" decorator="number"/>
+			</div>
+			<div>
+				<input type="text" id="test2_3"  validator="alphanumeric" decorator="alphanumeric"/>
+			</div>
+			<div>
+				<input type="text" id="test2_4"  validator="length" decorator="length"
+				validatorMinLength="5" and validatorMaxLength="7"/>
+			</div>
+
+			<app:validation on="valid then l:validation2.test[valid=true] else l:validation2.test[valid=false]">
+				<members>
+					 test2_1 test2_2 test2_3 test2_4
+				</members>
+			</app:validation>
+
+			<div on="l:validation2.test[valid=true] then show else hide" style="display: none; padding: 20px">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Last Field not in Validation
+		</td>
+		<td class="result" >
+			<div>
+				<input type="text" id="test3_1"  validator="date" decorator="date"/>
+			</div>
+			<div>
+				<input type="text" id="test3_2"  validator="number" decorator="number"/>
+			</div>
+			<div>
+				<input type="text" id="test3_3"  validator="alphanumeric" decorator="alphanumeric"/>
+			</div>
+
+			<app:validation on="valid then l:validation3.test[valid=true] else l:validation3.test[valid=false]">
+				<members>
+					 test3_1 test3_2 
+				</members>
+			</app:validation>
+
+			<div on="l:validation3.test[valid=true] then show else hide" style="display: none; padding: 20px">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>
+
+
+</table>
+
+
+
+</body>
+
+</html>

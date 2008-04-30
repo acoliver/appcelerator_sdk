@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+	<link rel="stylesheet" type="text/css" href="../css/tabpanel.css" />
+</head>
+<body>
+
+<h3> Tab Panel Widget </h3> 
+<p>
+	These tests exercise the tab panel widget
+</p>
+
+<table width="100%">
+	<tr>
+		<td class="test" valign="middle" style="width: 100px">
+			Basic Tab Panel 
+		</td>
+		<td class="result" style="width: 500px">
+			<app:tabpanel id="tabpanel1">
+				<tab name="tab1">Tab 1</tab>
+				<tab name="tab2">Tab 2</tab>
+				<tab name="tab3">Tab 3</tab>
+			</app:tabpanel>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle" style="width: 100px">
+			Basic Tab Panel (init state = tab2)
+		</td>
+		<td class="result" style="width: 500px">
+			<app:tabpanel id="tabpanel2" initial="tab2">
+				<tab name="tab1">Tab 1</tab>
+				<tab name="tab2">Tab 2</tab>
+				<tab name="tab3">Tab 3</tab>
+			</app:tabpanel>
+		</td>
+	</tr>
+	<tr>
+		<td class="test"  valign="middle" style="width: 100px">
+			Basic Tab Panel (with styles)
+		</td>
+		<td class="result" style="width: 500px">
+			<div id="styled_tab">
+			<app:tabpanel id="tabpanel3" initial="tab2">
+				<tab name="tab1">Tab 1</tab>
+				<tab name="tab2">Tab 2</tab>
+				<tab name="tab3">Tab 3</tab>
+			</app:tabpanel>
+			<div style="border-top:1px solid #ff9900; clear: both"></div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="test"  valign="middle" style="width: 100px">
+            Dark Gray (tab_spacing = 30px)
+        </td>
+        <td class="result" style="width: 500px">
+            <app:tabpanel id="tabpanel4" color="dark_gray" initial="tab2" tab_spacing="80px">
+                <tab name="tab1">Tab 1</tab>
+                <tab name="tab2">Tab 2</tab>
+                <tab name="tab3">Tab 3</tab>
+            </app:tabpanel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test"  valign="middle" style="width: 100px">
+            Light Gray
+        </td>
+        <td class="result" style="width: 500px">
+            <app:tabpanel id="tabpanel5" color="light_gray" initial="tab2">
+                <tab name="tab1">Tab 1</tab>
+                <tab name="tab2">Tab 2</tab>
+                <tab name="tab3">Tab 3</tab>
+            </app:tabpanel>
+        </td>
+    </tr>
+</table>
+
+
+
+</body>
+
+</html>

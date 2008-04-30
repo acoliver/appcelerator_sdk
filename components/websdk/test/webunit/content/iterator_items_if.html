@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<app:iterator items="[1,2,3, #{content_file_number}]">
+	<app:if expr="false">
+		FAIL!
+		<else>
+			<html:span>#{iterator_value}, </html:span>
+		</else>
+	</app:if>
+	</app:iterator>
+	End Content File: #{content_file_number}
+</body>
+</html>
