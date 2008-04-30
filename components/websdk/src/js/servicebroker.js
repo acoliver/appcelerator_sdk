@@ -226,8 +226,6 @@ Appcelerator.Util.ServiceBroker =
 	 * remote - deliver the message to the server
 	 *
 	 *
-	 * callback is an optional method to be called if the server responds with
-	 * the same requestid
 	 */
 	queue: function (msg, callback)
 	{
@@ -361,7 +359,7 @@ Appcelerator.Util.ServiceBroker =
                 return;
             }
         }
-		var stat = Appcelerator.Util.Performance.createStat();
+        var stat = Appcelerator.Util.Performance.createStat();
 
         var array = this.remoteDirectListeners[type];
         if (array && array.length > 0)
@@ -1070,15 +1068,12 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
 
 Appcelerator.Util.ServiceBrokerMarshaller['application/json'] = 
 {
-	currentRequestId:1,
 	prepareMsg: function(msg)
 	{
 		var result = {};
-		result['requestid'] = this.currentRequestId++;
 		result['type'] = msg[0]['type'];
 		result['scope'] = msg[2];
 		result['version'] = msg[3];
-		result['datatype'] = 'JSON';
 		result['data'] = msg[0]['data'];
 		return result;
 	},
@@ -1110,7 +1105,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
 			{
 				request['messages'].push(this.prepareMsg(messageQueue[0]));
 			}
-			json['request'] = request;
+			json = request;
         }
 		return {
 			'postBody': Object.toJSON(json),
@@ -1128,27 +1123,28 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
 			$E(this+', invalid content type: '+contentType+', expected: application/json');
 			return null;
 		}
-		var msgs = [];
-		var result = response.responseText.evalJSON();
-        for (var c = 0; c < result['messages'].length; c++)
+		
+        var result = response.responseText.evalJSON();
+        var messages = result['messages'];
+        var msgs = [];
+        for (var c = 0; c < messages.length; c++)
         {
-			try
-			{
-				message = result['messages'][c];
-				var requestid = message['requestid'];
-				var type = message['type'];
-				var datatype = message['datatype'];
-				var scope = message['scope'] || 'appcelerator';
-				var data = message['data'];
-				$D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-				msgs.push({type:type,data:data,datatype:datatype,scope:scope,requestid:requestid});
-			}
-			catch (e)
-			{
-			   $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
-			}
+            try
+            {
+                message = messages[c];
+                var type = message['type'];
+                var datatype = message['datatype'];
+                var scope = message['scope'] || 'appcelerator';
+                var data = message['data'];
+                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+                msgs.push({type:type,data:data,datatype:datatype,scope:scope});
+            }
+            catch (e)
+            {
+                $E(this + ' - Error in dispatch of message. ' + Object.getExceptionDetail(e));
+            }
         }
-		return msgs;
+        return msgs;
 	}
 };
 
