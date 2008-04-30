@@ -20,14 +20,17 @@
 
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../../build.rb")
+require "common.rb"
+
 build_config = load_config(BUILD_DIR)
 
 desc 'default java build'
+
 task :default do
   java_dir = File.expand_path "#{STAGE_DIR}/java"
   java_classes = File.expand_path "#{java_dir}/classes"
   java_source = File.expand_path "#{BUILD_DIR}/src"
-  
+ 
   clean_dir(java_dir)
   
   FileUtils.mkdir_p to_path(java_classes)
@@ -51,39 +54,28 @@ task :default do
   # FileUtils.copy("#{BUILD_DIR}/java/SampleService.java",File.join(java_dir,'dist','src','java'))
   # FileUtils.copy("#{BUILD_DIR}/installer/build/java/install.rb",File.join(java_dir,'dist'))
   # FileUtils.copy("#{BUILD_DIR}/installer/build/java/war.rb",File.join(java_dir,'dist'))
-  # 
   
-  puts "Compiling Java files..." if VERBOSE
-   
-  cp = Dir["#{BUILD_DIR}/lib/**/*.jar"].inject([]) {|a,f| a<<to_path(f) }
-  FileUtils.cd(java_source) do
-    src = Dir["**/*.java"].inject([]) {|a,f| a<<to_path(f) }
-    src.delete_if {|f| f =~ /EchoService.java$/ }
+  compile_dir(java_source, java_classes, "#{BUILD_DIR}/lib")
 
-    FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
-    call_command "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{to_path(java_classes)}"
-  end
   f = File.open "#{java_dir}/dist/build.yml", 'w+'
   f.puts build_config.to_yaml
   f.close
+
   java_dist = File.expand_path "#{java_dir}/dist/lib"
   FileUtils.mkdir_p "#{java_dist}" unless File.exists? "#{java_dist}"
-  FileUtils.cd(java_classes) do
-     cl = []
 
+  jar_file = File.expand_path("appcelerator.jar","#{java_dist}")
+  create_jar(jar_file, java_classes)
+
+  FileUtils.cd(java_classes) do
+
+ #    cl = []
  #    Find.find(java_classes) do |path|
  #     f = File.expand_path path
  #     next if File.directory?(f)
  #     fn = f.gsub(java_classes+'/','')
  #     cl << fn
  #    end
-     jar_file = File.expand_path("appcelerator.jar","#{java_dist}")
-     if is_win32
-       call_command "jar cvf #{jar_file} ."
-      else
-       system "jar cvf #{jar_file} ." if VERBOSE
-       system "jar cvf #{jar_file} . >/dev/null" unless VERBOSE
-     end
   
      zipfile = File.expand_path "#{STAGE_DIR}/service_java_#{build_config[:version]}.zip"
      FileUtils.rm_rf zipfile

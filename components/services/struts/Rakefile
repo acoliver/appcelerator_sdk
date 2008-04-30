@@ -1,0 +1,83 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+def path(*args) File.expand_path(*args) end
+struts_service_dir = File.dirname(__FILE__)
+java_service_dir = path("../java", struts_service_dir)
+
+require path("#{struts_service_dir}/../../build.rb")
+require path("common.rb", java_service_dir)
+
+build_config = load_config(struts_service_dir)
+desc 'default struts build'
+
+task :default do
+  struts_stage_dir = path("struts", STAGE_DIR)
+  java_build_dir = path("classes", struts_stage_dir)
+  app_source = path("src", java_service_dir)
+  app_struts_source = path("src", struts_service_dir)
+
+  build_lib_dir = path("lib/build", struts_service_dir) # necessary to build -struts.jar
+  run_lib_dir = path("lib/run", struts_service_dir) # necessary to run a struts project
+ 
+  clean_dir(struts_stage_dir)
+  FileUtils.mkdir_p to_path(java_build_dir) 
+
+  # build the latest appcelerator.jar for this release
+  cp_dir = path("lib", java_service_dir)
+  compile_dir(app_source, java_build_dir, cp_dir)
+  jar_file = path("appcelerator.jar", build_lib_dir)
+  FileUtils.rm_rf(jar_file) # remove old vesion, if necessary
+  create_jar(jar_file, java_build_dir)
+
+  # clean
+  clean_dir(struts_stage_dir)
+  FileUtils.mkdir_p to_path(java_build_dir) 
+
+  # now create an appcelerator-struts.jar file
+  compile_dir(app_struts_source, java_build_dir, build_lib_dir)
+  jar_file = path("appcelerator-struts.jar", run_lib_dir)
+  FileUtils.rm_rf(jar_file) # remove old vesion, if necessary
+  create_jar(jar_file, java_build_dir)
+
+  zipfile = path("service_struts_#{build_config[:version]}.zip", STAGE_DIR)
+  FileUtils.rm_rf zipfile
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+
+    lib_dir = path('lib', struts_service_dir) 
+    dofiles(lib_dir) do |f|
+      if not f == '.'
+        zipfile.add("lib/#{File.basename(f)}", "#{lib_dir}/#{f}")
+      end
+    end
+
+    templates_dir = path('templates', struts_service_dir) 
+    dofiles(templates_dir) do |f|
+      if not f == '.'
+        zipfile.add("templates/#{f}", "#{templates_dir}/#{f}")
+      end
+    end
+
+    zipfile.add("build.yml", "build.yml")
+  end
+
+  FileUtils.rm_rf struts_stage_dir
+end
+
