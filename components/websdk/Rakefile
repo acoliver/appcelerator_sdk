@@ -233,7 +233,7 @@ namespace :selenium do
     webrick = start_webrick()
     
     sleep 5 if( selenium or webrick)
-    run_selenium_tests("Firefox Tests", "safari")
+    run_selenium_tests("Safari Tests", "safari")
     
     stop_selenium() if selenium
     stop_webrick() if webrick
@@ -244,7 +244,7 @@ namespace :selenium do
     webrick = start_webrick()
     
     sleep 5 if( selenium or webrick)
-    run_selenium_tests("Firefox Tests", "iexplorer")
+    run_selenium_tests("IE Tests", "iexplorer")
     
     stop_selenium() if selenium
     stop_webrick() if webrick
@@ -296,6 +296,7 @@ def start_webrick()
 
       trap("INT"){ s.shutdown }
       s.start
+      exit
     else 
       my_file = File.new("#{STAGE_DIR}/tmp/webrick.pid", File::CREAT|File::TRUNC|File::WRONLY)
       my_file.puts pid
