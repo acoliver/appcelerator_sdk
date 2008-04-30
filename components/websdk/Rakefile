@@ -187,7 +187,7 @@ END_LICENSE
 end
 
 task :test => [:default] do
-  test_src_path = "#{BUILD_DIR}/test"
+  test_src_path = "#{BUILD_DIR}/test/webunit"
   test_dst_path = "#{STAGE_DIR}/unittest"
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
@@ -208,6 +208,59 @@ task :test => [:default] do
   
 end
 
+namespace :selenium do 
+  task :start do
+      start_selenium()
+  end
+  
+  task :stop do 
+      stop_selenium()
+  end
+  
+  task :firefox => [:test] do 
+    selenium = start_selenium()
+    webrick = start_webrick()
+    
+    sleep 5 if( selenium or webrick)
+    run_selenium_tests("Firefox Tests", "firefox")
+    
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+  end
+
+  task :safari => [:test] do 
+    selenium = start_selenium()
+    webrick = start_webrick()
+    
+    sleep 5 if( selenium or webrick)
+    run_selenium_tests("Firefox Tests", "safari")
+    
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+  end
+  
+  task :iexplorer => [:test] do 
+    selenium = start_selenium()
+    webrick = start_webrick()
+    
+    sleep 5 if( selenium or webrick)
+    run_selenium_tests("Firefox Tests", "iexplorer")
+    
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+  end
+end
+
+namespace :webrick do 
+  task :start do
+    start_webrick()
+  end
+  
+  task :stop do 
+    stop_webrick()
+  end
+end
+
 # copies everything except hidden directories
 def cp_r(src,dst)
   src_root = Pathname.new(src)
@@ -223,4 +276,102 @@ def cp_r(src,dst)
       FileUtils.cp(abs_path, dst_path, :verbose => VERBOSE)
     end
   end
+end
+
+def start_webrick()
+  FileUtils.mkdir_p("#{STAGE_DIR}/tmp", :verbose => VERBOSE)
+  
+  if(!File.exists?("#{STAGE_DIR}/tmp/webrick.pid"))
+    pid = fork
+    if !pid 
+      $stderr.close
+      $stderr = open("#{STAGE_DIR}/tmp/webrick.log", "w")
+
+      require 'webrick'
+      include WEBrick
+      s = HTTPServer.new(
+          :Port            => 9002,
+          :DocumentRoot    => "#{STAGE_DIR}/unittest"
+      )
+
+      trap("INT"){ s.shutdown }
+      s.start
+    else 
+      my_file = File.new("#{STAGE_DIR}/tmp/webrick.pid", File::CREAT|File::TRUNC|File::WRONLY)
+      my_file.puts pid
+      my_file.close
+      return true
+    end
+  elsif
+    $stderr.puts "It looks like Webrick was already started. Remove pid file at: #{STAGE_DIR}/tmp/webrick.pid"
+    return false
+  end
+end 
+
+def stop_webrick()
+  file = File.new("#{STAGE_DIR}/tmp/webrick.pid", "r")
+  pid = file.gets().strip!.to_i
+  file.close
+  Process.kill(2, pid)
+  FileUtils.rm("#{STAGE_DIR}/tmp/webrick.pid") 
+end
+
+def start_selenium()
+  FileUtils.mkdir_p("#{STAGE_DIR}/tmp", :verbose => VERBOSE)
+  tmp_path = "#{STAGE_DIR}/tmp"
+  
+  if(!File.exists?("#{tmp_path}/selenium.pid"))
+    pid = fork
+    if !pid 
+      $stdout.close
+      $stdout = open("#{tmp_path}/selenium.log", "w")
+      exec("java -jar #{BUILD_DIR}/test/lib/selenium-server.jar")
+    else 
+      my_file = File.new("#{tmp_path}/selenium.pid", File::CREAT|File::TRUNC|File::WRONLY)
+      my_file.puts pid
+      my_file.close
+      return true
+    end
+  elsif 
+    $stderr.puts "It looks like selenium was already started.  Remove pidfile at: #{tmp_path}/selenium.pid"
+    return false
+  end
+end
+
+def stop_selenium()
+  file = File.new("#{STAGE_DIR}/tmp/selenium.pid", "r")
+  pid = file.gets().strip!.to_i
+  file.close
+  Process.kill(15, pid)
+  FileUtils.rm("#{STAGE_DIR}/tmp/selenium.pid")
+end
+
+def run_selenium_tests(browser_name, browser)
+  require 'test/unit/testsuite'
+  require 'test/unit/ui/console/testrunner'
+  require 'test/lib/selenium'
+  require 'test/lib/selenium_unit.rb'
+
+  #
+  # You need to manually include the tests
+  # to be run here.  
+  #
+  require 'test/selenium/app_button_test'
+  
+  #
+  # End includes for unit test files
+  #
+  
+  def build_suite(name, browser, location)
+      suite = Test::Unit::SeleniumTestSuite.new(name, browser, location)
+      ObjectSpace::each_object(Class) { |klass| 
+          if klass < Test::Unit::SeleniumTestCase
+              suite << klass.suite 
+          end
+      }
+      return suite
+  end
+
+  Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
+         "http://localhost:9002/widget_tests"))
 end
