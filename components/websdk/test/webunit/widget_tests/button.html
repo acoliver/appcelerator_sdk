@@ -34,7 +34,7 @@ input[type=text]
 			Default Button
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]">
+			<app:button id="button_test_1" on="click then javascript[alert('test passed')]">
 				Click me
 			</app:button>
 		</td>
@@ -44,7 +44,7 @@ input[type=text]
 			Dark Square Button
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" corner="square">
+			<app:button id="button_test_2" on="click then javascript[alert('test passed')]" corner="square">
 				Click me
 			</app:button>
 		</td>
@@ -54,7 +54,7 @@ input[type=text]
 			Light Round Button
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" corner="round" color="light">
+			<app:button id="button_test_3" on="click then javascript[alert('test passed')]" corner="round" color="light">
 				Click me
 			</app:button>
 		</td>
@@ -64,7 +64,7 @@ input[type=text]
 			Light Square Button
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" corner="square" color="light">
+			<app:button id="button_test_4" on="click then javascript[alert('test passed')]" corner="square" color="light">
 				Click me
 			</app:button>
 		</td>
@@ -77,7 +77,7 @@ input[type=text]
 			<table>
 				<tr>
 					<td>
-						<app:button on="l:button.enable then enable or l:button.disable then disable or click then javascript[alert('test passed')]" disabled="true">
+						<app:button id="button_test_5" on="l:button.enable then enable or l:button.disable then disable or click then javascript[alert('test passed')]" disabled="true">
 							Click me
 						</app:button>
 					</td>
@@ -98,7 +98,7 @@ input[type=text]
 		<td class="result" >
 			<input type="text" name="firstname" id="firstname" validator="required"/>
 			<div>
-				<app:button on="click then javascript[alert('test passed')]" activators="firstname">
+				<app:button id="button_test_6" on="click then javascript[alert('test passed')]" activators="firstname">
 					Click me
 				</app:button>
 			</div>
@@ -111,7 +111,7 @@ input[type=text]
 		<td class="result" >
 			<input type="text" name="lastname" id="lastname" fieldset="myform" value="test value"/>
 			<div>
-				<app:button on="click then l:button.fieldset" fieldset="myform">
+				<app:button id="button_test_7" on="click then l:button.fieldset" fieldset="myform">
 					Click me
 				</app:button>
 				<app:script on="l:button.fieldset then execute">
@@ -125,7 +125,7 @@ input[type=text]
 			Add Icon
 		</td>
 		<td class="result" >
-			<app:button id="button_green_icon_test" on="click then javascript[alert('test passed')]" icon="add_green">
+			<app:button id="button_test_8" on="click then javascript[alert('test passed')]" icon="add_green">
 				Click me
 			</app:button>
 		</td>
@@ -135,7 +135,7 @@ input[type=text]
 			Add Icon (Gray)
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="add_gray">
+			<app:button id="button_test_9" on="click then javascript[alert('test passed')]" icon="add_gray">
 				Click me
 			</app:button>
 		</td>
@@ -145,7 +145,7 @@ input[type=text]
 			Delete Icon
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="delete_red">
+			<app:button id="button_test_10" on="click then javascript[alert('test passed')]" icon="delete_red">
 				Click me
 			</app:button>
 		</td>
@@ -155,7 +155,7 @@ input[type=text]
 			Delete Icon (Gray)
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="delete_gray">
+			<app:button id="button_test_11" on="click then javascript[alert('test passed')]" icon="delete_gray">
 				Click me
 			</app:button>
 		</td>
@@ -165,7 +165,7 @@ input[type=text]
 			Edit Icon
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="edit_yellow">
+			<app:button id="button_test_12" on="click then javascript[alert('test passed')]" icon="edit_yellow">
 				Click me
 			</app:button>
 		</td>
@@ -175,7 +175,7 @@ input[type=text]
 			Edit Icon (Gray)
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="edit_gray">
+			<app:button id="button_test_13" on="click then javascript[alert('test passed')]" icon="edit_gray">
 				Click me
 			</app:button>
 		</td>
@@ -185,7 +185,7 @@ input[type=text]
 			Save Icon
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="save_blue">
+			<app:button  id="button_test_14" on="click then javascript[alert('test passed')]" icon="save_blue">
 				Click me
 			</app:button>
 		</td>
@@ -195,7 +195,7 @@ input[type=text]
 			Save Icon (Gray)
 		</td>
 		<td class="result" >
-			<app:button on="click then javascript[alert('test passed')]" icon="save_gray">
+			<app:button id="button_test_15" on="click then javascript[alert('test passed')]" icon="save_gray">
 				Click me
 			</app:button>
 		</td>
@@ -205,7 +205,7 @@ input[type=text]
             Button 'on' parameters should be optional
         </td>
         <td class="result" >
-            <app:button icon="save_gray">
+            <app:button id="button_test_16" icon="save_gray">
                 Test Passed
             </app:button>
         </td>

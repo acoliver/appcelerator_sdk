@@ -321,14 +321,16 @@ def start_webrick()
 end 
 
 def kill_process(file_name)
+  signum = 15
   if RUBY_PLATFORM.match(/win32/)
     require 'win32/process'
+    signum = 9
   end
   file = File.open(file_name)
   pid = file.gets.strip!.to_i
   file.close
   p "Attempting to kill: #{pid}"
-  Process.kill(9, pid)
+  Process.kill(signum, pid)
   File.delete(file_name)
 end
 
@@ -348,7 +350,7 @@ def start_selenium()
     require 'win32/process'
     log = File.open("#{STAGE_DIR}/tmp/selenium.log", "w")
     process_info = Process.create(
-        :app_name => "java -jar #{BUILD_DIR}\\test\\lib\\selenium-server.jar",
+        :app_name => "java -jar #{BUILD_DIR}\\test\\lib\\selenium-server.jar -browserSessionReuse",
         :startup_info => {:stdout => log}
     )
     File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
@@ -363,7 +365,7 @@ def start_selenium()
     else
       $stdout.close
       $stdout = open("#{STAGE_DIR}/tmp/selenium.log", "w") 
-      exec "java -jar #{BUILD_DIR}/test/lib/selenium-server.jar"
+      exec "java -jar #{BUILD_DIR}/test/lib/selenium-server.jar -browserSessionReuse"
       p "Shouldn't get here"
     end
   end

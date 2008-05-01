@@ -77,6 +77,19 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
       yield(FINISHED, name)
     end
     
+    def child_has_class(elem, class_name)
+        text = get_eval("#{dollar(elem)}.select('[class=#{class_name}]')")
+        return (text.length > 0)    
+    end
+    
+    def mq(message_name)
+        return get_eval("window.$MQ('#{message_name}')");
+    end
+    
+    def dollar(elem_id)
+        return "$(window.document.getElementById('#{elem_id}'))"
+    end
+    
     def setup
         @selenium = Selenium::SeleniumDriver.new("localhost", 4444,
     		"*#{@browser}", "#{@basepath}/", 15000)

@@ -16,5 +16,5 @@ s = HTTPServer.new(
     :DocumentRoot    => "#{STAGE_DIR}/unittest"
 )
 
-trap(3){ s.shutdown }
+trap(15){ s.shutdown }
 s.start
