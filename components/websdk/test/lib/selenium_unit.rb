@@ -1,4 +1,4 @@
-class SeleniumDriver
+class Selenium::SeleniumDriver
     def open(url)
         do_command("open", [url,])
         sleep 1

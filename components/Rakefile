@@ -104,7 +104,7 @@ namespace :websdk do
       
       task :all do 
         FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:stop"
+          call_rake " selenium:all"
         end
       end
       

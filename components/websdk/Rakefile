@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 BUILD_DIR = File.dirname(__FILE__)
 require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
@@ -217,13 +218,26 @@ namespace :selenium do
       stop_selenium()
   end
   
-  task :firefox => [:test] do 
-    selenium = start_selenium()
+  task :all => [:test] do 
     webrick = start_webrick()
-    
-    sleep 5 if( selenium or webrick)
+    selenium = start_selenium()
+  
+    sleep 5 if( selenium or webrick )
     run_selenium_tests("Firefox Tests", "firefox")
+    # run_selenium_tests("Safari Tests", "safari")
+    run_selenium_tests("IE Tests", "iexplore")
     
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+  end
+  
+  task :firefox => [:test] do 
+    webrick = start_webrick()
+    selenium = start_selenium()
+  
+    sleep 5 if( selenium or webrick )
+    run_selenium_tests("Firefox Tests", "firefox")
+  
     stop_selenium() if selenium
     stop_webrick() if webrick
   end
@@ -239,12 +253,12 @@ namespace :selenium do
     stop_webrick() if webrick
   end
   
-  task :iexplorer => [:test] do 
+  task :ie => [:test] do 
     selenium = start_selenium()
     webrick = start_webrick()
     
     sleep 5 if( selenium or webrick)
-    run_selenium_tests("IE Tests", "iexplorer")
+    run_selenium_tests("IE Tests", "iexplore")
     
     stop_selenium() if selenium
     stop_webrick() if webrick
@@ -279,72 +293,79 @@ def cp_r(src,dst)
 end
 
 def start_webrick()
-  FileUtils.mkdir_p("#{STAGE_DIR}/tmp", :verbose => VERBOSE)
-  
-  if(!File.exists?("#{STAGE_DIR}/tmp/webrick.pid"))
-    pid = fork
-    if !pid 
-      $stderr.close
-      $stderr = open("#{STAGE_DIR}/tmp/webrick.log", "w")
-
-      require 'webrick'
-      include WEBrick
-      s = HTTPServer.new(
-          :Port            => 9002,
-          :DocumentRoot    => "#{STAGE_DIR}/unittest"
-      )
-
-      trap("INT"){ s.shutdown }
-      s.start
-      exit
-    else 
-      my_file = File.new("#{STAGE_DIR}/tmp/webrick.pid", File::CREAT|File::TRUNC|File::WRONLY)
-      my_file.puts pid
-      my_file.close
-      return true
-    end
-  elsif
-    $stderr.puts "It looks like Webrick was already started. Remove pid file at: #{STAGE_DIR}/tmp/webrick.pid"
+  if(File.exists?("#{STAGE_DIR}/tmp/webrick.pid"))
     return false
   end
+  p "Starting Webrick"
+  if RUBY_PLATFORM.match(/win32/)
+    require 'win32/process'
+    process_info = Process.create(:app_name => "ruby  #{BUILD_DIR}\\test\\lib\\start_webrick.rb #{STAGE_DIR}")
+    File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file| 
+      file.puts(process_info.process_id)
+    }
+  else 
+    pid = fork
+    if pid 
+      File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file| 
+        file.puts(pid)
+      }
+    else 
+      exec "ruby  #{BUILD_DIR}/test/lib/start_webrick.rb #{STAGE_DIR}"
+    end
+  end
+  
+  return true
 end 
 
-def stop_webrick()
-  file = File.new("#{STAGE_DIR}/tmp/webrick.pid", "r")
-  pid = file.gets().strip!.to_i
+def kill_process(file_name)
+  if RUBY_PLATFORM.match(/win32/)
+    require 'win32/process'
+  end
+  file = File.open(file_name)
+  pid = file.gets.strip!.to_i
   file.close
-  Process.kill(2, pid)
-  FileUtils.rm("#{STAGE_DIR}/tmp/webrick.pid") 
+  p "Attempting to kill: #{pid}"
+  Process.kill(9, pid)
+  File.delete(file_name)
+end
+
+def stop_webrick()
+  kill_process("#{STAGE_DIR}/tmp/webrick.pid")
 end
 
 def start_selenium()
-  FileUtils.mkdir_p("#{STAGE_DIR}/tmp", :verbose => VERBOSE)
-  tmp_path = "#{STAGE_DIR}/tmp"
-  
-  if(!File.exists?("#{tmp_path}/selenium.pid"))
-    pid = fork
-    if !pid 
-      $stdout.close
-      $stdout = open("#{tmp_path}/selenium.log", "w")
-      exec("java -jar #{BUILD_DIR}/test/lib/selenium-server.jar")
-    else 
-      my_file = File.new("#{tmp_path}/selenium.pid", File::CREAT|File::TRUNC|File::WRONLY)
-      my_file.puts pid
-      my_file.close
-      return true
-    end
-  elsif 
-    $stderr.puts "It looks like selenium was already started.  Remove pidfile at: #{tmp_path}/selenium.pid"
+  if(File.exists?("#{STAGE_DIR}/tmp/selenium.pid"))
     return false
   end
+  
+  p "Starting Selenium"
+  
+  if RUBY_PLATFORM.match(/win32/)
+    require 'win32/process'
+    log = File.open("#{STAGE_DIR}/tmp/selenium.log", "w")
+    process_info = Process.create(
+        :app_name => "java -jar #{BUILD_DIR}\\test\\lib\\selenium-server.jar",
+        :startup_info => {:stdout => log}
+    )
+    File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
+      file.puts(process_info.process_id)
+    }
+  else 
+    pid = fork
+    if pid 
+      File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
+        file.puts(pid)
+      }
+    else 
+      exec "java -jar #{BUILD_DIR}\\test\\lib\\selenium-server.jar &> #{STAGE_DIR}/tmp/selenium.log"
+    end
+  end
+  
+  return true
 end
 
 def stop_selenium()
-  file = File.new("#{STAGE_DIR}/tmp/selenium.pid", "r")
-  pid = file.gets().strip!.to_i
-  file.close
-  Process.kill(15, pid)
-  FileUtils.rm("#{STAGE_DIR}/tmp/selenium.pid")
+  kill_process("#{STAGE_DIR}/tmp/selenium.pid")
 end
 
 def run_selenium_tests(browser_name, browser)
@@ -363,16 +384,18 @@ def run_selenium_tests(browser_name, browser)
   # End includes for unit test files
   #
   
-  def build_suite(name, browser, location)
-      suite = Test::Unit::SeleniumTestSuite.new(name, browser, location)
-      ObjectSpace::each_object(Class) { |klass| 
-          if klass < Test::Unit::SeleniumTestCase
-              suite << klass.suite 
-          end
-      }
-      return suite
-  end
+
 
   Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
          "http://localhost:9002/widget_tests"))
+end
+
+def build_suite(name, browser, location)
+    suite = Test::Unit::SeleniumTestSuite.new(name, browser, location)
+    ObjectSpace::each_object(Class) { |klass| 
+        if klass < Test::Unit::SeleniumTestCase
+            suite << klass.suite 
+        end
+    }
+    return suite
 end
