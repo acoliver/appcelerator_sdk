@@ -22,6 +22,10 @@ function(element,condition,action,elseAction,delay,ifCond)
 			token = token.substring(1);
 			operator = '!=';
 		}
+		else if (token == '*')
+		{
+		    operator = '*';
+		}
 		
 		// support a null (no history) history
 		token = token.length == 0 || token=='_none_' || token==='null' ? null : token;
@@ -52,6 +56,14 @@ function(element,condition,action,elseAction,delay,ifCond)
 					{
 						Appcelerator.Compiler.executeAfter(elseActionFunc,delay,{data:data});
 					}
+					break;
+				}
+				case '*':
+				{
+				    if (newLocation)
+				    {
+    					Appcelerator.Compiler.executeAfter(actionFunc,delay,{data:data});
+				    }
 					break;
 				}
 			}
