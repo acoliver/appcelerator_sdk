@@ -37,7 +37,7 @@ public class EchoService
     /**
      * incoming message type
      */
-    private static final String TEST_MESSAGE_REQUEST = "app.test.classpath.request";
+    private static final String TEST_MESSAGE_REQUEST = "app.test.message.request";
     
     /**
      * response message type

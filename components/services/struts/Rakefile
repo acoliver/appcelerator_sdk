@@ -61,21 +61,22 @@ task :default do
   FileUtils.rm_rf zipfile
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
 
-    lib_dir = path('lib', struts_service_dir) 
-    dofiles(lib_dir) do |f|
+    dist_dir = path('dist', struts_service_dir) 
+    dofiles(dist_dir) do |f|
       if not f == '.'
-        zipfile.add("lib/#{File.basename(f)}", "#{lib_dir}/#{f}")
+        zipfile.add("dist/#{f}", "#{dist_dir}/#{f}")
       end
     end
 
-    templates_dir = path('templates', struts_service_dir) 
-    dofiles(templates_dir) do |f|
+    lib_dir = path('lib', struts_service_dir) 
+    dofiles(lib_dir) do |f|
       if not f == '.'
-        zipfile.add("templates/#{f}", "#{templates_dir}/#{f}")
+        zipfile.add("dist/public/WEB-INF/lib/#{File.basename(f)}", "#{lib_dir}/#{f}")
       end
     end
 
     zipfile.add("build.yml", "build.yml")
+    zipfile.add("install.rb", "install.rb")
   end
 
   # do some cleanup

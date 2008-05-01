@@ -1,25 +1,9 @@
 # This file is part of Appcelerator.
 #
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
-# For more information, please visit http://www.appcelerator.org
-#
-# Appcelerator is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-
 include Appcelerator
 module Appcelerator
-  class Java
+  class Struts
 
     #
     # this method is called when a project:update command is run on an existing
@@ -75,12 +59,15 @@ module Appcelerator
     
     private
     def install(from_path,to_path,config,tx,update)
-      Installer.copy(tx, "#{from_path}/lib", to_path)
 
-      #Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
-      #Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
-      #Installer.copy(tx,from_path,to_path, [ "#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
-      #  'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
+      # remove old jars for upgrades
+      if (File.exists?("#{to_path}/public/WEB-INF/lib"))
+          Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/public/WEB-INF/lib")
+          Installer.remove_prev_jar(tx,"appcelerator-struts","#{to_path}/public/WEB-INF/lib")
+      end
+
+      Installer.copy(tx, "#{from_path}/dist", to_path)
+
       #tx.mkdir "#{to_path}/app/services/org/appcelerator/test"
       #Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
       #tx.rm "#{to_path}/app/services/EchoService.java" if File.exists? "#{to_path}/app/services/EchoService.java"

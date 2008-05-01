@@ -38,9 +38,14 @@ import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageDirection;
 import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.util.Util;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 public class AppceleratorRequestProcessor extends RequestProcessor {
+
+    @SuppressWarnings("unused")
+    private static final Log LOG = LogFactory.getLog(RequestProcessor.class);
 
     public void init(ActionServlet servlet, ModuleConfig moduleConfig) throws ServletException {
         super.init(servlet, moduleConfig);
