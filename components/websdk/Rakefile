@@ -388,21 +388,25 @@ def run_selenium_tests(browser_name, browser)
   # to be run here.  
   #
   require 'test/selenium/app_button_test'
-  
+  require 'test/selenium/messaging_test'
   #
   # End includes for unit test files
   #
   
-
-
   Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
          "http://localhost:9002/widget_tests"))
 end
 
 def build_suite(name, browser, location)
+    tests = ENV['tests']
+    if tests 
+        tests = tests.split(',')
+    end
+    
     suite = Test::Unit::SeleniumTestSuite.new(name, browser, location)
     ObjectSpace::each_object(Class) { |klass| 
-        if klass < Test::Unit::SeleniumTestCase
+        if klass < Test::Unit::SeleniumTestCase and (tests.nil? or tests.include?(klass.to_s))
+            puts "Adding: #{klass}"
             suite << klass.suite 
         end
     }

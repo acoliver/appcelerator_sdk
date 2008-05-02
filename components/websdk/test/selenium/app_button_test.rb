@@ -7,7 +7,7 @@ class ButtonTest < Test::Unit::SeleniumTestCase
     def initialize(name="button test")
         return super(name)
     end
-		
+    
   	def test_clicking
   	    #url = "#{@basepath}/#{@@widget}"
         open(url())
@@ -115,8 +115,5 @@ class ButtonTest < Test::Unit::SeleniumTestCase
     def url()
         return "#{@basepath}/#{@@widget}"
     end
-    
-	def teardown
-		@selenium.stop
-	end
+
 end

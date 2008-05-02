@@ -1,3 +1,5 @@
+require 'json'
+
 class Selenium::SeleniumDriver
     def open(url)
         do_command("open", [url,])
@@ -89,6 +91,63 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     def dollar(elem_id)
         return "$(window.document.getElementById('#{elem_id}'))"
     end
+
+    def get_messages()
+        messages = get_eval("window.Appcelerator.Selenium.get_messages()")
+        JSON.parse(messages)
+    end
+    
+    def get_message(name)
+        messages = get_messages()
+        messages.each { |message| 
+            name = name[1..name.length]
+            if message['type'] == name
+                return message
+            end
+        }
+        return nil
+    end
+    
+    def clear_messages()
+        return get_eval("window.Appcelerator.Selenium.clear_messages()")
+    end
+    
+    def add_message_listeners
+        javascript = <<END_OF_JAVASCRIPT
+        window.Appcelerator.Selenium = {
+            messages: new window.Array(),
+            clear_messages: function() {
+               window.Appcelerator.Selenium.messages.clear(); 
+            },
+            get_messages: function() {
+                return window.Object.toJSON(window.Appcelerator.Selenium.messages);
+            }
+        };
+
+        window.$MQL('l:~.*',function(type,msg,datatype,from)
+        {
+            window.Appcelerator.Selenium.messages.push(
+            {
+               'type': type,
+               'msg': msg,
+               'datatype': datatype,
+               'from': from 
+            });
+        });
+
+        window.$MQL('r:~.*',function(type,msg,datatype,from)
+        {
+            window.Appcelerator.Selenium.messages.push(
+            {
+               'type': type,
+               'msg': msg,
+               'datatype': datatype,
+               'from': from 
+            });
+        });
+END_OF_JAVASCRIPT
+        ret = get_eval(javascript)
+    end
     
     def setup
         @selenium = Selenium::SeleniumDriver.new("localhost", 4444,
@@ -96,4 +155,7 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     	@selenium.start
     end
     
+	def teardown
+		@selenium.stop
+	end
 end
