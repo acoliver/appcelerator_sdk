@@ -10,7 +10,7 @@ Appcelerator.Util.DateTime =
     ONE_WEEK: 604800000,
     ONE_MONTH: 18748800000, // this is rough an assumes 31 days
     ONE_YEAR: 31536000000,
-	
+
 	/**
 	 * Convert a duration from the format: "2y 3w 5d 27m 13s" into milliseconds
 	 */
@@ -18,7 +18,7 @@ Appcelerator.Util.DateTime =
 	{
 		var str = '';
 		var time = 0;
-		
+
 		for (var c=0,len=value.length;c<len;c++)
 		{
 			var ch = value.charAt(c);
@@ -85,23 +85,23 @@ Appcelerator.Util.DateTime =
 				}
 			}
 		}
-		
+
 		if (str.length > 0)
 		{
 			time+=parseInt(str);
 		}
-	
+
 		return time;
 	},
     getDurationNoFormat: function (begin, end)
 	{
         end = end || new Date();
         var amount = end.getTime() - begin.getTime();
-		
+
 		var hours = 0
 		var minutes = 0;
 		var seconds = 0;
-		
+
 		if (amount > this.ONE_HOUR)
 		{
 			hours = Math.round(amount/this.ONE_HOUR);
@@ -124,7 +124,7 @@ Appcelerator.Util.DateTime =
 		}
 		if (amount > this.ONE_SECOND)
 		{
-			seconds = Math.round(amount/this.ONE_SECOND);			
+			seconds = Math.round(amount/this.ONE_SECOND);
 			amount = amount - (this.ONE_SECOND * seconds);
 		}
 		if (amount == this.ONE_SECOND)
@@ -135,33 +135,33 @@ Appcelerator.Util.DateTime =
 		{
 			seconds = "0" + seconds;
 		}
-		
+
 		if (hours > 0)
 		{
 			return hours + ":" + minutes + ":" + seconds;
 		}
-		
+
 		if (minutes > 0)
 		{
 			return minutes + ":" + seconds;
 		}
-		
+
 		if (seconds > 0)
 		{
 			return "0:" + seconds;
 		}
-		
+
 		else return ":00";
 	},
 	getDuration: function (begin, end)
     {
         end = end || new Date();
         var amount = end.getTime() - begin.getTime();
-        
+
 		return this.toDuration(amount);
     },
     toDuration: function (amount)
-    {	
+    {
         amount = amount || 0;
 
 		if (amount < 0)
@@ -572,5 +572,20 @@ Appcelerator.Util.DateTime =
         gmtDate.setUTCHours(gmtHour, min, sec);
 
         return gmtDate;
-    }
+    },
+    //Returns the client machine's timezone offset from GMT
+    //Format is something like -0400 or +0815
+    getTimezoneOffset = function()
+	{
+		var curdate = new Date();
+		var offset = curdate.getTimezoneOffset();
+		var hours = Math.floor(offset/60);
+		var modMin = Math.abs(offset%60);
+		var s = new String();
+		s += (hours > 0) ? "-" : "+";
+		var absHours = Math.abs(hours);
+		s += (absHours < 10) ? "0" + absHours :absHours;
+		s += ((modMin == 0) ? "00" : modMin);
+		return s;
+	}
 };
