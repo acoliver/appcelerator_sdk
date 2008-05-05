@@ -19,6 +19,7 @@
 package Appcelerator::Message;
 use XML::Simple;
 use JSON::Any;
+use Time::Local;
 use strict;
 
 sub new {
@@ -26,20 +27,20 @@ sub new {
     my $self = {};
 
     $self->{"_type"} = shift;
-    $self->{"_requestid"} = shift;
+    $self->{"_version"} = shift;
     $self->{"_scope"} = shift;
     $self->{"_data"} = shift;
-    $self->{"_version"} = shift;
+    $self->{"_timestamp"} = shift;
 
     bless ($self, $class);
     return $self;
 }
 
 sub type { my $self = shift; return $self->{"_type"}; }
-sub requestid { my $self = shift; return $self->{"_requestid"}; }
+sub version { my $self = shift; return $self->{"_version"}; }
 sub scope { my $self = shift; return $self->{"_scope"}; }
 sub data { my $self = shift; return $self->{"_data"}; }
-sub version { my $self = shift; return $self->{"_version"}; }
+sub timestamp { my $self = shift; return $self->{"_timestamp"}; }
 sub setData{ my $self = shift; $self->{"_data"} = shift; }
 
 
@@ -73,16 +74,17 @@ sub deserializeJSON {
     my $j = JSON::Any->new;
 
     my $requests = $j->decode($input);
-    my $messages = [];
+    my $pversion = $requests->{'version'}; # protocol version
+    my $timestamp = $requests->{'timestamp'};
 
+    my $messages = [];
     for my $jsonmessage (@{$requests->{'messages'}}) {
         my $type = $jsonmessage->{'type'};
-        my $requestid = $jsonmessage->{'requestid'};
+        my $version = $jsonmessage->{'version'}; # message version
         my $scope = $jsonmessage->{'scope'};
         my $data = $jsonmessage->{'data'};
-        my $version = $jsonmessage->{'version'};
 
-        push @{$messages}, Appcelerator::Message->new($type, $requestid, $scope, $data, $version);
+        push @{$messages}, Appcelerator::Message->new($type, $version, $scope, $data, $timestamp);
     }
 
     return $messages;
@@ -95,19 +97,19 @@ sub serializeJSON {
     my @responses = ();
     for my $message (@{$messages}) {
         my $json_response = {
-            'requestid' => $message->requestid(),
             'type' => $message->type(),
-            'data' => $message->data(),
+            'version' => $message->version(),
             'scope' => $message->scope(),
-            'direction' => 'OUTGOING',
-            'datatype' => 'JSON'};
+            'data' => $message->data(),
+        };
         push @responses, $json_response;
     }
 
     my $envelope = {
-        version => '1.0',
-        sessionid => $sessionid,
-        messages => \@responses
+        'version' => '1.0',
+        'sessionid' => $sessionid,
+        'timestamp' => timelocal(gmtime()),
+        'messages' => \@responses,
     };
 
     return $j->encode($envelope);
@@ -121,15 +123,15 @@ sub deserializeXML {
     my $messages = [];
     my $xmlsimple = new XML::Simple(forcearray=>1);
     my $xml = $xmlsimple->XMLin($input);
+    my $timestamp = $xml->{'timestamp'};
 
     foreach my $xmlmessage (@{$xml->{'message'}}) {
-        my $requestid = $xmlmessage->{'requestid'};
         my $type = $xmlmessage->{'type'};
-        my $scope = $xmlmessage->{'scope'};
         my $version = $xmlmessage->{'version'};
+        my $scope = $xmlmessage->{'scope'};
         my $data = $j->decode($xmlmessage->{'content'});
 
-        push @{$messages}, Appcelerator::Message->new($type, $requestid, $scope, $data, $version);
+        push @{$messages}, Appcelerator::Message->new($type, $version, $scope, $data, $timestamp);
     }
 
     return $messages;
@@ -144,7 +146,7 @@ sub serializeXML {
         my $data = $j->encode($message->data());
 
         my $json_response = {
-            'requestid' => $message->requestid(),
+            'requestid' => "1", # no longer used
             'type' => $message->type(),
             'scope' => $message->scope(),
             'content' => $data,
@@ -161,8 +163,8 @@ sub serializeXML {
     
 
     my $xmlsimple_out = new XML::Simple(KeepRoot=>1,
-                                     ForceArray=>1,
-                                     RootName=>'messages');
+                                        ForceArray=>1,
+                                        RootName=>'messages');
     return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" . $xmlsimple_out->XMLout($envelope);
 }
 

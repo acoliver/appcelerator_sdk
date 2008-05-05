@@ -27,18 +27,20 @@ BEGIN {
     push @INC, File::Spec->catfile("..", "lib");
 }
 
+use strict;
 use CGI;
 
-use Digest::MD5 qw(md5);
+use Digest::MD5 qw(md5_hex);
 use Apache::Session::File;
 use Data::Dumper;
 use Appcelerator::Service;
 use Appcelerator::Message;
 
-$shared_secret = "";
-$tmpdir = "/tmp/";
-$lockdir = "/var/lock/";
-$query = new CGI;
+my $shared_secret = "";
+my $tmpdir = "/tmp/";
+my $lockdir = "/var/lock/";
+my $query = new CGI;
+my %session;
 
 # preserve the post data
 my $postdata = $query->param('POSTDATA');
@@ -49,7 +51,7 @@ my $content_type = $ENV{'CONTENT_TYPE'};
 $query->parse_params($ENV{'QUERY_STRING'});
 
 # start a session 
-($sessionid, $cookie) = start_session();
+my ($sessionid, $cookie) = start_session();
 
 # get request parameters
 my $method = $ENV{'REQUEST_METHOD'};
@@ -81,8 +83,8 @@ if ($init eq "1") {
 
 } elsif ($method eq "GET") { # GET not supported, return no messages
     $header{'-type'} = "text/xml; charset=utf-8";
-    $responses = [];
-    $response .= Appcelerator::Message->serialize($contentType, $responses);
+    my $responses = [];
+    $response .= Appcelerator::Message->serialize($content_type, $responses);
 
 } elsif ($method ne "POST") {
     $header{'-type'} = "text/plain";
@@ -95,8 +97,8 @@ if ($init eq "1") {
     $header{'-Expires'} = "now";
     $header{'-Cache-control'} = "no-cache, no-store, private, must-revalidate";
 
-    $messages = Appcelerator::Message->deserialize($content_type, $postdata);
-    $responses = get_responses($messages, $sessionid);
+    my $messages = Appcelerator::Message->deserialize($content_type, $postdata);
+    my $responses = get_responses($messages, $sessionid);
     $response .= Appcelerator::Message->serialize($content_type, $responses, $sessionid);
 }
 
@@ -114,14 +116,13 @@ sub get_responses {
         LISTENER: for my $service (@handlers) {
 
             my $type = $service->response_type();
-            my $id = $request->requestid();
+            my $version = $request->version();
             my $scope = $request->scope();
-            my $version = $service->version();
-            my $response = new Appcelerator::Message($type, $id, $scope, {}, $version);
+            my $response = new Appcelerator::Message($type, $version, $scope, {});
 
             $service->execute({-request => $request,
                               -response => $response,
-                              -session => $session});
+                              -session => \%session});
 
             push @{$responses}, $response;
         }
@@ -170,7 +171,7 @@ sub bad_request() {
     }
 
     if ($auth ne $shared_secret) {
-        if (md5($sessionid.$instanceid) ne $auth) {
+        if (md5_hex($sessionid.$instance_id) ne $auth) {
             return 1;
         }
     }
