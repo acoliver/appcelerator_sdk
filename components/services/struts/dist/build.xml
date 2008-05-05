@@ -18,7 +18,8 @@
 
 	<path id="runclasspath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
-		<fileset dir="${classes.dir}" includes="**/*.jar"/>
+        <pathelement path="${class.dir}"/>
+        <pathelement path="${services.dir}"/>
 	</path>
 
 	<target name="banner">
