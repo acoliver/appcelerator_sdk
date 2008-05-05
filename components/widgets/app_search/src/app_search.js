@@ -31,7 +31,7 @@ Appcelerator.Widget.Search =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -155,6 +155,10 @@ Appcelerator.Widget.Search =
 			type: T.bool,
 			description: "Whether or not to use type search for Safari"
 	    }];
+	},
+	ignoreFieldset: function()
+	{
+	    return true;
 	},
 	compileWidget: function(params)
 	{

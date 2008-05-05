@@ -31,7 +31,7 @@ Appcelerator.Widget.Pagination =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -127,6 +127,10 @@ Appcelerator.Widget.Pagination =
 			type: T.bool
         }];
 	},
+	ignoreFieldset: function()
+	{
+	    return true;
+	},	
 	compileWidget: function(parameters)
 	{
 		var request = parameters['request'];

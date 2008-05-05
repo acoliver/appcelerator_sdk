@@ -49,7 +49,7 @@ Appcelerator.Widget.Field =
 	},
 	getSpecVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getAuthor: function()
 	{
@@ -67,6 +67,10 @@ Appcelerator.Widget.Field =
 	{
 		return 'app:field';
 	},
+	ignoreFieldset: function()
+	{
+	    return true;
+	},	
     getAttributes: function()
     {
         var T = Appcelerator.Types;

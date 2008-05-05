@@ -1399,7 +1399,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 				}
 			}
 			
-			if(fieldset && !instructions.ignoreFieldset)
+			if(fieldset && !module.ignoreFieldset)
 			{
 			    Appcelerator.Compiler.addFieldSet(outer, false, fieldset);
 			}

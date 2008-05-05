@@ -32,7 +32,7 @@ Appcelerator.Widget.Button =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -73,6 +73,10 @@ Appcelerator.Widget.Button =
 	dontParseOnAttributes: function()
 	{
 		return true;
+	},
+	ignoreFieldset: function()
+	{
+	    return true;
 	},
 	//Helper function to check if the button is disabled.  Firefox, Safari and IE do different
 	//things
