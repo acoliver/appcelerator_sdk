@@ -756,6 +756,24 @@
 			</form>
 		</td>
 	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test35">Run Test</a> Value Action (form)
+			<app:script on="l:test35 then execute" style="display:none">
+				$MQ("l:test35.1", {bar:{beat:{bot:"Test passed",bob:"Test passed",boy:"Test passed"}}});
+			</app:script>
+		</td>
+		<td class="result">
+			<div>
+				Values should be set <form on="l:test35.1 then value[bar]">
+					<input name="beat.bot" id="t" />
+					<div style="border: 1px solid green" name="beat.bob" id="b"></div>
+					<textarea name="beat.boy"></textarea>
+				</form>
+			</div>
+		</td>
+	</tr>	
+	
 </table>
 
 <app:script on="l:test26 then execute">
