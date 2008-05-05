@@ -34,6 +34,21 @@
             <app:script on="l:history.test2 then history[test2]"></app:script>
         </td>
     </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Catch All
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#catchall">Click me</a>
+            <div id="catchall_div"></div>
+            <app:script on="history:* then execute">
+                if (this.data.state == 'catchall')
+                {
+                    $('catchall_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
 </table>
 
 </body>

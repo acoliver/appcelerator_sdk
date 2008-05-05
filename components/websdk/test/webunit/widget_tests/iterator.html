@@ -197,6 +197,50 @@ th
             </app:iterator>
         </td>
     </tr>
+    <tr>
+        <td class="test" valign="middle">
+           	<a href="javascript:void(0)" on="click then l:iterator.validator">Run Test Twice</a> Validator/Decorator Trash
+        </td>
+        <td class="result" >
+            <app:iterator on="l:iterator.validator then execute">
+				<html:input type="text" validator="required" decorator="required" id="validator_input" width="100"></html:input>
+            </app:iterator>
+            <app:script on="l:iterator.validator then execute">
+                if (!window.validator_test)
+                {
+                    window.validator_test = true;
+                }
+                else
+                {
+                    $('validator_input').value = 'Test passed if no errors';
+                    Appcelerator.Compiler.executeFunction($('validator_input'), "revalidate");
+                }
+            </app:script>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+           	<a href="javascript:void(0)" on="click then l:iterator.fieldset">Run Test Twice</a> (then click button) Fieldset Trash
+        </td>
+        <td class="result" >
+            <app:iterator on="l:iterator.fieldset then execute">
+				<html:input type="hidden" id="fieldset_input" fieldset="iterator_fieldset" value="Test Passed"></html:input>
+				<html:input type="button" id="fieldset_button" fieldset="iterator_fieldset" on="click then l:iterator.fieldset.submit" value="do not click yet"></html:input>
+            </app:iterator>
+            <div on="l:iterator.fieldset.submit then value[fieldset_input]">
+            </div>
+            <app:script on="l:iterator.fieldset then execute">
+                if (!window.fieldset_test)
+                {
+                    window.fieldset_test = true;
+                }
+                else
+                {
+                    $('fieldset_button').value = 'click me now';
+                }
+            </app:script>
+        </td>
+    </tr>
     <!-- <tr>
         <td class="test" valign="middle">
            	items attribute inside content file

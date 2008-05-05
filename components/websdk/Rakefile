@@ -189,7 +189,7 @@ end
 
 task :test => [:default] do
   test_src_path = "#{BUILD_DIR}/test/webunit"
-  test_dst_path = "#{STAGE_DIR}/unittest"
+  test_dst_path = "#{STAGE_DIR}/webunit"
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
   

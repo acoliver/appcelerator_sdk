@@ -117,6 +117,21 @@
             <app:message name="l:fieldset.start2"></app:message>
         </td>
     </tr>
+    <tr>
+		<td class="test" width="35%" valign="middle">
+			"bind" action
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+		    <div on="l:test.bind.response then bind" fieldset="bind_form">
+    		    <div><input type="text" value="not passed yet" fieldset="bind_form" name="bind_input"/></div>
+    		    <div fieldset="bind_form" name="bind_div" style="margin-top: 10px; margin-bottom: 10px">not passed yet</div>
+    		    <div><textarea fieldset="bind_form" name="bind_text">not passed yet</textarea></div>
+    		</div>
+		    <div>
+		        <input type="button" value="click me" on="click then l:test.bind.response[bind_input=passed,bind_div=passed,bind_text=passed]"/>
+		    </div>
+		</td>
+    </tr>
 
 
 </table>
