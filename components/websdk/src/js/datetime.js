@@ -575,7 +575,7 @@ Appcelerator.Util.DateTime =
     },
     //Returns the client machine's timezone offset from GMT
     //Format is something like -0400 or +0815
-    getTimezoneOffset = function()
+    getTimezoneOffset: function()
 	{
 		var curdate = new Date();
 		var offset = curdate.getTimezoneOffset();
