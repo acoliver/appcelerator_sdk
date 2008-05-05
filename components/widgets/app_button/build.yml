@@ -4,7 +4,7 @@
 :version: 1.0.1
 :dependencies: 
 - :type: websdk
-  :version: ">=2.1"
+  :version: ">=2.1.2"
   :name: websdk
 :tags: [ uicontrol ]
 :description: "app:button is a fancier looking button that can be used in place of a normal HTML button"

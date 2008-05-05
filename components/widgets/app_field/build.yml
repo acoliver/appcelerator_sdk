@@ -4,7 +4,7 @@
 :version: 1.0.1
 :dependencies: 
 - :type: websdk
-  :version: ">=2.1"
+  :version: ">=2.1.2"
   :name: websdk
 :tags: [ uicontrol ]
 :description: "app:field is a ui control that supports laying out different types of fields for collecting or displaying values"
