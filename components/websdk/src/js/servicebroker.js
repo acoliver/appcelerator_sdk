@@ -6,9 +6,9 @@ Appcelerator.Util.ServiceBroker =
     serverPath: Appcelerator.DocumentPath + "servicebroker",
     interceptors: [],
     messageQueue: [],
-	localMessageQueue: [],
-	localTimer: null,
-	localTimerPoll: 10,
+    localMessageQueue: [],
+    localTimer: null,
+    localTimerPoll: 10,
     initQueue:[],
     timer: null,
     time: null,
@@ -21,10 +21,10 @@ Appcelerator.Util.ServiceBroker =
     remotePatternListeners: [],
     devmode: (window.location.href.indexOf('devmode=1') > 0),
     disabled: this.devmode || (window.location.href.indexOf('file:/') == 0) || Appcelerator.Parameters.get('mbDisabled')=='1',
-	remoteDisabled: this.disabled || Appcelerator.Parameters.get('remoteDisabled')=='1',
-	marshaller:'xml/json',
-	transport:'appcelerator',
-	multiplex:true,
+    remoteDisabled: this.disabled || Appcelerator.Parameters.get('remoteDisabled')=='1',
+    marshaller:'xml/json',
+    transport:'appcelerator',
+    multiplex:true,
 
     toString: function ()
     {
@@ -33,7 +33,7 @@ Appcelerator.Util.ServiceBroker =
 
     addInterceptor: function (interceptor)
     {
-     	$D(this.toString() + ' Adding interceptor: ' + interceptor);
+         $D(this.toString() + ' Adding interceptor: ' + interceptor);
         this.interceptors.push(interceptor);
     },
 
@@ -43,12 +43,12 @@ Appcelerator.Util.ServiceBroker =
         this.interceptors.remove(interceptor);
     },
 
-	convertType: function (t)
-	{
-		if (t.startsWith('l:')) return t.replace(/^l:/,'local:');
-		if (t.startsWith('r:')) return t.replace(/^r:/,'remote:');
-		return t;
-	},
+    convertType: function (t)
+    {
+        if (t.startsWith('l:')) return t.replace(/^l:/,'local:');
+        if (t.startsWith('r:')) return t.replace(/^r:/,'remote:');
+        return t;
+    },
 
     addListenerByType: function (t, callback)
     {
@@ -187,148 +187,148 @@ Appcelerator.Util.ServiceBroker =
     },
     triggerComplete:function()
     {
-    	this.compileComplete = true;
-    	this.runInitQueue();
-		this.startLocalTimer();
+        this.compileComplete = true;
+        this.runInitQueue();
+        this.startLocalTimer();
     },
     triggerConfig:function()
     {
-    	this.configComplete = true;
-    	this.runInitQueue();
+        this.configComplete = true;
+        this.runInitQueue();
     },
     runInitQueue:function()
     {
-    	// we need both of these conditions to be true before we can complete initialization
-    	if (this.compileComplete && this.configComplete)
-    	{
-    		this.init = true;
-	    	if (this.initQueue && this.initQueue.length > 0)
-	    	{
-	    		for (var c=0;c<this.initQueue.length;c++)
-	    		{
-	    			this.queue(this.initQueue[c][0],this.initQueue[c][1]);
-	    		}
-	    		this.initQueue = null;
-	    	}
-    	}
+        // we need both of these conditions to be true before we can complete initialization
+        if (this.compileComplete && this.configComplete)
+        {
+            this.init = true;
+            if (this.initQueue && this.initQueue.length > 0)
+            {
+                for (var c=0;c<this.initQueue.length;c++)
+                {
+                    this.queue(this.initQueue[c][0],this.initQueue[c][1]);
+                }
+                this.initQueue = null;
+            }
+        }
     },
-	/**
-	 * enqueue an event into the broker
-	 *
-	 * the msg must contain a 'type' property
-	 * which is in the format:
-	 *
-	 * [destination:message_type]
-	 *
-	 * where destination is either:
-	 *
-	 * local - deliver the message to client listeners (don't go to the server)
-	 * remote - deliver the message to the server
-	 *
-	 *
-	 */
-	queue: function (msg, callback)
-	{
-		if (!Appcelerator.Util.ServiceBroker.init)
-		{
-			$D(msg.type+' will be queued, not yet initialized');
-			this.initQueue.push([msg,callback]);
-			return;
-		}
+    /**
+     * enqueue an event into the broker
+     *
+     * the msg must contain a 'type' property
+     * which is in the format:
+     *
+     * [destination:message_type]
+     *
+     * where destination is either:
+     *
+     * local - deliver the message to client listeners (don't go to the server)
+     * remote - deliver the message to the server
+     *
+     *
+     */
+    queue: function (msg, callback)
+    {
+        if (!Appcelerator.Util.ServiceBroker.init)
+        {
+            $D(msg.type+' will be queued, not yet initialized');
+            this.initQueue.push([msg,callback]);
+            return;
+        }
 
-		var type = msg['type'];
+        var type = msg['type'];
 
-		if (!type)
-		{
-			throw "type must be specified on the message";
-		}
+        if (!type)
+        {
+            throw "type must be specified on the message";
+        }
 
-		type = this.convertType(type);
+        type = this.convertType(type);
 
-		var scope = msg['scope'] || 'appcelerator';
-		var version = msg['version'] || '1.0';
+        var scope = msg['scope'] || 'appcelerator';
+        var version = msg['version'] || '1.0';
 
-		// let the interceptors have at it
-		if (this.interceptors.length > 0)
-		{
-			var send = true;
-			for (var c = 0, len = this.interceptors.length; c < len; c++)
-			{
-				var interceptor = this.interceptors[c];
-				var func = interceptor['interceptQueue'];
-				if (func)
-				{
-					var result = func.apply(interceptor, [msg,callback,type,scope,version]);
-					if (this.DEBUG) $D(self.toString() + ' Invoked interceptor: ' + interceptor + ', returned: ' + result + ' for message: ' + type);
-					if (result != null && !result)
-					{
-						send = false;
-						break;
-					}
-				}
-			}
+        // let the interceptors have at it
+        if (this.interceptors.length > 0)
+        {
+            var send = true;
+            for (var c = 0, len = this.interceptors.length; c < len; c++)
+            {
+                var interceptor = this.interceptors[c];
+                var func = interceptor['interceptQueue'];
+                if (func)
+                {
+                    var result = func.apply(interceptor, [msg,callback,type,scope,version]);
+                    if (this.DEBUG) $D(self.toString() + ' Invoked interceptor: ' + interceptor + ', returned: ' + result + ' for message: ' + type);
+                    if (result != null && !result)
+                    {
+                        send = false;
+                        break;
+                    }
+                }
+            }
 
-			if (!send)
-			{
-				// allow the interceptor the ability to squash it
-				$D(this + ' interceptor squashed event: ' + msg['type']);
-				return;
-			}
-		}
+            if (!send)
+            {
+                // allow the interceptor the ability to squash it
+                $D(this + ' interceptor squashed event: ' + msg['type']);
+                return;
+            }
+        }
 
-		var a = type.indexOf(':');
+        var a = type.indexOf(':');
 
-		var dest = a != -1 ? type.substring(0, a) : 'local';
-		var name = a != -1 ? type.substring(a + 1) : type;
+        var dest = a != -1 ? type.substring(0, a) : 'local';
+        var name = a != -1 ? type.substring(a + 1) : type;
 
-		// replace the destination
-		msg['type'] = name;
+        // replace the destination
+        msg['type'] = name;
 
-		var data = (msg['data']) ? msg['data'] : {};
+        var data = (msg['data']) ? msg['data'] : {};
 
-		if(Logger.debugEnabled)
-		{
-			var json = null;
-			switch (typeof(data))
-			{
-				case 'object':
-				case 'array':
-				json = Object.toJSON(data);
-				break;
-				default:
-				json = data.toString();
-				break;
-			}
-			$D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
-		}
+        if(Logger.debugEnabled)
+        {
+            var json = null;
+            switch (typeof(data))
+            {
+                case 'object':
+                case 'array':
+                json = Object.toJSON(data);
+                break;
+                default:
+                json = data.toString();
+                break;
+            }
+            $D(this + ' message queued: ' + name + ', data: ' + json+', version: '+version+', scope: '+scope);
+        }
 
-		this.localMessageQueue.push([name,data,dest,scope,version]);
+        this.localMessageQueue.push([name,data,dest,scope,version]);
 
-		if(dest == 'remote')
-		{
-			// send remote
-			if (this.messageQueue)
-			{
-				// in devmode, we don't actually send remote events
-				if (!this.devmode && !this.remoteDisabled)
-				{
-					// place in the outbound message queue for delivery
-					this.messageQueue.push([msg,callback,scope,version]);
+        if(dest == 'remote')
+        {
+            // send remote
+            if (this.messageQueue)
+            {
+                // in devmode, we don't actually send remote events
+                if (!this.devmode && !this.remoteDisabled)
+                {
+                    // place in the outbound message queue for delivery
+                    this.messageQueue.push([msg,callback,scope,version]);
 
-					// the remote message can be forced to be sent immediate
-					// by setting this property, otherwise, it will be queued
-					this.startTimer(msg['immediate'] || false);
-				}
-			}
-			else
-			{
-				$E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
-			}
-		}
-	},
+                    // the remote message can be forced to be sent immediate
+                    // by setting this property, otherwise, it will be queued
+                    this.startTimer(msg['immediate'] || false);
+                }
+            }
+            else
+            {
+                $E(this + ' message:' + name + " ignored since we don't have a messageQueue!");
+            }
+        }
+    },
     dispatch: function (msg)
     {
-		var requestid = msg.requestid;
+        var requestid = msg.requestid;
         var type = msg.type;
         var datatype = msg.datatype;
         var scope = msg.scope;
@@ -382,7 +382,7 @@ Appcelerator.Util.ServiceBroker =
                 }
             }
         }
-		Appcelerator.Util.Performance.endStat(stat,type,"remote");
+        Appcelerator.Util.Performance.endStat(stat,type,"remote");
 
     },
     sendToListener: function (listener, type, msg, datatype, from, scope)
@@ -419,10 +419,10 @@ Appcelerator.Util.ServiceBroker =
         var scopeCheckFunc = listener.acceptScope;
         if (scopeCheckFunc)
         {
-        	if (!scopeCheckFunc(scope))
-        	{
-        		return;
-        	}
+            if (!scopeCheckFunc(scope))
+            {
+                return;
+            }
         }
         
         $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
@@ -448,80 +448,80 @@ Appcelerator.Util.ServiceBroker =
             $E(this.toString()+', deliver called but no message queue');
             return;
         }
-		if (this.remoteDisabled)
-		{
-			// remote disabled
+        if (this.remoteDisabled)
+        {
+            // remote disabled
             return;
-		}
+        }
 
-		// get the marshaller to use
-		var marshaller = Appcelerator.Util.ServiceBrokerMarshaller[this.marshaller];
-		if (!marshaller)
-		{
-			$E(this+' - no marshaller defined, will not send message to remote endpoint');
-			this.remoteDisabled = true;
-			return;
-		}
-		var transportHandler = Appcelerator.Util.ServiceBrokerTransportHandler[this.transport];
-		if (!transportHandler)
-		{
-			$E(this+' - no transport handler defined, will not send message to remote endpoint');
-			this.remoteDisabled = true;
-			return;
-		}
-		
-		this.fetching = true;
-		
-		var payloadObj = marshaller.serialize(this.messageQueue,this.multiplex);
-		var payload = payloadObj.postBody;
-		var contentType = payloadObj.contentType;
-	
-		var instructions = transportHandler.prepare(this,initialrequest,payload,contentType);
+        // get the marshaller to use
+        var marshaller = Appcelerator.Util.ServiceBrokerMarshaller[this.marshaller];
+        if (!marshaller)
+        {
+            $E(this+' - no marshaller defined, will not send message to remote endpoint');
+            this.remoteDisabled = true;
+            return;
+        }
+        var transportHandler = Appcelerator.Util.ServiceBrokerTransportHandler[this.transport];
+        if (!transportHandler)
+        {
+            $E(this+' - no transport handler defined, will not send message to remote endpoint');
+            this.remoteDisabled = true;
+            return;
+        }
+        
+        this.fetching = true;
+        
+        var payloadObj = marshaller.serialize(this.messageQueue,this.multiplex);
+        var payload = payloadObj.postBody;
+        var contentType = payloadObj.contentType;
+    
+        var instructions = transportHandler.prepare(this,initialrequest,payload,contentType);
 
-		if (this.multiplex)
-		{
-			this.messageQueue.clear();
-		}
-		else
-		{
-			if (this.messageQueue.length > 0)
-			{
-				this.messageQueue.removeAt(0);
-			}
-		}
+        if (this.multiplex)
+        {
+            this.messageQueue.clear();
+        }
+        else
+        {
+            if (this.messageQueue.length > 0)
+            {
+                this.messageQueue.removeAt(0);
+            }
+        }
 
-		var url = instructions.url;
-		var method = instructions.method;
-		var postBody = instructions.postBody;
-		var contentType = instructions.contentType;
+        var url = instructions.url;
+        var method = instructions.method;
+        var postBody = instructions.postBody;
+        var contentType = instructions.contentType;
 
-		this.sendRequest(url,method,postBody,contentType,marshaller,transportHandler);
-		
-		if (!this.multiplex && this.messageQueue.length > 0)
-		{
-			this.deliver.defer();
-		}
-	},
-	sendRequest: function(url,method,body,contentType,marshaller,transportHandler,count)
-	{
-	    count = (count || 0) + 1;
-	    
-		if (count > 3)
-		{
-		  $E('failed to send request too many times to '+url);
-		  return;
-		}
+        this.sendRequest(url,method,postBody,contentType,marshaller,transportHandler);
+        
+        if (!this.multiplex && this.messageQueue.length > 0)
+        {
+            this.deliver.defer();
+        }
+    },
+    sendRequest: function(url,method,body,contentType,marshaller,transportHandler,count)
+    {
+        count = (count || 0) + 1;
+        
+        if (count > 3)
+        {
+          $E('failed to send request too many times to '+url);
+          return;
+        }
         var self = this;
-		var pending = false;
-		
+        var pending = false;
+        
         new Ajax.Request(url,
         {
             asynchronous: true,
             method: method,
             postBody: body,
             contentType: contentType,
-			evalJSON:false,
-			evalJS:false,
+            evalJSON:false,
+            evalJS:false,
             onComplete: function()
             {
                 self.fetching = false;
@@ -530,71 +530,71 @@ Appcelerator.Util.ServiceBroker =
             {
                 (function()
                 {
-	                self.fetching = false;
-	                self.startTimer(false);
-	
-					if (result && result.status && result.status >= 200 && result.status < 300)
-					{
-	                    if (self.serverDown)
-	                    {
-	                        self.serverDown = false;
-	                        var downtime = new Date().getTime() - self.serverDownStarted;
-	                        if (Logger.infoEnabled) Logger.info('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Server is UP at ' + self.serverPath);
-	                        self.queue({type:'local:appcelerator.servicebroker.server.up',data:{path:this.serverPath,downtime:downtime}});
-	                    }
+                    self.fetching = false;
+                    self.startTimer(false);
+    
+                    if (result && result.status && result.status >= 200 && result.status < 300)
+                    {
+                        if (self.serverDown)
+                        {
+                            self.serverDown = false;
+                            var downtime = new Date().getTime() - self.serverDownStarted;
+                            if (Logger.infoEnabled) Logger.info('[' + Appcelerator.Util.DateTime.get12HourTime(new Date(), true, true) + '] ' + self.toString() + ' Server is UP at ' + self.serverPath);
+                            self.queue({type:'local:appcelerator.servicebroker.server.up',data:{path:this.serverPath,downtime:downtime}});
+                        }
 
                         var cl = parseInt(result.getResponseHeader("Content-Length") || '1');
-						var contentType = result.getResponseHeader('Content-Type') || 'unknown';
-						
+                        var contentType = result.getResponseHeader('Content-Type') || 'unknown';
+                        
                         if (cl > 0)
                         {
-							var msgs = marshaller.deserialize(result,parseInt(cl),contentType);
-							if (msgs && msgs.length > 0)
-							{
-								for (var c=0;c<msgs.length;c++)
-								{
-								  self.localMessageQueue.push([msgs[c].type,msgs[c].data,'remote',msgs[c].scope,msgs[c].version||'1.0']);
-								}
-							}
-						}
-					}
+                            var msgs = marshaller.deserialize(result,parseInt(cl),contentType);
+                            if (msgs && msgs.length > 0)
+                            {
+                                for (var c=0;c<msgs.length;c++)
+                                {
+                                  self.localMessageQueue.push([msgs[c].type,msgs[c].data,'remote',msgs[c].scope,msgs[c].version||'1.0']);
+                                }
+                            }
+                        }
+                    }
                 }).defer();
             },
             onFailure: function (transport, json)
             {
-				//
-				// 400 in this case means security check failed
-				//
-            	if (transport.status == 400)
-            	{
-					if (pending)
-					{
+                //
+                // 400 in this case means security check failed
+                //
+                if (transport.status == 400)
+                {
+                    if (pending)
+                    {
                         self.queue({type:'l:appcelerator.servicebroker.failed',data:{}});
                         Logger.warn("Failed authentication");
-			  			return;
-					}
-					else
-					{
-						// we're going to retry on a 400 (authentication error) to resend
-						// the request - in this case, we need to re-serialize/prepare the 
-						// request again since most likely our cookie has changed and we need
-						// to re-calculate the security token
-						
-						pending=true;
-						
-						var instructions = transportHandler.prepare(self,false,body,contentType);
-						var newURL = instructions.url;
+                          return;
+                    }
+                    else
+                    {
+                        // we're going to retry on a 400 (authentication error) to resend
+                        // the request - in this case, we need to re-serialize/prepare the 
+                        // request again since most likely our cookie has changed and we need
+                        // to re-calculate the security token
+                        
+                        pending=true;
+                        
+                        var instructions = transportHandler.prepare(self,false,body,contentType);
+                        var newURL = instructions.url;
 
-						// increment count as a failsafe guard to prevent this from happening too many times
-						self.sendRequest(newURL,method,body,contentType,marshaller,transportHandler,count+1);
-						return;
-					}
-            	}
-				if (transport.status == 406)
-				{
-			  		self.sendRequest(url,method,body,contentType,marshaller,count);
-					return;
-				}
+                        // increment count as a failsafe guard to prevent this from happening too many times
+                        self.sendRequest(newURL,method,body,contentType,marshaller,transportHandler,count+1);
+                        return;
+                    }
+                }
+                if (transport.status == 406)
+                {
+                      self.sendRequest(url,method,body,contentType,marshaller,count);
+                    return;
+                }
                 self.fetching = false;
                 if (transport.status >= 500 || transport.status == 404)
                 {
@@ -648,7 +648,7 @@ Appcelerator.Util.ServiceBroker =
     destroy: function ()
     {
         this.cancelTimer();
-		this.cancelLocalTimer();
+        this.cancelLocalTimer();
         if (this.messageQueue) this.messageQueue.clear();
         if (this.localMessageQueue) this.localMessageQueue.clear();
         this.messageQueue = null;
@@ -716,96 +716,96 @@ Appcelerator.Util.ServiceBroker =
     },
 
     startLocalTimer: function ()
-    {		
-		this.localTimer = setInterval(function()
+    {        
+        this.localTimer = setInterval(function()
         {
-			var queue = this.localMessageQueue; 
-			if (queue && queue.length)
-			{
-				var message = queue[0];
-				var name = message[0];
-				var data = message[1];
-				var dest = message[2];
-				var scope = message[3];
-				var version = message[4];
-				var stat = Appcelerator.Util.Performance.createStat();
-				
-				switch (dest)
-				{
-					case 'remote':
-					{
-						var arraydirect = this.remoteDirectListeners[name];
-						var arraypattern = this.remotePatternListeners;
-						if (arraydirect)
-						{
-						    for (var c = 0, len = arraydirect.length; c < len; c++)
-						    {
-						        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-						    }
-						}
-						if (arraypattern)
-						{
-						    for (var c = 0, len = arraypattern.length; c < len; c++)
-						    {
-						        var entry = arraypattern[c];
-						        var listener = entry[0];
-						        var pattern = entry[1];
-						        if (pattern.test(name))
-						        {
-						            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-						        }
-						    }
-						}
-						break;
-					}
-					case 'local':
-					{
-						arraydirect = this.localDirectListeners[name];
-						arraypattern = this.localPatternListeners;
-						if (arraydirect)
-						{
-						    for (var c = 0, len = arraydirect.length; c < len; c++)
-						    {
-						        this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
-						    }
-						}
-						if (arraypattern)
-						{
-						    for (var c = 0, len = arraypattern.length; c < len; c++)
-						    {
-						        var entry = arraypattern[c];
-						        var listener = entry[0];
-						        var pattern = entry[1];
-						        if (pattern.test(name))
-						        {
-						            this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
-						        }
-						    }
-						}
-						break;
-					}
-				}
-				Appcelerator.Util.Performance.endStat(stat,name,dest);
-				
-				queue.remove(message);
-			}
+            var queue = this.localMessageQueue; 
+            if (queue && queue.length)
+            {
+                var message = queue[0];
+                var name = message[0];
+                var data = message[1];
+                var dest = message[2];
+                var scope = message[3];
+                var version = message[4];
+                var stat = Appcelerator.Util.Performance.createStat();
+                
+                switch (dest)
+                {
+                    case 'remote':
+                    {
+                        var arraydirect = this.remoteDirectListeners[name];
+                        var arraypattern = this.remotePatternListeners;
+                        if (arraydirect)
+                        {
+                            for (var c = 0, len = arraydirect.length; c < len; c++)
+                            {
+                                this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+                            }
+                        }
+                        if (arraypattern)
+                        {
+                            for (var c = 0, len = arraypattern.length; c < len; c++)
+                            {
+                                var entry = arraypattern[c];
+                                var listener = entry[0];
+                                var pattern = entry[1];
+                                if (pattern.test(name))
+                                {
+                                    this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case 'local':
+                    {
+                        arraydirect = this.localDirectListeners[name];
+                        arraypattern = this.localPatternListeners;
+                        if (arraydirect)
+                        {
+                            for (var c = 0, len = arraydirect.length; c < len; c++)
+                            {
+                                this.sendToListener(arraydirect[c], name, data, 'JSON', dest, scope, version);
+                            }
+                        }
+                        if (arraypattern)
+                        {
+                            for (var c = 0, len = arraypattern.length; c < len; c++)
+                            {
+                                var entry = arraypattern[c];
+                                var listener = entry[0];
+                                var pattern = entry[1];
+                                if (pattern.test(name))
+                                {
+                                    this.sendToListener(listener, name, data, 'JSON', dest, scope, version);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+                Appcelerator.Util.Performance.endStat(stat,name,dest);
+                
+                queue.remove(message);
+            }
         }.bind(this), this.localTimerPoll);
-	},
-	
+    },
+    
     startTimer: function (force)
     {
-    	if (!this.init)
-    	{
-    	  	// make sure we've initialized
-    	  	$D(this.toString()+' - startTimer called but not running yet');
-    		return;
-    	}
-    	
-    	if (this.disabled)
-    	{
-    		return;
-    	}
-    	
+        if (!this.init)
+        {
+              // make sure we've initialized
+              $D(this.toString()+' - startTimer called but not running yet');
+            return;
+        }
+        
+        if (this.disabled)
+        {
+            return;
+        }
+        
         // stop the existing timer
         this.cancelTimer();
 
@@ -884,7 +884,7 @@ Appcelerator.Util.ServiceBroker =
         }
         else
         {
-        	$E(toString() + ' startTimer called and we have no message queue');
+            $E(toString() + ' startTimer called and we have no message queue');
         }
     },
     maxWaitPollTime: 200,   /*how long to poll the message queue on the server */
@@ -904,12 +904,12 @@ Appcelerator.Util.ServiceBroker =
 //
 function $MQ (type,data,scope,version)
 {
-	Appcelerator.Util.ServiceBroker.queue({
-		type: type,
-		data: data || {},
-		scope: scope,
-		version: version || '1.0'
-	});
+    Appcelerator.Util.ServiceBroker.queue({
+        type: type,
+        data: data || {},
+        scope: scope,
+        version: version || '1.0'
+    });
 }
 
 //
@@ -917,57 +917,57 @@ function $MQ (type,data,scope,version)
 //
 function $MQL (type,f,myscope,element)
 {
-	var listener = 
-	{
-		accept: function ()
-		{
-			if (Object.isArray(type))
-			{
-				return type;
-			}
-			return [type];
-		},
-		acceptScope: function (scope)
-		{
-			if (myscope)
-			{
-				return myscope == '*' || scope == myscope;
-			}
-			return true;
-		},
-		onMessage: function (type,msg,datatype,from,scope)
-		{
-			try
-			{
-				f.apply(f,[type,msg,datatype,from,scope]);
-			}
+    var listener = 
+    {
+        accept: function ()
+        {
+            if (Object.isArray(type))
+            {
+                return type;
+            }
+            return [type];
+        },
+        acceptScope: function (scope)
+        {
+            if (myscope)
+            {
+                return myscope == '*' || scope == myscope;
+            }
+            return true;
+        },
+        onMessage: function (type,msg,datatype,from,scope)
+        {
+            try
+            {
+                f.apply(f,[type,msg,datatype,from,scope]);
+            }
             catch(e)
             {
                 Appcelerator.Compiler.handleElementException(element,e);
             }
-		}
-	};
-	
-	Appcelerator.Util.ServiceBroker.addListener(listener);
+        }
+    };
+    
+    Appcelerator.Util.ServiceBroker.addListener(listener);
 
-	if (element)
-	{
-		Appcelerator.Compiler.addTrash(element,function()
-		{
-			Appcelerator.Util.ServiceBroker.removeListener(listener);
-		});
-	}
+    if (element)
+    {
+        Appcelerator.Compiler.addTrash(element,function()
+        {
+            Appcelerator.Util.ServiceBroker.removeListener(listener);
+        });
+    }
 
-	return listener;
+    return listener;
 }
 
 
 Appcelerator.Util.ServiceBrokerMarshaller={};
 Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] = 
 {
-	currentRequestId:1,
-	jsonify:function(msg)
-	{
+    currentRequestId:1,
+    jsonify:function(msg)
+    {
         var requestid = this.currentRequestId++;
         var scope = msg[2];
         var version = msg[3];
@@ -976,59 +976,59 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
         var xml = "<message requestid='" + requestid + "' type='" + msg[0]['type'] + "' datatype='" + datatype + "' scope='"+scope+"' version='"+version+"'>";
         xml += '<![CDATA[' + Object.toJSON(data) + ']]>';
         xml += "</message>";
-		return xml;
-	},
-	serialize: function(messageQueue,multiplex)
-	{
-		var xml = null;
+        return xml;
+    },
+    serialize: function(messageQueue,multiplex)
+    {
+        var xml = null;
         if (messageQueue.length > 0)
         {
-			xml = '';
-	        var time = new Date();
-	        var timestamp = time.getTime();
+            xml = '';
+            var time = new Date();
+            var timestamp = time.getTime();
             xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-			var tz = time.getTimezoneOffset()/60;
+            var tz = time.getTimezoneOffset()/60;
             var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
             xml += "<request version='1.0' idle='" + idleMs + "' timestamp='"+timestamp+"' tz='"+tz+"'>\n";
-			if (multiplex)
-			{
-	            for (var c = 0,len = messageQueue.length; c < len; c++)
-	            {
-					xml+=this.jsonify(messageQueue[c]);
-	            }
-			}
-			else
-			{
-				xml+=this.jsonify(messageQueue[0]);
-			}
+            if (multiplex)
+            {
+                for (var c = 0,len = messageQueue.length; c < len; c++)
+                {
+                    xml+=this.jsonify(messageQueue[c]);
+                }
+            }
+            else
+            {
+                xml+=this.jsonify(messageQueue[0]);
+            }
             xml += "</request>";
         }
-		return {
-			'postBody': xml,
-			'contentType':'text/xml'
-		};
-	},
-	deserialize: function(response,length,contentType)
-	{
-		if (response.status == 202)
-		{
-			return null;
-		}
-		if (contentType.indexOf('text/xml')==-1 && contentType.indexOf('application/xml')==-1)
-		{
-			$E(this+', invalid content type: '+contentType+', expected: text/xml or application/xml');
-			return null;
-		}
-		var xml = response.responseXML;
-		if (!xml)
-		{
-			return null;
-		}
+        return {
+            'postBody': xml,
+            'contentType':'text/xml'
+        };
+    },
+    deserialize: function(response,length,contentType)
+    {
+        if (response.status == 202)
+        {
+            return null;
+        }
+        if (contentType.indexOf('text/xml')==-1 && contentType.indexOf('application/xml')==-1)
+        {
+            $E(this+', invalid content type: '+contentType+', expected: text/xml or application/xml');
+            return null;
+        }
+        var xml = response.responseXML;
+        if (!xml)
+        {
+            return null;
+        }
         var children = xml.documentElement.childNodes;
-		var msgs = null;
+        var msgs = null;
         if (children && children.length > 0)
         {
-			msgs = [];
+            msgs = [];
             for (var c = 0; c < children.length; c++)
             {
                 var child = children.item(c);
@@ -1037,23 +1037,23 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
                     var requestid = child.getAttribute("requestid");
                     try
                     {
-				        var type = child.getAttribute("type");
-				        var datatype = child.getAttribute("datatype");
-				        var scope = child.getAttribute("scope") || 'appcelerator';
-			            var data, text;
-			            try
-			            {
-			                text = Appcelerator.Util.Dom.getText(child);
-			                data = text.evalJSON();
-			                data.toString = function () { return Object.toJSON(this); };
-			            }
-			            catch (e)
-			            {
-			                $E('Error received evaluating: ' + text + ' for type: ' + type + ", error: " + Object.getExceptionDetail(e));
-			                return;
-			            }
-		                $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-						msgs.push({type:type,data:data,datatype:datatype,scope:scope,requestid:requestid});
+                        var type = child.getAttribute("type");
+                        var datatype = child.getAttribute("datatype");
+                        var scope = child.getAttribute("scope") || 'appcelerator';
+                        var data, text;
+                        try
+                        {
+                            text = Appcelerator.Util.Dom.getText(child);
+                            data = text.evalJSON();
+                            data.toString = function () { return Object.toJSON(this); };
+                        }
+                        catch (e)
+                        {
+                            $E('Error received evaluating: ' + text + ' for type: ' + type + ", error: " + Object.getExceptionDetail(e));
+                            return;
+                        }
+                        $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+                        msgs.push({type:type,data:data,datatype:datatype,scope:scope,requestid:requestid});
                     }
                     catch (e)
                     {
@@ -1062,62 +1062,62 @@ Appcelerator.Util.ServiceBrokerMarshaller['xml/json'] =
                 }
             }
         }
-		return msgs;
-	}
+        return msgs;
+    }
 };
 
 Appcelerator.Util.ServiceBrokerMarshaller['application/json'] = 
 {
-	prepareMsg: function(msg)
-	{
-		var result = {};
-		result['type'] = msg[0]['type'];
-		result['scope'] = msg[2];
-		result['version'] = msg[3];
-		result['data'] = msg[0]['data'];
-		return result;
-	},
-	serialize: function(messageQueue,multiplex)
-	{
-		var json = {};
+    prepareMsg: function(msg)
+    {
+        var result = {};
+        result['type'] = msg[0]['type'];
+        result['scope'] = msg[2];
+        result['version'] = msg[3];
+        result['data'] = msg[0]['data'];
+        return result;
+    },
+    serialize: function(messageQueue,multiplex)
+    {
+        var json = {};
         if (messageQueue.length > 0)
         {
-			var request = {};
+            var request = {};
 
-	        var time = new Date();
-	        json['timestamp'] = time.getTime()  + (time.getTimezoneOffset()*60*1000);
-			json['version'] = '1.0';
-			json['messages'] = [];
+            var time = new Date();
+            json['timestamp'] = time.getTime()  + (time.getTimezoneOffset()*60*1000);
+            json['version'] = '1.0';
+            json['messages'] = [];
 
-			if (multiplex)
-			{
-	            for (var c = 0,len = messageQueue.length; c < len; c++)
-	            {
-					json['messages'].push(this.prepareMsg(messageQueue[c]));
-	            }
-			}
-			else
-			{
-				json['messages'].push(this.prepareMsg(messageQueue[0]));
-			}
+            if (multiplex)
+            {
+                for (var c = 0,len = messageQueue.length; c < len; c++)
+                {
+                    json['messages'].push(this.prepareMsg(messageQueue[c]));
+                }
+            }
+            else
+            {
+                json['messages'].push(this.prepareMsg(messageQueue[0]));
+            }
         }
-		return {
-			'postBody': Object.toJSON(json),
-			'contentType':'application/json'
-		};
-	},
-	deserialize: function(response,length,contentType)
-	{
-		if (response.status == 202)
-		{
-			return null;
-		}
-		if (contentType.indexOf('application/json')==-1)
-		{
-			$E(this+', invalid content type: '+contentType+', expected: application/json');
-			return null;
-		}
-		
+        return {
+            'postBody': Object.toJSON(json),
+            'contentType':'application/json'
+        };
+    },
+    deserialize: function(response,length,contentType)
+    {
+        if (response.status == 202)
+        {
+            return null;
+        }
+        if (contentType.indexOf('application/json')==-1)
+        {
+            $E(this+', invalid content type: '+contentType+', expected: application/json');
+            return null;
+        }
+        
         var result = response.responseText.evalJSON();
         var messages = result['messages'];
         var msgs = [];
@@ -1141,63 +1141,63 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
             }
         }
         return msgs;
-	}
+    }
 };
 
 function jsonParameterEncode (key, value, array)
 {
-	switch(typeof(value))
-	{
-		case 'string':
-		case 'number':
-		case 'boolean':
-		{
-			array.push(key+'='+encodeURIComponent(value));
-			break;
-		}
-		case 'array':
-		case 'object':
-		{
-			// check to see if the object is an array
-			if (Object.isArray(value))
-			{
-				for (var c=0;c<value.length;c++)
-				{
-					jsonParameterEncode(key+'.'+c,value[c],array);
-				}
-			}
-			else
-			{
-				for (var p in value)
-				{
-					jsonParameterEncode(key+'.'+p,value[p],array);
-				}
-			}
-			break;
-		}
-		case 'function':
-		{
-			break;
-		}
-		default:
-		{
-			array.push(encodeURIComponent(key)+'=');
-			break;
-		}
-	}
+    switch(typeof(value))
+    {
+        case 'string':
+        case 'number':
+        case 'boolean':
+        {
+            array.push(key+'='+encodeURIComponent(value));
+            break;
+        }
+        case 'array':
+        case 'object':
+        {
+            // check to see if the object is an array
+            if (Object.isArray(value))
+            {
+                for (var c=0;c<value.length;c++)
+                {
+                    jsonParameterEncode(key+'.'+c,value[c],array);
+                }
+            }
+            else
+            {
+                for (var p in value)
+                {
+                    jsonParameterEncode(key+'.'+p,value[p],array);
+                }
+            }
+            break;
+        }
+        case 'function':
+        {
+            break;
+        }
+        default:
+        {
+            array.push(encodeURIComponent(key)+'=');
+            break;
+        }
+    }
 }
 
 function jsonToQueryParams(json)
 {
-	var parameters = [];
+    var parameters = [];
 
-	for (var key in json)
-	{
-		var value = json[key];
-		jsonParameterEncode(key,value,parameters);
-	}
-	
-	return parameters.join('&');
+    for (var key in json)
+    {
+        var value = json[key];
+        jsonParameterEncode(key,value,parameters);
+    }
+    
+    return parameters.join('&');
 };
 
 /**
@@ -1247,59 +1247,59 @@ function json_encode_xml (node,json)
  */
 Appcelerator.Util.ServiceBrokerMarshaller['application/x-www-form-urlencoded'] = 
 {
-	currentRequestId:1,
-	parameterize: function(msg)
-	{
+    currentRequestId:1,
+    parameterize: function(msg)
+    {
         var requestid = this.currentRequestId++;
         var scope = msg[2];
         var version = msg[3];
         var datatype = 'JSON';
         var data = msg[0]['data'];
 
-		var str = '$messagetype='+msg[0]['type']+'&$requestid='+requestid+'&$datatype='+datatype+'&$scope='+scope+'&$version='+version;
-		
-		if (data)
-		{
-			str+='&' + jsonToQueryParams(data);
-		}
-		return str;
-	},
-	serialize: function(messageQueue,multiplex)
-	{
-		var xml = null;
+        var str = '$messagetype='+msg[0]['type']+'&$requestid='+requestid+'&$datatype='+datatype+'&$scope='+scope+'&$version='+version;
+        
+        if (data)
+        {
+            str+='&' + jsonToQueryParams(data);
+        }
+        return str;
+    },
+    serialize: function(messageQueue,multiplex)
+    {
+        var xml = null;
         if (messageQueue.length > 0)
         {
-			xml = '';
-			if (multiplex)
-			{
-	            for (var c = 0,len = messageQueue.length; c < len; c++)
-	            {
-					xml+=this.parameterize(messageQueue[c]);
-	            }
-			}
-			else
-			{
-				xml+=this.parameterize(messageQueue[0]);
-			}
+            xml = '';
+            if (multiplex)
+            {
+                for (var c = 0,len = messageQueue.length; c < len; c++)
+                {
+                    xml+=this.parameterize(messageQueue[c]);
+                }
+            }
+            else
+            {
+                xml+=this.parameterize(messageQueue[0]);
+            }
         }
-		return {
-			'postBody': xml,
-			'contentType':'application/x-www-form-urlencoded'
-		};
-	},
-	deserialize: function(response,length,contentType)
-	{
-		if (response.status == 202)
-		{
-			return null;
-		}
-		if (contentType.indexOf('/json')==-1)
-		{
-			$E(this+', invalid content type: '+contentType+', expected json mimetype');
-			return null;
-		}
-		return response.responseText.evalJSON(true);
-	}
+        return {
+            'postBody': xml,
+            'contentType':'application/x-www-form-urlencoded'
+        };
+    },
+    deserialize: function(response,length,contentType)
+    {
+        if (response.status == 202)
+        {
+            return null;
+        }
+        if (contentType.indexOf('/json')==-1)
+        {
+            $E(this+', invalid content type: '+contentType+', expected json mimetype');
+            return null;
+        }
+        return response.responseText.evalJSON(true);
+    }
 };
 
 Appcelerator.Util.ServiceBrokerTransportHandler = {};
@@ -1309,27 +1309,27 @@ Appcelerator.Util.ServiceBrokerTransportHandler = {};
  */
 Appcelerator.Util.ServiceBrokerTransportHandler['appcelerator'] = 
 {
-	prepare: function(serviceBroker,initialrequest,payload,contentType)
-	{
-		// get the auth token
-		var cookieName = Appcelerator.ServerConfig['sessionid'].value||'JSESSIONID';
-		var authToken = Appcelerator.Util.Cookie.GetCookie(cookieName);
-		
-		// calculate the token we send back to the server
-		var token = (authToken) ? Appcelerator.Util.MD5.hex_md5(authToken+serviceBroker.instanceid) : '';
-		
-		// create parameters for URL
+    prepare: function(serviceBroker,initialrequest,payload,contentType)
+    {
+        // get the auth token
+        var cookieName = Appcelerator.ServerConfig['sessionid'].value||'JSESSIONID';
+        var authToken = Appcelerator.Util.Cookie.GetCookie(cookieName);
+        
+        // calculate the token we send back to the server
+        var token = (authToken) ? Appcelerator.Util.MD5.hex_md5(authToken+serviceBroker.instanceid) : '';
+        
+        // create parameters for URL
         var parameters = "?maxwait=" + ((!initialrequest && payload) ? serviceBroker.maxWaitPollTime : serviceBroker.maxWaitPollTimeWhenSending)+"&instanceid="+serviceBroker.instanceid+'&auth='+token+'&ts='+new Date().getTime();
-		var url = serviceBroker.serverPath + parameters;
-		var method = payload ? 'post' : 'get';
-		
-		return { 
-			'url':url, 
-			'method': method, 
-			'postBody': payload||'', 
-			'contentType':contentType 
-		};
-	}
+        var url = serviceBroker.serverPath + parameters;
+        var method = payload ? 'post' : 'get';
+        
+        return { 
+            'url':url, 
+            'method': method, 
+            'postBody': payload||'', 
+            'contentType':contentType 
+        };
+    }
 };
 
 
@@ -1366,149 +1366,149 @@ Object.extend(Appcelerator.Util.ServiceBrokerInterceptor.prototype, {
 
 if (Appcelerator.Util.ServiceBroker.disabled || Appcelerator.Util.ServiceBroker.remoteDisabled)
 {
-	Appcelerator.Util.ServiceBroker.triggerConfig();
-	Logger.warn('[ServiceBroker] remote delivery of messages is disabled');
+    Appcelerator.Util.ServiceBroker.triggerConfig();
+    Logger.warn('[ServiceBroker] remote delivery of messages is disabled');
 }
 else
 {
-	Appcelerator.Util.ServerConfig.addConfigListener(function()
-	{
-		var config = Appcelerator.ServerConfig['servicebroker'];
-		if (!config || config['disabled']=='true')
-		{
-			Appcelerator.Util.ServiceBroker.disabled = true;
-			Appcelerator.Util.ServiceBroker.remoteDisabled = true;
-			Appcelerator.Util.ServiceBroker.triggerConfig();
-			Logger.warn('[ServiceBroker] remote delivery of messages is disabled');
-			return;
-		}
-		Appcelerator.Util.ServiceBroker.serverPath = config.value;
-		Appcelerator.Util.ServiceBroker.poll = (config.poll == 'true');
-		Appcelerator.Util.ServiceBroker.multiplex = config.multiplex ? (config.multiplex == 'true') : true;
-		Appcelerator.Util.ServiceBroker.transport = config.transport || Appcelerator.Util.ServiceBroker.transport;
-		Appcelerator.Util.ServiceBroker.marshaller = config.marshaller || Appcelerator.Util.ServiceBroker.marshaller;
-		
-		var cookieName = Appcelerator.ServerConfig['sessionid'].value || 'unknown_cookie_name';
+    Appcelerator.Util.ServerConfig.addConfigListener(function()
+    {
+        var config = Appcelerator.ServerConfig['servicebroker'];
+        if (!config || config['disabled']=='true')
+        {
+            Appcelerator.Util.ServiceBroker.disabled = true;
+            Appcelerator.Util.ServiceBroker.remoteDisabled = true;
+            Appcelerator.Util.ServiceBroker.triggerConfig();
+            Logger.warn('[ServiceBroker] remote delivery of messages is disabled');
+            return;
+        }
+        Appcelerator.Util.ServiceBroker.serverPath = config.value;
+        Appcelerator.Util.ServiceBroker.poll = (config.poll == 'true');
+        Appcelerator.Util.ServiceBroker.multiplex = config.multiplex ? (config.multiplex == 'true') : true;
+        Appcelerator.Util.ServiceBroker.transport = config.transport || Appcelerator.Util.ServiceBroker.transport;
+        Appcelerator.Util.ServiceBroker.marshaller = config.marshaller || Appcelerator.Util.ServiceBroker.marshaller;
+        
+        var cookieName = Appcelerator.ServerConfig['sessionid'].value || 'unknown_cookie_name';
         var cookieValue = Appcelerator.Util.Cookie.GetCookie(cookieName);
         
         if (!cookieValue)
         {
-	        new Ajax.Request(Appcelerator.Util.ServiceBroker.serverPath+'?initial=1',
-	        {
-	            asynchronous: true,
-	            method: 'get',
-	            evalJSON:false,
-	            evalJS:false,
-	            onSuccess:function(r)
-	            {
-			        Appcelerator.Util.ServiceBroker.triggerConfig();
-			        Appcelerator.Util.ServiceBroker.startTimer();
-			        Logger.info('ServiceBroker ready');
-	            }
-	        });
+            new Ajax.Request(Appcelerator.Util.ServiceBroker.serverPath+'?initial=1',
+            {
+                asynchronous: true,
+                method: 'get',
+                evalJSON:false,
+                evalJS:false,
+                onSuccess:function(r)
+                {
+                    Appcelerator.Util.ServiceBroker.triggerConfig();
+                    Appcelerator.Util.ServiceBroker.startTimer();
+                    Logger.info('ServiceBroker ready');
+                }
+            });
             return;
         }
-		
-		
+        
+        
         Appcelerator.Util.ServiceBroker.triggerConfig();
         Appcelerator.Util.ServiceBroker.startTimer();
         Logger.info('ServiceBroker ready');
-	});
-	
-	//
-	// if being loaded from an IFrame - don't do the report
-	//
-	if (window.parent == null || window.parent == window)
-	{
-		var screenHeight = screen.height;
-		var screenWidth = screen.width;
-		var colorDepth = screen.colorDepth || -1;
+    });
+    
+    //
+    // if being loaded from an IFrame - don't do the report
+    //
+    if (window.parent == null || window.parent == window)
+    {
+        var screenHeight = screen.height;
+        var screenWidth = screen.width;
+        var colorDepth = screen.colorDepth || -1;
 
-		/**
-		 * if autoReportStats is set (default), we are going to send a status 
-		 * message to the server with our capabilities and some statistics info
-		 */
-		Appcelerator.Core.onload(function()
-		{
-			if (Appcelerator.Browser.autoReportStats)
-			{
-				var platform = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
-				var data = 
-				{
-					'userAgent': navigator.userAgent,
-					'flash': Appcelerator.Browser.isFlash,
-					'flashver': Appcelerator.Browser.flashVersion,
-					'screen': {
-						'height':screenHeight,
-						'width':screenWidth,
-						'color':colorDepth
-					 },
-					'os': platform,
-					'referrer': document.referrer,
-					'path': window.location.href,
-					'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}})
-				};
-				$MQ('remote:appcelerator.status.report',data);
-			}
-		});
-	}
+        /**
+         * if autoReportStats is set (default), we are going to send a status 
+         * message to the server with our capabilities and some statistics info
+         */
+        Appcelerator.Core.onload(function()
+        {
+            if (Appcelerator.Browser.autoReportStats)
+            {
+                var platform = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
+                var data = 
+                {
+                    'userAgent': navigator.userAgent,
+                    'flash': Appcelerator.Browser.isFlash,
+                    'flashver': Appcelerator.Browser.flashVersion,
+                    'screen': {
+                        'height':screenHeight,
+                        'width':screenWidth,
+                        'color':colorDepth
+                     },
+                    'os': platform,
+                    'referrer': document.referrer,
+                    'path': window.location.href,
+                    'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}})
+                };
+                $MQ('remote:appcelerator.status.report',data);
+            }
+        });
+    }
 }
 
 
 Appcelerator.Core.onunload(Appcelerator.Util.ServiceBroker.destroy.bind(Appcelerator.Util.ServiceBroker));
 Appcelerator.Compiler.afterDocumentCompile(function()
 {
-	Appcelerator.Util.ServiceBroker.triggerComplete();
+    Appcelerator.Util.ServiceBroker.triggerComplete();
 });
 
 Appcelerator.Util.Performance = Class.create();
 Appcelerator.Util.Performance = 
 {
-	logStats: (window.location.href.indexOf('logStats=1') > 0),
-	stats: $H({}),
-	createStat: function ()
+    logStats: (window.location.href.indexOf('logStats=1') > 0),
+    stats: $H({}),
+    createStat: function ()
     {
-		if (this.logStats)
-			return new Date();
-	},
-	endStat: function (start,type,category,data)
+        if (this.logStats)
+            return new Date();
+    },
+    endStat: function (start,type,category,data)
     {
-		if (this.logStats)
-		{
-			var id = type;
-			if (category)
-				id = id+'.'+category
-			else
-				category='';
-			var end = new Date();
-			var stat = this.stats.get(id);
-        	var diff = (end.getTime() - start.getTime());
-			if (!stat)
-			{
-				var stat = {'type':type,'category':category,'hits':0,'mean':0,'min':diff,'max':diff,'total':0};
-				this.stats.set(id,stat);
-			}
-			stat.hits++;
-			stat.last = diff;
-			stat.total +=diff;
-			stat.mean = stat.total/stat.hits;
-			stat.max = (stat.last > stat.max ? stat.last : stat.max); 
-			stat.min = (stat.last < stat.min ? stat.last : stat.min); 
-			Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + ' min:'+stat.min+'ms max:'+stat.max+'ms total:' + stat.total+'ms');
-		}
-	},
-	reset: function (start,type,data)
+        if (this.logStats)
+        {
+            var id = type;
+            if (category)
+                id = id+'.'+category
+            else
+                category='';
+            var end = new Date();
+            var stat = this.stats.get(id);
+            var diff = (end.getTime() - start.getTime());
+            if (!stat)
+            {
+                var stat = {'type':type,'category':category,'hits':0,'mean':0,'min':diff,'max':diff,'total':0};
+                this.stats.set(id,stat);
+            }
+            stat.hits++;
+            stat.last = diff;
+            stat.total +=diff;
+            stat.mean = stat.total/stat.hits;
+            stat.max = (stat.last > stat.max ? stat.last : stat.max); 
+            stat.min = (stat.last < stat.min ? stat.last : stat.min); 
+            Logger.info('stats: ' + type + ' last:' + stat.last + 'ms mean:'+stat.mean+'ms hits:'+stat.hits + ' min:'+stat.min+'ms max:'+stat.max+'ms total:' + stat.total+'ms');
+        }
+    },
+    reset: function (start,type,data)
     {
-		this.stats = $H({});
-	}
+        this.stats = $H({});
+    }
 };
 $MQL('l:get.performance.request',function(type,msg,datatype,from)
 {
-	$MQ('l:get.performance.response',{'stats':Appcelerator.Util.Performance.stats.values()});
+    $MQ('l:get.performance.response',{'stats':Appcelerator.Util.Performance.stats.values()});
 });
 $MQL('l:reset.performance.request',function(type,msg,datatype,from)
 {
-	Appcelerator.Util.Performance.reset();
+    Appcelerator.Util.Performance.reset();
 });
 
 
