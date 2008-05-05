@@ -1085,27 +1085,21 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
 			var request = {};
 
 	        var time = new Date();
-	        var timestamp = time.getTime();
-			var tz = time.getTimezoneOffset()/60;
-            var idleMs = Appcelerator.Util.IdleManager.getIdleTimeInMS();
-			request['idle'] = idleMs;
-			request['timestamp'] = timestamp;
-			request['tz'] = tz;
-			request['version'] = '1.0';
+	        json['timestamp'] = time.getTime()  + (time.getTimezoneOffset()*60*1000);
+			json['version'] = '1.0';
+			json['messages'] = [];
 
-			request['messages'] = [];
 			if (multiplex)
 			{
 	            for (var c = 0,len = messageQueue.length; c < len; c++)
 	            {
-					request['messages'].push(this.prepareMsg(messageQueue[c]));
+					json['messages'].push(this.prepareMsg(messageQueue[c]));
 	            }
 			}
 			else
 			{
-				request['messages'].push(this.prepareMsg(messageQueue[0]));
+				json['messages'].push(this.prepareMsg(messageQueue[0]));
 			}
-			json = request;
         }
 		return {
 			'postBody': Object.toJSON(json),
@@ -1132,10 +1126,12 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
             try
             {
                 message = messages[c];
+
                 var type = message['type'];
                 var datatype = message['datatype'];
                 var scope = message['scope'] || 'appcelerator';
                 var data = message['data'];
+                message['datatype'] = "JSON"; // always JSON
                 $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
                 msgs.push({type:type,data:data,datatype:datatype,scope:scope});
             }
