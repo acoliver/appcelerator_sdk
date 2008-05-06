@@ -70,16 +70,15 @@ namespace Appcelerator
 
         private static void setupLogFile()
         {
-            //APPSDK-403: Read the logging settings from the ConfigurationManager (which reads them from web.config)
-            String logFileLocation = ConfigurationManager.AppSettings["LogLocation"];
-            String logLevelSetting = ConfigurationManager.AppSettings["LogLevel"];
-            String autoFlushSetting = ConfigurationManager.AppSettings["AutoFlushLog"];            
-
-            //Set append to true so we automatically create a new file when needed but append otherwise
-            writer = new StreamWriter(logFileLocation, true);
-
             try
-            {
+            {                
+                //APPSDK-403: Read the logging settings from the ConfigurationManager (which reads them from web.config)
+                String logFileLocation = ConfigurationManager.AppSettings["LogLocation"];
+                String logLevelSetting = ConfigurationManager.AppSettings["LogLevel"];
+                String autoFlushSetting = ConfigurationManager.AppSettings["AutoFlushLog"];            
+
+                //Set append to true so we automatically create a new file when needed but append otherwise
+                writer = new StreamWriter(logFileLocation, true);
 
                 bool autoflush = false;
                 try
