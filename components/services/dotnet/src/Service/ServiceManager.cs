@@ -167,18 +167,13 @@ namespace Appcelerator
             switch (content_type)
             {
                 case ServiceBroker.APPLICATION_JSON:
-                    using (StreamReader request_reader = new StreamReader(context.Request.InputStream))
-                    {
-                        StringReader requestJSON = new StringReader(request_reader.ReadToEnd());
-                        JsonParser parser = new JsonParser(requestJSON, true);
-                        JsonArray messageArray = (JsonArray)parser.ParseObject()["data"];
+                    JsonArray messageArray = (JsonArray)details.JSON["messages"];
 
-                        foreach (JsonObject jsonMessage in messageArray)
-                        {
-                            Message m = new Message(jsonMessage, context.Session, broker, details);
-                            m.Direction = MessageDirection.INCOMING;
-                            messages.Add(m);
-                        }
+                    foreach (JsonObject jsonMessage in messageArray)
+                    {
+                        Message m = new Message(jsonMessage, context.Session, broker, details);
+                        m.Direction = MessageDirection.INCOMING;
+                        messages.Add(m);
                     }
                     break;
                 case ServiceBroker.XML_JSON:

@@ -85,10 +85,10 @@ namespace Appcelerator
             switch (content_type)
             {
                 case ServiceBroker.APPLICATION_JSON:
-                    footer = "</messages>";
+                    footer = "]}";
                     break;
                 case ServiceBroker.XML_JSON:
-                    footer = "]}";
+                    footer = "</messages>";
                     break;
             }
             return footer;
@@ -108,16 +108,16 @@ namespace Appcelerator
                       time: the timestamp of this response in ISO 8601 format with timezone specified
                       messages: (an array of objects conforming to the message schema below
             */
-            String json_header = "{version:'1.1',encoding:'UTF-8',sessionid:'" + session_id + "',timestamp:'" + time + "',messages:[";
+            String json_header = "{version:'1.1',encoding:'UTF-8',sessionid:'" + session_id + "',timestamp:" + time + ",messages:[";
             String header = "";
 
             switch (content_type)
             {
                 case ServiceBroker.APPLICATION_JSON:
-                    header = xml_header;
+                    header = json_header;
                     break;
                 case ServiceBroker.XML_JSON:
-                    header = json_header;
+                    header = xml_header;
                     break;
             }
             return header;
@@ -125,7 +125,7 @@ namespace Appcelerator
 
         public double getTimeStamp()
         {
-            return (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            return Math.Floor((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
         }
 
         private void GuaranteeSessionMapped(String session_id)

@@ -98,7 +98,7 @@ namespace Appcelerator
             {
                 //If we can't open the settings file
                 Logger.Instance.LoggingLevel = LoggingLevel.ERROR;
-                writer.AutoFlush = false;
+                writer.AutoFlush = true;
             }
         }
 

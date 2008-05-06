@@ -34,8 +34,8 @@ namespace Appcelerator
             HttpResponse response = context.Response;
             HttpRequest request = context.Request;
             String content_type = request.ContentType;
-
-            response.ContentType = "text/xml;charset=UTF-8";
+            
+            response.ContentType = request.ContentType;
             response.Expires = 0;
             response.CacheControl = "Private"; //no-cache, no-store, private, must-revalidate
 
@@ -44,6 +44,11 @@ namespace Appcelerator
             context.Session["make_persistant"] = 1;
 
             String response_text = "";
+
+            if (content_type == "" && request.QueryString.GetValues("initial") != null)
+                return;
+            
+            content_type = content_type.Contains(XML_JSON) ? XML_JSON : APPLICATION_JSON;
 
             logger.Debug("Received HTTP Reqest of type: " + request.HttpMethod +" with content_type of " + content_type);
             switch (request.HttpMethod)

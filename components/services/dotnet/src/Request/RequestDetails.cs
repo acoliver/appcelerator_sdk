@@ -20,13 +20,13 @@ namespace Appcelerator
         private String tz="";
 
         //New JSON-only protocol
-        private String time="";
         private String encoding="";
         private String sessionid="";
+        private JsonObject jsonObj;
 
         //Both
         private String version="";
-
+        
 
         public RequestDetails(Stream request_data, String content_type)
         {
@@ -38,9 +38,9 @@ namespace Appcelerator
                         StringReader requestJSON = new StringReader(request_reader.ReadToEnd());
                         JsonParser parser = new JsonParser(requestJSON,true);
                         JsonObject json = parser.ParseObject();
-                        time = ((JsonString)json["time"]).Value;
-                        encoding = ((JsonString)json["encoding"]).Value;
-                        sessionid = ((JsonString)json["sessionid"]).Value;
+                        jsonObj = json;
+                        timestamp = ((JsonNumber)json["timestamp"]).Value.ToString();
+                        //sessionid = ((JsonString)json["sessionid"]).Value;
                         version = ((JsonString)json["version"]).Value;
                     }
                     break;
@@ -63,39 +63,34 @@ namespace Appcelerator
             get { return timestamp; }
             set { timestamp = value; }
         }
-
         public String Idle
         {
             get { return timestamp; }
             set { idle = value; }
         }
-
         public String Timezone
         {
             get { return tz; }
             set { tz = value; }
         }
-
         public String Version
         {
             get { return version; }
             set { version = value; }
         }
-
-        private String Time
-        {
-            get { return time; }
-            set { time = value; }
-        }
-        private String Encoding
+        public String Encoding
         {
             get { return encoding; }
             set { encoding = value; }
         }
-        private String SessionId
+        public String SessionId
         {
             get { return sessionid; }
             set { sessionid = value; }
+        }
+        public JsonObject JSON
+        {
+            get { return jsonObj; }
         }
     }
 }

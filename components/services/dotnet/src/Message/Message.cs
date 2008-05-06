@@ -48,7 +48,6 @@ namespace Appcelerator
 
         public Message(JsonObject message, HttpSessionState session, ServiceBroker servicebroker, RequestDetails details)
         {
-            requestid = ((JsonString)message["requestid"]).Value;
             type = ((JsonString)message["type"]).Value;
             scope = ((JsonString)message["scope"]).Value;
             version = ((JsonString)message["version"]).Value;
