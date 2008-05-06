@@ -13,41 +13,6 @@
     These tests exercise sending messages
 </p>
 
-<!-- <script type="text/javascript" charset="utf-8">
-window.Appcelerator.Selenium = {
-    messages: [],
-    clear_messages: function() {
-       window.Appcelerator.Selenium.messages.clear(); 
-    },
-    get_messages: function() {
-        return Object.toJSON(window.Appcelerator.Selenium.messages);
-    }
-}
-
-window.$MQL('l:~.*',function(type,msg,datatype,from)
-{
-    alert("local message");
-    window.Appcelerator.Selenium.messages.push(
-    {
-       'type': type,
-       'msg': msg,
-       'datatype': datatype,
-       'from': from 
-    });
-});
-
-window.$MQL('r:~.*',function(type,msg,datatype,from)
-{
-    alert("remote message");
-    window.Appcelerator.Selenium.messages.push(
-    {
-       'type': type,
-       'msg': msg,
-       'datatype': datatype,
-       'from': from 
-    });
-});
-</script> -->
 
 <div on="l:test.message then r:send.message">
     This is just a div that responds to messages

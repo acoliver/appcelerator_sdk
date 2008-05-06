@@ -108,6 +108,11 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
         return nil
     end
     
+    def assert_alert(alert_text)
+        my_text = get_alert()
+        assert_equal(alert_text, my_text)
+    end
+    
     def clear_messages()
         return get_eval("window.Appcelerator.Selenium.clear_messages()")
     end
@@ -147,6 +152,10 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
         });
 END_OF_JAVASCRIPT
         ret = get_eval(javascript)
+    end
+    
+    def url()
+        return "#{@basepath}#{page()}"
     end
     
     def setup

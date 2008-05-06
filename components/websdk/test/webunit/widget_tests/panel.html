@@ -26,39 +26,6 @@
 <p>
     These tests exercise the panel widget
 </p>
-<!--
-<div class="app_panel AP_DGRP " id="app_43" > 
-    <div class="app_panel_container collapsed">  
-        <div class="panel_header_container"> <div class="panel_hl"> </div> <div class="panel_hr"> </div>
-            <div class="panel_hc">
-                <div class="panel_header"> 
-                    <h3></h3> 
-                </div> 
-            </div>
-        </div>
- 
-        <div class="ap_body"> 
-            <div class="panel_cl">
-                <div class="panel_cr"> 
-                    <div class="panel_cc"> 
-                        <div class="panel_body">  To be, or not to be - that is the question: 
-                            <br>  Whether 'tis nobler in the mind to suffer 
-                            <br>  The slings and arrows of outrageous fortune 
-                            <br>  
-                        </div> 
-                        <div class="panel_tail"> 
-                            <div class="tail_right"> 
-                            </div>
-                        </div> 
-                    </div> 
-                </div>
-            </div> 
-            <div class="panel_footer_container"> <div class="panel_fl"> </div> <div class="panel_fr"> </div> <div class="panel_fc"> </div>
-            </div>
-        </div> 
-    </div>
- </div>
- -->
 <table width="90%">
     <tr>
         <td class="test" width="50%" valign="middle">
@@ -77,6 +44,48 @@
         <td class="result">
             <app:panel userClass="my_dimensions" color="light_gray" rounded='true' tail="right">
                 POW!
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see an alert when you shade/unshade
+        </td>
+        <td class="result">
+            <app:panel id="app_panel_shade_test" color="light_gray" rounded='true' shade='true' header_text="Shade/Unshade Test"
+                    on="shade then script[alert('Test Passed Shade')] or unshade then script[alert('Test Passed Unshade')]
+                        or l:shade.panel then shade or l:unshade.panel then unshade">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see an alert when you close/open <button on="click then l:open.this.panel">Open</button>
+        </td>
+        <td class="result">
+            <app:panel id="app_panel_close_open_test" color="light_gray" rounded='true' close='true' header_text="Close/Open Test"
+                    on="close then script[alert('Test Passed Close')] or open then script[alert('Test Passed Open')]
+                        or l:open.this.panel then open
+                        or l:close.this.panel then close">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
+            </app:panel>
+        </td>
+    </tr>
+     <tr>
+        <td class="test" width="50%" valign="middle">
+            You should see a light gray speech bubble with the tail in the left
+        </td>
+        <td class="result">
+            <app:panel color="light_gray" rounded='true' tail="left"
+                    on="close then script[alert('Test Passed')] and open then script[alert('Test Passed')]">
+                To be, or not to be - that is the question: <br />
+                Whether 'tis nobler in the mind to suffer  <br />
+                The slings and arrows of outrageous fortune  <br />
             </app:panel>
         </td>
     </tr>

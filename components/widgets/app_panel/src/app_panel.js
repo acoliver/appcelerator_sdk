@@ -65,7 +65,7 @@ Appcelerator.Widget.Panel =
     },
     getConditions: function()
     {
-        return ["open", "close", "shade", "unshaded"];
+        return ["open", "close", "shade", "unshade"];
     },
     getActions: function()
     {

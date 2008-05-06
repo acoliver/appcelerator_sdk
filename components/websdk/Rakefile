@@ -388,13 +388,14 @@ def run_selenium_tests(browser_name, browser)
   # to be run here.  
   #
   require 'test/selenium/app_button_test'
+  require 'test/selenium/app_panel_test'
   require 'test/selenium/messaging_test'
   #
   # End includes for unit test files
   #
   
   Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
-         "http://localhost:9002/widget_tests"))
+         "http://localhost:9002"))
 end
 
 def build_suite(name, browser, location)

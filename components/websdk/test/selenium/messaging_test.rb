@@ -1,7 +1,6 @@
 class MessagingTest < Test::Unit::SeleniumTestCase
     include SeleniumHelper
-    @@page = "messaging.html"
- 
+
     def test_message_sent
         open(url())
         add_message_listeners()
@@ -10,7 +9,7 @@ class MessagingTest < Test::Unit::SeleniumTestCase
         assert(nil != get_message('r:send.message'))
     end
     
-    def url()
-        return "#{@basepath}/../misc/#{@@page}"
+    def page()
+       return '/misc/messaging.html' 
     end
 end

@@ -13,7 +13,7 @@ s = HTTPServer.new(
     :Logger => logger,
     :AccessLog => access_log,
     :Port            => 9002,
-    :DocumentRoot    => "#{STAGE_DIR}/unittest"
+    :DocumentRoot    => "#{STAGE_DIR}/webunit"
 )
 
 trap(15){ s.shutdown }

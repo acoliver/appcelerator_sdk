@@ -112,8 +112,9 @@ class ButtonTest < Test::Unit::SeleniumTestCase
         assert(child_has_class("button_test_15", "button_icon_save_gray"))
   	end
   
-    def url()
-        return "#{@basepath}/#{@@widget}"
+    def page()
+        return '/widget_tests/button.html'
     end
+
 
 end
