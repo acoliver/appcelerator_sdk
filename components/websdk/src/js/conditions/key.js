@@ -111,61 +111,96 @@ function(element,condition,action,elseAction,delay,ifCond)
             var me = $(scope.id);
             if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
             var e = e || window.event;
-            var data = {key: e.keyCode || e.which, event: e};
+            var key = e.keyCode || e.which;
+            var data = {key: key, event: e};
 
             if (attribute)
             {
-                switch (attribute)
+                var mods = attribute.split('+');
+                var code = mods[mods.length-1];
+                
+                switch (code)
                 {
                     case 'enter':
                     {
-                        if (data.key != Event.KEY_RETURN) return;
+                        if (key != Event.KEY_RETURN) return;
                         break;
                     }
                     case 'esc':
                     {
-                        if (data.key != Event.KEY_ESC) return;
+                        if (key != Event.KEY_ESC) return;
                         break;
                     }
                     case 'left':
                     {
-                        if (data.key != Event.KEY_LEFT) return;
+                        if (key != Event.KEY_LEFT) return;
                         break;
                     }
                     case 'right':
                     {
-                        if (data.key != Event.KEY_RIGHT) return;
+                        if (key != Event.KEY_RIGHT) return;
                         break;
                     }
                     case 'up':
                     {
-                        if (data.key != Event.KEY_UP) return;
+                        if (key != Event.KEY_UP) return;
                         break;
                     }
                     case 'down':
                     {
-                        if (data.key != Event.KEY_DOWN) return;
+                        if (key != Event.KEY_DOWN) return;
                         break;
                     }
                     case 'tab':
                     {
-                        if (data.key != Event.KEY_TAB) return;
+                        if (key != Event.KEY_TAB) return;
                         break;
                     }
                     case 'delete':
                     {
-                        if (data.key != Event.KEY_DELETE) return;
+                        if (key != Event.KEY_DELETE) return;
                         break;
                     }
                     case 'backspace':
                     {
-                        if (data.key != Event.KEY_BACKSPACE) return;
+                        if (key != Event.KEY_BACKSPACE) return;
                         break;
                     }
                     default:
                     {
-                        if (data.key != attribute) return;
+                        if (key != code) return;
                         break;
+                    }
+                }
+                
+                if (mods.length > 1)
+                {
+                    for (var i=0; i<(mods.length-1); i++)
+                    {
+                        var mod = mods[i];
+                        switch (mod)
+                        {
+                            case 'ctrl':
+                            {
+                                if (!e.ctrlKey) return;
+                                break;
+                            }
+                            case 'alt':
+                            {
+                                if (!e.altKey) return;
+                                break;
+                            }
+                            case 'shift':
+                            {
+                                if (!e.shiftKey) return;
+                                break;
+                            }
+                            case 'meta':
+                            {
+                                if (!e.metaKey) return;
+                                break;
+                            }
+                        }
                     }
                 }
             }
