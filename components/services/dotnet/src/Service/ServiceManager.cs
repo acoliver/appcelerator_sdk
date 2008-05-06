@@ -177,8 +177,7 @@ namespace Appcelerator
                     }
                     break;
                 case ServiceBroker.XML_JSON:
-                    XPathDocument doc = new XPathDocument(context.Request.InputStream);
-                    XPathNodeIterator iter = doc.CreateNavigator().Select("//message");
+                    XPathNodeIterator iter = details.XMLIterator;
 
                     while (iter.MoveNext())
                     {

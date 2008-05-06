@@ -18,7 +18,7 @@ namespace Appcelerator
         private String timestamp="";
         private String idle="";
         private String tz="";
-
+        private XPathNodeIterator xmlObj;
         //New JSON-only protocol
         private String encoding="";
         private String sessionid="";
@@ -48,6 +48,7 @@ namespace Appcelerator
                     XPathDocument requestXML = new XPathDocument(request_data);
                     XmlDocument doc = new XmlDocument();
                     doc.LoadXml(requestXML.CreateNavigator().OuterXml);
+                    xmlObj = doc.CreateNavigator().Select("//message");
                     XmlElement request = doc.DocumentElement;
 
                     timestamp = request.GetAttribute("timestamp");
@@ -91,6 +92,10 @@ namespace Appcelerator
         public JsonObject JSON
         {
             get { return jsonObj; }
+        }
+        public XPathNodeIterator XMLIterator
+        {
+            get { return xmlObj; }
         }
     }
 }

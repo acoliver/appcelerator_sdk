@@ -17,7 +17,8 @@ namespace Appcelerator
     public class ServiceBroker : IHttpHandler, IRequiresSessionState
     {
         public const String APPLICATION_JSON = "application/json";
-        public const String XML_JSON = "xml/json";
+        public const String XML_JSON = "text/xml"; //"xml/json";
+        public const String TEXT_HTML = "text/html";
         private Dispatcher dispatcher = Dispatcher.Instance;
         private ServiceManager serviceManager;
         private Logger logger;
@@ -45,7 +46,7 @@ namespace Appcelerator
 
             String response_text = "";
 
-            if (content_type == "" && request.QueryString.GetValues("initial") != null)
+            if ((content_type == "" || content_type.Contains(TEXT_HTML)) && request.QueryString.GetValues("initial") != null)
                 return;
             
             content_type = content_type.Contains(XML_JSON) ? XML_JSON : APPLICATION_JSON;
