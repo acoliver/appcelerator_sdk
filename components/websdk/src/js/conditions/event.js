@@ -43,6 +43,11 @@ Appcelerator.Compiler.actionId = 0;
 
 Appcelerator.Compiler.isEventSelector = function (token)
 {
+    if (token.indexOf(':')!=-1 || token.indexOf('[')!=-1)
+    {
+        return false;
+    }
+    
 	if (token.charAt(token.length-1)=='!')
 	{
 		token = token.substring(0,token.length-1);
@@ -53,10 +58,12 @@ Appcelerator.Compiler.isEventSelector = function (token)
 		{
 			return true;
 		}
-		if (token.indexOf(Appcelerator.Compiler.Events[c]) != -1)
+		
+		var i = token.indexOf('.');
+		realtoken = token.substring(i+1);
+		if (realtoken==Appcelerator.Compiler.Events[c])
 		{
-			// make sure it's not another action
-			return token.indexOf(':')==-1 && token.indexOf('[')==-1;
+			return true;
 		}
 	}
 	return false;

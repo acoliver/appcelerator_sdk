@@ -22,6 +22,33 @@ Appcelerator.Compiler.registerAttributeProcessor(['div','ul','ol'],'sortable',
 					options.tag = Appcelerator.Compiler.getTagname(child);
 				}
 			}
+			
+			options.onUpdate = function(e)
+			{
+				var listeners = element.updateListeners;
+				if (listeners && listeners.length > 0)
+				{
+					for (var c=0;c<listeners.length;c++)
+					{
+						var cb = listeners[c];
+						cb.onUpdate(e);
+					}
+				}
+			};
+			
+			options.onChange = function(e)
+			{
+				var listeners = element.changeListeners;
+				if (listeners && listeners.length > 0)
+				{
+					for (var c=0;c<listeners.length;c++)
+					{
+						var cb = listeners[c];
+						cb.onChange(e);
+					}
+				}
+			};
+			
 			Sortable.create(element.id,options);
 
 			Appcelerator.Compiler.addTrash(element,function()

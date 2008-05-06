@@ -731,7 +731,35 @@
 				<div >move me - 3</div>
 			</div>
 		</td>
-	</tr>	
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Sortable (sortchange condition)
+		</td>
+		<td class="result">	
+			<div sortable="true" style="cursor: move" on="sortchange then javascript[$('sortchange_text').innerHTML='Test Passed']">
+				<div >move me - 1</div>
+				<div >move me - 2</div>
+				<div >move me - 3</div>
+			</div>
+			<div id="sortchange_text" style="color: red">
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Sortable (sortupdate condition)
+		</td>
+		<td class="result">	
+			<div sortable="true" style="cursor: move" on="sortupdate then javascript[$('sortupdate_text').innerHTML='Test Passed']">
+				<div >move me - 1</div>
+				<div >move me - 2</div>
+				<div >move me - 3</div>
+			</div>
+			<div id="sortupdate_text" style="color: red">
+			</div>
+		</td>
+	</tr>
 	<tr>
 		<td class="test" valign="middle">
 			<a on="click then l:clearform.form">Run Test</a>

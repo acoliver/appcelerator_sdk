@@ -1728,7 +1728,8 @@ Appcelerator.Compiler.handleCondition = function(clause)
 {
     var element = clause[0];
     $D('handleCondition called for ',element);
-    //first loop through custom actions defined by the widget 
+
+    //first loop through custom conditions defined by the widget 
     for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++) 
     {
         var condFunction = Appcelerator.Compiler.customConditionsForWidget[f].func;
