@@ -190,10 +190,8 @@
     {
         global $json;
         $request = get_object_vars($json->decode($input));
-        //$request = get_object_vars($request['request']);
 
         $timestamp = $request['timestamp'];
-        $tz = $request['tz'];
         
         $requests = array();
         foreach ($request['messages'] as $smessage)
@@ -201,12 +199,9 @@
            $smessage = get_object_vars($smessage);
            $message = array();
            $message['type'] = $smessage['type']; 
-           $message['scope'] = $smessage['scope']; 
            $message['version'] = $smessage['version']; 
-           $message['requestid'] = $smessage['requestid']; 
-           $message['datatype'] = $smessage['datatype']; 
-           $message['direction'] = "INCOMMING";
-           $message['data'] = $smessage['data']; 
+           $message['scope'] = $smessage['scope']; 
+           $message['data'] = get_object_vars($smessage['data']);
            array_push($requests, $message);
         }
 
@@ -254,11 +249,8 @@
         {
             $request = array();
             $request['type']      = $messageAttrs['TYPE'];
-            $request['requestid'] = $messageAttrs['REQUESTID'];
-            $request['scope']     = array_key_exists('SCOPE', $messageAttrs) ? $messageAttrs['SCOPE'] : 'appcelerator';
             $request['version']   = array_key_exists('VERSION', $messageAttrs) ? $messageAttrs['VERSION'] : '1.0';
-            $request['datatype']  = array_key_exists('DATATYPE', $messageAttrs) ? $messageAttrs['DATATYPE'] : 'JSON';
-            $request['direction'] = 'INCOMMING';
+            $request['scope']     = array_key_exists('SCOPE', $messageAttrs) ? $messageAttrs['SCOPE'] : 'appcelerator';
             $request['data'] = get_object_vars($json->decode($cdata));
             array_push($requests, $request);
         }
@@ -284,7 +276,8 @@
         global $json;
         $out = array(
             'version' => '1.0',
-            'encoding' => 'UTF-8');
+            'timestamp' => gmdate('U999')
+        );
             
         if (!is_null($sessionid))
         {
@@ -299,13 +292,19 @@
         global $json;
         $out = "";
         $out = $out . '<?xml version="1.0" encoding="UTF-8"?>';
-        $out = $out . '<messages version="$version" sessionid="$sessionid">';
+        $out = $out . '<messages version="1.0"';
+       
+        if (isset($sessionid))
+        { 
+            $out = $out . ' sessionid="' . $sessionid;
+        }
+        $out = $out . '>';
     
         foreach ($responses as $r)
         {
             $out = $out
-                     . '<message requestid="' . $r['requestid']
-                     . '" direction="OUTGOING" datatype="JSON" type="' . $r['type']
+                     . '<message requestid="1"' 
+                     . ' direction="OUTGOING" datatype="JSON" type="' . $r['type']
                      . '" scope="' . $r['scope'] . '"><![CDATA['
                      . $json->encode($r['data']) . ']]></message>';
         }
@@ -344,9 +343,6 @@
                 $response['scope'] = $request['scope'];
                 $response['version'] = $request['version'];
                 $response['type'] = $handler->getResponseType();
-                $response['requestid'] = $request['requestid'];
-                $response['direction'] = "OUTGOING";
-                $response['datatype'] = $request['datatype'];
                 $response['data'] = &$data;
 
                 array_push($responses, &$response);

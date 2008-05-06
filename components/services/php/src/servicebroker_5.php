@@ -129,11 +129,8 @@
 
             $request = array();
             $request['type'] = $node->getAttribute('type');
-            $request['scope'] = $node->getAttribute('scope');
             $request['version'] = $node->getAttribute('version');
-            $request['requestid'] = $node->getAttribute('requestid');
-            $request['datatype'] = $node->getAttribute('datatype');
-            $request['direction'] = "INCOMMING";
+            $request['scope'] = $node->getAttribute('scope');
             $request['data'] = json_decode($cdata, true);
             $requests[] = $request; 
         }
@@ -144,21 +141,17 @@
     function getRequestsFromJSON($input)
     {
         $request = json_decode($input, true);
-        //$request = $request['request'];
-
+    
+        $version = $request['version']; // protocol version
         $timestamp = $request['timestamp'];
-        $tz = $request['tz'];
         
         $requests = array();
         foreach ($request['messages'] as $smessage)
         {
            $message = array();
            $message['type'] = $smessage['type']; 
+           $message['version'] = $smessage['version'];  // service version
            $message['scope'] = $smessage['scope']; 
-           $message['version'] = $smessage['version']; 
-           $message['requestid'] = $smessage['requestid']; 
-           $message['datatype'] = $smessage['datatype']; 
-           $message['direction'] = "INCOMMING";
            $message['data'] = $smessage['data']; 
            $requests[] = $message;
         }
@@ -182,7 +175,8 @@
     {
         $json = array(
             'version' => '1.0',
-            'encoding' => 'UTF-8');
+            'timestamp' => gmdate('U999') // timestamp in miliseconds
+        );
             
         if (!is_null($sessionid))
         {
@@ -210,10 +204,8 @@
         {
             $element = $dom->createElement('message');
             $element->setAttribute('type', $response['type']);
-            $element->setAttribute('requestid', $response['requestid']);
-            $element->setAttribute('datatype',  $response['datatype']);
-            $element->setAttribute('direction', $response['direction']);
-            $element->setAttribute('timestamp', $response['timestamp']);
+            $element->setAttribute('requestid', '1');
+            $element->setAttribute('datatype',  'JSON');
             $cdata = $dom->createCDATASection(json_encode($response['data']));
             $element->appendChild($cdata);
             $messages->appendChild($element);
@@ -250,12 +242,9 @@
             {
                 $response = array();
                 $data = array();
-                $response['scope'] = $request['scope'];
-                $response['version'] = $request['version'];
                 $response['type'] = $handler->getResponseType();
-                $response['requestid'] = $request['requestid'];
-                $response['direction'] = "OUTGOING";
-                $response['datatype'] = $request['datatype'];
+                $response['version'] = $request['version'];
+                $response['scope'] = $request['scope'];
                 $response['data'] = &$data;
                 $responses[] = &$response; // serialize this later
             }
