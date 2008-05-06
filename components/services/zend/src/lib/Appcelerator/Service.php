@@ -42,7 +42,6 @@ final class Appcelerator_Service {
         Zend_Loader::loadClass('Appcelerator_Message');
         $response = $request->copy();
         $response->setType($service->getResponseType());
-        $response->setDirection("OUTGOING");
         $response->setData(array());
         return $response; 
     }

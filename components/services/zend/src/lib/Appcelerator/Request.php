@@ -7,7 +7,7 @@ final class Appcelerator_Request {
     private $invalidMethod = false;
 
     private $timestamp;
-    private $timezoneOffset;
+    private $version;
     private $sessionid;
 
     private $requests;
@@ -47,7 +47,7 @@ final class Appcelerator_Request {
         $dom->loadXML($input);
 
         $this->timestamp = $dom->documentElement->getAttribute("timestamp");
-        $this->timezoneOffset = $dom->documentElement->getAttribute("tz");
+        $this->version = $dom->documentElement->getAttribute("version");
 
         $nodes = $dom->documentElement->childNodes;
         foreach ($nodes as $node) {
@@ -62,11 +62,8 @@ final class Appcelerator_Request {
 
             $message = new Appcelerator_Message();
             $message->setType($node->getAttribute('type')); 
-            $message->setScope($node->getAttribute('scope')); 
             $message->setVersion($node->getAttribute('version')); 
-            $message->setRequestid($node->getAttribute('requestid')); 
-            $message->setDataType($node->getAttribute('datatype')); 
-            $message->setDirection("INCOMMING");
+            $message->setScope($node->getAttribute('scope')); 
             $message->setData(Zend_Json::decode($cdata,true)); 
             $this->requests[] = $message;
         }
@@ -76,17 +73,14 @@ final class Appcelerator_Request {
         //$request = $request['request'];
 
         $this->timestamp = $request['timestamp']; 
-        $this->timezoneOffset = $request['tz']; 
+        $this->version = $request['version']; 
 
         $this->message = array(); // we're going to fill this with messages
         foreach ($request['messages'] as $smessage) {
            $message = new Appcelerator_Message();
            $message->setType($smessage['type']); 
-           $message->setScope($smessage['scope']); 
            $message->setVersion($smessage['version']); 
-           $message->setRequestid($smessage['requestid']); 
-           $message->setDataType($smessage['datatype']); 
-           $message->setDirection("INCOMMING");
+           $message->setScope($smessage['scope']); 
            $message->setData($smessage['data']); 
            $this->requests[] = $message;
         }
@@ -136,11 +130,11 @@ final class Appcelerator_Request {
         foreach($this->responses as $response) {
             $message = $dom->createElement('message');
             $message->setAttribute('type', $response->getType());
-            $message->setAttribute('requestid', $response->getRequestid());
-            $message->setAttribute('datatype', $response->getDatatype());
-            $message->setAttribute('direction', $response->getDirection());
-            $message->setAttribute('scope', $response->getScope());
             $message->setAttribute('version', $response->getVersion());
+            $message->setAttribute('scope', $response->getScope());
+
+            $message->setAttribute('requestid', "1");
+            $message->setAttribute('datatype', "JSON");
 
             $cdata = $dom->createCDATASection(Zend_Json::encode($response->getData()));
             $message->appendChild($cdata);
@@ -154,7 +148,7 @@ final class Appcelerator_Request {
     public function getJSONResponse() {
         $out = array(
            'version' => '1.0',
-           'encoding' => 'UTF-8', 
+           'timestamp' => gmdate('U999'),
            'messages' => array()
         );
 
@@ -166,11 +160,8 @@ final class Appcelerator_Request {
         foreach($this->responses as $response) {
             $message = array();
             $message['type'] = $response->getType();
-            $message['requestid'] = $response->getRequestid();
-            $message['datatype'] = $response->getDatatype();
-            $message['direction'] = $response->getDirection();
-            $message['scope'] = $response->getScope();
             $message['version'] = $response->getVersion();
+            $message['scope'] = $response->getScope();
             $message['data'] = $response->getData();
             $out['messages'][] = $message; 
         }
