@@ -32,7 +32,7 @@ Appcelerator.Widget.Tabpanel =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return "1.0.1";
 	},
 	getSpecVersion: function()
 	{
