@@ -130,9 +130,10 @@ class ServiceDispatcher(object):
                 yield response
 
 
-class _default_CrossDomainProxy(object):
+
+class CrossDomainProxy(object):
     
-    SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')    
+    SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')
     
     def __call__(self, environ, start_response):
         fields = cgi.parse_qs(environ['QUERY_STRING'])
@@ -144,36 +145,26 @@ class _default_CrossDomainProxy(object):
             url = url[0]
             if '://' not in url:
                 url = urllib.unquote(url)
-            proxied_request = urllib.urlopen(url)
             
-            headers = [header for header in proxied_request.headers.items()
-                       if header[0].lower() not in self.SUPPRESSED_HEADERS]
+            headers,content = self.fetch(url)
             
             start_response('200 OK', headers)
-            return [proxied_request.read()]
+            return [content]
+    
+    def fetch(self, url):
+        proxied_request = urllib.urlopen(url)
+        headers = [header for header in proxied_request.headers.items()
+                   if header[0].lower() not in self.SUPPRESSED_HEADERS]
+        return headers, proxied_request.read()
 
 
-class _appengine_CrossDomainProxy(object):
+class AppEngineCrossDomainProxy(CrossDomainProxy):
     
-    SUPPRESSED_HEADERS = ('transfer-encoding','set-cookie')    
-    
-    def __call__(self, environ, start_response):
-        fields = cgi.parse_qs(environ['QUERY_STRING'])
-        url = fields.get('url', None)
-        if not url:
-            start_response('400 Bad Request', [])
-            return []
-        else:
-            url = url[0]
-            if '://' not in url:
-                url = urllib.unquote(url)
-            proxied_request = urlfetch.fetch(url)
-            
-            headers = [header for header in proxied_request.headers.items()
-                       if header[0].lower() not in self.SUPPRESSED_HEADERS]
-            
-            start_response('200 OK', headers)
-            return [proxied_request.content]
+    def fetch(self, url):
+        proxied_request = urlfetch.fetch(url)
+        headers = [header for header in proxied_request.headers.items()
+                   if header[0].lower() not in self.SUPPRESSED_HEADERS]
+        return headers, proxied_request.content
 
 
 def service_broker_factory(global_config, **local_conf):
@@ -241,7 +232,7 @@ ServiceBroker = InMemoryServiceBroker()
 
 
 
-def Service(request, response):
+def Service(request, response=None):
     " decorator to expose a service that can be dispatched to by the Appcelerator message broker"
     def _(func):
         arity = func.func_code.co_argcount
@@ -269,6 +260,7 @@ def Service(request, response):
                 return func(data, session, msgtype)
         else:
             logging.error('bad number of arguments for @Service annotated function, should be from 0 to 3')
+            return
         
         listener.responsetype = response
         listener.func_name = func.func_name
@@ -365,11 +357,9 @@ try:
     _JsonEncoder = DatastoreJsonEncoder
     _decoder_hook = _json_decoder_hook
     _load_services = _appengine_load_services
-    CrossDomainProxy = _appengine_CrossDomainProxy
+    CrossDomainProxy = AppEngineCrossDomainProxy
 except ImportError:
     # no appengine, using the standard stuff
     _JsonEncoder = json.JSONEncoder
     _decoder_hook = None
     _load_services = _pylons_load_services
-    CrossDomainProxy = _default_CrossDomainProxy
-
