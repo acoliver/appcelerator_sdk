@@ -162,9 +162,9 @@ Appcelerator.Compiler.removeElementId = function(id)
  */
 function $(element) 
 {
-    var args = $A(arguments);
-	if (args.length > 1) 
+	if (arguments.length > 1) 
 	{
+	    var args = $A(arguments);
     	return args.collect(function(a)
 		{
 			return $(a);
@@ -173,6 +173,11 @@ function $(element)
 
 	if (Object.isString(element))
 	{
+	    if(element == '')
+	    {
+	        // otherwise $('') == $, which breaks code doing null testing
+	        return null;
+	    }
 		var id = element;
 		element = window['$'+id];
 		if (!element)
