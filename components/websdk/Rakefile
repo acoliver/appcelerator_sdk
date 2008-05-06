@@ -404,7 +404,7 @@ def build_suite(name, browser, location)
         tests = tests.split(',')
     end
     
-    suite = Test::Unit::SeleniumTestSuite.new(name, browser, location)
+    suite = Test::Unit::SeleniumTestSuite.new(name, browser, location, "#{STAGE_DIR}/reports/#{browser}")
     ObjectSpace::each_object(Class) { |klass| 
         if klass < Test::Unit::SeleniumTestCase and (tests.nil? or tests.include?(klass.to_s))
             puts "Adding: #{klass}"

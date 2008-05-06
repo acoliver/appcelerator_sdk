@@ -1,4 +1,5 @@
 require 'json'
+require 'fileutils'
 
 class Selenium::SeleniumDriver
     def open(url)
@@ -8,19 +9,21 @@ class Selenium::SeleniumDriver
 end
 
 class Test::Unit::SeleniumTestSuite < Test::Unit::TestSuite
-    def initialize(name="Selenium Test", browser='firefox', basepath="http://appcelerator.org")
+    def initialize(name="Selenium Test", browser='firefox', basepath="http://appcelerator.org", screen_grab_location="")
         super(name)
         @browser = browser
         @basepath = basepath
+        @screen_grab_location = screen_grab_location
     end
     
-    attr_writer :browser, :basepath
+    attr_writer :browser, :basepath, :screen_grab_location
     
     def run(result, &progress_block)
       yield(STARTED, name)
       @tests.each do |test|
         test.browser = @browser
         test.basepath = @basepath
+        test.screen_grab_location = @screen_grab_location
         test.run(result, &progress_block)
       end
       yield(FINISHED, name)
@@ -30,7 +33,7 @@ end
 class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     include SeleniumHelper
     
-    attr_writer :browser, :basepath
+    attr_writer :browser, :basepath, :screen_grab_location
     
     def initialize(name="Selenium Test Case")
         super(name)
@@ -152,6 +155,11 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
         });
 END_OF_JAVASCRIPT
         ret = get_eval(javascript)
+    end
+    
+    def screen_shot(name)
+        FileUtils.mkdir_p("#{@screen_grab_location}/", :verbose => true)
+        capture_screenshot("#{@screen_grab_location}/#{name}")
     end
     
     def url()

@@ -5,7 +5,7 @@ class PanelTest < Test::Unit::SeleniumTestCase
     def initialize(name="panel test")
         return super(name)
     end
-    
+
     def test_shade_unshade()
         open(url())
         mq('l:shade.panel')
