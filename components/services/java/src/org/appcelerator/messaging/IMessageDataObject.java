@@ -420,5 +420,6 @@ public interface IMessageDataObject extends IMessageDataString
      *
      * @return class for value object associated with key or <code>null</code> if key not found
      */
+    @SuppressWarnings("unchecked")
     public Class getClass(String key);
 }

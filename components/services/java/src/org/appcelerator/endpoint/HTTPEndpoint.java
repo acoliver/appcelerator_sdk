@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.dispatcher.ServiceDirectoryScanner;
@@ -55,6 +54,7 @@ import org.mortbay.resource.Resource;
 public class HTTPEndpoint
 {
 
+    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(HTTPEndpoint.class);
     
     private Server server;

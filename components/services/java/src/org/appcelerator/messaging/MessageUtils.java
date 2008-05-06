@@ -62,14 +62,14 @@ public class MessageUtils
         return timezoneOffset;
     }
     
-    public static Document createMessageXML (String sessionId, String instanceId) throws Exception
+    public static Document createMessageXML (String sessionId) throws Exception
     {
-    	return createMessageXML(sessionId, instanceId,"UTF-8");
+    	return createMessageXML(sessionId, "UTF-8");
     }
-    public static Document createMessageXML (String sessionId, String instanceId, String encoding) throws Exception
+    public static Document createMessageXML (String sessionId, String encoding) throws Exception
     {
         long timestamp = System.currentTimeMillis();
-        return Util.toXML("<?xml version='1.0' encoding=\""+encoding+"\"?><messages timestamp='"+timestamp+"' tz='"+timezoneOffset+"' version='1.0' sessionid='" + sessionId + "' instanceid='"+instanceId+"' />",encoding);
+        return Util.toXML("<?xml version='1.0' encoding=\""+encoding+"\"?><messages timestamp='"+timestamp+"' tz='"+timezoneOffset+"' version='1.0' sessionid='" + sessionId + "' />",encoding);
     }
     /**
      * given a message, append it to root and return it
@@ -83,13 +83,16 @@ public class MessageUtils
     {
         Element elem = root.getOwnerDocument().createElement("message");
         root.appendChild(elem);
-        elem.setAttribute("timestamp", String.valueOf(message.getTimestamp()));
-        elem.setAttribute("requestid", message.getRequestid());
         elem.setAttribute("type", message.getType());
-        elem.setAttribute("direction", message.getDirection().name());
-        elem.setAttribute("datatype", message.getDataType().name());
-        elem.setAttribute("scope", message.getScope());
         elem.setAttribute("version", message.getVersion());
+        elem.setAttribute("scope", message.getScope());
+        elem.setAttribute("timestamp", String.valueOf(message.getTimestamp()));
+
+        // messages no longer track this data, but old
+        // clients may be expecting them
+        elem.setAttribute("requestid", "1");
+        elem.setAttribute("datatype", "JSON");
+
         IMessageDataObject data = message.getData();
         elem.appendChild(root.getOwnerDocument().createCDATASection(data.toDataString()));
         root.appendChild(elem);
@@ -106,18 +109,18 @@ public class MessageUtils
     public static Message fromXML(Element element, Principal user) throws Exception
     {
         Message message = new Message(user);
-        message.setRequestid(element.getAttribute("requestid"));
-        message.setDataType(MessageDataType.valueOf(element.getAttribute("datatype")));
         message.setType(element.getAttribute("type"));
-        message.setDirection(MessageDirection.INCOMING);
-        message.setData(MessageUtils.createMessageDataObject(element));
-        message.setScope(element.getAttribute("scope"));
+        
         String version = element.getAttribute("version");
         if (version==null || version.equals(""))
         {
             version="1.0";
         }
         message.setVersion(version);
+        
+        message.setScope(element.getAttribute("scope"));
+        message.setData(MessageUtils.createMessageDataObject(element));
+
         return message;
     }
 
@@ -145,7 +148,6 @@ public class MessageUtils
     public static Message createResponseMessage(Message message)
     {
         Message responseMessage = new Message(message);
-        responseMessage.setDirection(MessageDirection.OUTGOING);
         responseMessage.setData(new JSONMessageDataObject());
         return responseMessage;
     }
@@ -159,10 +161,6 @@ public class MessageUtils
      */
     public static JSONObject getJSONObjectData(Message message) throws JSONException
     {
-        if (!message.getDataType().equals(MessageDataType.JSON))
-        {
-            throw new IllegalArgumentException("message is not a JSON message data type: " + message);
-        }
         Object data = message.getData();
         String jsonData;
         if (data instanceof Element)
@@ -173,10 +171,10 @@ public class MessageUtils
         {
             jsonData = (String) data;
         }
-		else if (data instanceof JSONMessageDataObject)
-		{
-			return ((JSONMessageDataObject)data).getJSONObject();
-		}
+        else if (data instanceof JSONMessageDataObject)
+        {
+            return ((JSONMessageDataObject)data).getJSONObject();
+        }
         else
         {
             throw new IllegalArgumentException("unhandled class type for JSON " + data.getClass() + " for => " + message);
@@ -251,6 +249,7 @@ public class MessageUtils
      * @return new message data object
      * @throws MessageDataObjectException upon error
      */
+    @SuppressWarnings("unchecked")
     public static IMessageDataObject copyMessageDataObject(IMessageDataObject messageDataObject) throws MessageDataObjectException
     {
         IMessageDataObject newMessageDataObject = createMessageDataObject();

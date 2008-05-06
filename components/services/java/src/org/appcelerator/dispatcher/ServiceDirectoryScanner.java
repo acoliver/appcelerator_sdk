@@ -21,7 +21,6 @@
 package org.appcelerator.dispatcher;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -38,7 +37,6 @@ import javassist.CtClass;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.util.Util;
 
 /**
  * This class is responsible for scanning a directory for Java based files which contain
@@ -53,20 +51,20 @@ import org.appcelerator.util.Util;
 public class ServiceDirectoryScanner implements Runnable
 {
     private static final Log LOG = LogFactory.getLog(ServiceDirectoryScanner.class);
-    
+
     private File serviceDirectory;
     private Thread scannerThread;
     private boolean running;
     private long scanInterval;
     private HashMap<String,Entry> services=new HashMap<String,Entry>();
-    
-    
+
+
     public ServiceDirectoryScanner(File directory, long scanInterval)
     {
         this.serviceDirectory = directory;
         this.scanInterval = scanInterval;
     }
-    
+
     public void start ()
     {
         if (this.running)
@@ -78,7 +76,7 @@ public class ServiceDirectoryScanner implements Runnable
         this.scannerThread.start();
         LOG.info("Service scanner is running every " + (scanInterval/1000) + " seconds");
     }
-    
+
     public void stop ()
     {
         if (running)
@@ -95,7 +93,7 @@ public class ServiceDirectoryScanner implements Runnable
             LOG.info("Service scanner has been stopped");
         }
     }
-    
+
     public void run ()
     {
         while(running)
@@ -103,61 +101,61 @@ public class ServiceDirectoryScanner implements Runnable
             ArrayList<File> files = new ArrayList<File>();
             getSourceFiles(serviceDirectory, files);
 
-			if (files!=null && files.size() > 0)
+            if (files!=null && files.size() > 0)
             {
-	            Set<String> current = new HashSet<String>(services.keySet());
+                Set<String> current = new HashSet<String>(services.keySet());
 
-	            for (File file : files)
-	            {
-	                String name = file.getName();
-	                Entry entry = services.get(name);
-	                if (entry==null)
-	                {
-	                    // new
-	                    try
-	                    {
-	                        entry = new Entry(file,serviceDirectory);
-	                        services.put(name, entry);
-	                    }
-	                    catch (Exception ex)
-	                    {
-	                        ex.printStackTrace();
-	                    }
-	                }
-	                else
-	                {
-	                    // current
-	                    current.remove(name);
-	                }
+                for (File file : files)
+                {
+                    String name = file.getName();
+                    Entry entry = services.get(name);
+                    if (entry==null)
+                    {
+                        // new
+                        try
+                        {
+                            entry = new Entry(file,serviceDirectory);
+                            services.put(name, entry);
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                    else
+                    {
+                        // current
+                        current.remove(name);
+                    }
 
-	                if (entry != null && entry.requiresCompilation())
-	                {
-	                    try
-	                    {
-	                        entry.compile();
-	                    }
-	                    catch (Exception ex)
-	                    {
-	                        ex.printStackTrace();
-	                        services.remove(name);
-	                    }
-	                }
-	            }
+                    if (entry != null && entry.requiresCompilation())
+                    {
+                        try
+                        {
+                            entry.compile();
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                            services.remove(name);
+                        }
+                    }
+                }
 
-	            if (!current.isEmpty())
-	            {
-	                // not found, they have been removed and need to be
-	                // removed from registery
-	                for (String name : current)
-	                {
-	                    Entry e = services.remove(name);
-	                    for (ServiceAdapter a : e.registrations)
-	                    {
-	                    	ServiceRegistry.unregisterService(a);
-	                    }
-	                }
-	            }
-			}
+                if (!current.isEmpty())
+                {
+                    // not found, they have been removed and need to be
+                    // removed from registery
+                    for (String name : current)
+                    {
+                        Entry e = services.remove(name);
+                        for (ServiceAdapter a : e.registrations)
+                        {
+                            ServiceRegistry.unregisterService(a);
+                        }
+                    }
+                }
+            }
             try
             {
                 Thread.sleep(scanInterval);
@@ -168,68 +166,69 @@ public class ServiceDirectoryScanner implements Runnable
             }
         }
     }
-	public void getSourceFiles(ArrayList<File> files) 
-	{
-		getSourceFiles(serviceDirectory,files);
-	}
-	private void getSourceFiles(File directory,ArrayList<File> result) {
-		File [] files = directory.listFiles();
-		for (File file : files)
-		{
- 			if (file.isDirectory())
- 			{
- 				LOG.debug("traversing "+file);
- 				getSourceFiles(file,result);
- 			}
- 			else if (file.getName().endsWith(".java")) 
-	        {
- 				result.add(file);
- 				LOG.debug("added "+file);
-	        } 
-	        else
-	        {
- 				LOG.debug("ignored "+file);
-	        }
-		}
-	}
-    
-	private static final Pattern packagePattern = Pattern.compile("package (.*?);",Pattern.MULTILINE|Pattern.DOTALL);
-	private static String findPackage(String code)
-	{
-		Matcher matcher = packagePattern.matcher(code);
-		if (matcher.find())
-		{
-			return matcher.group(1);
-		}
-		return null;
-	}
-    
+    public void getSourceFiles(ArrayList<File> files) 
+    {
+        getSourceFiles(serviceDirectory,files);
+    }
+    private void getSourceFiles(File directory,ArrayList<File> result) {
+        File [] files = directory.listFiles();
+        for (File file : files)
+        {
+            if (file.isDirectory())
+            {
+                LOG.debug("traversing "+file);
+                getSourceFiles(file,result);
+            }
+            else if (file.getName().endsWith(".java")) 
+            {
+                result.add(file);
+                LOG.debug("added "+file);
+            } 
+            else
+            {
+                LOG.debug("ignored "+file);
+            }
+        }
+    }
+
+    private static final Pattern packagePattern = Pattern.compile("package (.*?);",Pattern.MULTILINE|Pattern.DOTALL);
+    @SuppressWarnings("unused")
+    private static String findPackage(String code)
+    {
+        Matcher matcher = packagePattern.matcher(code);
+        if (matcher.find())
+        {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
     private static final class Entry
     {
         File sourceFile;
         File compiledFile;
-		File serviceDirectory;
+        File serviceDirectory;
         long modified;
         int count = 1;
         boolean errored;
         List<ServiceAdapter> registrations=new ArrayList<ServiceAdapter>();
-        
+
         Entry (File file, File serviceDirectory) throws Exception
         {
             this.sourceFile = file;
-			this.serviceDirectory = serviceDirectory;
+            this.serviceDirectory = serviceDirectory;
             this.modified=sourceFile.lastModified();
-			
-			String javaCode = Util.copyToString(this.sourceFile);
+
+            //String javaCode = Util.copyToString(this.sourceFile);
             this.compiledFile = new File(file.getParentFile(), file.getName().replace(".java", ".class"));
             compile();
         }
-        
+
         public boolean requiresCompilation ()
         {
             return sourceFile.lastModified()!=modified || !this.compiledFile.exists();
         }
-        
+
         public void compile() throws Exception
         {
             LOG.debug ("calling compile on "+sourceFile);
@@ -248,7 +247,7 @@ public class ServiceDirectoryScanner implements Runnable
             }
             this.modified=sourceFile.lastModified();
         }
-        
+
         @SuppressWarnings("unchecked")
         private void load() throws Exception
         {
@@ -256,13 +255,13 @@ public class ServiceDirectoryScanner implements Runnable
             {
                 for (ServiceAdapter a : registrations)
                 {
-                	ServiceRegistry.unregisterService(a);
+                    ServiceRegistry.unregisterService(a);
                 }
-                
+
                 // clear our registrations
                 registrations.clear();
             }
-            
+
             // load the file using javassist so we can manipulate it
             ClassPool pool = ClassPool.getDefault();
             InputStream in = new FileInputStream(compiledFile);
@@ -276,10 +275,10 @@ public class ServiceDirectoryScanner implements Runnable
             // clean up the reference from the pool
             ct.detach();
             ct=null;
-            
+
             try
             {
-            	ServiceRegistry.registerServiceMethods(clz,true,registrations,null,"directoryScanner");
+                ServiceRegistry.registerServiceMethods(clz,true,registrations,null,"directoryScanner");
             }
             catch (Exception ex)
             {
@@ -287,7 +286,7 @@ public class ServiceDirectoryScanner implements Runnable
             }
         }
     }
-    
+
     public static void main (String args[]) throws Exception
     {
         ServiceDirectoryScanner scanner = new ServiceDirectoryScanner(new File("/Users/jhaynie/tmp/"),5000);

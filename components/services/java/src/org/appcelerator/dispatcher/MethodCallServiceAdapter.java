@@ -40,6 +40,8 @@ public class MethodCallServiceAdapter extends ServiceAdapter
 {
     private final Object instance;
     private final Method method;
+
+    @SuppressWarnings("unchecked")
     private Class serviceClass;
 
     private Method premethod;
@@ -60,6 +62,7 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         this.version = service.version();
     }
 
+    @SuppressWarnings("unchecked")
     public Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
     {
         if (methodname==null || "".equals(methodname))
@@ -72,15 +75,15 @@ public class MethodCallServiceAdapter extends ServiceAdapter
     public boolean is(ServiceAdapter sa)
     {
         if (!(sa instanceof MethodCallServiceAdapter))
-		{
+        {
             return false;
-		}
+        }
 
         MethodCallServiceAdapter target = (MethodCallServiceAdapter) sa;
         if (this.method.equals(target.method))
-		{
+        {
             return true;
-		}
+        }
 
         return false;
     }
@@ -99,7 +102,7 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         }
         return false;
     }
-    
+
     /* (non-Javadoc)
      * @see org.appcelerator.dispatcher.ServiceAdapter#hashCode()
      */
@@ -113,41 +116,43 @@ public class MethodCallServiceAdapter extends ServiceAdapter
      * @return
      */
     public Method getMethod() 
-	{
+    {
         return this.method;
     }
 
-	private Object getParameterFromProperty(Message request, Class clz, Annotation annotations[])
-	{
-		ServiceProperty prop = null;
-		
-		if (annotations!=null)
-		{
-			for (int c=0;c<annotations.length;c++)
-			{
-				if (ServiceProperty.class.equals(annotations[c].annotationType()))
-				{
-					prop = (ServiceProperty)annotations[c];
-					break;
-				}
-			}
-		}
-		
-		if (null != prop)
-		{
-			JSONObject obj = MessageUtils.getJSONObjectData(request);
-			JSONObject value = (JSONObject)obj.get(prop.name());
-			return JSONObject.toBean( value, clz );
-		}
-		else
-		{
-			return JSONObject.toBean( MessageUtils.getJSONObjectData(request), clz );
-		}
-	}
+    @SuppressWarnings("unchecked")
+    private Object getParameterFromProperty(Message request, Class clz, Annotation annotations[])
+    {
+        ServiceProperty prop = null;
+
+        if (annotations!=null)
+        {
+            for (int c=0;c<annotations.length;c++)
+            {
+                if (ServiceProperty.class.equals(annotations[c].annotationType()))
+                {
+                    prop = (ServiceProperty)annotations[c];
+                    break;
+                }
+            }
+        }
+
+        if (null != prop)
+        {
+            JSONObject obj = MessageUtils.getJSONObjectData(request);
+            JSONObject value = (JSONObject)obj.get(prop.name());
+            return JSONObject.toBean( value, clz );
+        }
+        else
+        {
+            return JSONObject.toBean( MessageUtils.getJSONObjectData(request), clz );
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
      */
+    @SuppressWarnings("unchecked")
     public void dispatch (Message request, Message response)
     {
         try
@@ -158,52 +163,52 @@ public class MethodCallServiceAdapter extends ServiceAdapter
             }
 
             response.getData().put("success",true);
-			
-			Class types[]  = this.method.getParameterTypes();
-			Annotation annotations[][] = this.method.getParameterAnnotations();
-			Object returnValue = null;
-			
+
+            Class types[]  = this.method.getParameterTypes();
+            Annotation annotations[][] = this.method.getParameterAnnotations();
+            Object returnValue = null;
+
             switch(types.length)
             {
-	            case 1:
-	            {
-					// first see if the parameter is a message
-					if (Message.class.equals(types[0]))
-					{
-		                returnValue = this.method.invoke(this.instance, request);
-					}
-					else
-					{
-						// this must be a automapping javabean
-						returnValue = this.method.invoke(this.instance, getParameterFromProperty(request,types[0],annotations[0]));
-					}
-	                break;
-	            }
-	            case 2:
-	            {
-					// first see if the parameters are messages
-					if (Message.class.equals(types[0]) && Message.class.equals(types[1]))
-					{
-		                returnValue = this.method.invoke(this.instance, request, response);
-						break;
-					}
-	            }
-	            default:
-	            {
-					Object args [] = new Object[types.length];
-					for (int c=0;c<types.length;c++)
-					{
-						if (Message.class.equals(types[c]))
-						{
-							args[c] = request;
-						}
-						else
-						{
-							args[c] = getParameterFromProperty(request,types[c],annotations[c]);
-						}
-					}
-					returnValue = this.method.invoke(this.instance, args);
-	            }
+                case 1:
+                {
+                    // first see if the parameter is a message
+                    if (Message.class.equals(types[0]))
+                    {
+                        returnValue = this.method.invoke(this.instance, request);
+                    }
+                    else
+                    {
+                        // this must be a automapping javabean
+                        returnValue = this.method.invoke(this.instance, getParameterFromProperty(request,types[0],annotations[0]));
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    // first see if the parameters are messages
+                    if (Message.class.equals(types[0]) && Message.class.equals(types[1]))
+                    {
+                        returnValue = this.method.invoke(this.instance, request, response);
+                        break;
+                    }
+                }
+                default:
+                {
+                    Object args [] = new Object[types.length];
+                    for (int c=0;c<types.length;c++)
+                    {
+                        if (Message.class.equals(types[c]))
+                        {
+                            args[c] = request;
+                        }
+                        else
+                        {
+                            args[c] = getParameterFromProperty(request,types[c],annotations[c]);
+                        }
+                    }
+                    returnValue = this.method.invoke(this.instance, args);
+                }
             }
 
             if (postmethod != null)
@@ -211,19 +216,19 @@ public class MethodCallServiceAdapter extends ServiceAdapter
                 postmethod.invoke(this.instance,request,response);
             }
 
-			if (returnValue != null && false == Void.class.equals(returnValue.getClass()))
-			{
-				JSONObject jsonObject = JSONObject.fromObject(returnValue);
-				for (Iterator iter = jsonObject.keys(); iter.hasNext();)
-				{
-					String key = (String)iter.next();
-					response.getData().put(key,jsonObject.get(key));
-				}
-			}
+            if (returnValue != null && false == Void.class.equals(returnValue.getClass()))
+            {
+                JSONObject jsonObject = JSONObject.fromObject(returnValue);
+                for (Iterator iter = jsonObject.keys(); iter.hasNext();)
+                {
+                    String key = (String)iter.next();
+                    response.getData().put(key,jsonObject.get(key));
+                }
+            }
         }
         catch (Exception e)
         {
-			e.printStackTrace();
+            e.printStackTrace();
             response.getData().put("success",false);
             response.getData().put("exception",e.getMessage());
         }

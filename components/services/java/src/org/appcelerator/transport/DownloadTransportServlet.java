@@ -41,8 +41,10 @@ import org.appcelerator.dispatcher.ServiceRegistry;
  */
 public class DownloadTransportServlet extends HttpServlet
 {
-    private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(DownloadTransportServlet.class);
+
+    private static final long serialVersionUID = 1L;
     private boolean embeddedMode;
     
     /* (non-Javadoc)

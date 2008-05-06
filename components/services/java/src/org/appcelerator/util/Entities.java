@@ -34,6 +34,7 @@ import java.util.TreeMap;
  * @since 2.0
  * @version $Id: Entities.java,v 1.17 2004/02/18 22:59:50 ggregory Exp $
  */
+@SuppressWarnings("unchecked")
 class Entities {
 
     private static final String[][] BASIC_ARRAY = {

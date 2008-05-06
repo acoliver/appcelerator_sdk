@@ -37,6 +37,7 @@ import org.w3c.dom.NodeList;
 /**
  * XML-JSON service marshaller for communicating with Appcelerator client.
  */
+@SuppressWarnings("unused")
 public class XMLJSONMarshaller
 {
     @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.DECODE)
@@ -57,20 +58,18 @@ public class XMLJSONMarshaller
             if (node.getNodeType()==Node.ELEMENT_NODE && node.getNodeName().equals("message"))
             {
                 Message msg = MessageUtils.fromXML((Element)node,null);
-                msg.setTimezoneOffset(tz);
-                msg.setSentTimestamp(timestamp);
                 messages.add(msg);
             }
         }
     }
     
     @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.ENCODE)
-    public String encode (List<Message> messages, OutputStream out) throws Exception
+    public String encode (List<Message> messages, String sessionid, OutputStream out) throws Exception
     {
         // use the first message as a reference for the instanceid and sessiondid
         Message m = messages.get(0);
         
-        Document xml = MessageUtils.createMessageXML(m.getSessionid(),m.getInstanceid());
+        Document xml = MessageUtils.createMessageXML(sessionid);
         Element root = xml.getDocumentElement();
         
         for (Message message : messages)

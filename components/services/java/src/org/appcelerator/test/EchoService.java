@@ -122,6 +122,7 @@ public class EchoService
      * @param response
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Service(request = TEST_BEAN_MESSAGE_REQUEST, response = TEST_BEAN_MESSAGE_RESPONSE, version = "2.0")
     protected java.util.Map processTestVersion2 (@ServiceProperty(name="foo") Foo foo, @ServiceProperty(name="bar") Bar bar)
         throws Exception

@@ -22,6 +22,7 @@ package org.appcelerator.marshaller;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +84,21 @@ public class ServiceMarshallerManager
         
         Object call (Object... args) throws Exception
         {
-            return this.method.invoke(this.instance, args);
+            try
+            {
+                return this.method.invoke(this.instance, args);
+
+            }
+            catch (Exception e) // don't lose underlying exceptions
+            {
+                if (e instanceof InvocationTargetException
+                        && e.getCause() instanceof Exception)
+                {
+                    throw (Exception) e.getCause();
+                }
+            }
+            
+            return null;
         }
     }
     
@@ -100,12 +115,12 @@ public class ServiceMarshallerManager
 		}
     }
     
-    public static String encode (String contentType, List<Message> messages, OutputStream output) throws Exception
+    public static String encode (String contentType, List<Message> messages, String sessionid, OutputStream output) throws Exception
     {
-        ServiceMarshallerAdapter decoder = encoders.get(contentType);
-        if (decoder!=null)
+        ServiceMarshallerAdapter encoder = encoders.get(contentType);
+        if (encoder!=null)
         {
-            return (String)decoder.call(messages,output);
+            return (String)encoder.call(messages, sessionid, output);
         }
 		else
 		{

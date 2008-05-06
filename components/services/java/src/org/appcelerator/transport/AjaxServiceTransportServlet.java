@@ -43,7 +43,6 @@ import org.appcelerator.dispatcher.ServiceDispatcherManager;
 import org.appcelerator.marshaller.ServiceMarshallerManager;
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
-import org.appcelerator.messaging.MessageDirection;
 import org.appcelerator.messaging.MessageType;
 import org.appcelerator.util.Util;
 
@@ -185,17 +184,14 @@ public class AjaxServiceTransportServlet extends HttpServlet
             
             HttpSession session = req.getSession();
             InetAddress address = InetAddress.getByName(req.getRemoteAddr());
-            String instanceid = req.getParameter("instanceid");
+            //String instanceid = req.getParameter("instanceid");
 
             
             for (Message request : requests)
             {
                 request.setUser(req.getUserPrincipal());
-                request.setInstanceid(instanceid);
                 request.setSession(session);
-                request.setSessionid(session.getId());
                 request.setAddress(address);
-                request.setDirection(MessageDirection.INCOMING);
                 
                 //FIXME => refactor this out
                 if (request.getType().equals(MessageType.APPCELERATOR_STATUS_REPORT))
@@ -229,7 +225,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             // encode the responses
             ServletOutputStream output = resp.getOutputStream();
             ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-            String responseType = ServiceMarshallerManager.encode(type, responses, bout);
+            String responseType = ServiceMarshallerManager.encode(type, responses, req.getSession().getId(), bout);
             byte buf [] = bout.toByteArray();
             ByteArrayInputStream bin = new ByteArrayInputStream(buf);
             

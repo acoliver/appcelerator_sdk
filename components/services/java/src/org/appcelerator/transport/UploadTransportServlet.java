@@ -23,10 +23,9 @@ package org.appcelerator.transport;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.security.Principal;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -39,14 +38,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.appcelerator.messaging.IMessageDataObject;
-import org.appcelerator.messaging.Message;
-import org.appcelerator.messaging.MessageDataType;
-import org.appcelerator.messaging.MessageDirection;
-import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.dispatcher.ServiceDispatcherManager;
+import org.appcelerator.messaging.IMessageDataObject;
+import org.appcelerator.messaging.Message;
+import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.util.TimeUtil;
 
 
@@ -115,6 +111,7 @@ public class UploadTransportServlet extends HttpServlet
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
         if (request.getMethod().equalsIgnoreCase("POST"))
@@ -129,7 +126,7 @@ public class UploadTransportServlet extends HttpServlet
             String type = null;
             String callback = null;
             long size = 0L;
-            String instanceid = null;
+            // String instanceid = null;
             IMessageDataObject data = MessageUtils.createMessageDataObject();
             
             try
@@ -153,7 +150,7 @@ public class UploadTransportServlet extends HttpServlet
                         }
                         else if (item.getFieldName().equals("instanceid"))
                         {
-                            instanceid = item.getString();
+                            //instanceid = item.getString();
                             continue;
                         }
                         // place it in the data payload
@@ -219,14 +216,10 @@ public class UploadTransportServlet extends HttpServlet
             // create a message
             Message msg = new Message();
             msg.setUser(request.getUserPrincipal());
-            msg.setDataType(MessageDataType.JSON);
-            msg.setDirection(MessageDirection.INCOMING);
             msg.setSession(request.getSession());
-            msg.setSessionid(request.getSession().getId());
             msg.setType(type);
             msg.setData(data);
             msg.setAddress(InetAddress.getByName(request.getRemoteAddr()));
-            msg.setInstanceid(instanceid);
             msg.setScope(scope);
             msg.setVersion(version);
             

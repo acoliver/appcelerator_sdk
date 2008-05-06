@@ -36,9 +36,6 @@ import org.appcelerator.annotation.ServiceMarshaller;
 import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageDataObjectException;
-import org.appcelerator.messaging.MessageDataType;
-import org.appcelerator.messaging.MessageDirection;
-import org.appcelerator.messaging.MessageUtils;
 
 /**
  * Marshaller for encoding and decoding incoming/outgoing JSON messages.
@@ -48,15 +45,22 @@ public class JSONMarshaller
     
     private static final Log LOG = LogFactory.getLog(JSONMarshaller.class);
     
+    @SuppressWarnings("unused")
     @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.DECODE)
     public void decode (InputStream input, List<Message> messages) throws Exception
     {
         String buffer = readBuffer(input);
-        JSONObject o = JSONObject.fromObject(buffer);
-        JSONObject request = o.getJSONObject("request");
+        JSONObject request = JSONObject.fromObject(buffer);
         
-        Long timestamp = request.getLong("timestamp");
-        Float tz = new Float(request.getDouble("tz"));
+        Long timestamp = System.currentTimeMillis();
+        try {
+            timestamp = Long.parseLong(request.getString("timestamp"));
+        } catch (NumberFormatException e) {
+            LOG.warn("Could not parse message timestamp");
+            
+        }
+        
+            String version = request.getString("version");
 
         JSONArray jsonMessages = request.getJSONArray("messages");
         for (Object jsonMessage : jsonMessages) {
@@ -65,7 +69,7 @@ public class JSONMarshaller
                 continue;
 
             try {
-                messages.add(decodeMessage((JSONObject) jsonMessage, timestamp, tz));
+                messages.add(decodeMessage((JSONObject) jsonMessage, timestamp));
             } catch (Exception e) {
                 LOG.debug("Could not parse message: " + e);
             }
@@ -77,20 +81,23 @@ public class JSONMarshaller
      * Deserialize an Appcelerator Message object given a JSONObject
      * @param smessage the serialized version of the message
      * @param timestamp the timestamp for when this message was sent
-     * @param tz the timezone offset for this message
      * @return the deserialied Message object
      * @throws Exception if an error is encountered during deserialization
      */
-    private Message decodeMessage(JSONObject smessage, Long timestamp, Float tz) throws Exception {
+    private Message decodeMessage(JSONObject smessage, Long timestamp) throws Exception {
         Message message = new Message();
-        message.setTimezoneOffset(tz);
-        message.setSentTimestamp(timestamp);
+        message.setTimestamp(timestamp);
         
-        message.setRequestid(smessage.getString("requestid"));
-        message.setDataType(MessageDataType.valueOf(smessage.getString("datatype")));
         message.setType(smessage.getString("type"));
-        message.setDirection(MessageDirection.INCOMING);
-        
+        String version = smessage.optString("version");
+
+        if (version==null || version.equals(""))
+        {
+            version="1.0";
+        }
+        message.setVersion(version);
+        message.setScope(smessage.getString("scope"));
+
         try
         {
             message.setData(new JSONMessageDataObject(smessage.getJSONObject("data")));
@@ -100,37 +107,21 @@ public class JSONMarshaller
             throw new MessageDataObjectException(ex);
         }
         
-        message.setScope(smessage.getString("scope"));
-        
-        String version = smessage.optString("version");
-        if (version==null || version.equals(""))
-        {
-            version="1.0";
-        }
-        message.setVersion(version);
 
         return message;
     }
 
     @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.ENCODE)
-    public String encode (List<Message> messages, OutputStream in) throws Exception
+    public String encode (List<Message> messages, String sessionid, OutputStream in) throws Exception
     {
-        long timestamp = System.currentTimeMillis();
-        float timezoneOffset = MessageUtils.getTimezoneOffset();
-        
-        // use the first message as a reference for the instanceid and sessiondid
-        Message m = messages.get(0);
-        String sessionid = m.getSessionid();
-        String instanceid = m.getInstanceid();
-        
+
         JSONObject out = new JSONObject();
         out.put("version", "1.0");
-        out.put("encoding", "UTF-8");
-        out.put("sessionid", sessionid);
-        out.put("instanceid", instanceid);
-        out.put("timestamp", timestamp);
-        out.put("tz", timezoneOffset);
+        out.put("timestamp", System.currentTimeMillis());
         
+        if (sessionid != null)
+            out.put("sessionid", sessionid);
+
         JSONArray jsonMessages = new JSONArray();
         for (Message message : messages) {
             jsonMessages.add(encodeMessage(message));
@@ -153,14 +144,9 @@ public class JSONMarshaller
     {
         JSONObject smessage = new JSONObject();
         
-        smessage.put("timestamp", String.valueOf(message.getTimestamp()));
-        smessage.put("requestid", message.getRequestid());
         smessage.put("type", message.getType());
-        smessage.put("direction", message.getDirection().name());
-        smessage.put("datatype", message.getDataType().name());
-        smessage.put("scope", message.getScope());
         smessage.put("version", message.getVersion());
-
+        smessage.put("scope", message.getScope());
         if (message.getData() instanceof JSONMessageDataObject) {
             JSONMessageDataObject dobject = (JSONMessageDataObject) message.getData();
             smessage.put("data", dobject.getJSONObject());

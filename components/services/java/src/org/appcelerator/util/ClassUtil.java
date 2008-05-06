@@ -29,6 +29,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:jhaynie@appcelerator.com">Jeff Haynie</a>
  */
+@SuppressWarnings("unchecked")
 public class ClassUtil
 {
     public static Set<Class> getAllInterfaces(Class clazz)

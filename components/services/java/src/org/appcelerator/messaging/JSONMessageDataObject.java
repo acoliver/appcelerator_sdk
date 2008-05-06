@@ -339,6 +339,7 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
      * @return this.
      * @throws IllegalArgumentException If the value type is not valid.
      */
+    @SuppressWarnings("unchecked")
     public IMessageDataObject put(String key, Object value)
     {
         try
@@ -811,9 +812,10 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
      *
      * @return a set view of the keys contained in this object.
      */
+    @SuppressWarnings("unchecked")
     public Set<String> keySet()
     {
-        return jsonObject.keySet();
+        return (Set<String>) jsonObject.keySet();
     }
 
 
@@ -822,6 +824,7 @@ public class JSONMessageDataObject implements IMessageDataObject, JSONString
      *
      * @return class for value object associated with key or <code>null</code> if key not found
      */
+    @SuppressWarnings("unchecked")
     public Class getClass(String key)
     {
         try

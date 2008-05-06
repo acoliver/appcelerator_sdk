@@ -22,12 +22,10 @@ package org.appcelerator.dispatcher;
 
 import java.lang.reflect.Method;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.appcelerator.annotation.Downloadable;
-import org.appcelerator.messaging.Message;
 
 /**
  * an adapter which wraps an object and specific @Downloadable method which is
@@ -51,6 +49,8 @@ public class DownloadableAdapter
         this.premethod = getMethod(i,s.premessage());
         this.method.setAccessible(true);
     }
+    
+    @SuppressWarnings("unchecked")
     public static Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
 	{
     	if (methodname==null || "".equals(methodname))

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+@SuppressWarnings("unchecked")
 public class RawMessageDataList implements IMessageDataList
 {
     private String json;

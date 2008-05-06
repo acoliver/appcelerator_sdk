@@ -49,6 +49,7 @@ public class RawMessageDataObject implements IMessageDataObject
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public Class getClass(String key)
     {
         // TODO Auto-generated method stub

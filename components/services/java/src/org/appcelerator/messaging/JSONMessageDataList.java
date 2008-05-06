@@ -168,12 +168,12 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
      * @throws NullPointerException if the specified array is <tt>null</tt>.
      */
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a)
+    public <E> E[] toArray(E[] a)
     {
         final int size = size();
         if (a.length < size)
         {
-            a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
+            a = (E[]) Array.newInstance(a.getClass().getComponentType(), size);
         }
 
         Object[] results = a;
@@ -633,7 +633,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
      *
      * @author <a href="mailto:jkashimba@hakano.com">Jared Kashimba</a>
      */
-    private class JSONMessageDataListIterator<T> implements ListIterator<T>
+    private class JSONMessageDataListIterator<E> implements ListIterator<E>
     {
         /**
          * internal current index of the iterator
@@ -687,14 +687,14 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
          *          if the iteration has no next element.
          */
         @SuppressWarnings("unchecked")
-        public T next()
+        public E next()
         {
             if (!hasNext())
             {
                 throw new NoSuchElementException("no more elements");
             }
 
-            return (T) get(index++);
+            return (E) get(index++);
         }
 
         /**
@@ -724,14 +724,14 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
          *          element.
          */
         @SuppressWarnings("unchecked")
-        public T previous()
+        public E previous()
         {
             if (!hasPrevious())
             {
                 throw new NoSuchElementException("no previous element");
             }
 
-            return (T) get(--index);
+            return (E) get(--index);
         }
 
         /**
@@ -801,7 +801,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
          *                                       <tt>add</tt> have been called after the last call to
          *                                       <tt>next</tt> or <tt>previous</tt>.
          */
-        public void set(T o)
+        public void set(E o)
         {
             throw new UnsupportedOperationException("set not supported for " + this);
         }
@@ -826,7 +826,7 @@ public class JSONMessageDataList<T> implements IMessageDataList<T>, JSONString
          * @throws IllegalArgumentException      if some aspect of this element
          *                                       prevents it from being added to this list.
          */
-        public void add(T o)
+        public void add(E o)
         {
             throw new UnsupportedOperationException("add not supported for " + this);
         }

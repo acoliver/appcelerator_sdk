@@ -23,7 +23,6 @@ package org.appcelerator.dispatcher;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.StringTokenizer;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;

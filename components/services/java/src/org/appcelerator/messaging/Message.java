@@ -36,38 +36,23 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Message implements Serializable
 {
+    @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(Message.class);
     private static final long serialVersionUID = 1L;
 
-    private String sessionid;
-    private String requestid;
-    private String instanceid;
     private String type;
-    private IMessageDataObject data;
-    private MessageDirection direction;
-    private MessageDataType dataType = MessageDataType.XML;
-    private long timestamp;
-    private long sendTimestamp;
-    private float timezoneOffset;
-    private String scope;
-    private InetAddress address;
     private String version;
+    private String scope;
+    private IMessageDataObject data;
     
+    private long timestamp;
+    
+    private InetAddress address;
     private transient Principal user;
     private transient HttpSession session;
 
     public Message()
     {
-    }
-
-    public String getInstanceid()
-    {
-        return instanceid;
-    }
-
-    public void setInstanceid(String instanceid)
-    {
-        this.instanceid = instanceid;
     }
 
     /**
@@ -100,7 +85,6 @@ public class Message implements Serializable
         super();
         this.user = user;
         this.timestamp = System.currentTimeMillis();
-        this.timezoneOffset = MessageUtils.getTimezoneOffset();
     }
 
     /**
@@ -110,7 +94,7 @@ public class Message implements Serializable
      */
     public Message(Message m)
     {
-        this(m.getUser(), m.getSessionid(), m.getInstanceid(),m.getRequestid(), m.getType(), m.getDirection(), MessageDataType.JSON, m.getData(), m.getScope(), m.getAddress(), m.getVersion(), m.getSentTimestamp(), m.getTimezoneOffset());
+        this(m.getType(), m.getVersion(), m.getScope(), m.getData(), m.getUser(), m.getAddress(), m.getTimestamp());
     }
 
     /**
@@ -129,23 +113,18 @@ public class Message implements Serializable
      * @param sentTimestamp message sender timestamp
      * @param tz        timezone offset of message sender
      */
-    public Message(Principal user, String sessionid, String instanceid, String requestid, String type, MessageDirection direction, MessageDataType dataType, IMessageDataObject data, String scope, InetAddress addr, String version, long sentTimestamp, float timezoneOffset)
+    public Message(String type, String version, String scope, IMessageDataObject data, Principal user, InetAddress addr, long timestamp)
     {
         super();
-        this.user = user;
-        this.sessionid = sessionid;
-        this.requestid = requestid;
+        
         this.type = type;
-        this.data = data;
-        this.direction = direction;
-        this.timestamp = System.currentTimeMillis();
-        this.dataType = dataType;
-        this.scope = scope;
-        this.address = addr;
         this.version = version;
-        this.sendTimestamp = sentTimestamp;
-        this.timezoneOffset = timezoneOffset;
-        this.instanceid = instanceid;
+        this.scope = scope;
+        this.data = data;
+        
+        this.user = user;
+        this.address = addr;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -173,19 +152,12 @@ public class Message implements Serializable
     {
         if (data != null)
         {
-            if (LOG.isDebugEnabled())
-            {
-                return "Message[sessionid:" + sessionid + ",direction:" + direction.name() + ",type:" + type + "," + data + ",sender:" + this.user + "]";
-            }
-            else
-            {
-                int len = Math.min(150, data.toString().length());
-                return "Message[sessionid:" + sessionid + ",direction:" + direction.name() + ",type:" + type + "," + data.toString().substring(0, len) + ",sender:" + this.user + "]";
-            }
+            int len = Math.min(150, data.toString().length());
+            return "Message[type:" + type + ",version:" + version + ",scope:" + scope + ",data-length:" + len + ",data:" + data + ",sender:" + this.user + "]";
         }
         else
         {
-            return "Message[sessionid:" + sessionid + ",direction:" + direction.name() + ",type:" + type + ",<null>,sender:" + this.user + "]";
+            return "Message[type:" + type + ",version:" + version + ",scope:" + scope + ",data-length:0,data:<null>,sender:" + this.user + "]";
         }
     }
 
@@ -210,36 +182,6 @@ public class Message implements Serializable
     }
 
     /**
-     * get the direction of this message
-     *
-     * @return message direction
-     */
-    public MessageDirection getDirection()
-    {
-        return this.direction;
-    }
-
-    /**
-     * set the direction of this message
-     *
-     * @param direction message direction
-     */
-    public void setDirection(MessageDirection direction)
-    {
-        this.direction = direction;
-    }
-    
-    public void setSentTimestamp (long ts)
-    {
-        this.sendTimestamp = ts;
-    }
-    
-    public long getSentTimestamp ()
-    {
-        return this.sendTimestamp;
-    }
-
-    /**
      * get the timestamp this message was sent
      *
      * @return message timestamp
@@ -247,6 +189,15 @@ public class Message implements Serializable
     public long getTimestamp()
     {
         return this.timestamp;
+    }
+    /**
+     * set the timestamp for the time this message was sent
+     *
+     * @return message timestamp
+     */
+    public void setTimestamp(Long timestamp)
+    {
+        this.timestamp = timestamp;
     }
 
     /**
@@ -270,46 +221,6 @@ public class Message implements Serializable
     }
 
     /**
-     * get the request id associated with this message
-     *
-     * @return request id
-     */
-    public String getRequestid()
-    {
-        return this.requestid;
-    }
-
-    /**
-     * set the request id for this message
-     *
-     * @param requestid request id for this message
-     */
-    public void setRequestid(String requestid)
-    {
-        this.requestid = requestid;
-    }
-
-    /**
-     * get the session id associated with this message
-     *
-     * @return session id
-     */
-    public String getSessionid()
-    {
-        return this.sessionid;
-    }
-
-    /**
-     * set the session id for this message
-     *
-     * @param sessionid session id for this message
-     */
-    public void setSessionid(String sessionid)
-    {
-        this.sessionid = sessionid;
-    }
-
-    /**
      * get the type of the data payload attached to this message
      *
      * @return message data payload type
@@ -327,26 +238,6 @@ public class Message implements Serializable
     public void setType(String type)
     {
         this.type = type;
-    }
-
-    /**
-     * get the type of the data payload attached to this message
-     *
-     * @return data type for payload
-     */
-    public MessageDataType getDataType()
-    {
-        return this.dataType;
-    }
-
-    /**
-     * set the type of the data payload attached to this message
-     *
-     * @param dataType data type for payload
-     */
-    public void setDataType(MessageDataType dataType)
-    {
-        this.dataType = dataType;
     }
 
     public String getScope()
@@ -377,15 +268,5 @@ public class Message implements Serializable
     public void setVersion(String version)
     {
         this.version = version;
-    }
-
-    public float getTimezoneOffset()
-    {
-        return timezoneOffset;
-    }
-
-    public void setTimezoneOffset(float timezoneOffset)
-    {
-        this.timezoneOffset = timezoneOffset;
     }
 }

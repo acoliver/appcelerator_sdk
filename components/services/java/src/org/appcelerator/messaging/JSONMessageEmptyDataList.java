@@ -32,6 +32,7 @@ public final class JSONMessageEmptyDataList<T> extends JSONMessageDataList<T> im
 {
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unchecked")
     public static final JSONMessageEmptyDataList EMPTY_LIST = new JSONMessageEmptyDataList();
 
     @SuppressWarnings("unchecked")
