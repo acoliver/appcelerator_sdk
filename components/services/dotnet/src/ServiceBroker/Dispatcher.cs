@@ -96,9 +96,8 @@ namespace Appcelerator
 
         private string getResponseHeader(String content_type, String session_id)
         {
-            String time = DateTime.Now.ToString("s");
+            double time = getTimeStamp();
             String xml_header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-            String date = getISO8601TimeStamp();
             xml_header += "<messages version='1.0' sessionid='" + session_id + "'>";
 
             /* 
@@ -109,7 +108,7 @@ namespace Appcelerator
                       time: the timestamp of this response in ISO 8601 format with timezone specified
                       messages: (an array of objects conforming to the message schema below
             */
-            String json_header = "{version:'1.1',encoding:'UTF-8',sessionid:'" + session_id + "',time:'" + time+"',messages:[";
+            String json_header = "{version:'1.1',encoding:'UTF-8',sessionid:'" + session_id + "',timestamp:'" + time + "',messages:[";
             String header = "";
 
             switch (content_type)
@@ -124,9 +123,9 @@ namespace Appcelerator
             return header;
         }
 
-        public String getISO8601TimeStamp()
+        public double getTimeStamp()
         {
-            return DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", DateTimeFormatInfo.InvariantInfo);
+            return (DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
 
         private void GuaranteeSessionMapped(String session_id)

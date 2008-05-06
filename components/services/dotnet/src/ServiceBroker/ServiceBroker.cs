@@ -16,7 +16,7 @@ namespace Appcelerator
 {
     public class ServiceBroker : IHttpHandler, IRequiresSessionState
     {
-        public const String APPLICATION_JSON = "foo";
+        public const String APPLICATION_JSON = "application/json";
         public const String XML_JSON = "xml/json";
         private Dispatcher dispatcher = Dispatcher.Instance;
         private ServiceManager serviceManager;
