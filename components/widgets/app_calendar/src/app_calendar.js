@@ -73,28 +73,41 @@ Appcelerator.Widget.Calendar =
 	{
 		Element.show($(parameterMap['name']));
 	},
+	setValue: function(id,params,value) {
+	    var cal = YAHOO.appcelerator.calendar[params['name']];
+	    if (value != "") {
+    		cal.select(value);
+    		var selectedDates = cal.getSelectedDates();
+    		if (selectedDates.length > 0) {
+    			var firstDate = selectedDates[0];
+    			cal.cfg.setProperty("pagedate", (firstDate.getMonth()+1) + "/" + firstDate.getFullYear());
+    			cal.render();
+    		}
+    	}
+	},
+	getValue: function(id,params) {
+	    return params['value'];
+	},
 	compileWidget: function(parameters)
 	{
 		var inputId = parameters['inputId'];
 		var elementId = parameters['elementId'];
 		var minDate = parameters['minDate'];
 		var title = parameters['title'];
-		var name = 'app_calendar_' + this.calendarCount++;
-		var id = parameters['id'];
 		var name = parameters['name'];
+		var id = parameters['id'];
 		var element = null;
 		
 		if (elementId)
 		{
 			element = $(elementId);
 		}
-		else
+		else if(inputId)
 		{
 			element = $(inputId);
 		}
 		
 		YAHOO.namespace('appcelerator.calendar');
-		var calendar = $(name);
 		
 		if (minDate)
 		{
@@ -110,27 +123,38 @@ Appcelerator.Widget.Calendar =
 		{
 			var dates=args[0];
 			var date=dates[0];
+			
 			var year=date[0];
 			var month=date[1];
 			var date=date[2];
+            
+			var dateString = month + '/' + date + '/' + year;
 			
-			if (inputId)
+			if(element)
 			{
-				element.value = month + '/' + date + '/' + year;
-				Appcelerator.Compiler.executeFunction(element,'revalidate');
-			}
-			else
-			{
-				element.innerHTML = month + '/' + date + '/' + year;
-			}
-			Element.hide(calendar);
+    			if (inputId)
+    			{
+    				element.value = dateString;
+    				Appcelerator.Compiler.executeFunction(element,'revalidate');
+    			}
+    			else
+    			{
+    				element.innerHTML = dateString;
+    			}
+    		}
+    		else
+    		{
+    		    parameters['value'] = dateString;
+    		}
+    		
+			Element.hide(name);
 		}, YAHOO.appcelerator.calendar[name], true);
 	},
 	buildWidget: function(element, parameters)
 	{
-        if (!parameters['inputId'] && !parameters['elementId'])
+        if (!parameters.inputId && !parameters.elementId && !$(parameters.id).hasAttribute('fieldset'))
         {
-            throw "inputId or elementId is required";
+            throw "inputId or elementId or fieldset is required";
         }
         
 		parameters['name'] = 'app_calendar_' + Appcelerator.Widget.Calendar.calendarCount++;

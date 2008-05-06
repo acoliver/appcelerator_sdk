@@ -117,6 +117,7 @@
             <app:message name="l:fieldset.start2"></app:message>
         </td>
     </tr>
+
     <tr>
 		<td class="test" width="35%" valign="middle">
 			"bind" action
@@ -130,6 +131,82 @@
 		    <div>
 		        <input type="button" value="click me" on="click then l:test.bind.response[bind_input=passed,bind_div=passed,bind_text=passed]"/>
 		    </div>
+		</td>
+    </tr>
+
+    <tr>
+		<td class="test" width="35%" valign="middle">
+			Setting a widget with a fieldset
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+  		  <div>
+  	        <input type="button" value="click me" on="click then l:start.bind.calendar"/>
+  	    </div>
+		    <div
+		      fieldset="calendar_set"
+		      on="l:bind.calendar then bind"
+		      style="padding-bottom: 100px;">
+    		    <div><input fieldset="calendar_set" name="bind_input" type="text" value="not passed yet"/></div>
+    		    <div fieldset="calendar_set" name="bind_div" style="margin-top: 10px; margin-bottom: 10px">not passed yet</div>
+    		    <app:calendar fieldset="calendar_set" name="bind_calendar" id="bind_calendar"></app:calendar>
+    		</div>
+    		<app:script>
+	      $MQL('l:bind.calendar', function() {
+	        // MQL'd cuz otherwise the calendar hides itself
+	        Element.show($('bind_calendar').firstChild);
+	      });
+    		</app:script>
+		    <app:script on="l:start.bind.calendar then execute">
+		      $MQ('l:bind.calendar', {
+		        bind_calendar: '4/11/2009',
+		        bind_input: 'Input field set!',
+		        bind_div: 'Test passed if calendar set to April 11th, 2009'
+		      });
+		    </app:script>
+		</td>
+    </tr>
+
+    <tr>
+		<td class="test" width="35%" valign="middle">
+			Roundtripping a widget with a fieldset
+		</td>
+		<td class="result" width="65%" valign="top" align="left">
+  	    <div>
+  	        <input type="button" value="click me" on="click then l:start.bind.calendar2"/>
+  	    </div>
+		    <div
+		      fieldset="calendar_set2"
+		      on="l:return.trip.the.calendar then l:sending.calendar or l:bind.calendar2 then bind"
+		      style="padding-bottom: 165px;">
+    		    <div><input fieldset="calendar_set2" name="bind_input" type="text" value="not passed yet"/></div>
+    		    <app:calendar
+    		        fieldset="calendar_set2"
+    		        name="bind_calendar2"
+    		        id="bind_calendar2"
+    		        on="l:show.cal.2 then execute">
+    		    </app:calendar>
+    		    <div style="height: 60px"></div>
+    		</div>
+    		<app:script>
+		    $MQL('l:sending.calendar', function(type,data) {
+	        Element.show($('bind_calendar2').firstChild);
+	        if(data.bind_input == window.inputText 
+	        && data.bind_calendar2 == window.calDate) {
+	          alert('Test Passed');
+	        } else {
+	          alert('Test Failed');
+	        }
+	      });
+		    </app:script>
+		    <app:script on="l:start.bind.calendar2 then execute">
+		      window.inputText = 'Input field set!';
+		      window.calDate = '4/11/2005';
+		      $MQ('l:bind.calendar2', {
+		        bind_calendar2: window.calDate,
+		        bind_input: window.inputText,
+		      });
+		      $MQ('l:return.trip.the.calendar', {});
+		    </app:script>
 		</td>
     </tr>
 
