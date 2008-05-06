@@ -95,18 +95,17 @@ class ServiceDispatcher(object):
             if input:
                 payload = json.loads(input, object_hook=_decoder_hook)
                 options = {
-                    'request': payload['request'],
+                    'request': payload,
                     'environ': environ
                 }
                 
-                messages = payload['request']['messages']
+                messages = payload['messages']
                 results = self.handle_messages(messages, session, options)
                 responses = [
-                    {'direction': 'OUTGOING',
-                     'datatype': 'JSON',
-                     'requestid': rsp['incoming']['requestid'],
+                    {
                      'type': rsp['type'],
-                     'data': rsp['data']}
+                     'data': rsp['data']
+                    }
                     for rsp
                     in results
                 ]
@@ -270,7 +269,6 @@ def Service(request, response):
                 return func(data, session, msgtype)
         else:
             logging.error('bad number of arguments for @Service annotated function, should be from 0 to 3')
-            return
         
         listener.responsetype = response
         listener.func_name = func.func_name
