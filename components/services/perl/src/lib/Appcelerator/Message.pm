@@ -108,7 +108,7 @@ sub serializeJSON {
     my $envelope = {
         'version' => '1.0',
         'sessionid' => $sessionid,
-        'timestamp' => timelocal(gmtime()),
+        'timestamp' => timelocal(gmtime()) * 1000,
         'messages' => \@responses,
     };
 
