@@ -2081,7 +2081,7 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
 Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 {
 	var tagname = Appcelerator.Compiler.getTagname(elem);
-	if (tagname != 'input' && tagname != 'textarea')
+	if (tagname != 'input' && tagname != 'textarea' && tagname != 'select')
 	{
 		return null;
 	}
