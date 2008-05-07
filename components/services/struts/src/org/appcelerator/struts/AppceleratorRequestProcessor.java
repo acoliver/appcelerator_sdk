@@ -130,11 +130,8 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
 
         for (Message incommingMessage: incommingMessages) {
             incommingMessage.setUser(servletRequest.getUserPrincipal());
-            incommingMessage.setInstanceid(instanceid);
             incommingMessage.setSession(session);
-            incommingMessage.setSessionid(session.getId());
             incommingMessage.setAddress(address);
-            incommingMessage.setDirection(MessageDirection.INCOMING);
             
             // original appcelerator service dispatching
             try {
@@ -221,7 +218,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
         
         String responseType = null;
         try {
-            responseType = ServiceMarshallerManager.encode(contentType, outgoingMessages, bout);
+            responseType = ServiceMarshallerManager.encode(contentType, outgoingMessages, session.getId(), bout);
         } catch (Exception e) {
             e.printStackTrace();
             return;
