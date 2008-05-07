@@ -135,7 +135,7 @@ Appcelerator.Widget.Template =
 			t.setAttribute('scope',scope);
 			t.innerHTML = Appcelerator.Compiler.getHtml(doc);
 			state.pending--;
-			Appcelerator.Compiler.compileElement(t,state,false);
+			Appcelerator.Compiler.compileElement(t,state,true);
 			Appcelerator.Compiler.checkLoadState(state);
 		});
 	}
