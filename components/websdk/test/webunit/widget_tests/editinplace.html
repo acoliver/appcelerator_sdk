@@ -54,7 +54,7 @@ input[type=text]
 				cancelOn="click then l:cancel1" defaultValue="Joe Smith">
 			</app:editinplace>
 			<app:script on="l:save1 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 		</td>
 	</tr>
@@ -69,7 +69,7 @@ input[type=text]
 			<app:message name="l:load2" args="{'name':'Test Passed'}">
 			</app:message>		
 			<app:script on="l:save2 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 
 		</td>
@@ -86,7 +86,7 @@ input[type=text]
 			<app:message name="l:load3" args="{'date':'10/5/2007' }">
 			</app:message>		
 			<app:script on="l:save2 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 
 		</td>
@@ -101,7 +101,7 @@ input[type=text]
 				errorPosition="bottom">
 			</app:editinplace>
 			<app:script on="l:save4 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 		</td>
 	</tr>
@@ -115,7 +115,7 @@ input[type=text]
 				editClassName="edit" defaultClassName="default">
 			</app:editinplace>
 			<app:script on="l:save5 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 		</td>
 	</tr>
@@ -129,7 +129,7 @@ input[type=text]
 				validator="required" defaultValue="clear me to see error">
 			</app:editinplace>
 			<app:script on="l:save6 then execute">
-			alert(this.data);
+			alert(Object.toJSON(this.data));
 			</app:script>		
 
 		</td>
