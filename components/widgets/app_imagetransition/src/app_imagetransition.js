@@ -32,7 +32,7 @@ Appcelerator.Widget.Imagetransition =
 	},
 	getVersion: function()
 	{
-		return '1.0';
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -159,7 +159,7 @@ Appcelerator.Widget.Imagetransition =
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'presentation' : html,
+			'presentation' : html
 	   };
 	}
 };
