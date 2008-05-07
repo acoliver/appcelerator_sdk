@@ -111,7 +111,15 @@ function(element,condition,action,elseAction,delay,ifCond)
             var me = $(scope.id);
             if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
             var e = e || window.event;
-            var key = e.keyCode || e.which;
+            var key = 0;
+            if (window.event)
+            {
+                key = e.keyCode;
+            }
+            else
+            {
+                key = e.which;
+            }
             var data = {key: key, event: e};
 
             if (attribute)
