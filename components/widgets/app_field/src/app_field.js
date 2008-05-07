@@ -457,7 +457,7 @@ Appcelerator.Widget.Field =
 			if (node.nodeType == 1)
 			{
 				var langid = node.getAttribute('langid');
-				switch (node.nodeName)
+				switch (node.nodeName.toUpperCase())
 				{
 					case 'HEADER':
 					{
