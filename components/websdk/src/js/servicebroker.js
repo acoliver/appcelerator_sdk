@@ -1432,6 +1432,7 @@ else
         {
             if (Appcelerator.Browser.autoReportStats)
             {
+                var time = new Date();
                 var platform = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
                 var data = 
                 {
@@ -1446,7 +1447,8 @@ else
                     'os': platform,
                     'referrer': document.referrer,
                     'path': window.location.href,
-                    'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}})
+                    'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}}),
+                    'tz' : time.getTimezoneOffset()/60
                 };
                 $MQ('remote:appcelerator.status.report',data);
             }
