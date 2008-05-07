@@ -69,7 +69,8 @@ class CacheMiddleware(object):
     
     def __call__(self, environ, start_response):
         if environ.get('paste.registry'):
-            environ['paste.registry'].register(self.cache, self.cache_manager)
+            if environ['paste.registry'].reglist:
+                environ['paste.registry'].register(self.cache, self.cache_manager)
         environ[self.environ_key] = self.cache_manager
         return self.app(environ, start_response)
 
@@ -80,12 +81,13 @@ class SessionMiddleware(object):
     def __init__(self, wrap_app, config=None, environ_key='beaker.session', **kwargs):
         """Initialize the Session Middleware
         
-        The Session middleware will make a lazy session instance available 
-        every request under the ``environ['beaker.cache']`` key by default. The location in
-        environ can be changed by setting ``environ_key``.
+        The Session middleware will make a lazy session instance available
+        every request under the ``environ['beaker.session']`` key by
+        default. The location in environ can be changed by setting
+        ``environ_key``.
         
         ``config``
-            dict  All settings should be prefixed by 'cache.'. This method of
+            dict  All settings should be prefixed by 'session.'. This method of
             passing variables is intended for Paste and other setups that
             accumulate multiple component settings in a single dictionary. If
             config contains *no cache. prefixed args*, then *all* of the config
@@ -131,7 +133,8 @@ class SessionMiddleware(object):
     def __call__(self, environ, start_response):
         session = SessionObject(environ, **self.options)
         if environ.get('paste.registry'):
-            environ['paste.registry'].register(self.session, session)
+            if environ['paste.registry'].reglist:
+                environ['paste.registry'].register(self.session, session)
         environ[self.environ_key] = session
         environ['beaker.get_session'] = self._get_session
         
