@@ -1,6 +1,5 @@
 
 
-Appcelerator.Util.DateTime = Class.create();
 Appcelerator.Util.DateTime =
 {
     ONE_SECOND:1000,
@@ -587,5 +586,14 @@ Appcelerator.Util.DateTime =
 		s += (absHours < 10) ? "0" + absHours :absHours;
 		s += ((modMin == 0) ? "00" : modMin);
 		return s;
+	},
+	
+	parse: function(date, format)
+	{
+	    return Jel.Date.parse(date,format);
+	},
+	format: function(date, format)
+	{
+	    return Jel.Date.format(date, format);
 	}
 };

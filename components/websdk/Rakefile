@@ -99,7 +99,14 @@ END_LICENSE
   append_file(LICENSE_HEADER,jsdebug,true)
   append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
   append_file(js_source+'/prolog.js', jsdebug)
-  thirdparty = %w(prototype/prototype.js scriptaculous/scriptaculous.js scriptaculous/effects.js scriptaculous/dragdrop.js scriptaculous/resizable.js)
+  thirdparty = [
+    'prototype/prototype.js',
+    'scriptaculous/scriptaculous.js',
+    'scriptaculous/effects.js',
+    'scriptaculous/dragdrop.js',
+    'scriptaculous/resizable.js',
+    'jel/jel_datetime.js'
+  ]
   thirdparty.each do |file|
     append_file(BUILD_DIR+'/lib/'+file, jsdebug)
   end
