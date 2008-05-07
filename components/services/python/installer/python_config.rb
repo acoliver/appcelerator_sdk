@@ -59,9 +59,12 @@ module Appcelerator
     def quiet_system(cmd)
       if OPTIONS[:verbose]
         puts cmd
-      elsif not on_windows
-        # is there a windows equivalent of this?
-        cmd += ' > /dev/null 2>&1'
+      else
+        if on_windows
+          cmd += ' 1>NUL 2>NUL'
+        else
+          cmd += ' > /dev/null 2>&1'
+        end
       end
       if cmd =~ /^sudo / and OPTIONS[:subprocess]
         puts "__MAGIC__|ask|Please enter your password to install required python libraries|true|__MAGIC__"
@@ -112,7 +115,7 @@ module Appcelerator
     end
     
     def on_windows
-      RUBY_PLATFORM =~ /(:?mswin|mingw)/
+      RUBY_PLATFORM =~ /(mswin|mingw|windows|win32)/
     end
   end
 end
