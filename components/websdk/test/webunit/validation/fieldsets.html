@@ -152,7 +152,6 @@
     		</div>
     		<app:script>
 	      $MQL('l:bind.calendar', function() {
-	        // MQL'd cuz otherwise the calendar hides itself
 	        Element.show($('bind_calendar').firstChild);
 	      });
     		</app:script>
@@ -191,7 +190,7 @@
 		    $MQL('l:sending.calendar', function(type,data) {
 	        Element.show($('bind_calendar2').firstChild);
 	        if(data.bind_input == window.inputText 
-	        && data.bind_calendar2 == window.calDate) {
+	        &amp;&amp; data.bind_calendar2 == window.calDate) {
 	          alert('Test Passed');
 	        } else {
 	          alert('Test Failed');
@@ -203,7 +202,7 @@
 		      window.calDate = '4/11/2005';
 		      $MQ('l:bind.calendar2', {
 		        bind_calendar2: window.calDate,
-		        bind_input: window.inputText,
+		        bind_input: window.inputText
 		      });
 		      $MQ('l:return.trip.the.calendar', {});
 		    </app:script>
