@@ -903,11 +903,19 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 	var functionWrapper = delay > 0 ? (function() 
 	{
 		var args = $A(arguments);
+		
+		// IE destroys the keyCode when there's a delay
+		var event = args[0];
+		if (event.keyCode)
+		{
+		    args[0] = {keyCode: event.keyCode};
+		}
+		
 		var a = function()
 		{
 			return logWrapper.apply(logWrapper,args);
 		};
-		a.delay(delay/1000);
+        a.delay(delay/1000);
 	}) : logWrapper;
 
 	Event.observe(element,event,functionWrapper,false);
