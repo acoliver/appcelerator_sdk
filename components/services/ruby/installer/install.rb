@@ -130,8 +130,7 @@ module Appcelerator
       puts "Updating Rails project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
       
       if to_version == '1.0.4'
-        Installer.copy tx, "#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator/dispatcher.rb", 
-        "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator/dispatcher.rb"
+        Installer.copy tx, "#{from_path}/rails/vendor/plugins/appcelerator/.", "#{to_path}/vendor/plugins/appcelerator/"
 
         projectname = File.basename(to_path)
         rails_gem = get_rails_gem
