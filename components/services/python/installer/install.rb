@@ -86,19 +86,21 @@ END_CODE
     # UNTESTED!
     def update_project(from_path,to_path,config,tx,from_version,to_version)
       puts "Updating Python project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
+
+      @pyconfig = PythonConfig.new
       install_appcelerator_egg_if_needed(from_path, config[:service_version])
       
       project_path = to_path
       project_name = config[:name]
-      app_path = File.join to_path, project_name
+      app_path = config[:project]
       project_location = File.dirname to_path
       
       edit tx, "#{project_path}/development.ini" do |content|
-        content.sub(/egg:Appcelerator==([^#]+)#/) do |match|
+        content.gsub(/egg:Appcelerator==([^#]+)#/) do |match|
           if $1 != from_version
             puts "Upgrading from #{from_version} to #{to_version}, but project seemed to be version #{$1}, how odd."
           end
-          "require('Appcelerator==#{to_version}')"
+          "egg:Appcelerator==#{to_version}#"
         end
       end
       
