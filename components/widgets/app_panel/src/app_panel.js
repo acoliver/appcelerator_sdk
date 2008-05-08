@@ -37,7 +37,7 @@ Appcelerator.Widget.Panel =
     },
     getVersion: function()
     {
-        return "1.0.2";
+        return "1.0.3";
     },
     getSpecVersion: function()
     {

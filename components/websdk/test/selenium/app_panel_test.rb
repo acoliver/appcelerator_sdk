@@ -1,7 +1,6 @@
 class PanelTest < Test::Unit::SeleniumTestCase
   include SeleniumHelper
    
-  
     def initialize(name="panel test")
         return super(name)
     end

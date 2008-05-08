@@ -31,7 +31,7 @@ Appcelerator.Widget.Search =
 	},
 	getVersion: function()
 	{
-		return '1.0.1';
+		return '1.0.2';
 	},
 	getSpecVersion: function()
 	{

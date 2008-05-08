@@ -45,7 +45,7 @@ Appcelerator.Widget.Field =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.2';
 	},
 	getSpecVersion: function()
 	{
