@@ -802,7 +802,7 @@ HELP
                         
           elsif remote and should_update(local[:version],remote[:version])
             # upgrading
-            if options[:force_update] or confirm_yes("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
+            if OPTIONS[:force_update] or confirm_yes("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
               component = install_from_devnetwork(remote, options)
               finish_install(component, options)
             else
@@ -1137,8 +1137,8 @@ HELP
       update = Installer.get_component(:remote, cm)
     
       if update
-      
-        if Installer.should_update(build_config[:version], update[:version])
+        
+        if compare_versions(build_config[:version], update[:version]) == -1
           if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
             update_component = Installer.fetch_network_component(update,1,1)

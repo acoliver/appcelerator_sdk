@@ -95,7 +95,9 @@ CommandRegistry.registerCommand('update:project','update project components',[
                 when :service
                   Installer.require_component(:service, component[:name], component[:version], opts)
                   
-                  config[:service_version] = component[:version]
+                  from_version = config[:service_version]
+                  to_version = config[:service_version] = component[:version]
+                  
                   service_dir = Installer.get_component_directory(component)
                   service_name = Project.make_service_name(component[:name])
                   script = File.join(service_dir,'install.rb')
@@ -105,8 +107,12 @@ CommandRegistry.registerCommand('update:project','update project components',[
                   require script
                   installer = Appcelerator.const_get(service_name).new
                   if installer.respond_to?(:update_project)
-                    if installer.update_project(service_dir,pwd,project_config,tx,config[:service_version],component[:version])
-                      puts "Updated service '#{component[:name]}' to #{component[:version]}"
+                    if installer.update_project(service_dir,pwd,project_config,tx,from_version,to_version)
+                      puts "Updated service '#{component[:name]}' to #{to_version}"
+                    end
+                  else
+                    if installer.create_project(service_dir,pwd,project_config,tx)
+                      puts "Updated service '#{component[:name]}' to #{to_version}"
                     end
                   end
               else
