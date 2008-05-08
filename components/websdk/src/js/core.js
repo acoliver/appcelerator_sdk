@@ -623,7 +623,12 @@ Appcelerator.Core.registerModuleWithJS = function (moduleName,module,js,jspath)
         else
         {
 	        var loaded = false;
-	        script.onload = checkState;
+	        
+	        if(!Appcelerator.Browser.isOpera) 
+            {
+                script.onload = checkState; 
+            }
+            
 	        script.onreadystatechange = function()
 	        {
 	            switch(this.readyState)
