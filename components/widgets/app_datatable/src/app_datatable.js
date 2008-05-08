@@ -83,6 +83,7 @@ Appcelerator.Widget.Datatable =
 				 type: T.cssDimension},
                 {name: 'property', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
+                {name: 'compile', optional: true, defaultValue: 'false', type: T.bool},
                 {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber},
                 {name: 'sortIndex', optional: true, defaultValue: -1, type: T.naturalNumber},
 				{name: 'stickySort', optional: true, defaultValue: true, type: T.bool}];
@@ -107,7 +108,7 @@ Appcelerator.Widget.Datatable =
 		var on_array = [];
 
 		var parameterMap = $(id).parameterMap;
-		var needRecompile=false;
+		var needRecompile=parameterMap['compile'];
 		var scope = parameterMap['scope'];
 		
 		//Valid values are 'client', 'server', and 'off'
