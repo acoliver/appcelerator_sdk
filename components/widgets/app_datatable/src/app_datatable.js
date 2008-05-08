@@ -84,6 +84,7 @@ Appcelerator.Widget.Datatable =
                 {name: 'property', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'pagination', optional: true, defaultValue: 'false', type: T.bool},
                 {name: 'compile', optional: true, defaultValue: 'false', type: T.bool},
+                {name: 'module', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'maxRows', optional: true, defaultValue: 0, type: T.naturalNumber},
                 {name: 'sortIndex', optional: true, defaultValue: -1, type: T.naturalNumber},
 				{name: 'stickySort', optional: true, defaultValue: true, type: T.bool}];
@@ -106,8 +107,8 @@ Appcelerator.Widget.Datatable =
 	{		
 		//list of on attributes to be parsed and evaluated at the end of create
 		var on_array = [];
-
-		var parameterMap = $(id).parameterMap;
+		var element = $(id);
+		var parameterMap = element.parameterMap;
 		var needRecompile=parameterMap['compile'];
 		var scope = parameterMap['scope'];
 		
@@ -294,7 +295,7 @@ Appcelerator.Widget.Datatable =
 				}
 				var cell_value = (Object.getNestedProperty(array[xrun],column_property_name)||'');
 				if (formatterFunction) {
-					cell_value = formatterFunction(cell_value,column_property_name, array[xrun]);
+					cell_value = formatterFunction(cell_value,column_property_name, array[xrun],element);
 				} else {
 					cell_value.toString().escapeHTML();
 				}
