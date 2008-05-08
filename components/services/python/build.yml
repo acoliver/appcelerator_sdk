@@ -3,6 +3,6 @@
 :dependencies: 
 - :type: websdk
   :name: websdk
-  :version: ">=2.1"
+  :version: ">=2.1.2"
 :name: python
 :version: 1.0.5
