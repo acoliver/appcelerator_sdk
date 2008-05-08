@@ -190,7 +190,7 @@ module Appcelerator
 	    obj.public_methods.each do |m|
 	      next if registrations and registrations.include? m
 	      meth = obj.method(m)
-	      puts "m=#{m}, #{meth}"
+        # puts "m=#{m}, #{meth}"
 	      next if meth.arity > 0
 	      next if m =~ /\?$/
 	      next if m =~ /^to_/
