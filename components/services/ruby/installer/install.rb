@@ -27,7 +27,7 @@ module Appcelerator
   class Ruby 
     def create_project(from_path,to_path,config,tx)
 
-      puts "Creating new ruby project using #{from_path}" if OPTIONS[:debug]
+      puts "Creating new Rails project using #{from_path}" if OPTIONS[:debug]
       
       rails_gem = get_rails_gem
       
@@ -124,6 +124,25 @@ module Appcelerator
       end
       
       Gem.cache.search('rails').last
+    end
+    
+    def update_project(from_path,to_path,config,tx,from_version,to_version)
+      puts "Updating Rails project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
+      
+      if to_version == '1.0.4'
+        Installer.copy tx, "#{from_path}/rails/vendor/plugins/appcelerator/lib/appcelerator/dispatcher.rb", 
+        "#{to_path}/vendor/plugins/appcelerator/lib/appcelerator/dispatcher.rb"
+
+        projectname = File.basename(to_path)
+        rails_gem = get_rails_gem
+        xml = File.read("#{from_path}/rails/public/appcelerator.xml")
+        if rails_gem.version.to_s.to_f > 1.2
+          xml.gsub!(/SESSIONID/,"_#{projectname}_session")
+        else
+          xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
+        end
+        Installer.put "#{to_path}/public/appcelerator.xml", xml
+      end
     end
   end
 end
