@@ -155,19 +155,7 @@ module Appcelerator
       
 	    @registrations = nil
     end
-    
-#     def Service.autoload_controllers_as_services
-#       require 'app/controllers/application'
-# #      load_controller(Application,name)
-#       Dir["#{RAILS_ROOT}/app/controllers/*_controller.rb"].each do |file|
-#         name = File.basename(file).gsub('.rb','')
-#         next if name =~ /(proxy|upload|service_broker)_controller/
-#         require name
-#         controller = eval(name.camelize)
-#         load_controller(controller,name)
-#       end
-#     end
-    
+        
     private
     
     def Service.load_controller(controller,service_name)
@@ -190,7 +178,6 @@ module Appcelerator
 	    obj.public_methods.each do |m|
 	      next if registrations and registrations.include? m
 	      meth = obj.method(m)
-        # puts "m=#{m}, #{meth}"
 	      next if meth.arity > 0
 	      next if m =~ /\?$/
 	      next if m =~ /^to_/

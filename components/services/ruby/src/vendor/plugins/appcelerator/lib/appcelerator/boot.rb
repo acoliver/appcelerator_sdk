@@ -59,13 +59,6 @@ if defined?(RAILS_ROOT)
     
     # load the agent
     require File.dirname(__FILE__)+'/agent/client'
-    
-    # if ENV['RAILS_ENV'] != 'production'
-    #     puts '=> Registered services.... '
-    #     puts Appcelerator::ServiceBroker.diagnostics
-    #     puts
-    # end
-    # puts '=> Appcelerator loaded'
   end
 end
 
