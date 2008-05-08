@@ -48,7 +48,11 @@ module Appcelerator
       
       true
     end
-    
+
+    def update_project(from_path,to_path,config,tx,from_version,to_version)
+        config[:name] = File.basename(Dir.pwd)
+        create_project(from_path,to_path,config,tx)
+    end
     
     #
     # Helpers
