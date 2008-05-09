@@ -444,6 +444,14 @@ Appcelerator.Widget.Search =
 		{
 			html += ' name="'+parameters['name']+'" ';
 		}
+		if (parameters['on'])
+		{
+			html += ' on="'+parameters['on']+'" ';
+		}
+		if (parameters['value'])
+		{
+			html += ' value="'+parameters['value']+'" ';
+		}
 		html += '/></td></tr></table>';
 		html += '<div style="display:none;z-index:2;position:absolute; left: 0px" id="'+element.id+'_results" on="'+parameters['selected']+' then hide">';
 		html += '<div id="'+element.id+'_select" style="width: '+parameters['resultWidth']+'px; border: 1px #000 solid; cursor: pointer;"></div></div>';
