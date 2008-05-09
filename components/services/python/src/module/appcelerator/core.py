@@ -22,6 +22,7 @@ __all__ = ['service_broker_factory', 'cross_domain_proxy_factory', 'ServiceBroke
 import traceback
 import logging
 import cgi
+import re
 import urllib2 as urllib
 
 import simplejson as json
@@ -99,7 +100,7 @@ class ServiceDispatcher(object):
                     'environ': environ
                 }
                 
-                messages = payload['messages']
+                messages = payload.get('messages', [])
                 results = self.handle_messages(messages, session, options)
                 responses = [
                     {
@@ -191,6 +192,9 @@ class InMemoryServiceBroker(object):
         self.listeners = {}
     
     def registerListener(self, msgtype, listener):
+        if re.match('(r|l|remote|local):', msgtype):
+            logging.warn('Services message names should not be prefixed with "r:" or "remote:" ('+msgtype+')')
+        
         try:
             self.listeners[msgtype].append(listener)
         except KeyError:
