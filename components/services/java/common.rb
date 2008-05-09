@@ -17,12 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-def compile_dir(source_dir, output_dir, cp_dir)
+def compile_dir(source_dir, output_dir, cp_dirs)
   puts "Compiling Java files..." if VERBOSE
   output_dir = to_path(output_dir)
- 
-  cp = Dir["#{cp_dir}/**/*.jar"].inject("") {|a,f| a += java_path_separator + to_path(f)}
 
+  if (cp_dirs.class != Array)
+    cp_dirs = [cp_dirs]
+  end
+
+  cp = cp_dirs.collect{|d| Dir["#{d}/**/*.jar"]}.flatten()
+  cp = to_path(cp.join(java_path_separator))
+  
   FileUtils.cd(source_dir) do
     src_files = Dir["**/*.java"].collect{|file| to_path(file)}
     src_files.delete_if {|f| f =~ /EchoService.java$/ }
