@@ -188,7 +188,7 @@ task :osx=> [:setup] do
     system "hdiutil eject /Volumes/Appcelerator 2>/dev/null"
 
     FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
-    build_yaml = File.join(osx_dir,'build.yml')
+    build_yaml = File.join(osx_dir,'installer','build.yml')
     dump_yaml(config, build_yaml)
 
     # build the package structure
@@ -229,7 +229,7 @@ task :osx=> [:setup] do
       zipfile.add("build.yml", build_yaml)
     end
 
-    FileUtils.rm_rf osx_dir
+#    FileUtils.rm_rf osx_dir
     puts "Mac OSX Installer is now ready"
   end
   
