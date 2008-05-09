@@ -281,6 +281,7 @@ copy)
     echo "Copying to a temporary location..." >&2
     cp "\$0" "\$SCRIPT_COPY"
     chmod +x "\$SCRIPT_COPY"
+    export LAUNCH_DIR=\`pwd\`
     cd "\$TMPROOT"
     exec "\$SCRIPT_COPY" --phase2 -- \$initargs
     ;;

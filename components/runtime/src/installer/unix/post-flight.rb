@@ -121,16 +121,25 @@ def valid_install_location?(dir)
   end
 end
 
+from_dir = File.expand_path(File.dirname('.'))
+
+# this environment variable is set by code in the makeself-header.sh script
+cur_dir = ENV['LAUNCH_DIR']
+if cur_dir
+  FileUtils.cd(cur_dir)
+else
+  puts "Expected $LAUNCH_DIR to be set. Failing"
+end
+
 while true
   dir = ask "Install directory? [#{install_dir}] "
   dir = install_dir if not dir or dir == '' 
   install_dir = dir
-  
   break if valid_install_location?(install_dir)
 end
 
 install_dir = File.expand_path install_dir
-from_dir = File.expand_path(File.dirname(__FILE__))
+
 
 
 puts "Installing Appcelerator to #{install_dir}, One moment..."
@@ -165,6 +174,7 @@ end
 
 # do our installation
 FileUtils.mkdir_p install_dir unless File.exists?(install_dir)
+puts 'from_dir '+from_dir
 FileUtils.cp_r "#{from_dir}/.", install_dir
 FileUtils.ln_s "#{install_dir}/appcelerator", "#{install_dir}/app", :force=>true
 
