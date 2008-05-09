@@ -188,14 +188,13 @@ public class ServiceRegistry
 		// check for duplicates in the set of adapters
 		for (ServiceAdapter possibleDuplicate : adapters) 
 		{
-			if (possibleDuplicate.is(adapter) && unregisterIfFound) 
+			if (possibleDuplicate.is(adapter)) 
 			{
-				adapters.remove(adapter);
-				break;
-			} 
-			else if (possibleDuplicate.is(adapter)) 
-			{
-				return false;
+				if (unregisterIfFound) {
+					adapters.remove(possibleDuplicate);
+				} else {
+					return false;
+				}
 			}
 		}
 		

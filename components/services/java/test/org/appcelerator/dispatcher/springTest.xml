@@ -8,5 +8,10 @@
   <bean class='org.appcelerator.dispatcher.ServiceRegistry' id='serviceRegistry' factory-method="getInstance">
     <property name='dispatchVisitor' ref='dispatchVisitor' />
   </bean>
-  <bean class='org.appcelerator.dispatcher.LoggedDispatchVisitor' id='dispatchVisitor'/>
+  <bean class='org.appcelerator.dispatcher.visitor.LoggedDispatchVisitor' id='dispatchVisitor'/>
+
+    
+  <bean class='org.appcelerator.dispatcher.TestService' id='testService'>
+  	<property name="simpleProperty" value="foo"/>
+  </bean>
 </beans>
