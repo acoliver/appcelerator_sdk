@@ -229,7 +229,7 @@ task :osx=> [:setup] do
       zipfile.add("build.yml", build_yaml)
     end
 
-#    FileUtils.rm_rf osx_dir
+    FileUtils.rm_rf osx_dir
     puts "Mac OSX Installer is now ready"
   end
   
