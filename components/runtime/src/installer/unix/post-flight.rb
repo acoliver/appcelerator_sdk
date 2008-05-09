@@ -174,7 +174,6 @@ end
 
 # do our installation
 FileUtils.mkdir_p install_dir unless File.exists?(install_dir)
-puts 'from_dir '+from_dir
 FileUtils.cp_r "#{from_dir}/.", install_dir
 FileUtils.ln_s "#{install_dir}/appcelerator", "#{install_dir}/app", :force=>true
 
