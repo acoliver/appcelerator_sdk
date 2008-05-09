@@ -239,7 +239,7 @@ public class UploadTransportServlet extends HttpServlet
             response.setHeader("Pragma","no-cache");
             response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
             response.setDateHeader("Expires", System.currentTimeMillis()-TimeUtil.ONE_YEAR);
-            response.setContentType("text/html");
+            response.setContentType("text/html;charset=UTF-8");
             
             // optionally, invoke a callback function/message on upload in the client
             if (callback!=null || !responses.isEmpty())
