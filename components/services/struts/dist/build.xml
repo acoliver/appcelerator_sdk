@@ -2,7 +2,7 @@
 <!-- ==================================================================== -->
 <!-- Appcelerator Project Build                                           -->
 <!-- ==================================================================== -->
-<project name="build-appcelerator" default="compile" basedir=".">
+<project name="build-appcelerator" default="build" basedir=".">
 
     <property name="run.port" value="4000"/>
     <property name="run.scanperiod" value="5000"/>
@@ -28,7 +28,7 @@
 		<echo>Please see COPYING for more details on license requirements</echo>
 	</target>
 
-	<target name="compile" description="Compiles the Java code" depends="banner">
+	<target name="build" description="Compiles the Java code" depends="banner">
 		<mkdir dir="${classes.dir}"/>
 		<javac debug="true" srcdir="src" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>

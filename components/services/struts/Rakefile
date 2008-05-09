@@ -36,16 +36,15 @@ task :default do
   app_source = path("src", java_service_dir)
   app_struts_source = path("src", struts_service_dir)
 
-  build_lib_dir = path("lib/build", struts_service_dir) # necessary to build -struts.jar
-  run_lib_dir = path("lib/run", struts_service_dir) # necessary to run a struts project
+  lib_dir = path("lib", struts_service_dir) # necessary to build -struts.jar
  
   clean_dir(struts_stage_dir)
   FileUtils.mkdir_p to_path(java_build_dir) 
 
   # build the latest appcelerator.jar for this release
-  cp_dir = path("lib", java_service_dir)
-  compile_dir(app_source, java_build_dir, cp_dir)
-  app_jar_file = path("appcelerator-#{java_config[:version]}.jar", build_lib_dir)
+  java_cp_dir = path("lib", java_service_dir)
+  compile_dir(app_source, java_build_dir, java_cp_dir)
+  app_jar_file = path("appcelerator-#{java_config[:version]}.jar", lib_dir)
   create_jar(app_jar_file, java_build_dir)
 
   # clean
@@ -53,8 +52,8 @@ task :default do
   FileUtils.mkdir_p to_path(java_build_dir) 
 
   # now create an appcelerator-struts.jar file
-  compile_dir(app_struts_source, java_build_dir, build_lib_dir)
-  struts_jar_file = path("appcelerator-struts-#{config[:version]}.jar", run_lib_dir)
+  compile_dir(app_struts_source, java_build_dir, [java_cp_dir, lib_dir])
+  struts_jar_file = path("appcelerator-struts-#{config[:version]}.jar", lib_dir)
   create_jar(struts_jar_file, java_build_dir)
 
   zipfile = path("service_struts_#{config[:version]}.zip", STAGE_DIR)
@@ -68,12 +67,15 @@ task :default do
       end
     end
 
-    lib_dir = path('lib', struts_service_dir) 
     dofiles(lib_dir) do |f|
       if not f == '.'
         zipfile.add("dist/public/WEB-INF/lib/#{File.basename(f)}", "#{lib_dir}/#{f}")
       end
     end
+
+    Dir["#{java_cp_dir}/**/*.jar"].each { |f|
+        zipfile.add("dist/public/WEB-INF/lib/#{File.basename(f)}", f)
+    }
 
     zipfile.add("build.yml", "build.yml")
     zipfile.add("install.rb", "install.rb")
