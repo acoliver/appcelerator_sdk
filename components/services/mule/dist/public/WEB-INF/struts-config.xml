@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+        "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+
+<struts-config>
+    <display-name>
+        <![CDATA[ struts servicebroker ]]>
+    </display-name>
+    <description>
+        <![CDATA[   ]]>
+    </description>
+
+    <!-- ==== Form Bean Definitions ==== -->
+
+    <form-beans>
+        <form-bean name="messageForm" type="org.appcelerator.struts.example.MessageForm"/>
+    </form-beans>
+    
+    <!-- ==== Action Mapping Definitions ==== -->
+    <action-mappings>
+
+        <!-- Display any other page (Logon, MainMenu) - Wildcards must come first! -->
+        
+        <!--
+        <action
+                path="/*"
+                forward="/{1}.jsp">
+        </action>
+        -->
+        
+        <action
+                path="/servicebroker"
+                type="org.appcelerator.struts.example.MessageAction">
+            <forward
+                    name="Success"
+                    path="/.jsp"/>
+        </action>
+
+ 
+        <action
+                path="appcelerator.status.report"
+                type="org.apache.struts.mock.MockAction">
+        </action>
+
+        <action
+                path="app.test.message.request"
+                type="org.appcelerator.struts.example.MessageAction"
+                name="messageForm">
+            <forward
+                    name="Success"
+                    path="app.test.message.response"/>
+        </action>
+        
+        <action
+                path="app.test.piglatin.request"
+                type="org.appcelerator.struts.example.PiglatinAction"
+                name="messageForm">
+            <forward
+                    name="Success"
+                    path="app.test.piglatin.response"/>
+        </action>
+        
+        <action
+                path="/PigLatinTranslation"
+                name="messageForm"
+                type="org.appcelerator.struts.example.PiglatinAction"
+                scope="request">
+            <forward
+                    name="Success"
+                    path="/Translate.jsp"/>
+ 
+        </action>
+
+        <!-- Process a user logon -->
+        <!-- 
+        <action
+                path="/SubmitLogon"
+                type="org.apache.struts.apps.mailreader.actions.LogonAction"
+                name="LogonForm"
+                scope="request"
+                cancellable="true"
+                validate="true"
+                input="Logon">
+            <exception
+                    key="expired.password"
+                    type="org.apache.struts.apps.mailreader.dao.ExpiredPasswordException"
+                    path="/ChangePassword.do"/>
+            <forward
+                    name="Success"
+                    path="/MainMenu.do"/>
+        </action>
+ -->
+    </action-mappings>
+
+    <!-- ==== Controller Configuration ==== -->
+
+    <controller
+            processorClass="org.appcelerator.struts.AppceleratorRequestProcessor"
+            pagePattern="$M$P"
+            inputForward="true"/>
+
+</struts-config>

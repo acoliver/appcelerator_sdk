@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mule-configuration PUBLIC "-//MuleSource //DTD mule-configuration XML V1.0//EN"
+                                "http://mule.mulesource.org/dtds/mule-configuration.dtd">
+
+<mule-configuration id="Mule_Appcelerator" version="1.0">
+
+	<description>
+		A sample configuration file showing how to use the Appcelerator Transport for Mule.
+	</description>
+
+    <!-- These are the currently available transformers for Appcelerator. -->
+    <transformers>
+        <transformer name="JSONToXML" className="org.mule.providers.appcelerator.transformers.JSONToXML"/>
+        <transformer name="XMLToJSON" className="org.mule.providers.appcelerator.transformers.XMLToJSON"/>
+        <transformer name="AppceleratorJSONToJIRA" className="org.mule.providers.appcelerator.transformers.AppceleratorJSONToJIRA"/>
+    </transformers>
+    
+	<model name="dev">
+		<mule-descriptor name="appceleratorTest"
+			implementation="org.appcelerator.test.MuleService">
+			<inbound-router>
+					<endpoint responseTransformers="XMLToJSON"  transformers="JSONToXML" address="app://mule.request:mule.response@localhost/1.0">
+					</endpoint>
+			</inbound-router>
+		</mule-descriptor>
+	</model>
+	
+</mule-configuration>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ==================================================================== -->
+<!-- Appcelerator Project Build                                           -->
+<!-- ==================================================================== -->
+<project name="build-appcelerator" default="build" basedir=".">
+
+    <property name="run.port" value="4000"/>
+    <property name="run.scanperiod" value="5000"/>
+
+    <property name="web.dir" value="public"/>
+    <property name="classes.dir" value="${web.dir}/WEB-INF/classes"/>
+    <property name="lib.dir" value="${web.dir}/WEB-INF/lib"/>
+    <property name="services.dir" value="app/services"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<path id="runclasspath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <pathelement path="${class.dir}"/>
+        <pathelement path="${services.dir}"/>
+	</path>
+
+	<target name="banner">
+		<echo>Appcelerator RIA Platform for Java</echo>
+		<echo>Licensed under the GNU GPL version 3 or later</echo>
+		<echo>Please see COPYING for more details on license requirements</echo>
+	</target>
+
+	<target name="build" description="Compiles the Java code" depends="banner">
+		<mkdir dir="${classes.dir}"/>
+		<javac debug="true" srcdir="src" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
+	</target>
+
+    <target name="run" description="Run this Appcelerator project" depends="banner">
+        <mkdir dir="${classes.dir}"/>
+        <java fork="true" classpathref="runclasspath" classname="org.appcelerator.struts.StrutsEndpoint">
+            <arg value="${run.port}"/> <!-- port to run on -->
+            <arg value="${web.dir}"/> <!-- the web directory -->
+            <arg value="${services.dir}"/> <!-- the dynamically compiled services dir -->
+            <arg value="${run.scanperiod}"/> <!-- sleep time between service dir scans -->
+        </java>
+    </target>
+
+	<target name="clean">
+		<delete dir="${classes.dir}/**"/>
+	</target>
+
+</project>
