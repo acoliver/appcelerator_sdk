@@ -670,12 +670,19 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var) 
 {
 	//TODO: allow getter calls in property chain
-	var o = Object.getNestedProperty(namespace,var_expr,template_var);
+	var def = {};
+	var o = Object.getNestedProperty(namespace,var_expr,def);
 	if (typeof(o) == 'object')
 	{
 		o = Object.toJSON(o);
 		o = o.replace(/"/g,'&quot;');
 	}
+	
+	if (o != def)
+	{
+	    o = eval(var_expr, namespace);
+	}
+	
 	return o;
 }
 
@@ -693,6 +700,7 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
             "'].join('');};" + (htmlonly?'':varname);
 	
 	var result = htmlonly ? body : eval(body);
+	
 	return result;
 };
 
