@@ -1125,7 +1125,7 @@ Appcelerator.Util.ServiceBrokerMarshaller['application/json'] =
         {
             try
             {
-                message = messages[c];
+                var message = messages[c];
 
                 var type = message['type'];
                 var datatype = message['datatype'];
