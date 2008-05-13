@@ -167,7 +167,7 @@ public class JSONMarshaller
         String line;
         StringBuffer buffer = new StringBuffer();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(input));
+        BufferedReader in = new BufferedReader(new InputStreamReader(input, "UTF-8"));
         while ((line = in.readLine()) != null) {
             buffer.append(line);
         }
