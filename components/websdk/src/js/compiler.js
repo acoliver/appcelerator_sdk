@@ -613,7 +613,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 			}
 			catch(e)
 			{
-				$E(e);
+				$D(e);
 			}
 		}
 		try
@@ -622,7 +622,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 		}
 		catch(e)
 		{
-			$E(e);
+			$D(e);
 		}
 	}
 	
