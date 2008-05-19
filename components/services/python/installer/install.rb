@@ -29,9 +29,9 @@ module Appcelerator
       app_path = File.join to_path, project_name
       project_location = File.dirname to_path
       
-      dependencies = %w(simplejson beaker paste python)
-      if dependencies.include?(project_name) or project_name.include?(' ') or project_name.include?(';')
-        puts "Invalid project name, must not contain spaces, semicolons, or be one of: #{dependencies}"
+      dependencies = %w(appcelerator simplejson beaker paste python)
+      if dependencies.include?(project_name) or not project_name.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)
+        puts "Invalid project name, must be a valid python identifier, and not one of: #{dependencies}"
         return false
       end
       
