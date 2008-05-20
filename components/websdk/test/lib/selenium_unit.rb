@@ -82,13 +82,16 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
       yield(FINISHED, name)
     end
     
+    # Helper methods to make writing test cases for 
+    # all this stuff a little cleaner
+    
     def child_has_class(elem, class_name)
         text = get_eval("#{dollar(elem)}.select('[class=#{class_name}]')")
         return (text.length > 0)    
     end
     
-    def mq(message_name)
-        return get_eval("window.$MQ('#{message_name}')");
+    def mq(message_name, args = {})
+        return get_eval("window.$MQ('#{message_name}', #{args.to_json})");
     end
     
     def dollar(elem_id)
@@ -100,14 +103,19 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
         JSON.parse(messages)
     end
     
-    def get_message(name)
-        messages = get_messages()
-        messages.each { |message| 
-            name = name[1..name.length]
-            if message['type'] == name
-                return message
-            end
-        }
+    def get_message(name, attempts=1)
+        while(attempts > 0)
+            messages = get_messages()
+            messages.each { |message| 
+                msg_name = name[2..name.length]
+                if message['type'] == msg_name
+                    return message
+                end
+            }
+            attempts -= 1
+            sleep 1 if attempts > 0 
+        end
+        
         return nil
     end
     
@@ -118,6 +126,22 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     
     def clear_messages()
         return get_eval("window.Appcelerator.Selenium.clear_messages()")
+    end
+    
+    def is_displayed(locator, idx=0)
+        return get_eval(prototype_selector(locator,idx) + ".style.display != 'none'") == 'true'
+    end
+    
+    def is_visible(locator, idx=0) 
+        return get_eval(prototype_selector(locator,idx) + ".style.visible != 'none'") == 'true'
+    end
+    
+    def get_style(locator, style_name, idx=0)
+        return get_eval(prototype_selector(locator,idx) + ".getStyle('#{style_name}')")
+    end
+        
+    def not_present(locator)
+        return get_eval(prototype_selector(locator, 0)) == 'false'
     end
     
     def add_message_listeners
@@ -170,9 +194,23 @@ END_OF_JAVASCRIPT
         @selenium = Selenium::SeleniumDriver.new("localhost", 4444,
     		"*#{@browser}", "#{@basepath}/", 15000)
     	@selenium.start
+    	@selenium.open(url())
+    	add_message_listeners()
     end
     
 	def teardown
 		@selenium.stop
 	end
+	
+	
+    def prototype_selector(str, idx)
+        # try to be smart, if there is a hash, assume prototype locator
+        # otherwise just use dollar
+        
+        if(str.include?('#'))
+            return "window.$$('#{str}').length > 0 && window.$$('#{str}')[#{idx}]"
+        else
+            return "window.$('#{str}')"
+        end
+    end
 end

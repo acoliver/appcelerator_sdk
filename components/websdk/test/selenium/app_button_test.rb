@@ -2,15 +2,12 @@
 class ButtonTest < Test::Unit::SeleniumTestCase
   include SeleniumHelper
     @@widget = "button.html"
-   
   
     def initialize(name="button test")
         return super(name)
     end
     
   	def test_clicking
-  	    #url = "#{@basepath}/#{@@widget}"
-        open(url())
         click("button_test_1")
         alert_text = get_alert()
         assert_equal("test passed", alert_text)
@@ -18,7 +15,6 @@ class ButtonTest < Test::Unit::SeleniumTestCase
 	
   	def test_square 
         elem = "button_test_2"
-        open(url())
         click(elem)
         alert_text = get_alert()
         assert_equal("test passed", alert_text)
@@ -29,7 +25,6 @@ class ButtonTest < Test::Unit::SeleniumTestCase
 	
 	def test_light_gray
         elem = "button_test_3"
-        open(url())
         click(elem)
         alert_text = get_alert()
         assert_equal("test passed", alert_text)
@@ -40,7 +35,6 @@ class ButtonTest < Test::Unit::SeleniumTestCase
   	
   	def test_light_square 
         elem = "button_test_4"
-        open(url())
         click(elem)
         alert_text = get_alert()
         assert_equal("test passed", alert_text)
@@ -51,7 +45,6 @@ class ButtonTest < Test::Unit::SeleniumTestCase
   	
   	def test_enable_disable
         elem = "button_test_5"
-        open(url())
         click(elem)
         begin
             alert_text = get_alert()
@@ -76,7 +69,6 @@ class ButtonTest < Test::Unit::SeleniumTestCase
   	
   	def test_activators
   	    elem = "button_test_6"
-  	    open(url())
   	    
   	    begin
             alert_text = get_alert()
@@ -94,14 +86,12 @@ class ButtonTest < Test::Unit::SeleniumTestCase
   	
   	def test_fieldset
   	    elem = "button_test_7"
-        open(url())
         click(elem)
         alert_text = get_alert()
         assert_equal("test passed with value of input test value", alert_text)
   	end
   	
   	def test_icons
-        open(url())
         assert(child_has_class("button_test_8", "button_icon_add_green"))
         assert(child_has_class("button_test_9", "button_icon_add_gray"))
         assert(child_has_class("button_test_10", "button_icon_delete_red"))

@@ -6,7 +6,6 @@ class PanelTest < Test::Unit::SeleniumTestCase
     end
 
     def test_shade_unshade()
-        open(url())
         mq('l:shade.panel')
         assert_alert("Test Passed Shade")
         
@@ -15,7 +14,6 @@ class PanelTest < Test::Unit::SeleniumTestCase
     end
     
     def test_open_close()
-        open(url())
         mq('l:close.this.panel')
         assert_alert("Test Passed Close")
         

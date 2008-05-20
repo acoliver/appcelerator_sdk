@@ -23,7 +23,7 @@
 		<td class="test" valign="middle">
 			Load HTML file (with on/value expression)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_1">
 			<app:content src="../content/content_file.html"></app:content>
 		</td>
 	</tr>
@@ -31,7 +31,7 @@
 		<td class="test" valign="middle">
 			Load  HTML file (lazy load 5s)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_2" >
 			<app:content lazy="true" on="l:load.content then execute after 5s" 
 			src="../content/content_file2.html"></app:content>
 		</td>
@@ -40,10 +40,10 @@
 		<td class="test" valign="middle">
 			Load  HTML file (conditionally hide/show)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_3">
 			<a on="click then l:toggle[action=hide]">Hide</a> | 
 			<a on="click then l:toggle[action=show]">Show</a>
-			<app:content on="l:toggle[action=hide] then hide else show" 
+			<app:content id="hide_show_content" on="l:toggle[action=hide] then hide else show" 
 			src="../content/content_file2.html"></app:content>
 		</td>
 	</tr>
@@ -51,11 +51,11 @@
 		<td class="test" valign="middle">
 			Load HTML file (with onload attribute)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_4">
 			<div style="display: none">
 				<app:content src="../content/content_file.html" onload="l:content.loaded"></app:content>
 			</div>
-			<div style="display: none" on="l:content.loaded then show">
+			<div class="passed" style="display: none" on="l:content.loaded then show">
 				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
 			</div>
 		</td>
@@ -64,20 +64,20 @@
 		<td class="test" valign="middle">
 			Load HTML file (with onfetch attribute)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_5">
 			<div style="display: none">
 				<app:content src="../content/content_file.html" onfetch="l:content.fetch"></app:content>
 			</div>
-			<div style="display: none" on="l:content.fetch then show">
+			<div class="passed" style="display: none" on="l:content.fetch then show">
 				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
 			</div>
 		</td>
 	</tr>	
 	<tr>
-		<td class="test" valign="middle">
+		<td class="test" valign="middle" id="content_result_6">
 			Load HTML file (with &lt;style&gt; element)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_6">
 			<app:content src="../content/content_styled_1.html"></app:content>
 		</td>
 	</tr>
@@ -85,7 +85,7 @@
 		<td class="test" valign="middle">
 			Load HTML file (with &lt;link&gt; element)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_7">
 			<app:content src="../content/content_styled_2.html"></app:content>
 		</td>
 	</tr>
@@ -93,7 +93,7 @@
 		<td class="test" valign="middle">
 			Load HTML file (with &lt;style&gt; element and &lt;link&gt; element -- testing css order)
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_8">
 			<app:content src="../content/content_styled_3.html"></app:content>
 		</td>
 	</tr>
@@ -101,7 +101,7 @@
 		<td class="test" valign="middle">
 			Load HTML file with reload = false
 		</td>
-		<td class="result" >
+		<td class="result" id="content_result_9">
 			<app:script>
 				content_file3 = 0;
 			</app:script>

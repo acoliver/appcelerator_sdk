@@ -245,6 +245,12 @@ namespace :selenium do
     sleep 5 if( selenium or webrick )
     run_selenium_tests("Firefox Tests", "firefox")
   
+    # make selenium clean up on windows.  Bad assumption
+    # that nobody is developing the sdk and running the
+    # selenium tests with firefox running
+    
+    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/)
+    
     stop_selenium() if selenium
     stop_webrick() if webrick
   end
@@ -331,7 +337,7 @@ def kill_process(file_name)
   signum = 15
   if RUBY_PLATFORM.match(/win32/)
     require 'win32/process'
-    signum = 9
+    signum = 5
   end
   file = File.open(file_name)
   pid = file.gets.strip!.to_i
@@ -358,7 +364,8 @@ def start_selenium()
     log = File.open("#{STAGE_DIR}/tmp/selenium.log", "w")
     process_info = Process.create(
         :app_name => "java -jar #{BUILD_DIR}\\test\\lib\\selenium-server.jar -browserSessionReuse",
-        :startup_info => {:stdout => log}
+        :startup_info => {:stdout => log},
+        :creation_flags => Windows::Process::CREATE_NEW_PROCESS_GROUP
     )
     File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
       file.puts(process_info.process_id)
@@ -395,6 +402,7 @@ def run_selenium_tests(browser_name, browser)
   # to be run here.  
   #
   require 'test/selenium/app_button_test'
+  require 'test/selenium/app_content_test'
   require 'test/selenium/app_panel_test'
   require 'test/selenium/messaging_test'
   #
