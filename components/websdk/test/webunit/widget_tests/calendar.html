@@ -31,14 +31,14 @@ input[type=text]
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Basic Calendar: should start with calendar shown, click to update the text box
+			Basic Calendar: press select to show the calendar, click to update the text box
 		</td>
 		<td class="result" >
 			<app:calendar title="Select Start Date" inputId="jobfilter_date_start" on="l:calendarexample.start then execute"
 				minDate="10/16/2007">
 			</app:calendar>
 			<input type="text" id="jobfilter_date_start"></input>
-			<a on="click then l:calendarexample.start">select</a>
+			<a id="calendar_start_link" on="click then l:calendarexample.start">select</a>
 		</td>
 	</tr>
 </table>

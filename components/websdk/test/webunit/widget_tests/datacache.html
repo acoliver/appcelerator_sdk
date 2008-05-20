@@ -19,46 +19,74 @@
 </p>
 
 <table width="90%">
-	<tr>
-		<td class="test" valign="middle">
-			<a on="click then l:datacache1.request">Reload Data</a>			
-			Basic Cache (with default keepAlive)
-		</td>
-		<td class="result" >
-			<app:datacache request="l:datacache1.request" response="l:datacache1.response"></app:datacache>
-			Count should stay at one:  
-			<span id="datacache1" on="l:datacache1.response then value[result]"></span>
-		</td>
-	</tr>
+    <tr>
+        <td class="test" valign="middle">
+            <a on="click then l:datacache1.request">Reload Data</a>         
+            Basic Cache (with default keepAlive)
+        </td>
+        <td class="result" >
+            <app:datacache request="l:datacache1.request" response="l:datacache1.response" reaperInterval="10000"></app:datacache>
+            Count should stay at one:  
+            <span id="datacache1" on="l:datacache1.response then value[result]"></span>
+        </td>
+    </tr>
 	<tr>
 		<td class="test" valign="middle">
 			<a on="click then l:datacache2.request">Reload Data</a>			
-			Basic Cache (with keepAlive=30s)
+			Basic Cache (with keepAlive=5s)
 		</td>
 		<td class="result" >
-			<app:datacache request="l:datacache2.request" keepAlive="30000" response="l:datacache2.response"></app:datacache>
-			Count should increment every ~30s: 
+			<app:datacache request="l:datacache2.request" keepAlive="5000" response="l:datacache2.response"></app:datacache>
+			Count should increment every ~5s: 
 			<span id="datacache2" on="l:datacache2.response then value[result]"></span>
 		</td>
 	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			<a on="click then l:datacache3.request">Click Once</a>			
-			Basic Cache (with keepAlive=30s)
-		</td>
-		<td class="result" >
-			<app:datacache request="l:datacache3.request" keepAlive="30000" autoRefresh="true" 
-			response="l:datacache3.response"></app:datacache>
-			Count should auto-increment every ~30s: 
-			<span id="datacache3" on="l:datacache3.response then value[result]"></span>
-		</td>
-	</tr>
-
+    <tr>
+        <td class="test" valign="middle">
+            <a on="click then l:datacache3.request">Click Once</a>          
+            Basic Cache (with keepAlive=5s)
+        </td>
+        <td class="result" >
+            <app:datacache request="l:datacache3.request" keepAlive="5000" autoRefresh="true" 
+            response="l:datacache3.response"></app:datacache>
+            Count should auto-increment every ~10s (reaper interval): 
+            <span id="datacache3" on="l:datacache3.response then value[result]"></span>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <a on="click then l:datacache4.request">Click Once</a>          
+            TTL longer than reaper interval (with keepAlive=20s)
+        </td>
+        <td class="result" >
+            <app:datacache request="l:datacache4.request" keepAlive="20000" autoRefresh="true"
+            response="l:datacache4.response"></app:datacache>
+            Count should auto-increment every ~20s: 
+            <span id="datacache4" on="l:datacache4.response then value[result]"></span>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <a on="click then l:datacache5.request[args=true]">Increment</a>
+            <a on="click then l:datacache5.request[args=false]">Decrement</a>               
+            Cache Messages with Arguments
+        </td>
+        <td class="result" >
+            <app:datacache request="l:datacache5.request" keepAlive="20000" 
+            response="l:datacache5.response"></app:datacache>
+            Count should increment/decrement every ~5s: 
+            <span id="datacache5args" on="l:datacache5.response then value[result]">0</span>
+            <span id="datacache5noargs" on="l:datacache5.response then value[decrement]">0</span>
+        </td>
+    </tr>
 </table>
 <script>
 var count = 0;
 var count2= 0;
 var count3= 0;
+var count4= 0;
+var count5 = 0;
+var count6 = 0;
 </script>
 
 <app:script on="l:datacache1.request then execute">
@@ -79,6 +107,22 @@ var count3= 0;
 </app:script>
 <app:message name="l:datacache3.request"></app:message>
 
+<app:script on="l:datacache4.request then execute">
+	count4++;
+	$MQ('l:datacache4.response',{'result':count4})
+</app:script>
+<app:message name="l:datacache4.request"></app:message>
+
+<app:script on="l:datacache5.request[args=true] then execute">
+	count5++;
+	$MQ('l:datacache5.response',{'result':count5,'decrement':count6})
+</app:script>
+<app:message name="l:datacache5.request[args=true]"></app:message>
+
+<app:script on="l:datacache5.request[args=false] then execute">
+	count6--;
+	$MQ('l:datacache5.response',{'result':count5,'decrement':count6})
+</app:script>
 </body>
 
 </html>

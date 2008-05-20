@@ -59,16 +59,36 @@ Appcelerator.Widget.Datacache =
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'request', optional: false, type: T.messageReceive,
-		         description: "The message request to cache."},
-				{name: 'response', optional: false, type: T.messageSend,
-				 description: "The message response to cache."},
-				{name: 'keepAlive', optional: true, defaultValue: 1800000,
-				 description: "Keep alive",
-				 type: T.number},
-				{name: 'autoRefresh', optional: true, defaultValue: false,
-				 description: "Auto refresh",
-				 type: T.bool}];
+		return [
+		{
+		    name: 'request', 
+		    optional: false, 
+		    type: T.messageReceive,
+		    description: "The message request to cache."
+		}, {
+		    name: 'response', 
+		    optional: false, 
+		    type: T.messageSend,
+			description: "The message response to cache."
+		}, {
+		    name: 'keepAlive', 
+		    optional: true, 
+		    defaultValue: 1800000,
+			description: "Keep alive",
+			type: T.number
+		}, {
+		    name: 'autoRefresh', 
+		    optional: true, 
+		    defaultValue: false,
+			description: "Auto refresh",
+			type: T.bool
+		}, {
+		    name: 'reaperInterval',
+		    optional: true,
+		    defaultValue: 30000,
+		    description: "How often the datacache will go through to expire entires.  This applies to ALL datacache widgets " + 
+		        " and must be on the first widget"
+		}];
 	},	
 	buildWidget: function(element, parameters)
 	{
@@ -76,17 +96,8 @@ Appcelerator.Widget.Datacache =
 		var response = parameters['response'];
 		var keepAlive = parameters['keepAlive'];
 		var autoRefresh = parameters['autoRefresh'];
+		var reaperInterval = parameters['reaperInterval'];
 		
-	    if (!request)
-	    {
-	        throw "syntax error: required 'request' attribute for "+element.id;
-	    }
-	
-		if (!response)
-		{
-	        throw "syntax error: required 'response' attribute for "+element.id;			
-		}
-
         request = Appcelerator.Util.ServiceBroker.convertType(request);
         response= Appcelerator.Util.ServiceBroker.convertType(response);
 
@@ -98,10 +109,10 @@ Appcelerator.Widget.Datacache =
 				setInterval(function()
 				{
 					Appcelerator.Widget.Datacache.dataCacheTimer();
-				}, 30000);
+				}, reaperInterval);
 			}
 			
-            var entry = {req:request,resp:response,ttl:parseInt(keepAlive),data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
+            var entry = {req:request,resp:response,ttl:parseInt(keepAlive),args:null,data:null,timestamp:new Date().getTime(),refresh:autoRefresh};
             Appcelerator.Widget.Datacache.cache.push(entry);
 			var interceptor = 
 			{
@@ -109,7 +120,10 @@ Appcelerator.Widget.Datacache =
 			  	{ 		
 					if (messageType == request)
 					{
-						if (entry.data)
+                        if (entry.data 
+                                && !Appcelerator.Widget.Datacache.isExpired(entry,new Date().getTime())
+                                && Appcelerator.Widget.Datacache.equals(entry.args, msg.data)
+                        )
 						{
 							entry.data.app_datacache_message = true;
 							$MQ(response, entry.data, scope);
@@ -117,6 +131,7 @@ Appcelerator.Widget.Datacache =
 						}
 						else
 						{
+						    entry.args = msg.data;
 							return true;
 						}
 					}
@@ -147,7 +162,7 @@ Appcelerator.Widget.Datacache =
 		for (var c=0;c<Appcelerator.Widget.Datacache.cache.length;c++)
 		{
 			var entry = Appcelerator.Widget.Datacache.cache[c];
-			if (now >= entry.ttl + entry.timestamp)
+			if (Appcelerator.Widget.Datacache.isExpired(entry,now))
 			{
 				entry.data = null;
 				if (entry.refresh == true || entry.refresh == "true")
@@ -156,7 +171,30 @@ Appcelerator.Widget.Datacache =
 				}
 			}
 		}
-	}
+	},
+	
+	isExpired: function(entry, now) 
+	{
+	    return now >= entry.ttl + entry.timestamp;
+	},
+	
+	equals: function(left, right) {
+      if(left == right) return true;
+      if(typeof left == "object" && typeof right == "object") {
+        for(var field in left) {
+          if(!Appcelerator.Widget.Datacache.equals(left[field], right[field])) {
+            return false;
+          }
+        }
+        // somewhat redundant and inefficient...
+        for(var field in right) {
+          if(!Appcelerator.Widget.Datacache.equals(left[field], right[field])) {
+            return false;
+          }
+        }
+        return true;
+      }
+    }
 };
 
 Appcelerator.Widget.register('app:datacache',Appcelerator.Widget.Datacache);

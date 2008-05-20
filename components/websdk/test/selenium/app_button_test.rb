@@ -87,6 +87,7 @@ class ButtonTest < Test::Unit::SeleniumTestCase
   	def test_fieldset
   	    elem = "button_test_7"
         click(elem)
+        sleep 1
         alert_text = get_alert()
         assert_equal("test passed with value of input test value", alert_text)
   	end
