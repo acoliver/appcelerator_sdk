@@ -38,7 +38,7 @@ Appcelerator.Widget.Folder =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '1.0.1';
 	},
 	getSpecVersion: function()
 	{
@@ -218,7 +218,7 @@ Appcelerator.Widget.Folder =
 							closeChildren(parentid, childid);
 							if (openaction)
 							{
-								eval(openaction);
+								openaction();
 							}
 						}
 					};
@@ -234,7 +234,7 @@ Appcelerator.Widget.Folder =
 							Element.show(childid+'_closed');
 							if (closeaction)
 							{
-								eval(closeaction);
+								closeaction();
 							}
 						}
 					};

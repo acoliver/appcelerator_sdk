@@ -680,7 +680,14 @@ Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_
 	
 	if (o != def)
 	{
-	    o = eval(var_expr, namespace);
+	    try
+	    {
+    	    o = eval(var_expr, namespace);
+	    }
+	    catch (e)
+	    {
+	        o = template_var;
+	    }
 	}
 	
 	return o;
@@ -1430,15 +1437,15 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
             //
             if (instructions.compile)
             {
-					try
-					{
-						module.compileWidget(widgetParameters,outer);
-					}
-					catch (exxx)
-					{
-						Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id + ', type ' + element.nodeName);
-						return;
-					}
+                try
+                {
+                	module.compileWidget(widgetParameters,outer);
+                }
+                catch (exxx)
+                {
+                	Appcelerator.Compiler.handleElementException($(id), exxx, 'compiling widget ' + id + ', type ' + element.nodeName);
+                	return;
+                }
             }
             
             if (added && instructions.wire && outer)
@@ -1856,18 +1863,22 @@ Appcelerator.Compiler.smartSplit = function(value,splitter)
 
 Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, additionalParams)
 {
-	var actionFunc = null;
-	
-	if (ifCond)
+	var actionFunc = function(scope)
 	{
-		actionFunc = 'if (' + ifCond + ') { ' + Appcelerator.Compiler.makeAction(id,action,additionalParams) + ' } ';
-	}
-	else
-	{
-		actionFunc = Appcelerator.Compiler.makeAction(id,action,additionalParams);
-	}
-	
-	return actionFunc.toFunction(true);	
+	    var f = Appcelerator.Compiler.makeAction(id,action,additionalParams);
+	    if (ifCond)
+	    {
+	        if (eval(ifCond))
+	        {
+	            f(scope);
+	        }
+	    }
+	    else
+	    {
+	        f(scope);
+	    }
+	};
+	return actionFunc;	
 };
 
 /**
@@ -1882,65 +1893,79 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
  */
 Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 {
-	var html = '';
+    var actionFuncs = [];
 	var actions = Appcelerator.Compiler.smartSplit(value,' and ');
 	
 	for (var c=0,len=actions.length;c<len;c++)
 	{
-		var actionstr = actions[c].trim();
-		var remote_msg = actionstr.startsWith('remote:') || actionstr.startsWith('r:');
-		var local_msg = !remote_msg && (actionstr.startsWith('local:') || actionstr.startsWith('l:'));
-		var actionParams = Appcelerator.Compiler.parameterRE.exec(actionstr);
-		var params = actionParams!=null ? Appcelerator.Compiler.getParameters(actionParams[2],(remote_msg||local_msg)) : null;
-		var action = actionParams!=null ? actionParams[1] : actionstr;
+        (function()
+        {
+    		var actionstr = actions[c].trim();
+    		var remote_msg = actionstr.startsWith('remote:') || actionstr.startsWith('r:');
+    		var local_msg = !remote_msg && (actionstr.startsWith('local:') || actionstr.startsWith('l:'));
+    		var actionParams = Appcelerator.Compiler.parameterRE.exec(actionstr);
+    		var params = actionParams!=null ? Appcelerator.Compiler.getParameters(actionParams[2],(remote_msg||local_msg)) : null;
+    		var action = actionParams!=null ? actionParams[1] : actionstr;
 
-		if (local_msg || remote_msg)
-		{
-			params = (params || {});
-			if (local_msg && params['id']==null) 
-			{
-			 	params['id'] = id;
-			}
-			if (additionalParams)
-			{
-				for (var p in additionalParams)
-				{
-					params[p] = additionalParams[p];
-				}
-			}
-			html+='Appcelerator.Compiler.fireServiceBrokerMessage("'+id+'","'+action+'",'+Object.toJSON(params)+', this);';
-		}
-		else
-		{
-			var builder = Appcelerator.Compiler.customActions[action];
-			if (!builder)
-			{
-				throw "syntax error: unknown action: "+action+" for "+id;
-			}
+    		if (local_msg || remote_msg)
+    		{
+    			params = (params || {});
+    			if (local_msg && params['id']==null) 
+    			{
+    			 	params['id'] = id;
+    			}
+    			if (additionalParams)
+    			{
+    				for (var p in additionalParams)
+    				{
+    					params[p] = additionalParams[p];
+    				}
+    			}
+    			var f = function(scope)
+    			{
+    			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, params, scope);
+    			}
+    			actionFuncs.push(f);
+    		}
+    		else
+    		{
+    			var builder = Appcelerator.Compiler.customActions[action];
+    			if (!builder)
+    			{
+    				throw "syntax error: unknown action: "+action+" for "+id;
+    			}
 
-			//
-			// see if the widget has its own parameter parsing routine
-			//
-			var f = builder.parseParameters;
+    			//
+    			// see if the widget has its own parameter parsing routine
+    			//
+    			var f = builder.parseParameters;
 			
-			if (f && typeof(f)=='function')
-			{
-				// this is called as a function to custom parse parameters in the action between brackets []
-				params = f(id,action,actionParams?actionParams[2]||actionstr:actionstr);
-			}
+    			if (f && typeof(f)=='function')
+    			{
+    				// this is called as a function to custom parse parameters in the action between brackets []
+    				params = f(id,action,actionParams?actionParams[2]||actionstr:actionstr);
+    			}
 
-			//
-			// delegate to our pluggable actions to make it easy
-			// to extend the action functionality
-			//
-			html+=builder.build(id,action,params);
-		}
-		if (c+1 < len)
-		{
-			html+='; ';
-		}
+    			//
+    			// delegate to our pluggable actions to make it easy
+    			// to extend the action functionality
+    			//
+    			var f = function(scope)
+    			{
+    			    builder.execute(id, action, params, scope);
+    			}
+    			actionFuncs.push(f);
+    		}
+        })();
 	}
-	return html;
+    var actionFunction = function(scope)
+    {
+        for (var i=0; i < actionFuncs.length; i++)
+        {
+            actionFuncs[i](scope);
+        }
+    }
+	return actionFunction;
 };
 
 Appcelerator.Compiler.convertMessageType = function(type)
@@ -2602,7 +2627,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
  */
 Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 {	
-	var f = (scope!=null) ? function() { action.call(scope); } : action;
+	var f = (scope!=null) ? function() { action(scope); } : action;
 	
 	if (delay > 0)
 	{

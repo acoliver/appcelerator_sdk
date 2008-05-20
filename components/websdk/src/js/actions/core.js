@@ -1,67 +1,67 @@
 Appcelerator.Compiler.registerCustomAction('show',
 {
-	build: function(id,action,params)
+	execute: function(id, action, params)
 	{
 		if (params && params.length > 0)
 		{
 			var obj = params[0];
 			var key = obj.key;
-			return "Element.show('" + key + "')";
+			Element.show(key);
 		}
 		else
 		{
-			return "Element.show('" + id + "')";
+		    Element.show(id);
 		}
 	}
 });
 
 Appcelerator.Compiler.registerCustomAction('hide',
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
 			var obj = params[0];
 			var key = obj.key;
-			return "Element.hide('" + key + "')";
+			Element.hide(key);
 		}
 		else
 		{
-			return "Element.hide('" + id + "')";
+		    Element.hide(id);
 		}	
 	}
 });
 
 Appcelerator.Compiler.registerCustomAction('visible',
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
 			var obj = params[0];
 			var key = obj.key;
-			return "Element.setStyle('" + key + "',{visibility:'visible'})";
+			Element.setStyle(key, {visibility:'visible'});
 		}
 		else
 		{
-			return "Element.setStyle('" + id + "',{visibility:'visible'})";
+			Element.setStyle(id, {visibility:'visible'});
 		}
 	}
 });
 
 Appcelerator.Compiler.registerCustomAction('hidden',
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
 			var obj = params[0];
 			var key = obj.key;
-			return "Element.setStyle('" + key + "',{visibility:'hidden'})";
+			Element.setStyle(key, {visibility:'hidden'});
 		}
 		else
 		{
-			return "Element.setStyle('" + id + "',{visibility:'hidden'})";
+			Element.setStyle(id, {visibility:'hidden'});
 		}
 	}
 });
@@ -84,7 +84,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 	    description: "Invokes a Scriptaculous visual effect on this element"
 	},
 	
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
@@ -138,7 +138,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 				throw "syntax error: unsupported effect type: "+effectName;
 			}
 			
-			return "Element.visualEffect('"+target+"','"+effectName+"',{"+options+"})";
+			Element.visualEffect(target,effectName,("{"+options+"}").evalJSON());
 		}
 		else
 		{
@@ -155,7 +155,7 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 		requiresParameters: true,
 		description: "Toggles a CSS property, or boolean attribute on this element"
 	},
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
@@ -165,7 +165,14 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 			var code = null;
 			if (key == 'class')
 			{
-				code = 'if (Element.hasClassName("'+id+'","'+val+'")) Element.removeClassName("'+id+'","'+val+'"); else Element.addClassName("'+id+'","'+val+'")';
+			    if (Element.hasClassName(id,val))
+			    {
+			        Element.removeClassName(id,val); 
+			    }
+			    else 
+			    {
+			        Element.addClassName(id,val);
+		        }
 			}
 			else
 			{
@@ -192,22 +199,54 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 								case 'visible':
 									opposite='hidden'; break;
 							}
-							code = 'var a = Element.getStyle("'+id+'","'+key+'"); if (a!="'+opposite+'") Element.setStyle("'+id+'",{"'+key+'":"'+opposite+'"}); else Element.setStyle("'+id+'",{"'+key+'":"'+val+'"})';
+							var a = Element.getStyle(id,key); 
+						    var params = {};
+							if (a!=opposite)
+							{
+							    params[key] = opposite;
+							}
+							else 
+							{
+							    params[key] = val;
+						    }
+						    Element.setStyle(id,params);
 							break;
 						}
 						default:
 						{
-							code = 'var a = Element.getStyle("'+id+'","'+key+'"); if (a) Element.setStyle("'+id+'",{"'+key+'":""}); else Element.setStyle("'+id+'",{"'+key+'":"'+val+'"})';
+							var a = Element.getStyle(id, key); 
+						    var params = {};
+							if (a) 
+							{
+							    params[key] = '';
+							}
+							else 
+							{
+							    params[key] = val;
+						    }
+						    Element.setStyle(id,params);
 							break;
 						}
 					}
 				}
 				else
 				{
-					code = 'var a = $("'+id+'"); if (!a) throw "no element with ID: '+id+'"; var v = a.getAttribute("'+key+'"); if (v) a.removeAttribute("'+key+'"); else a.setAttribute("'+key+'","'+val+'")';
+					var a = $(id);
+					if (!a) 
+					{
+					    throw "no element with ID: "+id; 
+					}
+					var v = a.getAttribute(key);
+					if (v) 
+					{
+					    a.removeAttribute(key);
+					}
+					else
+					{
+					    a.setAttribute(key,val);
+				    }
 				}
 			}
-			return code;
 		}
 		else
 		{
@@ -216,14 +255,21 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 	}
 });
 
-Appcelerator.Compiler.generateSetter = function(value)
+Appcelerator.Compiler.generateSetter = function(value,scope)
 {
-	return 'Appcelerator.Compiler.getEvaluatedValue("'+value+'",this.data||{})';
+    if (scope)
+    {
+    	return Appcelerator.Compiler.getEvaluatedValue(value,scope.data||{});
+    }
+    else
+    {
+    	return Appcelerator.Compiler.getEvaluatedValue(value,{});
+    }
 };
 
 (function()
 {
-	var addsetBuildFunction = function(id,action,params)
+	var addsetBuildFunction = function(id,action,params,scope)
 	{
 		if (params.length == 0)
 		{
@@ -235,47 +281,73 @@ Appcelerator.Compiler.generateSetter = function(value)
 		if (Appcelerator.Compiler.isCSSAttribute(key))
 		{
 			key = Appcelerator.Compiler.convertCSSAttribute(key);
-			return "Element.setStyle('" + id + "',{'" + key + "':" + Appcelerator.Compiler.generateSetter(value) + "})";				
+			var params = {};
+			params[key] = Appcelerator.Compiler.generateSetter(value,scope);
+			Element.setStyle(id, params);
+			return;
 		}
 		else if (key == 'class')
 		{
 			if (action=='set')
 			{
-				return "$('" + id + "').className = " + Appcelerator.Compiler.generateSetter(value);
+				$(id).className = Appcelerator.Compiler.generateSetter(value,scope);
+				return;
 			}
-			return "Element.addClassName('" + id + "'," + Appcelerator.Compiler.generateSetter(value)+")";
+			Element.addClassName(id, Appcelerator.Compiler.generateSetter(value,scope));
+			return;
 		}
-		else
+		else if (key.startsWith('style'))
 		{
-			if (key.startsWith("style"))
+		    $(id)[key] = Appcelerator.Compiler.generateSetter(value,scope);
+		    return;
+	    }
+	    else
+	    {
+			var e = $(id);
+			if (!e)
 			{
-				return "$('"+id+"')."+key+ "=" + Appcelerator.Compiler.generateSetter(value);
+			    throw "syntax error: element with ID: "+id+" doesn't exist";
 			}
-			
-			var code = 'var e = $("'+id+'"); if (!e) throw "syntax error: element with ID: '+id+' doesn\'t exist";'
-			code+= "var isOperaSetIframe =  " + Appcelerator.Browser.isOpera + " && e.nodeName=='IFRAME' && '"+key+"'=='src';";
-            code+="if (e.nodeName=='IFRAME' && '"+key+"'=='src'){";
-            code+="var onload=e.getAttribute('onloaded');";
-            code+="if (onload){";
-            code+="Appcelerator.Util.IFrame.monitor(e,function(){$MQ(onload,{},e.scope);});";
-            code+="}";
-            code+="}";
-			code+='if (e["'+key+'"]!=null){';
-			switch(key)
-			{	
-				case 'checked':
-				case 'selected':
-				case 'disabled':
-					code+='e.'+key + " = ('true' == ''+" + Appcelerator.Compiler.generateSetter(value) + ')';
-					break;
-				default:
-					code+='if(isOperaSetIframe) {e.location.href='+ Appcelerator.Compiler.generateSetter(value) + '; }';
-					code+='else { e.' + key + " = " + Appcelerator.Compiler.generateSetter(value) + '; }'; 
-			}
-			code+='} else {';
-			code+="e.setAttribute('"+key+"'," + Appcelerator.Compiler.generateSetter(value) + ")";
-			code+='}';
-			return code;
+			if (e.nodeName=='IFRAME' && key=='src')
+			{
+			    var onload = e.getAttribute('onloaded');
+			    if (onload)
+			    {
+			        Appcelerator.Util.IFrame.monitor(e, function()
+			        {
+			            $MQ(onload,{},e.scope);
+			        });
+		        }
+		    }
+			if (e[key]!=null)
+			{
+    			switch(key)
+    			{	
+    				case 'checked':
+    				case 'selected':
+    				case 'disabled':
+    				{
+    				    e[key] = ('true' == Appcelerator.Compiler.generateSetter(value,scope));
+    					break;
+					}
+    				default:
+    				{
+            			var isOperaSetIframe = Appcelerator.Browser.isOpera && e.nodeName=='IFRAME' && key=='src';
+    				    if (isOperaSetIframe)
+    				    {
+    				        e.location.href = Appcelerator.Compiler.generateSetter(value,scope);
+    				    }
+    				    else
+    				    {
+    				        e[key] = Appcelerator.Compiler.generateSetter(value,scope);
+    				    }
+					}
+    			}
+		    }
+		    else
+		    {
+		        e.setAttribute(key, Appcelerator.Compiler.generateSetter(value,scope));
+		    }
 		}		
 	}
 	
@@ -285,7 +357,7 @@ Appcelerator.Compiler.generateSetter = function(value)
 		{
 			description: "Add a CSS property or attribute on this element"
 		},
-		build: addsetBuildFunction
+		execute: addsetBuildFunction
 	});
     Appcelerator.Compiler.registerCustomAction('set',
     {
@@ -293,13 +365,13 @@ Appcelerator.Compiler.generateSetter = function(value)
         {
             description: "Set a CSS property or attribute on this element"
         },
-        build: addsetBuildFunction
+        execute: addsetBuildFunction
     });
 })();
 
 Appcelerator.Compiler.registerCustomAction('remove',
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params.length == 0)
 		{
@@ -311,9 +383,9 @@ Appcelerator.Compiler.registerCustomAction('remove',
 		switch (key)
 		{
 			case 'class':
-				return "Element.removeClassName('" + id + "'," + Appcelerator.Compiler.formatValue(value)+")";
+			    Element.removeClassName(id,Appcelerator.Compiler.formatValue(value));
 			default:
-				return "$('" + id + "').removeAttribute('"+key+"')";
+    			$(id).removeAttribute(key);
 		}
 	}
 });
@@ -324,7 +396,7 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 	{
 		requiresParameters: true
 	},
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		if (params.length == 0)
 		{
@@ -335,9 +407,8 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 		{
 			var statemachine = obj.key;
 			var state = obj.value;
-			return 'Appcelerator.Compiler.StateMachine.fireStateMachineChange("'+statemachine+'","'+state+'",true,true,false)';
+			Appcelerator.Compiler.StateMachine.fireStateMachineChange(statemachine,state,true,true,false);
 		});
-		return changes.join(';');
 	}
 });
 
@@ -359,9 +430,9 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 	    {
 	        return params;
 	    },
-	    build: function (id,action,params)
+	    execute: function (id,action,params)
 	    {
-	        return params;
+	        eval(params);
 	    }
 	};
 	
@@ -398,24 +469,33 @@ Appcelerator.Compiler.findParameter = function(params,key)
 	return null;
 }
 
-Appcelerator.Compiler.buildActionFunction = function(id,method,params,checkenabled)
+Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkenabled,scope)
 {
 	var target = Appcelerator.Compiler.findParameter(params,'id') || id;
-	var prefix = '';
-	var suffix = '';
 	var customActionParams = Object.toJSON(params);
 	if (checkenabled)
 	{
-		prefix='try{ var e=$("'+target+'"); if (e && !e.disabled && Element.showing(e)) ';
-		suffix='}catch(xxx_){}';
+	    try
+	    {
+	        var e = $(target);
+	        if (e && !e.disabled && Element.showing(e))
+	        {
+	            Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, customActionParams, scope.direction, scope.type]);
+	        }
+	    }
+	    catch (xxx_)
+	    {
+        }
 	}
-
-	return prefix + 'Appcelerator.Compiler.executeFunction("'+target+'","'+method+'",["'+target+'","'+method+'",this.data,this.scope,this.version,'+customActionParams+',this.direction,this.type])' + suffix;
+	else
+	{
+        Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, customActionParams, scope.direction, scope.type]);
+	}
 };
 
 Appcelerator.Compiler.registerCustomAction('selectOption',
 {
-	build: function(id,action,params)
+	execute: function(id,action,params,scope)
 	{
 		if (params.length == 0)
 		{
@@ -434,86 +514,79 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 		{
 			def = '';
 		}
-
-		var code = 'var selectedValue = Object.getNestedProperty(this.data, "'+ key + '","'+def+'");';
-		code += ' var targetSelect = $("'+id+'");';
 		
-		code += ' for (var j=0;j<targetSelect.options.length;j++)';
-		code += ' {';
-		code += '   if (targetSelect.options[j].value == selectedValue)';
-		code += '   {';
-		code += '      targetSelect.selectedIndex = j;';
-		code += '      break;';
-		code += '    }';
-		code += '  }';
-        code += 'Appcelerator.Compiler.executeFunction(targetSelect,"revalidate");';
-        return code;		
+		var selectedValue = Object.getNestedProperty(scope.data, key, def);
+		var targetSelect = $(id);
+		for (var j=0;j<targetSelect.options.length;j++)
+		{
+		    if (targetSelect.options[j].value == selectedValue)
+		    {
+		        targetSelect.selectedIndex = j;
+		        break;
+		    }
+		}
+		Appcelerator.Compiler.executeFunction(targetSelect,'revalidate');
 	}
 });
 
 var ResetAction =
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		var target = Appcelerator.Compiler.findParameter(params,'id') || id;
 		var element = $(target);
 		var revalidate = false;
 		var code = null;
 		
-		var elementHtml = '$("'+target+'")';
+		var element = $(target);
 		var variable = '';
-		var value = '""';
+		var value = '';
 		
 		switch (Appcelerator.Compiler.getTagname(element))
 		{
 			case 'input':
 			case 'textarea':
 			{
-				variable = 'value';
+			    element.value = value;
 				revalidate=true;
 				break;
 			}
 			case 'select':
 			{
-				variable = 'selectedIndex';
-				value = '0'; 
+			    element.selectedIndex = 0;
 				revalidate=true;
 				break;
 			}
 			case 'img':
 			{
-				variable = 'src';
+			    element.src = '';
 				break;
 			}
 			case 'a':
 			{
-				variable = 'href';
-				value = '#';
+			    element.href = '#';
 				break;
 			}
 			case 'form':
 			{
-				return 'Form.reset("'+target+'"); Form.Methods.getInputs("'+target+'").each(function(i){Appcelerator.Compiler.executeFunction(i,"revalidate");});';
+				Form.reset(target); 
+				Form.Methods.getInputs(target).each(function(i)
+				{
+				    Appcelerator.Compiler.executeFunction(i,'revalidate');
+				});
+                return;
 			}
 			default:
 			{
-				variable='innerHTML';
-				code = elementHtml+".update(" + value + ")";
-				break;
+				element.update(value);
+				return;
 			}
-		}
-		
-		if (!code)
-		{
-		    code = elementHtml + '.' + variable + '=' + value;
 		}
 		
 		if (revalidate)
 		{
-			code+='; Appcelerator.Compiler.executeFunction(' + elementHtml +',"revalidate");'
+		    Appcelerator.Compiler.executeFunction(element,revalidate);
 		}
-		
-		return code;
 	}
 };
 Appcelerator.Compiler.registerCustomAction('clear',ResetAction);
@@ -521,7 +594,7 @@ Appcelerator.Compiler.registerCustomAction('reset',ResetAction);
 
 var ResetFormAction =
 {
-	build: function(id,action,params)
+	execute: function(id,action,params)
 	{
 		var target = Appcelerator.Compiler.findParameter(params,'id') || id;
 		var element = $(target);
@@ -532,7 +605,7 @@ var ResetFormAction =
 		{
 			case 'form':
 			{
-				form='$("'+target+'")';
+			    $(target).reset();
 				break;
 			}
 			case 'input':
@@ -540,102 +613,13 @@ var ResetFormAction =
 			case 'textarea':
 			default:
 			{
-				form='$("'+target+'").form';
+			    $(target).form.reset();
 				break;
 			}
 		}
-		code = form+'.reset()';
-		return code;
 	}
 };
 Appcelerator.Compiler.registerCustomAction('clearform',ResetFormAction);
-
-Appcelerator.Compiler.registerCustomAction('popup',
-{
-	re: /([+|-]{0,1})([0-9])+/,
-	
-	getPosition: function (value)
-	{
-		var obj = {value:"0",relative:true};
-		var match = this.re.exec(value);
-		if (match)
-		{
-			obj.relative=(match[1]=='+'||match[1]=='-');
-			obj.value=value;
-		}
-		return obj;
-	},
-	build: function(id,action,params)
-	{
-		var target = id;
-		
-		var xOffset = "0", yOffset = "0";
-		var xRelative = true, yRelative = true;
-		var effect = "appear";
-		
-		if (params && params.length > 0)
-		{
-			var obj = params[0];
-			
-			if (params.length == 1)
-			{
-				if (obj.key == 'id')
-				{
-					target = obj.value;
-				}
-				else
-				{
-					target = obj.key;
-				}
-			}
-			else
-			{
-				for (var c=0;c<params.length;c++)
-				{
-					var obj = params[c];
-					switch (obj.key)
-					{
-						case 'id':
-						{
-							target = obj.value;
-							break;
-						}
-						case 'x':
-						{
-							var pos = this.getPosition(obj.value);
-							xOffset=pos.value;
-							xRelative=pos.relative;
-							break;
-						}
-						case 'y':
-						{
-							var pos = this.getPosition(obj.value);
-							yOffset=pos.value;
-							yRelative=pos.relative;
-							break;
-						}
-						case 'effect':
-						{
-							effect = obj.value;
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		var code = 'var event = args[0]; var x = Event.pointerX(event); var y = Event.pointerY(event);'+
-				   ((xRelative) ? "x+=" + xOffset : "x=" + xOffset) + ";" +
-				   ((xRelative) ? "y+=" + yOffset : "y=" + yOffset) + ";" +
-				   'Element.setStyle("'+target+'",{top:(y||0)+"px",left:(x||0)+"px"}); ' +
-				   'setTimeout(function(){ Element.ensureVisible("'+target+'"); },50); ' +
-				   ((!effect || effect=='') ? 'Element.show("'+target+'"); ' :  
-				   'Element.visualEffect("'+target+'","'+effect+'"); ') ;
-				
-		return code;
-	}
-});
-
 
 Appcelerator.Compiler.registerCustomAction('value',
 {
@@ -650,7 +634,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 	{
 		return params;
 	},
-	build: function(id,action,parameters)
+	execute: function(id,action,parameters,scope)
 	{
 		var targetId = id;
 		var idFound = false;
@@ -666,7 +650,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 		else
 		{
 			params = Appcelerator.Compiler.getParameters(parameters,false);
-
 			for (var c=0,len=params.length;c<len;c++)
 			{
 				var param = params[c];
@@ -712,11 +695,11 @@ Appcelerator.Compiler.registerCustomAction('value',
 			{
 				// allow them to specify exact javascript expression to run
 				// that will set the value (analogous to onBindMessageExpr in 1.x)
-				valueHtml = '(function(){ return ' + expressionMatch[1] + ' }).call(this);';
+				valueHtml = (function(){ return expressionMatch[1]}).call(this);
 			}
 			else if (params[0].key.charAt(0)=='$')
 			{
-				valueHtml = 'Appcelerator.Compiler.getElementValue($("'+params[0].key.substring(1)+'"))';
+			    valueHtml = Appcelerator.Compiler.getElementValue($(params[0].key.substring(1)));
 			}
 			else
 			{
@@ -729,7 +712,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 					// default $null string is a special keyword to mean empty value
 					def = '';
 				}
-				valueHtml = 'Object.getNestedProperty(this.data, "'+ key + '","'+def+'")';
+				valueHtml = Object.getNestedProperty(scope.data, key, def);
 			}
 			if (valueHtml==null)
 			{
@@ -744,13 +727,12 @@ Appcelerator.Compiler.registerCustomAction('value',
 					throw "syntax error: couldn't find target with ID: "+targetId+" for value action";
 				}
 
-				valueHtml = 'Appcelerator.Compiler.getElementValue($("'+targetId+'"))';
+                valueHtml = Appcelerator.Compiler.getElementValue($(targetId));
 			}
 		}
 		
 		var element = $(id);
 		var html = '';
-		var elementHtml = '$("'+id+'")';
 		var variable = '';
 		var expression = '';
 		
@@ -806,29 +788,31 @@ Appcelerator.Compiler.registerCustomAction('value',
 				if (!property) throw "required parameter named 'property' not found in value parameter list";
 				if (!value) throw "required parameter named 'value' not found in value parameter list";
 				if (!text) text = value;
-				code = 'var ar = ' + Appcelerator.Compiler.generateSetter(property) + '; ';
-				code+= 'var s = ' + elementHtml + ';';
 				if (!append)
 				{
-					code+= 's.options.length = 0;';
+				    element.options.length = 0;
 				}
-				code+= 'if (ar) {';
-				code+= 'for (var c=0;c<ar.length;c++){';
-				if (row)
+				var ar = Appcelerator.Compiler.generateSetter(property,scope);
+				if (ar)
 				{
-					code+= ' var row = Object.getNestedProperty(ar[c],"'+row+'");';
+				    for (var c=0;c<ar.length;c++)
+				    {
+				        if (row)
+				        {
+				            var rowData = Object.getNestedProperty(ar[c],row);
+				        }
+				        else
+				        {
+				            var rowData = ar[c];
+				        }
+				        if (rowData)
+				        {
+				            element.options[element.options.length] = new Option(Object.getNestedProperty(rowData, text), Object.getNestedProperty(rowData, value));
+				        }
+				    }
 				}
-				else
-				{
-					code+= ' var row = ar[c];';
-				}
-				code+= ' if (row){';
-				code+= '  s.options[s.options.length] = new Option(Object.getNestedProperty(row,"'+text+'"),Object.getNestedProperty(row,"'+value+'"));';
-				code+= ' }';
-				code+= '}';
-				code+= '}';
-				code+= revalidate ? '; Appcelerator.Compiler.executeFunction(s,"revalidate");' : '';
-				return code;
+                Appcelerator.Compiler.executeFunction(element,'revalidate');
+				return;
 			}
 			case 'div':
 			case 'span':
@@ -923,25 +907,22 @@ Appcelerator.Compiler.registerCustomAction('value',
 			}
 		}
 		
-		var suffix = revalidate ? '; Appcelerator.Compiler.executeFunction(' + elementHtml +',"revalidate");' : '';
-		
-		$D('built expression=> ', elementHtml, '.', variable, '=', valueHtml, expression, suffix);
-
-		var html = '';
 		if (!form)
 		{
 			if (append)
 			{
-				html = 'var value_' + element.id+' = ' + elementHtml + '.' + variable + ';'
-				html += elementHtml + '.' + variable + ' = value_'+element.id+' + ' + valueHtml + expression;
+			    var val = element[variable];
+			    element[variable] = val + valueHtml + expression;
 			}
 			else
 			{
-				html = elementHtml + '.' + variable + '=' + valueHtml + expression;
+			    element[variable] = valueHtml + expression;
 			}
-			html += suffix;
+			if (revalidate)
+			{
+			    Appcelerator.Compiler.executeFunction(element, 'revalidate');
+			}
 		}
-		return html;
 	},
 	findMatchingFormClause: function(element, params)
 	{
@@ -957,7 +938,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 				return clauses[i];
 			} 
 		}
-
 		return [];
 	}
 });
@@ -969,11 +949,11 @@ Appcelerator.Compiler.registerCustomAction('bind',
         requiresParameters: false,
 		description: "Sets the value to all elements with the same fieldset to the data from the payload"
     },
-	parseParameters: function (id,action,params)
+	parseParameters: function (id,action,params,scope)
 	{
 		return params;
 	},
-	build: function(id,action,parameters)
+	execute: function(id,action,parameters,scope)
 	{
 		var element = $(id);
 		var fieldset = element.getAttribute('fieldset');
@@ -985,8 +965,7 @@ Appcelerator.Compiler.registerCustomAction('bind',
 		
 		var key = parameters;
 		
-		var code = 'Appcelerator.Compiler.updateFieldsetValues("'+fieldset+'",this.data,"'+key+'")';
-		return code;
+		Appcelerator.Compiler.updateFieldsetValues(fieldset, scope.data, key);
 	}
 });
 
@@ -998,9 +977,9 @@ Object.extend(GenericActionFunction.prototype,
 		this.checkenabled = check;
 		this.widgetAction = !!widgetAction;
 	},
-	build: function(id,action,params)
+	execute: function(id,action,params,scope)
 	{
-		return Appcelerator.Compiler.buildActionFunction(id,action,params,this.checkenabled);
+        Appcelerator.Compiler.executeActionFunction(id,action,params,this.checkenabled,scope);
 	}
 });
 
