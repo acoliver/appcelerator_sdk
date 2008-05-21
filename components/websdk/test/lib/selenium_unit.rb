@@ -91,7 +91,8 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     end
     
     def mq(message_name, args = {})
-        return get_eval("window.$MQ('#{message_name}', #{args.to_json})");
+        ret = get_eval("window.$MQ('#{message_name}', #{args.to_json})");
+        return ret
     end
     
     def dollar(elem_id)
@@ -120,8 +121,12 @@ class Test::Unit::SeleniumTestCase < Test::Unit::TestCase
     end
     
     def assert_alert(alert_text)
-        my_text = get_alert()
-        assert_equal(alert_text, my_text)
+        begin
+          my_text = get_alert()
+          assert_equal(alert_text, my_text)
+        rescue SeleniumCommandError
+          assert(false, "Alert expected but there were none")
+        end
     end
     
     def clear_messages()

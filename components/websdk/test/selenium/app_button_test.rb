@@ -48,14 +48,15 @@ class ButtonTest < Test::Unit::SeleniumTestCase
         click(elem)
         begin
             alert_text = get_alert()
-            assert(false)
+            assert(false, "An alert should not have been thrown")
         rescue SeleniumCommandError
             
-        end
+          end
+          
         mq('l:button.enable')
         click(elem)
-        alert_text = get_alert()
-        assert_equal("test passed", alert_text)
+        sleep 1
+        assert_alert("test passed")
         
         mq('l:button.disable')
         click(elem)
