@@ -143,20 +143,21 @@ END_LICENSE
   end
 
   jar = to_path "#{BUILD_DIR}/lib/yuicompressor-2.2.5.jar"
-  YUI_COMPRESSOR = "java -jar #{jar}"
-  COMPRESS_RB = "ruby #{BUILD_DIR}/lib/compress.rb"
+  YUI_COMPRESSOR = "java -jar \"#{jar}\""
+  COMPRESS_RB = "ruby \"#{BUILD_DIR}/lib/compress.rb\""
   
   if COMPRESS
     puts "Compressing appcelerator.js"
-    call_command("#{YUI_COMPRESSOR} #{jsdebug} -o #{jsout} #{SUPPRESS_OUTPUT}") || compress_fail
-    call_command("#{COMPRESS_RB} #{jsout} #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
+    p "#{YUI_COMPRESSOR} \"#{jsdebug}\" -o \"#{jsout}\" #{SUPPRESS_OUTPUT}"
+    call_command("#{YUI_COMPRESSOR} \"#{jsdebug}\" -o \"#{jsout}\" #{SUPPRESS_OUTPUT}") || compress_fail
+    call_command("#{COMPRESS_RB} \"#{jsout}\" \"#{jstemp}\" #{SUPPRESS_OUTPUT}") || compress_fail
     FileUtils.rm jsout
     append_file(LICENSE_HEADER, jsout, true)
     append_file(jstemp, jsout)
     FileUtils.rm jstemp
 
-    call_command("#{YUI_COMPRESSOR} #{jslite} -o #{jstemp} #{SUPPRESS_OUTPUT}") || compress_fail
-    call_command("#{COMPRESS_RB} #{jstemp} #{jslite} #{SUPPRESS_OUTPUT}") || compress_fail
+    call_command("#{YUI_COMPRESSOR} \"#{jslite}\" -o \"#{jstemp}\" #{SUPPRESS_OUTPUT}") || compress_fail
+    call_command("#{COMPRESS_RB} \"#{jstemp}\" \"#{jslite}\" #{SUPPRESS_OUTPUT}") || compress_fail
     FileUtils.rm jstemp
     append_file(LICENSE_HEADER, jstemp, true)
     append_file(jslite, jstemp)
