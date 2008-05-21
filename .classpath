@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="components/services/java/lib/ezmorph-1.0.4.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/javassist-3.7.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/json-lib-2.2.1-jdk15.jar"/>
-	<classpathentry kind="lib" path="components/services/java/lib/scannotation-1.0.1.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/compiler/jdt-core-3.1.1.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/compiler/js-1.6RC7.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/compiler/nekohtml-0.9.5.jar"/>
@@ -28,5 +27,6 @@
 	<classpathentry kind="lib" path="components/services/java/lib/optional/junit-3.8.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/optional/servletapi-2.3.jar"/>
 	<classpathentry kind="lib" path="components/services/java/lib/optional/spring-2.5.1.jar"/>
+	<classpathentry kind="lib" path="components/services/java/lib/scannotation-1.0.2.jar"/>
 	<classpathentry kind="output" path="output/classes"/>
 </classpath>
