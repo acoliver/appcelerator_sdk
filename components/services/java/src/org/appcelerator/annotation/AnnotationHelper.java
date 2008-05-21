@@ -13,7 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -24,6 +24,7 @@ package org.appcelerator.annotation;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,11 +34,11 @@ import javax.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.scannotation.AnnotationDB;
-import org.scannotation.WarUrlFinder;
 import org.scannotation.ClasspathUrlFinder;
+import org.scannotation.WarUrlFinder;
 
 /**
- * Utilities for managing and finding annotations. Uses Bill Burke's 
+ * Utilities for managing and finding annotations. Uses Bill Burke's
  * super dandy Scannotation framework.
  *
  */
@@ -45,10 +46,10 @@ public class AnnotationHelper
 {
     private static final Log LOG = LogFactory.getLog(AnnotationHelper.class);
     private static Map<String, Set<String>> annotationIndex;
-    
+
     /**
      * seed the annotation DB
-     * 
+     *
      * @param urls
      */
     public static void initializeAnnotationDB (URL urls[])
@@ -73,17 +74,21 @@ public class AnnotationHelper
 	{
         initializeAnnotationDB(ClasspathUrlFinder.findClassPaths());
 	}
-    
+
     /**
      * initialize the annotation DB from Servlet classpath
-     * 
+     *
      * @param context
      */
     public static void initializeAnnotationDBFromServlet (ServletContext context)
     {
-        initializeAnnotationDB(WarUrlFinder.findWebInfLibClasspaths(context));
+    	Set<URL> urlSet = new HashSet<URL>();
+    	urlSet.addAll(Arrays.asList(WarUrlFinder.findWebInfLibClasspaths(context)));
+    	urlSet.addAll(Arrays.asList(WarUrlFinder.findWebInfClassesPath(context)));
+
+    	initializeAnnotationDB(urlSet.toArray(new URL[] {}));
     }
-    
+
     @SuppressWarnings("unchecked")
     public static Class<? extends Object>[] findAnnotation(Class<? extends Annotation> name)
     {
@@ -110,7 +115,7 @@ public class AnnotationHelper
         }
         return clz.toArray(new Class[clz.size()]);
     }
-    
+
     public static void main (String args[]) throws Exception
     {
         Class<? extends Object>[] cls=AnnotationHelper.findAnnotation(ServiceMarshaller.class);
