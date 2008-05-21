@@ -24,8 +24,10 @@ package org.appcelerator.annotation;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -86,7 +88,14 @@ public class AnnotationHelper
     	urlSet.addAll(Arrays.asList(WarUrlFinder.findWebInfLibClasspaths(context)));
     	urlSet.addAll(Arrays.asList(WarUrlFinder.findWebInfClassesPath(context)));
 
-    	initializeAnnotationDB(urlSet.toArray(new URL[] {}));
+    	List<URL> validList = new ArrayList<URL>();
+
+    	for (URL url : urlSet)
+    	{
+    		if (url != null && url.toString().startsWith("file")) validList.add(url);
+    	}
+
+    	initializeAnnotationDB(validList.toArray(new URL[] {}));
     }
 
     @SuppressWarnings("unchecked")
