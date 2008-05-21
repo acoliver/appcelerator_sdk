@@ -338,14 +338,14 @@ Appcelerator.Widget.Datatable =
 			$(myidback).onmouseout = function(){Appcelerator.Widget.Datatable.stopContinuousPagination(id)}.bind(this);
 			$(myidforward).onmouseout = function(){Appcelerator.Widget.Datatable.stopContinuousPagination(id)}.bind(this);
 		}
-		var on_run_array = [];
-		
-		for (var i = 0, len = on_array.length; i < len; i++)
-		{
-			on_run_array.push(Appcelerator.Compiler.compileExpression($(on_array[i]['id']),on_array[i]['on'],false));
+		if (length >0) {
+			var on_run_array = [];
+			for (var i = 0, len = on_array.length; i < len; i++)
+			{
+				on_run_array.push(Appcelerator.Compiler.compileExpression($(on_array[i]['id']),on_array[i]['on'],false));
+			}
+			eval(on_run_array.join(';'));
 		}
-
-		eval(on_run_array.join(';'));
 	},
 	compileWidget: function (parameters, element)
 	{		
