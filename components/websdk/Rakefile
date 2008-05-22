@@ -148,7 +148,6 @@ END_LICENSE
   
   if COMPRESS
     puts "Compressing appcelerator.js"
-    p "#{YUI_COMPRESSOR} \"#{jsdebug}\" -o \"#{jsout}\" #{SUPPRESS_OUTPUT}"
     call_command("#{YUI_COMPRESSOR} \"#{jsdebug}\" -o \"#{jsout}\" #{SUPPRESS_OUTPUT}") || compress_fail
     call_command("#{COMPRESS_RB} \"#{jsout}\" \"#{jstemp}\" #{SUPPRESS_OUTPUT}") || compress_fail
     FileUtils.rm jsout
