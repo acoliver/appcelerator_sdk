@@ -234,6 +234,8 @@ namespace :selenium do
     # run_selenium_tests("Safari Tests", "safari")
     run_selenium_tests("IE Tests", "iexplore")
     
+    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/)
+    
     stop_selenium() if selenium
     stop_webrick() if webrick
   end
