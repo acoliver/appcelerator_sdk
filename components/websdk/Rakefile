@@ -226,57 +226,20 @@ namespace :selenium do
   end
   
   task :all => [:test] do 
-    webrick = start_webrick()
-    selenium = start_selenium()
-  
-    sleep 5 if( selenium or webrick )
-    run_selenium_tests("Firefox Tests", "firefox")
-    # run_selenium_tests("Safari Tests", "safari")
-    run_selenium_tests("IE Tests", "iexplore")
-    
-    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/)
-    
-    stop_selenium() if selenium
-    stop_webrick() if webrick
+      run_test([{:browser_name=>"Firefox Tests", :browser=>"firefox"},
+                {:browser_name=>'IE Tests', :browser=>'ie'}])
   end
   
   task :firefox => [:test] do 
-    webrick = start_webrick()
-    selenium = start_selenium()
-  
-    sleep 5 if( selenium or webrick )
-    run_selenium_tests("Firefox Tests", "firefox")
-  
-    # make selenium clean up on windows.  Bad assumption
-    # that nobody is developing the sdk and running the
-    # selenium tests with firefox running
-    
-    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/)
-    
-    stop_selenium() if selenium
-    stop_webrick() if webrick
+      run_test([{:browser_name=>"Firefox Tests", :browser=>"firefox"}])
   end
 
   task :safari => [:test] do 
-    selenium = start_selenium()
-    webrick = start_webrick()
-    
-    sleep 5 if( selenium or webrick)
-    run_selenium_tests("Safari Tests", "safari")
-    
-    stop_selenium() if selenium
-    stop_webrick() if webrick
+      run_test([{:browser_name=>"Safari Tests", :browser=>'safari'}])
   end
   
   task :ie => [:test] do 
-    selenium = start_selenium()
-    webrick = start_webrick()
-    
-    sleep 5 if( selenium or webrick)
-    run_selenium_tests("IE Tests", "iexplore")
-    
-    stop_selenium() if selenium
-    stop_webrick() if webrick
+      run_test([{:browser_name=>'IE Tests', :browser=>'ie'}])
   end
 end
 
@@ -349,6 +312,15 @@ def kill_process(file_name)
   File.delete(file_name)
 end
 
+def end_tests(success)
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+    
+    if(!success)
+        exit -1
+    end
+end
+
 def stop_webrick()
   kill_process("#{STAGE_DIR}/tmp/webrick.pid")
 end
@@ -393,6 +365,30 @@ def stop_selenium()
   kill_process("#{STAGE_DIR}/tmp/selenium.pid")
 end
 
+def run_test(browsers)
+    selenium = start_selenium()
+    webrick = start_webrick()
+    
+    sleep 5 if( selenium or webrick)
+    
+    success = true
+    browsers.each { |browser| 
+        success = success && run_selenium_tests(browser[:browser_name], browser[:browser])
+    }
+    
+    # make selenium clean up on windows.  Bad assumption
+    # that nobody is developing the sdk and running the
+    # selenium tests with firefox running
+    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/) && browser == "firefox"
+    
+    stop_selenium() if selenium
+    stop_webrick() if webrick
+    
+    if(!success)
+        throw "Selenium Tests Failed"
+    end
+end
+
 def run_selenium_tests(browser_name, browser)
   require 'test/unit/testsuite'
   require 'test/unit/ui/console/testrunner'
@@ -413,8 +409,14 @@ def run_selenium_tests(browser_name, browser)
   # End includes for unit test files
   #
   
-  Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
+  results = Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
          "http://localhost:9002"))
+         
+  if(results.error_count > 0 or results.failure_count > 0)
+      return false
+  end
+  
+  return true
 end
 
 def build_suite(name, browser, location)
