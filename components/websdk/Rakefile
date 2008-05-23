@@ -227,7 +227,7 @@ namespace :selenium do
   
   task :all => [:test] do 
       run_test([{:browser_name=>"Firefox Tests", :browser=>"firefox"},
-                {:browser_name=>'IE Tests', :browser=>'ie'}])
+                {:browser_name=>'IE Tests', :browser=>'iexplore'}])
   end
   
   task :firefox => [:test] do 
@@ -239,7 +239,7 @@ namespace :selenium do
   end
   
   task :ie => [:test] do 
-      run_test([{:browser_name=>'IE Tests', :browser=>'ie'}])
+      run_test([{:browser_name=>'IE Tests', :browser=>"iexplore"}])
   end
 end
 
@@ -374,12 +374,12 @@ def run_test(browsers)
     success = true
     browsers.each { |browser| 
         success = success && run_selenium_tests(browser[:browser_name], browser[:browser])
+        system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/) && browser[:browser] == "firefox"
     }
     
     # make selenium clean up on windows.  Bad assumption
     # that nobody is developing the sdk and running the
     # selenium tests with firefox running
-    system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/) && browser == "firefox"
     
     stop_selenium() if selenium
     stop_webrick() if webrick
