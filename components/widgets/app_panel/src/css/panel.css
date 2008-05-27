@@ -68,8 +68,8 @@
 .app_panel .button_panel 
 {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 6px;
+    right: 6px;
     position: absolute; 
     z-index: 1000;
 }
