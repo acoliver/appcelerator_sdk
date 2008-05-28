@@ -1,0 +1,29 @@
+body
+{
+	font-family: Tahoma, Arial;
+	font-size: 12px;
+	color: #696969;
+}
+
+a, a:visited, a:active, a:hover
+{
+	text-decoration:underline;
+	color: #696969;
+}
+
+h1
+{
+    font-size: 15px;
+}
+
+.test_label
+{
+    background-color: #eee;
+    padding: 10px;
+}
+
+.test_result
+{
+    padding: 10px;
+    background-color: #ffffcc;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Appcelerator&trade; Performance Tests</title>
+    <script type="text/javascript" src="../javascripts/config.js"></script> 
+    <script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script> 
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+</head>
+<body>
+    
+    <app:iterator on="l:iterator.run then execute" property="rows" id="iterator_test">
+        <html:div>#{name} #{value}</html:div>
+    </app:iterator>
+    
+    <app:script style="display: none">
+        var rows = [];
+        for (var i = 0; i&lt;5000;i++)
+        {
+            rows.push({name: 'test', value: 'some value'});
+        }
+        $MQ('l:iterator.run', {rows: rows});
+    </app:script>
+    
+    <app:script on="l:perfmon.action[id=iterator_test] then execute" style="display: none">
+        window.parent.$MQ('l:test.result', {item: 'iterator2', result: (this.data.time + ' ms')});
+    </app:script>
+</body>
+
+</html>

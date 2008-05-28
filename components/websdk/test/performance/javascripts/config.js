@@ -1,0 +1,2 @@
+AppceleratorConfig = {};
+AppceleratorConfig['perfmon'] = true;

@@ -678,7 +678,7 @@ Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_
 		o = o.replace(/"/g,'&quot;');
 	}
 	
-	if (o != def)
+	if (o == def)
 	{
 	    try
 	    {
@@ -1925,7 +1925,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			{
     			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, params, scope);
     			}
-    			actionFuncs.push(f);
+    			actionFuncs.push({func: f, action: action});
     		}
     		else
     		{
@@ -1954,7 +1954,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			{
     			    builder.execute(id, action, params, scope);
     			}
-    			actionFuncs.push(f);
+    			actionFuncs.push({func: f, action: action});
     		}
         })();
 	}
@@ -1962,7 +1962,18 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     {
         for (var i=0; i < actionFuncs.length; i++)
         {
-            actionFuncs[i](scope);
+            actionFunc = actionFuncs[i];
+            var timeStart = null;
+            if (Appcelerator.Config['perfmon'])
+            {
+                timeStart = new Date();
+            }
+            actionFunc.func(scope);
+            if (Appcelerator.Config['perfmon'])
+            {
+                var time = (new Date()).getTime() - timeStart.getTime();
+                $MQ('l:perfmon.action', {id: id, action: actionFunc.action, time: time});
+            }
         }
     }
 	return actionFunction;
@@ -3000,7 +3011,7 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 
 Appcelerator.Compiler.setHTML = function(element,html)
 {
-	$(element).update(html);
+	$(element).innerHTML = html;
 	if (Appcelerator.Browser.isIE6) Appcelerator.Browser.fixImageIssues.defer();
 };
 

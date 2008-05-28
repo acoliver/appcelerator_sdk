@@ -195,8 +195,11 @@ END_LICENSE
 end
 
 task :test => [:default] do
-  test_src_path = "#{BUILD_DIR}/test/webunit"
-  test_dst_path = "#{STAGE_DIR}/webunit"
+  copy_tests("#{BUILD_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
+  copy_tests("#{BUILD_DIR}/test/performance", "#{STAGE_DIR}/performance")
+end
+
+def copy_tests(test_src_path, test_dst_path)
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
   
@@ -212,8 +215,7 @@ task :test => [:default] do
   Dir["#{widgets_src_path}/*/src/"].each do |file|
     name = file[/widgets\/([^\/]+)\/src/,1]
     cp_r(file,"#{widgets_dst_path}/#{name}")
-  end
-  
+  end  
 end
 
 namespace :selenium do 

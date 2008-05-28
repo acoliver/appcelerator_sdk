@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Appcelerator&trade; Performance Tests</title>
+    <script type="text/javascript" src="javascripts/appcelerator-debug.js"></script> 
+    <script type="text/javascript" src="javascripts/test.js"></script>     
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="css/test.css" />
+</head>
+<body>
+    <h1>Performance Tests</h1>
+    
+    <table width="600">
+        <tr>
+            <td class="test_label" width="300">
+                <div>
+                    Iterator (<a href="javascript:void(0)" on="click then javascript[runTest('iterator1')]">run</a>)
+                </div>
+                <div>
+                    5000 rows, no HTML replacement
+                </div>
+            </td>
+            <td class="test_result">
+                <div id="iterator1_test" style="display: none">
+                </div>
+                <div on="l:test.result[item=iterator1] then value[result]">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="test_label" width="300">
+                <div>
+                    Iterator (<a href="javascript:void(0)" on="click then javascript[runTest('iterator2')]">run</a>)
+                </div>
+                <div>
+                    5000 rows, with HTML replacement
+                </div>
+            </td>
+            <td class="test_result">
+                <div id="iterator2_test" style="display: none">
+                </div>
+                <div on="l:test.result[item=iterator2] then value[result]">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="test_label" width="300">
+                <div>
+                    Iterator (<a href="javascript:void(0)" on="click then javascript[runTest('iterator3')]">run</a>)
+                </div>
+                <div>
+                    5000 rows, with HTML and on expression
+                </div>
+            </td>
+            <td class="test_result">
+                <div id="iterator3_test" style="display: none">
+                </div>
+                <div on="l:test.result[item=iterator3] then value[result]">
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
