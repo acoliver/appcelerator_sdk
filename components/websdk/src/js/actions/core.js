@@ -677,7 +677,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 				else if (param.key == 'value')
 				{
 					// this is a hack to allow multiple parameters and an expression
-					if (param.value=='expr(')
+					if (param.value == 'expr(')
 					{
 						var i = parameters.indexOf('expr(');
 						var l = parameters.lastIndexOf(')');
@@ -694,8 +694,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 			if (expressionMatch)
 			{
 				// allow them to specify exact javascript expression to run
-				// that will set the value (analogous to onBindMessageExpr in 1.x)
-				valueHtml = (function(){ return expressionMatch[1]}).call(this);
+				valueHtml = eval(expressionMatch[1], scope);
 			}
 			else if (params[0].key.charAt(0)=='$')
 			{
