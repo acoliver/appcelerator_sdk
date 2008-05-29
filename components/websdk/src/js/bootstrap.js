@@ -81,7 +81,8 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.Config['browser_check'] = true;
 		Appcelerator.Config['hide_body'] = false;		
 		Appcelerator.Config['ie_png'] = true;
-		Appcelerator.Config['perfmon'] = false;		
+		Appcelerator.Config['perfmon'] = false;	
+		Appcelerator.Config['usegears'] = true;	
 	}
 	
 	var jsFileLocation = null;

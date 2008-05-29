@@ -312,12 +312,7 @@ Appcelerator.Util.ServiceBroker =
                 // in devmode, we don't actually send remote events
                 if (!this.devmode && !this.remoteDisabled)
                 {
-                    // place in the outbound message queue for delivery
-                    this.messageQueue.push([msg,callback,scope,version]);
-
-                    // the remote message can be forced to be sent immediate
-                    // by setting this property, otherwise, it will be queued
-                    this.startTimer(msg['immediate'] || false);
+					this.queueRemote(msg,callback,scope,version);
                 }
             }
             else
@@ -326,6 +321,15 @@ Appcelerator.Util.ServiceBroker =
             }
         }
     },
+    queueRemote:function(msg,callback,scope,version)
+	{
+        // place in the outbound message queue for delivery
+        this.messageQueue.push([msg,callback,scope,version]);
+
+        // the remote message can be forced to be sent immediate
+        // by setting this property, otherwise, it will be queued
+        this.startTimer(msg['immediate'] || false);
+	},
     dispatch: function (msg)
     {
         var requestid = msg.requestid;
