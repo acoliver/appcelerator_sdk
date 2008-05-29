@@ -60,6 +60,12 @@ Appcelerator.Util.ServiceBroker.gearsDispatch = function(msg)
 	var status = tok[1];
 	var payload = tok[2];
 	
+	if (status == 202)
+	{
+		// this means no content
+		return;
+	}
+	
     var marshaller = Appcelerator.Util.ServiceBroker.marshaller;
 
 	switch (marshaller)
@@ -85,6 +91,7 @@ Appcelerator.Util.ServiceBroker.gearsDispatch = function(msg)
 		        var type = parameters['type'];
 		        var datatype = parameters['datatype'];
 		        var scope = parameters['scope'] || 'appcelerator';
+				var version = parameters['version'] || '1.0';
 		        var data = null;
 		        try
 		        {
@@ -97,7 +104,7 @@ Appcelerator.Util.ServiceBroker.gearsDispatch = function(msg)
 		            return;
 		        }
 		        $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-				Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,'1.0']);
+				Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,version]);
 			}
 			break;
 		}
@@ -113,7 +120,8 @@ Appcelerator.Util.ServiceBroker.gearsDispatch = function(msg)
 					var type = entry.type;
 					var data = entry.data;
 					var scope = entry.scope;
-					Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,'1.0']);
+					var version = entry.version;
+					Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,version]);
 				}
 			}
 			break;
