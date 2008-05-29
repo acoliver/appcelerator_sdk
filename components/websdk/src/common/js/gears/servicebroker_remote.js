@@ -8,11 +8,11 @@ var wp = google.gears.workerPool;
 var timer = null;
 var mainSender = null;
 
-function send(method,url,postBody,sender)
+function send(method,url,postBody,contentType,sender)
 {
 	var req = google.gears.factory.create('beta.httprequest');
 	req.open(method,url);
-	req.setRequestHeader('Content-Type','text/plain');
+	req.setRequestHeader('Content-Type',contentType);
 	req.setRequestHeader('X-Requested-With','XMLHttpRequest');
 	req.onreadystatechange = function() 
 	{
@@ -32,7 +32,7 @@ function config(parameters)
 		// based on pre-configured iterval
 		google.gears.factory.create('beta.timer').setInterval(function()
 		{
-			send('GET',parameters.url);
+			send('GET',parameters.url,'text/plain');
 		},parameters.interval);
 	}
 }
@@ -60,5 +60,5 @@ wp.onmessage = function(a, b, message)
     var postBody = instructions.postBody;
     var contentType = instructions.contentType;
     
-	send(method,url,postBody,message.sender);
+	send(method,url,postBody,contentType,message.sender);
 }

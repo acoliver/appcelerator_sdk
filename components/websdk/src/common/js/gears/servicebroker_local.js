@@ -60,40 +60,65 @@ Appcelerator.Util.ServiceBroker.gearsDispatch = function(msg)
 	var status = tok[1];
 	var payload = tok[2];
 	
-    var marshaller = Appcelerator.Util.ServiceBrokerMarshaller[Appcelerator.Util.ServiceBroker.marshaller];
+    var marshaller = Appcelerator.Util.ServiceBroker.marshaller;
 
-	var arrMatch = null;
-	
-	// we have to use regular expressions to parse response since we don't have XML parser we can use
-	// in gears return responseXML for their XHR
-
-	while (arrMatch = Appcelerator.Util.ServiceBroker.gearsResponseRE.exec(payload))
+	switch (marshaller)
 	{
-		var parameters={};
-		arrMatch[1].split(' ').each(function(a,b)
+		case 'xml/json':
 		{
-			var s = a.split('=');
-			parameters[s[0]] = s[1].gsub("'",'');
-		});
-		var cdata = arrMatch[2];
-		// strip out <![CDATA[]]> to get JSON payload
-		var json = cdata.substring(9,cdata.length-3);
-        var type = parameters['type'];
-        var datatype = parameters['datatype'];
-        var scope = parameters['scope'] || 'appcelerator';
-        var data = null;
-        try
-        {
-            data = json.evalJSON();
-            data.toString = function () { return Object.toJSON(this); };
-        }
-        catch (e)
-        {
-            $E('Error received evaluating: ' + text + ' for type: ' + type + ", error: " + Object.getExceptionDetail(e));
-            return;
-        }
-        $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
-		Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,'1.0']);
+			var arrMatch = null;
+
+			// we have to use regular expressions to parse response since we don't have XML parser we can use
+			// in gears return responseXML for their XHR
+
+			while (arrMatch = Appcelerator.Util.ServiceBroker.gearsResponseRE.exec(payload))
+			{
+				var parameters={};
+				arrMatch[1].split(' ').each(function(a,b)
+				{
+					var s = a.split('=');
+					parameters[s[0]] = s[1].gsub("'",'');
+				});
+				var cdata = arrMatch[2];
+				// strip out <![CDATA[]]> to get JSON payload
+				var json = cdata.substring(9,cdata.length-3);
+		        var type = parameters['type'];
+		        var datatype = parameters['datatype'];
+		        var scope = parameters['scope'] || 'appcelerator';
+		        var data = null;
+		        try
+		        {
+		            data = json.evalJSON();
+		            data.toString = function () { return Object.toJSON(this); };
+		        }
+		        catch (e)
+		        {
+		            $E('Error received evaluating: ' + text + ' for type: ' + type + ", error: " + Object.getExceptionDetail(e));
+		            return;
+		        }
+		        $D(this.toString() + ' received remote message, type:' + type + ',data:' + data);
+				Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,'1.0']);
+			}
+			break;
+		}
+		case 'application/json':
+		{
+			var response = eval('('+ payload + ')');
+			var array = response.messages;
+			if (array && array.length > 0)
+			{
+				for (var c=0;c<array.length;c++)
+				{
+					var entry = array[c];
+					var type = entry.type;
+					var data = entry.data;
+					var scope = entry.scope;
+					Appcelerator.Util.ServiceBroker.localMessageQueue.push([type,data,'remote',scope,'1.0']);
+				}
+			}
+			break;
+		}
 	}
+
 };
 
