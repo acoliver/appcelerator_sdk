@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.simple_panel_style {
+    height: 50px;
+    width: 200px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Simple Panel Widget </h3> 
+<p>
+	These tests exercise the simple panel widget
+</p>
+
+<table width="90%">
+    <tr>
+        <td class="test" valign="middle">
+            Test Minty Fresh
+        </td>
+        <td class="result" >
+            <app:simple_panel color="minty_fresh">
+                Test Passed if Minty Fresh!
+            </app:simple_panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Test New Grass
+        </td>
+        <td class="result" >
+            <app:simple_panel color="new_grass">
+                Test Passed if New Grass!
+            </app:simple_panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Test height width (100x100)
+        </td>
+        <td class="result" >
+            <app:simple_panel color="new_grass" height="100px" width="100px">
+                Test Passed if 100x100!
+            </app:simple_panel>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Test style (50x200)
+        </td>
+        <td class="result" >
+            <app:simple_panel user_class="simple_panel_style" color="minty_fresh">
+                Test Passed if 50x200!
+            </app:simple_panel>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

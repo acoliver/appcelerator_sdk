@@ -1,0 +1,33 @@
+.app_simple_panel {
+    position: relative;
+}
+
+.app_simple_panel_top_left {position: absolute; top: 0px; left: 0px; height: 3px; width: 4px; padding-left: 4px; background-repeat: no-repeat; background-position: top left; font-size: 0px;}
+.app_simple_panel_center {margin: 0px 4px; height: 3px; background-repeat: repeat-x; padding: 0px;font-size: 0px;}
+.app_simple_panel_top_right {position: absolute; top: 0px; right: 0px; height: 3px; width: 4px;  background-repeat: no-repeat; background-position: top right;font-size: 0px;}
+
+.app_simple_panel_bottom_left {position: absolute; bottom: 0px; left: 0px; height: 3px; width: 4px; padding-left: 4px; background-repeat: no-repeat; background-position: top left; font-size: 0px;}
+.app_simple_panel_bottom_right {position: absolute; bottom: 0px; right: 0px; height: 3px; width: 4px;  background-repeat: no-repeat; background-position: top right; font-size: 0px;}
+
+
+.app_simple_panel_content {
+    padding: 0px 4px;
+}
+/*******************************
+ * Minty fresh theme
+ *******************************/
+.app_simple_panel_minty_fresh .app_simple_panel_top_left {background: url(../images/minty_fresh/top_left.png) no-repeat;}
+.app_simple_panel_minty_fresh .app_simple_panel_top_right {background: url(../images/minty_fresh/top_right.png) no-repeat;}
+.app_simple_panel_minty_fresh .app_simple_panel_bottom_left {background: url(../images/minty_fresh/bottom_left.png) no-repeat;}
+.app_simple_panel_minty_fresh .app_simple_panel_bottom_right {background: url(../images/minty_fresh/bottom_right.png) no-repeat;}
+
+
+.app_simple_panel_minty_fresh .app_simple_panel_center { background: #98f0cc;}
+.app_simple_panel_minty_fresh .app_simple_panel_content {background: #98f0cc;}
+
+.app_simple_panel_new_grass .app_simple_panel_top_left {background: url(../images/new_grass/top_left.png) no-repeat;}
+.app_simple_panel_new_grass .app_simple_panel_top_right {background: url(../images/new_grass/top_right.png) no-repeat;}
+.app_simple_panel_new_grass .app_simple_panel_bottom_left {background: url(../images/new_grass/bottom_left.png) no-repeat;}
+.app_simple_panel_new_grass .app_simple_panel_bottom_right {background: url(../images/new_grass/bottom_right.png) no-repeat;}
+.app_simple_panel_new_grass .app_simple_panel_center { background: #1abc74;}
+.app_simple_panel_new_grass .app_simple_panel_content {background: #1abc74;}
