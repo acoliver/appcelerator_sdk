@@ -23,12 +23,7 @@ function buildIEImage(img,width,height,src)
 function fixBackgroundPNG(obj)
 {
     var filterName = 'DXImageTransform.Microsoft.AlphaImageLoader';
-    if (obj.style.backgroundImage.indexOf('blank_1x1.gif') > 0)
-    {
-        setTimeout(function() { obj.style.backgroundImage = '' }, 0);
-        return;
-    }
-    var bg   = obj.currentStyle.backgroundImage;
+    var bg = obj.currentStyle.backgroundImage;
     var bgsrc = bg.substring(5,bg.length-2);
     var scale = obj.currentStyle.backgroundRepeat == 'no-repeat' ? 'image' : 'scale';
     obj.style.backgroundImage = "url("+Appcelerator.ImagePath+"blank_1x1.gif)";    
@@ -36,7 +31,7 @@ function fixBackgroundPNG(obj)
     if (filters[filterName])
     {
         filters[filterName].enabled = true;
-        with (filters[f]) { src = bgsrc };
+        with (filters[filterName]) { src = bgsrc };
     }
     else
     {
@@ -52,6 +47,14 @@ function fixIEImages(init)
     var isClass = !init && ((this.className != this._png_class) && (this.className || this._png_class));
     if (!(isSrc || isBg || isClass)) return;
     this._png_class = this.className;
+    
+    // Required for Whatever:hover support - erase any set BG if className changes.
+    if (isClass && ((style.backgroundImage.indexOf('url(') == -1) || (style.backgroundImage.indexOf('blank_1x1') > -1)))
+    {
+        setTimeout(function() { this.style.backgroundImage = '' }, 0);
+        return;
+    }
+    var bgSrc = currentStyle.backgroundImage || style.backgroundImage;
     
     if (this.nodeName == 'IMG')
     {
@@ -82,7 +85,7 @@ function fixIEImages(init)
             }
         }
     }
-    else if (this.currentStyle.backgroundImage.match(/(\.png)|(blank_1x1\.gif)/i) != null) 
+    else if (((bgSrc + this.src).indexOf('blank_1x1') == -1) && this.currentStyle.backgroundImage.match(/(\.png)|(blank_1x1\.gif)/i) != null)
     {
         fixBackgroundPNG(this);
     }

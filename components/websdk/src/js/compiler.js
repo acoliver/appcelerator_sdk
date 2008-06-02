@@ -1458,8 +1458,6 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			{
                 outer.style.display='';
 			}
-
-			if (Appcelerator.Browser.isIE6) Appcelerator.Browser.fixImageIssues.defer();
 		}
 	}
 	else
@@ -3012,7 +3010,6 @@ Appcelerator.Util.ServerConfig.addConfigListener(function()
 Appcelerator.Compiler.setHTML = function(element,html)
 {
 	$(element).innerHTML = html;
-	if (Appcelerator.Browser.isIE6) Appcelerator.Browser.fixImageIssues.defer();
 };
 
 

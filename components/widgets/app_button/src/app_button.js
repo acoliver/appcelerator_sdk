@@ -107,12 +107,6 @@ Appcelerator.Widget.Button =
 				left.className = 'button_'+color+'_'+corner+'_left_over';
 				middle.className = 'button_'+color+'_'+corner+'_middle_over button_'+color+'_text';
 				right.className = 'button_'+color+'_'+corner+'_right_over';
-				if (Appcelerator.Browser.isIE6)
-				{
-					Appcelerator.Browser.fixBackgroundPNG(left);
-					Appcelerator.Browser.fixBackgroundPNG(middle);
-					Appcelerator.Browser.fixBackgroundPNG(right);
-				}
 			}
 		};
 		
@@ -123,12 +117,6 @@ Appcelerator.Widget.Button =
 				left.className = 'button_'+color+'_'+corner+'_left';
 				middle.className = 'button_'+color+'_'+corner+'_middle button_'+color+'_text';
 				right.className = 'button_'+color+'_'+corner+'_right';
-				if (Appcelerator.Browser.isIE6)
-				{
-					Appcelerator.Browser.fixBackgroundPNG(left);
-					Appcelerator.Browser.fixBackgroundPNG(middle);
-					Appcelerator.Browser.fixBackgroundPNG(right);
-				}
 			}
 		};
 		
@@ -139,12 +127,6 @@ Appcelerator.Widget.Button =
 				left.className = 'button_'+color+'_'+corner+'_left_press';
 				middle.className = 'button_'+color+'_'+corner+'_middle_press button_'+color+'_text';
 				right.className = 'button_'+color+'_'+corner+'_right_press';
-				if (Appcelerator.Browser.isIE6)
-				{
-					Appcelerator.Browser.fixBackgroundPNG(left);
-					Appcelerator.Browser.fixBackgroundPNG(middle);
-					Appcelerator.Browser.fixBackgroundPNG(right);
-				}
 			}
 		};		
 
@@ -155,12 +137,6 @@ Appcelerator.Widget.Button =
 				left.className = 'button_'+color+'_'+corner+'_left_over';
 				middle.className = 'button_'+color+'_'+corner+'_middle_over button_'+color+'_text';
 				right.className = 'button_'+color+'_'+corner+'_right_over';
-				if (Appcelerator.Browser.isIE6)
-				{
-					Appcelerator.Browser.fixBackgroundPNG(left);
-					Appcelerator.Browser.fixBackgroundPNG(middle);
-					Appcelerator.Browser.fixBackgroundPNG(right);
-				}
 			}
 		};		
 
@@ -191,14 +167,7 @@ Appcelerator.Widget.Button =
 		middle.className = 'button_'+color+'_'+corner+'_middle button_'+color+'_text';
 		right.className = 'button_'+color+'_'+corner+'_right';
 		button.className = 'button_widget';
-		if (Appcelerator.Browser.isIE6)
-		{
-			Appcelerator.Browser.fixBackgroundPNG(left);
-			Appcelerator.Browser.fixBackgroundPNG(middle);
-			Appcelerator.Browser.fixBackgroundPNG(right);
-		}
 		$(id).parentNode.disabled = false;	
-       	
 	},
 	disable: function(id,parameters,data,scope,version)
 	{
@@ -215,12 +184,6 @@ Appcelerator.Widget.Button =
 		middle.className = 'button_'+color+'_'+corner+'_middle_disabled button_'+color+'_text_disabled';
 		right.className = 'button_'+color+'_'+corner+'_right_disabled';
 		button.className = 'button_widget_disabled';
-		if (Appcelerator.Browser.isIE6)
-		{
-			Appcelerator.Browser.fixBackgroundPNG(left);
-			Appcelerator.Browser.fixBackgroundPNG(middle);
-			Appcelerator.Browser.fixBackgroundPNG(right);
-		}
 		$(id).parentNode.disabled = true;
 	},
 	buildWidget: function(element,parameters)
