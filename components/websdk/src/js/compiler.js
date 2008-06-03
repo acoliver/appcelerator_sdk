@@ -2669,7 +2669,7 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 	
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 
-	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] ith ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <code>'+(context||'unknown')+'</code></div></div>';
+	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] ith ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <pre>'+(context||'unknown')+'</pre></div></div>';
 	$E(msg);
 
 	switch (tag)

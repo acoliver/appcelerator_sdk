@@ -149,7 +149,7 @@ Object.getExceptionDetail = function (e,format)
 		{
 			// sometimes you'll get a PermissionDenied on certain errors
 		}
-        return 'message: ' + (e.message || e) + ', location: ' + line + ', stack: ' + (format?'<code>':'') +(e.stack || 'not specified') + (format?'</code>':'');
+        return 'message: ' + (e.message || e) + ', location: ' + line + ', stack: ' + (format?'<pre>':'') +(e.stack || 'not specified') + (format?'</pre>':'');
     }
 };
 
