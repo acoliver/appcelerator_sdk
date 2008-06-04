@@ -32,7 +32,7 @@ Appcelerator.Widget.Shadowbox =
     },
     getVersion: function()
     {
-        return 1.1;
+        return '1.0.1';
     },
     getSpecVersion: function()
     {
@@ -85,14 +85,19 @@ Appcelerator.Widget.Shadowbox =
 	},
     buildWidget: function(element,parameters)
     {
-		var options = 
-		{
-			skipSetup: true,
-	        loadingImage: Appcelerator.WidgetPath + 'app_shadowbox/images/loading.gif',
-			overlayBgImage: Appcelerator.WidgetPath + 'app_shadowbox/images/overlay-85.png'
-	    };
+        if (!parameters['options'])
+        {
+            parameters['options'] = {};
+        }
+        else
+        {
+            parameters['options'] = parameters['options'].evalJSON();
+        }
+		parameters['options']['skipSetup'] = true;
+		parameters['options']['loadingImage'] = Appcelerator.WidgetPath + 'app_shadowbox/images/loading.gif';
+	    parameters['options']['overlayBgImage'] = Appcelerator.WidgetPath + 'app_shadowbox/images/overlay-85.png';
 
-		Shadowbox.init(options);
+		Shadowbox.init(parameters['options']);
 		
 		html = '<a href="'+parameters['src']+'" id="'+parameters['id']+'">';
 		html += Appcelerator.Compiler.getHtml(element);

@@ -1998,7 +1998,6 @@ if(typeof Shadowbox == 'undefined'){
             links = [links]; // one link
         }
 
-		$E(links.toSource());
         var link;
         for(var i = 0, len = links.length; i < len; ++i){
             link = links[i];
