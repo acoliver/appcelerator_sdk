@@ -37,7 +37,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.annotation.ServiceTransport;
 import org.appcelerator.dispatcher.ServiceDispatcherManager;
 import org.appcelerator.marshaller.ServiceMarshallerManager;
@@ -70,17 +69,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
         {
         	performValidation = Boolean.parseBoolean(validate);
         }
-
-		if (this.embeddedMode)
-		{
-			AnnotationHelper.initializeAnnotationDBFromClasspath();
-		}
-		else
-		{
-	        AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
-		}
     }
-
 	/**
 	 * called to indicate that the class path must be used when loading annotations instead
 	 * of WAR lib
@@ -192,6 +181,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
                 request.setUser(req.getUserPrincipal());
                 request.setSession(session);
                 request.setAddress(address);
+                request.setServletRequest(req);
                 
                 //FIXME => refactor this out
                 if (request.getType().equals(MessageType.APPCELERATOR_STATUS_REPORT))

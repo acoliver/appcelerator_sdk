@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.Principal;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -50,7 +51,8 @@ public class Message implements Serializable
     private InetAddress address;
     private transient Principal user;
     private transient HttpSession session;
-
+    private transient ServletRequest servletRequest;
+    
     public Message()
     {
     }
@@ -268,5 +270,21 @@ public class Message implements Serializable
     public void setVersion(String version)
     {
         this.version = version;
+    }
+
+    /**
+     * @return the servletRequest
+     */
+    public ServletRequest getServletRequest()
+    {
+        return servletRequest;
+    }
+
+    /**
+     * @param servletRequest the servletRequest to set
+     */
+    public void setServletRequest(ServletRequest servletRequest)
+    {
+        this.servletRequest = servletRequest;
     }
 }
