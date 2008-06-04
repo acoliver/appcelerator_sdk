@@ -150,7 +150,7 @@ Appcelerator.Widget.Iterator =
 						html+='<tr class="'+parameterMap['rowEvenClassName']+'">';
 				}
 				/* escape out the "'" so that works in IE */
-				for (idx in o)
+				for (var idx in o)
 				{
 					if (typeof o[idx] == 'string')
 					{
