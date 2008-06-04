@@ -162,24 +162,30 @@ Appcelerator.Util.Cookie =
     }
 };    
 
-if (window.location.protocol!='file:')
+Appcelerator.Core.onload(function()
 {
-	(function()
-	{
-		if (Appcelerator.Config['cookie_check'])
-		{
-			Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
-			var cookie = Appcelerator.Util.Cookie.GetCookie('CookieCheck');
-			if (!cookie)
-			{
-			   // cookies not working
-			   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
-			}
-			else
-			{
-			   // just delete it
-			   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
-			}
-		}
-	})();
-}	
+    Appcelerator.Util.ServerConfig.addConfigListener(function()
+    {
+        if (window.location.protocol!='file:')
+        {
+        	(function()
+        	{
+        		if (Appcelerator.Config['cookie_check'])
+        		{
+        			Appcelerator.Util.Cookie.SetCookie('CookieCheck','1');
+        			var cookie = Appcelerator.Util.Cookie.GetCookie('CookieCheck');
+        			if (!cookie)
+        			{
+        			   // cookies not working
+        			   window.location = Appcelerator.DocumentPath + 'upgrade_cookies.html';
+        			}
+        			else
+        			{
+        			   // just delete it
+        			   Appcelerator.Util.Cookie.DeleteCookie('CookieCheck');
+        			}
+        		}
+        	})();
+        }
+    });
+});

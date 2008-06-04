@@ -71,20 +71,6 @@ Appcelerator.Parameters = $H({});
 // 
 (function()
 {
-	if (window.AppceleratorConfig)
-	{
-		Appcelerator.Config = window.AppceleratorConfig;
-	}
-	else
-	{
-		Appcelerator.Config['cookie_check'] = false;
-		Appcelerator.Config['browser_check'] = true;
-		Appcelerator.Config['hide_body'] = false;
-		Appcelerator.Config['perfmon'] = false;
-		Appcelerator.Config['usegears'] = true;
-		Appcelerator.Config['report_stats'] = true;
-	}
-	
 	var jsFileLocation = null;
 	
 	$A(document.getElementsByTagName("script")).findAll( function(s) 
@@ -282,7 +268,5 @@ Appcelerator.Parameters = $H({});
 	});
 	Appcelerator.Browser.unsupportedBrowserMessage = "<h1>Browser Upgrade Required</h1><p>We're sorry, but your browser version is not supported by this application.</p><p>This application requires a modern browser, such as <a href='http://www.getfirefox.com'>Firefox 2.0+</a>, <a href='http://www.apple.com/safari/'>Safari 2.0+</a>, <a href='http://www.microsoft.com/windows/products/winfamily/ie/default.mspx'>Internet Explorer 6.0+</a> or <a href='http://www.opera.com'>Opera 9.0+</a>.</p><p>Your browser reported: <font face='courier'>" + ua + "</font></p>";
 	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';
-	Appcelerator.Browser.autocheckBrowserSupport = Appcelerator.Config['browser_check'];
-	Appcelerator.Browser.autoReportStats = Appcelerator.Config['report_stats'];
 })();
 

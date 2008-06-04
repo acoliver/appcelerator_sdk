@@ -100,4 +100,56 @@ Appcelerator.Util.ServerConfig.loadComplete = function()
 	Appcelerator.Util.ServerConfig.listeners = null;
 };
 
+Appcelerator.Util.ServerConfig.addConfigListener(function ()
+{
+	if (window.AppceleratorConfig)
+	{
+		Appcelerator.Config = window.AppceleratorConfig;
+	}
+	else
+	{
+	    Appcelerator.Util.ServerConfig.setValues('cookie_check', true);
+	    Appcelerator.Util.ServerConfig.setValues('browser_check', true);
+	    Appcelerator.Util.ServerConfig.setValues('hide_body', false);
+	    Appcelerator.Util.ServerConfig.setValues('perfmon', false);
+	    Appcelerator.Util.ServerConfig.setValues('usegears', true);
+	    Appcelerator.Util.ServerConfig.setValues('report_stats', true);
+	}
+	Appcelerator.Browser.autocheckBrowserSupport = Appcelerator.Config['browser_check'];
+	Appcelerator.Browser.autoReportStats = Appcelerator.Config['report_stats'];
+});
+
+Appcelerator.Util.ServerConfig.setValues = function(key, def)
+{
+    if (Appcelerator.ServerConfig[key])
+    {
+        Appcelerator.Config[key] = Appcelerator.ServerConfig[key].value;
+    }
+    else if (Appcelerator.Parameters.get(key))
+    {
+        var param = Appcelerator.Parameters.get(key);
+        switch (param)
+        {
+            case 'true':
+            {
+                Appcelerator.Config[key] = true;
+                break;
+            }
+            case 'false':
+            {
+                Appcelerator.Config[key] = false;
+                break;
+            }
+            default:
+            {
+                Appcelerator.Config[key] = Appcelerator.Parameters.get(key);
+            }
+        }
+    }
+    else
+    {
+        Appcelerator.Config[key] = def;
+    }
+}
+
 Appcelerator.Core.onload(Appcelerator.Util.ServerConfig.load);
