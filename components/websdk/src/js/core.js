@@ -745,7 +745,7 @@ Appcelerator.Core.onload(function()
     };
 
 
-	if (Appcelerator.Browser.autocheckBrowserSupport && !Appcelerator.Browser.isBrowserSupported && Appcelerator.Config['browser_check'])
+	if (Appcelerator.Browser.autocheckBrowserSupport && !Appcelerator.Browser.isBrowserSupported)
 	{
 		document.body.style.display = 'none';
 		try
