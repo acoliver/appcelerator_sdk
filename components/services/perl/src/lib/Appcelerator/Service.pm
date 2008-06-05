@@ -19,7 +19,7 @@
 package Appcelerator::Service;
 use strict;
 use FindBin qw($Bin);
-use File::Spec::Functions qw(catfile);
+use File::Spec::Functions qw(catfile splitpath);
 use Data::Dumper;
 
 use base 'Exporter';
@@ -27,10 +27,10 @@ our @EXPORT = ('Service');
 our %handlers = ();
 
 # load all service handlers
-my $search_path = catfile("$Bin", "..", "app", "Services", "*");
+my $search_path = catfile("$Bin", "..", "app", "Services", "*.pm");
 for my $service (glob($search_path)) {
+    $_, $_, $service = splitpath($service);
     $service =~ s/\.[^.]*$//;
-    $service =~ s/.*\///g;
     eval("use Services::$service");
 }
 
