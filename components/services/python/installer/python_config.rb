@@ -83,9 +83,17 @@ module Appcelerator
     # probably expensive, caching this
     def find_windows_pythons
       require 'win32/registry'
+      
+      global = find_version_in_registry(Win32::Registry::HKEY_LOCAL_MACHINE)
+      user = find_version_in_registry(Win32::Registry::HKEY_CURRENT_USER)
+      
+      global.merge(user)
+    end
+    
+    def find_version_in_registry registry_hive
       paths = {}
       begin
-        Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Python\PythonCore') do |reg|
+        registry_hive.open('SOFTWARE\Python\PythonCore') do |reg|
           reg.each_key do |key,wtime|
             begin
               paths[key] = reg.open(key).open('InstallPath').read('')[1]
@@ -95,7 +103,6 @@ module Appcelerator
           end
         end
       rescue
-        paths
       end
       paths
     end
