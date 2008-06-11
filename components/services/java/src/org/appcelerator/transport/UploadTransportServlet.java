@@ -13,7 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -56,13 +56,13 @@ public class UploadTransportServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(UploadTransportServlet.class);
-    
+
     private DiskFileItemFactory fileFactory = new DiskFileItemFactory();
     private File tempDirectory;
     private int maxFileSize = Integer.MAX_VALUE;
-    
+
     private boolean embeddedMode;
-    
+
     /* (non-Javadoc)
      * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
      */
@@ -89,7 +89,7 @@ public class UploadTransportServlet extends HttpServlet
     {
         this.embeddedMode = embed;
     }
-    
+
     public int getMaxFileSize()
     {
         return maxFileSize;
@@ -128,7 +128,7 @@ public class UploadTransportServlet extends HttpServlet
             long size = 0L;
             // String instanceid = null;
             IMessageDataObject data = MessageUtils.createMessageDataObject();
-            
+
             try
             {
                 ServletFileUpload upload = new ServletFileUpload(fileFactory);
@@ -167,22 +167,22 @@ public class UploadTransportServlet extends HttpServlet
                         {
                             f = File.createTempFile("sup", ".tmp");
                         }
-                        
+
                         f.deleteOnExit();
 
                         // write out the temporary file
                         item.write(f);
-                        
+
                         size = item.getSize();
-                        
+
                         IMessageDataObject filedata = MessageUtils.createMessageDataObject();
-                        
+
                         filedata.put("file", f.getAbsolutePath());
                         filedata.put("size", size);
                         filedata.put("contentType", item.getContentType());
                         filedata.put("fieldName", item.getFieldName());
                         filedata.put("fileName",item.getName());
-                        
+
                         data.put("filedata",filedata);
                     }
                 }
@@ -200,10 +200,10 @@ public class UploadTransportServlet extends HttpServlet
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,fe.getMessage());
                 return;
             }
-            
+
             String scope = request.getParameter("scope");
             String version = request.getParameter("version");
-            
+
             if (scope==null)
             {
                 scope = "appcelerator";
@@ -212,17 +212,18 @@ public class UploadTransportServlet extends HttpServlet
             {
                 version = "1.0";
             }
-            
+
             // create a message
             Message msg = new Message();
             msg.setUser(request.getUserPrincipal());
             msg.setSession(request.getSession());
+            msg.setServletRequest(request);
             msg.setType(type);
             msg.setData(data);
             msg.setAddress(InetAddress.getByName(request.getRemoteAddr()));
             msg.setScope(scope);
             msg.setVersion(version);
-            
+
             // send the data
             ArrayList<Message> responses=new ArrayList<Message>();
 			try
@@ -235,12 +236,12 @@ public class UploadTransportServlet extends HttpServlet
 	            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
-            
+
             response.setHeader("Pragma","no-cache");
             response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, private");
             response.setDateHeader("Expires", System.currentTimeMillis()-TimeUtil.ONE_YEAR);
             response.setContentType("text/html;charset=UTF-8");
-            
+
             // optionally, invoke a callback function/message on upload in the client
             if (callback!=null || !responses.isEmpty())
             {
@@ -264,9 +265,9 @@ public class UploadTransportServlet extends HttpServlet
 				{
 					code.append(makeMessage(m.getType(),m.getData().toDataString(),m.getScope(),m.getVersion()));
 				}
-				
+
                 code.append("</script></head><body></body></html>");
-                
+
                 // send the response
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().print(code.toString());
@@ -280,14 +281,14 @@ public class UploadTransportServlet extends HttpServlet
         {
             response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED,"method was: "+request.getMethod());
         }
-    }    
+    }
 
 	private String makeMessage(String type, String data, String scope, String version)
 	{
 		StringBuilder code = new StringBuilder();
         code.append("window.parent.$MQ(");
         code.append("'");
-        if (!type.startsWith("l:") && !type.startsWith("local:") && 
+        if (!type.startsWith("l:") && !type.startsWith("local:") &&
 			!type.startsWith("r:") && !type.startsWith("remote:"))
 		{
 			code.append("r:");
