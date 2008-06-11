@@ -355,7 +355,7 @@ def _json_decoder_hook(obj):
 # Is this IoC?
 try:
     from google.appengine.ext import db
-    from google.appengine.api import users
+    from google.appengine.api import users, urlfetch
     import datetime
     # ok, we must be running on appengine, use our customizations
     _JsonEncoder = DatastoreJsonEncoder
