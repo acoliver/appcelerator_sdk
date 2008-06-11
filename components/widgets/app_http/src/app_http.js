@@ -258,8 +258,9 @@ Appcelerator.Widget.Http =
                     }
                     else
                     {
-                        $E('app: http onSuccess received unsupported content type = ' + contentType);
-                        return;
+                        // using some custom protocol
+                        json_result.contentType = contentType;
+                        json_result.responseText = result.responseText;
                     }
                     (function()
                     {
