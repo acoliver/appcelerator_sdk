@@ -1,21 +1,21 @@
 /**
  * Traverses the document, starting at the body node.
- * 
+ *
  * As it encounters widget tags, it fires off async requests for
  * the modules' code. As modules finish fetching they callback
  * listeners which call Appcelerator.Compiler.compileWidget
  * to construct the widget in HTML.
- * 
+ *
  * A.C.compileWidget dispatches widget construction to each module,
  * and then uses flags (called 'instructions') returned by the module
  * to complete the widget building/compiling process.
- * 
+ *
  * @fileOverview a set of functions related to compiling a DOM with web expressions into resulting DHTML/javascript/AJAX
  * @name Appcelerator.Compiler
  */
 
 /**
- * this should be set if you want the document to be 
+ * this should be set if you want the document to be
  * compiled when loaded - otherwise, it must be manually compiled
  */
 Appcelerator.Compiler.compileOnLoad = true;
@@ -23,7 +23,7 @@ Appcelerator.Compiler.compileOnLoad = true;
 /**
  * returns true if running in interpretive mode
  * compilation is done at runtime in the browser
- * 
+ *
  * @deprecated no longer used
  */
 Appcelerator.Compiler.isInterpretiveMode = true;
@@ -31,7 +31,7 @@ Appcelerator.Compiler.isInterpretiveMode = true;
 /**
  * returns true if running in compiled mode
  * compilation is done at deployment time
- * 
+ *
  * @deprecated no longer used
  */
 Appcelerator.Compiler.isCompiledMode = false;
@@ -52,9 +52,9 @@ Appcelerator.Compiler.nextId = 0;
 Appcelerator.Compiler.functionId = 1;
 
 /**
- * check an element for an ID and ensure that if it doesn't have one, 
+ * check an element for an ID and ensure that if it doesn't have one,
  * it will automatically generate a system-generated unique ID
- * 
+ *
  * @param {element} element element to check
  * @return {string} return the id of the element
  */
@@ -67,7 +67,7 @@ Appcelerator.Compiler.getAndEnsureId = function(element)
 	if (!element._added_to_cache)
 	{
 	    Appcelerator.Compiler.setElementId(element,element.id);
-    }	
+    }
 	return element.id;
 };
 
@@ -77,7 +77,7 @@ Appcelerator.Compiler.getAndEnsureId = function(element)
  * $ID such as if you have an element named foo you can reference the
  * element directly with the global variable named $foo.
  *
- * @param {element} element to set ID 
+ * @param {element} element to set ID
  * @param {string} id of the element
  * @return {element} element
  */
@@ -94,8 +94,8 @@ Appcelerator.Compiler.setElementId = function(element, id)
 };
 
 /**
- * removes an element ID attribute from the global cache and 
- * delete the auto-generated global variable 
+ * removes an element ID attribute from the global cache and
+ * delete the auto-generated global variable
  *
  * @param {string} id id of the element to delete
  * @return {boolean} true if found or false if not found
@@ -104,7 +104,7 @@ Appcelerator.Compiler.removeElementId = function(id)
 {
 	if (id)
 	{
-		var element_var = window['$'+id]; 
+		var element_var = window['$'+id];
 		if (element_var)
 		{
 			try
@@ -135,18 +135,18 @@ Appcelerator.Compiler.removeElementId = function(id)
 /**
  * we're doing to redefine prototype's $ function to do some special
  * processing - we delete it first
- * 
+ *
  * @private
  */
 (function()
 {
 	if (Object.isFunction(window['$']))
 	{
-	    try 
-	    { 
-	        delete window['$']; 
-	    } 
-	    catch (e) 
+	    try
+	    {
+	        delete window['$'];
+	    }
+	    catch (e)
 	    {
 	    }
 	}
@@ -160,9 +160,9 @@ Appcelerator.Compiler.removeElementId = function(id)
  * @param {string} element can either by array of string ids, single strip or element
  * @return {element} element object or null if not found
  */
-function $(element) 
+function $(element)
 {
-	if (arguments.length > 1) 
+	if (arguments.length > 1)
 	{
 	    var args = $A(arguments);
     	return args.collect(function(a)
@@ -185,12 +185,12 @@ function $(element)
 			element = document.getElementById(id);
 		}
 	}
-	
+
 	return element ? Element.extend(element) : null;
 }
 
 /**
- * generate a unique ID 
+ * generate a unique ID
  *
  * @return {string} id that can be used only once
  */
@@ -200,7 +200,7 @@ Appcelerator.Compiler.generateId = function()
 };
 
 /**
- * @property {hash} has of key which is name of element (or * for all elements) and array 
+ * @property {hash} has of key which is name of element (or * for all elements) and array
  * of attribute processors that should be called when element is encountered
  */
 Appcelerator.Compiler.attributeProcessors = {'*':[]};
@@ -208,10 +208,10 @@ Appcelerator.Compiler.attributeProcessors = {'*':[]};
 /**
  * Register an object that has a <b>handle</b> method which takes
  * an element, attribute name, and attribute value of the processed element.
- * 
+ *
  * This method takes the name of the element (or optionally, null or * as
  * a wildcard) and an attribute (required) value to look for on the element
- * and a listener.  
+ * and a listener.
  *
  * @param {string} name of attribute processor. can be array of strings for multiple elements or * for wildcard.
  * @param {string} attribute to check when matching element
@@ -310,7 +310,7 @@ Appcelerator.Compiler.removeContainerProcessor = function(listener)
 	Appcelerator.Compiler.containerProcessors.remove(listener);
 };
 
-/** 
+/**
  * called when a container is created
  *
  * @param {element} element being compiled
@@ -366,12 +366,12 @@ Appcelerator.Compiler.checkLoadState = function (state)
 		{
 			state.onfinish(code);
 		}
-				
+
 		if (typeof(state.onafterfinish)=='function')
 		{
 			state.onafterfinish();
 		}
-	}	
+	}
 };
 
 /**
@@ -385,14 +385,14 @@ Appcelerator.Compiler.checkLoadState = function (state)
 Appcelerator.Compiler.dynamicCompile = function(element,notimeout,recursive)
 {
 	if (!element) return;
-	
+
     $D('dynamic compile called for ',element,' - id=',element.id);
-    
-    Appcelerator.Compiler.doCompile(element,recursive);   
+
+    Appcelerator.Compiler.doCompile(element,recursive);
 };
 
 Appcelerator.Compiler.doCompile = function(element,recursive)
-{    
+{
     var state = Appcelerator.Compiler.createCompilerState();
     Appcelerator.Compiler.compileElement(element,state,recursive);
     state.scanned = true;
@@ -408,11 +408,11 @@ Appcelerator.Compiler.onbeforecompileListeners = [];
 Appcelerator.Compiler.oncompileListeners = [];
 Appcelerator.Compiler.beforeDocumentCompile = function(l)
 {
-	Appcelerator.Compiler.onbeforecompileListeners.push(l);	
+	Appcelerator.Compiler.onbeforecompileListeners.push(l);
 };
 Appcelerator.Compiler.afterDocumentCompile = function(l)
 {
-    Appcelerator.Compiler.oncompileListeners.push(l);   
+    Appcelerator.Compiler.oncompileListeners.push(l);
 };
 
 /**
@@ -423,7 +423,7 @@ Appcelerator.Compiler.afterDocumentCompile = function(l)
 Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 {
     $D('compiled document called');
-    
+
     if (Appcelerator.Compiler.onbeforecompileListeners)
     {
        for (var c=0;c<Appcelerator.Compiler.onbeforecompileListeners.length;c++)
@@ -433,7 +433,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
        delete Appcelerator.Compiler.onbeforecompileListeners;
     }
 
-    var container = document.body;  
+    var container = document.body;
     var originalVisibility = container.style.visibility || 'visible';
 
 	if (Appcelerator.Config['hide_body'])
@@ -445,7 +445,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     {
         Appcelerator.Compiler.setElementId(document.body, 'app_body');
     }
-    
+
     var state = Appcelerator.Compiler.createCompilerState();
 
     // start scanning at the body
@@ -478,7 +478,7 @@ Appcelerator.Compiler.compileDocumentOnFinish = function ()
         }
         delete Appcelerator.Compiler.oncompileListeners;
     }
-    $MQ('l:app.compiled');	
+    $MQ('l:app.compiled');
 }
 
 Appcelerator.Compiler.compileInterceptors=[];
@@ -512,15 +512,15 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	Appcelerator.Compiler.determineScope(element);
 
     $D('compiling element => '+element.id);
-	
+
 	if (typeof(state)=='undefined')
 	{
 		throw "compileElement called without state for "+element.id;
 	}
-	
+
 	Appcelerator.Compiler.onPrecompile(element);
 
-	// check to see if we should compile	
+	// check to see if we should compile
 	var doCompile = element.getAttribute('compile') || 'true';
 	if (doCompile == 'false')
 	{
@@ -540,7 +540,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	if (name.indexOf(':')>0)
 	{
 		element.style.originalDisplay = element.style.display || 'block';
-		
+
         state.pending+=1;
 		Appcelerator.Core.requireModule(name,function()
 		{
@@ -548,13 +548,13 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 			state.pending-=1;
 			Appcelerator.Compiler.checkLoadState(state);
 		});
-	}	
+	}
 	else
 	{
 		Appcelerator.Compiler.delegateToAttributeListeners(element);
-		
+
 		if (recursive)
-        {		
+        {
 			if (element.nodeName.toLowerCase() != 'textarea')
 			{
 				var elementChildren = [];
@@ -589,7 +589,7 @@ Appcelerator.Compiler.getElementChildren = function (element)
 
 /**
  * method should be called to clean up any listeners or internally added stuff
- * the compiler places into the element 
+ * the compiler places into the element
  *
  * @param {element} element to destroy
  * @param {boolean} recursive should be destroy element's children as well (defaults to true)
@@ -598,11 +598,11 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 {
 	if (!element) return;
 	recursive = recursive==null ? true : recursive;
-	
+
 	element.compiled = 0;
-	
+
 	Appcelerator.Compiler.removeElementId(element.id);
-	
+
 	if (Object.isArray(element.trashcan))
 	{
 		for (var c=0,len=element.trashcan.length;c<len;c++)
@@ -625,7 +625,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 			$D(e);
 		}
 	}
-	
+
 	if (recursive)
 	{
 		if (element.nodeType == 1 && element.childNodes && element.childNodes.length > 0)
@@ -639,7 +639,7 @@ Appcelerator.Compiler.destroy = function(element, recursive)
 					{
 						Appcelerator.Compiler.destroy(node,true);
 					}
-					catch(e) 
+					catch(e)
 					{
 					    $E(e);
 					}
@@ -655,7 +655,7 @@ Appcelerator.Compiler.destroyContent = function(element)
 	for (var i=0,len=elementChildren.length;i<len;i++)
 	{
 	    Appcelerator.Compiler.destroy(elementChildren[i], true);
-	}    
+	}
 };
 
 Appcelerator.Compiler.addTrash = function(element,trash)
@@ -667,7 +667,7 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 	element.trashcan.push(trash);
 };
 
-Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var) 
+Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var)
 {
 	//TODO: allow getter calls in property chain
 	var def = {};
@@ -677,7 +677,7 @@ Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_
 		o = Object.toJSON(o);
 		o = o.replace(/"/g,'&quot;');
 	}
-	
+
 	if (o == def)
 	{
 	    try
@@ -689,15 +689,15 @@ Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_
 	        o = template_var;
 	    }
 	}
-	
+
 	return o;
 }
 
 Appcelerator.Compiler.templateRE = /#\{(.*?)\}/g;
-Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)			 
+Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 {
 	varname = varname==null ? 'f' : varname;
-	
+
 	var fn = function(m, name, format, args)
 	{
 		return "', jtv(values,'"+name+"','#{"+name+"}'),'";
@@ -705,9 +705,9 @@ Appcelerator.Compiler.compileTemplate = function(html,htmlonly,varname)
 	var body = "var "+varname+" = function(values){ var jtv = Appcelerator.Compiler.getJsonTemplateVar; return ['" +
             html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(Appcelerator.Compiler.templateRE, fn) +
             "'].join('');};" + (htmlonly?'':varname);
-	
+
 	var result = htmlonly ? body : eval(body);
-	
+
 	return result;
 };
 
@@ -740,8 +740,8 @@ Appcelerator.Compiler.removeHtmlPrefix = function(html)
 
 /**
  * this super inefficient but nifty function will
- * parse our HTML: namespace tags required when HTML is 
- * included in APP: tags but as long as they are 
+ * parse our HTML: namespace tags required when HTML is
+ * included in APP: tags but as long as they are
  * not within a APP: tags content.  The browser
  * doesn't like HTML: (he'll think it's a non-HTML tag)
  * so we need to strip the HTML: before passing to browser
@@ -794,7 +794,7 @@ Appcelerator.Compiler.specialMagicParseTagSet = function(html,prefix)
         // check to see if we're within a nested element of the same name
         var dupidx = content.indexOf(beginTag+tagName);
         if (dupidx!=-1)
-        {   
+        {
             startIdx=lastIdx+endTagName.length;
             continue;
         }
@@ -824,7 +824,7 @@ Appcelerator.Compiler.getHtml = function (element,convertHtmlPrefix)
 	convertHtmlPrefix = (convertHtmlPrefix==null) ? true : convertHtmlPrefix;
 
 	var html = element.innerHTML || Appcelerator.Util.Dom.getText(element);
-	
+
 	return Appcelerator.Compiler.convertHtml(html, convertHtmlPrefix);
 };
 
@@ -879,10 +879,10 @@ Appcelerator.Compiler.getTagname = function(element)
 {
 	if (!element) throw "element cannot be null";
 	if (element.nodeType!=1) throw "node: "+element.nodeName+" is not an element, was nodeType: "+element.nodeType+", type="+(typeof element);
-	
+
 	// used by the compiler to mask a tag
 	if (element._tagName) return element._tagName;
-	
+
 	if (Appcelerator.Browser.isIE)
 	{
 		if (element.scopeName && element.tagUrn)
@@ -899,7 +899,7 @@ Appcelerator.Compiler.getTagname = function(element)
 
 /**
  * internal method to add event listener
- * 
+ *
  * @param {element} element to add event to
  * @param {string} event name
  * @param {function} action to invoke when event is fired
@@ -914,18 +914,18 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 		$D('on '+element.id+'.'+event+' => invoking action '+action);
 		return action.apply({data:{}},args);
 	};
-	
-	var functionWrapper = delay > 0 ? (function() 
+
+	var functionWrapper = delay > 0 ? (function()
 	{
 		var args = $A(arguments);
-		
+
 		// IE destroys the keyCode when there's a delay
 		var event = args[0];
 		if (event.keyCode)
 		{
 		    args[0] = {keyCode: event.keyCode};
 		}
-		
+
 		var a = function()
 		{
 			return logWrapper.apply(logWrapper,args);
@@ -934,22 +934,22 @@ Appcelerator.Compiler.addEventListener = function (element,event,action,delay)
 	}) : logWrapper;
 
 	Event.observe(element,event,functionWrapper,false);
-	
+
 	Appcelerator.Compiler.addTrash(element,function()
 	{
 		Event.stopObserving(element,event,functionWrapper);
 	});
-	
+
 	return element;
 }
-    
+
 /**
  * called to install a change listener
  *
  * @param {element} element to add change listener
  * @param {function} action function to call when change is detected in element
  * @return {element} element
- */ 
+ */
 Appcelerator.Compiler.installChangeListener = function (element, action)
 {
     (function()
@@ -984,7 +984,7 @@ Appcelerator.Compiler.installChangeListener = function (element, action)
     	    Event.observe(element,'blur',element._blurChangeListener);
     	}
     }).defer();
-    
+
     return element;
 };
 
@@ -1013,8 +1013,8 @@ Appcelerator.Compiler.removeChangeListener = function (element)
 Appcelerator.Compiler.ElementFunctions = {};
 
 /**
- * get a function attached to element 
- * 
+ * get a function attached to element
+ *
  * @param {element} element that has attached function
  * @param {string} name of function
  * @return {function} function attached or null if none found with name
@@ -1023,13 +1023,13 @@ Appcelerator.Compiler.getFunction = function(element,name)
 {
 	var id = (typeof element == 'string') ? element : element.id;
 	var key = id + '_' + name;
-	
+
 	var f = Appcelerator.Compiler.ElementFunctions[key];
 	if (f)
 	{
 		return f;
 	}
-	
+
 	element = $(id);
 	if (element)
 	{
@@ -1041,7 +1041,7 @@ Appcelerator.Compiler.getFunction = function(element,name)
 /**
  * attach a special function to element which can be invoked (such as a special action)
  * by system
- * 
+ *
  * @param {element} element to attach function to
  * @param {string} name of the function
  * @param {function} function to invoke
@@ -1051,7 +1051,7 @@ Appcelerator.Compiler.attachFunction = function(element,name,f)
 {
 	var id = (typeof element == 'string') ? element : element.id;
 	var key = id + '_' + name;
-	Appcelerator.Compiler.ElementFunctions[key]=f;		
+	Appcelerator.Compiler.ElementFunctions[key]=f;
 	return element;
 };
 
@@ -1071,7 +1071,7 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
 	args = (args==null) ? [] : args;
 	var id = (typeof element == 'string') ? element : element.id;
 	element = $(id);
-	
+
 	var key = id + '_' + name;
 	var f = Appcelerator.Compiler.ElementFunctions[key];
 	if (f)
@@ -1140,13 +1140,13 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
  */
 Appcelerator.Compiler.customConditionsForWidget = [];
 Appcelerator.Compiler.customConditionObservers = {};
- 
+
 Appcelerator.Compiler.compileWidget = function(element,state,name)
 {
 	name = name || Appcelerator.Compiler.getTagname(element);
 	var module = Appcelerator.Core.widgets[name];
 	var compiledCode = '';
-	
+
     $D('compiled widget '+element+', id='+element.id+', tag='+name+', module='+module);
 
 	if (module)
@@ -1155,16 +1155,16 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 		{
 			var version = module.flashVersion || 9.0;
 			var error = null;
-			
+
 			if (!Appcelerator.Browser.isFlash)
-			{  
+			{
 				error = 'Flash version ' + version + ' or greater is required';
 			}
 			else if (Appcelerator.Browser.flashVersion < version)
 			{
 				error = 'Flash version ' + version + ' or greater is required. Your version is: '+Appcelerator.Browser.flashVersion;
 			}
-			
+
 			if (error)
 			{
 				error = error + '. <a href="http://www.adobe.com/products/flashplayer/" target="_NEW">Download Flash Now</a>'
@@ -1174,9 +1174,9 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 				return;
 			}
 		}
-		
+
 		var id = Appcelerator.Compiler.getAndEnsureId(element);
-		
+
 		var moduleAttributes = module.getAttributes();
 		var widgetParameters = {};
 		for (var i = 0; i < moduleAttributes.length; i++)
@@ -1204,7 +1204,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			}
 		}
 		widgetParameters['id'] = id;
-		
+
 		//
 		// building custom functions
 		//
@@ -1224,7 +1224,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
             Appcelerator.Compiler.customConditionObservers[id] = {};
             var customConditions = module.getConditions();
             Appcelerator.Compiler.customConditionsForWidget.clear();
-            for(var i = 0; i < customConditions.length; i++) 
+            for(var i = 0; i < customConditions.length; i++)
             {
                 var custCond = customConditions[i];
                 Appcelerator.Compiler.customConditionsForWidget.push(
@@ -1234,7 +1234,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
                 });
             }
         }
-        
+
         //
         // parse on attribute
         //
@@ -1263,7 +1263,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			Appcelerator.Compiler.handleElementException(element, exxx, 'building widget ' + element.id);
 			return;
 		}
-		
+
 		//
 		// allow the widget to change its id
 		//
@@ -1273,13 +1273,13 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			id = element.id;
 			Appcelerator.Compiler.getAndEnsureId(element);
 		}
-		
+
 		var added = false;
 		if (instructions)
 		{
 			var position = instructions.position || Appcelerator.Compiler.POSITION_REPLACE;
 			var removeElement = position == Appcelerator.Compiler.POSITION_REMOVE;
-			
+
 			if (!removeElement)
 			{
 				//
@@ -1296,15 +1296,15 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					   var parent_tag = instructions.parent_tag || 'div';
 					   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;display:none">'+html+'</'+parent_tag+'>';
 					}
-					
+
 					// add the XML namespace IE thing but only if you have what looks to
 					// be a widget that requires namespace - otherwise, it will causes issues like when
-					// you include a single <img> 
+					// you include a single <img>
 					if (Appcelerator.Browser.isIE && html.indexOf('<app:') != -1)
 					{
 						html = Appcelerator.Compiler.addIENameSpace(html);
 					}
-					
+
 					added = true;
 					switch(position)
 					{
@@ -1357,7 +1357,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					}
 				}
 			}
-			
+
 			var outer = null;
 			if (added)
 			{
@@ -1367,13 +1367,13 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					// in case we're in a content file or regular unattached DOM
 					outer = element.ownerDocument.getElementById(id+'_temp');
 				}
-				
+
 				Appcelerator.Compiler.delegateToContainerProcessors(element, outer);
 			}
-            
+
 			var compileId = id;
 			var fieldset = element.getAttribute('fieldset');
-			
+
 			//
 			// remove element
 			//
@@ -1383,7 +1383,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			    Appcelerator.Compiler.removeElementId(removeId);
 				Element.remove(element);
 			}
-			
+
 			if (outer)
 			{
     			if (added && !$(id))
@@ -1396,12 +1396,12 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 			    outer.widget = module;
                 outer.widgetParameters = widgetParameters;
 			}
-			
-			// 
+
+			//
 			// attach any special widget functions
 			//
 			if (functions)
-			{ 
+			{
 				for (var c=0;c<functions.length;c++)
 				{
 					var methodname = functions[c];
@@ -1426,12 +1426,12 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 					})();
 				}
 			}
-			
+
 			if(fieldset && !module.ignoreFieldset)
 			{
 			    Appcelerator.Compiler.addFieldSet(outer, false, fieldset);
 			}
-			
+
             //
             // run initialization
             //
@@ -1447,7 +1447,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
                 	return;
                 }
             }
-            
+
             if (added && instructions.wire && outer)
             {
 				Appcelerator.Compiler.compileElement(outer, state);
@@ -1463,7 +1463,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	else
 	{
 		// reset to the original
-		if (element.style && element.style.display != element.style.originalDisplay) 
+		if (element.style && element.style.display != element.style.originalDisplay)
 		{
 		  element.style.display = element.style.originalDisplay;
 		}
@@ -1474,15 +1474,15 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 
 Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
 {
-    return function (element, condition, action, elseAction, delay, ifCond) 
-    { 
+    return function (element, condition, action, elseAction, delay, ifCond)
+    {
         var id = element.id;
         var actionParams = Appcelerator.Compiler.parameterRE.exec(condition);
         var type = (actionParams ? actionParams[1] : condition);
         var params = actionParams ? actionParams[2] : null;
         if(type == custCond)
         {
-            var entry = 
+            var entry =
             {
                 'action': action,
                 'delay': delay,
@@ -1490,12 +1490,12 @@ Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
                 'ifCond': ifCond,
                 'params': params
             }
-            
+
             if(Appcelerator.Compiler.customConditionObservers[id][custCond])
             {
                 Appcelerator.Compiler.customConditionObservers[id][custCond].push(entry);
             }
-            else 
+            else
             {
                 Appcelerator.Compiler.customConditionObservers[id][custCond] = [entry];
             }
@@ -1507,7 +1507,7 @@ Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
 Appcelerator.Compiler.determineScope = function(element)
 {
 	var scope = element.getAttribute('scope');
-	
+
 	if (!scope)
 	{
 		var p = element.parentNode;
@@ -1515,7 +1515,7 @@ Appcelerator.Compiler.determineScope = function(element)
 		{
 			scope = p.scope;
 		}
-		
+
 		if (!scope)
 		{
 			scope = 'appcelerator';
@@ -1570,7 +1570,7 @@ Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
 					break;
 				}
 			}
-		
+
 			if (in_left_bracket && in_right_bracket)
 			{
 				validx = -1;
@@ -1582,7 +1582,7 @@ Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
 	}
 	else
 	{
-		validx = searchString.indexOf(value);		
+		validx = searchString.indexOf(value);
 	}
 	return validx;
 };
@@ -1600,7 +1600,7 @@ Appcelerator.Compiler.parseExpression = function(value)
 
 	var thens = [];
 	var ors = Appcelerator.Compiler.smartSplit(value,' or ');
-	
+
 	for (var c=0,len=ors.length;c<len;c++)
 	{
 		var expression = ors[c].trim();
@@ -1630,7 +1630,7 @@ Appcelerator.Compiler.parseExpression = function(value)
 		{
 			action = nextstr;
 		}
-		
+
 		var nextStr = elseAction || action;
 		var ifCond = null;
 		var ifIdx = nextStr.indexOf(' if expr[');
@@ -1654,9 +1654,9 @@ Appcelerator.Compiler.parseExpression = function(value)
 			}
 			nextStr = ifStr.substring(endP+2);
 		}
-		
-		var delay = 0;		
-		var afterIdx =  Appcelerator.Compiler.smartTokenSearch(nextstr, 'after '); 		
+
+		var delay = 0;
+		var afterIdx =  Appcelerator.Compiler.smartTokenSearch(nextstr, 'after ');
 
 		if (afterIdx!=-1)
 		{
@@ -1674,24 +1674,24 @@ Appcelerator.Compiler.parseExpression = function(value)
 				}
 			}
 		}
-		
+
 		thens.push([null,condition,action,elseAction,delay,ifCond]);
 	}
 	return thens;
 };
- 
+
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	var clauses = Appcelerator.Compiler.parseExpression(value);
 	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
-	for(var i = 0; i < clauses.length; i++) 
+	for(var i = 0; i < clauses.length; i++)
 	{
 		var clause = clauses[i];
         $D('compiling expression for ',element.id,' => condition=[',clause[1],'], action=[',clause[2],'], elseAction=[',clause[3],'], delay=[',clause[4],'], ifCond=[',clause[5],']');
 
         clause[0] = element;
         var handled = Appcelerator.Compiler.handleCondition.call(this, clause);
-		
+
         if (!handled)
         {
             throw "syntax error: unknown condition type: "+clause[1]+" for "+value;
@@ -1699,11 +1699,11 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	}
 };
 
-Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data) 
+Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 {
     var ok = true;
     var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
-    
+
     if (actionParams)
     {
     	for (var c=0,len=actionParams.length;c<len;c++)
@@ -1712,7 +1712,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
     		var not_cond = p.key.charAt(p.key.length-1) == '!';
     		var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
     		var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
-		
+
     		// added x to eval $args
     		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
     		if (not_cond)
@@ -1738,7 +1738,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
  * customConditions is a list of parsers that take the left-hand-side
  * of an on expression (before the 'then') and register event listeners
  * to be called when the condition is true.
- * 
+ *
  * Parsers registered with registerCustomCondition are called in order
  * until one of them successfully parses the condition and returns true.
  */
@@ -1755,8 +1755,8 @@ Appcelerator.Compiler.handleCondition = function(clause)
     var element = clause[0];
     $D('handleCondition called for ',element);
 
-    //first loop through custom conditions defined by the widget 
-    for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++) 
+    //first loop through custom conditions defined by the widget
+    for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++)
     {
         var condFunction = Appcelerator.Compiler.customConditionsForWidget[f].func;
         var processed = condFunction.apply(condFunction,clause);
@@ -1765,7 +1765,7 @@ Appcelerator.Compiler.handleCondition = function(clause)
  			return true;
  		}
     }
-    
+
 	for (var f=0;f<Appcelerator.Compiler.customConditions.length;f++)
 	{
 		var condFunction = Appcelerator.Compiler.customConditions[f];
@@ -1794,7 +1794,7 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 	//
 	// create a wrapper that will auto-publish events for each
 	// action that can be subscribed to
-	// 
+	//
 	var action = Object.clone(callback);
 	action.build = function(id,action,params)
 	{
@@ -1804,9 +1804,9 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 			'; }catch(exxx){Appcelerator.Compiler.handleElementException',
 			'($("',id,'"),exxx,"Executing:',action,'");}'
 		].join('');
-		
+
 	};
-	
+
 	if (callback.parseParameters)
 	{
 		action.parseParameters = callback.parseParameters;
@@ -1876,14 +1876,14 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 	        f(scope);
 	    }
 	};
-	return actionFunc;	
+	return actionFunc;
 };
 
 /**
- * make an valid javascript function for executing the 
+ * make an valid javascript function for executing the
  * action - this string must be converted to a function
  * object before executing
- * 
+ *
  * @param {string} id of the element
  * @param {string} value of the action string
  * @param {object} optional parameters to pass to action
@@ -1893,7 +1893,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 {
     var actionFuncs = [];
 	var actions = Appcelerator.Compiler.smartSplit(value,' and ');
-	
+
 	for (var c=0,len=actions.length;c<len;c++)
 	{
         (function()
@@ -1908,7 +1908,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     		if (local_msg || remote_msg)
     		{
     			params = (params || {});
-    			if (local_msg && params['id']==null) 
+    			if (local_msg && params['id']==null)
     			{
     			 	params['id'] = id;
     			}
@@ -1937,7 +1937,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			// see if the widget has its own parameter parsing routine
     			//
     			var f = builder.parseParameters;
-			
+
     			if (f && typeof(f)=='function')
     			{
     				// this is called as a function to custom parse parameters in the action between brackets []
@@ -2001,14 +2001,14 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 			fieldset = element.getAttribute('fieldset');
 			scope = element.scope;
 		}
-		
+
 		for (var p in data)
 		{
 			data[p] = Appcelerator.Compiler.getEvaluatedValue(data[p],data,scopedata);
 		}
-		
+
 		var local = type.startsWith('local:') || type.startsWith('l:');
-		
+
 		if (fieldset)
 		{
 			var fields = Appcelerator.Compiler.fieldSets[fieldset];
@@ -2019,14 +2019,14 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 					var fieldid = fields[c];
 					var field = $(fieldid);
 					var name = field.name || fieldid;
-					
+
 					if (null == data[name])
 					{
-						// special case type field we only want to add 
+						// special case type field we only want to add
 						// the value if it's checked
 						if (field.type == 'radio' && !field.checked)
 						{
-							continue;					
+							continue;
 						}
 						var newvalue = Appcelerator.Compiler.getElementValue(field,true,local);
 						var valuetype = typeof(newvalue);
@@ -2042,14 +2042,14 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 				}
 			}
 		}
-		
+
 		if (local)
 		{
 			if (data['id'] == null)
 			{
                 data['id'] = id;
 			}
-		    
+
 		    if (data['element'] == null)
             {
 				// this might not be the element that triggered the message,
@@ -2057,20 +2057,20 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
                 data['element'] = $(data['id']);
             }
 		}
-		
+
 		if (!scope || scope == '*')
 		{
 			scope = 'appcelerator';
 		}
-		
+
 		$MQ(type,data,scope);
 	}).defer();
 };
 
 
 /**
- * return the elements value depending on the type of 
- * element it is 
+ * return the elements value depending on the type of
+ * element it is
  *
  * @param {element} element to get value from
  * @param {boolean} dequote should we automatically dequote value
@@ -2080,7 +2080,7 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
 {
     elem = $(elem);
     dequote = (dequote==null) ? true : dequote;
-    
+
     var widget = elem.widget
     if (widget)
     {
@@ -2098,6 +2098,7 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
                 return Appcelerator.Compiler.getInputFieldValue(elem,true,local);
             }
             case 'img':
+            case 'iframe':
             {
                 return elem.src;
             }
@@ -2126,7 +2127,7 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
  * @param {element} element
  * @param {boolean} dequote
  * @param {boolean} local true if it is for a local message
- * @return {string} value 
+ * @return {string} value
  */
 Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 {
@@ -2141,12 +2142,12 @@ Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 	var type = elem.getAttribute('type') || 'text';
 
 	var v = Form.Element.Methods.getValue(elem);
-	
+
 	switch(type)
 	{
 		case 'checkbox':
 			return (v == 'on' || v == 'checked');
-			
+
 		case 'password':
 		{
 			if (!local)
@@ -2181,14 +2182,14 @@ Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 Appcelerator.Compiler.getKeyValue = function (value)
 {
 	if (!value) return null;
-	
+
 	if (value.charAt(0)=='$')
 	{
 		return value;
 	}
 	else
 	{
-		// special syntax to allow 
+		// special syntax to allow
 		if (Appcelerator.Compiler.expressionRE.test(value))
 		{
 			return value;
@@ -2211,17 +2212,17 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 				return Appcelerator.Compiler.getElementValue(elem,true);
 			}
 		}
-        else if(!isNaN(parseFloat(v))) 
+        else if(!isNaN(parseFloat(v)))
         {
             //Assume that if they provided a number, they want the number back
-            //this is important because in IE window[1] returns the first iframe 
+            //this is important because in IE window[1] returns the first iframe
             return v;
         }
 		else
 		{
 			// determine if this is a dynamic javascript
 			// expression that needs to be executed on-the-fly
-			
+
 			var match = Appcelerator.Compiler.expressionRE.exec(v);
 			if (match)
 			{
@@ -2240,7 +2241,7 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 				}
 				return func.call(s);
 			}
-			
+
 			if (scope)
 			{
 				var result = Object.getNestedProperty(scope,v,null);
@@ -2249,20 +2250,20 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 					return result;
 				}
 			}
-			
+
 			if (data)
 			{
 				return Object.getNestedProperty(data,v,v);
 			}
 		}
-	}	
+	}
 	return v;
 };
 
 Appcelerator.Compiler.formatValue = function (value,quote)
 {
 	quote = (quote == null) ? true : quote;
-	
+
 	if (value!=null)
 	{
 		var type = typeof(value);
@@ -2396,7 +2397,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		return asjson ? {} : [];
 	}
-	// this is just a simple optimization to 
+	// this is just a simple optimization to
 	// check and make sure we have at least a key/value
 	// separator character before we continue with this
 	// inefficient parser
@@ -2629,15 +2630,15 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 
 /**
  * potentially delay execution of function if delay argument is specified
- * 
+ *
  * @param {function} action to execute
  * @param {integer} delay value to execute in ms
  * @param {object} scope to invoke function in
  */
 Appcelerator.Compiler.executeAfter = function(action,delay,scope)
-{	
+{
 	var f = (scope!=null) ? function() { action(scope); } : action;
-	
+
 	if (delay > 0)
 	{
 		f.delay(delay/1000);
@@ -2658,7 +2659,7 @@ Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 Appcelerator.Compiler.handleElementException = function(element,e,context)
 {
 	var makeDiv = false;
-	
+
 	if (!element)
 	{
 		var id = Appcelerator.Compiler.generateId();
@@ -2666,7 +2667,7 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 		makeDiv = true;
 		element = $(id);
 	}
-	
+
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 
 	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] ith ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <pre>'+(context||'unknown')+'</pre></div></div>';
@@ -2706,7 +2707,7 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 			break;
 		}
 	}
-	
+
 	if (tag.indexOf(':')>0)
 	{
 		makeDiv=true;
@@ -2730,7 +2731,7 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 		p.style.opacity='1.0';
 		p.style.backgroundColor='#fcc';
 	}
-	
+
 	Appcelerator.Compiler.setHTML(element,msg);
 };
 
@@ -2744,7 +2745,7 @@ Appcelerator.Compiler.fieldSets = {};
  * @param {string}  optional name for the fieldset, overrides attribute on element
  *
  * @return {string} fieldset name or null if none found
- */ 
+ */
 Appcelerator.Compiler.addFieldSet = function(element,excludeSelf,fieldsetName)
 {
 	excludeSelf = (excludeSelf==null) ? false : excludeSelf;
@@ -2787,7 +2788,7 @@ Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)
 	{
 		data = values;
 	}
-	
+
 	if (fieldset)
 	{
 		var fields = Appcelerator.Compiler.fieldSets[fieldset];
@@ -2913,7 +2914,7 @@ Appcelerator.Compiler.setElementValue = function (element, value)
     }
 }
 
-Appcelerator.Compiler.CSSAttributes = 
+Appcelerator.Compiler.CSSAttributes =
 [
 	'color',
 	'cursor',
@@ -2959,14 +2960,14 @@ Appcelerator.Compiler.CSSAttributes =
 Appcelerator.Compiler.isCSSAttribute = function (name)
 {
 	if (name == 'style') return true;
-	
+
 	for (var c=0,len=Appcelerator.Compiler.CSSAttributes.length;c<len;c++)
 	{
 		if (Appcelerator.Compiler.CSSAttributes[c] == name)
 		{
 			return true;
 		}
-		
+
 		var css = Appcelerator.Compiler.CSSAttributes[c];
 		var index = css.indexOf('-');
 		if (index > 0)
@@ -3000,7 +3001,7 @@ Appcelerator.Compiler.convertCSSAttribute = function (css)
 Appcelerator.Util.ServerConfig.addConfigListener(function()
 {
     if (Appcelerator.Compiler.compileOnLoad)
-	{		
+	{
         var outputHandler = Prototype.K;
         Appcelerator.Compiler.compileDocument(outputHandler);
 	}
@@ -3016,11 +3017,11 @@ Appcelerator.Compiler.setHTML = function(element,html)
 /**
  * attach a method which can dynamically compile an expression passed in
  * for a given element. this allows a more unobstrutive or standards based
- * approach for purists such as 
+ * approach for purists such as
  *
  * $('myelement').on('click then l:foo')
  */
-var AppceleratorCompilerMethods = 
+var AppceleratorCompilerMethods =
 {
     on: function(re,webexpr,parameters)
     {
@@ -3066,7 +3067,7 @@ Object.extend(Array.prototype,
         }
         return this;
     },
-	
+
 	withoutAll:function(vals)
 	{
 		return this.without.apply(this, vals);
