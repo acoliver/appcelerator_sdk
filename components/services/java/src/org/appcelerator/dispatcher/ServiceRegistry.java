@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -240,12 +240,12 @@ public class ServiceRegistry
 	/**
 	 * dispatch an incoming downloadable
 	 */
-    public static boolean dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
+    public static boolean dispatch (HttpServletRequest request, String ticket, String name, HttpServletResponse response)
     {
         DownloadableAdapter adapter = ServiceRegistry.getRegisteredDownloadable(name);
 		if (adapter!=null)
 		{
-			adapter.dispatch(session,ticket,name,response);
+			adapter.dispatch(request,ticket,name,response);
 			return true;
 		}
         return false;

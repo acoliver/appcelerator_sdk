@@ -22,8 +22,9 @@ package org.appcelerator.dispatcher;
 
 import java.lang.reflect.Method;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.appcelerator.annotation.Downloadable;
 
@@ -58,7 +59,7 @@ public class DownloadableAdapter
     		return null;
 		}
     	Class cl = i.getClass();
-    	return cl.getMethod(methodname, HttpSession.class, String.class, String.class, HttpServletResponse.class);
+    	return cl.getMethod(methodname, HttpServletRequest.class, String.class, String.class, HttpServletResponse.class);
     }
     public boolean is(Class<? extends Object> clz, Method method, Downloadable service)
     {
@@ -101,20 +102,20 @@ public class DownloadableAdapter
      * @param request
      * @param response
      */
-    public void dispatch (HttpSession session, String ticket, String name, HttpServletResponse response)
+    public void dispatch (HttpServletRequest request, String ticket, String name, HttpServletResponse response)
     {
         try
         {
         	if (premethod != null)
 			{
-        		premethod.invoke(this.instance,session,ticket,name,response);
+        		premethod.invoke(this.instance,request,ticket,name,response);
 			}
 
-            this.method.invoke(this.instance,session,ticket,name,response);
+            this.method.invoke(this.instance,request,ticket,name,response);
 
         	if (postmethod != null)
 			{
-        		postmethod.invoke(this.instance,session,ticket,name,response);
+        		postmethod.invoke(this.instance,request,ticket,name,response);
 			}
         }
         catch (Throwable e)
