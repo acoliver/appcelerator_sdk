@@ -28,7 +28,7 @@ Appcelerator.Compiler.registerCustomAction('hide',
 		else
 		{
 		    Element.hide(id);
-		}	
+		}
 	}
 });
 
@@ -66,7 +66,7 @@ Appcelerator.Compiler.registerCustomAction('hidden',
 	}
 });
 
-// get the effects 
+// get the effects
 Appcelerator.Compiler.effects = $H(Effect).select(function(kv) {
     var name = kv[0];
     var val = kv[1];
@@ -83,7 +83,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 		optionalParameterKeys: Appcelerator.Compiler.effects,
 	    description: "Invokes a Scriptaculous visual effect on this element"
 	},
-	
+
 	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
@@ -94,7 +94,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 			// split first param to get effect name
 			var arg1= params[0].key.split(",");
 			var effectName = arg1[0];
-			
+
 			// get first option if exists
 			if (arg1.length>1)
 			{
@@ -110,7 +110,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 					options += (params.length>1)?',':'';
 				}
 			}
-			
+
 			// get remaining options
 			if (params.length > 1)
 			{
@@ -123,13 +123,13 @@ Appcelerator.Compiler.registerCustomAction('effect',
 					}
 					// otherwise, its an effect option
 					else
-					{						
+					{
 						options += params[c].key + ":'" + params[c].value + "'";
 						options += (c!=params.length-1)?',':'';
 					}
 				}
 			}
-		  	
+
 			// format/validate effect name
 			effectName = effectName.dasherize().camelize();
 		  	effectName = effectName.charAt(0).toUpperCase() + effectName.substring(1);
@@ -137,7 +137,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 			{
 				throw "syntax error: unsupported effect type: "+effectName;
 			}
-			
+
 			Element.visualEffect(target,effectName,("{"+options+"}").evalJSON());
 		}
 		else
@@ -167,9 +167,9 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 			{
 			    if (Element.hasClassName(id,val))
 			    {
-			        Element.removeClassName(id,val); 
+			        Element.removeClassName(id,val);
 			    }
-			    else 
+			    else
 			    {
 			        Element.addClassName(id,val);
 		        }
@@ -199,13 +199,13 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 								case 'visible':
 									opposite='hidden'; break;
 							}
-							var a = Element.getStyle(id,key); 
+							var a = Element.getStyle(id,key);
 						    var params = {};
 							if (a!=opposite)
 							{
 							    params[key] = opposite;
 							}
-							else 
+							else
 							{
 							    params[key] = val;
 						    }
@@ -214,13 +214,13 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 						}
 						default:
 						{
-							var a = Element.getStyle(id, key); 
+							var a = Element.getStyle(id, key);
 						    var params = {};
-							if (a) 
+							if (a)
 							{
 							    params[key] = '';
 							}
-							else 
+							else
 							{
 							    params[key] = val;
 						    }
@@ -232,12 +232,12 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 				else
 				{
 					var a = $(id);
-					if (!a) 
+					if (!a)
 					{
-					    throw "no element with ID: "+id; 
+					    throw "no element with ID: "+id;
 					}
 					var v = a.getAttribute(key);
-					if (v) 
+					if (v)
 					{
 					    a.removeAttribute(key);
 					}
@@ -322,7 +322,7 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 			if (e[key]!=null)
 			{
     			switch(key)
-    			{	
+    			{
     				case 'checked':
     				case 'selected':
     				case 'disabled':
@@ -348,9 +348,9 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 		    {
 		        e.setAttribute(key, Appcelerator.Compiler.generateSetter(value,scope));
 		    }
-		}		
+		}
 	}
-	
+
     Appcelerator.Compiler.registerCustomAction('add',
 	{
 		metadata:
@@ -402,7 +402,7 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 		{
 			throw "syntax error: expected parameters in format 'statechange[statemachine=state]'";
 		}
-		
+
 		var changes = params.map(function(obj)
 		{
 			var statemachine = obj.key;
@@ -414,7 +414,7 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 
 (function()
 {
-	var scriptBuilderAction = 
+	var scriptBuilderAction =
 	{
 		metadata:
         {
@@ -435,8 +435,8 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 	        eval(params);
 	    }
 	};
-	
-	
+
+
 	Appcelerator.Compiler.registerCustomAction('javascript',scriptBuilderAction);
 	Appcelerator.Compiler.registerCustomAction('function',scriptBuilderAction);
 	Appcelerator.Compiler.registerCustomAction('script',scriptBuilderAction);
@@ -501,11 +501,11 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 		{
 			throw "syntax error: expected parameter property for action: "+action;
 		}
-		var select = $(id);		
-		
+		var select = $(id);
+
 		if (!select.options)
 		{
-			throw "syntax error: selectOption must apply to a select tag";	
+			throw "syntax error: selectOption must apply to a select tag";
 		}
 
 		var key = params[0].key;
@@ -514,7 +514,7 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 		{
 			def = '';
 		}
-		
+
 		var selectedValue = Object.getNestedProperty(scope.data, key, def);
 		var targetSelect = $(id);
 		for (var j=0;j<targetSelect.options.length;j++)
@@ -537,11 +537,11 @@ var ResetAction =
 		var element = $(target);
 		var revalidate = false;
 		var code = null;
-		
+
 		var element = $(target);
 		var variable = '';
 		var value = '';
-		
+
 		switch (Appcelerator.Compiler.getTagname(element))
 		{
 			case 'input':
@@ -569,7 +569,7 @@ var ResetAction =
 			}
 			case 'form':
 			{
-				Form.reset(target); 
+				Form.reset(target);
 				Form.Methods.getInputs(target).each(function(i)
 				{
 				    Appcelerator.Compiler.executeFunction(i,'revalidate');
@@ -582,7 +582,7 @@ var ResetAction =
 				return;
 			}
 		}
-		
+
 		if (revalidate)
 		{
 		    Appcelerator.Compiler.executeFunction(element,revalidate);
@@ -600,7 +600,7 @@ var ResetFormAction =
 		var element = $(target);
 		var code = null;
 		var form = null;
-		
+
 		switch (Appcelerator.Compiler.getTagname(element))
 		{
 			case 'form':
@@ -690,7 +690,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 				}
 			}
 			var expressionMatch = Appcelerator.Compiler.expressionRE.exec(valueExpr);
-			
+
 			if (expressionMatch)
 			{
 				// allow them to specify exact javascript expression to run
@@ -729,15 +729,15 @@ Appcelerator.Compiler.registerCustomAction('value',
                 valueHtml = Appcelerator.Compiler.getElementValue($(targetId));
 			}
 		}
-		
+
 		var element = $(id);
 		var html = '';
 		var variable = '';
 		var expression = '';
-		
+
 		//TODO: select
 		var revalidate = false;
-		
+
 		switch (Appcelerator.Compiler.getTagname(element))
 		{
 			case 'input':
@@ -831,6 +831,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 				break;
 			}
 			case 'img':
+			case 'iframe':
 			{
 				append=false;
 				variable = 'src';
@@ -846,7 +847,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 					new_input.type = 'text';
 					new_input.style.display = 'none';
 					new_input.name = 'no_submit_guarantee';
-					element.appendChild(new_input);					
+					element.appendChild(new_input);
 				}
 
 				//Set form to true so we clear html var below -- we deligate to subsequent calls to handleCondition
@@ -859,7 +860,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 
 				var descendants = element.descendants();
 				for (var c = 0; c < descendants.length; c++)
-				{					
+				{
 					var child = descendants[c];
 
 					//need an id to handle the condition later and probably need one anyway so make sure it's there
@@ -885,11 +886,11 @@ Appcelerator.Compiler.registerCustomAction('value',
 								child_parameter = child.getAttribute('name') || '';
 						 }
 					}
-					
-					if (child_parameter != '') 
+
+					if (child_parameter != '')
 					{
 						//e.g. value[bar.idx]
-						var action = 'value['+parameters + '.' + child_parameter+']';						
+						var action = 'value['+parameters + '.' + child_parameter+']';
 						//the current child element is the one we want to handle the condition on
 						clause[0] = child;
 						//the condition to handle for this child element
@@ -905,7 +906,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 				throw "syntax error: " + element.nodeName+' not supported for value action';
 			}
 		}
-		
+
 		if (!form)
 		{
 			if (append)
@@ -925,7 +926,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 	},
 	findMatchingFormClause: function(element, params)
 	{
-		//iterate over the clauses and find the appropriate clause to return 
+		//iterate over the clauses and find the appropriate clause to return
 		//(the one with the appropriate action being handled by the cal for registerCustomAction('value'))
 		var clauses = Appcelerator.Compiler.parseExpression(element.getAttribute('on'));
 
@@ -935,7 +936,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 			if (condition == params)
 			{
 				return clauses[i];
-			} 
+			}
 		}
 		return [];
 	}
@@ -956,14 +957,14 @@ Appcelerator.Compiler.registerCustomAction('bind',
 	{
 		var element = $(id);
 		var fieldset = element.getAttribute('fieldset');
-		
+
 		if (!fieldset || fieldset == '')
 		{
 			throw "syntax error: element has no field set attribute "  + element;
 		}
-		
+
 		var key = parameters;
-		
+
 		Appcelerator.Compiler.updateFieldsetValues(fieldset, scope.data, key);
 	}
 });
@@ -1006,7 +1007,7 @@ for (var c=0,len=Appcelerator.Compiler.GenericFunctions.length;c<len;c++)
 Appcelerator.Compiler.buildCustomAction = function (name)
 {
 	var action = Appcelerator.Compiler.customActions[name];
-	
+
 	if (!action)
 	{
 		var f = new GenericActionFunction(false, true);

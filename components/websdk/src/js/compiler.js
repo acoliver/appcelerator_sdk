@@ -2895,6 +2895,7 @@ Appcelerator.Compiler.setElementValue = function (element, value)
                     break;
                 }
                 case 'img':
+                case 'iframe':
                 {
                     element.src = value;
                     break;
