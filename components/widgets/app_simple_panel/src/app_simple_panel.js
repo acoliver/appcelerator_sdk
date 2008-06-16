@@ -21,7 +21,7 @@ Appcelerator.Widget.AppSimplePanel =
 	 */
 	getVersion: function()
 	{
-		return 1.0;
+		return "1.0.1";
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the

@@ -9,7 +9,7 @@
   :version: ">=2.1"
 :description: app:simple_panel widget
 :name: app:simple_panel
-:version: 1.0
+:version: 1.0.1
 :release_notes: initial release
 :licenses: [1]
 
