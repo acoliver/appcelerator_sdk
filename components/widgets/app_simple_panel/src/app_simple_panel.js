@@ -107,9 +107,12 @@ Appcelerator.Widget.AppSimplePanel =
 	    if(element.getStyle("width") == null || element.getStyle("width") == '0px') {element.style.width = "100%";}
 	    if(element.getStyle("height") == null || element.getStyle("height") == '0px') {element.style.height = "100%";}
 	    
-        setTimeout(function() {
-            $(parameters['id'] + "_app_simple_panel_content").style.height = (element.getHeight() - 6) + "px";
-        }, 10);
+        var interval = setInterval(function() {
+            if(element.getHeight() > 0) {
+                $(parameters['id'] + "_app_simple_panel_content").style.height = (element.getHeight() - 6) + "px";
+                clearInterval(interval);
+            }
+        }, 150);
 	},
 	/**
 	 * this method will be called each time a <app:simple_panel> is encountered in a page. the return object gives
@@ -121,7 +124,6 @@ Appcelerator.Widget.AppSimplePanel =
 	buildWidget: function(element,parameters)
 	{
 	    var style = 'app_simple_panel_' + parameters['color'];
-		//TODO - this is optional, but usually is the HTML to replace for <app:simple_panel>
 		var html = [];
 		html.push('<div id="' + element.id + '" class="app_simple_panel ' + style + ' ' + parameters['user_class'] + '"');
 		html.push('>');
@@ -135,7 +137,7 @@ Appcelerator.Widget.AppSimplePanel =
 		return {
 			'presentation' : html.join(' '),   // this is the HTML to replace for the contents <app:simple_panel>
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,  // usually the default, could be POSITION_REMOVE to remove <app:simple_panel> entirely
-			'wire' : false,  // true to compile the contents of the presentation contents replaced above
+			'wire' : true,  // true to compile the contents of the presentation contents replaced above
 			'compile' : true,  // true to call compileWidget once the HTML has been replaced and available in the DOM
 			'parameters': null  // parameters object to pass to compileWidget
 		};		
