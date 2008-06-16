@@ -228,7 +228,9 @@ Appcelerator.Compiler.registerAttributeProcessor = function(name,attribute,liste
 			a = [];
 			Appcelerator.Compiler.attributeProcessors[name]=a;
 		}
-		a.push([attribute,listener]);
+		// always push to the end such that custom attribute processors will be 
+		// processed before internal ones so that they can overwrite builtins
+		a.unshift([attribute,listener]);
 	}
 	else
 	{
@@ -241,7 +243,9 @@ Appcelerator.Compiler.registerAttributeProcessor = function(name,attribute,liste
 				a = [];
 				Appcelerator.Compiler.attributeProcessors[n]=a;
 			}
-			a.push([attribute,listener]);
+			// always push to the end such that custom attribute processors will be 
+			// processed before internal ones so that they can overwrite builtins
+			a.unshift([attribute,listener]);
 		}
 	}
 };
