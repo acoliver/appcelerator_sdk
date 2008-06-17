@@ -645,7 +645,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var form = false;
 		if (parameters.charAt(0)=='"' || parameters.charAt(0)=="'")
 		{
-			valueHtml = parameters;
+			valueHtml = parameters.substr(1, parameters.length - 2);
 		}
 		else
 		{
@@ -694,7 +694,12 @@ Appcelerator.Compiler.registerCustomAction('value',
 			if (expressionMatch)
 			{
 				// allow them to specify exact javascript expression to run
-				valueHtml = eval(expressionMatch[1], scope);
+                // valueHtml = eval(expressionMatch[1], scope);
+                var valFunc = function()
+    	        {
+    	            return eval(expressionMatch[1]);
+    	        }.bind(scope);
+    	        valueHtml = valFunc();
 			}
 			else if (params[0].key.charAt(0)=='$')
 			{
