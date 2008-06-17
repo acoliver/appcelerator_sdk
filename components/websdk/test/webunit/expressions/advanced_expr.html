@@ -284,6 +284,26 @@
 
 		</td>
 	</tr>
+	<tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-532 Local/Remote Messages Not Being Respected -->
+            Message payload is not passed correctly into the script action
+        </td>
+        <td class="result">
+			<a on="click then l:appsdk532.one[text='Test Passed']">Click to run</a>
+
+            <div on="l:appsdk532.one then script[$(this.data.id).innerHTML = this.data.text]"></div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            Use Id in an expression for input
+        </td>
+        <td class="result">
+            <input type="text" name="blah" value="Empty then blur" 
+                    on="blur then value[Test Passed] if expr[$(this.id).value.length == 0]"/>
+        </td>
+    </tr>
 </table>
 
 <app:statemachine id="test" initial="valid">

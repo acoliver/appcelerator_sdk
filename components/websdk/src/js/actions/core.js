@@ -430,9 +430,10 @@ Appcelerator.Compiler.registerCustomAction('statechange',
 	    {
 	        return params;
 	    },
-	    execute: function (id,action,params)
-	    {
-	        eval(params);
+	    execute: function (id,action,params,scope)
+	    {   
+	        var f = function() { eval(params); }.bind(scope);
+	        f();
 	    }
 	};
 
@@ -472,7 +473,6 @@ Appcelerator.Compiler.findParameter = function(params,key)
 Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkenabled,scope)
 {
 	var target = Appcelerator.Compiler.findParameter(params,'id') || id;
-	var customActionParams = Object.toJSON(params);
 	if (checkenabled)
 	{
 	    try
@@ -480,7 +480,7 @@ Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkena
 	        var e = $(target);
 	        if (e && !e.disabled && Element.showing(e))
 	        {
-	            Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, customActionParams, scope.direction, scope.type]);
+	            Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
 	        }
 	    }
 	    catch (xxx_)
@@ -489,7 +489,7 @@ Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkena
 	}
 	else
 	{
-        Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, customActionParams, scope.direction, scope.type]);
+        Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
 	}
 };
 
