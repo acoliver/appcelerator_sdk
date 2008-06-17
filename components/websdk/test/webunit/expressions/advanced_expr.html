@@ -286,7 +286,7 @@
 	</tr>
 	<tr>
         <td class="test" valign="middle">
-            <!-- APPSDK-532 Local/Remote Messages Not Being Respected -->
+            <!-- APPSDK-532 Message payload is not passed correctly  -->
             Message payload is not passed correctly into the script action
         </td>
         <td class="result">
@@ -302,6 +302,17 @@
         <td class="result">
             <input type="text" name="blah" value="Empty then blur" 
                     on="blur then value[Test Passed] if expr[$(this.id).value.length == 0]"/>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
+            <!-- APPSDK-532 Message payload is not passed correctly  -->
+            Test this.data in expression
+        </td>
+        <td class="result">
+            <a on="click then l:appsdk532.two[test=true]">Click to run</a>
+
+            <div on="l:appsdk532.two then value[Test Passed] if expr[this.data.test]"></div>
         </td>
     </tr>
 </table>

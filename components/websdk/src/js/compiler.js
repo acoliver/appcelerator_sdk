@@ -1870,7 +1870,11 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 	    var f = Appcelerator.Compiler.makeAction(id,action,additionalParams);
 	    if (ifCond)
 	    {
-	        if (eval(ifCond))
+	        var ifFunc = function()
+	        {
+	            return eval(ifCond);
+	        }.bind(scope);
+	        if (ifFunc())
 	        {
 	            f(scope);
 	        }
