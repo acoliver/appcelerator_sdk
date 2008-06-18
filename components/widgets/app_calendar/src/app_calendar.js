@@ -58,12 +58,13 @@ Appcelerator.Widget.Calendar =
 	},
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute', 'close'];
 	},
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
 		return [{name: 'on', optional: true, description: "May be used to execute the calendar.", type: T.onExpr},
+		        {name: 'close', optional: true, description: 'Toggle display of the close button.', type: T.bool, defaultValue: false},
 				{name: 'inputId', optional: true, type: T.identifier},
 				{name: 'elementId', optional: true, type: T.identifier},
 				{name: 'minDate', optional: true, type: T.pattern(/[0-9]{1,2}\/[0-9]{1,2}(\/[0-9]{4})/)},
@@ -72,6 +73,10 @@ Appcelerator.Widget.Calendar =
 	execute: function(id,parameterMap,data,scope,version)
 	{
 		Element.show($(parameterMap['name']));
+	},
+	close: function(id, parameterMap, data, scope, version) 
+	{
+	    Element.hide($(parameterMap['name']));
 	},
 	setValue: function(id,params,value) {
 	    var cal = YAHOO.appcelerator.calendar[params['name']];
@@ -96,6 +101,7 @@ Appcelerator.Widget.Calendar =
 		var title = parameters['title'];
 		var name = parameters['name'];
 		var id = parameters['id'];
+		var close = !!parameters['close'];
 		var element = null;
 		
 		if (elementId)
@@ -111,11 +117,11 @@ Appcelerator.Widget.Calendar =
 		
 		if (minDate)
 		{
-			YAHOO.appcelerator.calendar[name] = new YAHOO.widget.Calendar(name+'_cal',name,{close:false,mindate:minDate,title:title});
+			YAHOO.appcelerator.calendar[name] = new YAHOO.widget.Calendar(name+'_cal',name,{close:close,mindate:minDate,title:title});
 		}
 		else
 		{
-			YAHOO.appcelerator.calendar[name] = new YAHOO.widget.Calendar(name+'_cal',name,{close:true,title:title});
+			YAHOO.appcelerator.calendar[name] = new YAHOO.widget.Calendar(name+'_cal',name,{close:close,title:title});
 		}
 
 		YAHOO.appcelerator.calendar[name].render();
@@ -158,11 +164,13 @@ Appcelerator.Widget.Calendar =
         }
         
 		parameters['name'] = 'app_calendar_' + Appcelerator.Widget.Calendar.calendarCount++;
-		var html = '<div style="position:absolute;z-index:1000;display:none" id="'+parameters['name']+'"></div>';
+		var html = '<div style="position:absolute;z-index:1000;display:none" id="'+parameters['name']+'" on="' + 
+		        parameters['on'] + '"></div>';
 		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : html,
+			'wire': true,
 			'compile' : true 
 	   };	
 	}

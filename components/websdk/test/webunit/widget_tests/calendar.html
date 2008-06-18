@@ -41,6 +41,34 @@ input[type=text]
 			<a id="calendar_start_link" on="click then l:calendarexample.start">select</a>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Calendar with a close button
+		</td>
+		<td class="result" >
+			<app:calendar title="Select Start Date" close="true" inputId="jobfilter_date_start2" on="l:calendarexample2.start then execute"
+				minDate="10/16/2007">
+			</app:calendar>
+			<input type="text" id="jobfilter_date_start2"></input>
+			<a id="calendar_start_link2" on="click then l:calendarexample2.start">select</a>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Close via message. 
+			<a on="click then l:calendarexample3.start">Open</a>
+			<a on="click then l:calendarexample3.close">Close</a>
+			<a on="click then l:calendarexample3.start">Re-open</a>
+		</td>
+		<td class="result" >
+			<app:calendar title="Select Start Date" inputId="jobfilter_date_start3" 
+			        on="l:calendarexample3.start then execute or l:calendarexample3.close then close"
+				minDate="10/16/2007">
+			</app:calendar>
+			<input type="text" id="jobfilter_date_start3"></input>
+			<a id="calendar_start_link3" on="click then l:calendarexample3.start">select</a>
+		</td>
+	</tr>
 </table>
 </body>
 </html>
