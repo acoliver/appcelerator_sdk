@@ -9,4 +9,4 @@ This is a simple example shows how to programmatically select a node:
 	
     <app:message name="l:select" args="{'id': 1}"></app:message>
 
-Use 'select_no_fire' if you do not want the tree to refire an event
+Use 'select\_no\_fire' if you do not want the tree to refire an event

@@ -10,8 +10,8 @@ This is a simple example that uses the `<app:music_player>` and dynamically load
 	
 The value in the load action can be any valid Javascript expression.  The this scope has the following parameters:
 
-# data - the data payload of the message
-# parameters - any defined attributes defined on the `app:music_player` tag
-# id - the id of the `app:music_player` tag
+ + data - the data payload of the message
+ + parameters - any defined attributes defined on the `app:music_player` tag
+ + id - the id of the `app:music_player` tag
 
 

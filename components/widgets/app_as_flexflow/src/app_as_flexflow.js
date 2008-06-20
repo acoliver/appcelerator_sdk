@@ -22,7 +22,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	 */
 	getVersion: function()
 	{
-		return "1.0.1";
+		return "1.0.2";
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the

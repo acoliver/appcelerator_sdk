@@ -25,6 +25,7 @@ This is a simple example that uses the `<app:template>`.
 	-->
 	</style>
 In the example below, the Header and the Footer come from a template, but the Body of the template is overriden.
+
 	<app:template src="content/template.html">
 		<html:div id="template_body">
 			<html:div class="my_body">

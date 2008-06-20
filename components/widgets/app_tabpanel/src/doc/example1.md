@@ -39,6 +39,7 @@ This is a simple example that uses the `<app:tabpanel>`.
   </style>
 
 Here's an example of a basic tab panel with no custom styling
+
   <div id="styled">
     <app:tabpanel id="contentmenu" initial="tab1">
       <tab name="tab1">Tab 1</tab>
@@ -48,6 +49,7 @@ Here's an example of a basic tab panel with no custom styling
   </div>
 
 Here's an example of a basic tab panel with custom styling
+
   <div id="styled">
     <app:tabpanel id="styled_tab" initial="tab1">
       <tab name="tab1">Look</tab>

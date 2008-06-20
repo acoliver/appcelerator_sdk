@@ -64,7 +64,9 @@ This is a simple example that uses the `<app:field>`.
 		}
 
 	</style>
+	
 Basic Field (text)
+
 	<app:field validator="required" type="text">
 		<header>
 			Name:
@@ -75,6 +77,7 @@ Basic Field (text)
 	</app:field>
 
 Field (custom error)
+
 	<app:field validator="required" type="text">
 		<header>
 			Name:
@@ -88,6 +91,7 @@ Field (custom error)
 	</app:field>
 
 Field (drop down populate via message)
+
 	<app:field validator="required" type="dropdown" message="l:populate.field"
 		property="rows" value="id" text="text">
 		<header>
@@ -104,6 +108,7 @@ Field (drop down populate via message)
 	</app:message>
 
 Field (autocomplete with delay and indicator)
+
 	<app:field  type="autocomplete" autocomplete="l:autocomplete.search"
 	delay="1000ms" indicator="auto_indicator">
 		<header>
@@ -120,6 +125,7 @@ Field (autocomplete with delay and indicator)
 	</app:script>
 
 Field (styled - but not well)
+
 	<app:field  type="text" activeClassName="my_active" inactiveClassName="my_inactive" fieldInactiveClassName="my_field_inactive" fieldActiveClassName="my_field_active" >
 		<header class="my_header">
 			Name:

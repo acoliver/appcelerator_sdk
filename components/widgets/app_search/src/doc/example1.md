@@ -3,6 +3,7 @@ Title: Simple Example
 This is a simple example that uses the `<app:search>`.
 	
 Here is a real simple example
+
 	<app:search request="l:search.request" response="l:search.response" selected="l:search.selected" key="search" property="result">
 	</app:search>
 	<app:script on="l:search.request then execute">
@@ -11,6 +12,7 @@ Here is a real simple example
 	
 
 Here's another example with a complex search result.
+
 	<app:search request="l:search2.request" response="l:search2.response" selected="l:search2.selected" key="search" property="result">
 		<html:div>
 			#{name}
