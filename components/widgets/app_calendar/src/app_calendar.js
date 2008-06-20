@@ -34,7 +34,7 @@ Appcelerator.Widget.Calendar =
 	},
 	getVersion: function()
 	{
-		return '1.0.2';
+		return '1.0.3';
 	},
 	getSpecVersion: function()
 	{
@@ -65,10 +65,10 @@ Appcelerator.Widget.Calendar =
 		var T = Appcelerator.Types;
 		return [{name: 'on', optional: true, description: "May be used to execute the calendar.", type: T.onExpr},
 		        {name: 'close', optional: true, description: 'Toggle display of the close button.', type: T.bool, defaultValue: false},
-				{name: 'inputId', optional: true, type: T.identifier},
-				{name: 'elementId', optional: true, type: T.identifier},
-				{name: 'minDate', optional: true, type: T.pattern(/[0-9]{1,2}\/[0-9]{1,2}(\/[0-9]{4})/)},
-				{name: 'title', optional: true, defaultValue: ''}];
+				{name: 'inputId', optional: true, description: 'The id of the input element to update', type: T.identifier},
+				{name: 'elementId', optional: true, description: 'Alias for inputId', type: T.identifier},
+				{name: 'minDate', optional: true, description: 'The minimum allowed date', type: T.pattern(/[0-9]{1,2}\/[0-9]{1,2}(\/[0-9]{4})/)},
+				{name: 'title', optional: true, description: 'The title of the calendar', defaultValue: ''}];
 	},
 	execute: function(id,parameterMap,data,scope,version)
 	{
