@@ -45,7 +45,7 @@ Appcelerator.Widget.AppYuiMap =
     },
     getVersion: function()
     {
-        return 1.0;
+        return '1.0.1';
     },
     getSpecVersion: function()
     {
@@ -233,6 +233,7 @@ Appcelerator.Widget.AppYuiMap =
     initializeMap: function(params) 
     {
         var mapDiv = $(params['id']);
+        /* do this twice, seems to be important in both places */
         mapDiv.style.height = params['height'];
         mapDiv.style.width = params['width'];
         
@@ -244,6 +245,10 @@ Appcelerator.Widget.AppYuiMap =
         if(params['disable_key_controls']) {
             map.disableKeyControls();
         }
+        
+        mapDiv.style.height = params['height'];
+        mapDiv.style.width = params['width'];
+        
         map.drawZoomAndCenter(params["initial_location"], parseInt(params["zoom_level"]));
         $MQ('l:' + params['id'] + '_init');
     },

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Content Widget </h3> 
+<p>
+	These tests exercise the content widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+            You should see two markers near buckhead.
+		</td>
+		<td class="result" id="map_result_1">
+			<app:yui_map id="mapContainer" api_key='Wcmd.ljV34Gz49YHhEFrjhaNgTer.SmTdtZYsVH97AMBd1PCp7FUL1y3wo8hSw--'
+                initial_location="Atlanta, GA" zoom_level="8" max_zoom_out="8" height="230px" width="358px"
+                on_marker_click='r:portal.select.location.request'
+                on="l:add.map.markers then add_markers"
+            >
+            </app:yui_map>
+		</td>
+	</tr>
+
+</table>
+
+
+<app:script on="l:mapContainer_init then execute">
+    $MQ('l:add.map.markers', {locations: [{'id': 1, 'location': '3535 Piedmont Rd, Atlanta, Georgia 30305'}, 
+        {'id': 2, 'location': '79 Buckhead Ave., Atlanta, GA 30305'}]});
+</app:script>
+</body>
+
+</html>
