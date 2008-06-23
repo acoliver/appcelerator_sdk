@@ -24,7 +24,6 @@ module Appcelerator
       Appcelerator::Installer.copy(tx,from_path,to_path, ['install.rb','build.yml'])
       tx.chmod(0755, "#{to_path}/public/servicebroker.pl")     
       tx.chmod(0755, "#{to_path}/public/proxy.pl")     
-      tx.rm "#{to_path}/app/services"
       true
     end
   end
