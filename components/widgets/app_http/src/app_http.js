@@ -215,7 +215,7 @@ Appcelerator.Widget.Http =
 							uriLink += k + '=' + methodParams[k] + '&';
 						}
 					}
-                    uriLink = proxy.value + '?url='+ encodeURIComponent(uriLink);
+                    uriLink = proxy.value + '?url='+ encodeURIComponent(encodeURI(uriLink));
 					methodParams = null;
                 }
             }
