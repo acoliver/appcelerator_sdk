@@ -1531,11 +1531,18 @@ Appcelerator.Compiler.determineScope = function(element)
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
     $D('parseOnAttribute ',element.id);
-	var on = element.getAttribute('on');
-	if (on && Object.isString(on))
+    try
+    {
+    	var on = element.getAttribute('on');
+    	if (on && Object.isString(on))
+    	{
+    		Appcelerator.Compiler.compileExpression(element,on,false);
+    		return true;
+    	}
+    }
+	catch (exxx)
 	{
-		Appcelerator.Compiler.compileExpression(element,on,false);
-		return true;
+		Appcelerator.Compiler.handleElementException(element, exxx, 'compiling "on" attribute for element ' + element.id);
 	}
 	return false;
 };
