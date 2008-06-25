@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:35%;
+}
+input[type=text]
+{
+	width:40%;
+	border:1px solid #ccc;
+	padding:3px;
+	font-size:12px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Yui Compatibility </h3> 
+<p>
+	These tests ensure that YUI widgets can be used together
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Yui Calendar
+		</td>
+		<td class="result" style="height: 200px;vertical-align: top">
+			<app:calendar title="Select Start Date" close="true" inputId="yui_compat_date_start" on="l:yuicalendar.start then execute"
+				minDate="10/16/2007">
+			</app:calendar>
+			<input type="text" id="yui_compat_date_start"></input>
+			<app:message name="l:yuicalendar.start"></app:message>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Yui Map
+		</td>
+		<td class="result" >
+			<app:yui_map id="test_mapContainer" api_key=' Wcmd.ljV34Gz49YHhEFrjhaNgTer.SmTdtZYsVH97AMBd1PCp7FUL1y3wo8hSw--'
+                initial_location="Atlanta, GA" zoom_level="8" max_zoom_out="8" height="230px" width="358px"
+            ></app:yui_map>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
