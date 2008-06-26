@@ -153,7 +153,7 @@ Appcelerator.Compiler.registerCustomAction('toggle',
 	metadata:
 	{
 		requiresParameters: true,
-		description: "Toggles a CSS property, or boolean attribute on this element"
+		description: "Toggles a CSS property, CSS Class, or boolean attribute on this element"
 	},
 	execute: function(id,action,params)
 	{
@@ -383,7 +383,8 @@ Appcelerator.Compiler.registerCustomAction('remove',
 		switch (key)
 		{
 			case 'class':
-			    Element.removeClassName(id,Appcelerator.Compiler.formatValue(value));
+			    Element.removeClassName(id,Appcelerator.Compiler.formatValue(value,false));
+			    break;
 			default:
     			$(id).removeAttribute(key);
 		}
