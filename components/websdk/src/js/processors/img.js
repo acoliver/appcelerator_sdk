@@ -4,20 +4,6 @@
 
 Appcelerator.Compiler.Image = {};
 
-if (Appcelerator.Browser.isIE6)
-{
-	Appcelerator.Compiler.registerAttributeProcessor('img','src',
-	{
-		handle: function(img,attribute,value)
-		{
-			if (value)
-			{
-	    		Appcelerator.Browser.fixImage(img,value);
-			}
-		}
-	});
-}
-
 Appcelerator.Compiler.registerAttributeProcessor('img','srcexpr',
 {
 	handle: function(img,attribute,value)
