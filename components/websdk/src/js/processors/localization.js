@@ -15,6 +15,7 @@ Appcelerator.Localization.AttributeProcessor =
 			     Logger.error("couldn't find localization key for "+value);
 			     return;
 			}
+            Logger.info(Appcelerator.Compiler.getTagname(element));
 			switch (Appcelerator.Compiler.getTagname(element))
 			{
 				case 'select':
@@ -43,6 +44,12 @@ Appcelerator.Localization.AttributeProcessor =
 				case 'input':
 				{
 					element.value = v;
+					break;
+				}
+				case 'img':
+				{
+					element.setAttribute("title", v);
+					element.setAttribute("alt", v);
 					break;
 				}
 				default:

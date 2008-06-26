@@ -125,7 +125,8 @@ Appcelerator.Localization.supportedTags =
 	'h3',
 	'h4',
 	'ol',
-	'legend'
+	'legend',
+    'img'
 ];
 
 //
