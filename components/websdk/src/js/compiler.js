@@ -2047,11 +2047,11 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 						var valuetype = typeof(newvalue);
 						if (newvalue!=null && (valuetype=='object' || newvalue.length > 0 || valuetype=='boolean'))
 						{
-							data[name] = newvalue;
+							Object.setNestedProperty(data, name, newvalue);
 						}
 						else
 						{
-							data[name] = '';
+							Object.setNestedProperty(data, name, '');
 						}
 					}
 				}
