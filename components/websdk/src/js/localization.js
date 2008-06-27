@@ -1,4 +1,12 @@
-Appcelerator.Localization.currentLanguage = 'en';
+if (window.navigator.language != undefined)
+{
+    Appcelerator.Localization.currentLanguage = window.navigator.language;
+}
+else
+{
+    Appcelerator.Localization.currentLanguage = 'en';
+}
+
 Appcelerator.Localization.LanguageMap = {};
 
 //
