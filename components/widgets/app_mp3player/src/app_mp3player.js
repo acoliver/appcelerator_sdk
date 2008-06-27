@@ -13,7 +13,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
@@ -57,7 +57,7 @@ Appcelerator.Widget.Mp3player =
 	getActions: function()
 	{
 		return ['execute'];
-	},	
+	},
 	getAttributes: function()
 	{
         return [{
@@ -78,7 +78,7 @@ Appcelerator.Widget.Mp3player =
 	{
 		var propertyName = parameterMap['property'];
 		var mp3 = data[propertyName];
-		
+
 		if (mp3)
 		{
 			var element = $(parameterMap['id']);
@@ -99,17 +99,17 @@ Appcelerator.Widget.Mp3player =
 			html += '<param name="wmode" value="transparent">';
 			html += '</object>';
 			html += '</div>';
-			
+
 			element.innerHTML = html;
 		}
 	},
 	buildWidget: function(element,parameters)
 	{
 		var html = '<div id="' + parameters['id'] + '"></div>';
-		
+
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'presentation' : html,
+			'presentation' : html
 	   };
 	}
 };
