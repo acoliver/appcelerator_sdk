@@ -31,6 +31,7 @@ SCRIPTNAME = 'app'
 SCRIPTDIR = File.dirname(__FILE__)
 LIB_DIR = "#{SCRIPTDIR}/lib"
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
+PLUGINS_DIR = File.join(SCRIPTDIR,'lib','plugins')
 OPTIONS[:subprocess] = (ARGV.include? '--subprocess') # bootstrapping
 
 GLOBAL_OPTS = {

@@ -62,11 +62,27 @@ module Appcelerator
     
     def PluginManager.loadPlugins
       PluginManager.preloadPlugins
-      path = Dir.pwd
+      PluginManager.loadPluginsFromPath(File.join(Dir.pwd, 'plugins'))
+      PluginManager.loadPluginsFromPath(PLUGINS_DIR)
+      p = []
+      # scan and add all of our plugins
+      Object::constants.each do |c|
+        cl = Object.const_get(c)
+        if cl.class == Class and cl.superclass==Appcelerator::Plugin
+          p << cl.to_s
+          Appcelerator::PluginManager.addPlugin(cl.new) 
+        end
+      end
+      show = OPTIONS[:debug] and p.length > 0
+      name = 'plugin' + (p.length > 1 ? 's' : '')
+      puts "--> Loading #{name}: #{p.join(',')}" if show
+    end
+    
+    def PluginManager.loadPluginsFromPath(path)
       if path 
         path = path.path if path.class==Dir
-        if File.exists? path and File.exists? "#{path}/plugins"
-          Dir["#{path}/plugins/*"].each do |dir|
+        if File.exists? path
+          Dir["#{path}/*"].each do |dir|
             begin
               if File.file?(dir) and File.extname(dir)=='.rb'
                 # load plugins in same directory as plugins
@@ -86,18 +102,6 @@ module Appcelerator
           end
         end
       end
-      p = []
-      # scan and add all of our plugins
-      Object::constants.each do |c|
-        cl = Object.const_get(c)
-        if cl.class == Class and cl.superclass==Appcelerator::Plugin
-          p << cl.to_s
-          Appcelerator::PluginManager.addPlugin(cl.new) 
-        end
-      end
-      show = OPTIONS[:debug] and p.length > 0
-      name = 'plugin' + (p.length > 1 ? 's' : '')
-      puts "--> Loading #{name}: #{p.join(',')}" if show
     end
     
     def PluginManager.preloadPlugins

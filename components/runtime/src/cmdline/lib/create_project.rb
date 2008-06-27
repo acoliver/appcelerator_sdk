@@ -47,6 +47,7 @@ module Appcelerator
       
       # write out our main configuration file
       props = {
+        :name => name,
         :installed=>Time.now,
         :service=>service_name,
         :service_version=>service_version,
