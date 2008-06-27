@@ -23,13 +23,30 @@ module Appcelerator
     def create_project(from_path,to_path,config,tx)
       puts "Creating new zend framework project using #{from_path}" if OPTIONS[:debug]
 
-      Appcelerator::Installer.copy tx, "#{from_path}/src/.", "#{to_path}", ["#{__FILE__}",'build.yml'], true
+      exclude = ["#{__FILE__}",'build.yml', '.project']
+      Appcelerator::Installer.copy(tx, "#{from_path}/src/.", "#{to_path}", exclude, true)
 
       %w(log script).each do |name|
-        FileUtils.rm_rf "#{to_path}/#{name}"
+        FileUtils.rm_rf("#{to_path}/#{name}")
       end
+
+      FileUtils.cp("#{from_path}/src/.project", "#{to_path}")
+      search_and_replace_in_file("#{to_path}/.project",
+                                 "MYAPP",
+                                  File.basename(to_path))
       true
     end
+
+    def search_and_replace_in_file(file, to_find, to_replace)
+      content = File.read(file).gsub!(to_find, to_replace)
+
+      f = File.open(file,'w+')
+      f.puts(content)
+      f.flush()
+      f.close()
+      true
+    end
+    
   end
 end
 
