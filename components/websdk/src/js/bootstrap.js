@@ -192,36 +192,39 @@ Appcelerator.Parameters = $H({});
 	// thanks to http://www.nikhilk.net/Silverlight-Analytics.aspx
     Appcelerator.Browser.isSilverlight = false;
 	Appcelerator.Browser.silverlightVersion = 0;
-    var container = null;
-    try {
-        var control = null;
-        if (window.ActiveXObject) {
-            control = new ActiveXObject('AgControl.AgControl');
-        }
-        else {
-            if (navigator.plugins['Silverlight Plug-In']) {
-                container = document.createElement('div');
-                document.body.appendChild(container);
-                container.innerHTML= '<embed type="application/x-silverlight" src="data:," />';
-                control = container.childNodes[0];
-            }
-        }
-        if (control) {
-            if (control.isVersionSupported('2.0')) 
-			{ 
-				Appcelerator.Browser.silverlightVersion = 2.0; 
-			}
-            else if (control.isVersionSupported('1.0')) 
-			{ 
-				Appcelerator.Browser.silverlightVersion = 1.0; 
-			}
-			Appcelerator.Browser.isSilverlight = Appcelerator.Browser.silverlightVersion > 0;
-        }
-    }
-    catch (e) { }
-    if (container) {
-        document.body.removeChild(container);
-    }
+	Event.observe(window,'load',function()
+	{
+	    var container = null;
+	    try {
+	        var control = null;
+	        if (window.ActiveXObject) {
+	            control = new ActiveXObject('AgControl.AgControl');
+	        }
+	        else {
+	            if (navigator.plugins['Silverlight Plug-In']) {
+	                container = document.createElement('div');
+	                document.body.appendChild(container);
+	                container.innerHTML= '<embed type="application/x-silverlight" src="data:," />';
+	                control = container.childNodes[0];
+	            }
+	        }
+	        if (control) {
+	            if (control.isVersionSupported('2.0')) 
+				{ 
+					Appcelerator.Browser.silverlightVersion = 2.0; 
+				}
+	            else if (control.isVersionSupported('1.0')) 
+				{ 
+					Appcelerator.Browser.silverlightVersion = 1.0; 
+				}
+				Appcelerator.Browser.isSilverlight = Appcelerator.Browser.silverlightVersion > 0;
+	        }
+	    }
+	    catch (e) { }
+	    if (container) {
+	        document.body.removeChild(container);
+	    }
+	});
 	
 	// flash detection
 	Appcelerator.Browser.isFlash = false;
