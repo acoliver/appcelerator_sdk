@@ -47,7 +47,7 @@ if (window.location.href.indexOf('file:/')==-1)
 
 	        var p = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
 			var f = Appcelerator.Browser.flashVersion;
-
+	        var si = Appcelerator.Util.Cookie.GetCookie(Appcelerator.ServerConfig['sessionid'].value);
 			var i = new Image;
 			var qs = $H({
 				'x-v':v,
@@ -60,6 +60,7 @@ if (window.location.href.indexOf('file:/')==-1)
 				'x-sv':data.silverlightver,
 				'x-r':document.referrer,
 				'x-t':document.title,
+				'x-si':si,
 				'x-dt':Appcelerator.Util.DateTime.format(time,'c')
 			}).toQueryString();
 			i.src = 'http://tracker.appcelerator.org/app.gif?t='+Number(new Date)+'&' + qs; 
