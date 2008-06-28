@@ -40,7 +40,7 @@ module Appcelerator
       copy tx, "#{template_dir}/COPYING", "#{path}/COPYING"
       copy tx, "#{template_dir}/README", "#{path}/README"
       
-      config = Appcelerator::Project.get_config(path)
+      config = Project.get_config(path)
       config[:name] = name
       config[:service_version] = service_version
       config[:service] = service_name
@@ -63,7 +63,7 @@ module Appcelerator
 
       # resize to update changes from web
       Installer.save_project_config path,props unless update
-      
+
       return config,props
     end
     

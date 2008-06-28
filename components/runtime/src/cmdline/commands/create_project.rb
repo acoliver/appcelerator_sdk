@@ -92,6 +92,8 @@ CommandRegistry.registerCommand('create:project','create a new project',[
         raise "Service #{service[:name]} has method 'check_dependencies' but it requires more than one argument"
     end
   end
+  
+  event = nil
 
   with_io_transaction(to) do |tx|
     event = {:project_dir=>to, :service_dir=>from,:name=>args[:name],
@@ -107,8 +109,10 @@ CommandRegistry.registerCommand('create:project','create a new project',[
       end
     ensure
       event[:success] = success
-      PluginManager.dispatchEvent 'after_create_project',event
     end
   end
+
+  PluginManager.dispatchEvent 'after_create_project',event
+
   success
 end

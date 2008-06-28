@@ -1418,46 +1418,6 @@ else
         Appcelerator.Util.ServiceBroker.startTimer();
         Logger.info('ServiceBroker ready');
     });
-    
-    //
-    // if being loaded from an IFrame - don't do the report
-    //
-    if (window.parent == null || window.parent == window)
-    {
-        var screenHeight = screen.height;
-        var screenWidth = screen.width;
-        var colorDepth = screen.colorDepth || -1;
-
-        /**
-         * if autoReportStats is set (default), we are going to send a status 
-         * message to the server with our capabilities and some statistics info
-         */
-        Appcelerator.Core.onload(function()
-        {
-            if (Appcelerator.Browser.autoReportStats)
-            {
-                var time = new Date();
-                var platform = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
-                var data = 
-                {
-                    'userAgent': navigator.userAgent,
-                    'flash': Appcelerator.Browser.isFlash,
-                    'flashver': Appcelerator.Browser.flashVersion,
-                    'screen': {
-                        'height':screenHeight,
-                        'width':screenWidth,
-                        'color':colorDepth
-                     },
-                    'os': platform,
-                    'referrer': document.referrer,
-                    'path': window.location.href,
-                    'cookies' : (document.cookie||'').split(';').collect(function(f){ var t = f.split('='); return t && t.length > 0 ? {name:t[0],value:t[1]} : {name:null,value:null}}),
-                    'tz' : time.getTimezoneOffset()/60
-                };
-                $MQ('remote:appcelerator.status.report',data);
-            }
-        });
-    }
 }
 
 

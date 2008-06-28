@@ -86,40 +86,25 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.Parameters = $H(s.src.toQueryParams());
 	});	
 	
-    var idx = window.document.location.href.lastIndexOf('/');
-    if (idx == window.document.location.href.length - 1)
+	//
+	// top is important such that if the JS file is in a different location (hosted)
+	// than the primary document, we use the primary document's path (cross site scripting)
+	//
+	var idx = top.window.document.location.href.lastIndexOf('/');
+    if (idx == top.window.document.location.href.length - 1)
     {
-    	Appcelerator.DocumentPath = window.document.location.href;
+    	Appcelerator.DocumentPath = top.window.document.location.href;
     }
     else
     {
-        Appcelerator.DocumentPath  = window.document.location.href.substr(0, idx);
+        Appcelerator.DocumentPath  = top.window.document.location.href.substr(0, idx);
         if (Appcelerator.DocumentPath.substring(Appcelerator.DocumentPath.length - 1) != '/')
         {
             Appcelerator.DocumentPath  = Appcelerator.DocumentPath + '/';
         }
     }
 
-	//
-	// this check will determine if the JS file (and related structure)
-	// is in a different directory than our document and if so, make the
-	// document path and our assets relative to where appcelerator JS is loaded
-	//
-	if (jsFileLocation)
-	{
-		idx = jsFileLocation.lastIndexOf('/');
-		jsFileLocation = jsFileLocation.substring(0,idx);
-		if (jsFileLocation!=Appcelerator.DocumentPath+'js')
-		{
-			idx = jsFileLocation.lastIndexOf('/');
-			var newpath = jsFileLocation.substring(0,idx+1);
-			if (newpath)
-			{
-			    Appcelerator.DocumentPath = newpath;
-			}
-		}
-	}
-	else
+	if (!jsFileLocation)
 	{
 		Appcelerator.ScriptNotFound = true;
 	}
@@ -203,6 +188,42 @@ Appcelerator.Parameters = $H({});
 		Appcelerator.Browser.isSunOS = true;
 	}
 	
+	// silverlight detection
+	// thanks to http://www.nikhilk.net/Silverlight-Analytics.aspx
+    Appcelerator.Browser.isSilverlight = false;
+	Appcelerator.Browser.silverlightVersion = 0;
+    var container = null;
+    try {
+        var control = null;
+        if (window.ActiveXObject) {
+            control = new ActiveXObject('AgControl.AgControl');
+        }
+        else {
+            if (navigator.plugins['Silverlight Plug-In']) {
+                container = document.createElement('div');
+                document.body.appendChild(container);
+                container.innerHTML= '<embed type="application/x-silverlight" src="data:," />';
+                control = container.childNodes[0];
+            }
+        }
+        if (control) {
+            if (control.isVersionSupported('2.0')) 
+			{ 
+				Appcelerator.Browser.silverlightVersion = 2.0; 
+			}
+            else if (control.isVersionSupported('1.0')) 
+			{ 
+				Appcelerator.Browser.silverlightVersion = 1.0; 
+			}
+			Appcelerator.Browser.isSilverlight = Appcelerator.Browser.silverlightVersion > 0;
+        }
+    }
+    catch (e) { }
+    if (container) {
+        document.body.removeChild(container);
+    }
+	
+	// flash detection
 	Appcelerator.Browser.isFlash = false;
 	Appcelerator.Browser.flashVersion = 0;
 	if (Appcelerator.Browser.isIE)

@@ -118,8 +118,8 @@ module Appcelerator
       false
     end
     
-    def Installer.login_if_required
-      Installer.login unless @@loggedin
+    def Installer.login_if_required(quiet=false)
+      Installer.login(nil,nil,false,quiet) unless @@loggedin
     end
 
     def Installer.get_client
@@ -149,7 +149,7 @@ module Appcelerator
       end
     end
 
-    def Installer.login(un=nil,pw=nil,exit_on_failure=false)
+    def Installer.login(un=nil,pw=nil,exit_on_failure=false,force_quiet=false)
       if OPTIONS[:no_remote]
         die("--no-remote has been specified and you need to go to the Dev Network for content.", 2)
       end
@@ -158,7 +158,7 @@ module Appcelerator
       if not @@loggedin or (username.nil? or password.nil?) or (@@loggedin and (username != @@config[:username] or password != @@config[:password]))
         while true 
           if username and password
-            break if Installer.network_login(username,password,false)
+            break if Installer.network_login(username,password,force_quiet)
             STDERR.puts "Invalid credentials, please try again..."
             return false if exit_on_failure
           end

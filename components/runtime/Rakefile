@@ -46,6 +46,7 @@ task :update do
   FileUtils.mkdir_p update_dir
 
   copy_dir "#{BUILD_DIR}/src/cmdline", update_dir 
+  FileUtils.cp "#{BUILD_DIR}/../services/common/ruby/agent/uuid.rb", "#{update_dir}/lib/uuid.rb"
 
   zipfile = "#{STAGE_DIR}/installer_update_#{build_config[:version]}.zip"
   FileUtils.rm_rf zipfile
@@ -81,6 +82,7 @@ task :win32 => [:setup] do
     
     copy_dir "#{BUILD_DIR}/src/cmdline", win32_dir
     copy_dir "#{BUILD_DIR}/src/installer/win32", win32_dir
+    FileUtils.cp "#{BUILD_DIR}/../services/common/ruby/agent/uuid.rb", "#{win32_dir}/lib/uuid.rb"
 
     FileUtils.cp_r "#{STAGE_DIR}/../LICENSE", win32_dir
     build_yaml = File.join(win32_dir,'build.yml')
@@ -119,6 +121,7 @@ task :unix => [:setup] do
 
     copy_dir "#{BUILD_DIR}/src/cmdline", unix_dir 
     copy_dir "#{BUILD_DIR}/src/installer/unix", unix_dir 
+    FileUtils.cp "#{BUILD_DIR}/../services/common/ruby/agent/uuid.rb", "#{unix_dir}/lib/uuid.rb"
 
     FileUtils.rm_r "#{unix_dir}/maker"
     FileUtils.rm_r "#{unix_dir}/appcelerator.lsm"
@@ -162,6 +165,7 @@ task :osx=> [:setup] do
 
     copy_dir "#{BUILD_DIR}/src/cmdline", "#{osx_dir}/installer" 
     copy_dir "#{BUILD_DIR}/src/installer/osx", "#{osx_dir}/installer/build/osx"
+    FileUtils.cp "#{BUILD_DIR}/../services/common/ruby/agent/uuid.rb", "#{osx_dir}/installer/lib/uuid.rb"
 
     # dynamically make our list of files into the pmdoc before we build
     make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
