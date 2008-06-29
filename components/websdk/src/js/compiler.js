@@ -1710,35 +1710,113 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	}
 };
 
-Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
+Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data) 
 {
     var ok = true;
     var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
-
+    
     if (actionParams)
     {
     	for (var c=0,len=actionParams.length;c<len;c++)
     	{
     		var p = actionParams[c];
     		var not_cond = p.key.charAt(p.key.length-1) == '!';
+			var bnot_cond = p.key.charAt(0)=='!';
     		var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
-    		var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
-
+			k = bnot_cond ? k.substring(1) : k;
+			var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
+			
+			// mathematics
+			if ((p.operator == '<' || p.operator == '>') && (p.value && typeof(p.value)=='string' && p.value.charAt(0)=='='))
+			{
+				p.operator += '=';
+				p.value = p.value.substring(1);
+			}
+			
+			// regular expression
+			if (p.value && typeof(p.value)=='string' && p.value.charAt(0)=='~')
+			{
+				p.regex = true;
+				p.value = p.value.substring(1);
+			}
+		
     		// added x to eval $args
     		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
-    		if (not_cond)
-    		{
-    			if (v == x)
-    			{
-    				ok = false;
-    				break;
-    			}
-    		}
-    		else if (null == v || v != x)
-    		{
-    			ok = false;
-    			break;
-    		}
+			var matched = k!=v;
+			
+//			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
+			
+			if (bnot_cond)
+			{
+				if (p.regex)
+				{
+					var r = new RegExp(x);
+					ok = !r.test(v);
+				}
+				else
+				{
+					ok =  p.empty ? matched ? x==null : v!=null : !(v==x);
+				}
+			}
+			else
+			{
+				if (matched && not_cond)
+				{
+					if (p.regex)
+					{
+						var r = new RegExp(x);
+						ok = !r.test(v);
+					}
+					else
+					{
+						ok = v!=x;
+					}
+				}
+				else if (matched && !not_cond)
+				{
+					switch(p.operator)
+					{
+						case '<':
+						{
+							ok = v < x;
+							break;
+						}
+						case '>':
+						{
+							ok = v > x;
+							break;
+						}
+						case '<=':
+						{
+							ok = v <= x;
+							break;
+						}
+						case '>=':
+						{
+							ok = v >= x;
+							break;
+						}
+						default:
+						{
+							if (p.regex)
+							{
+								var r = new RegExp(x);
+								ok = r.test(v);
+							}
+							else
+							{
+								ok = p.empty ? v : v==x;
+							}
+							break;
+						}
+					}
+				}
+				else if (!matched)
+				{
+					ok = not_cond ? null != x : null == x;
+				}
+			}
+			if (!ok) break;
     	}
     }
     return ok;
@@ -2396,7 +2474,7 @@ Appcelerator.Compiler.decodeParameterValue = function(token,wasquoted)
 	return value == null ? token : value;
 };
 
-Appcelerator.Compiler.parameterSeparatorRE = /[=:]+/;
+Appcelerator.Compiler.parameterSeparatorRE = /[=:><!]+/;
 
 /**
  * method will parse out a loosely typed json like structure
@@ -2412,7 +2490,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		return asjson ? {} : [];
 	}
-	// this is just a simple optimization to
+	// this is just a simple optimization to 
 	// check and make sure we have at least a key/value
 	// separator character before we continue with this
 	// inefficient parser
@@ -2420,11 +2498,11 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		if (asjson)
 		{
-			return {key:str,value:null};
+			return {str:null};
 		}
 		else
 		{
-			return [{key:str,value:null}];
+			return [{key:str,value:null,empty:true}];
 		}
 	}
 	var state = 0;
@@ -2432,6 +2510,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	var key = null;
 	var data = asjson ? {} : [];
 	var quotedStart = false, tickStart = false;
+	var operator = null;
 
 	for (var c=0,len=str.length;c<len;c++)
 	{
@@ -2506,9 +2585,17 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 				}
 				break;
 			}
+			case '>':
+			case '<':
 			case '=':
 			case ':':
 			{
+				if (ch == '<' || ch == '>')
+				{
+					key = currentstr.trim();
+					currentstr = '';
+					state = STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER;
+				}
 				switch (state)
 				{
 					case STATE_LOOKING_FOR_VARIABLE_END:
@@ -2517,12 +2604,14 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						state = STATE_LOOKING_FOR_VALUE_BEGIN;
 						key = currentstr.trim();
 						currentstr = '';
+						operator = ch;
 						break;
 					}
 					case STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER:
 					{
 						append = false;
 						state = STATE_LOOKING_FOR_VALUE_BEGIN;
+						operator = ch;
 						break;
 					}
 				}
@@ -2538,6 +2627,24 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						state = STATE_LOOKING_FOR_VARIABLE_BEGIN;
 						break;
 					}
+					case STATE_LOOKING_FOR_VARIABLE_END:
+					{
+						// we got to the end (single parameter with no value)
+						state=STATE_LOOKING_FOR_VARIABLE_BEGIN;
+						append=false;
+						if (asjson)
+						{
+							data[currentstr]=null;
+						}
+						else
+						{
+							data.push({key:currentstr,value:null,empty:true,operator:operator});
+						}
+						key = null;
+						quotedStart = false, tickStart = false;
+						currentstr = '';
+						break;
+					}
 					case STATE_LOOKING_FOR_VALUE_END:
 					{
 						if (!quotedStart && !tickStart)
@@ -2550,7 +2657,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 							}
 							else
 							{
-								data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart)});
+								data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
 							}
 							key = null;
 							quotedStart = false, tickStart = false;
@@ -2596,7 +2703,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 					}
 					else
 					{
-						data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart)});
+						data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
 					}
 					key = null;
 					quotedStart = false, tickStart = false;
@@ -2635,13 +2742,25 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			}
 			else
 			{
-				data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart)});
+				data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
 			}
 		}
 	}
 
+	if (currentstr && !key)
+	{
+		if (asjson)
+		{
+			data[key]=null;
+		}
+		else
+		{
+			data.push({key:currentstr,value:null,empty:true,operator:operator});
+		}
+	}
 	return data;
 };
+
 
 /**
  * potentially delay execution of function if delay argument is specified

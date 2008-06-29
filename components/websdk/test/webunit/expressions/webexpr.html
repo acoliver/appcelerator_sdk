@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> Web Expressions </h3> 
+<p>
+	These tests exercise web expressions parameter matching.
+</p>
+
+<app:message name="l:test" args="{count:'100'}"></app:message>
+
+<table width="90%">
+	<tr>
+		<td class="test">l:test[count>0]</td>
+		<td class="result" on="l:test[count>0] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count>1]</td>
+		<td class="result" on="l:test[count>1] then value['passed'] else value['failed']"></td>
+	</tr>
+	
+	<tr>
+		<td class="test">l:test[count<101]</td>
+		<td class="result" on="l:test[count<101] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count&lt;=100]</td>
+		<td class="result" on="l:test[count<=100] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count&gt;=100]</td>
+		<td class="result" on="l:test[count>=100] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!count&gt;101]</td>
+		<td class="result" on="l:test[!count>101] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!count&gt;=101]</td>
+		<td class="result" on="l:test[!count>=101] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!count&lt;101]</td>
+		<td class="result" on="l:test[!count<101] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!count&lt;=200]</td>
+		<td class="result" on="l:test[!count<=200] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count!=200]</td>
+		<td class="result" on="l:test[count!=200] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count=100]</td>
+		<td class="result" on="l:test[count=100] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count=~100]</td>
+		<td class="result" on="l:test[count=~100] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count=~1]</td>
+		<td class="result" on="l:test[count=~1] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count=~^1]</td>
+		<td class="result" on="l:test[count=~^1] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count=~0$]</td>
+		<td class="result" on="l:test[count=~0$] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!count=~9$]</td>
+		<td class="result" on="l:test[!count=~9$] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count]</td>
+		<td class="result" on="l:test[count] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[!foobar]</td>
+		<td class="result" on="l:test[!foobar] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count,!foobar]</td>
+		<td class="result" on="l:test[count,!foobar] then value['passed'] else value['failed']"></td>
+	</tr>
+</table>
+
+</body>
+</html>
