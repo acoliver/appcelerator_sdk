@@ -44,10 +44,11 @@ if (window.location.href.indexOf('file:/')==-1)
 
 			c = Appcelerator.ServerConfig['sid'];
 	        if (c) s = c.value;
-
+	
 	        var p = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
 			var f = Appcelerator.Browser.flashVersion;
-	        var si = Appcelerator.Util.Cookie.GetCookie(Appcelerator.ServerConfig['sessionid'].value);
+			var sic = (Appcelerator.ServerConfig['sessionid']||{}).value;
+	        var si = Appcelerator.Util.Cookie.GetCookie(sic);
 			var i = new Image;
 			var qs = $H({
 				'x-v':v,

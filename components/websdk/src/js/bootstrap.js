@@ -72,6 +72,7 @@ Appcelerator.Parameters = $H({});
 (function()
 {
 	var jsFileLocation = null;
+	var baseHref = null;
 	
 	$A(document.getElementsByTagName("script")).findAll( function(s) 
 	{
@@ -85,24 +86,40 @@ Appcelerator.Parameters = $H({});
 	{
 		Appcelerator.Parameters = $H(s.src.toQueryParams());
 	});	
+
+	$A(document.getElementsByTagName("base")).each( function(s) 
+	{
+		if (s.href)
+		{
+			baseHref = s.href;
+			throw $break;
+		}
+	});
 	
-	//
-	// top is important such that if the JS file is in a different location (hosted)
-	// than the primary document, we use the primary document's path (cross site scripting)
-	//
-	var idx = top.window.document.location.href.lastIndexOf('/');
-    if (idx == top.window.document.location.href.length - 1)
-    {
-    	Appcelerator.DocumentPath = top.window.document.location.href;
-    }
-    else
-    {
-        Appcelerator.DocumentPath  = top.window.document.location.href.substr(0, idx);
-        if (Appcelerator.DocumentPath.substring(Appcelerator.DocumentPath.length - 1) != '/')
-        {
-            Appcelerator.DocumentPath  = Appcelerator.DocumentPath + '/';
-        }
-    }
+	if (baseHref)
+	{
+		Appcelerator.DocumentPath = baseHref;
+	}
+	else
+	{
+		//
+		// top is important such that if the JS file is in a different location (hosted)
+		// than the primary document, we use the primary document's path (cross site scripting)
+		//
+		var idx = top.window.document.location.href.lastIndexOf('/');
+	    if (idx == top.window.document.location.href.length - 1)
+	    {
+	    	Appcelerator.DocumentPath = top.window.document.location.href;
+	    }
+	    else
+	    {
+	        Appcelerator.DocumentPath  = top.window.document.location.href.substr(0, idx);
+	        if (Appcelerator.DocumentPath.substring(Appcelerator.DocumentPath.length - 1) != '/')
+	        {
+	            Appcelerator.DocumentPath  = Appcelerator.DocumentPath + '/';
+	        }
+	    }
+	}
 
 	if (!jsFileLocation)
 	{
