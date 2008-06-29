@@ -25,7 +25,7 @@ final class Appcelerator_Request {
         $this->responses = array();
         
         // Only GET and POST are allowed
-        if (!$request->isPost() && !$requesst->isGet()) {
+        if (!$request->isPost() && !$request->isGet()) {
             $this->invalidMethod = true;
             return;
         }
