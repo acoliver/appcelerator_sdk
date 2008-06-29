@@ -1745,6 +1745,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 			var matched = k!=v;
 			
 //			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
+//			top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
 			
 			if (bnot_cond)
 			{
@@ -2490,11 +2491,14 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		return asjson ? {} : [];
 	}
+	
+	var containsExpr = /expr\((.*?)\)/.test(str);
+	
 	// this is just a simple optimization to 
 	// check and make sure we have at least a key/value
 	// separator character before we continue with this
 	// inefficient parser
-	if (!Appcelerator.Compiler.parameterSeparatorRE.test(str))
+	if (!Appcelerator.Compiler.parameterSeparatorRE.test(str) && !containsExpr)
 	{
 		if (asjson)
 		{
@@ -2511,6 +2515,28 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	var data = asjson ? {} : [];
 	var quotedStart = false, tickStart = false;
 	var operator = null;
+	
+	// extract out our expressions prior to processing normal strings
+	if (containsExpr)
+	{
+		while ( true ) 
+		{ 	
+			var expr = str.match(/expr\((.*?)\)/,""); 	
+			if (!expr) 	
+			{ 		
+				break; 	
+			} 	
+			if (asjson)
+			{
+				data[expr[0]]=null;
+			}
+			else
+			{
+				data.push({key:expr[1],value:null,expression:true});
+			}
+			str = str.replace(expr[0],'');
+		} 
+	}
 
 	for (var c=0,len=str.length;c<len;c++)
 	{

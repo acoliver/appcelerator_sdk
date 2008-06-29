@@ -13,8 +13,6 @@
 	These tests exercise web expressions parameter matching.
 </p>
 
-<app:message name="l:test" args="{count:'100'}"></app:message>
-
 <table width="90%">
 	<tr>
 		<td class="test">l:test[count>0]</td>
@@ -93,7 +91,25 @@
 		<td class="test">l:test[count,!foobar]</td>
 		<td class="result" on="l:test[count,!foobar] then value['passed'] else value['failed']"></td>
 	</tr>
+	<tr>
+		<td class="test">l:test[expr(this.count > 1)]</td>
+		<td class="result" on="l:test[expr(this.count > 1)] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[expr(this.count > 1),count=100]</td>
+		<td class="result" on="l:test[expr(this.count > 1),count=100] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[expr(this.count > 1),count>99,expr(this.count==100)]</td>
+		<td class="result" on="l:test[expr(this.count > 1),count>99,expr(this.count==100)] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[count,expr(1+1>1)]</td>
+		<td class="result" on="l:test[count,expr(1+1>1)] then value['passed'] else value['failed']"></td>
+	</tr>
 </table>
+
+<app:message name="l:test" args="{count:'100'}"></app:message>
 
 </body>
 </html>
