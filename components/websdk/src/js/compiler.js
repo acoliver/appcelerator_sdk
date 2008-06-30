@@ -674,13 +674,13 @@ Appcelerator.Compiler.addTrash = function(element,trash)
 Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_var)
 {
     var def = {};
-	var o = Object.getNestedProperty(namespace,var_expr,def);
+    var o = Object.getNestedProperty(namespace,var_expr,def);
 
-	if (o == def) // wasn't found in template context
-	{
+    if (o == def) // wasn't found in template context
+    {
         try
         {
-	        o = eval(var_expr, namespace);
+            with(namespace) { o = eval(var_expr) };
         }
         catch (e) // couldn't be evaluated either
         {
@@ -690,7 +690,7 @@ Appcelerator.Compiler.getJsonTemplateVar = function(namespace,var_expr,template_
     
     if (typeof(o) == 'object')
     {
-	    o = Object.toJSON(o).replace(/"/g,'&quot;');
+        o = Object.toJSON(o).replace(/"/g,'&quot;');
     }
     return o;
 }
