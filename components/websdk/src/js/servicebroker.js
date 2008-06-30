@@ -2,7 +2,9 @@ Appcelerator.Util.ServiceBroker =
 {
     DEBUG:false,
     init:false,
-    instanceid:Appcelerator.instanceid,
+    // this is a randomly generated id used to identify all messages from a page
+    instanceid: Appcelerator.instanceid,
+    // this default location is overwritten by values in appcelerator.xml
     serverPath: Appcelerator.DocumentPath + "servicebroker",
     interceptors: [],
     messageQueue: [],
@@ -441,9 +443,12 @@ Appcelerator.Util.ServiceBroker =
         return true;
     },
 
-    XML_REGEXP: /^<(.*)>$/,
+    flush: function()
+    {
+        this.deliver(false,true);
+    },
 
-    deliver: function (initialrequest)
+    deliver: function (initialrequest, synchronous)
     {
         if (this.messageQueue == null)
         {
@@ -499,14 +504,14 @@ Appcelerator.Util.ServiceBroker =
         var postBody = instructions.postBody;
         var contentType = instructions.contentType;
 
-        this.sendRequest(url,method,postBody,contentType,marshaller,transportHandler);
+        this.sendRequest(url,method,postBody,contentType,marshaller,transportHandler,synchronous);
         
         if (!this.multiplex && this.messageQueue.length > 0)
         {
             this.deliver.defer();
         }
     },
-    sendRequest: function(url,method,body,contentType,marshaller,transportHandler,count)
+    sendRequest: function(url,method,body,contentType,marshaller,transportHandler,count,synchronous)
     {
         count = (count || 0) + 1;
         
@@ -520,7 +525,7 @@ Appcelerator.Util.ServiceBroker =
         
         new Ajax.Request(url,
         {
-            asynchronous: true,
+            asynchronous: !synchronous,
             method: method,
             postBody: body,
             contentType: contentType,
