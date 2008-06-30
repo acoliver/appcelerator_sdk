@@ -1724,7 +1724,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 			var bnot_cond = p.key.charAt(0)=='!';
     		var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
 			k = bnot_cond ? k.substring(1) : k;
-			var v = Appcelerator.Compiler.getEvaluatedValue(k,data);
+			var v = Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.expression);
 			
 			// mathematics
 			if ((p.operator == '<' || p.operator == '>') && (p.value && typeof(p.value)=='string' && p.value.charAt(0)=='='))
@@ -1739,13 +1739,13 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 				p.regex = true;
 				p.value = p.value.substring(1);
 			}
-		
+			
     		// added x to eval $args
     		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
-			var matched = k!=v;
+			var matched = p.expression ? v : (k!=v);
 			
-//			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
-//			top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
+//			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression+',p.value='+p.value);
+//			top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression);
 			
 			if (bnot_cond)
 			{
@@ -1806,7 +1806,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 							}
 							else
 							{
-								ok = p.empty ? v : v==x;
+								ok = p.empty || p.expression ? v : v==x;
 							}
 							break;
 						}
@@ -1815,6 +1815,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 				else if (!matched)
 				{
 					ok = not_cond ? null == x : null != x;
+					//ok = not_cond && empty ? (null == x : null != x) : (null != x : null == x);
 				}
 			}
 			if (!ok) break;
@@ -2292,11 +2293,11 @@ Appcelerator.Compiler.getKeyValue = function (value)
 	return Appcelerator.Compiler.formatValue(value,false);
 };
 
-Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
+Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope,isExpression)
 {
 	if (v && typeof(v) == 'string')
 	{
-		if (v.charAt(0)=='$')
+		if (!isExpression && v.charAt(0)=='$')
 		{
 			var varName = v.substring(1);
 			var elem = $(varName);
@@ -2306,7 +2307,7 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 				return Appcelerator.Compiler.getElementValue(elem,true);
 			}
 		}
-        else if(!isNaN(parseFloat(v)))
+        else if(!isExpression && !isNaN(parseFloat(v)))
         {
             //Assume that if they provided a number, they want the number back
             //this is important because in IE window[1] returns the first iframe
@@ -2316,11 +2317,10 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope)
 		{
 			// determine if this is a dynamic javascript
 			// expression that needs to be executed on-the-fly
-
-			var match = Appcelerator.Compiler.expressionRE.exec(v);
+			var match = isExpression || Appcelerator.Compiler.expressionRE.exec(v);
 			if (match)
 			{
-				var expr = match[1];
+				var expr = isExpression ? v : match[1];
 				var func = expr.toFunction();
 				var s = scope || {};
 				if (data)

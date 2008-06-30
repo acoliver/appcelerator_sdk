@@ -18,7 +18,11 @@
 		<td class="test">l:test[foo]</td>
 		<td class="result" on="l:test[foo] then value['failed'] else value['passed']"></td>
 	</tr>
-	<!-- <tr>
+	<tr>
+		<td class="test">l:test[!foo]</td>
+		<td class="result" on="l:test[!foo] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
 		<td class="test">l:test[count>0]</td>
 		<td class="result" on="l:test[count>0] then value['passed'] else value['failed']"></td>
 	</tr>
@@ -122,7 +126,7 @@
 	<tr>
 		<td class="test">l:test[!$duh]</td>
 		<td class="result" on="l:test[!$duh] then value['passed'] else value['failed']"></td>
-	</tr> -->
+	</tr>
 </table>
 
 <input type="hidden" id="foobar" value="100"/>
