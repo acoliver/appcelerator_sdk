@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body>
+
+<h3> AS Flex Flow Widget </h3> 
+<p>
+	These tests exercise the as_flexflow widget
+</p>
+
+<table width="90%">
+    <tr>
+		<td class="test" valign="middle">
+		    Default (Carousel)
+		</td>
+		<td class="result" >
+            <app:as_flexflow property="photos" id="FlexFlowTest1" img_height="200" on="l:show.images.1 then execute or l:select then select" img_width="200">
+            </app:as_flexflow>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		    Cover Flow
+		</td>
+		<td class="result" >
+            <app:as_flexflow property="photos" id="FlexFlowTest2" img_height="200" on="l:show.images.1 then execute or l:select then select" img_width="200" view="cover">
+            </app:as_flexflow>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		    Carousel
+		</td>
+		<td class="result" >
+            <app:as_flexflow property="photos" id="FlexFlowTest3" img_height="200" on="l:show.images.1 then execute or l:select then select" img_width="200" view="carousel">
+            </app:as_flexflow>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		    Vista
+		</td>
+		<td class="result" >
+            <app:as_flexflow property="photos" id="FlexFlowTest4" img_height="200" on="l:show.images.1 then execute or l:select then select" img_width="200" view="vista">
+            </app:as_flexflow>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		    Vertical
+		</td>
+		<td class="result" >
+            <app:as_flexflow property="photos" id="FlexFlowTest5" img_height="200" on="l:show.images.1 then execute or l:select then select"                img_width="200" view="vertical">
+            </app:as_flexflow>
+		</td>
+	</tr>
+</table>
+
+
+<app:script on="l:app.compiled then execute after 500">
+    $MQ('l:show.images.1', {photos: [
+        {'id': 1, 'label': 'Jeff', 'image': '../widgets/app_as_flexflow/doc/jeff.jpg'},
+        {'id': 2, 'label': 'Nolan', 'image': '../widgets/app_as_flexflow/doc/nolan.jpg'},
+        {'id': 3, 'label': 'Matt', 'image': '../widgets/app_as_flexflow/doc/matt.jpg'},
+        {'id': 4, 'label': 'Joe', 'image': '../widgets/app_as_flexflow/doc/joe.jpg'},
+        {'id': 5, 'label': 'Ben', 'image': '../widgets/app_as_flexflow/doc/ben.jpg'}
+    ]});
+</app:script>
+</body>
+</html>

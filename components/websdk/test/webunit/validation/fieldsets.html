@@ -212,10 +212,10 @@
 
 </table>
 <app:script on="l:submit.form then execute">
-alert(this.data);
+alert(Object.toJSON(this.data));
 </app:script>
 <app:script on="l:submit.form2 then execute">
-alert(this.data);
+alert(Object.toJSON(this.data));
 </app:script>
 
 </body>

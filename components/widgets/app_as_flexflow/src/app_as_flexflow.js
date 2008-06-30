@@ -81,6 +81,12 @@ Appcelerator.Widget.AppAsFlexflow =
 			type: T.identifier,
             description: "The name of the property in the passed in array that contains the list of photos"
         }, {
+            name: 'view',
+            optional: true,
+            type: T.enumeration('vertical', 'vista', 'cover', 'carousel'),
+            defaultValue: 'carousel',
+            description: "The presentation view of the flex flow" 
+        }, {
             name: 'click_message',
             optional: true,
 			type: Appcelerator.Types.messageSend,
@@ -90,13 +96,13 @@ Appcelerator.Widget.AppAsFlexflow =
             optional: true,
 			type: Appcelerator.Types.naturalNumber,
 			defaultValue: 300,
-            description: "Then name of the message sent when the flex flow is clicked"
+            description: "The height of the images in the flex flow"
         }, {
              name: 'img_width',
             optional: true,
 			type: Appcelerator.Types.naturalNumber,
 			defaultValue: 300,
-            description: "Then name of the message sent when the flex flow is clicked"
+            description: "The width of the images in the flex flow"
         }, {
             name: 'label_position',
             optional: true,
@@ -176,9 +182,8 @@ Appcelerator.Widget.AppAsFlexflow =
             bridge.setBgColor(0x000000);
             bridge.setMaxImageWidth(parameters['img_width']);
             bridge.setMaxImageHeight(parameters['img_height']); 
-            
-            bridge.getCfc().addEventListener("click", function() {
-                var index = bridge.getCfc().getSelectedIndex();
+            bridge.getFlowWidget().addEventListener("click", function() {
+                var index = bridge.getFlowWidget().getSelectedIndex();
                 var data = Appcelerator.Widget.AppAsFlexflow.flows[id][index];
                 data.index = index;
 				$(id + "_label").innerHTML = data.label;
@@ -203,7 +208,15 @@ Appcelerator.Widget.AppAsFlexflow =
 	        parameters['click_message'] = "l:" + id + "_click";
 	    }
 	    
-	    var box_height = parseInt(parameters['img_height']) + 100;
+	    var view = parameters['view'];
+	    var box_height;
+	    
+	    if(view == 'vertical') {
+	        box_height = parseInt(parameters['img_height']) * 2;
+	    } else {    
+	        box_height = parseInt(parameters['img_height']) + 100;
+	    }
+	    
 		var html = [];
 		html.push('<div style="position:relative; background-color: black;" id="' + id + '">');
 		
@@ -218,7 +231,7 @@ Appcelerator.Widget.AppAsFlexflow =
         html.push('id="flow_object_' + element.id + '" width="100%" height="' + box_height + '"');
         html.push('codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">');
         html.push('  <param name="movie" value="' + Appcelerator.WidgetPath + 'app_as_flexflow/swf/FlexFlow.swf" />');
-        html.push('  <param name="flashvars" value="bridgeName=' + bridge_name + '"/>');
+        html.push('  <param name="flashvars" value="bridgeName=' + bridge_name + '&flowName=' + view + '"/>');
         html.push('  <param name="quality" value="high" />');
         html.push('  <param name="allowScriptAccess" value="sameDomain" />');
         html.push('  <param name="wmode" value="transparent" />');
@@ -232,7 +245,7 @@ Appcelerator.Widget.AppAsFlexflow =
         html.push('    allowScriptAccess="sameDomain"');
         html.push('    type="application/x-shockwave-flash"');
         html.push('    pluginspage="http://www.adobe.com/go/getflashplayer" ');
-        html.push('    flashvars="bridgeName=' + bridge_name + '">');
+        html.push('    flashvars="bridgeName=' + bridge_name + '&flowName=' + view + '">');
         html.push('  </embed>');
         html.push('</object>');
         
