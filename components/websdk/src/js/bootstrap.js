@@ -120,8 +120,29 @@ Appcelerator.Parameters = $H({});
 	        }
 	    }
 	}
-
-	if (!jsFileLocation)
+	if (jsFileLocation)
+	{
+		if (!baseHref)
+		{
+			var hostIdx = jsFileLocation.indexOf('://');
+			if (hostIdx > 0)
+			{
+				var jsHostPath = jsFileLocation.substring(hostIdx + 3, jsFileLocation.indexOf('/',hostIdx + 4));
+				var docIdx = Appcelerator.DocumentPath.indexOf('://');
+				if (docIdx > 0)
+				{
+					var docHostPath = Appcelerator.DocumentPath.substring(docIdx + 3, Appcelerator.DocumentPath.indexOf('/',docIdx+4));
+					if (docHostPath == jsHostPath)
+					{
+						// if on the same host then always prefer the JS location (one directory up) as the base href
+						// such that we can have multiple content directories that include the JS relatively from the top
+						Appcelerator.DocumentPath = jsFileLocation.substring(0,jsFileLocation.lastIndexOf('/')) + '/../'
+					}
+				}
+			}
+		}
+	}
+	else
 	{
 		Appcelerator.ScriptNotFound = true;
 	}
