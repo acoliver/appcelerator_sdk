@@ -1744,7 +1744,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
     		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
 			var matched = k!=v;
 			
-//			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
+			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
 //			top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty);
 			
 			if (bnot_cond)
@@ -1814,7 +1814,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 				}
 				else if (!matched)
 				{
-					ok = not_cond ? null != x : null == x;
+					ok = not_cond ? null == x : null != x;
 				}
 			}
 			if (!ok) break;
