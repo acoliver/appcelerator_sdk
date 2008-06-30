@@ -32,7 +32,7 @@ Appcelerator.Widget.Content =
 	},
 	getVersion: function()
 	{
-		return '1.0.1';
+		return '1.0.2';
 	},
 	getSpecVersion: function()
 	{
@@ -77,7 +77,7 @@ Appcelerator.Widget.Content =
 				 description: "Fire this message when content file is fetched but before being loaded."},
  				{name: 'property', optional: true, type: T.messageSend,
  				 description: "The name of the property in the message payload to be used for the src"},
-				{name:'useframe', optional: true, type: T.bool, 
+				{name:'useframe', optional: true, defaultValue: 'true', type: T.bool, 
 				 description: "Use a hidden iframe when fetching the content, instead of an Ajax request. This is normally not required."}
 		];
 	},
@@ -124,7 +124,7 @@ Appcelerator.Widget.Content =
         target = $(target);
         target.style.visibility='hidden';
 
-		if (!useframe)
+		if (useframe != 'true')
 		{
 			new Ajax.Request(src,
 			{
