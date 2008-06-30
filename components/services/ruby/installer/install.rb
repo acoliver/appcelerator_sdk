@@ -89,7 +89,7 @@ module Appcelerator
         missing_gems << 'rails'
       end
       if missing_gem? 'json' and missing_gem? 'json_pure'
-        if RUBY_PLATFORM =~ /(windows|win32)/
+        if RUBY_PLATFORM =~ /(windows|win32)/ or system 'gcc' == false
           missing_gems << 'json_pure'
         else
           missing_gems << 'json'
@@ -100,6 +100,11 @@ module Appcelerator
       end
       
       if not missing_gems.empty?
+        
+        if RUBY_PLATFORM =~ /darwin/ and missing_gems.include? 'sqlite3-ruby' and system 'gcc' == false
+          die 'Rails backend requires Apple Developer Tools ( http://developer.apple.com/technology/xcode.html )'
+        end
+        
         STDERR.puts 'Rails, json, and sqlite3 must be installed to create a project.'
         if not OPTIONS[:quiet] and confirm 'Install dependencies now? [Yn]',true,false,'y'
           
