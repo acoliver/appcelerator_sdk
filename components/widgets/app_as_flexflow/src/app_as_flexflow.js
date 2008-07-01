@@ -158,7 +158,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	        } 
 	        
 	        if(selected != -1) {
-	            bridge.getCfc().setSelectedIndex(i);
+	            bridge.getFlowWidget().setSelectedIndex(i);
 	            var data = covers[i];
                 data.index = i;
                 $MQ(id + "_select", data);
