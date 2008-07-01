@@ -88,28 +88,12 @@ Appcelerator.Compiler.registerCustomAction('effect',
 	{
 		if (params && params.length > 0)
 		{
-			var options = '';
+			var options = {};
 			var target=id
 
 			// split first param to get effect name
 			var arg1= params[0].key.split(",");
 			var effectName = arg1[0];
-
-			// get first option if exists
-			if (arg1.length>1)
-			{
-				// if option is id, set target element for effect
-				if (arg1[1] == "id")
-				{
-					target = params[0].value;
-				}
-				// otherwise, its an effect option
-				else
-				{
-					options += arg1[1] + ":'" + params[0].value + "'";
-					options += (params.length>1)?',':'';
-				}
-			}
 
 			// get remaining options
 			if (params.length > 1)
@@ -124,12 +108,11 @@ Appcelerator.Compiler.registerCustomAction('effect',
 					// otherwise, its an effect option
 					else
 					{
-						options += params[c].key + ":'" + params[c].value + "'";
-						options += (c!=params.length-1)?',':'';
+					    options[params[c].key] = eval(params[c].value);
 					}
 				}
 			}
-
+			
 			// format/validate effect name
 			effectName = effectName.dasherize().camelize();
 		  	effectName = effectName.charAt(0).toUpperCase() + effectName.substring(1);
@@ -138,7 +121,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 				throw "syntax error: unsupported effect type: "+effectName;
 			}
 
-			Element.visualEffect(target,effectName,("{"+options+"}").evalJSON());
+			Element.visualEffect(target,effectName,options);
 		}
 		else
 		{
