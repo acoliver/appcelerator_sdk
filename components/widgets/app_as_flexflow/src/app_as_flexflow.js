@@ -22,7 +22,7 @@ Appcelerator.Widget.AppAsFlexflow =
 	 */
 	getVersion: function()
 	{
-		return "1.0.3";
+		return "1.0.4";
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the
@@ -103,6 +103,18 @@ Appcelerator.Widget.AppAsFlexflow =
 			type: Appcelerator.Types.naturalNumber,
 			defaultValue: 300,
             description: "The width of the images in the flex flow"
+        }, {
+            name: 'box_height',
+            optional: true,
+			type: Appcelerator.Types.naturalNumber,
+			defaultValue: -1,
+            description: "The height of the Flash box containing the flex flow"
+        }, {
+             name: 'box_width',
+            optional: true,
+			type: Appcelerator.Types.naturalNumber,
+			defaultValue: "100%",
+            description: "The width of the Flash box containing the flex flow"
         }, {
             name: 'label_position',
             optional: true,
@@ -209,13 +221,15 @@ Appcelerator.Widget.AppAsFlexflow =
 	    }
 	    
 	    var view = parameters['view'];
-	    var box_height;
-	    
-	    if(view == 'vertical') {
+
+	    var box_height = parameters['box_height'];
+	    if(box_height == -1 && view == 'vertical') {
 	        box_height = parseInt(parameters['img_height']) * 2;
-	    } else {    
+	    } else if (box_height == -1) {    
 	        box_height = parseInt(parameters['img_height']) + 100;
 	    }
+
+	    var box_width = parameters['box_width'];
 	    
 		var html = [];
 		html.push('<div style="position:relative; background-color: black;" id="' + id + '">');
@@ -228,7 +242,7 @@ Appcelerator.Widget.AppAsFlexflow =
 		}
 		
 		html.push('<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"');
-        html.push('id="flow_object_' + element.id + '" width="100%" height="' + box_height + '"');
+        html.push('id="flow_object_' + element.id + '" width="' + box_width + '" height="' + box_height + '"');
         html.push('codebase="http://fpdownload.macromedia.com/get/flashplayer/current/swflash.cab">');
         html.push('  <param name="movie" value="' + Appcelerator.WidgetPath + 'app_as_flexflow/swf/FlexFlow.swf" />');
         html.push('  <param name="flashvars" value="bridgeName=' + bridge_name + '&flowName=' + view + '"/>');
@@ -236,7 +250,7 @@ Appcelerator.Widget.AppAsFlexflow =
         html.push('  <param name="allowScriptAccess" value="sameDomain" />');
         html.push('  <param name="wmode" value="transparent" />');
         html.push('  <embed src="' + Appcelerator.WidgetPath + 'app_as_flexflow/swf/FlexFlow.swf" quality="high"');
-        html.push('    width="100%" height="' + box_height + '" name="' + bridge_name + '" ');
+        html.push('    width="' + box_width + '" height="' + box_height + '" name="' + bridge_name + '" ');
         html.push('    align="middle"');
         html.push('    play="true"');
         html.push('    wmode="transparent"');
