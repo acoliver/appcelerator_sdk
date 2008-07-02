@@ -1,0 +1,58 @@
+.tabpanel_green_hdr
+{
+	display:block;
+	float:left;
+	height:27px;
+	position:relative;
+	left:15px;
+	margin-right:3px;
+	padding:3px 3px 0pt 0pt;
+	text-align:center;
+	width:88px;
+	line-height:23px;
+	background:transparent url(tab_normal.png) no-repeat scroll left top;
+	font-size:12px;
+	font-weight:bold;
+	color:#555;
+	cursor:pointer;
+}
+.tabpanel_green_hdr_active
+{
+	background:transparent url(tab_focus.png) no-repeat scroll left top;
+	color:white;
+}
+
+.tabpanel_green_hdr:hover
+{
+	background:transparent url(tab_focus.png) no-repeat scroll left top;
+	color:white;
+	
+}
+.tabpanel_green_tl
+{
+	
+}
+.tabpanel_green_tl_active
+{
+	
+}
+
+.tabpanel_green_tr
+{
+	
+}
+.tabpanel_green_tr_active
+{
+	
+}
+
+
+.tabpanel_green_divider
+{
+	height:2px;
+	background-color:#15cd00;
+	clear:both;
+	position:relative;
+	top:-5px;
+	border-bottom:1px solid #a1df71
+}

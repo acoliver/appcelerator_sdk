@@ -369,13 +369,16 @@ Appcelerator.Compiler.checkLoadState = function (state)
 		if (typeof(state.onfinish)=='function')
 		{
 			state.onfinish(code);
+			return true;
 		}
 
 		if (typeof(state.onafterfinish)=='function')
 		{
 			state.onafterfinish();
+			return true;
 		}
 	}
+	return false;
 };
 
 /**
@@ -540,6 +543,8 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
         element.compiled = 1;
     }
 
+	element.state = state;
+
 	var name = Appcelerator.Compiler.getTagname(element);
 	if (name.indexOf(':')>0)
 	{
@@ -557,27 +562,25 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	{
 		Appcelerator.Compiler.delegateToAttributeListeners(element);
 
-		if (recursive)
+		if (recursive && !element.stopCompile)
         {
-			if (element.nodeName.toLowerCase() != 'textarea')
-			{
-				var elementChildren = [];
-				for (var i = 0, length = element.childNodes.length; i < length; i++)
-				{
-				    if (element.childNodes[i].nodeType == 1)
-				    {
-			    	     elementChildren.push(element.childNodes[i]);
-			    	}
-				}
-				for (var i=0,len=elementChildren.length;i<len;i++)
-				{
-	                Appcelerator.Compiler.compileElement(elementChildren[i],state);
-				}
-			}
+			Appcelerator.Compiler.compileElementChildren(element);
+			element.state = null;
 		}
 	}
 };
 
+Appcelerator.Compiler.compileElementChildren = function(element)
+{
+	if (element.nodeName.toLowerCase() != 'textarea')
+	{
+		var elementChildren = Appcelerator.Compiler.getElementChildren(element);
+		for (var i=0,len=elementChildren.length;i<len;i++)
+		{
+            Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
+		}
+	}
+};
 Appcelerator.Compiler.getElementChildren = function (element)
 {
     var elementChildren = [];

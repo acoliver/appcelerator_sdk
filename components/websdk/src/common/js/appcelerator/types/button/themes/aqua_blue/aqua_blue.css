@@ -1,0 +1,66 @@
+.button_aqua_blue
+{
+	border:none;
+	cursor:pointer;
+	background-color:transparent;
+	clear:both;
+}
+
+.button_aqua_blue_left
+{
+	background:url(left.png);
+	height:24px;
+	width:12px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(left.gif);
+	
+}
+
+.button_aqua_blue_middle
+{
+	background:url(middle.png) repeat-x;
+	height:24px;
+	line-height:24px;
+	text-align:middle;
+	color:#000;
+	font-size:12px;
+	float:left;
+	padding-left:5px;
+	padding-right:5px;
+	
+	/* IE6 HACK */
+	_background:url(middle.gif) repeat-x;
+	_line-height:23px;
+	*line-height:23px;
+	
+}
+
+.button_aqua_blue_right
+{
+	background:url(right.png);
+	height:24px;
+	width:12px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(right.gif);
+	
+}
+
+.button_aqua_blue_left_disabled
+{
+	opacity:0.6;
+}
+
+.button_aqua_blue_middle_disabled
+{
+	opacity:0.6;
+	
+}
+
+.button_aqua_blue_right_disabled
+{
+	opacity:0.6;	
+}

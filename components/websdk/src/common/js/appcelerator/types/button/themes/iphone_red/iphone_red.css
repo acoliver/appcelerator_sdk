@@ -1,0 +1,75 @@
+.button_iphone_red
+{
+	border:none;
+	cursor:pointer;
+	background-color:transparent;
+}
+
+.button_iphone_red_left
+{
+	background:url(left.png);
+	height:48px;
+	width:16px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(left.gif);
+	
+}
+
+.button_iphone_red_middle
+{
+	background:url(middle.png) repeat-x;
+	height:48px;
+	line-height:48px;
+	text-align:middle;
+	color:white;
+	font-size:14px;
+	font-weight:bold;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(middle.gif) repeat-x;
+	
+}
+
+.button_iphone_red_right
+{
+	background:url(right.png);
+	height:48px;
+	width:16px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(right.gif);
+	
+}
+
+.button_iphone_red_left_disabled
+{
+	background:url(left_disabled.png);
+
+	/* IE6 HACK */
+	_background:url(left_disabled.gif);
+	
+}
+
+.button_iphone_red_middle_disabled
+{
+	background:url(middle_disabled.png) repeat-x;
+
+	color:#888;
+
+	/* IE6 HACK */
+	_background:url(middle_disabled.gif) repeat-x;
+	
+}
+
+.button_iphone_red_right_disabled
+{
+	background:url(right_disabled.png);
+	
+	/* IE6 HACK */
+	_background:url(right_disabled.gif);
+	
+}

@@ -1,0 +1,42 @@
+.button_itunes_back
+{
+	border:none;
+	cursor:pointer;
+	background-color:transparent;
+	width:27px;
+	
+}
+
+.button_itunes_back_left
+{
+	
+}
+
+.button_itunes_back_middle
+{
+	background:url(back.gif) no-repeat;
+	height:18px;
+	width:26px;
+	border-right:1px solid #303030;
+	
+}
+
+.button_itunes_back_right
+{
+}
+
+.button_itunes_back_left_disabled
+{
+}
+
+.button_itunes_back_middle_disabled
+{
+	background:url(back-disabled.gif) no-repeat;
+	height:18px;
+	width:26px;
+	border-right:1px solid #303030;
+	
+}
+
+.button_itunes_back_right_disabled
+{

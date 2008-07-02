@@ -1,0 +1,67 @@
+.panel_shaded_white
+{
+	position:relative;
+	background:url(overlay.png) no-repeat;
+	display:block;
+	height:130%;
+	left:4.44%;
+	overflow:visible;
+	top:-8.9%;
+	width:109%;
+	z-index:0;
+
+}
+.panel_shaded_white_hdr
+{
+}
+.panel_shaded_white_tl
+{
+}
+
+
+.panel_shaded_white_title
+{
+	
+}
+.panel_shaded_white_tr
+{
+}
+
+.panel_shaded_white_btm
+{
+
+}
+.panel_shaded_white_bl
+{
+}
+.panel_shaded_white_br
+{
+
+}
+
+.panel_shaded_white_btm_text
+{
+}
+
+.panel_shaded_white_close 
+{ 
+	cursor:pointer;
+	background:url(close.png);
+	height:15px;
+	position:absolute;
+	right:10px;
+	top:5px;
+	width:20px;
+
+
+} 
+
+.panel_shaded_white_close:hover
+{ 
+}
+
+.panel_shaded_white_body
+{
+		
+}
+

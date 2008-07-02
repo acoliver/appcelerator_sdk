@@ -1,0 +1,85 @@
+.tabpanel_white
+{
+	position:relative;
+}
+.tabpanel_white_hdr
+{
+	background:#fff url(top_grey.png) repeat-x;
+	bottom:0pt;
+	height:22px;
+	float:left;
+	position:relative;
+	left:15px;
+	position:relative;
+	width:100px;
+	color:#666;
+	font-size:13px;
+	text-align:center;
+	line-height:20px;
+	cursor:pointer;
+	margin-right:20px;
+	margin-left:20px;
+
+}
+.tabpanel_white_hdr_active
+{
+	background:#fff url(top_white.png) repeat-x;
+	height:22px;
+	color:#555;
+	font-weight:bold;
+	margin-right:20px;
+	margin-left:20px;
+}
+
+.tabpanel_white_hdr:hover
+{
+	
+}
+.tabpanel_white_tl
+{
+	background:url(tl_grey.png) no-repeat;
+	width:8px;
+	height:22px;
+	position:absolute;
+	left:0pt;
+	top:0pt;
+}
+.tabpanel_white_tl_active
+{
+	background:url(tl_white.png) no-repeat;
+	height:8px;
+	width:23px;
+	position:absolute;
+	left:0pt;
+	top:0pt;
+
+}
+
+.tabpanel_white_tr
+{
+	background:url(tr_grey.png) no-repeat;
+	width:8px;
+	height:22px;
+	position:absolute;
+	right:0pt;
+	top:0pt;
+	
+}
+.tabpanel_white_tr_active
+{
+	background:url(tr_white.png) no-repeat;
+	height:8px;
+	width:23px;
+	position:absolute;
+	left:0pt;
+	top:0pt;
+
+}
+
+
+.tabpanel_white_divider
+{
+	height:1px;
+	background-color:#d7dcdf;
+	clear:both;
+}

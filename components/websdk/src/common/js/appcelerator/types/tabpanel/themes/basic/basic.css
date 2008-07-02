@@ -1,0 +1,58 @@
+.tabpanel_basic_hdr
+{
+	display:block;
+	float:left;
+	height:18px;
+	position:relative;
+	left:15px;
+	
+	margin-right:3px;
+	padding:3px 3px 0pt 0pt;
+	text-align:center;
+	width:88px;
+	background-color:#f4f4f4;
+	border:1px solid #ccc;
+	border-bottom:none;
+	margin-bottom:-1px;
+	font-size:12px;
+	font-weight:bold;
+	color:#666;
+	cursor:pointer;
+	
+}
+.tabpanel_basic_hdr:hover
+{
+	background-color:white;
+	border-bottom:1px solid #fff;
+	
+}
+
+.tabpanel_basic_hdr_active
+{
+	background-color:white;
+	border-bottom:1px solid #fff;
+}
+
+.tabpanel_basic_tl
+{
+	
+}
+.tabpanel_basic_tr
+{
+	
+}
+.tabpanel_basic_tl_active
+{
+	
+}
+.tabpanel_basic_tr_active
+{
+	
+}
+
+.tabpanel_basic_divider
+{
+	height:1px;
+	border-top:1px solid #ccc;
+	clear:both;
+}

@@ -1,0 +1,63 @@
+.button_aqua_grey
+{
+	border:none;
+	cursor:pointer;
+	background-color:transparent;
+}
+
+.button_aqua_grey_left
+{
+	background:url(left.png);
+	height:24px;
+	width:12px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(left.gif);
+	
+}
+
+.button_aqua_grey_middle
+{
+	background:url(middle.png) repeat-x;
+	height:24px;
+	line-height:24px;
+	text-align:middle;
+	color:#000;
+	font-size:12px;
+	float:left;
+	padding-left:5px;
+	padding-right:5px;
+	
+	/* IE6 HACK */
+	_background:url(middle.gif) repeat-x;
+	
+}
+
+.button_aqua_grey_right
+{
+	background:url(right.png);
+	height:24px;
+	width:12px;
+	float:left;
+	
+	/* IE6 HACK */
+	_background:url(right.gif);
+	
+}
+
+.button_aqua_grey_left_disabled
+{
+	opacity:0.6;
+}
+
+.button_aqua_grey_middle_disabled
+{
+	opacity:0.6;
+	
+}
+
+.button_aqua_grey_right_disabled
+{
+	opacity:0.6;	
+}
