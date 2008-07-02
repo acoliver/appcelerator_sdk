@@ -1878,7 +1878,8 @@ Appcelerator.Compiler.parameterRE = /(.*?)\[(.*)?\]/i;
 Appcelerator.Compiler.expressionRE = /^expr\((.*?)\)$/;
 
 Appcelerator.Compiler.customActions = {};
-Appcelerator.Compiler.registerCustomAction = function(name,callback)
+Appcelerator.Compiler.customElementActions = {};
+Appcelerator.Compiler.registerCustomAction = function(name,callback,element)
 {
 	//
 	// create a wrapper that will auto-publish events for each
@@ -1900,7 +1901,14 @@ Appcelerator.Compiler.registerCustomAction = function(name,callback)
 	{
 		action.parseParameters = callback.parseParameters;
 	}
-	Appcelerator.Compiler.customActions[name] = action;
+	if (!element)
+	{
+    	Appcelerator.Compiler.customActions[name] = action;
+	}
+	else
+	{
+    	Appcelerator.Compiler.customElementActions[name] = action;
+	}
 };
 
 Appcelerator.Compiler.properCase = function (value)
@@ -2020,7 +2028,11 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     		}
     		else
     		{
-    			var builder = Appcelerator.Compiler.customActions[action];
+    		    var builder = Appcelerator.Compiler.customElementActions[action];
+                if (!builder)
+                {
+        			builder = Appcelerator.Compiler.customActions[action];
+                }
     			if (!builder)
     			{
     				throw "syntax error: unknown action: "+action+" for "+id;

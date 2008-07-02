@@ -454,29 +454,6 @@ Appcelerator.Compiler.findParameter = function(params,key)
 	return null;
 }
 
-Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkenabled,scope)
-{
-	var target = Appcelerator.Compiler.findParameter(params,'id') || id;
-	if (checkenabled)
-	{
-	    try
-	    {
-	        var e = $(target);
-	        if (e && !e.disabled && Element.showing(e))
-	        {
-	            Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
-	        }
-	    }
-	    catch (xxx_)
-	    {
-        }
-	}
-	else
-	{
-        Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
-	}
-};
-
 Appcelerator.Compiler.registerCustomAction('selectOption',
 {
 	execute: function(id,action,params,scope)
@@ -958,6 +935,29 @@ Appcelerator.Compiler.registerCustomAction('bind',
 	}
 });
 
+Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkenabled,scope)
+{
+	var target = Appcelerator.Compiler.findParameter(params,'id') || id;
+	if (checkenabled)
+	{
+	    try
+	    {
+	        var e = $(target);
+	        if (e && !e.disabled && Element.showing(e))
+	        {
+	            Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
+	        }
+	    }
+	    catch (xxx_)
+	    {
+        }
+	}
+	else
+	{
+        Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
+	}
+};
+
 var GenericActionFunction = Class.create();
 Object.extend(GenericActionFunction.prototype,
 {
@@ -1002,4 +1002,11 @@ Appcelerator.Compiler.buildCustomAction = function (name)
 		var f = new GenericActionFunction(false, true);
 		Appcelerator.Compiler.registerCustomAction(name,f);
 	}
+};
+
+Appcelerator.Compiler.buildCustomElementAction = function (name, element, callback)
+{
+    var f = new GenericActionFunction(false, true);
+    Appcelerator.Compiler.registerCustomAction(name, f, element);
+    Appcelerator.Compiler.attachFunction(element.id, name, callback);
 };
