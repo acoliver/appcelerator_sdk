@@ -86,7 +86,7 @@ module Appcelerator
       has_gcc = false
       if not RUBY_PLATFORM =~ /(windows|win32)/
         begin
-          system('gcc')
+          system('gcc &> /dev/null')
           has_gcc = $?.exitstatus != 127
         rescue
         end
