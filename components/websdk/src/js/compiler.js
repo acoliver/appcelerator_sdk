@@ -1143,7 +1143,6 @@ Appcelerator.Compiler.executeFunction = function(element,name,args,required)
  * @param {name} name of the widget which can override what the element actually is
  * @return {string} compiled code or null if none generated
  */
-Appcelerator.Compiler.customConditionsForWidget = [];
 Appcelerator.Compiler.customConditionObservers = {};
 
 Appcelerator.Compiler.compileWidget = function(element,state,name)
@@ -1228,15 +1227,12 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
         {
             Appcelerator.Compiler.customConditionObservers[id] = {};
             var customConditions = module.getConditions();
-            Appcelerator.Compiler.customConditionsForWidget.clear();
             for(var i = 0; i < customConditions.length; i++)
             {
                 var custCond = customConditions[i];
-                Appcelerator.Compiler.customConditionsForWidget.push(
-                {
-                    'name': custCond,
-                    'func': Appcelerator.Compiler.widgetCustomFunctionCallback(custCond)
-                });
+                var condFunct = Appcelerator.Compiler.widgetCustomFunctionCallback(custCond);
+                Appcelerator.Compiler.registerCustomCondition({conditionNames: [custCond]}, 
+                    condFunct, element.id);
             }
         }
 
@@ -1254,7 +1250,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
         {
             Appcelerator.Compiler.parseOnAttribute(element);
         }
-
+        
 		//
 		// hand off widget for building
 		//
@@ -1485,7 +1481,7 @@ Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
         var actionParams = Appcelerator.Compiler.parameterRE.exec(condition);
         var type = (actionParams ? actionParams[1] : condition);
         var params = actionParams ? actionParams[2] : null;
-        if(type == custCond)
+        if (type == custCond)
         {
             var entry =
             {
@@ -1496,7 +1492,7 @@ Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
                 'params': params
             }
 
-            if(Appcelerator.Compiler.customConditionObservers[id][custCond])
+            if (Appcelerator.Compiler.customConditionObservers[id][custCond])
             {
                 Appcelerator.Compiler.customConditionObservers[id][custCond].push(entry);
             }
@@ -1835,11 +1831,19 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
  * until one of them successfully parses the condition and returns true.
  */
 Appcelerator.Compiler.customConditions = [];
+Appcelerator.Compiler.customElementConditions = [];
 
-Appcelerator.Compiler.registerCustomCondition = function(metadata, condition)
+Appcelerator.Compiler.registerCustomCondition = function(metadata, condition, elementid)
 {
 	condition.metadata = metadata;
-	Appcelerator.Compiler.customConditions.push(condition);
+	if (!elementid)
+	{
+    	Appcelerator.Compiler.customConditions.push(condition);
+	}
+	else
+	{
+    	Appcelerator.Compiler.customElementConditions.push({elementid: elementid, condition: condition});
+	}
 };
 
 Appcelerator.Compiler.handleCondition = function(clause)
@@ -1848,14 +1852,18 @@ Appcelerator.Compiler.handleCondition = function(clause)
     $D('handleCondition called for ',element);
 
     //first loop through custom conditions defined by the widget
-    for (var f=0;f<Appcelerator.Compiler.customConditionsForWidget.length;f++)
+    for (var f=0;f<Appcelerator.Compiler.customElementConditions.length;f++)
     {
-        var condFunction = Appcelerator.Compiler.customConditionsForWidget[f].func;
-        var processed = condFunction.apply(condFunction,clause);
- 		if (processed)
- 		{
- 			return true;
- 		}
+        var cond = Appcelerator.Compiler.customElementConditions[f];
+        if (cond.elementid == element.id)
+        {
+            var condFunction = cond.condition;
+            var processed = condFunction.apply(condFunction,clause);
+     		if (processed)
+     		{
+     			return true;
+     		}
+        }
     }
 
 	for (var f=0;f<Appcelerator.Compiler.customConditions.length;f++)
