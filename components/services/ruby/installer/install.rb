@@ -83,27 +83,28 @@ module Appcelerator
     end
     
     def get_rails_gem
+      has_gcc = false
+      if not RUBY_PLATFORM =~ /(windows|win32)/
+        begin
+          system('gcc')
+          has_gcc = $?.exitstatus != 127
+        rescue
+        end
+      end
+
       missing_gems = []
       
       if missing_gem? 'rails'
         missing_gems << 'rails'
       end
-      if missing_gem? 'json' and missing_gem? 'json_pure'
-        if RUBY_PLATFORM =~ /(windows|win32)/ or system 'gcc' == false
-          missing_gems << 'json_pure'
-        else
-          missing_gems << 'json'
-        end
+      if missing_gem? 'json' and has_gcc
+        missing_gems << 'json'
       end
-      if missing_gem? 'sqlite3-ruby'
+      if missing_gem? 'sqlite3-ruby' and has_gcc
         missing_gems << 'sqlite3-ruby'
       end
       
       if not missing_gems.empty?
-        
-        if RUBY_PLATFORM =~ /darwin/ and missing_gems.include? 'sqlite3-ruby' and system 'gcc' == false
-          die 'Rails backend requires Apple Developer Tools ( http://developer.apple.com/technology/xcode.html )'
-        end
         
         STDERR.puts 'Rails, json, and sqlite3 must be installed to create a project.'
         if not OPTIONS[:quiet] and confirm 'Install dependencies now? [Yn]',true,false,'y'
@@ -120,6 +121,14 @@ module Appcelerator
             if not system(cmd)
               die "Unable to install required ruby gems"
             end
+          end
+          
+          if RUBY_PLATFORM =~ /darwin/ and missing_gems.include? 'sqlite3-ruby' and not has_gcc
+            puts 'Rails backend requires Apple Developer Tools ( http://developer.apple.com/technology/xcode.html )'
+          end
+          
+          if missing_gem? 'json'
+            puts 'Before running your Rails project, you must install json gem by doing \'gem install json\'.'
           end
           
           die 'Dependencies installed, please re-run your command'
