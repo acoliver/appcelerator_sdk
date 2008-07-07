@@ -50,6 +50,10 @@ Appcelerator.Module={};
 Appcelerator.Widget={};
 Appcelerator.Shortcuts={}; // please do not touch this
 
+Appcelerator.started = new Date;
+Appcelerator.loadTime = -1;
+Appcelerator.compileTime = -1;
+
 Appcelerator.Version = 
 {
 	major: parseInt('${version.major}'),
@@ -203,6 +207,8 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isPrism = Appcelerator.Browser.isMozilla && ua.indexOf('prism/') > 0;
     Appcelerator.Browser.isIceweasel = Appcelerator.Browser.isMozilla && ua.indexOf('iceweasel') > 0;
     Appcelerator.Browser.isEpiphany = Appcelerator.Browser.isMozilla && ua.indexOf('epiphany') > 0;
+	Appcelerator.Browser.isFluid = (window.fluid==undefined) != null;
+	Appcelerator.Browser.isGears = (window.google && google.gears) != null;
     
 	Appcelerator.Browser.isWindows = false;
 	Appcelerator.Browser.isMac = false;
