@@ -1,23 +1,15 @@
-.button_itunes_back
-{
-	border:none;
-	cursor:pointer;
-	background-color:transparent;
-	width:27px;
-	
-}
-
 .button_itunes_back_left
 {
-	
 }
 
 .button_itunes_back_middle
 {
 	background:url(back.gif) no-repeat;
+	text-align:center;
 	height:18px;
-	width:26px;
-	border-right:1px solid #303030;
+	width:30px;
+	border:0px none;
+	
 	
 }
 
@@ -33,10 +25,10 @@
 {
 	background:url(back-disabled.gif) no-repeat;
 	height:18px;
-	width:26px;
-	border-right:1px solid #303030;
+	width:30px;
 	
 }
 
 .button_itunes_back_right_disabled
 {
+}

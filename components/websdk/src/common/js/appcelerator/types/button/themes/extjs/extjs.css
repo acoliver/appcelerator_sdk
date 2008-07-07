@@ -1,49 +1,49 @@
-.button_extjs
-{
-	border:none;
-	cursor:pointer;
-	background-color:transparent;
-}
-
 .button_extjs_left
 {
-	background:url(left.png);
+	position:relative;
+	background:transparent url(left.png) no-repeat;
 	height:21px;
 	width:6px;
-	float:left;
-	
-	/* IE6 HACK */
-	_background:url(left.gif);
-	
+
+	/* browser specific positioning */
+	top:6px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
 }
 
 .button_extjs_middle
 {
 	background:url(middle.png) repeat-x;
 	height:21px;
-	line-height:21px;
-	text-align:middle;
-	color:#111;
+	border:0px none;
+	margin-left:-1px;
+	margin-right:-1px;
 	font-size:12px;
-	float:left;
-	padding-left:5px;
-	padding-right:5px;
+	padding-bottom:2px;
 	
-	/* IE6 HACK */
-	_background:url(middle.gif) repeat-x;
+	/* IE padding */
+	_padding-bottom:0px;
 	
 }
 
 .button_extjs_right
 {
-	background:url(right.png);
+	position:relative;
+	background:transparent url(right.png) no-repeat;
 	height:21px;
 	width:6px;
-	float:left;
+
+	/* browser specific positioning */
+	top:6px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
 	
-	/* IE6 HACK */
-	_background:url(right.gif);
-	
+}
+
+/* FF Specific Styles for left and right image */
+.button_extjs_geckofix
+{
+	top:6px;
 }
 
 .button_extjs_left_disabled
@@ -54,9 +54,7 @@
 .button_extjs_middle_disabled
 {
 	opacity:0.6;
-	
 }
-
 .button_extjs_right_disabled
 {
 	opacity:0.6;	

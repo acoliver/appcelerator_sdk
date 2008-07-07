@@ -65,7 +65,7 @@ Appcelerator.UI.registerUIComponent('type','select',
 		        }
 		        if (rowData)
 		        {
-					html += '<div id="'+id+'_combo_'+c+'" class="select_'+Appcelerator.UI.ContainerManager.select.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_value[value='+rowData.text+'] or mouseover then add[class=select_'+Appcelerator.UI.ContainerManager.select.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+Appcelerator.UI.ContainerManager.select.activeThemes[id]+'_dropdown_hover]">'+rowData.text+'</div>';
+					html += '<div id="'+id+'_combo_'+c+'" class="select_'+this.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_value[value='+rowData.text+'] or mouseover then add[class=select_'+this.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+this.activeThemes[id]+'_dropdown_hover]">'+rowData.text+'</div>';
 					values.push({'index':c,'id':id+'_combo_'+c,'value':rowData.value,'text':rowData.text});
 		        }
 		    }
@@ -78,13 +78,13 @@ Appcelerator.UI.registerUIComponent('type','select',
 			Appcelerator.Compiler.dynamicCompile(dropdown);
 			
 			// set tracking variables
-			Appcelerator.UI.ContainerManager.select.selectOptions[id] = values;
-			Appcelerator.UI.ContainerManager.select.currentOptions[id] = values;
-			Appcelerator.UI.ContainerManager.select.activeSelects[id].selectedIndex=-1;
-			Appcelerator.UI.ContainerManager.select.activeSelects[id].lastOption=ar.length - 1;
+			this.selectOptions[id] = values;
+			this.currentOptions[id] = values;
+			this.activeSelects[id].selectedIndex=-1;
+			this.activeSelects[id].lastOption=ar.length - 1;
 
 			// resize dropdown
-			$(id+"_combo_box").style.height = Appcelerator.UI.ContainerManager.select._getDropdownHeight(ar.length);
+			$(id+"_combo_box").style.height = this._getDropdownHeight(ar.length);
 
 		}
 
@@ -92,8 +92,8 @@ Appcelerator.UI.registerUIComponent('type','select',
 	
 	init:function(id,params,data,scope,version,attrs,direction,action)
 	{
-		Appcelerator.UI.ContainerManager.select.activeSelects[id].selectedIndex = 0;
-		$MQ('l:'+id+'_combo_value',{'value':Appcelerator.UI.ContainerManager.select.currentOptions[id][Appcelerator.UI.ContainerManager.select.activeSelects[id].selectedIndex].text});
+		self.activeSelects[id].selectedIndex = 0;
+		$MQ('l:'+id+'_combo_value',{'value':self.currentOptions[id][self.activeSelects[id].selectedIndex].text});
 	
 	},
 	
@@ -105,6 +105,8 @@ Appcelerator.UI.registerUIComponent('type','select',
 	build: function(element,options)
 	{	
 		var theme = options['theme'];
+
+		var self = this;
 		
 		// build new select 
 		var on = (element.getAttribute("on"))?'on="'+element.getAttribute("on")+'"':'';
@@ -113,27 +115,30 @@ Appcelerator.UI.registerUIComponent('type','select',
 		var selectOptions = element.options;
 
 		// record tracking variables		
-		Appcelerator.UI.ContainerManager.select.activeThemes[element.id] = theme;
-		Appcelerator.UI.ContainerManager.select.activeSelects[element.id] = {};
-		Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex = -1;
-		Appcelerator.UI.ContainerManager.select.activeSelects[element.id].lastOption = (element.options)?element.options.length-1:-1;
+		self.activeThemes[element.id] = theme;
+		self.activeSelects[element.id] = {};
+		self.activeSelects[element.id].selectedIndex = -1;
+		self.activeSelects[element.id].lastOption = (element.options)?element.options.length-1:-1;
 		
 		// IE Z-index Hack 
-		// reduce the container z-index for each select
+		// reduce the container z-index for each select in order to properly show layers
 		if (Appcelerator.Browser.isIE)
 		{
-			var html = '<span id="'+element.id+'"  class="select_'+theme+'" '+on+' style="z-index:'+	Appcelerator.UI.ContainerManager.select.selectCount+'">';
-			Appcelerator.UI.ContainerManager.select.selectCount--;
+			var html = '<span id="'+element.id+'"  class="select_'+theme+'" '+on+' style="z-index:'+	self.selectCount+'">';
+			self.selectCount--;
 		}
 		else
 		{
 			var html = '<span id="'+element.id+'"  class="select_'+theme+'" '+on+'>';
 		}
+		
+		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif';
+		
 		html += '<span id="'+element.id+'_container" style="position:relative">';
 		html += '<input style="width:'+options['width']+';" type="text" id="'+element.id+'_input" class="select_' + theme + '_input" on="l:'+element.id+'_combo_value then value[value] or click then l:'+element.id+'_combo_click"/>';
-		html += '<img id="'+element.id+'_combo_img" src="images/blank_1x1.gif" class="select_' + theme + '_arrow" on="click then l:'+element.id+'_combo_click and focus[id='+element.id+'_input]"/>';
+		html += '<img id="'+element.id+'_combo_img" src="'+blankImg+'" class="select_' + theme + '_arrow" on="click then l:'+element.id+'_combo_click and focus[id='+element.id+'_input]"/>';
 		html +='<div id="'+element.id+'_combo_box" on="l:'+element.id+'_combo_click then toggle[display]" style="display:none;width:'+options['width']+';" class="select_'+theme+'_dropdown">';
-		html += Appcelerator.UI.ContainerManager.select._getOptions(element,theme);
+		html += self._getOptions(element,theme);
 		html += '</div></span></span>';
 		new Insertion.Before(element,html);
 		
@@ -173,8 +178,10 @@ Appcelerator.UI.registerUIComponent('type','select',
 					// select current value
 					case Event.KEY_RETURN:
 					{
-						$MQ('l:'+element.id+'_combo_value',{'value':Appcelerator.UI.ContainerManager.select.currentOptions[element.id][Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex].text});
+						$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
 						$MQ('l:'+element.id + "_combo_click");
+						Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');	
+
 						Event.stop(event);
 						return;
 					}
@@ -182,12 +189,12 @@ Appcelerator.UI.registerUIComponent('type','select',
 					// update selected index and styles
 					case Event.KEY_UP:
 					{
-						if (Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex > 0)
+						if (self.activeSelects[element.id].selectedIndex > 0)
 						{
-							Element.removeClassName($(element.id+"_combo_" + Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
-							Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex--;
-							$MQ('l:'+element.id+'_combo_value',{'value':Appcelerator.UI.ContainerManager.select.currentOptions[element.id][Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex].text});
-							Element.addClassName($(element.id+"_combo_" + Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');							
+							Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
+							self.activeSelects[element.id].selectedIndex--;
+							$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');							
 						}
 						Event.stop(event);
 						return;
@@ -196,12 +203,12 @@ Appcelerator.UI.registerUIComponent('type','select',
 					// update selected index and styles
 					case Event.KEY_DOWN:
 					{
-						if (Appcelerator.UI.ContainerManager.select.activeSelects[element.id].lastOption != Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex)
+						if (self.activeSelects[element.id].lastOption != self.activeSelects[element.id].selectedIndex)
 						{
-							Element.removeClassName($(element.id+"_combo_" + Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
-							Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex++;
-							$MQ('l:'+element.id+'_combo_value',{'value':Appcelerator.UI.ContainerManager.select.currentOptions[element.id][Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex].text});
-							Element.addClassName($(element.id+"_combo_" + Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');	
+							Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
+							self.activeSelects[element.id].selectedIndex++;
+							$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');	
 						}
 						Event.stop(event);
 						return;
@@ -214,7 +221,7 @@ Appcelerator.UI.registerUIComponent('type','select',
 						{
 							$MQ("l:"+element.id + "_combo_click");
 						}
-						var values = Appcelerator.UI.ContainerManager.select.selectOptions[element.id];
+						var values = self.selectOptions[element.id];
 						var options = [];
 						for (var i=0;i<values.length;i++)
 						{
@@ -225,13 +232,13 @@ Appcelerator.UI.registerUIComponent('type','select',
 						}
 						
 						// update tracking variables
-						Appcelerator.UI.ContainerManager.select._updateOptions(element,options,theme);
-						Appcelerator.UI.ContainerManager.select.currentOptions[element.id] = options;
-						Appcelerator.UI.ContainerManager.select.activeSelects[element.id].lastOption = options.length -1;
-						Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex = 0;
+						self._updateOptions(element,options,theme);
+						self.currentOptions[element.id] = options;
+						self.activeSelects[element.id].lastOption = options.length -1;
+						self.activeSelects[element.id].selectedIndex = 0;
 
 						// resize dropdown
-						$(element.id+"_combo_box").style.height = Appcelerator.UI.ContainerManager.select._getDropdownHeight(options.length);
+						$(element.id+"_combo_box").style.height = self._getDropdownHeight(options.length);
 						
 						Element.addClassName($(element.id+"_combo_0"),'select_'+theme+'_dropdown_hover');							
 					}
@@ -243,10 +250,10 @@ Appcelerator.UI.registerUIComponent('type','select',
 		$MQL('l:'+element.id+'_combo_mouseover', 
 		function(t, data, datatype, direction)
 		{
-			if (data.row != Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex)
+			if (data.row != self.activeSelects[element.id].selectedIndex)
 			{
-				Element.removeClassName($(element.id+"_combo_" + Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');			
-				Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex = data.row;				
+				Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');			
+				self.activeSelects[element.id].selectedIndex = data.row;				
 			}
 		});
 
@@ -261,7 +268,7 @@ Appcelerator.UI.registerUIComponent('type','select',
 		$(element.id).widget = {};
 		$(element.id).widget.getValue = function(id, parms)
 		{
-			return Appcelerator.UI.ContainerManager.select.currentOptions[id][Appcelerator.UI.ContainerManager.select.activeSelects[id].selectedIndex].value
+			return self.currentOptions[id][self.activeSelects[id].selectedIndex].value
 		}
 
 
@@ -269,24 +276,36 @@ Appcelerator.UI.registerUIComponent('type','select',
 		$MQL('l:'+element.id+'_combo_value', 
 		function(t, data, datatype, direction)
 		{
-			var entry = Appcelerator.UI.ContainerManager.select.changeListeners[element.id];
+			var entry = self.changeListeners[element.id];
 			if (entry)
 			{
 				var action = entry['action'];
 				var delay = entry['delay'];
 				var ifcond = entry['ifcond'];
-				var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifcond,{'value':Appcelerator.UI.ContainerManager.select.currentOptions[element.id][Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex].value});
+				var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifcond,{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].value});
 
 				Appcelerator.Compiler.executeAfter(actionFunc,delay);
 			}
 		});
 		
 		// resize dropdown
-		$(element.id+"_combo_box").style.height = Appcelerator.UI.ContainerManager.select._getDropdownHeight(selectOptions.length);
+		$(element.id+"_combo_box").style.height = this._getDropdownHeight(selectOptions.length);
 
+		// register custom conditions
+		Appcelerator.Compiler.registerCustomCondition(
+		{
+			conditionNames: ['change'],
+			description: "respond to change events for select"
+		},
+		function(element,condition,action,elseAction,delay,ifCond)
+		{
+			self.registerChangeListener(element.id,action,ifCond,delay);
+			return true;
+		});
 
 		// load select theme
 		Appcelerator.Core.loadTheme('type','select',theme);	
+
 	},
 	
 	// update options based on current text
@@ -309,7 +328,7 @@ Appcelerator.UI.registerUIComponent('type','select',
 	{
 		if (length<20)
 		{
-			return (length *16) + "px";	
+			return (length *17) + "px";	
 		}
 		
 	},
@@ -326,10 +345,10 @@ Appcelerator.UI.registerUIComponent('type','select',
 				html += '<div id="'+element.id+'_combo_'+i+'" class="select_'+theme+'_dropdown_item" on="click then l:'+element.id+'_combo_value[value='+element.options[i].text+'] or mouseover then add[class=select_'+theme+'_dropdown_hover] and l:'+element.id+'_combo_mouseover[row='+i+'] or mouseout then remove[class=select_'+theme+'_dropdown_hover]">'+element.options[i].text+'</div>';
 				values.push({'index':i,'id':element.id+'_combo_'+i,'value':element.options[i].value,'text':element.options[i].text});
 			}
-			Appcelerator.UI.ContainerManager.select.selectOptions[element.id] = values;
-			Appcelerator.UI.ContainerManager.select.currentOptions[element.id] = values;
-			Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex = 0;
-			$MQ('l:'+element.id+'_combo_value',{'value':Appcelerator.UI.ContainerManager.select.currentOptions[element.id][Appcelerator.UI.ContainerManager.select.activeSelects[element.id].selectedIndex].text});
+			this.selectOptions[element.id] = values;
+			this.currentOptions[element.id] = values;
+			this.activeSelects[element.id].selectedIndex = 0;
+			$MQ('l:'+element.id+'_combo_value',{'value':this.currentOptions[element.id][this.activeSelects[element.id].selectedIndex].text});
 			
 			return html;
 		}
@@ -337,14 +356,3 @@ Appcelerator.UI.registerUIComponent('type','select',
 	}
 });
 
-// register custom conditions
-Appcelerator.Compiler.registerCustomCondition(
-{
-	conditionNames: ['select'],
-	description: "respond to change events for select"
-},
-function(element,condition,action,elseAction,delay,ifCond)
-{
-	Appcelerator.UI.ContainerManager.select.registerChangeListener(element.id,action,ifCond,delay);
-	return true;
-});

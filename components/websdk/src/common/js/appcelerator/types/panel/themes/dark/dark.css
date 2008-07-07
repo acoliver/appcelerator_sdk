@@ -39,7 +39,7 @@
 .panel_dark_close 
 { 
 	cursor:pointer;
-	background:transparent url(close.png) no-repeat scroll left top;
+	background:transparent url(close.png) no-repeat left top;
 	border:medium none;
 	display:block;
 	height:16px;
@@ -47,6 +47,9 @@
 	right:10px;
 	top:10px;
 	width:16px;
+	_height:32px;
+	_clip:rect(0px 16px 16px 0px);
+
 } 
 .panel_dark_btm
 {

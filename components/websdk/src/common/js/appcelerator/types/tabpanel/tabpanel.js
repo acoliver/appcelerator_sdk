@@ -12,7 +12,9 @@ Appcelerator.UI.registerUIComponent('type','tabpanel',
 		var classPrefix = 'tabpanel_' + options['theme'];
 		var container = document.createElement("div");
 
-		var html = '<div class="'+classPrefix+'">';
+		// add left end of tab
+		var html = '<ul style="margin:0;float:left;list-style-type:none"><li id="'+element.id+'_left" class="'+classPrefix+'_left"></li>';
+		
 		var tabCount = 0;
  		for (var c=0,len=element.childNodes.length;c<len;c++)
 		{
@@ -30,44 +32,44 @@ Appcelerator.UI.registerUIComponent('type','tabpanel',
 
 				if (options['initial'] == tabName)
 				{
-					if (node.style.width != "")
-					{
-						html += '<div style="width:'+node.style.width+'" class="'+classPrefix+'_hdr '+classPrefix+'_hdr_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_hdr_active] else remove[class='+classPrefix+'_hdr_active]">';
-					}
-					else
-					{
-						html += '<div class="'+classPrefix+'_hdr '+classPrefix+'_hdr_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_hdr_active] else remove[class='+classPrefix+'_hdr_active]">';
-
-					}
-					
-					html += '<div class="'+classPrefix+'_tr '+classPrefix+'_tr_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tr_active] else remove[class='+classPrefix+'_tr_active]"></div>';
-					html += '<div class="'+classPrefix+'_tl '+classPrefix+'_tl_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tl_active] else remove[class='+classPrefix+'_tl_active]"></div>';
-					html += node.innerHTML + '</div>';
+					html += '<li id="'+element.id+'_tableft_'+tabCount+'"  class="'+classPrefix+'_tab_left '+classPrefix+'_tab_left_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
+					html += '<li id="'+element.id+'_tabmid_'+tabCount+'"   class="'+classPrefix+'_tab_mid '+classPrefix+'_tab_mid_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right '+classPrefix+'_tab_right_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
 				}
 				else
 				{
-					if (node.style.width != "")
-					{
-						html += '<div style="width:'+node.style.width+'" class="'+classPrefix+'_hdr" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_hdr_active] else remove[class='+classPrefix+'_hdr_active]">';
-					}
-					else
-					{
-						html += '<div class="'+classPrefix+'_hdr" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_hdr_active] else remove[class='+classPrefix+'_hdr_active]">';
-
-					}
-					
-					html += '<div class="'+classPrefix+'_tr" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tr_active] else remove[class='+classPrefix+'_tr_active]"></div>';
-					html += '<div class="'+classPrefix+'_tl" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tl_active] else remove[class='+classPrefix+'_tl_active]"></div>';
-					html += node.innerHTML + '</div>';
+					html += '<li id="'+element.id+'_tableft_'+tabCount+'"  class="'+classPrefix+'_tab_left" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
+					html += '<li id="'+element.id+'_tabmid_'+tabCount+'"   class="'+classPrefix+'_tab_mid" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
 				}
 
 			}
 		}
-		html += '</div><div class="'+classPrefix+'_divider"></div>';
+		
+		// right end of tab panel
+		html += '<li id="'+element.id+'_right" class="'+classPrefix+'_right"></li>';
+		// end of div + divivder
+		html += '</ul><div class="'+classPrefix+'_divider"></div>';
 		container.innerHTML = html;
 		element.innerHTML = '';
 		element.appendChild(container);		
 		Appcelerator.Compiler.dynamicCompile(container);
+
+
+		// deal with IE PNG issue
+		if (Appcelerator.Browser.isIE6)
+		{
+			$(element.id +"_left").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+			$(element.id +"_right").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+			
+			for (var i=1;i<=tabCount;i++)
+			{
+				$(element.id +"_tableft_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+				$(element.id +"_tabmid_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+				$(element.id +"_tabright_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+			}
+		}
+
 		Appcelerator.Core.loadTheme('type','tabpanel',options['theme']);	
 	}
 });

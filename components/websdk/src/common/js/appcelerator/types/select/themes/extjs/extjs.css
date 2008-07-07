@@ -19,8 +19,7 @@
 .select_extjs_arrow
 {
 	background:transparent url(arrow.gif) no-repeat scroll 0pt;
-
-	border-color:-moz-use-text-color -moz-use-text-color #B5B8C8;
+	border-color:#B5B8C8;
 	border-style:none none solid;
 	border-width:0pt 0pt 1px;
 	cursor:pointer;

@@ -1,21 +1,13 @@
-.button_itunes_fwd
-{
-	border:none;
-	cursor:pointer;
-	background-color:transparent;
-	width:27px;
-}
-
 .button_itunes_fwd_left
 {
-	
 }
 
 .button_itunes_fwd_middle
 {
 	background:url(fwd.gif) no-repeat;
 	height:18px;
-	width:26px;
+	width:30px;
+	border:0px none;
 	border-left:1px solid #303030;
 	
 }
@@ -32,10 +24,14 @@
 {
 	background:url(fwd-disabled.gif) no-repeat;
 	height:18px;
-	width:26px;
+	width:30px;
+	border:0px none;
 	border-left:1px solid #303030;
-	
+
+	_border-left:0px none;
+	*border-left:0px none;
 }
 
 .button_itunes_fwd_right_disabled
 {
+}

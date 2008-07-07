@@ -60,10 +60,6 @@
 	bottom:0px; 
 	left:0px; 
 	background:url(bottom_left.gif) no-repeat;  
-
-	/* IE6 HACK */
-	_bottom:-1px;
-	
 	position:absolute;
 	
 }
@@ -76,8 +72,6 @@
 	background:url(bottom_right.gif) no-repeat;  
 	position:absolute;
 
-	/* IE6 HACK */
-	_bottom:-1px;
 }
 
 .panel_xp_btm_text

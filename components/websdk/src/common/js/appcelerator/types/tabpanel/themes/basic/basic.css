@@ -1,58 +1,98 @@
-.tabpanel_basic_hdr
+/* TAB */
+.tabpanel_basic_tab_mid
 {
-	display:block;
-	float:left;
 	height:18px;
-	position:relative;
-	left:15px;
-	
-	margin-right:3px;
-	padding:3px 3px 0pt 0pt;
-	text-align:center;
-	width:88px;
-	background-color:#f4f4f4;
-	border:1px solid #ccc;
-	border-bottom:none;
-	margin-bottom:-1px;
+	margin-right:20px;
+	background-color:#ddd;
+	border:1px solid #bbb;
+	border-bottom:1px solid #ccc;
 	font-size:12px;
 	font-weight:bold;
 	color:#666;
 	cursor:pointer;
+	padding-left:20px;
+	padding-right:20px;
+	height:20px;
+	line-height:20px;
+	margin-left:0px;	
+	float:left;
+	margin-bottom:-1px;
+		
+	/* IE  */
+	*position:relative;
+	*z-index:2;
+
 	
 }
-.tabpanel_basic_hdr:hover
+
+/* TAB ACTIVE */
+.tabpanel_basic_tab_mid_active
 {
-	background-color:white;
+	background-color:#fff;
 	border-bottom:1px solid #fff;
 	
 }
 
-.tabpanel_basic_hdr_active
+/* TAB HOVER */
+.tabpanel_basic_tab_mid:hover
 {
-	background-color:white;
+	background-color:#fff;
 	border-bottom:1px solid #fff;
+
 }
 
-.tabpanel_basic_tl
-{
-	
-}
-.tabpanel_basic_tr
-{
-	
-}
-.tabpanel_basic_tl_active
-{
-	
-}
-.tabpanel_basic_tr_active
-{
-	
-}
-
+/* DIVIDER LINE UNDER TABS */
 .tabpanel_basic_divider
 {
 	height:1px;
 	border-top:1px solid #ccc;
 	clear:both;
+		
+
+}
+
+/* UNUSED CLASSES */
+.tabpanel_basic_left
+{
+	/* left end of tab panel */
+	width:20px;
+	float:left;
+}
+.tabpanel_basic_right
+{
+	/* right end of tab panel */
+	float:left;
+}
+.tabpanel_basic_tab_left_active
+{
+	/* left end of tab - active */
+	float:left;
+}
+.tabpanel_basic_tab_right_active
+{
+	/* right end of tab - active */
+	float:left;
+
+}
+
+.tabpanel_basic_tab_left
+{
+	/* left end of tab  */
+	float:left;
+
+}
+.tabpanel_basic_tab_right
+{
+	/* right end of tab */
+	float:left;
+
+}
+
+.tabpanel_basic_tab_left:hover
+{
+	/* left end of tab - hover */
+}
+.tabpanel_basic_tab_right:hover
+{
+	/* right end of tab - hover */
 }

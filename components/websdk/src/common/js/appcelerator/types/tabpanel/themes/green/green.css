@@ -1,58 +1,100 @@
-.tabpanel_green_hdr
+/* TAB */
+.tabpanel_green_tab_mid
 {
-	display:block;
-	float:left;
-	height:27px;
-	position:relative;
-	left:15px;
+	height:26px;
 	margin-right:3px;
 	padding:3px 3px 0pt 0pt;
 	text-align:center;
 	width:88px;
-	line-height:23px;
-	background:transparent url(tab_normal.png) no-repeat scroll left top;
+	background:url(tab_normal.png) no-repeat scroll left top;
 	font-size:12px;
 	font-weight:bold;
 	color:#555;
+	line-height:26px;
 	cursor:pointer;
-}
-.tabpanel_green_hdr_active
+	border:0px none;
+	float:left;
+	margin-bottom:-3px;
+	
+	/* IE */
+	*line-height:23px;
+}	
+
+
+/* TAB ACTIVE */
+.tabpanel_green_tab_mid_active
 {
-	background:transparent url(tab_focus.png) no-repeat scroll left top;
+	background:url(tab_focus.png) no-repeat scroll left top !important;
 	color:white;
+	
 }
 
-.tabpanel_green_hdr:hover
+/* TAB HOVER */
+.tabpanel_green_tab_mid:hover
 {
-	background:transparent url(tab_focus.png) no-repeat scroll left top;
+	background:url(tab_focus.png) no-repeat scroll left top !important;
 	color:white;
-	
-}
-.tabpanel_green_tl
-{
-	
-}
-.tabpanel_green_tl_active
-{
-	
+
 }
 
-.tabpanel_green_tr
-{
-	
-}
-.tabpanel_green_tr_active
-{
-	
-}
-
-
+/* DIVIDER LINE UNDER TABS */
 .tabpanel_green_divider
 {
-	height:2px;
+	height:3px;
 	background-color:#15cd00;
+	border-bottom:1px solid #a1df71;
 	clear:both;
-	position:relative;
-	top:-5px;
-	border-bottom:1px solid #a1df71
+	
+
+	/* IE 6 */
+	_height:1px;
+	_border-bottom:none;
+	_border-top:2px solid #15cd00;
+	_background-color:none;
+
 }
+
+/* UNUSED CLASSES */
+.tabpanel_green_left
+{
+	/* left end of tab panel */
+	width:20px;
+	float:left;
+}
+.tabpanel_green_right
+{
+	/* right end of tab panel */
+	float:left;
+}
+.tabpanel_green_tab_left_active
+{
+	/* left end of tab - active */
+	float:left;
+}
+.tabpanel_green_tab_right_active
+{
+	/* right end of tab - active */
+	float:left;
+}
+
+.tabpanel_green_tab_left
+{
+	/* left end of tab  */
+	float:left;
+}
+.tabpanel_green_tab_right
+{
+	/* right end of tab */
+	float:left;
+}
+
+.tabpanel_green_tab_left:hover
+{
+	/* left end of tab - hover */
+}
+.tabpanel_green_tab_right:hover
+{
+	/* right end of tab - hover */
+}
+
+

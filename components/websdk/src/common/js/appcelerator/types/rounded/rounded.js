@@ -14,14 +14,13 @@ Appcelerator.UI.registerUIComponent('type','rounded',
 	{
 		var html = element.innerHTML;
 		element.innerHTML = '';
-		
 		// determining rounding options
 		var roundTL =false; var roundTR =false; var roundBR = false; var roundBL = false;
 		var rOps = options['corners'].split(' ');
 		for (var i=0;i<rOps.length;i++)
 		{
-			if (rOps[i] == "top"){roundTL = true;roundTR=true}
-			if (rOps[i] == "bottom"){roundBL = true;roundBR=true}
+			if (rOps[i] == "top"){roundTL = true;roundTR=true;}
+			if (rOps[i] == "bottom"){roundBL = true;roundBR=true;}
 			if (rOps[i] == "tl"){roundTL = true;}
 			if (rOps[i] == "tr"){roundTR = true;}
 			if (rOps[i] == "bl"){roundBL = true;}
@@ -40,6 +39,23 @@ Appcelerator.UI.registerUIComponent('type','rounded',
 		element.style.width=options['width'];
 		element.style.position="relative";
 		element.style.marginBottom = "10px";
+		
+		// adjust margins based on tail
+		if (options['tail'] && options['tail'].startsWith('l'))
+		{
+			element.style.marginLeft = "15px";
+		}
+
+		if (options['tail'] && options['tail'].startsWith('r'))
+		{
+			element.style.marginRight = "15px";
+		}
+
+		if (options['tail'] && options['tail'].startsWith('b'))
+		{
+			element.style.marginBottom = "30px";
+		}
+		
 		
 		// build bottom
 		for(var i=4;i>0;i--)
@@ -126,9 +142,13 @@ Appcelerator.UI.registerUIComponent('type','rounded',
 			if (roundRight) x.style.marginRight = "1px";
 			x.style.height="2px";
 		}
+	
 		x.style.overflow = "hidden";			
 		x.style.display = "block";			
 	    x.style.backgroundColor=color;
+	
+		// IE CRAZINESS 
+		x.style.fontSize = "0px";
 	    container.appendChild(x);		
 	}
 
