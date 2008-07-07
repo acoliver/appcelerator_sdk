@@ -4,8 +4,8 @@
 	background:transparent url(input.png) repeat-x;
 	border:0px none;
 	font-size:11px;
-	height:17px;
-	line-height:17px;
+	height:19px;
+	line-height:19px;
 	padding:2pt 1pt 1pt;
 	margin-left:-1px;
 	margin-right:-1px;
@@ -29,5 +29,4 @@
 	position:relative;
 	top:5px;
 	*top:2px;
-
 }

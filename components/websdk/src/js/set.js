@@ -200,3 +200,18 @@ Appcelerator.UI.UIManager.parseAttributes = function(element,f,options)
 	}
 	return options;
 };
+
+Appcelerator.UI.themes = {};
+
+Appcelerator.Core.loadTheme = function(pkg,container,theme)
+{
+	var path = Appcelerator.UI.themes[theme];
+	if (!path)
+	{
+		path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
+		Appcelerator.Core.remoteLoadCSS(path,function()
+		{
+			Appcelerator.UI.themes[theme]=path;
+		});
+	}
+};
