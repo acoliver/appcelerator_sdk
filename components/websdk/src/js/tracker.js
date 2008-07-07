@@ -1,7 +1,7 @@
-Appcelerator.appuid = $.cookie('appuid');
+Appcelerator.appuid = Appcelerator.Util.Cookie.GetCookie('appuid');
 if (!Appcelerator.appuid)
 {
-	Appcelerator.appuid = (new UUID).id + '-' + new Date().getTime();
+	Appcelerator.appuid = Appcelerator.Util.UUID.generateNewId() + '-' + new Date().getTime();
 	var e = new Date().getTime() + (Appcelerator.Util.DateTime.ONE_YEAR * 5);
 	Appcelerator.Util.Cookie.SetCookie('appuid',Appcelerator.appuid,e,'/');
 }
