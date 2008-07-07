@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:35%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Accordion Widget </h3> 
+<p>
+	These tests exercise the accordion widget
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Vertical Accordion
+		</td>
+		<td class="result" >
+            <div>
+                <app:accordion on="l:accordion then execute" property="rows">
+                    <html:h2 class="accordion_toggle">#{title}</html:h2>
+                    <html:div class="accordion_content">#{content}</html:div>
+                </app:accordion>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Vertical Accordion (With Mouseover)
+		</td>
+		<td class="result" >
+            <div>
+                <app:accordion on="l:accordion then execute" property="rows" onEvent="mouseover">
+                    <html:h2 class="accordion_toggle">#{title}</html:h2>
+                    <html:div class="accordion_content">#{content}</html:div>
+                </app:accordion>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Horizontal Accordion
+		</td>
+		<td class="result" >
+            <div>
+                <app:accordion on="l:accordion2 then execute" property="rows" mode="horizontal">
+                    <html:h2 class="accordion_toggle">#{title}</html:h2>
+                    <html:div class="accordion_content">#{content}</html:div>
+                </app:accordion>
+            </div>
+			<app:script>
+                $MQ('l:accordion2', {rows: [{title: 'Test Title 1', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus.'}, {title: 'Test Title 2', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus.'}, {title: 'Test Title 3', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus.'}]});
+            </app:script>
+		</td>
+	</tr>
+</table>
+
+<app:script>
+    $MQ('l:accordion', {rows: [{title: 'Test Title 1', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus. Aenean porttitor, lacus vel bibendum pulvinar, leo nulla suscipit leo, nec lobortis orci diam eget turpis. Sed eu eros et orci consectetuer molestie. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.'}, {title: 'Test Title 2', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus. Aenean porttitor, lacus vel bibendum pulvinar, leo nulla suscipit leo, nec lobortis orci diam eget turpis. Sed eu eros et orci consectetuer molestie. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.'}, {title: 'Test Title 3', content: 'Curabitur quam lorem, laoreet molestie, eleifend id, pulvinar vel, nunc. Proin congue felis quis purus. Aenean porttitor, lacus vel bibendum pulvinar, leo nulla suscipit leo, nec lobortis orci diam eget turpis. Sed eu eros et orci consectetuer molestie. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.'}]});
+</app:script>
+</body>
+</html>
