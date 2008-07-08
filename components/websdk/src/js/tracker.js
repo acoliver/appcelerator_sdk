@@ -1,12 +1,23 @@
-Appcelerator.appuid = Appcelerator.Util.Cookie.GetCookie('appuid');
-if (!Appcelerator.appuid)
+Appcelerator.Compiler.beforeDocumentCompile(function()
 {
-	Appcelerator.appuid = Appcelerator.Util.UUID.generateNewId() + '-' + new Date().getTime();
-	var e = new Date().getTime() + (Appcelerator.Util.DateTime.ONE_YEAR * 5);
-	Appcelerator.Util.Cookie.SetCookie('appuid',Appcelerator.appuid,e,'/');
-}
-(function()
+	Appcelerator.compileStarted = new Date;
+});
+Appcelerator.Compiler.afterDocumentCompile(function()
 {
+	var D = new Date().getTime();
+	Appcelerator.compileTime = D - Appcelerator.compileStarted.getTime();
+	Appcelerator.loadTime = D - Appcelerator.started.getTime(); 
+});
+
+Appcelerator.Core.onload(function()
+{
+	Appcelerator.appuid = Appcelerator.Util.Cookie.GetCookie('appuid');
+	if (!Appcelerator.appuid)
+	{
+		Appcelerator.appuid = Appcelerator.Util.UUID.generateNewId() + '-' + new Date().getTime();
+		var e = new Date(new Date().getTime() + (Appcelerator.Util.DateTime.ONE_YEAR * 5));
+		Appcelerator.Util.Cookie.SetCookie('appuid',Appcelerator.appuid,e,'/');
+	}
 	var sendRemote = window.location.href.indexOf('file:/')!=-1;
     var screenHeight = screen.height;
     var screenWidth = screen.width;
@@ -48,16 +59,6 @@ if (!Appcelerator.appuid)
 		    }
 		});
 	}
-	Appcelerator.Compiler.beforeDocumentCompile(function()
-	{
-		Appcelerator.compileStarted = new Date;
-	});
-	Appcelerator.Compiler.afterDocumentCompile(function()
-	{
-		var D = new Date().getTime();
-		Appcelerator.compileTime = D - Appcelerator.compileStarted.getTime();
-		Appcelerator.loadTime = D - Appcelerator.started.getTime(); 
-	});
 	setTimeout(function()
 	{
 		var a = 0, s = 0, v = 1, c = null;
@@ -102,5 +103,4 @@ if (!Appcelerator.appuid)
 		var d = new Date().getTime() - Appcelerator.started.getTime();
 		i.src = 'http://tracker.appcelerator.org/app.gif?t='+Number(new Date)+'&x-evt=0&x-appuid=' + Appcelerator.appuid + '&x-d=' + d + '&x-tid=' + Appcelerator.started.getTime(); 
 	});
-})();
-
+});

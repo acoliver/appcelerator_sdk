@@ -24,7 +24,7 @@
 			Load HTML file (with on/value expression)
 		</td>
 		<td class="result" id="content_result_1">
-			<app:content src="../content/content_file.html"></app:content>
+			<app:content src="content/content_file.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -33,7 +33,7 @@
 		</td>
 		<td class="result" id="content_result_2" >
 			<app:content lazy="true" on="l:load.content then execute after 5s" 
-			src="../content/content_file2.html"></app:content>
+			src="content/content_file2.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -44,7 +44,7 @@
 			<a on="click then l:toggle[action=hide]">Hide</a> | 
 			<a on="click then l:toggle[action=show]">Show</a>
 			<app:content id="hide_show_content" on="l:toggle[action=hide] then hide else show" 
-			src="../content/content_file2.html"></app:content>
+			src="content/content_file2.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -53,7 +53,7 @@
 		</td>
 		<td class="result" id="content_result_4">
 			<div style="display: none">
-				<app:content src="../content/content_file.html" onload="l:content.loaded"></app:content>
+				<app:content src="content/content_file.html" onload="l:content.loaded"></app:content>
 			</div>
 			<div class="passed" style="display: none" on="l:content.loaded then show">
 				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
@@ -66,7 +66,7 @@
 		</td>
 		<td class="result" id="content_result_5">
 			<div style="display: none">
-				<app:content src="../content/content_file.html" onfetch="l:content.fetch"></app:content>
+				<app:content src="content/content_file.html" onfetch="l:content.fetch"></app:content>
 			</div>
 			<div class="passed" style="display: none" on="l:content.fetch then show">
 				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
@@ -78,7 +78,7 @@
 			Load HTML file (with &lt;style&gt; element)
 		</td>
 		<td class="result" id="content_result_6">
-			<app:content src="../content/content_styled_1.html"></app:content>
+			<app:content src="content/content_styled_1.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -86,7 +86,7 @@
 			Load HTML file (with &lt;link&gt; element)
 		</td>
 		<td class="result" id="content_result_7">
-			<app:content src="../content/content_styled_2.html"></app:content>
+			<app:content src="content/content_styled_2.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -94,7 +94,7 @@
 			Load HTML file (with &lt;style&gt; element and &lt;link&gt; element -- testing css order)
 		</td>
 		<td class="result" id="content_result_8">
-			<app:content src="../content/content_styled_3.html"></app:content>
+			<app:content src="content/content_styled_3.html"></app:content>
 		</td>
 	</tr>
 	<tr>
@@ -105,12 +105,46 @@
 			<app:script>
 				content_file3 = 0;
 			</app:script>
-			<app:content src="../content/content_file3.html" on="l:content_file3 then execute"></app:content>
+			<app:content reload="false" src="content/content_file3.html" on="l:content_file3 then execute"></app:content>
 			<app:message name="l:content_file3" interval="2000">
 			</app:message>
 		</td>
 	</tr>	
-
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file with useframe = true (defaults to false)
+		</td>
+		<td class="result" id="content_result_10">
+			<div style="display: none">
+				<app:content useframe="true" src="content/content_file.html" onload="l:content.loaded"></app:content>
+			</div>
+			<div class="passed" style="display: none" on="l:content.loaded then show">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file with embedded scripts
+		</td>
+		<td class="result" id="content_result_11">
+			<app:content src="content/content_file4.html"></app:content>
+			<div class="passed" style="display: none" on="l:content.file4 then show">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			Load HTML file with embedded scripts (useframe=true)
+		</td>
+		<td class="result" id="content_result_12">
+			<app:content useframe="true" src="content/content_file4.html"></app:content>
+			<div class="passed" style="display: none" on="l:content.file4 then show">
+				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>	
 </table>
 
 <app:message name="l:load.content"></app:message>

@@ -87,9 +87,12 @@ Appcelerator.Widget.Content =
 	    {
 	        parameterMap['src'] = data[parameterMap['property']];
 	    }
+		Logger.info('parameterMap[reload] = '+parameterMap['reload']);
 	    
 		if (!parameterMap['reload'])
 		{
+			Logger.info('fetched = '+$(id).fetched);
+			Logger.info('parameterMap[fetched] = '+parameterMap['fetched']);
 			if (!$(id).fetched && !parameterMap['fetched'])
 			{
 				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
@@ -138,7 +141,7 @@ Appcelerator.Widget.Content =
 					}
 					var scope = target.getAttribute('scope') || target.scope;
 					var state = Appcelerator.Compiler.createCompilerState();
-					var html = resp.responseText;
+					var html = resp.responseText.stripScripts();
 					var match = /<body[^>]*>([\s\S]*)?<\/body>/mg.exec(html);
 					if (match)
 					{
@@ -162,6 +165,8 @@ Appcelerator.Widget.Content =
 			                $MQ(onload,{'src':src,'args':args});
 			             }
 					};
+					// evaluate scripts
+					resp.responseText.evalScripts();
 					Appcelerator.Compiler.compileElement(target.firstChild,state);
 					state.scanned=true;
 					Appcelerator.Compiler.checkLoadState(state);
@@ -181,8 +186,9 @@ Appcelerator.Widget.Content =
 				doc.setAttribute('scope',scope);
 				doc.scope = scope;
 				Appcelerator.Compiler.getAndEnsureId(doc);
+				var contentHTML = doc.innerHTML;
 				var state = Appcelerator.Compiler.createCompilerState();
-				var html = '<div>'+doc.innerHTML+'</div>';
+				var html = '<div>'+contentHTML.stripScripts()+'</div>';
 				if (args)
 				{
 					// replace tokens in our HTML with our args
@@ -200,6 +206,8 @@ Appcelerator.Widget.Content =
 		                $MQ(onload,{'src':src,'args':args});
 		             }
 				};
+				// evaluate scripts
+				contentHTML.evalScripts();
 				Appcelerator.Compiler.compileElement(target.firstChild,state);
 				state.scanned=true;
 				Appcelerator.Compiler.checkLoadState(state);
