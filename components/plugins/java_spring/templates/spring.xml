@@ -12,7 +12,7 @@
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
 		   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-	<bean id="springBeanDispatcher" class="org.appcelerator.dispatcher.SpringBeanDispatcher"></bean>
+	<bean id="springBeanDispatcher" class="org.appcelerator.dispatcher.SpringBeanDispatcher" factory-method="createDispatcher"></bean>
 	<context:annotation-config/>
 	<context:component-scan base-package="org.appcelerator"/>
 </beans> 
