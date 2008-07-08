@@ -71,7 +71,6 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 
 	public void setBeanFactory(BeanFactory f) throws BeansException
     {
-	    LOG.error("Esta fucked up");
         if (f instanceof ListableBeanFactory)
         {
             this.factory = (ListableBeanFactory)f;
