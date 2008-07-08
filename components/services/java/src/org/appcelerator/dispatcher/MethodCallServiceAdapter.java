@@ -20,8 +20,9 @@
  */
 package org.appcelerator.dispatcher;
 
-import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 
 import net.sf.json.JSONObject;
@@ -46,6 +47,7 @@ public class MethodCallServiceAdapter extends ServiceAdapter
 
     private Method premethod;
     private Method postmethod;
+    private Method postmethodException;
 
     public MethodCallServiceAdapter(Object i, Method m, Service service) throws Exception
     {
@@ -53,8 +55,9 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         this.method = m;
         this.serviceClass = i.getClass();
 
-        this.postmethod = getMethod(i,service.postmessage());
-        this.premethod = getMethod(i,service.premessage());
+        this.postmethod = getMethod(i,service.postmessage(), Message.class, Message.class);
+        this.premethod = getMethod(i,service.premessage(), Message.class, Message.class);
+        this.postmethodException = getMethod(i,service.postmessageException(), Message.class, Message.class, Throwable.class);
         this.method.setAccessible(true);
 
         this.request = service.request();
@@ -63,13 +66,13 @@ public class MethodCallServiceAdapter extends ServiceAdapter
     }
 
     @SuppressWarnings("unchecked")
-    public Method getMethod(Object i, String methodname) throws SecurityException, NoSuchMethodException 
+    public Method getMethod(Object i, String methodname, Class ... parameterTypes) throws SecurityException, NoSuchMethodException 
     {
         if (methodname==null || "".equals(methodname))
         {
             return null;
         }
-        return serviceClass.getMethod(methodname, Message.class, Message.class);
+        return serviceClass.getMethod(methodname, parameterTypes);
     }
 
     public boolean is(ServiceAdapter sa)
@@ -226,11 +229,25 @@ public class MethodCallServiceAdapter extends ServiceAdapter
                 }
             }
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
-            e.printStackTrace();
-            response.getData().put("success",false);
-            response.getData().put("exception",e.getMessage());
+            if (postmethodException != null)
+            {
+            	try {
+                	if (e instanceof InvocationTargetException)
+                		postmethodException.invoke(this.instance,request,response, ((InvocationTargetException)e).getCause());
+                	else
+                		postmethodException.invoke(this.instance,request,response, e);
+            	} catch (Exception fatal) {
+            		throw new RuntimeException("major problem invoking poastMethod for "+ request.getType(), fatal);
+            	}
+            }
+            else
+            {
+                e.printStackTrace();
+                response.getData().put("success",false);
+                response.getData().put("exception",e.getMessage());
+            }
         }
     }
 }

@@ -65,4 +65,9 @@ public @interface Service
 	 * parameters of Message type. The first is the incoming message, the second is the outgoing response.
 	 */
     String postmessage() default "";
+
+    /** 
+	 * method which will be invoked after the service is handled when an exception occurs. the method signature is (Message request, Message response, Throwable e)
+	 */
+    String postmessageException() default "";
 }
