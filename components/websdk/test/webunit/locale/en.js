@@ -20,4 +20,3 @@ var my_lang_bundle =
 };
 
 Appcelerator.Localization.addLanguageBundle('en','English',$H(my_lang_bundle));
-

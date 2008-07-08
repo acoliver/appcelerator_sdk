@@ -1,10 +1,10 @@
 if (window.navigator.language != undefined)
 {
-    Appcelerator.Localization.currentLanguage = window.navigator.language;
+	Appcelerator.Localization.currentLanguage = window.navigator.language;
 }
 else
 {
-    Appcelerator.Localization.currentLanguage = 'en';
+    Appcelerator.Localization.currentLanguage = 'en-US';
 }
 
 Appcelerator.Localization.LanguageMap = {};
@@ -16,7 +16,22 @@ Appcelerator.Localization.LanguageMap = {};
 Appcelerator.Localization.addLanguageBundle = function(lang,displayName,map)
 {
     map = map==null ? $H() : typeof(map.get)=='function' ? map : $H(map);
-	Appcelerator.Localization.LanguageMap['language_'+lang] = {'map':map,'display':displayName};
+	if (Object.isArray(lang))
+	{
+		for (var c=0;c<lang.length;c++)
+		{
+			Appcelerator.Localization.addLanguageBundle(lang[c],displayName,map);
+		}
+	}
+	else
+	{
+		Appcelerator.Localization.LanguageMap['language_'+lang] = {'map':map,'display':displayName,'lang':lang};
+		var idx = lang.indexOf('-');
+		if (idx > 0)
+		{
+			Appcelerator.Localization.LanguageMap['language_'+lang.substring(0,idx)] = {'map':map,'display':displayName,'lang':lang.substring(0,idx)};
+		}
+	}
 };
 
 //
@@ -25,8 +40,7 @@ Appcelerator.Localization.addLanguageBundle = function(lang,displayName,map)
 //
 Appcelerator.Localization.updateLanguageBundle = function(lang,displayName,map)
 {
-    map = map==null ? $H() : typeof(map.get)=='function' ? map : $H(map);
-    var bundle = Appcelerator.Localization.LanguageMap['language_'+lang];
+	var bundle = Appcelerator.Localization.getBundle(lang);
     if (!bundle)
     {
         Appcelerator.Localization.addLanguageBundle(lang,displayName,map);
@@ -35,6 +49,11 @@ Appcelerator.Localization.updateLanguageBundle = function(lang,displayName,map)
     {
         bundle.map = bundle.map.merge(map);
     }
+	var idx = lang.indexOf('-');
+	if (idx > 0)
+	{
+		Appcelerator.Localization.updateLanguageBundle(lang.substring(0,idx),displayName,map);
+	}
 };
 
 //
@@ -62,19 +81,36 @@ Appcelerator.Localization.getLanguages = function()
 	return langs;
 };
 
+Appcelerator.Localization.getBundle = function(lang)
+{
+	lang = (lang==null) ? Appcelerator.Localization.currentLanguage : lang;
+	var map = Appcelerator.Localization.LanguageMap['language_'+lang];
+
+	if (!map)
+	{
+		// we don't have a specific language bundle like en-US so we now
+		// just look for en part
+		var idx = lang.indexOf('-');
+		if (idx > 0)
+		{
+			return Appcelerator.Localization.getBundle(lang.substring(0,idx));
+		}
+	}
+	return map;
+}
+
 //
 // set a language bundle key for a given language - the language
 // bundle must have already been registered or an exception will be raised
 //
 Appcelerator.Localization.set = function(key,value,lang)
 {
-	lang = (lang==null) ? Appcelerator.Localization.currentLanguage : lang;
-	var map = Appcelerator.Localization.LanguageMap['language_'+lang];
-	if (!map)
+	var bundle = Appcelerator.Localization.getBundle(lang);
+	if (!bundle || !bundle.map)
 	{
 		throw "language bundle not found for language: "+lang;
 	}
-	map.set(key,value);
+	bundle.map.set(key,value);
 }
 
 //
@@ -82,13 +118,18 @@ Appcelerator.Localization.set = function(key,value,lang)
 //
 Appcelerator.Localization.get = function(key,defValue,lang)
 {
-	lang = (lang==null) ? Appcelerator.Localization.currentLanguage : lang;
-	
-	var bundle = Appcelerator.Localization.LanguageMap['language_'+lang];
-	
+	var bundle = Appcelerator.Localization.getBundle(lang);
 	if (bundle && bundle.map)
 	{
 		var value = bundle.map.get(key);
+		if (!value)
+		{
+			var idx = bundle.lang.indexOf('-');
+			if (idx > 0)
+			{
+				return Appcelerator.Localization.get(key,defValue,bundle.lang.substring(0,idx));
+			}
+		}
 		return value || defValue;
 	}
 	return defValue;
@@ -108,6 +149,10 @@ Appcelerator.Localization.getWithFormat = function (key, defValue, lang, args)
 	if (!cachedCopy)
 	{
 		var template = Appcelerator.Localization.get(key,defValue,lang);
+		if (!template)
+		{
+			return defValue;
+		}
 		cachedCopy = Appcelerator.Compiler.compileTemplate(template);
 		Appcelerator.Localization.compiledTemplates[cacheKey]=cachedCopy;
 	}
@@ -164,5 +209,5 @@ Appcelerator.Localization.unregisterTag = function(tag)
 // 
 // create the default english bundle and make it empty
 //
-Appcelerator.Localization.addLanguageBundle('en','English',{});
+Appcelerator.Localization.addLanguageBundle(['en','en-US'],'English',{});
 

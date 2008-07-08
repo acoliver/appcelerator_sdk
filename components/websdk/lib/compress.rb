@@ -38,11 +38,11 @@ js.gsub!(/\$D\([^\)]/) do |m|
 end
 
 # replace this globally scoped variables
-js.gsub!(/window\./,'$$w.')
-js.gsub!(/document\./,'$$d.')
-js.gsub!(/navigator\./,'$$n.')
-js.gsub!(/Object\./,'$$o.')
-js.gsub!(/Logger\./,'$$l.')
+#js.gsub!(/[^\.]window\./,'$$w.')
+#js.gsub!(/[^\.]document\./,'$$d.')
+#js.gsub!(/[^\.]navigator\./,'$$n.')
+#js.gsub!(/Object\./,'$$o.')
+#js.gsub!(/Logger\./,'$$l.')
 
 # make our shortcuts JS
 declare=<<EOF

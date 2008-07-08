@@ -122,19 +122,26 @@
             <a langid="merge.lang.key" href="#">Test failed</a>
         </td>
     </tr>   
+    <tr>
+        <td class="test" valign="middle">
+            Localization using sub key of language
+        </td>
+        <td class="result"> 
+			<span id="lang1">Test Failed</span>
+        </td>
+    </tr>   
 
 </table>
 <app:script>
 $("localization").innerHTML = Appcelerator.Localization.get("my.lang.key");
-</app:script>
-<app:script>
 $("localization2").innerHTML = Appcelerator.Localization.getWithFormat('my.format.key',null,null,{'result':'passed'});
+$('lang1').innerHTML = Appcelerator.Localization.get("merge.lang.key",'Test Failed','en');
 </app:script>
 
 <script>
 Appcelerator.Compiler.beforeDocumentCompile(function()
 {
-    Appcelerator.Localization.updateLanguageBundle('en','English',{'merge.lang.key':'Passed'});
+    Appcelerator.Localization.updateLanguageBundle('en-US','English',{'merge.lang.key':'Passed'});
 });
 </script>
 
