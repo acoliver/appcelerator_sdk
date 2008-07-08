@@ -87,12 +87,8 @@ Appcelerator.Widget.Content =
 	    {
 	        parameterMap['src'] = data[parameterMap['property']];
 	    }
-		Logger.info('parameterMap[reload] = '+parameterMap['reload']);
-	    
 		if (!parameterMap['reload'])
 		{
-			Logger.info('fetched = '+$(id).fetched);
-			Logger.info('parameterMap[fetched] = '+parameterMap['fetched']);
 			if (!$(id).fetched && !parameterMap['fetched'])
 			{
 				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
