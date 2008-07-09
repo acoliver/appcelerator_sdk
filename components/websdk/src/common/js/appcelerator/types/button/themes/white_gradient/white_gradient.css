@@ -1,4 +1,4 @@
-.input_white_gradient_input
+.button_white_gradient_middle
 {
 	background:#F3F3F3 url(input.gif) scroll left top;
 	border:1px solid #C9C9C9;
@@ -7,7 +7,7 @@
 	outline:none;
 }
 
-.input_white_gradient_input:focus
+.input_white_gradient_middle:hover
 {
 	background-position:0pt -400px;
 	border:1px solid #AAAAAA;

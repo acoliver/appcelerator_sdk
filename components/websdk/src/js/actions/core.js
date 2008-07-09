@@ -108,7 +108,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 					// otherwise, its an effect option
 					else
 					{
-					    options[params[c].key] = eval(params[c].value);
+					    options[params[c].key] = params[c].value;
 					}
 				}
 			}
