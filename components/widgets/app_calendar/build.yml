@@ -1,7 +1,7 @@
 --- 
 :type: widget
 :name: app:calendar
-:version: 1.0.3
+:version: 1.0.4
 :dependencies: 
 - :type: websdk
   :version: ">=2.1"

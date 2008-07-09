@@ -34,7 +34,7 @@ Appcelerator.Widget.Calendar =
 	},
 	getVersion: function()
 	{
-		return '1.0.3';
+		return '1.0.4';
 	},
 	getSpecVersion: function()
 	{
@@ -58,7 +58,7 @@ Appcelerator.Widget.Calendar =
 	},
 	getActions: function()
 	{
-		return ['execute', 'close'];
+		return ['execute'];
 	},
 	getAttributes: function()
 	{
@@ -68,7 +68,10 @@ Appcelerator.Widget.Calendar =
 				{name: 'inputId', optional: true, description: 'The id of the input element to update', type: T.identifier},
 				{name: 'elementId', optional: true, description: 'Alias for inputId', type: T.identifier},
 				{name: 'minDate', optional: true, description: 'The minimum allowed date', type: T.pattern(/[0-9]{1,2}\/[0-9]{1,2}(\/[0-9]{4})/)},
-				{name: 'title', optional: true, description: 'The title of the calendar', defaultValue: ''}];
+				{name: 'title', optional: true, description: 'The title of the calendar', defaultValue: ''},
+				{name: 'titleLangid', optional: true, defaultValue: ''},
+				{name: 'formatFunction', optional: true, defaultValue: 'Appcelerator.Widget.Calendar.calendartotext'}
+				];
 	},
 	execute: function(id,parameterMap,data,scope,version)
 	{
@@ -93,12 +96,17 @@ Appcelerator.Widget.Calendar =
 	getValue: function(id,params) {
 	    return params['value'];
 	},
+	calendartotext: function(month,day,year) {
+		return month + '/' + day + '/' + year;
+	},
 	compileWidget: function(parameters)
 	{
 		var inputId = parameters['inputId'];
 		var elementId = parameters['elementId'];
 		var minDate = parameters['minDate'];
 		var title = parameters['title'];
+		var titleLangid = parameters['titleLangid'];
+		var formatFunction = parameters['formatFunction']
 		var name = parameters['name'];
 		var id = parameters['id'];
 		var close = !!parameters['close'];
@@ -111,6 +119,9 @@ Appcelerator.Widget.Calendar =
 		else if(inputId)
 		{
 			element = $(inputId);
+		}
+		if (titleLangid != '') {
+			title = Appcelerator.Localization.get(titleLangid);
 		}
 		
 		YAHOO.namespace('appcelerator.calendar');
@@ -133,8 +144,11 @@ Appcelerator.Widget.Calendar =
 			var year=date[0];
 			var month=date[1];
 			var date=date[2];
-            
 			var dateString = month + '/' + date + '/' + year;
+            if (formatFunction) {
+				var f = eval(formatFunction);
+				dateString = f(month,date,year);
+			}
 			
 			if(element)
 			{
