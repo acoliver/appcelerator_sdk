@@ -75,14 +75,13 @@ Appcelerator.Parameters = $H({});
 // 
 (function()
 {
-	var jsFileLocation = null;
 	var baseHref = null;
 	
 	$A(document.getElementsByTagName("script")).findAll( function(s) 
 	{
 	    if (s.src && s.src.match(/appcelerator(-debug){0,1}\.js(\?.*)?$/))
 	    {
-	    	jsFileLocation = s.src;
+	    	Appcelerator.jsFileLocation = s.src;
 	    	return true;
 	    }
 	    return false;
@@ -124,14 +123,14 @@ Appcelerator.Parameters = $H({});
 	        }
 	    }
 	}
-	if (jsFileLocation)
+	if (Appcelerator.jsFileLocation)
 	{
 		if (!baseHref)
 		{
-			var hostIdx = jsFileLocation.indexOf('://');
+			var hostIdx = Appcelerator.jsFileLocation.indexOf('://');
 			if (hostIdx > 0)
 			{
-				var jsHostPath = jsFileLocation.substring(hostIdx + 3, jsFileLocation.indexOf('/',hostIdx + 4));
+				var jsHostPath = Appcelerator.jsFileLocation.substring(hostIdx + 3, Appcelerator.jsFileLocation.indexOf('/',hostIdx + 4));
 				var docIdx = Appcelerator.DocumentPath.indexOf('://');
 				if (docIdx > 0)
 				{
@@ -140,7 +139,7 @@ Appcelerator.Parameters = $H({});
 					{
 						// if on the same host then always prefer the JS location (one directory up) as the base href
 						// such that we can have multiple content directories that include the JS relatively from the top
-						Appcelerator.DocumentPath = jsFileLocation.substring(0,jsFileLocation.lastIndexOf('/')) + '/../'
+						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,Appcelerator.jsFileLocation.lastIndexOf('/')) + '/../'
 					}
 				}
 			}
@@ -207,7 +206,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isPrism = Appcelerator.Browser.isMozilla && ua.indexOf('prism/') > 0;
     Appcelerator.Browser.isIceweasel = Appcelerator.Browser.isMozilla && ua.indexOf('iceweasel') > 0;
     Appcelerator.Browser.isEpiphany = Appcelerator.Browser.isMozilla && ua.indexOf('epiphany') > 0;
-	Appcelerator.Browser.isFluid = (window.fluid==undefined) != null;
+	Appcelerator.Browser.isFluid = (window.fluid != null);
 	Appcelerator.Browser.isGears = (window.google && google.gears) != null;
     
 	Appcelerator.Browser.isWindows = false;

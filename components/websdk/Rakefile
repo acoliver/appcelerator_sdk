@@ -90,7 +90,8 @@ END_LICENSE
   js_files += Dir["#{js_source}/*/*.js"]
   
   # must sort after including subdirs
-  js_files.sort.each {|path| append_file(path, jslite) }
+  js_files.sort.each {|path| append_file(path, jslite) unless path =~ /tracker\.js/}
+  append_file("#{js_source}/tracker.js", jslite)
   append_file("#{js_source}/epilog.js", jslite)
 
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
