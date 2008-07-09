@@ -4,7 +4,8 @@ module Appcelerator
 
     def AID.generate_new(project_dir)
       require 'tmpdir'
-      UUID.setup(File.expand_path(File.join(Dir::tmpdir,'uuid.state')))
+      file = UUID.setup(File.expand_path(File.join(Dir::tmpdir,'uuid.state')))
+      UUID.config :state_file => file.to_s
       UUID.new
     end
     
