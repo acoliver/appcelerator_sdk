@@ -104,7 +104,7 @@ Appcelerator.UI.registerUIComponent('type','select',
 	
 	build: function(element,options)
 	{	
-		var theme = options['theme'];
+		var theme = options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('select');
 
 		var self = this;
 		

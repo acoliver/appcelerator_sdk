@@ -157,6 +157,26 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 });
 
 
+Appcelerator.UI.UIManager.defaultThemes = 
+	{'panel':'basic',
+	 'shadow':'basic',
+	 'button':'white_gradient',
+	 'input':'white_gradient',
+	 'textarea':'white_gradient',
+	 'panel':'white',
+	 'select':'thinline',
+	 'tabpanel':'white'};
+
+Appcelerator.UI.UIManager.getDefaultTheme = function(type)
+{
+	return Appcelerator.UI.UIManager.defaultThemes[type];
+};
+Appcelerator.UI.UIManager.setDefaultThemes = function(type,theme)
+{
+	Appcelerator.UI.UIManager.defaultThemes[type] = theme;
+};
+
+
 Appcelerator.UI.UIManager.attrToJSON = function(attrs)
 {
 	var a = attrs.split(",");

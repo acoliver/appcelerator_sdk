@@ -3,7 +3,7 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'theme', optional: true, description: "theme for the shadow",defaultValue: 'basic'}];
+		return [{name: 'theme', optional: true, description: "theme for the shadow",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('shadow')}];
 	},
 	build: function(element,options)
 	{
@@ -14,11 +14,9 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 		var d3 = document.createElement("div");
 		d3.className = "shadow_" + options['theme'] + "_3";;
 		var d4 = document.createElement("div");
-		var outerNode = element.parentNode;
-		outerNode.insertBefore(d1, element);
+		new Insertion.Before(element, d1);
 		d1.appendChild(d2);
 	 	d2.appendChild(d3);
-		outerNode.removeChild(element);
 		d3.appendChild(element);
 		var clearDiv = document.createElement("div");
 		clearDiv.style.clear = "both";

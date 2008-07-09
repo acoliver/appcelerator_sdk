@@ -3,7 +3,7 @@ Appcelerator.UI.registerUIComponent('type','panel',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: 'basic'},
+		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('panel')},
 				{name: 'width', optional: true, description: " width for panel" ,defaultValue: '300px', type: T.cssDimension},		 
 				{name: 'footer', optional: true, description: " footer for panel" , defaultValue: ''},
 				{name: 'title', optional: true, description: " title for panel" , defaultValue: ''},

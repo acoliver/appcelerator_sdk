@@ -8,7 +8,7 @@ Appcelerator.UI.registerUIComponent('type','input',
 	
 	build: function(element,options)
 	{
-		var theme = options['theme'];
+		var theme = options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('input')
 		Element.addClassName(element,"input_" + theme + "_input");
 		
 		// wrap input with two images (left and right)

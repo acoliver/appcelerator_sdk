@@ -3,13 +3,13 @@ Appcelerator.UI.registerUIComponent('type','tabpanel',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: 'basic'},
+		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('tabpanel')},
 				{name: 'initial', optional: false, description: "the initial active tab"}];
 	},
 	
 	build: function(element,options)
 	{
-		var classPrefix = 'tabpanel_' + options['theme'];
+		var classPrefix = 'tabpanel_' + options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('tabpanel');
 		var container = document.createElement("div");
 
 		// add left end of tab

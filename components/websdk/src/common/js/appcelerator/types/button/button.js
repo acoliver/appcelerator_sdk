@@ -30,10 +30,10 @@ Appcelerator.UI.registerUIComponent('type','button',
 	
 	build: function(element,options)
 	{
-		var theme = options['theme'];
+		var theme = options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('button');
 		Element.addClassName(element,"button_" + theme + "_middle");
 		element.theme = theme;
-		
+
 		// wrap input with two images (left and right)
 		var img1 = document.createElement('img');
 		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif';
