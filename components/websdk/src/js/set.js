@@ -1,6 +1,45 @@
 Appcelerator.UI = Class.create();
 Appcelerator.UI.UIManager = {};
 Appcelerator.UI.UIComponents = {};
+Appcelerator.UI.UIListeners = {};
+
+Appcelerator.UI.registerListener = function(type,name,event,callback)
+{
+	var f = function()
+	{
+		if (this.name == name || name == '*')
+		{
+			if (this.event == event || event == '*')
+			{
+				var scope = this.data || {};
+				scope.type = this.type;
+				scope.name = this.name;
+				scope.event = this.event;
+				callback.call(scope);
+			}
+		}
+	};
+	var listeners = Appcelerator.UI.UIListeners[type];
+	if (!listeners)
+	{
+		listeners=[];
+		Appcelerator.UI.UIListeners[type] = listeners;
+	}
+	listeners.push(f);
+};
+
+Appcelerator.UI.fireEvent = function(type,name,event,data)
+{
+	var listeners = Appcelerator.UI.UIListeners[type];
+	if (listeners && listeners.length > 0)
+	{
+		var scope = {type:type,name:name,event:event,data:data};
+		for (var c=0;c<listeners.length;c++)
+		{
+			listeners[c].call(scope);
+		}
+	}
+};
 
 /**
  * called by an UI manager implementation to register itself by type
@@ -91,7 +130,10 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound)
 	var f = Appcelerator.UI.UIManager[ui];
 	if (f)
 	{
+		var data = {element:element,args:args};
+		Appcelerator.UI.fireEvent(ui,type,'beforeBuild',data);
 		f(type,element,args);
+		Appcelerator.UI.fireEvent(ui,type,'afterBuild',data);
 	} 
 	else
 	{
@@ -104,6 +146,7 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound)
 			element.state.pending+=1;
 			Appcelerator.Core.requireCommonJS('appcelerator/'+ui+'s/'+ui+'s.js',function()
 			{
+				Appcelerator.UI.fireEvent(ui,type,'register');
 				Appcelerator.loadUIManager(ui,type,element,args,true);
 				element.state.pending-=1;
 				if (Appcelerator.Compiler.checkLoadState(element.state))
@@ -215,7 +258,7 @@ Appcelerator.UI.UIManager.parseAttributes = function(element,f,options)
 		options[modAttr.name] = value;
 		if (error == true)
 		{
-			alert('error');
+			$E('error parsing attributes for '+element);
 			return false;
 		}
 	}
