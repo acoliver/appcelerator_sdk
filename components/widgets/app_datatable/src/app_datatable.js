@@ -175,8 +175,8 @@ Appcelerator.Widget.Datatable =
 		for (var x = 0, len = header_array.length; x < len; x++)
 		{
 			var header_info = header_array[x];
-			var formatterFunction = eval(header_array[x]['formatter']);
-			var onheader = header_array[x]['cellon'];
+			var formatterFunction = eval(header_info['formatter']);
+			var onheader = header_info['cellon'];
 			var onTemplate = null;
 			if (onheader)
 			{
@@ -200,27 +200,26 @@ Appcelerator.Widget.Datatable =
 			}
 					
 			var sort_string = '';
-			if (sort == 'client')
-			{
+			if (header_info['sort']=='false') {
+				sort_string = '';
+			} else if (sort == 'client') {
 				sort_string = 'click then script[Appcelerator.Widget.Datatable.sortDataTableClient(' + x + ',' + '\'' + id + '\'' + ')]';
-			} else if (sort == 'server')
-			{
+			} else if (sort == 'server') {
 				sort_string = 'click then script[Appcelerator.Widget.Datatable.sortDataTableServer(' + x + ',' + '\'' + id + '\'' + ')]';
 				
 				if (parameterMap['current_server_sort_column'] == header_info['property'])
 				{
 					if (!parameterMap['sortBy'][parameterMap['current_server_sort_column']])
 					{
-						header_array[x]['cell'] = header_array[x]['cell'].replace(spacer_img,'');
-						header_array[x]['cell'] += arrow_up_img;
+						header_info['cell'] = header_info['cell'].replace(spacer_img,'');
+						header_info['cell'] += arrow_up_img;
 					} else
 					{
-						header_array[x]['cell'] = header_array[x]['cell'].replace(spacer_img,'');
-						header_array[x]['cell'] += arrow_down_img;
+						header_info['cell'] = header_info['cell'].replace(spacer_img,'');
+						header_info['cell'] += arrow_down_img;
 					}	
 				}
-			} else
-			{
+			} else {
 				sort_string = '';
 			}	
 				
@@ -275,31 +274,35 @@ Appcelerator.Widget.Datatable =
 		
 		for (; xrun < length; xrun++)
 		{
-			table_data_content += '<tr class="table_row">';				
+			table_data_content += '<tr class="table_row">';
+			var row = array[xrun];
 			for (var h = 0, lenH = header_array.length; h < lenH; h++)
 			{
+				var header_info = header_array[h];
 				var cell_class = (xrun % 2 == 0) ? rowEvenClass : rowOddClass;
 				if (cell_class == '')
-				{
 					cell_class = 'table_cell';
-				}
-				
+
 				//Get the column property needed to figure out what column from the current array item we need
-				var column_property_name = header_array[h]['property'];
-				var formatterFunction = header_array[h]['formatterFunction'];
-				var onTemplate = header_array[h]['onTemplate'];
+				var column_property_name = header_info['property'];
+				var formatterFunction = header_info['formatterFunction'];
+				var onTemplate = header_info['onTemplate'];
 				cell_on="";
-				if (onTemplate) 
-				{
-					cell_on = onTemplate.evaluate(array[xrun]);
-				}
-				var cell_value = (Object.getNestedProperty(array[xrun],column_property_name)||'');
-				if (formatterFunction) {
-					cell_value = formatterFunction(cell_value,column_property_name, array[xrun],element);
+				if (onTemplate)
+					cell_on = onTemplate.evaluate(row);
+				var cell_value = (Object.getNestedProperty(row,column_property_name)||'');
+				var dynamicproperty = header_info['dynamicproperty'];
+				if (dynamicproperty) {
+					needRecompile=true;
+					cell_value = dynamicproperty.evaluate(row);
+				} else if (formatterFunction) {
+					cell_value = formatterFunction(cell_value,column_property_name, row,element);
+					cell_value = '<span>'+cell_value+'</span>';
 				} else {
 					cell_value.toString().escapeHTML();
+					cell_value = '<span>'+cell_value+'</span>';
 				}
-				var td ='<td align="' + header_array[h]['align'] +'" '+ cell_on+ ' class="' + cell_class + '"><span>' + cell_value +'</span></td>';
+				var td ='<td align="' + header_info['align'] +'" '+ cell_on+ ' class="' + cell_class + '">' + cell_value +'</td>';
 				table_data_content += td;
 			}
 			table_data_content += '</tr>';
@@ -584,31 +587,36 @@ Appcelerator.Widget.Datatable =
 			if (element_children[i].nodeName.toLowerCase() == 'div')
 			{
 				var header_object = {};
-				//Header cell data				
-				header_langid = element_children[i].getAttribute('langid')||'';
-				if (header_langid == '')
-				{
-					header_object['cell'] = Appcelerator.Compiler.getHtml(element_children[i],true);					
-				} else
-				{
-					header_object['cell'] = Appcelerator.Localization.get(header_langid);
+				//Header cell data
+				if (element_children[i].getAttribute('langid')) {
+					header_object['cell'] =  Appcelerator.Localization.get(element_children[i].getAttribute('langid'));
+					var headertext = Appcelerator.Compiler.getHtml(element_children[i],true);
+					if (headertext)
+						header_object['dynamicproperty'] = new Template(headertext);
+				} else if (element_children[i].getAttribute('title')) {
+					header_object['cell'] = element_children[i].getAttribute('title');
+					var headertext = Appcelerator.Compiler.getHtml(element_children[i],true);
+					if (headertext)
+						header_object['dynamicproperty'] = new Template(headertext);
 				}
+					
 				//Header's 'on' attribute, compile it later
 				header_object['on'] =  element_children[i].getAttribute('on')||''; 
 				header_object['cellon'] =  element_children[i].getAttribute('cellon')||''; 
 				//Header's class attribute
 				header_object['class'] = element_children[i].className||''; 
 				//Header property to let us know what data to get from the array	
-				header_object['property'] = element_children[i].getAttribute('property')||''; 
+				header_object['property'] = element_children[i].getAttribute('property')||'';
 				//Header's 'align' property to go on all TD's making up this column
 				header_object['align'] = element_children[i].getAttribute('align')||''; 
 
 				//Header's sort function
 				header_object['sorter'] = element_children[i].getAttribute('sorter')||''; 
+				header_object['sort'] = element_children[i].getAttribute('sort')||"true"; 
 				
 				//Header's formatter function
 				header_object['formatter'] = element_children[i].getAttribute('formatter')||''; 
-				
+
 				header_array.push(header_object);
 			}
 		}
