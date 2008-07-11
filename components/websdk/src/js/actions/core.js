@@ -994,6 +994,7 @@ Appcelerator.Compiler.executeActionFunction = function(id,method,params,checkena
 	}
 	else
 	{
+		scope = (!scope) ? {} : scope;
         Appcelerator.Compiler.executeFunction(target, method, [target, method, scope.data, scope.scope, scope.version, params, scope.direction, scope.type]);
 	}
 };

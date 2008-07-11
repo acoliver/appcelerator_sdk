@@ -145,9 +145,10 @@ Appcelerator.Widget.Tabpanel =
 			var tab = $(tabs[c][1]);
             Appcelerator.Compiler.StateMachine.addState(id,tabs[c][0],null);
 			tab.state = tabs[c][0];
+			tab.statename = tabs[c][0];
 			tab.onclick = function(e)
 			{
-				Appcelerator.Compiler.StateMachine.fireStateMachineChange(id, this.state, true);
+				Appcelerator.Compiler.StateMachine.fireStateMachineChange(id, this.statename, true);
 				if (selectedTab)
 				{
 					Element.removeClassName(selectedTab, activeClassName);
