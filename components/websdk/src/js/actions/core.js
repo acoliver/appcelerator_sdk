@@ -142,10 +142,16 @@ Appcelerator.Compiler.registerCustomAction('effect',
 						{
 							target = params[c].value;
 						}
+						// is it a transition
+						else if (params[c].key == "transition")
+						{
+						    options[params[c].key] = eval(params[c].value);
+						}
 						// otherwise, its an effect option
 						else
 						{
 						    options[params[c].key] = params[c].value;
+							
 						}
 					}
 				}
