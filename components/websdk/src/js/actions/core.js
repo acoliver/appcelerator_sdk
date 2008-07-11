@@ -74,6 +74,37 @@ Appcelerator.Compiler.effects = $H(Effect).select(function(kv) {
     return Effect.Methods[lowerName] || val.superclass == Effect.Base;
 }).pluck('0');
 
+Appcelerator.Compiler.customEffects = {};
+
+Appcelerator.Compiler.registerCustomEffect = function(effect,callback)
+{
+	Appcelerator.Compiler.customEffects[effect] = callback;
+};
+
+Appcelerator.Compiler.getMoveByOpts = function(params)
+{
+	var x = Appcelerator.Compiler.findParameter(params,'x');
+	x  = (x==null)?0:x;
+	var y = Appcelerator.Compiler.findParameter(params,'y');
+	y  = (y==null)?0:y;
+	var duration = Appcelerator.Compiler.findParameter(params,'duration');
+	duration  = (duration==null)?2:duration;
+	return {'x':x,'y':y,'duration':duration};
+}
+
+Appcelerator.Compiler.registerCustomEffect('Bounce', function(id,params)
+{
+	opts = Appcelerator.Compiler.getMoveByOpts(params)
+	new Effect.MoveBy( $(id), opts['x'], opts['y'], {duration: opts['duration'], transition: Effect.Transitions.SwingTo});
+		
+});
+Appcelerator.Compiler.registerCustomEffect('Bang', function(id,params)
+{
+	opts = Appcelerator.Compiler.getMoveByOpts(params)
+	new Effect.MoveBy( $(id), opts['x'], opts['y'], {duration: opts['duration'], transition: Effect.Transitions.Bounce});
+		
+});
+
 Appcelerator.Compiler.registerCustomAction('effect',
 {
 	metadata:
@@ -88,40 +119,49 @@ Appcelerator.Compiler.registerCustomAction('effect',
 	{
 		if (params && params.length > 0)
 		{
-			var options = {};
-			var target=id
 
 			// split first param to get effect name
 			var arg1= params[0].key.split(",");
 			var effectName = arg1[0];
-
-			// get remaining options
-			if (params.length > 1)
-			{
-				for (var c=1;c<params.length;c++)
-				{
-					// if option is id, set target element for effect
-					if (params[c].key=="id")
-					{
-						target = params[c].value;
-					}
-					// otherwise, its an effect option
-					else
-					{
-					    options[params[c].key] = params[c].value;
-					}
-				}
-			}
-			
-			// format/validate effect name
 			effectName = effectName.dasherize().camelize();
 		  	effectName = effectName.charAt(0).toUpperCase() + effectName.substring(1);
-			if (!Effect[effectName])
-			{
-				throw "syntax error: unsupported effect type: "+effectName;
-			}
 
-			Element.visualEffect(target,effectName,options);
+			// check for standard effects
+			if (Appcelerator.Compiler.effects.indexOf(effectName) != -1)
+			{
+				var options = {};
+				var target=id
+
+				// get remaining options
+				if (params.length > 1)
+				{
+					for (var c=1;c<params.length;c++)
+					{
+						// if option is id, set target element for effect
+						if (params[c].key=="id")
+						{
+							target = params[c].value;
+						}
+						// otherwise, its an effect option
+						else
+						{
+						    options[params[c].key] = params[c].value;
+						}
+					}
+				}
+
+				Element.visualEffect(target,effectName,options);
+				
+			}
+			else if (Appcelerator.Compiler.customEffects[effectName])
+			{
+				var f = Appcelerator.Compiler.customEffects[effectName];
+				f(id,params);
+			}
+			else
+			{
+				throw "syntax error: unsupported effect type: "+effectName;				
+			}
 		}
 		else
 		{

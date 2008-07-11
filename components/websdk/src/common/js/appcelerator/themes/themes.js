@@ -7,7 +7,6 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options)
 		{
 			Appcelerator.UI.UIManager.setDefaultThemes(key,options[key])
 		}
-		Appcelerator.Compiler.compileElementChildren(element);
 	}
 	else
 	{

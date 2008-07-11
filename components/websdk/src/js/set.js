@@ -60,7 +60,6 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				})();
 			}
 		}
-		Appcelerator.Compiler.compileElementChildren(element);
 	}
 	else
 	{
@@ -147,6 +146,8 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 			element.stopCompile=true;
 			Appcelerator.loadUIManager(ui,type,element,args);
 		}
+		Appcelerator.Compiler.compileElementChildren(element);
+
 	},
 	metadata:
 	{
