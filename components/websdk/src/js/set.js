@@ -124,18 +124,12 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 			{
 				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback);
 				element.state.pending-=1;
-				if (Appcelerator.Compiler.checkLoadState(element.state))
-				{
-					element.state = null;
-				}
+				Appcelerator.Compiler.checkLoadState(element);
 			},function()
 			{
 				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
 				element.state.pending-=1;
-				if (Appcelerator.Compiler.checkLoadState(element.state))
-				{
-					element.state = null;
-				}
+				Appcelerator.Compiler.checkLoadState(element);
 			});
 		}
 	}
@@ -168,18 +162,12 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 				Appcelerator.UI.fireEvent(ui,type,'register');
 				Appcelerator.loadUIManager(ui,type,element,args,true,callback);
 				element.state.pending-=1;
-				if (Appcelerator.Compiler.checkLoadState(element.state))
-				{
-					element.state = null;
-				}
+				Appcelerator.Compiler.checkLoadState(element.state);
 			},function()
 			{
 				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
 				element.state.pending-=1;
-				if (Appcelerator.Compiler.checkLoadState(element.state))
-				{
-					element.state = null;
-				}
+				Appcelerator.Compiler.checkLoadState(element.state);
 			});
 		}
 	}
@@ -190,13 +178,20 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	queue:[],
 	handle: function(element,attribute,value)
 	{
-		// we wrap all set components in a container div
-		var div = document.createElement('div');
-		div.className = 'container';
-		div.style.padding = '0';
-		div.style.margin = '0';
-		Appcelerator.Compiler.getAndEnsureId(div);
-		element.wrap(div);
+		if (element != document.body)
+		{
+			// we wrap all set components in a container div
+			var div = document.createElement('div');
+			div.className = 'container';
+			div.style.padding = '0';
+			div.style.margin = '0';
+			Appcelerator.Compiler.getAndEnsureId(div);
+			element.wrap(div);
+		}
+		else
+		{
+			Element.addClassName(element,'container');
+		}
 
 		// parse value
 		var expressions = Appcelerator.Compiler.smartSplit(value,' and ');
