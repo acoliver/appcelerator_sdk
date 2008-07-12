@@ -145,8 +145,12 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 	{
 		var data = {element:element,args:args};
 		Appcelerator.UI.fireEvent(ui,type,'beforeBuild',data);
-		f(type,element,args,callback);
-		Appcelerator.UI.fireEvent(ui,type,'afterBuild',data);
+		var afterBuild = function()
+		{
+			Appcelerator.UI.fireEvent(ui,type,'afterBuild',data);
+			if (callback) callback();
+		};
+		f(type,element,args,afterBuild);
 	} 
 	else
 	{
