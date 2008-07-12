@@ -23,13 +23,13 @@ Appcelerator.Core.HeadElement = document.getElementsByTagName('head')[0];
  * @param {string} name of the common file
  * @param {function} onload function to invoke
  */
-Appcelerator.Core.requireCommonCSS = function(name,onload)
+Appcelerator.Core.requireCommonCSS = function(name,onload,onerror)
 {
     var srcpath = Appcelerator.Core.getModuleCommonDirectory()+'/css/'
             
     Appcelerator.Core.requireMultiple(function(path,action)
     {
-        Appcelerator.Core.remoteLoadCSS(path,onload);
+        Appcelerator.Core.remoteLoadCSS(path,onload,onerror);
     },srcpath,name);
 };
 
@@ -41,20 +41,20 @@ Appcelerator.Core.requireCommonCSS = function(name,onload)
  * @param {string} name of the common js
  * @param {function} onload function to callback upon load
  */
-Appcelerator.Core.requireCommonJS = function(name,onload)
+Appcelerator.Core.requireCommonJS = function(name,onload,onerror)
 {
     var srcpath = Appcelerator.Core.getModuleCommonDirectory()+'/js/'
             
     Appcelerator.Core.requireMultiple(function(path,action)
     {
-        Appcelerator.Core.remoteLoadScript(path,onload);
+        Appcelerator.Core.remoteLoadScript(path,onload,onerror);
     },srcpath,name);
 };
 
 /**
  * internal method for loading multiple files
  */
-Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
+Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload,onerror)
 {
     if (Object.isUndefined(name))
     {
@@ -74,10 +74,10 @@ Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
             }
             else
             {
-                Appcelerator.Core.requireMultiple(invoker,srcpath,name[idx],loader);                    
+                Appcelerator.Core.requireMultiple(invoker,srcpath,name[idx],loader,onerror);                    
             }
         };
-        Appcelerator.Core.requireMultiple(invoker,srcpath,name[idx],loader);                    
+        Appcelerator.Core.requireMultiple(invoker,srcpath,name[idx],loader,onerror);                    
     }
     else
     {
@@ -104,9 +104,9 @@ Appcelerator.Core.requireMultiple = function(invoker,srcpath,name,onload)
  * @param {string} path to resource
  * @param {function} onload function to execute once loaded
  */
-Appcelerator.Core.remoteLoadScript = function(path,onload)
+Appcelerator.Core.remoteLoadScript = function(path,onload,onerror)
 {
-    Appcelerator.Core.remoteLoad('script','text/javascript',path,onload);  
+    Appcelerator.Core.remoteLoad('script','text/javascript',path,onload,onerror);  
 };
 
 /**
@@ -128,7 +128,7 @@ Appcelerator.Core.remoteLoadScriptWithDependencies = function()
     if(0 < Appcelerator.Core.scriptWithDependenciesQueue.length) 
     {
         var script = Appcelerator.Core.scriptWithDependenciesQueue[0];
-        Appcelerator.Core.remoteLoad('script', 'text/javascript', script.path, function() {});
+        Appcelerator.Core.remoteLoad('script', 'text/javascript', script.path, null);
         Appcelerator.Core.scriptWithDependenciesCallback = function() 
         {
             script.onload();
@@ -144,11 +144,10 @@ Appcelerator.Core.remoteLoadScriptWithDependencies = function()
  * @param {string} path to resource
  * @param {function} onload function to execute once loaded
  */
-Appcelerator.Core.remoteLoadCSS = function(path,onload)
+Appcelerator.Core.remoteLoadCSS = function(path,onload,onerror)
 {
-    Appcelerator.Core.remoteLoad('link','text/css',path,onload);  
+    Appcelerator.Core.remoteLoad('link','text/css',path,onload,onerror);  
 };
-
 
 /**
  * dynamically load a remote file
@@ -157,8 +156,9 @@ Appcelerator.Core.remoteLoadCSS = function(path,onload)
  * @param {string} type as in content type
  * @param {string} full path to the resource
  * @param {function} onload to invoke upon load
+ * @param {function} onerror to invoke upon error
  */
-Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
+Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
 {
     var array = Appcelerator.Core.fetching[path];
     if (array)
@@ -185,6 +185,7 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
             element.setAttribute('rel','stylesheet');
             break;
     }
+	var timer = null;
     var loader = function()
     {
        var callbacks = Appcelerator.Core.fetching[path];
@@ -196,6 +197,7 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
            }
            delete Appcelerator.Core.fetching[path];
        }
+	   if (timer) clearTimeout(timer);
     };    
     if (tag == 'script')
     {
@@ -211,6 +213,21 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
 	        {
 	            var loaded = false;
 	            element.onload = loader;
+				if (onerror)
+				{
+					if (!loaded)
+					{
+						// max time to determine if we've got an error
+						// obviously won't work if takes long than 5 secs to load script
+						timer=setTimeout(onerror,5000);
+					}
+				}
+				element.onerror = function()
+				{
+					// for browsers that support onerror
+					if (timer) clearTimeout(timer);
+					onerror();
+				};
 	            element.onreadystatechange = function()
 	            {
 	                switch(this.readyState)
@@ -242,9 +259,9 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload)
 // dynamically load JS from path and call onload once 
 // loaded (or immediately if already loaded)
 //
-Appcelerator.Core.loadJS = function (path, onload, track)
+Appcelerator.Core.loadJS = function (path, onload, track, onerror)
 {
-    Appcelerator.Core.remoteLoadScript(path,onload);
+    Appcelerator.Core.remoteLoadScript(path,onload,onerror);
 };
 
 //
@@ -404,7 +421,7 @@ Appcelerator.Core.getModuleNameFromTag=function(moduleName)
  * @param {string} name of the module (for example, app:script)
  * @param {function} function to call upon loading *and* registering the module
  */
-Appcelerator.Core.requireModule = function(moduleName,onload)
+Appcelerator.Core.requireModule = function(moduleName,onload,onerror)
 {
 	var moduleName = Appcelerator.Core.getModuleNameFromTag(moduleName);
 	var module = Appcelerator.Core.modules[moduleName];

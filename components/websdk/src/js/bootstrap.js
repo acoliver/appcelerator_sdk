@@ -173,6 +173,7 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isOpera = (ua.indexOf('opera') > -1);
 	Appcelerator.Browser.isSafari = (ua.indexOf('safari') > -1);
 	Appcelerator.Browser.isSafari2 = false;
+	Appcelerator.Browser.isSafari3 = false;
 	Appcelerator.Browser.isIE = !!(window.ActiveXObject);
 	Appcelerator.Browser.isIE6 = false;
 	Appcelerator.Browser.isIE7 = false;
@@ -194,6 +195,10 @@ Appcelerator.Parameters = $H({});
 		{
 			Appcelerator.Browser.isSafari2 = true;
 		}
+		else if (webKitFields[2] > 500 && webKitFields[2] < 600)
+		{
+			Appcelerator.Browser.isSafari3 = true;
+		}
 	}
 
 	Appcelerator.Browser.isGecko = !Appcelerator.Browser.isSafari && (ua.indexOf('gecko') > -1);
@@ -213,22 +218,28 @@ Appcelerator.Parameters = $H({});
 	Appcelerator.Browser.isMac = false;
 	Appcelerator.Browser.isLinux = false;
 	Appcelerator.Browser.isSunOS = false;
+	
+	var platform = null;
 
 	if(ua.indexOf("windows") != -1 || ua.indexOf("win32") != -1)
 	{
 	    Appcelerator.Browser.isWindows = true;
+		platform = 'win32';
 	}
 	else if(ua.indexOf("macintosh") != -1 || ua.indexOf('mac os x') != -1)
 	{
 		Appcelerator.Browser.isMac = true;
+		platform = 'mac';
 	}
 	else if (ua.indexOf('linux')!=-1)
 	{
 		Appcelerator.Browser.isLinux = true;
+		platform = 'linux';
 	}
 	else if (ua.indexOf('sunos')!=-1)
 	{
 		Appcelerator.Browser.isSunOS = true;
+		platform = 'sun';
 	}
 	
 	// silverlight detection
@@ -330,6 +341,52 @@ Appcelerator.Parameters = $H({});
         if (Appcelerator.Browser['is'+name]===true)
         {
             Appcelerator.Browser.isBrowserSupported=true;
+			Event.observe(window,'load',function()
+			{
+				if (platform) Element.addClassName(document.body,platform);
+				Element.addClassName(document.body,name.toLowerCase());
+				if (Appcelerator.Browser.isMozilla)
+				{
+					Element.addClassName(document.body,'mozilla');
+				}
+				if (Appcelerator.Browser.isIPhone)
+				{
+					Element.addClassName(document.body,'iphone');
+					Element.addClassName(document.body,'webkit');
+					Element.addClassName(document.body,'safari');
+				}
+				if (Appcelerator.Browser.isSafari)
+				{
+					Element.addClassName(document.body,'webkit');
+					if (Appcelerator.Browser.isSafari2)
+					{
+						Element.addClassName(document.body,'safari2');
+					}
+					else if (Appcelerator.Browser.isSafari3)
+					{
+						Element.addClassName(document.body,'safari3');
+					}
+				}
+				else if (Appcelerator.Browser.isGecko)
+				{
+					Element.addClassName(document.body,'gecko');
+				}
+				if (Appcelerator.Browser.isFirefox)
+				{
+					if (ua.indexOf('firefox/3'))
+					{
+						Element.addClassName(document.body,'firefox3');
+					}
+					else if (ua.indexOf('firefox/2'))
+					{
+						Element.addClassName(document.body,'firefox2');
+					}
+				}
+				else if (Appcelerator.Browser.isIE)
+				{
+					Element.addClassName(document.body,'msie');
+				}
+			});
             throw $break;
         }
 	});

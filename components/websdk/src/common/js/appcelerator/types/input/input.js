@@ -27,7 +27,6 @@ Appcelerator.UI.registerUIComponent('type','input',
 		{
 			Element.addClassName(img1,"input_" + theme + "_geckofix");
 			Element.addClassName(img2,"input_" + theme + "_geckofix");
-			
 		}
 
 		// fix PNGs

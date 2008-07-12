@@ -100,8 +100,9 @@ Appcelerator.UI.registerUIComponent('type','panel',
 			$(element.id + "_btm").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
 			$(element.id + "_br").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
 			if (options['closeable'])
+			{
 				$(element.id + "_close").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-
+			}
 		}
 		
 		Appcelerator.Core.loadTheme('type','panel',options['theme']);	

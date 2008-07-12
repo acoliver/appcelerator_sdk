@@ -1,4 +1,4 @@
-Appcelerator.UI.registerUIManager('theme', function(theme,element,options)
+Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callback)
 {
 	// is this a default setting
 	if (theme == 'defaults')
@@ -12,7 +12,7 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options)
 	{
 		var type = element.nodeName.toLowerCase();
 		options['theme']=theme;
-		Appcelerator.UI.loadUIComponent('type',type,element,options);		
+		Appcelerator.UI.loadUIComponent('type',type,element,options,false,callback);		
 	}
 });
 

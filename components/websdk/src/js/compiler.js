@@ -579,6 +579,7 @@ Appcelerator.Compiler.compileElementChildren = function(element)
 		{
             Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
 		}
+		Appcelerator.Compiler.checkLoadState(element.state);
 	}
 };
 Appcelerator.Compiler.getElementChildren = function (element)

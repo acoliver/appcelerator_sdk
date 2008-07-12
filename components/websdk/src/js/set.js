@@ -1,5 +1,5 @@
 Appcelerator.UI = Class.create();
-Appcelerator.UI.UIManager = {};
+Appcelerator.UI.UIManager = {managers:{}};
 Appcelerator.UI.UIComponents = {};
 Appcelerator.UI.UIListeners = {};
 
@@ -46,7 +46,7 @@ Appcelerator.UI.fireEvent = function(type,name,event,data)
  */
 Appcelerator.UI.registerUIManager = function(ui,impl)
 {
-	Appcelerator.UI.UIManager[ui] = impl;
+	Appcelerator.UI.UIManager.managers[ui] = impl;
 };
 
 /**
@@ -60,7 +60,7 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 /**
  * called to load UI component by UI manager
  */ 
-Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound)
+Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound,callback)
 {
 	var f = Appcelerator.UI.UIComponents[type+':'+name];
 	if (f)
@@ -99,6 +99,10 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				})();
 			}
 		}
+		if (callback)
+		{
+			callback();
+		}
 	}
 	else
 	{
@@ -111,7 +115,15 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 			element.state.pending+=1;
 			Appcelerator.Core.requireCommonJS('appcelerator/'+type+'s/'+name+'/'+name+'.js',function()
 			{
-				Appcelerator.UI.loadUIComponent(type,name,element,options,true);
+				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback);
+				element.state.pending-=1;
+				if (Appcelerator.Compiler.checkLoadState(element.state))
+				{
+					element.state = null;
+				}
+			},function()
+			{
+				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
 				element.state.pending-=1;
 				if (Appcelerator.Compiler.checkLoadState(element.state))
 				{
@@ -125,14 +137,14 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 /**
  * called by a UI to load a UI manager
  */
-Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound)
+Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback)
 {
-	var f = Appcelerator.UI.UIManager[ui];
+	var f = Appcelerator.UI.UIManager.managers[ui];
 	if (f)
 	{
 		var data = {element:element,args:args};
 		Appcelerator.UI.fireEvent(ui,type,'beforeBuild',data);
-		f(type,element,args);
+		f(type,element,args,callback);
 		Appcelerator.UI.fireEvent(ui,type,'afterBuild',data);
 	} 
 	else
@@ -147,7 +159,15 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound)
 			Appcelerator.Core.requireCommonJS('appcelerator/'+ui+'s/'+ui+'s.js',function()
 			{
 				Appcelerator.UI.fireEvent(ui,type,'register');
-				Appcelerator.loadUIManager(ui,type,element,args,true);
+				Appcelerator.loadUIManager(ui,type,element,args,true,callback);
+				element.state.pending-=1;
+				if (Appcelerator.Compiler.checkLoadState(element.state))
+				{
+					element.state = null;
+				}
+			},function()
+			{
+				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
 				element.state.pending-=1;
 				if (Appcelerator.Compiler.checkLoadState(element.state))
 				{
@@ -165,6 +185,16 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	{
 		// parse value
 		var expressions = Appcelerator.Compiler.smartSplit(value,' and ');
+		var count = 0;
+		var id = element.id;
+		var compiler = function()
+		{
+			count++;
+			if (count == expressions.length)
+			{
+				Appcelerator.Compiler.compileElementChildren(element);
+			}
+		};
 		for (var i=0;i<expressions.length;i++)
 		{
 			// turn into comma-delimited string
@@ -186,11 +216,9 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 					args[pair[0].trim()] = pair[1].trim();
 				} 
 			}
-			element.stopCompile=true;
-			Appcelerator.loadUIManager(ui,type,element,args);
+			if (i == 0) element.stopCompile=true;
+			Appcelerator.loadUIManager(ui,type,element,args,false,compiler);
 		}
-		Appcelerator.Compiler.compileElementChildren(element);
-
 	},
 	metadata:
 	{
