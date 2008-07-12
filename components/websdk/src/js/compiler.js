@@ -556,6 +556,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
 			state.pending-=1;
 			Appcelerator.Compiler.checkLoadState(state);
+			element.fire('element:compiled:'+element.id,{id:element.id});
 		});
 	}
 	else
@@ -566,6 +567,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
         {
 			Appcelerator.Compiler.compileElementChildren(element);
 			element.state = null;
+			element.fire('element:compiled:'+element.id,{id:element.id});
 		}
 	}
 };
@@ -580,6 +582,7 @@ Appcelerator.Compiler.compileElementChildren = function(element)
             Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
 		}
 		Appcelerator.Compiler.checkLoadState(element.state);
+		element.fire('element:compiled:'+element.id,{id:element.id});
 	}
 };
 Appcelerator.Compiler.getElementChildren = function (element)

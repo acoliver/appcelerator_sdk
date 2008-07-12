@@ -10,6 +10,7 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 	}
 	else
 	{
+		Element.addClassName(element,'themed');
 		var type = element.nodeName.toLowerCase();
 		options['theme']=theme;
 		Appcelerator.UI.loadUIComponent('type',type,element,options,false,callback);		

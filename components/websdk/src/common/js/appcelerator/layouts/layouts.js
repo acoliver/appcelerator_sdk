@@ -6,6 +6,8 @@ Appcelerator.UI.LayoutManager._formatTable = function(options)
 
 Appcelerator.UI.registerUIManager('layout', function(type,element,options,callback)
 {
+	Element.addClassName(element,'layout');
+	Element.addClassName(element,type);
 	Appcelerator.UI.loadUIComponent('layout',type,element,options,false,callback);
 });
 

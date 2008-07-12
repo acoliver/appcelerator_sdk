@@ -20,6 +20,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 			// modal container
 			var container = document.createElement("div");
 			container.id = element.id + "_modal_container";
+			container.className = 'behavior modal';
 			var width = (Appcelerator.Browser.isIE6)? windowWidth + "px":"100%";
 			var overlayHtml = '<div style="display:none;position:absolute;top:0;left:0;z-index:2000;width:'+width+';height:'+windowHeight+'px;overflow:hidden;background-color:'+options['background-color']+';filter: alpha( opacity = '+options['opacity']*100+' );-moz-opacity:'+options['opacity']+';opacity:'+options['opacity']+';" on="'+on+'" ></div>';
 			new Insertion.Bottom(container, overlayHtml);

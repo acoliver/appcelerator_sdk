@@ -34,6 +34,10 @@
 {
 	top:5px;
 }
+body.firefox3 .layout.horizontal .input_rounded_search_input
+{
+	height:20px !important;
+}
 body.firefox3 .input_rounded_search_left
 {
 	height:20px !important;
