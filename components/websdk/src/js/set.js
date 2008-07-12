@@ -62,7 +62,7 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
  */ 
 Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound,callback)
 {
-	var f = Appcelerator.UI.UIComponents[type];
+	var f = Appcelerator.UI.UIComponents[type+':'+name];
 	if (f)
 	{
 		var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,f,options);
