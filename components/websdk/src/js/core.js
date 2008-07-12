@@ -221,13 +221,13 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
 						// obviously won't work if takes long than 5 secs to load script
 						timer=setTimeout(onerror,5000);
 					}
+					element.onerror = function()
+					{
+						// for browsers that support onerror
+						if (timer) clearTimeout(timer);
+						onerror();
+					};
 				}
-				element.onerror = function()
-				{
-					// for browsers that support onerror
-					if (timer) clearTimeout(timer);
-					onerror();
-				};
 	            element.onreadystatechange = function()
 	            {
 	                switch(this.readyState)
