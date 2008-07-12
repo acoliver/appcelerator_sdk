@@ -186,7 +186,6 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 		// parse value
 		var expressions = Appcelerator.Compiler.smartSplit(value,' and ');
 		var count = 0;
-		var id = element.id;
 		var compiler = function()
 		{
 			count++;
