@@ -156,6 +156,13 @@ Appcelerator.Parameters = $H({});
     Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
     Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
     Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
+
+	if (Appcelerator.jsFileLocation.indexOf('code.appcelerator.org') != -1)
+	{
+		var codepath = (('https:' == document.location.protocol) ? 'https://s3.amazonaws.com/code.appcelerator.org' : 'http://code.appcelerator.org' );
+		Appcelerator.ModulePath = codepath + Appcelerator.Version + '/widgets/';
+		Appcelerator.WidgetPath = Appcelerator.ModulePath;
+	}
 	
     Appcelerator.Parameters = Appcelerator.Parameters.merge(window.location.href.toQueryParams());
     
@@ -373,11 +380,11 @@ Appcelerator.Parameters = $H({});
 				}
 				if (Appcelerator.Browser.isFirefox)
 				{
-					if (ua.indexOf('firefox/3'))
+					if (ua.indexOf('firefox/3')>0)
 					{
 						Element.addClassName(document.body,'firefox3');
 					}
-					else if (ua.indexOf('firefox/2'))
+					else if (ua.indexOf('firefox/2')>0)
 					{
 						Element.addClassName(document.body,'firefox2');
 					}

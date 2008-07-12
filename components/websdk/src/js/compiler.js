@@ -364,7 +364,7 @@ Appcelerator.Compiler.addContainerProcessor(
 
 Appcelerator.Compiler.checkLoadState = function (state)
 {
-	if (state.pending==0 && state.scanned)
+	if (state && state.pending==0 && state.scanned)
 	{
 		if (typeof(state.onfinish)=='function')
 		{
@@ -545,55 +545,68 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 
 	element.state = state;
 
-	var name = Appcelerator.Compiler.getTagname(element);
-	if (name.indexOf(':')>0)
+	try
 	{
-		element.style.originalDisplay = element.style.display || 'block';
-
-        state.pending+=1;
-		Appcelerator.Core.requireModule(name,function()
+		var name = Appcelerator.Compiler.getTagname(element);
+		if (name.indexOf(':')>0)
 		{
-			var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
-			state.pending-=1;
-			Appcelerator.Compiler.checkLoadState(state);
-			element.fire('element:compiled:'+element.id,{id:element.id});
-		});
-	}
-	else
-	{
-		Appcelerator.Compiler.delegateToAttributeListeners(element);
+			element.style.originalDisplay = element.style.display || 'block';
 
-		if (recursive && !element.stopCompile)
-        {
-			Appcelerator.Compiler.compileElementChildren(element);
-			element.state = null;
-			element.fire('element:compiled:'+element.id,{id:element.id});
+	        state.pending+=1;
+			Appcelerator.Core.requireModule(name,function()
+			{
+				var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+				state.pending-=1;
+				Appcelerator.Compiler.checkLoadState(state);
+				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
+			});
 		}
+		else
+		{
+			Appcelerator.Compiler.delegateToAttributeListeners(element);
+
+			if (recursive && !element.stopCompile)
+	        {
+				Appcelerator.Compiler.compileElementChildren(element);
+				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
+			}
+		}
+	}
+	catch(e)
+	{
+		Appcelerator.Compiler.handleElementException(element, e, 'compiling ' + element.id);
 	}
 };
 
 Appcelerator.Compiler.compileElementChildren = function(element)
 {
-	if (element.nodeName.toLowerCase() != 'textarea')
+	if (element && element.nodeType == 1)
 	{
-		var elementChildren = Appcelerator.Compiler.getElementChildren(element);
-		for (var i=0,len=elementChildren.length;i<len;i++)
+		if (element.nodeName.toLowerCase() != 'textarea')
 		{
-            Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
+			var elementChildren = Appcelerator.Compiler.getElementChildren(element);
+			for (var i=0,len=elementChildren.length;i<len;i++)
+			{
+	            Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
+			}
 		}
 		Appcelerator.Compiler.checkLoadState(element.state);
-		element.fire('element:compiled:'+element.id,{id:element.id});
+		Element.fire(element,'element:compiled:'+element.id,{id:element.id});
 	}
 };
+
 Appcelerator.Compiler.getElementChildren = function (element)
 {
     var elementChildren = [];
-	for (var i = 0, length = element.childNodes.length; i < length; i++)
+	if (element && element.nodeType == 1)
 	{
-	    if (element.childNodes[i].nodeType == 1)
-	    {
-    	     elementChildren.push(element.childNodes[i]);
-    	}
+		for (var i = 0, length = element.childNodes.length; i < length; i++)
+		{
+		    if (element.childNodes[i].nodeType == 1)
+		    {
+	    	     elementChildren.push(element.childNodes[i]);
+	    	}
+		}
 	}
 	return elementChildren;
 }
