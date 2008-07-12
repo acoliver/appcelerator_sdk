@@ -68,7 +68,14 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 		var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,f,options);
 		if (formattedOptions!=false)
 		{
-			f.build(element,formattedOptions);
+			try
+			{
+				f.build(element,formattedOptions);
+			}
+			catch (e)
+			{
+				Appcelerator.Compiler.handleElementException(element,e);
+			}
 		}
 		if (f.getActions)
 		{

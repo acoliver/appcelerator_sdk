@@ -2843,81 +2843,10 @@ Appcelerator.Compiler.executeAfter = function(action,delay,scope)
  */
 Appcelerator.Compiler.handleElementException = function(element,e,context)
 {
-	var makeDiv = false;
-
-	if (!element)
-	{
-		var id = Appcelerator.Compiler.generateId();
-		new Insertion.Bottom(document.body,'<div id="'+id+'"></div>');
-		makeDiv = true;
-		element = $(id);
-	}
-
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
-
-	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] ith ID: '+(element.id||element)+' has an exception: <div>'+Object.getExceptionDetail(e,true)+'</div><div>in <pre>'+(context||'unknown')+'</pre></div></div>';
+	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] with ID: '+(element.id||element)+' has an error: <div>'+Object.getExceptionDetail(e,true)+'</div>' + (context ? '<div>in <pre>'+context+'</pre></div>' : '') + '</div>';
 	$E(msg);
-
-	switch (tag)
-	{
-		case 'input':
-		case 'textbox':
-		{
-			element.value = element.id;
-			makeDiv=true;
-			break;
-		}
-		case 'select':
-		{
-			element.options.length = 0;
-			element.options[0]=new Option(element.id,element.id);
-			makeDiv=true;
-			break;
-		}
-		case 'img':
-		{
-			element.src = Appcelerator.ImagePath + '/warning.png';
-			makeDiv=true;
-			break;
-		}
-		case 'a':
-		{
-			Appcelerator.Compiler.setHTML(element,element.id);
-			makeDiv=true;
-			break;
-		}
-		case 'script':
-		{
-			makeDiv=true;
-			break;
-		}
-	}
-
-	if (tag.indexOf(':')>0)
-	{
-		makeDiv=true;
-	}
-
-	if (makeDiv)
-	{
-		Element.remove(element);
-		var id = Appcelerator.Compiler.generateId();
-		new Insertion.Top(document.body,'<div style="2px dotted #900"><img src="'+Appcelerator.ImagePath+'warning.png"/> <span id="'+id+'"></span></div>');
-		element = $(id);
-		var p = element.parentNode;
-        p.style.font='auto';
-		p.style.display='block';
-		p.style.visibility='visible';
-		p.style.color='black';
-		p.style.margin='0px auto';
-		p.style.padding='5px';
-		p.style.border='1px solid #c00';
-		p.style.zIndex='9999';
-		p.style.opacity='1.0';
-		p.style.backgroundColor='#fcc';
-	}
-
-	Appcelerator.Compiler.setHTML(element,msg);
+	element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
 };
 
 Appcelerator.Compiler.fieldSets = {};
