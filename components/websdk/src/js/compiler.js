@@ -362,21 +362,22 @@ Appcelerator.Compiler.addContainerProcessor(
 });
 
 
-Appcelerator.Compiler.checkLoadState = function (state)
+Appcelerator.Compiler.checkLoadState = function (element)
 {
+	var state = element.state;
 	if (state && state.pending==0 && state.scanned)
 	{
 		if (typeof(state.onfinish)=='function')
 		{
 			state.onfinish(code);
-			return true;
 		}
 
 		if (typeof(state.onafterfinish)=='function')
 		{
 			state.onafterfinish();
-			return true;
 		}
+		Appcelerator.Compiler.removeState(element);
+		return true;
 	}
 	return false;
 };
@@ -403,12 +404,27 @@ Appcelerator.Compiler.doCompile = function(element,recursive)
     var state = Appcelerator.Compiler.createCompilerState();
     Appcelerator.Compiler.compileElement(element,state,recursive);
     state.scanned = true;
-    Appcelerator.Compiler.checkLoadState(state);
+    Appcelerator.Compiler.checkLoadState(element);
+};
+
+Appcelerator.Compiler.removeState = function(element)
+{
+	if (element.state)
+	{
+		try 
+		{
+			delete element.state;
+		}
+		catch (e)
+		{
+			element.state = null;
+		}
+	}
 };
 
 Appcelerator.Compiler.createCompilerState = function ()
 {
-	return {pending:0,code:'',scanned:false};
+	return {pending:0,scanned:false};
 };
 
 Appcelerator.Compiler.onbeforecompileListeners = [];
@@ -454,7 +470,8 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
     }
 
     var state = Appcelerator.Compiler.createCompilerState();
-
+	container.state = state;
+	
     // start scanning at the body
     Appcelerator.Compiler.compileElement(container,state);
 
@@ -472,7 +489,7 @@ Appcelerator.Compiler.compileDocument = function(onFinishCompiled)
 			Appcelerator.Compiler.compileDocumentOnFinish();
         }).defer();
     };
-    Appcelerator.Compiler.checkLoadState(state);
+    Appcelerator.Compiler.checkLoadState(container);
 };
 
 Appcelerator.Compiler.compileDocumentOnFinish = function ()
@@ -543,6 +560,8 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
         element.compiled = 1;
     }
 
+	//TODO: fix this - we need to remove this from element
+	
 	element.state = state;
 
 	try
@@ -557,7 +576,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 			{
 				var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
 				state.pending-=1;
-				Appcelerator.Compiler.checkLoadState(state);
+				Appcelerator.Compiler.checkLoadState(element);
 				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
 			});
 		}
@@ -590,7 +609,7 @@ Appcelerator.Compiler.compileElementChildren = function(element)
 	            Appcelerator.Compiler.compileElement(elementChildren[i],element.state);
 			}
 		}
-		Appcelerator.Compiler.checkLoadState(element.state);
+		Appcelerator.Compiler.checkLoadState(element);
 		Element.fire(element,'element:compiled:'+element.id,{id:element.id});
 	}
 };

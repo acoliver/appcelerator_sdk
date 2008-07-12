@@ -720,15 +720,13 @@ Appcelerator.Core.onunload = function(f)
 
 Appcelerator.Core.onloadInvoker = function()
 {
-	var ts = new Date().getTime();
-	
 	for (var c=0;c<Appcelerator.Core.onloaders.length;c++)
 	{
 		Appcelerator.Core.onloaders[c]();
 	} 
 	Appcelerator.Core.onloaders = null;
 	
-	Logger.info('Appcelerator v'+Appcelerator.Version+' ... loaded in '+(new Date().getTime()-ts)+' ms');
+	Logger.info('Appcelerator v'+Appcelerator.Version+' ... loaded in '+(new Date().getTime()-Appcelerator.started.getTime())+' ms');
 	Logger.info(Appcelerator.Copyright);
 	Logger.info(Appcelerator.LicenseMessage);
 	Logger.info('More App. Less Code.');
@@ -758,9 +756,11 @@ Appcelerator.Core.onload(function()
         cssPath: Appcelerator.StylePath,
         contentPath: Appcelerator.ContentPath,
         modulePath: Appcelerator.ModulePath,
-        instanceid: Appcelerator.instanceid
+        instanceid: Appcelerator.instanceid,
+		version: Appcelerator.Version,
+		codeServer: 'http://code.appcelerator.org/'
     };
-
+ 
 
 	if (Appcelerator.Browser.autocheckBrowserSupport && !Appcelerator.Browser.isBrowserSupported)
 	{
