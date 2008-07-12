@@ -7,4 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ layout ]
+:licenses: [1]
 :description: "app:template is a layout component for loading content based on a template"

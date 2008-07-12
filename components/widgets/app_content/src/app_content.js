@@ -32,7 +32,7 @@ Appcelerator.Widget.Content =
 	},
 	getVersion: function()
 	{
-		return '1.0.2';
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{
@@ -137,6 +137,7 @@ Appcelerator.Widget.Content =
 					}
 					var scope = target.getAttribute('scope') || target.scope;
 					var state = Appcelerator.Compiler.createCompilerState();
+					target.state = state;
 					var html = resp.responseText.stripScripts();
 					var match = /<body[^>]*>([\s\S]*)?<\/body>/mg.exec(html);
 					if (match)
@@ -165,7 +166,7 @@ Appcelerator.Widget.Content =
 					resp.responseText.evalScripts();
 					Appcelerator.Compiler.compileElement(target.firstChild,state);
 					state.scanned=true;
-					Appcelerator.Compiler.checkLoadState(state);
+					Appcelerator.Compiler.checkLoadState(target);
 				}
 			});
 		}
@@ -184,6 +185,7 @@ Appcelerator.Widget.Content =
 				Appcelerator.Compiler.getAndEnsureId(doc);
 				var contentHTML = doc.innerHTML;
 				var state = Appcelerator.Compiler.createCompilerState();
+				target.state = state;
 				var html = '<div>'+contentHTML.stripScripts()+'</div>';
 				if (args)
 				{
@@ -206,7 +208,7 @@ Appcelerator.Widget.Content =
 				contentHTML.evalScripts();
 				Appcelerator.Compiler.compileElement(target.firstChild,state);
 				state.scanned=true;
-				Appcelerator.Compiler.checkLoadState(state);
+				Appcelerator.Compiler.checkLoadState(target);
 			},true,true);
 		}
 	}

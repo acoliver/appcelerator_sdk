@@ -6,4 +6,5 @@
     <download>@{rootPath}download</download>
     <sessionid>app_session_id</sessionid>
     <language>perl</language>
+    <service>perl</service>
 </appcelerator>

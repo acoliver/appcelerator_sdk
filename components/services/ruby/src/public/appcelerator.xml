@@ -6,4 +6,6 @@
     <download>@{rootPath}download</download>
     <proxy>@{rootPath}proxy</proxy>
     <sessionid>SESSIONID</sessionid>
+    <language>ruby</language>
+    <service>rails</service>
 </appcelerator>

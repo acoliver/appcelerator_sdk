@@ -57,7 +57,7 @@ Appcelerator.Widget.Validation =
 	},
 	getVersion: function()
 	{
-		return 1.0;
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{

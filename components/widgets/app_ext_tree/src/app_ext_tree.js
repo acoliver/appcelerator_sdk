@@ -11,7 +11,7 @@ Appcelerator.Widget.AppExtTree =
     },
     getVersion: function()
     {
-        return 1.2;
+        return '__VERSION__';
     },
     getSpecVersion: function()
     {

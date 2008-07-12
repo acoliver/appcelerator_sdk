@@ -34,7 +34,7 @@ Appcelerator.Widget.Calendar =
 	},
 	getVersion: function()
 	{
-		return '1.0.4';
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{

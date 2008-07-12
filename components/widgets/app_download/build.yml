@@ -7,4 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ ]
+:licenses: [1]
 :description: "app:download is a simple utility for doing dynamic downloads using a remote service"

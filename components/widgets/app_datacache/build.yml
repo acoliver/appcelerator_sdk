@@ -7,4 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ ]
+:licenses: [1]
 :description: "app:datacache is a component which can be used to cache remote message responses and allow the results to be re-used within a specified time period instead of going back to the server"

@@ -4,7 +4,8 @@
 	<servicebroker poll="false" marshaller="application/json">@{rootPath}/servicebroker</servicebroker>
 	<upload>@{rootPath}upload.php</upload>
 	<download>@{rootPath}download.php</download>
-    <proxy>@{rootPath}/proxy</proxy>
+   <proxy>@{rootPath}/proxy</proxy>
 	<sessionid>PHPSESSID</sessionid>
    <language>php</language>
+   <service>zend</service>
 </appcelerator>

@@ -32,7 +32,7 @@ Appcelerator.Widget.Template =
 	},
 	getVersion: function()
 	{
-		return '1.0.2';
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{
@@ -135,8 +135,9 @@ Appcelerator.Widget.Template =
 			t.setAttribute('scope',scope);
 			t.innerHTML = Appcelerator.Compiler.getHtml(doc);
 			state.pending--;
+			t.state = state;
 			Appcelerator.Compiler.compileElement(t,state,true);
-			Appcelerator.Compiler.checkLoadState(state);
+			Appcelerator.Compiler.checkLoadState(t);
 		});
 	}
 };

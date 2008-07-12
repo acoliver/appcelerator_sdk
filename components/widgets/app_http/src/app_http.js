@@ -32,7 +32,7 @@ Appcelerator.Widget.Http =
     },
     getVersion: function()
     {
-        return 1.1;
+        return '__VERSION__';
     },
     getSpecVersion: function()
     {

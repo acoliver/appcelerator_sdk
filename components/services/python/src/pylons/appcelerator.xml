@@ -7,4 +7,5 @@
     <proxy>@{rootPath}proxy</proxy>
     <sessionid>SESSIONID</sessionid>
     <language>python</language>
+    <service>python</service>
 </appcelerator>

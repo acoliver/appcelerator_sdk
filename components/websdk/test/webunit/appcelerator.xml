@@ -5,5 +5,6 @@
 	<upload></upload>
 	<download></download>
 	<sessionid></sessionid>
-   <language></language>
+   <language>js</language>
+   <service>webunit</service>
 </appcelerator>

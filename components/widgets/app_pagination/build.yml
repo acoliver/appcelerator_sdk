@@ -7,4 +7,5 @@
   :version: ">=2.1.2"
   :name: websdk
 :tags: [ pagination ]
+:licenses: [1]
 :description: "app:pagination is a control for assisting in pagination capabilities using messages"

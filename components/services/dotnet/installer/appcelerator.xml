@@ -4,5 +4,6 @@
 	<upload>@{rootPath}upload</upload>
 	<download>@{rootPath}download</download>
 	<sessionid>SessionID</sessionid>
-    <language>dotnet</language>
+   <language>c#</language>
+   <service>dotnet</service>
 </appcelerator>

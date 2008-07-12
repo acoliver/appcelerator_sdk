@@ -22,7 +22,9 @@ Appcelerator.Widget.WIDGET_CLASS_NAME =
 	 */
 	getVersion: function()
 	{
-		return 1.0;
+		// leave this as-is and only configure from the build.yml file 
+		// and this will automatically get replaced on build of your distro
+		return '__VERSION__';
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the

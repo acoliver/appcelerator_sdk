@@ -71,7 +71,7 @@ Appcelerator.Widget.AppImageCropper =
 	 */
 	getVersion: function()
 	{
-		return 1.0;
+		return '__VERSION__';
 	},
 	/**
 	 * The widget spec version.  This is used to maintain backwards compatability as the

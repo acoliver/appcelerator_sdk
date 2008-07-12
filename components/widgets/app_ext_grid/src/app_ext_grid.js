@@ -11,7 +11,7 @@ Appcelerator.Widget.AppExtGrid =
     },
     getVersion: function()
     {
-        return 1.1;
+        return '__VERSION__';
     },
     getSpecVersion: function()
     {

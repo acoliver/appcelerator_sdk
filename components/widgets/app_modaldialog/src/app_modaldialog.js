@@ -32,7 +32,7 @@ Appcelerator.Widget.Modaldialog =
 	},
 	getVersion: function()
 	{
-		return '1.0.1';
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{

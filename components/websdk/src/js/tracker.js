@@ -125,7 +125,7 @@ Appcelerator.Core.onload(function()
 	}
 	setTimeout(function()
 	{
-		var a = 0, s = 0, v = 1, c = null, l = null;
+		var a = 0, s = 0, v = 1, c = null, l = null, svc = null;
 
 		c = Appcelerator.ServerConfig['aid'];
         if (c) a = c.value;
@@ -135,6 +135,9 @@ Appcelerator.Core.onload(function()
 
 		c = Appcelerator.ServerConfig['language'];
 		if (c) l = c.value;
+
+		c = Appcelerator.ServerConfig['service'];
+		if (c) svc = c.value;
 		
         var p = Appcelerator.Browser.isWindows ? 'win' : Appcelerator.Browser.isMac ? 'mac' : Appcelerator.Browser.isLinux ? 'linux' : Appcelerator.Browser.isSunOS ? 'sunos' : 'unknown';
 		var f = Appcelerator.Browser.flashVersion;
@@ -160,6 +163,7 @@ Appcelerator.Core.onload(function()
 			'slt': Appcelerator.loadTime,
 			'bl': window.navigator.language,
 			'lng': l,
+			'svc': svc,
 			'js': String(Appcelerator.jsFileLocation).encode64()
 		}).toQueryString();
 		Appcelerator.TrackStat(1,qs);

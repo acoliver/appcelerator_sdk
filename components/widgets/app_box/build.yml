@@ -2,6 +2,7 @@
 :type: widget
 :name: app:box
 :version: 1.0
+:licenses: [1]
 :dependencies: 
 - :type: websdk
   :version: ">=2.1"

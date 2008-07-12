@@ -7,4 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ ]
+:licenses: [1]
 :description: "app:content allows you to load external HTML content. this content can be parameterized and can be loaded on-demand or when the page is first loaded"

@@ -32,7 +32,7 @@ Appcelerator.Widget.Button =
 	},
 	getVersion: function()
 	{
-		return '1.0.2';
+		return '__VERSION__';
 	},
 	getSpecVersion: function()
 	{

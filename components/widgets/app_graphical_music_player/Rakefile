@@ -52,7 +52,14 @@ task :zip do
         pathname = Pathname.new(path)
         if not path.include? '.svn' and pathname.file?
           filename = pathname.relative_path_from(Pathname.new(src_dir))
-          zipfile.add(filename,src_dir+'/'+filename)
+          if path.include? "#{NAME}.js"
+            zipfile.get_output_stream(filename) do |f|
+              c = File.read(src_dir+'/'+filename)
+              f.puts c.gsub('__VERSION__',build[:version].to_s)
+            end
+          else
+            zipfile.add(filename,src_dir+'/'+filename)
+          end
         end
     end
     zipfile.add('build.yml','build.yml')

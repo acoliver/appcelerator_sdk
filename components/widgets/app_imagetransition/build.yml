@@ -7,4 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ images ]
+:licenses: [1]
 :description: "app:imagetransition is a control for transition from one image to another"

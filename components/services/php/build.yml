@@ -4,5 +4,5 @@
 - :type: websdk
   :name: websdk
   :version: ">=2.1.2"
-:version: 1.0.5
+:version: 1.0.6
 :name: php
