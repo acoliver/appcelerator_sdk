@@ -6,7 +6,7 @@
 	border-bottom:1px solid #eaeaea;
 	border-left:1px solid #e1e1e1;
 	border-right:1px solid #e1e1e1;
-	background:transparent url(arrow.gif) no-repeat scroll 0pt 50%;
+	background:#fafafa url(arrow.gif) no-repeat scroll 0pt 50%;
 
 	font-size:11px;
 	color:#595959;
@@ -57,11 +57,11 @@
 {
 	/* right end of tab panel */
 	/* left end of tab panel */
-	background:url(bottom.gif) no-repeat;
+	background:#fafafa url(bottom.gif) no-repeat;
 	width:213px;
 	height:7px;
-	border-top:1px solid #fafafa;
 	margin-top:-5px;
+	margin-bottom:0px;
 }
 
 .tabpanel_gradient_stacked_tab_left_active
