@@ -184,13 +184,13 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	{
 		if (element != document.body)
 		{
-			// we wrap all set components in a container div
+			//we wrap all set components in a container div
 			var div = document.createElement('div');
 			div.className = 'container';
 			div.style.padding = '0';
 			div.style.margin = '0';
 			Appcelerator.Compiler.getAndEnsureId(div);
-			element.wrap(div);
+			Element.wrap(element,div);
 		}
 		else
 		{
