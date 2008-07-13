@@ -6,10 +6,11 @@
 	font-size:11px;
 	height:19px;
 	line-height:19px;
-	padding:2pt 1pt 1pt;
+	padding:2px 1px 1px;
 	margin-left:-1px;
 	margin-right:-1px;
 	outline:none;
+	font-family:"arial",sans-serif;
 }
 
 .input_rounded_search_left
@@ -18,7 +19,7 @@
 	height:19px;
 	width:20px;
 	position:relative;
-	top:4px;
+	top:5px;
 	*top:2px;
 }
 .input_rounded_search_right
@@ -27,22 +28,58 @@
 	height:19px;
 	width:10px;
 	position:relative;
-	top:4px;
+	top:5px;
 	*top:2px;
 }
+
 .input_rounded_search_geckofix
 {
-	top:5px;
+	top:8px;
 }
+
 body.firefox3 .layout.horizontal .input_rounded_search_input
 {
 	height:20px !important;
 }
+
 body.firefox3 .input_rounded_search_left
 {
 	height:20px !important;
 }
+
 body.firefox3 .input_rounded_search_right
 {
 	height:20px !important;
 }
+
+body.firefox.win32 .input_rounded_search_geckofix
+{
+	top:6px !important;
+}
+
+body.ie7 .input_rounded_search_right
+{
+	top:0px;
+}
+
+body.ie7 .input_rounded_search_left
+{
+	top:0px;
+}
+
+body.ie7 .input_rounded_search_input
+{
+	padding-top:0px;
+	padding-bottom:4px;
+}
+
+body.safari.win32 .input_rounded_search_left
+{
+	top:4px;
+}
+
+body.safari.win32 .input_rounded_search_right
+{
+	top:4px;
+}
+
