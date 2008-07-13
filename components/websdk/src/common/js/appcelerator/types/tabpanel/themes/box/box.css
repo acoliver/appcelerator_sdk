@@ -59,6 +59,7 @@
 	/* left end of tab panel */
 	height:1px;
 	background-color:#ccc;
+	margin-left:2px;
 }
 .tabpanel_box_right
 {
