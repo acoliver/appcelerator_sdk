@@ -38,7 +38,11 @@ Appcelerator.UI.getTabs = function(element)
  */
 Appcelerator.UI.registerListener('type','tabpanel','afterBuild',function()
 {
-	if (this.args.theme == 'box')
+	if (this.args.theme == 'gradient_stacked')
+	{
+		$(this.element.id + "_left").innerHTML = (this.args.title)?this.args.title:'No Title';
+	}
+	else if (this.args.theme == 'box')
 	{
 		var tabs = Appcelerator.UI.getTabs(this.element);
 		var tabCount = (tabs.length-2)/3;
@@ -63,7 +67,7 @@ Appcelerator.UI.registerListener('type','tabpanel','afterBuild',function()
 				
 			}
 		}
-		if (this.args.behavior == 'wires')
+		else if (this.args.behavior == 'wires')
 		{
 			for (var i=1;i<=tabCount;i++)
 			{
@@ -76,7 +80,7 @@ Appcelerator.UI.registerListener('type','tabpanel','afterBuild',function()
 				Event.observe(tab,'click',function(event)
 				{
 					var tabNum = Event.element(event).id.substring(Event.element(event).id.length-1);
-					new Effect.Morph(Event.element(event),{style:'top:40px',duration:1.0,transition:Effect.Transitions.BouncePast});
+					new Effect.Morph(Event.element(event),{style:'top:30px',duration:1.0,transition:Effect.Transitions.BouncePast});
 					new Effect.Morph($(Event.element(event).id + "_string_" + tabNum),{style:'height:60px',duration:0.5});
 
 					for (var j=1;j<=tabCount;j++)
