@@ -1,0 +1,95 @@
+.tabpanel_arrows_container
+{
+	height:40px;
+}
+/* TAB */
+.tabpanel_arrows_tab_mid
+{
+	height:18px;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	background:#ccc url(arrow.png) no-repeat center right;
+	float:left;
+	background-color:none;
+	font-size:11px;
+	color:#595959;
+	cursor:pointer;
+	height:20px;
+	line-height:20px;
+	padding:5px;
+	width:100px;
+	text-align:center;
+}
+
+/* TAB ACTIVE */
+.tabpanel_arrows_tab_mid_active
+{
+	text-decoration:underline;
+}
+
+/* TAB HOVER */
+.tabpanel_arrows_tab_mid:hover
+{
+	text-decoration:underline;
+}
+
+/* DIVIDER LINE UNDER TABS */
+.tabpanel_arrows_divider
+{
+	clear:both;
+}
+
+/* UNUSED CLASSES */
+.tabpanel_arrows_left
+{
+	height:32px;
+	width:1px;
+	background-color:#ccc;
+	float:left;
+}
+.tabpanel_arrows_right
+{
+	height:30px;
+	width:10px;
+	border-right:1px solid #ccc;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+
+	background-color:#ccc;
+	float:left;
+	position:relative;
+	right:10px;
+
+}
+
+.tabpanel_arrows_tab_left_active
+{
+	/* left end of tab - active */
+	display:none;
+
+}
+.tabpanel_arrows_tab_right_active
+{
+	/* right end of tab - active */
+	display:none;
+}
+
+.tabpanel_arrows_tab_left
+{
+	/* left end of tab  */
+	display:none;
+}
+.tabpanel_arrows_tab_right
+{
+	/* right end of tab */
+	display:none;
+}
+
+.tabpanel_arrows_tab_left:hover
+{
+	/* left end of tab - hover */
+}
+.tabpanel_arrows_tab_right:hover
+{
+	/* right end of tab - hover */
+}
