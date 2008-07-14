@@ -308,15 +308,65 @@ Appcelerator.UI.UIManager.parseAttributes = function(element,f,options)
 
 Appcelerator.UI.themes = {};
 
-Appcelerator.Core.loadTheme = function(pkg,container,theme)
+Appcelerator.Core.registerTheme = function(container,theme,impl)
 {
-	var path = Appcelerator.UI.themes[theme];
-	if (!path)
+	var key = Appcelerator.Core.getThemeKey(container,theme);
+	var themeImpl = Appcelerator.UI.themes[key];
+	if (!themeImpl)
 	{
-		path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
-		Appcelerator.Core.remoteLoadCSS(path,function()
+		themeImpl = {};
+		Appcelerator.UI.themes[key] = themeImpl;
+	}
+	themeImpl.impl = impl;
+	themeImpl.loaded = true;
+	// trigger on registration any pending guys
+	Appcelerator.Core.loadTheme(null,container,theme,null,null);
+};
+
+Appcelerator.Core.getThemeKey = function(pkg,container,theme)
+{
+	return container + ':' + theme;
+};
+Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
+{
+	var key = Appcelerator.Core.getThemeKey(container,theme);
+	var themeImpl = Appcelerator.UI.themes[key];
+	var fetch = false;
+
+	if (!themeImpl)
+	{
+		themeImpl = { callbacks: [], impl: null, loaded: false };
+		Appcelerator.UI.themes[key] = themeImpl;
+		fetch = true;
+	}
+	
+	if (themeImpl.loaded)
+	{
+		if (themeImpl.callbacks && themeImpl.callbacks.length > 0 && themeImpl.impl && themeImpl.impl.build)
 		{
-			Appcelerator.UI.themes[theme]=path;
-		});
+			for (var c=0;c<themeImpl.callbacks.length;c++)
+			{
+				var callback = themeImpl.callbacks[c];
+				themeImpl.impl.build(callback.element,callback.options);
+			}
+		}
+		if (element!=null && options!=null && themeImpl.impl && themeImpl.impl.build)
+		{
+			themeImpl.impl.build(element,options);
+		}
+		themeImpl.callbacks = null;
+	}
+	else
+	{
+		themeImpl.callbacks.push({element:element,options:options});
+	}
+	
+	if (fetch)
+	{
+		var css_path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
+		Appcelerator.Core.remoteLoadCSS(css_path);
+
+		var js_path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.js';
+		Appcelerator.Core.remoteLoadScript(js_path);
 	}
 };

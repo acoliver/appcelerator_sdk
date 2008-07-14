@@ -1,3 +1,31 @@
+Appcelerator.UI.getTabs = function(element)
+{
+	var tabs = [];
+	var nodes = element.childNodes;
+	for (var i=0;i<nodes.length;i++)
+	{
+		if (nodes[i].nodeType == 1 && nodes[i].nodeName.toUpperCase() == "DIV")
+		{
+			var ulNodes = nodes[i].childNodes;
+			for (var j=0;j<ulNodes.length;j++)
+			{
+				if (ulNodes[j].nodeType == 1 && ulNodes[j].nodeName.toUpperCase() == "UL")
+				{
+					var liNodes = ulNodes[j].childNodes
+					for (var k=0;k<liNodes.length;k++)
+					{
+						if (liNodes[k].nodeType == 1 && liNodes[k].nodeName.toUpperCase() == "LI")
+						{
+							tabs.push(liNodes[k]);
+						}
+					}
+				}
+			}
+		}
+	}
+	return tabs;
+};
+
 Appcelerator.UI.registerUIComponent('type','tabpanel',
 {
 	getAttributes: function()
@@ -70,6 +98,6 @@ Appcelerator.UI.registerUIComponent('type','tabpanel',
 			}
 		}
 
-		Appcelerator.Core.loadTheme('type','tabpanel',options['theme']);	
+		Appcelerator.Core.loadTheme('type','tabpanel',options['theme'],element,options);	
 	}
 });

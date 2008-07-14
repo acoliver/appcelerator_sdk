@@ -36,7 +36,7 @@ Appcelerator.UI.registerUIComponent('type','input',
 			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
 		}
 		
-		Appcelerator.Core.loadTheme('type','input',theme);	
+		Appcelerator.Core.loadTheme('type','input',theme,element,options);	
 		
 	}
 });

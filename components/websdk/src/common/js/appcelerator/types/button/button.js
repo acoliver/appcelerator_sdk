@@ -70,7 +70,7 @@ Appcelerator.UI.registerUIComponent('type','button',
 			self.disable(element.id);	
 		}
 		
-		Appcelerator.Core.loadTheme('type','button',theme);
+		Appcelerator.Core.loadTheme('type','button',theme,element,options);
 		
 		if (element.getAttribute('activators'))
 		{

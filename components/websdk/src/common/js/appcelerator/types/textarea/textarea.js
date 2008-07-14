@@ -29,7 +29,7 @@ Appcelerator.UI.registerUIComponent('type','textarea',
 			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
 		}
 		
-		Appcelerator.Core.loadTheme('type','textarea',theme);	
+		Appcelerator.Core.loadTheme('type','textarea',theme,element,options);	
 		
 	}
 });

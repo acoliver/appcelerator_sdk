@@ -23,6 +23,6 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 		element.wrap(newContainer);	
 		d3.appendChild(element);
 		newContainer.appendChild(clearDiv);
-		Appcelerator.Core.loadTheme('behavior','shadow',options['theme']);	
+		Appcelerator.Core.loadTheme('behavior','shadow',options['theme'],element,options);	
 	}
 });

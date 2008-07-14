@@ -105,6 +105,6 @@ Appcelerator.UI.registerUIComponent('type','panel',
 			}
 		}
 		
-		Appcelerator.Core.loadTheme('type','panel',options['theme']);	
+		Appcelerator.Core.loadTheme('type','panel',options['theme'],element,options);	
 	}
 });
