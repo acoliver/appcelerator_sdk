@@ -182,20 +182,7 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	queue:[],
 	handle: function(element,attribute,value)
 	{
-		if (element != document.body)
-		{
-			//we wrap all set components in a container div
-			var div = document.createElement('div');
-			div.className = 'container';
-			div.style.padding = '0';
-			div.style.margin = '0';
-			Appcelerator.Compiler.getAndEnsureId(div);
-			Element.wrap(element,div);
-		}
-		else
-		{
-			Element.addClassName(element,'container');
-		}
+		Element.addClassName(element,'container');
 
 		// parse value
 		var expressions = Appcelerator.Compiler.smartSplit(value,' and ');
