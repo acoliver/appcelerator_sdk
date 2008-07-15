@@ -1,0 +1,10 @@
+--- 
+:release_notes: initial release
+:type: layout
+:licenses: [1]
+
+:description: fixedCenter layout
+:name: fixedCenter
+:version: 1.0
+:tags: 
+- layout
