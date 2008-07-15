@@ -160,7 +160,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 			html = '<span id="'+element.id+'"  class="select_'+theme+'" '+on+'>';
 		}
 
-		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif';
+		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif';
 
 		html += '<span id="'+element.id+'_container" style="position:relative">';
 		html += '<input style="width:'+options['width']+';" type="text" id="'+element.id+'_input" class="select_' + theme + '_input" on="l:'+element.id+'_combo_value then value[value] or click then l:'+element.id+'_combo_click"/>';

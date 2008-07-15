@@ -17,11 +17,15 @@
             height: 100px;
             width: 100px;
         }   
-        img, div
-        {
-            behavior: url(../images/iepngfix.htc);
-        }
     </style>
+	<!--[if IE 6]>
+	    <style>
+			img, div, td
+	        {
+			    behavior: url(../images/iepngfix.htc);
+	        }
+	    </style>
+	<![endif]-->
 </head>
 <body>
 

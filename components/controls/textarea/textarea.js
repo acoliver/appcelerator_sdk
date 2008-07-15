@@ -53,7 +53,7 @@ Appcelerator.UI.registerUIComponent('control','textarea',
 		
 		// wrap input with two images (left and right)
 		var img1 = document.createElement('img');
-		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif';
+		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif';
 		img1.src= blankImg;
 		img1.className = "textarea_" + theme + "_left";		
 		new Insertion.Before(element,img1);	
@@ -65,8 +65,8 @@ Appcelerator.UI.registerUIComponent('control','textarea',
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
 		{
-			img1.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
+			img1.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 		}
 		
 		Appcelerator.Core.loadTheme('type','textarea',theme,element,options);	

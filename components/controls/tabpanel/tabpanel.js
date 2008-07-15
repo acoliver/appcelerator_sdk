@@ -113,14 +113,14 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)
 		{
-			$(element.id +"_left").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
-			$(element.id +"_right").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+			$(element.id +"_left").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+			$(element.id +"_right").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
 			
 			for (var i=1;i<=tabCount;i++)
 			{
-				$(element.id +"_tableft_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
-				$(element.id +"_tabmid_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
-				$(element.id +"_tabright_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+				$(element.id +"_tableft_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+				$(element.id +"_tabmid_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+				$(element.id +"_tabright_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
 			}
 		}
 

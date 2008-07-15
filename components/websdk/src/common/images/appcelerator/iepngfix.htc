@@ -12,7 +12,7 @@ function fixBackgroundPNG(obj)
     var scale = (obj.currentStyle.backgroundRepeat == 'no-repeat') ? 'image' : 'scale';
     if (obj.style.backgroundImage.match('blank.gif')==null)
 	{
-		obj.style.backgroundImage = 'url('+Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif)';    
+		obj.style.backgroundImage = 'url('+Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif)';    
 		
 	}
     if (filters[filterName])

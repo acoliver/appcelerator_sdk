@@ -8,12 +8,14 @@
 	<script type="text/javascript" src="javascripts/appcelerator.js"></script> 
 	<link rel="stylesheet" type="text/css" href="css/webunit.css" />
     <link rel="shortcut icon" href="images/favicon.ico"/>
-    <style>
-        img, div
-        {
-            behavior: url(images/iepngfix.htc);
-        }
-    </style>
+	<!--[if IE 6]>
+	    <style>
+	        img,div
+	        {
+	            behavior: url(images/iepngfix.htc);
+	        }
+	    </style>
+	<![endif]-->
 </head>
 <body style="visibility:hidden" on="l:app.compiled then visible">
 	<div id="header">

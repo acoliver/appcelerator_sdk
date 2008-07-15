@@ -61,7 +61,7 @@ Appcelerator.UI.registerUIComponent('control','button',
 
 		// wrap input with two images (left and right)
 		var img1 = document.createElement('img');
-		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/blank.gif';
+		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif';
 		img1.src= blankImg;
 		img1.id = element.id + "_left";
 		img1.className = "button_" + theme + "_left";		
@@ -82,9 +82,9 @@ Appcelerator.UI.registerUIComponent('control','button',
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
 		{
-			img1.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			element.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
+			img1.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			element.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			
 		}
 		var self = this;
