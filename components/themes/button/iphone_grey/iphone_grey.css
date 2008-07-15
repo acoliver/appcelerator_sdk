@@ -1,0 +1,61 @@
+.button_iphone_grey_left
+{
+	background:transparent url(images/left.png);
+	height:48px;
+	width:16px;
+	position:relative;
+	
+	
+	/* browser specific positioning */
+	top:19px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
+}
+
+.button_iphone_grey_middle
+{
+	background:transparent url(images/middle.png) repeat-x;
+	height:48px;
+	color:white;
+	font-size:14px;
+	font-weight:bold;
+	border:0px none;
+	margin-left:-1px;
+	margin-right:-1px;
+}
+
+.button_iphone_grey_right
+{
+	background:transparent url(images/right.png);
+	height:48px;
+	width:16px;
+	position:relative;
+		
+	/* browser specific positioning */
+	top:19px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
+	
+}
+
+/* FF Specific Styles for left and right image */
+.button_iphone_grey_geckofix
+{
+	top:18px;
+}
+
+.button_iphone_grey_left_disabled
+{
+	background:url(images/left_disabled.png);
+}
+
+.button_iphone_grey_middle_disabled
+{
+	background:url(images/middle_disabled.png) repeat-x;
+	color:#888;
+}
+
+.button_iphone_grey_right_disabled
+{
+	background:url(images/right_disabled.png);
+}

@@ -1,0 +1,11 @@
+--- 
+:release_notes: initial release
+:type: theme
+:control: select
+:licenses: [1]
+
+:description: select white_gradient theme
+:name: white_gradient
+:version: 1.0
+:tags: 
+- theme

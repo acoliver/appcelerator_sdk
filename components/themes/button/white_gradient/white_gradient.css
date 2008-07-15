@@ -1,0 +1,16 @@
+.button_white_gradient_middle
+{
+	background:#F3F3F3 url(images/input.gif) scroll left top;
+	border:1px solid #C9C9C9;
+	color:#333;
+	padding:3px;
+	padding-right:15px;
+	padding-left:15px;
+	outline:none;
+}
+
+.input_white_gradient_middle:hover
+{
+	background-position:0pt -400px;
+	border:1px solid #AAA;
+}

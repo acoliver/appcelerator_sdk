@@ -1,0 +1,32 @@
+.button_itunes_back_left
+{
+}
+
+.button_itunes_back_middle
+{
+	background:url(images/back.gif) no-repeat;
+	text-align:center;
+	height:18px;
+	width:30px;
+	border:0px none;
+	cursor:pointer;
+}
+
+.button_itunes_back_right
+{
+}
+
+.button_itunes_back_left_disabled
+{
+}
+
+.button_itunes_back_middle_disabled
+{
+	background:url(images/back-disabled.gif) no-repeat;
+	height:18px;
+	width:30px;
+}
+
+.button_itunes_back_right_disabled
+{
+}

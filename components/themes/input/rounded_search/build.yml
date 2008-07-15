@@ -1,0 +1,11 @@
+--- 
+:release_notes: initial release
+:type: theme
+:control: input
+:licenses: [1]
+
+:description: input rounded_search theme
+:name: rounded_search
+:version: 1.0
+:tags: 
+- theme

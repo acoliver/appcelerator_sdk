@@ -1,0 +1,11 @@
+--- 
+:release_notes: initial release
+:type: theme
+:control: select
+:licenses: [1]
+
+:description: select thinline theme
+:name: thinline
+:version: 1.0
+:tags: 
+- theme

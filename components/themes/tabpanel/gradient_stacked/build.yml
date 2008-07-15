@@ -1,0 +1,11 @@
+--- 
+:release_notes: initial release
+:type: theme
+:control: tabpanel
+:licenses: [1]
+
+:description: tabpanel gradient_stacked theme
+:name: gradient_stacked
+:version: 1.0
+:tags: 
+- theme

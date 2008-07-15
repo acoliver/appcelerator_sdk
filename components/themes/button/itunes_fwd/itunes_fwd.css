@@ -1,0 +1,37 @@
+.button_itunes_fwd_left
+{
+}
+
+.button_itunes_fwd_middle
+{
+	background:url(images/fwd.gif) no-repeat;
+	height:18px;
+	width:30px;
+	border:0px none;
+	border-left:1px solid #303030;
+	cursor:pointer;
+}
+
+.button_itunes_fwd_right
+{
+}
+
+.button_itunes_fwd_left_disabled
+{
+}
+
+.button_itunes_fwd_middle_disabled
+{
+	background:url(images/fwd-disabled.gif) no-repeat;
+	height:18px;
+	width:30px;
+	border:0px none;
+	border-left:1px solid #303030;
+
+	_border-left:0px none;
+	*border-left:0px none;
+}
+
+.button_itunes_fwd_right_disabled
+{
+}

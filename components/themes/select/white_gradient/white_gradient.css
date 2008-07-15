@@ -1,0 +1,73 @@
+
+.select_white_gradient
+{
+	position:relative;
+	font-size:12px;
+}
+
+.select_white_gradient_input
+{
+	background:#F3F3F3 url(images/input.gif) scroll left top;
+	border:1px solid #C9C9C9;
+	color:#333333;
+	padding:3px;
+	outline:none;
+	height:15px;
+}
+
+.select_white_gradient_input:focus
+{
+	background-position:0pt -400px;
+	border:1px solid #AAAAAA;
+}
+
+.select_white_gradient_arrow
+{
+	background:transparent url(images/arrow.gif) no-repeat scroll 0pt;
+	border-color:#B5B8C8;
+	border-style:none none solid;
+	border-width:0pt 0pt 1px;
+	cursor:pointer;
+	height:20px;
+	width:17px;
+	position:relative;
+	top:7px;
+	
+	/* IE HACKS */
+	_top:4px;
+	*top:4px;
+}
+
+.select_white_gradient_dropdown
+{
+	border:1px solid #B5B8C8;
+	border-top:none;
+	cursor:pointer;
+	overflow-x:hidden;
+	overflow-y:auto;
+	position:absolute;
+	z-index:100;
+	display:block;
+	background-color:#fff;
+	left:0px;
+	height:200px;
+	margin:0px;
+	top:19px;
+	padding-right:5px;
+
+	/* IE HACKS */
+	_top:26px;
+	*top:25px;
+}
+
+.select_white_gradient_dropdown_item
+{
+	border:1px solid #fff;
+	margin-right:-5px;
+}
+
+.select_white_gradient_dropdown_hover
+{
+	background-color:#dedede;
+	border:1px dotted #aaa;
+}

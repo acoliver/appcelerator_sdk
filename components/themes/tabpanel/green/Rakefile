@@ -1,0 +1,78 @@
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# theme Rakefile
+#
+
+require 'rake'
+require 'fileutils'
+require 'zip/zip'
+require 'yaml'
+require 'find'
+require 'pathname'
+
+NAME = 'green'
+ZIPFILE = File.expand_path "#{NAME}.zip"
+
+desc 'default build which makes the theme'
+task :default => [:zip] do
+end
+
+desc 'zip up the theme'
+task :zip do
+  build = YAML::load_file File.expand_path("#{File.dirname(__FILE__)}/build.yml")
+  if build[:licenses].nil? or build[:licenses].empty?
+    STDERR.puts "Before you can build the theme, you need to set the licensing type."
+    STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"
+    STDERR.puts "for more information."
+    exit 1
+  end
+  src_dir = File.expand_path "#{File.dirname(__FILE__)}"
+  FileUtils.rm_r ZIPFILE if File.exists? ZIPFILE
+  Zip::ZipFile.open(ZIPFILE, Zip::ZipFile::CREATE) do |zipfile|
+    Find.find(src_dir) do |path|
+        pathname = Pathname.new(path)
+        next if path.include? '.svn' or path.include? 'Rakefile' or path.include? 'LICENSING.readme'
+        if pathname.file?
+          filename = pathname.relative_path_from(Pathname.new(src_dir))
+          if path.include? "#{NAME}.js"
+            zipfile.get_output_stream(filename) do |f|
+              c = File.read(src_dir+'/'+filename)
+              f.puts c.gsub('__VERSION__',build[:version].to_s)
+            end
+          else
+            zipfile.add(filename,src_dir+'/'+filename)
+          end
+        end
+    end
+  end
+end
+
+desc 'install the theme'
+task :install => [:zip] do
+  system "appcelerator install:theme #{ZIPFILE}"
+end
+
+desc 'release the theme'
+task :release => [:zip] do
+  system "appcelerator release:theme #{ZIPFILE}"
+end
+
+

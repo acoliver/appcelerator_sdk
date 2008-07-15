@@ -1,0 +1,77 @@
+
+.select_thinline
+{
+	position:relative;
+	font-size:12px;
+}
+
+.select_thinline_input
+{
+	background:#ffffff;
+	border:1px solid #bbb;
+	padding:2px;
+	padding-left:5px;
+	height:20px;
+	line-height:20px;
+	outline:none;
+	
+	/* NEEDED FOR FF/SAFARI DIFFERENCE IN RENDERING */
+	margin-bottom:1px;
+	
+	/* IE HACK */
+	_margin-bottom:0px;
+	*margin_bottom:0px;
+}
+
+.select_thinline_input:focus
+{
+}
+
+.select_thinline_arrow
+{
+	background:#fff url(images/arrow.png) no-repeat scroll 0pt;
+	cursor:pointer;
+	height:13px;
+	width:23px;
+	position:relative;
+	top:2px;
+	right:26px;
+
+	/* IE HACKS */
+	_top:4px;
+	*top:-3px;
+}
+
+.select_thinline_dropdown
+{
+	border:1px solid #bbb;
+	border-top:none;
+	cursor:pointer;
+	overflow-x:hidden;
+	overflow-y:auto;
+	position:absolute;
+	z-index:100;
+	display:block;
+	background-color:#fff;
+	left:0px;
+	height:200px;
+	margin:0px;
+	top:21px;
+	padding-right:7px;
+	
+	/* IE HACKS */
+	_top:26px;
+	*top:27px;
+}
+
+.select_thinline_dropdown_item
+{
+	border:1px solid #fff;
+	margin-right:-7px;
+}
+
+.select_thinline_dropdown_hover
+{
+	background-color:#ccc;
+	border:1px dotted #aaa;
+}

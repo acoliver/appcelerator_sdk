@@ -1,0 +1,60 @@
+.button_thinblue_left
+{
+	position:relative;
+	background:transparent url(images/left.png) no-repeat;
+	height:21px;
+	width:6px;
+
+	/* browser specific positioning */
+	top:6px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
+}
+
+.button_thinblue_middle
+{
+	background:url(images/middle.png) repeat-x;
+	height:21px;
+	border:0px none;
+	margin-left:-1px;
+	margin-right:-1px;
+	font-size:12px;
+	padding-bottom:2px;
+	
+	/* IE padding */
+	_padding-bottom:0px;
+	
+}
+
+.button_thinblue_right
+{
+	position:relative;
+	background:transparent url(images/right.png) no-repeat;
+	height:21px;
+	width:6px;
+
+	/* browser specific positioning */
+	top:6px;
+	_top:4px; /* IE 6 */
+	*top:4px; /* IE 7 */	
+}
+
+/* FF Specific Styles for left and right image */
+.button_thinblue_geckofix
+{
+	top:6px;
+}
+
+.button_thinblue_left_disabled
+{
+	opacity:0.6;
+}
+
+.button_thinblue_middle_disabled
+{
+	opacity:0.6;
+}
+.button_thinblue_right_disabled
+{
+	opacity:0.6;	
+}
