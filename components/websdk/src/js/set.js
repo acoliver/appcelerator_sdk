@@ -228,26 +228,27 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	}
 });
 
-
 Appcelerator.UI.UIManager.defaultThemes = 
-	{'panel':'basic',
-	 'shadow':'basic',
-	 'button':'white_gradient',
-	 'input':'white_gradient',
-	 'textarea':'white_gradient',
-	 'panel':'white',
-	 'select':'thinline',
-	 'tabpanel':'white'};
+{
+	'panel':'basic',
+	'shadow':'basic',
+	'button':'white_gradient',
+	'input':'white_gradient',
+	'textarea':'white_gradient',
+	'panel':'white',
+	'select':'thinline',
+	'tabpanel':'white'
+};
 
 Appcelerator.UI.UIManager.getDefaultTheme = function(type)
 {
 	return Appcelerator.UI.UIManager.defaultThemes[type];
 };
+
 Appcelerator.UI.UIManager.setDefaultThemes = function(type,theme)
 {
 	Appcelerator.UI.UIManager.defaultThemes[type] = theme;
 };
-
 
 Appcelerator.UI.UIManager.attrToJSON = function(attrs)
 {
@@ -316,6 +317,7 @@ Appcelerator.Core.getThemeKey = function(pkg,container,theme)
 };
 Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 {
+	theme = theme || Appcelerator.UI.UIManager.getDefaultTheme(container);
 	var key = Appcelerator.Core.getThemeKey(container,theme);
 	var themeImpl = Appcelerator.UI.themes[key];
 	var fetch = false;
@@ -379,3 +381,30 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 		Appcelerator.UI.loadUIComponent('type',type,element,options,false,callback);		
 	}
 });
+
+Appcelerator.UI.ContainerManager = {};
+Appcelerator.UI.registerUIManager('control',function(type,element,options,callback)
+{
+   Element.addClassName(element,type);
+   Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);
+});
+
+Appcelerator.UI.LayoutManager = {};
+Appcelerator.UI.LayoutManager._formatTable = function(options)
+{
+   return '<table width="'+options['width']+'" cellspacing="'+(options['spacing'] || '') +'" cellpadding="'+ (options['padding'] || '0') + '">';
+};
+
+Appcelerator.UI.registerUIManager('layout', function(type,element,options,callback)
+{
+   Element.addClassName(element,'layout');
+   Element.addClassName(element,type);
+   Appcelerator.UI.loadUIComponent('layout',type,element,options,false,callback);
+});
+
+Appcelerator.UI.registerUIManager('behavior', function(type,element,options,callback)
+{
+   Appcelerator.UI.loadUIComponent('behavior',type,element,options,false,callback);
+});
+
+
