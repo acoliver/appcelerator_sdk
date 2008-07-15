@@ -1,0 +1,66 @@
+#
+# This file is part of Appcelerator.
+#
+# Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
+# For more information, please visit http://www.appcelerator.org
+#
+# Appcelerator is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+BUILD_DIR = File.dirname(__FILE__)
+require File.expand_path("#{BUILD_DIR}/../build.rb")
+
+desc 'build all themes'
+task :all => [:default] do
+end
+
+task :default => [:stage] do
+  
+  theme_dir = "#{STAGE_DIR}"
+  
+  themes = []
+
+  Dir["#{BUILD_DIR}/*"].each do |dir|
+    next unless File.directory?(dir)
+    type = File.basename(dir)
+    Dir["#{BUILD_DIR}/#{type}/*"].each do |dir|
+      next unless File.directory?(dir)
+      name = File.basename(dir)
+      FileUtils.cd(dir) do |d|
+        call_rake
+        FileUtils.cp_r "#{name}.zip", "#{theme_dir}/#{type}_#{name}_theme.zip"
+        themes << name
+      end
+    end
+  end
+  
+  FileUtils.rm_rf "#{STAGE_DIR}/all_themes.zip"
+  
+  Zip::ZipFile.open("#{STAGE_DIR}/all_themes.zip", Zip::ZipFile::CREATE) do |zipfile|
+    dofiles("#{STAGE_DIR}") do |f|
+      filename = f.to_s
+      next unless File.extname(filename)=='.zip'
+      next if filename == '.'
+      zipfile.add(filename,"#{STAGE_DIR}/#{filename}")
+    end
+	 zipfile.get_output_stream('build.yml') do |o|
+	   c = {:name=>'allthemes',:type=>'allthemes',:version=>1.0}	
+	   o.puts c.to_yaml
+    end
+  end
+  
+  themes.each do |name|
+    FileUtils.rm_rf "#{BUILD_DIR}/#{name}/#{name}.zip"
+  end
+  
+end

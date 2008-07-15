@@ -2,7 +2,7 @@
 :release_notes: initial release
 :type: theme
 :control: button
-:licenses: []
+:licenses: [1]
 
 :description: button itunes_fwd theme
 :name: itunes_fwd
