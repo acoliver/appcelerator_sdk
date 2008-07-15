@@ -1,0 +1,29 @@
+.button_NAME_left
+{
+	cursor:pointer;
+}
+
+.button_NAME_middle
+{
+	cursor:pointer;
+}
+
+.button_NAME_right
+{
+	cursor:pointer;
+}
+
+.button_NAME_disabled
+{
+	opacity:0.6;
+}
+
+.button_NAME_middle_disabled
+{
+	opacity:0.6;
+}
+
+.button_NAME_right_disabled
+{
+	opacity:0.6;	
+}

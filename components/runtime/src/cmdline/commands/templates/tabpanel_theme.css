@@ -1,0 +1,65 @@
+
+.tabpanel_NAME_tab_mid
+{
+}
+
+/* TAB ACTIVE */
+.tabpanel_NAME_tab_mid_active
+{
+}
+
+/* TAB HOVER */
+.tabpanel_NAME_tab_mid:hover
+{
+}
+
+/* DIVIDER LINE UNDER TABS */
+.tabpanel_NAME_divider
+{
+}
+
+/* left end of tab panel */
+.tabpanel_NAME_left
+{
+	float:left;
+}
+
+/* right end of tab panel */
+.tabpanel_NAME_right
+{
+	float:left;
+}
+
+/* left end of tab - active */
+.tabpanel_NAME_tab_left_active
+{
+	float:left;
+}
+
+/* right end of tab - active */
+.tabpanel_NAME_tab_right_active
+{
+	float:left;
+}
+
+/* left end of tab  */
+.tabpanel_NAME_tab_left
+{
+	float:left;
+}
+
+/* right end of tab */
+.tabpanel_NAME_tab_right
+{
+	float:left;
+}
+
+/* left end of tab - hover */
+.tabpanel_NAME_tab_left:hover
+{
+}
+
+/* right end of tab - hover */
+.tabpanel_NAME_tab_right:hover
+{
+}

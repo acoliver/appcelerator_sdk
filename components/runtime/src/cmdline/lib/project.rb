@@ -24,10 +24,10 @@ module Appcelerator
       "#{service[0,1].upcase}#{service[1..-1]}"
     end
     
-    def Project.get_service(pwd=Dir.pwd)
+    def Project.get_service(pwd=Dir.pwd,fail_if_not_found=true)
       config = Installer.get_project_config(pwd)
       service = config[:service]
-      if not service
+      if not service and fail_if_not_found
         die "This directory doesn't look like an Appcelerator project. Please switch to your project directory and re-run"
       end
       service
@@ -49,6 +49,10 @@ module Appcelerator
       config[:app]="#{path}/app"
       config[:script]="#{path}/script"
       config[:plugin]="#{path}/plugins"
+      config[:components]="#{public_path}/components"
+      config[:layouts]="#{public_path}/components/layouts"
+      config[:behaviors]="#{public_path}/components/behaviors"
+      config[:controls]="#{public_path}/components/controls"
       config[:project]=path
       config
     end

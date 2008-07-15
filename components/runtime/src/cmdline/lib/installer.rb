@@ -1092,6 +1092,10 @@ HELP
       config
     end
     
+    def Installer.is_project_dir?(dir)
+      File.exists? "#{dir}/config/appcelerator.config"
+    end
+    
     def Installer.save_project_config(dir,config)
       puts "saving project config = #{dir}" if OPTIONS[:debug]
       
