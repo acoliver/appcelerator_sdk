@@ -43,6 +43,10 @@ directory structures and Rakefiles.  The main components are:
   - runtime (includes both command-line binary and installers)
   - services
   - websdk
+  - themes
+  - controls
+  - layouts 
+  - behaviors
 
 You can execute a specific component with the task <component>:<name>. For
 example, to build the Java Service:
