@@ -115,7 +115,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 	{
 		if (failIfNotFound)
 		{
-			$E('UI component type not found '+name);
+			Appcelerator.UI.UIManager.handleLoadError(element,type,name);
 		}
 		else
 		{
@@ -127,12 +127,22 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				Appcelerator.Compiler.checkLoadState(element);
 			},function()
 			{
-				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
+				Appcelerator.UI.UIManager.handleLoadError(element,type,name);
 				element.state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element);
 			});
 		}
 	}
+};
+
+/**
+ * called to handle load error
+ */
+Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype)
+{
+	//TODO: determine if we're online or offline to determine action here
+	//FIXME: add widget error handling
+	top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
 };
 
 /**
@@ -315,6 +325,7 @@ Appcelerator.Core.getThemeKey = function(pkg,container,theme)
 {
 	return container + ':' + theme;
 };
+
 Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 {
 	theme = theme || Appcelerator.UI.UIManager.getDefaultTheme(container);
@@ -356,7 +367,10 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 		Appcelerator.Core.remoteLoadCSS(css_path);
 
 		var js_path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.js';
-		Appcelerator.Core.remoteLoadScript(js_path);
+		Appcelerator.Core.remoteLoadScript(js_path,null,function()
+		{
+			Appcelerator.UI.UIManager.handleLoadError(element,pkg,theme,container);
+		});
 	}
 };
 

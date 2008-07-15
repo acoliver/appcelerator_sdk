@@ -218,8 +218,8 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
 					if (!loaded)
 					{
 						// max time to determine if we've got an error
-						// obviously won't work if takes long than 5 secs to load script
-						timer=setTimeout(onerror,5000);
+						// obviously won't work if takes long than 3.5 secs to load script
+						timer=setTimeout(onerror,3500);
 					}
 					element.onerror = function()
 					{
