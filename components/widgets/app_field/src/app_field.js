@@ -96,7 +96,8 @@ Appcelerator.Widget.Field =
                 {name: 'message', optional: true, type: T.messageReceive},
                 {name: 'property', optional: true, type: T.identifier},
                 {name: 'value', optional: true},
-                {name: 'text', optional: true}];
+                {name: 'text', optional: true},
+                {name: 'maxLength', optional: true}];
     },
 	compileWidget: function(params)
 	{
@@ -431,6 +432,7 @@ Appcelerator.Widget.Field =
 		var fieldDefaultLangId = parameters['fieldDefaultLangId'];
 		var defaultFieldValue = '';
 		var footerOn = null, headerOn = null;
+		var maxLength = parameters['maxLength'];
 		var inline = parameters['inline'] == 'true';
 		parameters['parameters'] = String.unescapeXML(parameters['parameters']);
 		parameters['scope'] = element.scope;
@@ -505,13 +507,13 @@ Appcelerator.Widget.Field =
 				if (!inline) html += '<div>';
 				var add = (type=='password') ? parameters['hash'] : null;
 				var addstr = add ? 'hash="'+add+'"' : '';
-				html += '<input '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" type="'+type+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') + '/>';
+				html += '<input '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" type="'+type+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '" ' : ' ') + (maxLength ? 'maxLength="' + maxLength + '"' : '') + '/>';
 				break;
 			}
             case 'textarea':
             {
                 if (!inline) html += '<div>';
-                html += '<textarea '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '')+'>'+defaultFieldValue+'</textarea>';
+                html += '<textarea '+validatorText+' '+namestr+' '+addstr+' decorator="custom" decoratorId="'+errorId+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '" ' : ' ') + (maxLength ? 'maxLength="' + maxLength + '"' : '') + '>'+defaultFieldValue+'</textarea>';
                 break;
             }
 			case 'select':
@@ -532,7 +534,7 @@ Appcelerator.Widget.Field =
 			case 'autocomplete':
 			{
 				if (!inline) html += '<div>';
-				html += '<input type="text" '+validatorText+''+namestr+' decorator="custom" decoratorId="'+errorId+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '"' : '') + '/>';
+				html += '<input type="text" '+validatorText+''+namestr+' decorator="custom" decoratorId="'+errorId+'" value="'+defaultFieldValue+'" id="' + id + '" ' + (fieldset ? 'fieldset="' + fieldset + '" ' : ' ') + (maxLength ? 'maxLength="' + maxLength + '"' : '') + '/>';
 				break;
 			}
 			default:
