@@ -1,0 +1,184 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:70%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Draggable Behavior </h3> 
+<p>
+	These are basic tests for the draggable behavior
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV
+		</td>
+		<td class="result" >
+            <div set="behavior[draggable]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				I am draggable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV horizontal only
+		</td>
+		<td class="result" >
+            <div set="behavior[draggable,contstraint=horizontal]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				I am draggable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV vertical only
+		</td>
+		<td class="result" >
+            <div set="behavior[draggable,contstraint=vertical]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				I am draggable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV custom handle 
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable,handle=myhandle]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				<div id="myhandle">Drag from this handle</div>
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV with ghosting
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable,ghosting=true]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV with start effect
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable,starteffect=highlight]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV with end effect
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable,endeffect=highlight]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV with revert
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable,revert=foo]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Panel (panel then draggable)
+		</td>
+		<td class="result" >
+			<div set="type[panel] and behavior[draggable]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Rounded (rounded then draggable)
+		</td>
+		<td class="result" >
+			<div set="type[rounded] and behavior[draggable]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Rounded with tail (rounded then draggable)
+		</td>
+		<td class="result" >
+			<div set="type[rounded,tail=tl] and behavior[draggable]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Panel (draggable then panel)
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and type[panel]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Rounded (draggable then rounded)
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and type[rounded]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Rounded with Shadow (draggable then rounded then shadow)
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and type[rounded] and behavior[shadow]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Panel with Resizable (draggable then panel then shadow)
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and type[panel] and behavior[resizable]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+
+
+
+</table>
+
+</body>
+</html>
+

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:70%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Resizable Behavior </h3> 
+<p>
+	These are basic tests for the resizable behavior
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Resizable DIV
+		</td>
+		<td class="result" >
+            <div set="behavior[resizable]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel (resizable then panel)
+		</td>
+		<td class="result" >
+            <div set="behavior[resizable] and type[panel]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel (panel then resizable)
+		</td>
+		<td class="result" >
+            <div set="type[panel] and behavior[resizable]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel with shadow (panel then resizable then shadow)
+		</td>
+		<td class="result" >
+            <div set="type[panel] and behavior[resizable] and behavior[shadow]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel with shadow (panel then shadow then resizable)
+		</td>
+		<td class="result" >
+            <div set="type[panel] and behavior[shadow] and behavior[resizable]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel with draggable (panel then draggable then resizable)
+		</td>
+		<td class="result" >
+            <div set="type[panel] and behavior[draggable] and behavior[resizable]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel with draggable (panel then resizable then draggable)
+		</td>
+		<td class="result" >
+            <div set="type[panel] and behavior[resizable] and behavior[draggable]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Panel with draggable (resizable then draggable then panel)
+		</td>
+		<td class="result" >
+            <div set="behavior[resizable] and behavior[draggable] and type[panel]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Tooltip
+		</td>
+		<td class="result" >
+			<input type="text" id="resize1"/>
+            <div set="behavior[resizable] and behavior[tooltip,id=resize1] and type[panel]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Resizable Rounded
+		</td>
+		<td class="result" >
+            <div set="behavior[resizable] and type[rounded]">
+				I am resizable
+            </div>
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+</html>

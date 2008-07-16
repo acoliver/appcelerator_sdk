@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:70%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Tooltip Behavior </h3> 
+<p>
+	These are basic tests for the tooltip behavior
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			DIV tooltip on input
+		</td>
+		<td class="result" >
+            <div>
+				<input id="tip1" type="text" set="theme[thinblue]"/>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+					set="behavior[tooltip,id=tip1]">
+					I am a tooltip for an input
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			DIV tooltip on panel
+		</td>
+		<td class="result" >
+            <div>
+				<div set="type[panel]" id="tip2">I am a panel</div>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+					set="behavior[tooltip,id=tip2]">
+					I am a tooltip for a panel
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			DIV tooltip on paragraph
+		</td>
+		<td class="result" >
+            <div>
+				<p  id="tip3">I am a paragraph full of text</p>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+					set="behavior[tooltip,id=tip3]">
+					I am a tooltip for a paragraph
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			DIV tooltip on IMG
+		</td>
+		<td class="result" >
+            <div>
+				<img src="warning.png"  id="tip4"/>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+					set="behavior[tooltip,id=tip4]">
+					I am a tooltip for an image
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Panel tooltip on DIV
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:10px;background-color:#ccc;border:1px solid #aaa" id="tip5">I am a DIV</div>
+				<div set="behavior[tooltip,id=tip5] and type[panel]">
+					<div style="padding:5px">I am a tooltip for a DIV</div>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Rounded tooltip on DIV
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:10px;background-color:#ccc;border:1px solid #aaa" id="tip6">I am a DIV</div>
+				<div set="behavior[tooltip,id=tip6] and type[rounded,background-color=#336699]" style="color:white">
+					<div style="padding:5px">I am a tooltip for a DIV</div>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Rounded tooltip (with tail) on DIV
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:10px;background-color:#ccc;border:1px solid #aaa" id="tip7">I am a DIV</div>
+				<div set="behavior[tooltip,id=tip7] and type[rounded,background-color=#336699,tail=lt]" style="color:white">
+					<div style="padding:5px">I am a tooltip for a DIV</div>
+				</div>
+            </div>
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

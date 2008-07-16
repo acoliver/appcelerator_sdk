@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:70%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Modal Behavior </h3> 
+<p>
+	These are basic tests for the modal behavior
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV (custom close)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=1]">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+					on="l:show.modal[v=1] then show or l:close.modal[v=1] then hide"
+					set="behavior[modal]">
+					<button on="click then l:close.modal[v=1]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV (custom close/custom background-color)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=2]">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc" 
+					on="l:show.modal[v=2] then show or l:close.modal[v=2] then hide"
+					set="behavior[modal,background-color=#336699]">
+					<button on="click then l:close.modal[v=2]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV (custom close/ No opacity)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=3]">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc" 
+					on="l:show.modal[v=3] then show or l:close.modal[v=3] then hide"
+					set="behavior[modal,opacity=0]">
+					<button on="click then l:close.modal[v=3]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV (custom close/ custom background / custom opacity)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=4]">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc" 
+					on="l:show.modal[v=4] then show or l:close.modal[v=4] then hide"
+					set="behavior[modal,opacity=0.2,background-color=yellow]">
+					<button on="click then l:close.modal[v=4]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV (custom close/ custom width)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=5]">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc;width:200px" 
+					on="l:show.modal[v=5] then show or l:close.modal[v=5] then hide"
+					set="behavior[modal]">
+					<button on="click then l:close.modal[v=5]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Panel (custom close, panel then behavior)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=6]">Click Me</button>
+				<div on="l:show.modal[v=6] then show or l:close.modal[v=6] then hide"
+					set=" type[panel] and behavior[modal]">
+					<button on="click then l:close.modal[v=6]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Panel (custom close, behavior then panel)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=7]">Click Me</button>
+				<div on="l:show.modal[v=7] then show or l:close.modal[v=7] then hide"
+					set="behavior[modal] and type[panel]">
+					<button on="click then l:close.modal[v=7]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Rounded (custom close, behavior then rounded)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=8]">Click Me</button>
+				<div on="l:show.modal[v=8] then show or l:close.modal[v=8] then hide"
+					set="behavior[modal] and type[rounded]">
+					<button on="click then l:close.modal[v=8]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal with nested themed button
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=9]">Click Me</button>
+				<div on="l:show.modal[v=9] then show or l:close.modal[v=9] then hide"
+					set="behavior[modal] and type[panel]">
+					<button on="click then l:close.modal[v=9]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Shadow (modal then shadow then panel)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=10]">Click Me</button>
+				<div on="l:show.modal[v=10] then show or l:close.modal[v=10] then hide"
+					set="behavior[modal] and behavior[shadow] and type[panel]">
+					<button on="click then l:close.modal[v=10]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Shadow (shadow then modal then panel)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=11]">Click Me</button>
+				<div on="l:show.modal[v=11] then show or l:close.modal[v=11] then hide"
+					set="behavior[shadow] and behavior[modal] and type[panel]">
+					<button on="click then l:close.modal[v=11]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Shadow (panel then shadow then modal)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=12]">Click Me</button>
+				<div on="l:show.modal[v=12] then show or l:close.modal[v=12] then hide"
+					set="type[panel] and behavior[shadow] and behavior[modal]">
+					<button on="click then l:close.modal[v=12]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Shadow (panel then modal then shadow)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=13]">Click Me</button>
+				<div on="l:show.modal[v=13] then show or l:close.modal[v=13] then hide"
+					set="type[panel] and behavior[modal] and behavior[shadow]">
+					<button on="click then l:close.modal[v=13]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Resizable (modal then resizable)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=14]">Click Me</button>
+				<div on="l:show.modal[v=14] then show or l:close.modal[v=14] then hide"
+					set="type[panel] and behavior[modal] and behavior[resizable]">
+					<button on="click then l:close.modal[v=14]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Draggable (modal then draggable)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=15]">Click Me</button>
+				<div on="l:show.modal[v=15] then show or l:close.modal[v=15] then hide"
+					set="type[panel] and behavior[modal] and behavior[draggable]">
+					<button on="click then l:close.modal[v=15]" set="theme[thinblue]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

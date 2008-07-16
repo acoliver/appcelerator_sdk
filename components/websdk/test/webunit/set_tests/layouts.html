@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:50%;
+}
+.layoutbox
+{
+	border:1px solid #ccc;
+	background-color:#e6e6e6;
+	padding:10px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Horizontal Layout </h3> 
+<p>
+	These are basic tests for the horizontal layout
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Three Horizontal DIVs (no options)
+		</td>
+		<td class="result" >
+            <div set="layout[horizontal]">
+				<div class="layoutbox" >one</div>
+				<div class="layoutbox" >two</div>
+				<div class="layoutbox" >three</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Three Vertical DIVs (no options)
+		</td>
+		<td class="result" >
+            <div set="layout[vertical]">
+				<div class="layoutbox" >one</div>
+				<div class="layoutbox" >two</div>
+				<div class="layoutbox" >three</div>
+            </div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			 Vertical Parent, Two Nested Horizontal
+		</td>
+		<td class="result" >
+            <div set="layout[vertical]">
+				<div set="layout[horizontal]">
+					<div props="width=80px" class="layoutbox" >one</div>
+					<div props="width=80px" class="layoutbox" >two</div>
+					<div props="width=80px" class="layoutbox" >three</div>
+					<div props="width=80px" class="layoutbox" >four</div>
+            	</div>
+				<div set="layout[horizontal]">
+					<div props="width=80px" class="layoutbox" >five</div>
+					<div props="width=80px" class="layoutbox" >six</div>
+					<div props="width=80px" class="layoutbox" >seven</div>
+					<div props="width=80px" class="layoutbox" >eight</div>
+            	</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Vertical Parent, Three Rows, Nested Horizontal (2nd row)
+		</td>
+		<td class="result" height="250px" valign="top">
+            <div set="layout[vertical]" style="width:300px;">
+				<div props="pos=mc" class="layoutbox" >header</div>
+				<div set="layout[horizontal]">
+					<div props="width=80px,pos=tc" style="height:150px" class="layoutbox" >one</div>
+					<div props="width=80px,pos=mc" class="layoutbox" >two</div>
+					<div props="width=80px,pos=bc" class="layoutbox" >three</div>
+            	</div>
+				<div props="pos=mc" class="layoutbox" >footer</div>
+			</div>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			DIV with absolute positioned image
+		</td>
+		<td class="result" >
+            <div class="layoutbox" style="height:50px;width:200px">
+				<div set="layout[xy,top=30px,left=10px]"><img src="appcelerator.png"/></div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Fixed Center Layout (100px)
+		</td>
+		<td class="result" width="200px;height:300px">
+            <div class="layoutbox" set="layout[fixedCenter,width=100px]">
+				I am fixed center
+           </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Border Layout
+		</td>
+		<td class="result" width="200px;height:300px">
+			<div set="layout[border]">
+				<div class="layoutbox"  position="east">east</div>
+				<div class="layoutbox"  position="north">north</div>
+				<div class="layoutbox"  position="south">south</div>
+				<div class="layoutbox" position="west">west</div>
+				<div class="layoutbox"  position="center">center</div>
+				
+           </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Border Layout (with missing regions)
+		</td>
+		<td class="result" width="200px;height:300px">
+			<div set="layout[border]">
+				<div class="layoutbox"  position="east" >east</div>
+				<div class="layoutbox"  position="center">center</div>
+				<div class="layoutbox"  position="north">north</div>
+				<div class="layoutbox"  position="south">south</div>
+				
+           </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Border Layout with various widths
+		</td>
+		<td class="result" width="200px;height:300px">
+			<div set="layout[border]">
+				<div class="layoutbox"  position="east" style="width:120px">east</div>
+				<div class="layoutbox"  position="north">north</div>
+				<div class="layoutbox"  position="south">south</div>
+				<div class="layoutbox" position="west" style="width:50px">west</div>
+				<div class="layoutbox"  position="center" style="width:30px">center</div>
+				
+           </div>
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>
