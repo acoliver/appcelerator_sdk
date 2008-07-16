@@ -128,7 +128,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				Appcelerator.Compiler.checkLoadState(element);
 			},function()
 			{
-				Appcelerator.UI.UIManager.handleLoadError(element,type,name);
+				Appcelerator.UI.UIManager.handleLoadError(element,type,name,null,path);
 				element.state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element);
 			});
@@ -139,9 +139,9 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 /**
  * called to handle load error
  */
-Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype)
+Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype,path)
 {
-	$E("error loading - type:"+type+",name:"+name+",subtype:"+subtype+" for "+element.id);
+	$E("error loading - type:"+type+",name:"+name+",subtype:"+subtype+"\nfor "+element.id+' from url='+path);
 	//TODO: determine if we're online or offline to determine action here
 	//FIXME: add widget error handling
 	//top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
@@ -248,10 +248,11 @@ Appcelerator.UI.UIManager.defaultThemes =
 	'button':'white_gradient',
 	'input':'white_gradient',
 	'textarea':'white_gradient',
-	'panel':'white',
 	'select':'thinline',
 	'tabpanel':'white'
 };
+
+//FIXME - change to add type (control, behavior)
 
 Appcelerator.UI.UIManager.getDefaultTheme = function(type)
 {
@@ -309,7 +310,6 @@ Appcelerator.UI.UIManager.parseAttributes = function(element,f,options)
 
 Appcelerator.UI.themes = {};
 
-//FIXME - add type to register
 Appcelerator.Core.registerTheme = function(type,container,theme,impl)
 {
 	var key = Appcelerator.Core.getThemeKey(type,container,theme);
@@ -322,18 +322,18 @@ Appcelerator.Core.registerTheme = function(type,container,theme,impl)
 	themeImpl.impl = impl;
 	themeImpl.loaded = true;
 	// trigger on registration any pending guys
-	Appcelerator.Core.loadTheme(null,container,theme,null,null);
+	Appcelerator.Core.loadTheme(type,container,theme,null,null);
 };
 
 Appcelerator.Core.getThemeKey = function(pkg,container,theme)
 {
-	return container + ':' + theme;
+	return pkg + ':' + container + ':' + theme;
 };
 
 Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 {
 	theme = theme || Appcelerator.UI.UIManager.getDefaultTheme(container);
-	var key = Appcelerator.Core.getThemeKey(container,theme);
+	var key = Appcelerator.Core.getThemeKey(pkg,container,theme);
 	var themeImpl = Appcelerator.UI.themes[key];
 	var fetch = false;
 
@@ -396,7 +396,7 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 		Element.addClassName(element,'themed');
 		var type = element.nodeName.toLowerCase();
 		options['theme']=theme;
-		Appcelerator.UI.loadUIComponent('type',type,element,options,false,callback);		
+		Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);		
 	}
 });
 
