@@ -1,11 +1,11 @@
 --- 
-:release_notes: initial release
 :type: theme
-:control: panel
-:licenses: [1]
-
 :description: panel basic theme
-:name: basic
+:control: panel
 :version: 1.0
+:name: panel:basic
 :tags: 
 - theme
+:release_notes: initial release
+:licenses: 
+- 1

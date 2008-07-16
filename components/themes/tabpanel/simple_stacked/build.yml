@@ -1,11 +1,11 @@
 --- 
-:release_notes: initial release
 :type: theme
-:control: tabpanel
-:licenses: [1]
-
 :description: tabpanel simple_stacked theme
-:name: simple_stacked
+:control: tabpanel
 :version: 1.0
+:name: tabpanel:simple_stacked
 :tags: 
 - theme
+:release_notes: initial release
+:licenses: 
+- 1

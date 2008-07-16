@@ -18,17 +18,17 @@
 #
 
 include Appcelerator
-CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
+CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to a project',[
   {
     :name=>'name',
-    :help=>'name of the widget to add (such as app:my_widget)',
+    :help=>'name of the behavior to add (such as resizable)',
     :required=>true,
     :default=>nil,
     :type=>Types::AnyType
   },
   {
     :name=>'path',
-    :help=>'path of the project to add the widget to',
+    :help=>'path of the project to add the behavior to',
     :required=>false,
     :default=>nil,
     :type=>[
@@ -42,13 +42,13 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
   {
     :name=>'version',
     :display=>'--version=X.X.X',
-    :help=>'specify a version of the widget to use',
+    :help=>'specify a version of the behavior to use',
     :value=>true
   }
 ],[
-  'add:widget app:message',
-  'add:widgets app:iterator,app:box',
-  'add:widget app:script ~/myproject'
+  'add:behavior resizable',
+  'add:behaviors draggable,resizable',
+  'add:behavior draggable ~/myproject'
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
@@ -61,24 +61,24 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 
     with_io_transaction(pwd,options[:tx]) do |tx|
       
-      widget_names = args[:name].split(',').uniq
-      widget_names.each do |name|
+      behavior_names = args[:name].split(',').uniq
+      behavior_names.each do |name|
                 
-        widget = Installer.require_component(:widget, name, options[:version], options)
-        widget_name = widget[:name].gsub ':', '_'
+        behavior = Installer.require_component(:behavior, name, options[:version], options)
+        behavior_name = behavior[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
+        to_dir = "#{Dir.pwd}/public/components/behaviors/#{behavior_name}"
         tx.mkdir to_dir
 
-        event = {:widget_name=>widget[:name],:version=>widget[:version],:widget_dir=>widget[:dir],:to_dir=>to_dir}
-        PluginManager.dispatchEvents('add_widget', event) do
-          Installer.copy tx, widget[:dir], to_dir
+        event = {:behavior_name=>behavior[:name],:version=>behavior[:version],:behavior_dir=>behavior[:dir],:to_dir=>to_dir}
+        PluginManager.dispatchEvents('add_behavior', event) do
+          Installer.copy tx, behavior[:dir], to_dir
 
-          widgets = config[:widgets] ||= []
-          widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>widget[:name],:version=>widget[:version]}
+          behaviors = config[:behaviors] ||= []
+          behaviors.delete_if { |w| w[:name] == name } 
+          behaviors << {:name=>behavior[:name],:version=>behavior[:version]}
         end
-        puts "Added #{widget[:name]} #{widget[:version]}" unless OPTIONS[:quiet] or options[:quiet]
+        puts "Added #{behavior[:name]} #{behavior[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
       Installer.save_project_config(pwd,config) unless options[:no_save]
     end

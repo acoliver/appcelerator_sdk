@@ -31,87 +31,86 @@ CommandRegistry.registerCommand('create:theme','create a new theme project',[
     :conversion=>Types::DirectoryType
   },
   {
-    :name=>'control',
-    :help=>'name of the control (such as input)',
-    :required=>true,
-    :type=>Types::StringType
-  },
-  {
     :name=>'name',
-    :help=>'name of the theme to create (such as my_theme)',
+    :help=>'name of the control:theme to create (such as input:my_theme)',
     :required=>true,
     :type=>Types::StringType
   }
 ],nil,[
-  'create:theme c:\tmp input mytheme',
-  'create:theme ~/mydir panel mytheme'
+  'create:theme c:\tmp input:mytheme',
+  'create:theme ~/mydir panel:mytheme'
 ]) do |args,options|
   
   name = args[:name]
   
-  if not name =~ /^[\w\d_]+$/
+  if not name =~ /^[\w\d_]+:[\w\d_]+$/
     message = <<-ERROR_MESSAGE
 Invalid theme name
 
-User-defined themes must be one or more alphanumeric word/letter combinations
+User-defined themes must be one or more alphanumeric word/letter combinations 
+where the first part if the control separate with colon and the name of the theme 
+as the second part
 
-  > my_theme_foo
-  > mytheme
-  > my1theme
+  > input:my_theme_foo
+  > panel:mytheme
+  > select:my1theme
 ERROR_MESSAGE
     raise UserError.new(message)
   end
+  
+  control = args[:name][0,args[:name].index(':')]
+  theme_name = args[:name][args[:name].index(':')+1..-1]
   
   out_dir = args[:path].path
 
   if Installer.is_project_dir?(out_dir)
     config = Project.get_config(out_dir)
-    out_dir = File.join(config[:controls],args[:control],'themes')
+    out_dir = File.join(config[:controls],control,'themes')
   end
   
   ##TODO: do we have control installed?
   
-  dir = File.expand_path(File.join(out_dir,name))
+  dir = File.expand_path(File.join(out_dir,theme_name))
   
   ##TODO: exists?
   
   Installer.mkdir dir unless File.exists? dir
   
-  event = {:dir=>dir,:name=>name,:control=>args[:control]}
+  event = {:dir=>dir,:name=>name,:control=>control,:theme=>theme_name}
 
   PluginManager.dispatchEvents('create_theme',event) do
     
     template_dir = "#{File.dirname(__FILE__)}/templates"
     
     template = File.read "#{template_dir}/theme.js"
-    template.gsub! 'TYPE', args[:control]
-    template.gsub! 'THEME', name
+    template.gsub! 'TYPE', control
+    template.gsub! 'THEME', theme_name
     
     FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme" 
-    Installer.put "#{dir}/#{name}.js", template
+    Installer.put "#{dir}/#{theme_name}.js", template
 
-    if File.exists? "#{template_dir}/#{args[:control]}_theme.css"
-      template = File.read "#{template_dir}/#{args[:control]}_theme.css"
-      template.gsub! 'NAME', name
-      Installer.put "#{dir}/#{name}.css" , template
+    if File.exists? "#{template_dir}/#{control}_theme.css"
+      template = File.read "#{template_dir}/#{control}_theme.css"
+      template.gsub! 'NAME', theme_name
+      Installer.put "#{dir}/#{theme_name}.css" , template
     else
-      Installer.put "#{dir}/#{name}.css", ''
+      Installer.put "#{dir}/#{theme_name}.css", ''
     end
     
     template = File.read "#{template_dir}/component_Rakefile"
-    template.gsub! 'COMPONENT_NAME', name.downcase
+    template.gsub! 'COMPONENT_NAME', theme_name
     template.gsub! 'COMPONENT_TYPE', 'theme'
-    template.gsub! 'COMPONENT', name.upcase
-    template.gsub! 'Component', name[0,1].upcase + name[1..-1].downcase
+    template.gsub! 'COMPONENT_ZIP', name.downcase.gsub(':','_')
+    template.gsub! 'COMPONENT', theme_name.upcase
+    template.gsub! 'Component', theme_name[0,1].upcase + theme_name[1..-1].downcase
     
     Installer.put "#{dir}/Rakefile", template
     
     build_config = {
       :name=>name,
-      :control=>args[:control],
       :version=>1.0,
       :type=>'theme',
-      :description=>"#{args[:control]} #{name} theme",
+      :description=>"#{control} #{theme_name} theme",
       :release_notes=>"initial release",
       :tags=> ['theme'],
       :licenses=>[]

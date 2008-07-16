@@ -18,17 +18,17 @@
 #
 
 include Appcelerator
-CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
+CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a project',[
   {
     :name=>'name',
-    :help=>'name of the widget to add (such as app:my_widget)',
+    :help=>'name of the control to add (such as input)',
     :required=>true,
     :default=>nil,
     :type=>Types::AnyType
   },
   {
     :name=>'path',
-    :help=>'path of the project to add the widget to',
+    :help=>'path of the project to add the control to',
     :required=>false,
     :default=>nil,
     :type=>[
@@ -42,13 +42,13 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
   {
     :name=>'version',
     :display=>'--version=X.X.X',
-    :help=>'specify a version of the widget to use',
+    :help=>'specify a version of the control to use',
     :value=>true
   }
 ],[
-  'add:widget app:message',
-  'add:widgets app:iterator,app:box',
-  'add:widget app:script ~/myproject'
+  'add:control panel',
+  'add:controls panel,select',
+  'add:control panel ~/myproject'
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
@@ -61,24 +61,24 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 
     with_io_transaction(pwd,options[:tx]) do |tx|
       
-      widget_names = args[:name].split(',').uniq
-      widget_names.each do |name|
+      control_names = args[:name].split(',').uniq
+      control_names.each do |name|
                 
-        widget = Installer.require_component(:widget, name, options[:version], options)
-        widget_name = widget[:name].gsub ':', '_'
+        control = Installer.require_component(:control, name, options[:version], options)
+        control_name = control[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
+        to_dir = "#{Dir.pwd}/public/components/controls/#{control_name}"
         tx.mkdir to_dir
 
-        event = {:widget_name=>widget[:name],:version=>widget[:version],:widget_dir=>widget[:dir],:to_dir=>to_dir}
-        PluginManager.dispatchEvents('add_widget', event) do
-          Installer.copy tx, widget[:dir], to_dir
+        event = {:control_name=>control[:name],:version=>control[:version],:control_dir=>control[:dir],:to_dir=>to_dir}
+        PluginManager.dispatchEvents('add_control', event) do
+          Installer.copy tx, control[:dir], to_dir
 
-          widgets = config[:widgets] ||= []
-          widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>widget[:name],:version=>widget[:version]}
+          controls = config[:controls] ||= []
+          controls.delete_if { |w| w[:name] == name } 
+          controls << {:name=>control[:name],:version=>control[:version]}
         end
-        puts "Added #{widget[:name]} #{widget[:version]}" unless OPTIONS[:quiet] or options[:quiet]
+        puts "Added #{control[:name]} #{control[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
       Installer.save_project_config(pwd,config) unless options[:no_save]
     end

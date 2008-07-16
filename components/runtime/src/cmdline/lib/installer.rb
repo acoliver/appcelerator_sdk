@@ -757,13 +757,11 @@ HELP
     end
 
 
-    # quiet_if_installed=false,tx=nil,force=false,skip_dependencies=false
-
     # to be called by user-level commands
     # if the component is not installed, this will install it from the devnetwork,
     # if an older version of the component is installed, this will prompt the user to upgrade
     # if the user declines to upgrade, the installed version will be returned
-    def Installer.require_component(type,name,version, options={})      
+    def Installer.require_component(type,name,version,options={})      
       
       options[:from] = name
       component_info = {:name=>name,:type=>type,:version=>version}

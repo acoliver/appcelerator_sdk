@@ -29,7 +29,7 @@ require 'find'
 require 'pathname'
 
 NAME = 'COMPONENT_NAME'
-ZIPFILE = File.expand_path "#{NAME}.zip"
+ZIPFILE = File.expand_path "COMPONENT_ZIP.zip"
 
 desc 'default build which makes the COMPONENT_TYPE'
 task :default => [:zip] do

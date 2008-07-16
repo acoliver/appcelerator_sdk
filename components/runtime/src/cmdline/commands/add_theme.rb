@@ -18,17 +18,17 @@
 #
 
 include Appcelerator
-CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a project',[
+CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project',[
   {
     :name=>'name',
-    :help=>'name of the widget to add (such as app:my_widget)',
+    :help=>'name of the theme to add (such as app:my_theme)',
     :required=>true,
     :default=>nil,
     :type=>Types::AnyType
   },
   {
     :name=>'path',
-    :help=>'path of the project to add the widget to',
+    :help=>'path of the project to add the theme to',
     :required=>false,
     :default=>nil,
     :type=>[
@@ -42,13 +42,13 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
   {
     :name=>'version',
     :display=>'--version=X.X.X',
-    :help=>'specify a version of the widget to use',
+    :help=>'specify a version of the theme to use',
     :value=>true
   }
 ],[
-  'add:widget app:message',
-  'add:widgets app:iterator,app:box',
-  'add:widget app:script ~/myproject'
+  'add:theme panel:thinline',
+  'add:themes panel:thinline,input:greybox',
+  'add:theme panel:foobar ~/myproject'
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
@@ -61,24 +61,26 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 
     with_io_transaction(pwd,options[:tx]) do |tx|
       
-      widget_names = args[:name].split(',').uniq
-      widget_names.each do |name|
+      theme_names = args[:name].split(',').uniq
+      theme_names.each do |name|
                 
-        widget = Installer.require_component(:widget, name, options[:version], options)
-        widget_name = widget[:name].gsub ':', '_'
+        control = args[:name][0,args[:name].index(':')]
+        theme_name = args[:name][args[:name].index(':')+1..-1]
+
+        theme = Installer.require_component(:theme, name, options[:version], options)
         
-        to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
+        to_dir = "#{Dir.pwd}/public/components/#{control}/themes/#{theme_name}"
         tx.mkdir to_dir
 
-        event = {:widget_name=>widget[:name],:version=>widget[:version],:widget_dir=>widget[:dir],:to_dir=>to_dir}
-        PluginManager.dispatchEvents('add_widget', event) do
-          Installer.copy tx, widget[:dir], to_dir
+        event = {:name=>name,:control=>control,:theme_name=>theme_name,:version=>theme[:version],:theme_dir=>theme[:dir],:to_dir=>to_dir}
+        PluginManager.dispatchEvents('add_theme', event) do
+          Installer.copy tx, theme[:dir], to_dir
 
-          widgets = config[:widgets] ||= []
-          widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>widget[:name],:version=>widget[:version]}
+          themes = config[:themes] ||= []
+          themes.delete_if { |w| w[:name] == name } 
+          themes << {:name=>theme[:name],:version=>theme[:version]}
         end
-        puts "Added #{widget[:name]} #{widget[:version]}" unless OPTIONS[:quiet] or options[:quiet]
+        puts "Added #{theme[:name]} #{theme[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
       Installer.save_project_config(pwd,config) unless options[:no_save]
     end

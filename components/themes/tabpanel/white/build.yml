@@ -1,11 +1,11 @@
 --- 
-:release_notes: initial release
 :type: theme
-:control: tabpanel
-:licenses: [1]
-
 :description: tabpanel white theme
-:name: white
+:control: tabpanel
 :version: 1.0
+:name: tabpanel:white
 :tags: 
 - theme
+:release_notes: initial release
+:licenses: 
+- 1

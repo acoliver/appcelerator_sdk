@@ -82,6 +82,7 @@ ERROR_MESSAGE
     template = File.read "#{template_dir}/component_Rakefile"
     template.gsub! 'COMPONENT_NAME', name.downcase
     template.gsub! 'COMPONENT_TYPE', 'behavior'
+    template.gsub! 'COMPONENT_ZIP', name.downcase
     template.gsub! 'COMPONENT', name.upcase
     template.gsub! 'Component', name[0,1].upcase + name[1..-1].downcase
     

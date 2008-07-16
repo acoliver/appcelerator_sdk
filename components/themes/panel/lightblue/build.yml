@@ -1,11 +1,11 @@
 --- 
-:release_notes: initial release
 :type: theme
-:control: panel
-:licenses: [1]
-
 :description: panel lightblue theme
-:name: lightblue
+:control: panel
 :version: 1.0
+:name: panel:lightblue
 :tags: 
 - theme
+:release_notes: initial release
+:licenses: 
+- 1
