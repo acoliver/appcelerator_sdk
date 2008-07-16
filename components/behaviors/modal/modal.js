@@ -1,10 +1,5 @@
 Appcelerator.UI.registerUIComponent('behavior','modal',
 {
-	/**
-	 * The attributes supported by the behaviors. This metadata is 
-	 * important so that your behavior can automatically be type checked, documented, 
-	 * so the IDE can auto-sense the widgets metadata for autocomplete, etc.
-	 */
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
@@ -12,29 +7,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 	       	    {name: 'opacity', optional: true, description: "opacity for modal background",defaultValue: 0.6}		
 				];
 	},
-	/**
-	 * The version of the behavior. This will automatically be corrected when you
-	 * publish the component.
-	 */
-	getVersion: function()
-	{
-		// leave this as-is and only configure from the build.yml file 
-		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
-	},
-	/**
-	 * The behavior spec version.  This is used to maintain backwards compatability as the
-	 * Widget API needs to change.
-	 */
-	getSpecVersion: function()
-	{
-		return 1.0;
-	},
-	/**
-	 * This is called when the behavior is loaded and applied for a specific element that 
-	 * references (or uses implicitly) the behavior.
-	 */
-	build:  function(element,options)
+	build: function(element,options)
 	{
 		var on = element.getAttribute("on");
 		if (on)
@@ -42,32 +15,47 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 			// window size
 			var windowHeight = (Appcelerator.Browser.isIE)?document.documentElement.clientHeight:window.outerHeight;
 			var windowWidth = (Appcelerator.Browser.isIE)?document.documentElement.clientWidth:window.innerWidth;
+			var width = (Appcelerator.Browser.isIE6)? windowWidth + "px":"100%";
 
 			// modal container
-			var container = document.createElement("div");
-			container.id = element.id + "_modal_container";
-			container.className = 'behavior modal';
-			var width = (Appcelerator.Browser.isIE6)? windowWidth + "px":"100%";
-			var overlayHtml = '<div style="display:none;position:absolute;top:0;left:0;z-index:2000;width:'+width+';height:'+windowHeight+'px;overflow:hidden;background-color:'+options['background-color']+';filter: alpha( opacity = '+options['opacity']*100+' );-moz-opacity:'+options['opacity']+';opacity:'+options['opacity']+';" on="'+on+'" ></div>';
-			new Insertion.Bottom(container, overlayHtml);
+			var modalContainer = document.createElement('div');
+			modalContainer.id = element.id + "_modal_container";
+			modalContainer.className = 'behavior modal';	
+			modalContainer.style.display = "none";
+			modalContainer.style.position = "absolute";
+			modalContainer.style.top = "0px";
+			modalContainer.style.left = "0px";
+			modalContainer.style.zIndex = "2000";
+			modalContainer.style.width = width;
+			modalContainer.style.height = windowHeight + "px";
+			modalContainer.style.backgroundColor = options['background-color'];
+			modalContainer.style.opacity = options['opacity'];
+			modalContainer.style.filter = "alpha( opacity = "+options['opacity']*100+")";
+			modalContainer.setAttribute('on',on);
 			
 			// modal content
 			var overlayDataHTML = document.createElement("div");
-			overlayDataHTML.style.display = "none";
+			overlayDataHTML.style.position = "absolute";
 			overlayDataHTML.style.zIndex = "2001";
-			overlayDataHTML.style.position = "relative";
-			overlayDataHTML.style.top = 100 - element.offsetTop + "px";
-			overlayDataHTML.setAttribute("align","center");
+			overlayDataHTML.style.top = "100px";
+			overlayDataHTML.style.width = "95%"
+			overlayDataHTML.style.display = "none";
 			overlayDataHTML.setAttribute("on",on);
+			overlayDataHTML.setAttribute('align','center');
 			
-			new Insertion.Bottom(container, overlayDataHTML);
-			Appcelerator.Compiler.dynamicCompile(container);
-			new Insertion.Bottom(overlayDataHTML,element);
-			new Insertion.Bottom(document.body,container);
+			new Insertion.Bottom(document.body,overlayDataHTML);
+			new Insertion.Bottom(document.body,modalContainer);
+
+			Appcelerator.Compiler.dynamicCompile(modalContainer);
+			Appcelerator.Compiler.dynamicCompile(overlayDataHTML);
+			
+			overlayDataHTML.appendChild(element);
+			
 		}
 		else
 		{
 			throw "on expression required for 'on' behavior";
 		}
+		
 	}
 });
