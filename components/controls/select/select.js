@@ -341,7 +341,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 		});
 
 		// load select theme
-		Appcelerator.Core.loadTheme('type','select',theme,element,options);	
+		Appcelerator.Core.loadTheme('control','select',theme,element,options);	
 	},
 
 	// update options based on current text

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('input','thinblue',
+Appcelerator.Core.registerTheme('control','input','thinblue',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

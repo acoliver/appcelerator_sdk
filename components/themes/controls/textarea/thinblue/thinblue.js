@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('textarea','thinblue',
+Appcelerator.Core.registerTheme('control','textarea','thinblue',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

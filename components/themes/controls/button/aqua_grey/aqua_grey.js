@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('button','aqua_grey',
+Appcelerator.Core.registerTheme('control','button','aqua_grey',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

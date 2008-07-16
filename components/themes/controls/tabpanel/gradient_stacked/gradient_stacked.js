@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('tabpanel','gradient_stacked',
+Appcelerator.Core.registerTheme('control','tabpanel','gradient_stacked',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

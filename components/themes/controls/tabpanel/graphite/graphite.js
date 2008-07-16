@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('tabpanel','graphite',
+Appcelerator.Core.registerTheme('control','tabpanel','graphite',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

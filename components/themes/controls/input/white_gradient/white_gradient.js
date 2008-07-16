@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('input','white_gradient',
+Appcelerator.Core.registerTheme('control','input','white_gradient',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

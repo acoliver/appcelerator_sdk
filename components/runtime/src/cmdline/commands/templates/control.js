@@ -54,6 +54,6 @@ Appcelerator.UI.registerUIComponent('control','NAME',
 		
 		// NOTE: you must always call load theme before returning from build for the 
 		// framework to dynamically apply the appropriate theme for this control
-		Appcelerator.Core.loadTheme('type','NAME',theme,element,options);	
+		Appcelerator.Core.loadTheme('control','NAME',theme,element,options);	
 	}
 });

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('button','lightblue_gradient',
+Appcelerator.Core.registerTheme('control','button','lightblue_gradient',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

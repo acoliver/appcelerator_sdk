@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('TYPE','THEME',
+Appcelerator.Core.registerTheme('COMPONENT','TYPE','THEME',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

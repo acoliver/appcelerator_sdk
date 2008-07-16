@@ -120,7 +120,8 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 		else
 		{
 			element.state.pending+=1;
-			Appcelerator.Core.requireCommonJS('appcelerator/'+type+'s/'+name+'/'+name+'.js',function()
+			var path = Appcelerator.DocumentPath + '/components/'+type+'s/'+name+'/'+name+'.js';
+			Appcelerator.Core.remoteLoadScript(path,function()
 			{
 				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback);
 				element.state.pending-=1;
@@ -140,9 +141,10 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
  */
 Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype)
 {
+	$E("error loading - type:"+type+",name:"+name+",subtype:"+subtype+" for "+element.id);
 	//TODO: determine if we're online or offline to determine action here
 	//FIXME: add widget error handling
-	top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
+	//top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
 };
 
 /**
@@ -171,6 +173,7 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 		else
 		{
 			element.state.pending+=1;
+			//FIXME
 			Appcelerator.Core.requireCommonJS('appcelerator/'+ui+'s/'+ui+'s.js',function()
 			{
 				Appcelerator.UI.fireEvent(ui,type,'register');
@@ -306,9 +309,10 @@ Appcelerator.UI.UIManager.parseAttributes = function(element,f,options)
 
 Appcelerator.UI.themes = {};
 
-Appcelerator.Core.registerTheme = function(container,theme,impl)
+//FIXME - add type to register
+Appcelerator.Core.registerTheme = function(type,container,theme,impl)
 {
-	var key = Appcelerator.Core.getThemeKey(container,theme);
+	var key = Appcelerator.Core.getThemeKey(type,container,theme);
 	var themeImpl = Appcelerator.UI.themes[key];
 	if (!themeImpl)
 	{
@@ -363,10 +367,10 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 	
 	if (fetch)
 	{
-		var css_path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
+		var css_path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
 		Appcelerator.Core.remoteLoadCSS(css_path);
 
-		var js_path = Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.js';
+		var js_path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.js';
 		Appcelerator.Core.remoteLoadScript(js_path,null,function()
 		{
 			Appcelerator.UI.UIManager.handleLoadError(element,pkg,theme,container);

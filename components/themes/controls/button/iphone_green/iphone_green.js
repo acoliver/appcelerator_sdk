@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('button','iphone_green',
+Appcelerator.Core.registerTheme('control','button','iphone_green',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

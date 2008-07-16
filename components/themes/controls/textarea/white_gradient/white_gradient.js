@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('textarea','white_gradient',
+Appcelerator.Core.registerTheme('control','textarea','white_gradient',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('tabpanel','simple_stacked',
+Appcelerator.Core.registerTheme('control','tabpanel','simple_stacked',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('select','white_gradient',
+Appcelerator.Core.registerTheme('control','select','white_gradient',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('button','thinblue',
+Appcelerator.Core.registerTheme('control','button','thinblue',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

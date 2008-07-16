@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('tabpanel','minimal',
+Appcelerator.Core.registerTheme('control','tabpanel','minimal',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

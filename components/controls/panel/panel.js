@@ -98,6 +98,6 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			}
 		}
 		
-		Appcelerator.Core.loadTheme('type','panel',options['theme'],element,options);	
+		Appcelerator.Core.loadTheme('control','panel',options['theme'],element,options);	
 	}
 });

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('panel','basic',
+Appcelerator.Core.registerTheme('control','panel','basic',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('input','rounded_search',
+Appcelerator.Core.registerTheme('control','input','rounded_search',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

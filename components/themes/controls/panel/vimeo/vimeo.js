@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('panel','vimeo',
+Appcelerator.Core.registerTheme('control','panel','vimeo',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

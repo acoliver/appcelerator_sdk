@@ -124,6 +124,6 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 			}
 		}
 
-		Appcelerator.Core.loadTheme('type','tabpanel',options['theme'],element,options);	
+		Appcelerator.Core.loadTheme('control','tabpanel',options['theme'],element,options);	
 	}
 });

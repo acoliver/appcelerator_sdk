@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('input','thinline',
+Appcelerator.Core.registerTheme('control','input','thinline',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

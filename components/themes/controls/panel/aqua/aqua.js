@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('panel','aqua',
+Appcelerator.Core.registerTheme('control','panel','aqua',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

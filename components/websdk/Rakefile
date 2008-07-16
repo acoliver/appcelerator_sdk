@@ -217,6 +217,29 @@ def copy_tests(test_src_path, test_dst_path)
     name = file[/widgets\/([^\/]+)\/src/,1]
     cp_r(file,"#{widgets_dst_path}/#{name}")
   end  
+  
+  %w(controls layouts behaviors).each do |name|
+    FileUtils.mkdir_p "#{test_dst_path}/components/#{name}"
+    Dir["#{BUILD_DIR}/../#{name}/*"].each do |file|
+      next unless File.directory? file
+      aname = File.basename(file)
+      cp_r("#{BUILD_DIR}/../#{name}/#{aname}/","#{test_dst_path}/components/#{name}/#{aname}")
+    end
+  end
+
+  Dir["#{BUILD_DIR}/../themes/*"].each do |file|
+    next unless File.directory?(file)
+    type = File.basename(file)
+    Dir["#{BUILD_DIR}/../themes/#{type}/*"].each do |f|
+      control = File.basename(f)
+      Dir["#{BUILD_DIR}/../themes/#{type}/#{control}/*"].each do |fn|
+        next unless File.directory?(fn)
+        theme = File.basename(fn)
+        cp_r("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/","#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}")
+      end
+    end
+  end
+  FileUtils.cp_r("#{BUILD_DIR}/src/web/component_notfound.html","#{test_dst_path}")
 end
 
 namespace :selenium do 
@@ -259,11 +282,13 @@ end
 # copies everything except hidden directories
 def cp_r(src,dst)
   src_root = Pathname.new(src)
-  FileUtils.mkdir_p(dst, :verbose => VERBOSE)
+  FileUtils.mkdir_p(dst, :verbose => VERBOSE) unless File.exists? dst
   Dir["#{src}/**/**"].each do |abs_path|
     src_path = Pathname.new(abs_path)
     rel_path = src_path.relative_path_from(src_root)
     dst_path = "#{dst}/#{rel_path.to_s}"
+    
+    next if abs_path.include? '.svn'
     
     if src_path.directory?
       FileUtils.mkdir_p(dst_path, :verbose => VERBOSE)

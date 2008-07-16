@@ -95,7 +95,7 @@ Appcelerator.UI.registerUIComponent('control','button',
 			self.disable(element.id);	
 		}
 		
-		Appcelerator.Core.loadTheme('type','button',theme,element,options);
+		Appcelerator.Core.loadTheme('control','button',theme,element,options);
 		
 		if (element.getAttribute('activators'))
 		{

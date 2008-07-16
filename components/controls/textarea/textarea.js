@@ -69,6 +69,6 @@ Appcelerator.UI.registerUIComponent('control','textarea',
 			img2.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 		}
 		
-		Appcelerator.Core.loadTheme('type','textarea',theme,element,options);	
+		Appcelerator.Core.loadTheme('control','textarea',theme,element,options);	
 	}
 });

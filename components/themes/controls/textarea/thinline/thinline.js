@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('textarea','thinline',
+Appcelerator.Core.registerTheme('control','textarea','thinline',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

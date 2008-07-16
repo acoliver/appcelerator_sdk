@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('tabpanel','arrows',
+Appcelerator.Core.registerTheme('control','tabpanel','arrows',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

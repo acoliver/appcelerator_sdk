@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('button','itunes_fwd',
+Appcelerator.Core.registerTheme('control','button','itunes_fwd',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 
