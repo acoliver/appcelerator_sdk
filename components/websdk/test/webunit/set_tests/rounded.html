@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:50%;
+}
+.rounded_content
+{
+	padding:5px;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Rounded Control </h3> 
+<p>
+	These are basic tests for the rounded control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			 Rounded in a Modal Panel
+		</td>
+		<td class="result" >
+			<button set="theme[aqua_blue]" on="click then l:show.modal">Show Modal</button>
+			<div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:close.modal then hide">
+	            <div set="control[rounded]" style="width:200px;height:100px">
+					<div class="rounded_content">I am rounded</div>
+					<input type="text" set="theme[thinblue]" style="width:50px"/>
+					<button set="theme[thinblue]" on="click then l:close.modal">close</button>
+	            </div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			Simple Rounded
+		</td>
+		<td class="result" >
+            <div set="control[rounded]">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Custom Background Color
+		</td>
+		<td class="result" >
+            <div set="control[rounded,background-color=#336699]">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Custom Width / Height
+		</td>
+		<td class="result" >
+            <div set="control[rounded,width=200px,height=50px]">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Width / Height using style attribute
+		</td>
+		<td class="result" >
+            <div set="control[rounded]" style="width:200px;height:50px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (left top)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=lt]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (left bottom)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=lb]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (right bottom)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=rb]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (right top)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=rt]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (bottom left)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=bl]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Tail (bottom right)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,tail=br]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			  Custom corners (left top)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=tl]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Custom corners (right top)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=tr]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Custom corners (top)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=top]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Custom corners (right bottom)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=br]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Custom corners (left bottom)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=bl]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Custom corners (bottom)
+		</td>
+		<td class="result" >
+            <div set="control[rounded,corners=bottom]" style="width:100px;height:100px">
+				<div class="rounded_content">I am rounded</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Rounded in a Panel
+		</td>
+		<td class="result" >
+			<div set="control[panel]">
+	            <div set="control[rounded]" style="width:100px;height:100px">
+					<div class="rounded_content">I am rounded</div>
+	            </div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Rounded in a border layout
+		</td>
+		<td class="result" >
+			<div set="layout[border]">
+				<div position="east"><div set="control[rounded]"><div class="rounded_content">east</div></div></div>
+				<div position="west"><div set="control[rounded]"><div class="rounded_content">west</div></div></div>
+				<div position="north"><div set="control[rounded]"><div class="rounded_content">north</div></div></div>
+				<div position="south"><div set="control[rounded]"><div class="rounded_content">south</div></div></div>
+				<div position="center"><div set="control[rounded]"><div class="rounded_content">center</div></div></div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Stacked Rounded
+		</td>
+		<td class="result" >
+			<div set="control[rounded]">
+				<div class="rounded_content">Foo</div>
+			</div>
+			<div set="control[rounded]">
+				<div class="rounded_content">Foo</div>
+			</div>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Rounded with form fields
+		</td>
+		<td class="result" >
+			<div set="control[rounded]" style="height:200px;width:300px">
+				<div class="rounded_content">
+					<div>Username:</div>
+					<input type="text" set="theme[thinblue]" style="width:100px"/>
+					<div>Password:</div>
+					<input type="password" set="theme[thinblue]" style="width:100px"/>
+					<div>
+						<button set="theme[thinblue]" on="click then script[alert('you hit login')]">Login</button>
+						<button set="theme[thinblue]" on="click then script[alert('you hit cancel')]">Cancel</button>
+					</div>
+				</div>
+			</div>
+
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

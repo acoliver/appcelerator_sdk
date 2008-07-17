@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:30%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Textarea Control </h3> 
+<p>
+	These are basic tests for the textarea control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Themes (themes should look correct)
+		</td>
+		<td class="result" >
+            <div>
+				<textarea set="theme[thinblue]">I am a text area</textarea>
+				<textarea set="theme[white_gradient]">I am a text area</textarea>
+				<textarea set="theme[thinline]">I am a text area</textarea>
+				
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Textarea in a panel
+		</td>
+		<td class="result" >
+            <div set="control[panel]">
+				<textarea set="theme[white_gradient]">I am a text area</textarea>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Textarea in a modal panel
+		</td>
+		<td class="result" >
+			<button on="click then l:show.modal">click me </button>
+            <div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:hide.modal then hide">
+				<textarea set="theme[white_gradient]">I am a text area</textarea>
+				<button set="theme[aqua_grey]" on="click then l:hide.modal">close</button>
+				
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Input in a border layout
+		</td>
+		<td class="result" >
+			<div set="layout[border]">
+				<div position="east"><textarea set="theme[white_gradient]">I am a text area</textarea></div>
+				<div position="south"><textarea set="theme[white_gradient]">I am a text area</textarea></div>
+				<div position="west"><textarea set="theme[white_gradient]">I am a text area</textarea></div>
+				<div position="north"><textarea set="theme[white_gradient]">I am a text area</textarea></div>
+				<div position="center"><textarea set="theme[white_gradient]">I am a text area</textarea></div>
+				
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+</html>

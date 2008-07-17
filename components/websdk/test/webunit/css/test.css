@@ -22,7 +22,7 @@ p
 {
 	color:#696969;
 }
-
+/*
 input[type="text"] 
 {
 	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
@@ -32,7 +32,7 @@ input[type="text"]
 	margin:1px;
 	padding:2px 2px 2px 2px;
 	width:280px;
-}
+}*/
 select
 {
 	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);

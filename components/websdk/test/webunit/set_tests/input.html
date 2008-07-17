@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:30%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Input Control </h3> 
+<p>
+	These are basic tests for the input control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Themes (themes should look correct)
+		</td>
+		<td class="result" >
+            <div>
+				<input type="text" set="theme[rounded_search]"/>
+				<input type="text" set="theme[thinline]"/>
+				<input type="text" set="theme[thinblue]"/>
+				<input type="text" set="theme[white_gradient]"/>
+				
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Horizontal layout (should flow left to right)
+		</td>
+		<td class="result" >
+            <div>
+				<input set="theme[thinblue]" type="text" style="width:100px"/>
+				<input set="theme[thinblue]" type="text" style="width:100px"/>
+				
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Input in a panel
+		</td>
+		<td class="result" >
+            <div set="control[panel]">
+				<input set="theme[rounded_search]" type="text"/>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Input in a modal panel
+		</td>
+		<td class="result" >
+			<button on="click then l:show.modal">click me </button>
+            <div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:hide.modal then hide">
+				<input set="theme[rounded_search]" type="text"/>
+				<button set="theme[aqua_grey]" on="click then l:hide.modal">close</button>
+				
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Input in a border layout
+		</td>
+		<td class="result" >
+			<div set="layout[border]">
+				<div position="east"><input type="text" set="theme[rounded_search]" style="width:80px"/></div>
+				<div position="west"><input type="text" set="theme[rounded_search]" style="width:80px"/></div>
+				<div position="north"><input type="text" set="theme[rounded_search]" style="width:80px"/></div>
+				<div position="south"><input type="text" set="theme[rounded_search]" style="width:80px"/></div>
+				<div position="center"><input type="text" set="theme[rounded_search]" style="width:80px"/></div>
+				
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+</html>	
