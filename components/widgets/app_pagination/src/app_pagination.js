@@ -192,8 +192,13 @@ Appcelerator.Widget.Pagination =
 				}
 			}
 			
-			nextAnchor.setAttribute('on','click then '+request+'[dir=next]');
-            prevAnchor.setAttribute('on','click then '+request+'[dir=previous]');
+			if (request.indexOf(']')>0) {
+				nextAnchor.setAttribute('on','click then '+request.sub(']',',dir=next]'));
+	            prevAnchor.setAttribute('on','click then '+request.sub(']',',dir=previous]'));
+			} else {
+				nextAnchor.setAttribute('on','click then '+request+'[dir=next]');
+	            prevAnchor.setAttribute('on','click then '+request+'[dir=previous]');
+			}
 			Appcelerator.Compiler.dynamicCompile(nextAnchor);
 			Appcelerator.Compiler.dynamicCompile(prevAnchor);
 		}); // TODO: what should scope be?
