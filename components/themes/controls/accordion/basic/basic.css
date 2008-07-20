@@ -1,0 +1,50 @@
+.accordion_basic_container
+{
+	padding-right:5px;
+	border:1px solid #666;
+	border-top:none;
+}
+.body.ie6 .accordion_basic_container
+{
+	padding-right:0px;
+}
+.accordion_basic_row
+{
+	clear:both;
+	height:25px;
+}
+.accordion_basic_row_left
+{
+	
+}
+.accordion_basic_row_middle
+{
+	background-color:#aaa;
+	border-top:1px solid #666;
+	height:25px;
+	float:left;
+	line-height:25px;
+	color:#fff;
+	padding-left:5px;
+}
+.accordion_basic_row_right
+{
+}
+.accordion_basic_row_data
+{
+	clear:both;
+	padding-right:5px;
+}
+
+.accordion_basic_row_left_active
+{
+	
+}
+.accordion_basic_row_middle_active
+{
+	border-bottom:1px solid #666;
+}
+.accordion_basic_row_right_active
+{
+}
+.

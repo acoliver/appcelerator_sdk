@@ -1,0 +1,45 @@
+.accordion_aqua_grey_container
+{
+	width:auto !important;
+}
+
+.accordion_aqua_grey_row
+{
+	clear:both;
+	margin:0px;
+	height:23px;
+}
+.accordion_aqua_grey_row_left
+{
+	background:url(left.png) no-repeat ;
+	height:23px;
+	width:13px;
+	float:left;
+	
+}
+.accordion_aqua_grey_row_middle
+{
+	background:url(middle.png) repeat-x;
+	height:23px;
+	float:left;
+	font-size:11px;
+	line-height:23px;
+	color:#444;
+}
+.accordion_aqua_grey_row_right
+{
+	background:url(right.png) no-repeat;;
+	height:23px;
+	width:13px;
+	float:left;
+}
+.accordion_aqua_grey_row_data
+{
+	clear:both;
+	padding-left:5px;
+
+}
+.accordion_aqua_grey_active
+{
+	
+}

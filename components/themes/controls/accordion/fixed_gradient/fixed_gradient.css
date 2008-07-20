@@ -1,0 +1,42 @@
+.accordion_fixed_gradient_container
+{
+	width: auto !important;
+}
+.accordion_fixed_gradient_row
+{
+	clear:both;
+	height:37px;
+}
+.accordion_fixed_gradient_row_left
+{
+	
+}
+.accordion_fixed_gradient_row_middle
+{
+	background: url(bar.gif) no-repeat;
+	height:37px;
+	width:980px !important;
+	color:#999;
+	line-height:37px;
+	padding-left:5px;
+}
+.accordion_fixed_gradient_row_right
+{
+}
+.accordion_fixed_gradient_row_data
+{
+	clear:both;
+	width:980px !important;
+}
+
+.accordion_fixed_gradient_row_left_active
+{
+	
+}
+.accordion_fixed_gradient_row_middle_active
+{
+}
+.accordion_fixed_gradient_row_right_active
+{
+}
+.

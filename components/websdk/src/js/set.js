@@ -249,7 +249,8 @@ Appcelerator.UI.UIManager.defaultThemes =
 	'input':'white_gradient',
 	'textarea':'white_gradient',
 	'select':'thinline',
-	'tabpanel':'white'
+	'tabpanel':'white',
+	'accordion':'basic'
 };
 
 //FIXME - change to add type (control, behavior)
