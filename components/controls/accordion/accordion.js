@@ -62,7 +62,7 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 	{
 		return 1.0;
 	},
-	
+
 	open: function(id,parameters,data,scope,version,attrs,direction,action)
 	{
 		if (attrs[0] && attrs[0].key == 'row')
@@ -72,7 +72,7 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 	{
 		return ['open'];
 	},
-	
+
 	/**
 	 * This is called when the control is loaded and applied for a specific element that 
 	 * references (or uses implicitly) the control.
@@ -93,7 +93,8 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 		{
 			var node = element.childNodes[c];
 			if (node.nodeType == 1)
-			{				
+			{
+				
 				// row container
 				html +='<div class="'+classPrefix + '_row" on="click then l:accordion.click[val='+element.id+'_'+count+']">';
 				html +=' <div id="'+element.id + '_accordion_left_'+count+'" class="'+classPrefix+'_row_left" on="l:accordion.click[val='+element.id+'_'+count+'] then add[class='+classPrefix+'_row_left_active] else remove[class='+classPrefix+'_row_left_active]"></div>';
@@ -110,15 +111,15 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 				html += ' else effect[Morph,style=height:0px,duration:'+options['speed']+']" style="width:'+options['width']+'">';
 				if (Appcelerator.Browser.isIE)
 				{
-					html += '<div on="l:accordion.click[val='+element.id+'_'+count+'] then show else hide" style="display:none">'+node.outerHTML+'</div>';	
+					html += '<div on="l:accordion.click[val='+element.id+'_'+count+'] then effect[Appear] after '+ options['speed']+'s else hide" style="display:none">'+node.outerHTML+'</div>';	
 				}
 				else
 				{
-					html += '<div on="l:accordion.click[val='+element.id+'_'+count+'] then show else hide" style="display:none">'+Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)) + '</div>';	
+					html += '<div on="l:accordion.click[val='+element.id+'_'+count+'] then effect[Appear] after '+ options['speed']+'s else hide" style="display:none">'+Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)) + '</div>';	
 				}
 				html += '</div>';
 				count++;
-			
+
 			}
 		}	
 		container.innerHTML = html;

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:50%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Accordion Control </h3> 
+<p>
+	These are basic tests for the accordion control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+		 Default Theme (no args)
+		</td>
+		<td class="result" >
+			<div set="control[accordion]">
+				<div title="Row 1"> I am row one </div>
+				<div title="Row 2"> I am row two</div>
+				<div title="Row 3"> I am row three</div>
+			</div>	
+			
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		 Aqua Grey Theme with height and width
+		</td>
+		<td class="result" >
+			<div set="control[accordion,width=200px,height=150px,theme=aqua_grey]">
+				<div title="Row 1"> I am row one </div>
+				<div title="Row 2"> I am row two</div>
+				<div title="Row 3"> I am row three</div>
+			</div>	
+			
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		 Fixed Gradient Theme (fixed width)
+		</td>
+		<td class="result" >
+			<div set="control[accordion,width=200px,height=150px,theme=fixed_gradient]">
+				<div title="Row 1"> I am row one </div>
+				<div title="Row 2"> I am row two</div>
+				<div title="Row 3"> I am row three</div>
+			</div>	
+			
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Speed option (how quickly the panels open and close)
+		</td>
+		<td class="result" >
+			<div set="control[accordion,width=200px,height=150px,theme=basic,speed=2.0]">
+				<div title="Row 1"> I am row one </div>
+				<div title="Row 2"> I am row two</div>
+				<div title="Row 3"> I am row three</div>
+			</div>	
+			
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+		 Open Action
+		</td>
+		<td class="result" >
+			<button on="click then l:open1">open row 1</button>
+			<button on="click then l:open2">open row 2 </button>
+			<button on="click then l:open3">open row 3 </button>
+			<div set="control[accordion,width=200px,height=150px,theme=basic]" on="l:open1 then open[row=0] or l:open2 then open[row=1] or l:open3 then open[row=2]">
+				<div title="Row 1"> I am row one </div>
+				<div title="Row 2"> I am row two</div>
+				<div title="Row 3"> I am row three</div>
+			</div>	
+			
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>
