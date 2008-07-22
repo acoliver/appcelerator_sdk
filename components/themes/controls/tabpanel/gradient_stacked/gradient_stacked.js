@@ -42,5 +42,6 @@ Appcelerator.Core.registerTheme('control','tabpanel','gradient_stacked',
 	 */
 	build: function(element,options)
 	{
+		$(element.id + "_left").innerHTML = options.title || '';
 	}
 });
