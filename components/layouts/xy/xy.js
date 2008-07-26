@@ -8,15 +8,11 @@ Appcelerator.UI.registerUIComponent('layout','xy',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		
-		/*
-		Example: 
-		return [{name: 'mode', optional: false, description: "Vertical or horizontal alignment",
-		         type: T.enumeration('vertical', 'horizontal')}]
-		*/
-		
-		//TODO
-		return [];
+		return [{name: 'top', optional: true, description: "top positioning",defaultValue: ''},
+			    {name: 'bottom', optional: true, description: "bottom positioning",defaultValue: ''},
+		        {name: 'left', optional: true, description: "left positioning",defaultValue: ''},
+		        {name: 'right', optional: true, description: "right positioning",defaultValue: ''}
+		];
 	},
 	/**
 	 * The version of the layout. This will automatically be corrected when you

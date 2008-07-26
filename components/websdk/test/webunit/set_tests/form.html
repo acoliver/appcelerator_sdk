@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:50%;
+}
+-->
+</style>
+</head>
+<body>
+
+<h3> Form Layout </h3> 
+<p>
+	These are basic tests for the form layout
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+		Vertical
+		</td>
+		<td class="result" >
+			<form set="layout[vertical]">
+				<label for="one1">Email Address:</label>
+				<label for="two1">Street Address:</label>
+				<input type="text"  id="one1" />
+				<input type="text"  id="two1" />
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal]">
+				<label for="one2">Email Address:</label>
+				<label for="two2">Street Address:</label>
+				<input type="text"  id="one2" />
+				<input type="text"  id="two2" />
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Vertical (hint right, error top)
+		</td>
+		<td class="result" >
+			<form set="layout[vertical,hintPos=right,errorPos=top]">
+				<label for="one3">Email Address:</label>
+				<label for="two3">Street Address:</label>
+				<label for="one3" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two3" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one3" type="error" id="one_dec3" style="font-size:11px;color:red">invalid email</label>
+				<label for="two3" type="error" id="two_dec3" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one3" validator="email" decorator="custom" decoratorId="one_dec3"/>
+				<input type="text"  id="two3" validator="required" decorator="custom" decoratorId="two_dec3"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal (hint right, error top)
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal,hintPos=right,errorPos=top,width=400px]">
+				<label for="one4">Email Address:</label>
+				<label for="two4">Street Address:</label>
+				<label for="one4" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two4" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one4" type="error" id="one_dec4" style="font-size:11px;color:red">invalid email</label>
+				<label for="two4" type="error" id="two_dec4" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one4" validator="email" decorator="custom" decoratorId="one_dec4"/>
+				<input type="text"  id="two4" validator="required" decorator="custom" decoratorId="two_dec4"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Vertical (hint bottom, error top)
+		</td>
+		<td class="result" >
+			<form set="layout[vertical,hintPos=bottom,errorPos=top]">
+				<label for="one5">Email Address:</label>
+				<label for="two5">Street Address:</label>
+				<label for="one5" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two5" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one5" type="error" id="one_dec5" style="font-size:11px;color:red">invalid email</label>
+				<label for="two5" type="error" id="two_dec5" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one5" validator="email" decorator="custom" decoratorId="one_dec5"/>
+				<input type="text"  id="two5" validator="required" decorator="custom" decoratorId="two_dec5"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal (hint bottom, error top)
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal,hintPos=bottom,errorPos=top]">
+				<label for="one6">Email Address:</label>
+				<label for="two6">Street Address:</label>
+				<label for="one6" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two6" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one6" type="error" id="one_dec6" style="font-size:11px;color:red">invalid email</label>
+				<label for="two6" type="error" id="two_dec6" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one6" validator="email" decorator="custom" decoratorId="one_dec6"/>
+				<input type="text"  id="two6" validator="required" decorator="custom" decoratorId="two_dec6"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Vertical (hint top, error right)
+		</td>
+		<td class="result" >
+			<form set="layout[vertical,hintPos=top,errorPos=right]">
+				<label for="one7">Email Address:</label>
+				<label for="two7">Street Address:</label>
+				<label for="one7" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two7" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one7" type="error" id="one_dec7" style="font-size:11px;color:red">invalid email</label>
+				<label for="two7" type="error" id="two_dec7" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one7" validator="email" decorator="custom" decoratorId="one_dec7"/>
+				<input type="text"  id="two7" validator="required" decorator="custom" decoratorId="two_dec7"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal (hint top, error right)
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal,hintPos=top,errorPos=right]">
+				<label for="one8">Email Address:</label>
+				<label for="two8">Street Address:</label>
+				<label for="one8" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two8" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one8" type="error" id="one_dec8" style="font-size:11px;color:red">invalid email</label>
+				<label for="two8" type="error" id="two_dec8" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one8" validator="email" decorator="custom" decoratorId="one_dec8"/>
+				<input type="text"  id="two8" validator="required" decorator="custom" decoratorId="two_dec8"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+		Vertical (hint input, error bottom)
+		</td>
+		<td class="result" >
+			<form set="layout[vertical,hintPos=input,errorPos=bottom]">
+				<label for="one9">Email Address:</label>
+				<label for="two9">Street Address:</label>
+				<label for="one9" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two9" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one9" type="error" id="one_dec9" style="font-size:11px;color:red">invalid email</label>
+				<label for="two9" type="error" id="two_dec9" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one9" validator="email" decorator="custom" decoratorId="one_dec9"/>
+				<input type="text"  id="two9" validator="required" decorator="custom" decoratorId="two_dec9"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal (hint input, error bottom)
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal,hintPos=input,errorPos=bottom]">
+				<label for="one10">Email Address:</label>
+				<label for="two10">Street Address:</label>
+				<label for="one10" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two10" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one10" type="error" id="one_dec10" style="font-size:11px;color:red">invalid email</label>
+				<label for="two10" type="error" id="two_dec10" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one10" validator="email" decorator="custom" decoratorId="one_dec10"/>
+				<input type="text"  id="two10" validator="required" decorator="custom" decoratorId="two_dec10"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+		Horizontal (labelWidth)
+		</td>
+		<td class="result" >
+			<form set="layout[horizontal,labelWidth=150px,hintPos=input,errorPos=bottom]">
+				<label for="one11">Email Address:</label>
+				<label for="two11">Very Long Label for Field:</label>
+				<label for="one11" type="hint" style="font-size:11px;color:#777">email hint</label>
+				<label for="two11" type="hint" style="font-size:11px;color:#777">street hint</label>
+				<label for="one11" type="error" id="one_dec11" style="font-size:11px;color:red">invalid email</label>
+				<label for="two11" type="error" id="two_dec11" style="font-size:11px;color:red">invalid street</label>
+				<input type="text"  id="one11" validator="email" decorator="custom" decoratorId="one_dec11"/>
+				<input type="text"  id="two11" validator="required" decorator="custom" decoratorId="two_dec11"/>
+				<button set="theme[thinblue]" >Save</button>
+				<button set="theme[thinblue]">Cancel</button>
+			</form>
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

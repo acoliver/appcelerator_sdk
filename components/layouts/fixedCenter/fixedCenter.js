@@ -8,15 +8,7 @@ Appcelerator.UI.registerUIComponent('layout','fixedCenter',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		
-		/*
-		Example: 
-		return [{name: 'mode', optional: false, description: "Vertical or horizontal alignment",
-		         type: T.enumeration('vertical', 'horizontal')}]
-		*/
-		
-		//TODO
-		return [];
+		return [{name: 'width', optional: true, description: "width for fixed center portion",defaultValue: '1000px'}];
 	},
 	/**
 	 * The version of the layout. This will automatically be corrected when you

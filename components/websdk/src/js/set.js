@@ -414,6 +414,222 @@ Appcelerator.UI.LayoutManager._formatTable = function(options)
    return '<table width="'+options['width']+'" cellspacing="'+(options['spacing'] || '') +'" cellpadding="'+ (options['padding'] || '0') + '">';
 };
 
+Appcelerator.UI.LayoutManager._buildForm = function(options)
+{
+	var childNodes = options['childNodes'];
+	var html = options['html'];
+	var align = options['align'];
+	var colspan = options['colspan'];
+	var hintPos = options['hintPos'];
+	var errorPos = options['errorPos'];
+	var labelWidth = options['labelWidth'];
+	var formElement = options['element'];
+	
+	var inputHTML = [];
+	var labelHTML = [];
+	var buttonHTML = [];
+	var hintHTML = [];
+	var errorHTML = [];
+	for (var c=0,len=childNodes.length;c<len;c++)
+	{
+		var node = childNodes[c];
+		if (node.nodeType == 1)
+		{
+			if (node.tagName.toLowerCase() == 'input')
+			{
+				inputHTML.push({'element':node});
+			}
+			else if (node.tagName.toLowerCase() == 'label')
+			{
+				if (Appcelerator.Browser.isIE)
+				{
+					if (node.getAttribute("type") == "hint")
+					{
+						hintHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});
+					}
+					else if (node.getAttribute("type") == "error")
+					{
+						errorHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});
+					}
+					else
+					{
+						labelHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});						
+					}
+				}
+				else
+				{
+					if (node.getAttribute("type") == "hint")
+					{
+						hintHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
+					}
+					else if (node.getAttribute("type") == "error")
+					{
+						errorHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
+					}
+					else
+					{
+						labelHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});						
+					}
+					
+				}
+			}
+			else if (node.tagName.toLowerCase() == 'button')
+			{
+				if (Appcelerator.Browser.isIE)
+				{
+					buttonHTML.push(node.outerHTML);
+				}
+				else
+				{
+					buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
+				}
+			}
+		}	
+	}
+	// 
+	// horizontal: hint (top, right, bottom, input), error (top, right, bottom)
+	// vertical: hint (top, right, bottom, input), error (top, right, bottom)
+	// 
+	
+	for (var x=0;x<inputHTML.length;x++)
+	{
+		(function()
+		{
+			var label = '';
+			var error = ''
+			var hint = '';
+			var input = '';
+			input = inputHTML[x].element;
+
+			// define label for this input
+			label = '';
+			for (var i=0;i<labelHTML.length;i++)
+			{
+				if (labelHTML[i].id == input.id)
+				{
+					label = labelHTML[i].html;
+					break;
+				}
+			}
+
+			// define error for this input
+			error = ''
+			for (var i=0;i<errorHTML.length;i++)
+			{
+				if (errorHTML[i].id == input.id)
+				{
+					error = errorHTML[i].html;
+					break;
+				}
+			}
+
+			// define hint for this input
+			hint = '';
+			for (var i=0;i<hintHTML.length;i++)
+			{
+				if (hintHTML[i].id == input.id)
+				{
+					hint = (hintPos == 'input')?hintHTML[i].element.innerHTML:hintHTML[i].html;
+					break;
+				}
+			}
+
+			if (align=='horizontal')
+			{
+				// define vertical align for <td>
+				var valign = 'middle';
+				var labelPadding = "5px";
+				var inputPadding = "5px";
+				var topPadding = "0px";
+				if ((errorPos == 'top' || errorPos == 'bottom')&&((hintPos == 'top' || hintPos == 'bottom')))
+				{
+					valign = "middle";				
+					labelPadding = "15px"
+				}
+				
+				else if (errorPos == 'top' || hintPos == 'top')
+				{
+					valign = "bottom";
+				}
+				else if (errorPos=='bottom' || hintPos=='bottom')
+				{
+					valign = "top";
+					topPadding = "4px"
+				}
+				// create form
+				if ((labelPadding == "5px")  && (hintPos != 'bottom') && (errorPos != 'bottom'))
+				{
+					labelPadding = "9px";
+				}
+				
+				html += '<tr><td valign="'+valign+'" width="'+labelWidth+'" style="padding-bottom:'+labelPadding+';padding-top:'+topPadding+'" >' + label + '</td>';
+				html += '<td style="padding-bottom:'+inputPadding+'">';
+				html += (hintPos == "top")?'<div>'+hint+'</div>':'';
+				html += (errorPos == "top")?'<div>'+error+'</div>':'';
+				if (hintPos == "input")
+				{
+					input.setAttribute("value",hint);
+				}
+				html += Appcelerator.Util.Dom.toXML(input,true,Appcelerator.Compiler.getTagname(input));
+				html += (hintPos == 'right')?hint:'';				
+				html += (errorPos == 'right')?error:'';
+				html += (hintPos == 'bottom')?'<div style="margin-bottom:10px;position:relative;top:-1px">'+hint + '</div>':'';				
+				html += (errorPos == 'bottom')?'<div style="margin-bottom:10px;position:relative;top:-1px">'+error + '</div>':'';
+				html += '</td></tr>';
+
+			}
+			else
+			{
+				// create form
+				html += '<tr><td>' + label;
+				html += (hintPos == "top")?hint:'';
+				html += (errorPos == "top")?error:'';
+				html += '</td></tr><tr>';
+				html += (errorPos != 'bottom' && hintPos != 'bottom')?'<td style="padding-bottom:5px">':'<td>';
+				if (hintPos == "input")
+				{
+					input.setAttribute("value",hint);
+				}
+				html += Appcelerator.Util.Dom.toXML(input,true,Appcelerator.Compiler.getTagname(input));
+				html += (hintPos == 'right')?hint:'';				
+				html += (errorPos == 'right')?error:'';
+				html += (hintPos == 'bottom')?'<div style="margin-bottom:5px;position:relative;top:-1px">'+hint + '</div>':'';				
+				html += (errorPos == 'bottom')?'<div style="margin-bottom:5px;position:relative;top:-1px">'+error + '</div>':'';
+				html += '</td></tr>';
+
+			}
+			if (options['hintPos'] == "input")
+			{
+				formElement.observe('element:compiled:'+formElement.id,function(a)
+				{
+					Event.observe(input.id,'click',function(e)
+					{
+						if ($(input.id).value == hint)
+						{
+							$(input.id).value = '';
+						}
+					});
+					Event.observe(input.id,'blur',function(e)
+					{
+						if ($(input.id).value == '')
+						{
+							$(input.id).value = hint;
+						}
+					});
+				});
+			}
+		})();
+	}
+	var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"10px";
+	html += '<tr><td colspan='+colspan+' style="padding-top:'+buttonPadding+'">';
+	for (var y=0;y<buttonHTML.length;y++)
+	{
+		html += buttonHTML[y] + '<span style="padding-right:10px"></span>';
+	}
+	html += '</td></tr></table>';
+	return html;
+};
+
 Appcelerator.UI.registerUIManager('layout', function(type,element,options,callback)
 {
    Element.addClassName(element,'layout');
