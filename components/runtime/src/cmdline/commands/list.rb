@@ -117,7 +117,7 @@ def listComponents(type, components)
     puts "          >  #{cm[:name].ljust(32)} [#{cm[:version]}]"
   end
 
-  puts ' ' * 10 + 'No #{type}s available' if components.empty?
+  puts ' ' * 10 + "No #{type}s available" if components.empty?
   puts
 end
 
