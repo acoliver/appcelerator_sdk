@@ -193,6 +193,21 @@
 	</tr>
 	<tr>
 		<td class="test" width="35%" valign="middle">
+			Select <a on="click then l:test.select.validation">Select Option</a><br />
+			You should see an alert
+		</td>
+		<td class="result">
+			<select id="select_test_1" validator="required" decorator="required"
+			        on="l:test.select.validation then script[Appcelerator.Compiler.setElementValue($('select_test_1'), 'test_passed');]
+			            or change then script[alert('Test Passed')]">
+			    <option value=""></option>
+			    <option value="test_failed">Test Failed!</option>
+			    <option value="test_passed">Test Passed!</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" width="35%" valign="middle">
 			Custom Decorator
 		</td>
 		<td class="result">

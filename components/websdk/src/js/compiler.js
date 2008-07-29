@@ -3030,6 +3030,12 @@ Appcelerator.Compiler.setElementValue = function (element, value)
                         if (options[i].value == value)
                         {
                             element.selectedIndex = i;
+                            try {
+                                Event.cache[element._eventID]['change'][0]({});
+                            } catch(e) {
+                                $D('failed to find change listener for element ' + element.id);
+                            }
+                            revalidate = true;
                             break;
                         }
                     }
