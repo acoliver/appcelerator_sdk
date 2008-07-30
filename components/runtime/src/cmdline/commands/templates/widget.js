@@ -98,7 +98,7 @@ Appcelerator.Widget.WIDGET_CLASS_NAME =
 	      then the on expresson 'on="close then l:closed"' is valid. You can fire one of 
 	      these conditions by using:
 	      
-	          Appcelerator.Widget.fireWidgetCondition(<widget_id>, <condition_name>, <payload>);
+	          Appcelerator.Compiler.fireCustomCondition(<widget_id>, <condition_name>, <payload>);
 	          
 	      This feature removes the need to specify special attributes such as 'closeMessage'
 	    */
