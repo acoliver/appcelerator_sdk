@@ -151,9 +151,17 @@ Appcelerator.Widget.loadWidgetCSS = function(name,css)
  */
 Appcelerator.Widget.fireWidgetCondition = function(id, name, data)
 {
-    var entries = Appcelerator.Compiler.customConditionObservers[id][name];
-    if(entries) 
+    var observersForElement = Appcelerator.Compiler.customConditionObservers[id];
+    if(observersForElement == null) {
+        $D('no custom widget condition found for id="'+id+'"');
+    }
+    else if (observersForElement[name] == null)
     {
+        $D('no custom widget condition found for id="'+id+'" condition="'+name+'"');
+    }
+    else
+    {
+        var entries = observersForElement[name];
         for(var i = 0; i < entries.length; i++) 
         {   
             var entry = entries[i];
