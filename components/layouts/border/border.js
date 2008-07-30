@@ -42,11 +42,11 @@ Appcelerator.UI.registerUIComponent('layout','border',
 	 */
 	build:  function(element,options)
 	{
-		var e = element.down('*[position=east]');
-		var w = element.down('*[position=west]');
-		var n = element.down('*[position=north]');
-		var s = element.down('*[position=south]');
-		var c = element.down('*[position=center]');
+		var e = element.down('*[pos=east]');
+		var w = element.down('*[pos=west]');
+		var n = element.down('*[pos=north]');
+		var s = element.down('*[pos=south]');
+		var c = element.down('*[pos=center]');
 		
 		var html = "<table width='100%' class='borderlayout' border='0' cellpadding='0' cellspacing='0'>";
 		

@@ -20,7 +20,8 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 				'name': 'theme',
 				'optional': true,
 				'description': 'name of theme to use for this control',
-				'type': T.identifier
+				'type': T.identifier,
+				'defaultValue':Appcelerator.UI.UIManager.getDefaultTheme('accordion')
 			},
 			{
 				'name': 'height',

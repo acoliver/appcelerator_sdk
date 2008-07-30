@@ -54,6 +54,19 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
+			Simple Rounded with margin and padding around it
+		</td>
+		<td class="result" >
+			<div style="margin:5px;padding:5px">
+	            <div set="control[rounded]">
+					<div class="rounded_content">I am rounded</div>
+	            </div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
 			Custom Background Color
 		</td>
 		<td class="result" >
@@ -72,6 +85,7 @@
             </div>
 		</td>
 	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			 Width / Height using style attribute
@@ -258,6 +272,18 @@
 						<button set="theme[thinblue]" on="click then script[alert('you hit cancel')]">Cancel</button>
 					</div>
 				</div>
+			</div>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			 Rounded draggable
+		</td>
+		<td class="result" >
+			<div set="control[rounded] and behavior[draggable]" style="height:200px;width:300px">
+				<div class="rounded_content">foo</div>
+					
 			</div>
 
 		</td>

@@ -8,15 +8,15 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
+		return [{name: 'starteffect', optional: true, description: "effect when dragging starts "},
+				{name: 'endeffect', optional: true, description: "effect when dragging ends "},
+				{name: 'revert', optional: true, description: "revert to original position"},
+		        {name: 'ghosting', optional: true, description: "leave original container in place while dragging ",defaultValue: false},
+		        {name: 'handle', optional: true, description: "id of handle that is draggable "},
+		        {name: 'constraint', optional: true, description: "constrain draggable direction ",defaultValue: '',type: T.enumeration('horizontal','vertical')},
+		        {name: 'corners', optional: true, description: "round top corners ",defaultValue:"top bottom"}
+		];
 		
-		/*
-		Example: 
-		return [{name: 'mode', optional: false, description: "Vertical or horizontal alignment",
-		         type: T.enumeration('vertical', 'horizontal')}]
-		*/
-		
-		//TODO
-		return [];
 	},
 	/**
 	 * The version of the behavior. This will automatically be corrected when you
@@ -48,7 +48,7 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 		// to draggable
 		element.observe('element:compiled:'+element.id,function(a)
 		{
-			var container = element.up('.container');
+			//var container = element.up('.container');
 			if (options.endeffect)
 			{
 				var name = options.endeffect;
@@ -81,8 +81,9 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 					options.revert = f;
 				}
 			}
-			var d = new Draggable(container.id,options);
-			Appcelerator.Compiler.addTrash(container,function()
+			var d = new Draggable(element.id,options);
+			//var d = new Draggable(element.id,options);
+			Appcelerator.Compiler.addTrash(element,function()
 			{
 				d.destroy();
 			});

@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:40%;
+}
+/* test how images perform with img styles */
+img
+{
+	padding:5px;
+	top:3px;
+	position:relative;
+}
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Panel Control</h3> 
+<p>
+	These are basic tests for the panel control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic Themes (with header and footer)
+		</td>
+		<td class="result" >
+            <div set="control[panel,theme=aqua,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=basic,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=dark,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=lightblue,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=white,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=lightgrey,title=title,footer=footer]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=xp,title=title,footer=footer]">
+				foo
+            </div>
+			
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Basic Themes (without header and footer)
+		</td>
+		<td class="result" >
+            <div set="control[panel,theme=aqua]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=basic]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=dark]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=lightblue]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=white]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=lightgrey]">
+				foo
+            </div>
+			<div style="margin:5px"></div>
+            <div set="control[panel,theme=xp]">
+				foo
+            </div>
+			
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			Set Footer 
+		</td>
+		<td class="result" >
+			<div set="control[panel,theme=white,title=set footer test]" on="l:footer then footer">
+				I am a panel
+			</div>
+			<button on="click then l:footer[value=footer set]">click me</button>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Set Header 
+		</td>
+		<td class="result" >
+			<div set="control[panel,theme=white]" on="l:title then title">
+				I am a panel
+			</div>
+			<button on="click then l:title[value=title set]">click me</button>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Custom Width and Height using CSS 
+		</td>
+		<td class="result" style="height:50px">
+			<div set="control[panel,theme=white]" style="width:400px;height:70px">
+				I am a panel
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle" >
+			Custom Width and Height panel attributes
+		</td>
+		<td class="result" >
+			<div set="control[panel,theme=white,height=70px,width=400px]">
+				I am a panel
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Closeable false
+		</td>
+		<td class="result" >
+			<div set="control[panel,theme=white,closeable=false]">
+				I am a panel
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			two panels
+		</td>
+		<td class="result" >
+			<div set="control[panel,theme=white,closeable=false]" style="height:70px;width:100px">
+				I am a panel
+			</div>
+			<div set="control[panel,theme=white,closeable=false]" style="height:70px;width:100px">
+				I am a panel
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			panels in a horizontal layout
+		</td>
+		<td class="result" >
+			<div set="layout[horizontal]">
+				<div set="control[panel,theme=white,closeable=false,width=50px]">
+					I am a panel
+				</div>
+				<div set="control[panel,theme=white,closeable=false,width=50px]">
+					I am a panel
+				</div>
+				<div set="control[panel,theme=white,closeable=false,width=50px]">
+					I am a panel
+				</div>
+
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			panels with shadow
+		</td>
+		<td class="result" >
+				<div set="control[panel,theme=basic,closeable=false] and behavior[shadow]">
+					panel before shadow
+				</div>
+				<div set="behavior[shadow] and control[panel,theme=white,closeable=false] ">
+					shadow  before panel
+				</div>
+
+			</div>
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

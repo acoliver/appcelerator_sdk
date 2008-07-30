@@ -38,7 +38,7 @@
 			Draggable DIV horizontal only
 		</td>
 		<td class="result" >
-            <div set="behavior[draggable,contstraint=horizontal]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+            <div set="behavior[draggable,constraint=horizontal]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
 				I am draggable
             </div>
 		</td>
@@ -48,7 +48,7 @@
 			Draggable DIV vertical only
 		</td>
 		<td class="result" >
-            <div set="behavior[draggable,contstraint=vertical]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
+            <div set="behavior[draggable,constraint=vertical]" style="padding:10px;border:1px solid #ccc;background-color:#eee">
 				I am draggable
             </div>
 		</td>
@@ -129,7 +129,7 @@
 			Draggable Rounded with tail (rounded then draggable)
 		</td>
 		<td class="result" >
-			<div set="control[rounded,tail=tl] and behavior[draggable]">
+			<div set="control[rounded,tail=lt] and behavior[draggable]">
 				<div>I am draggable</div>
 			</div>
 		</td>
@@ -166,12 +166,22 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Draggable Panel with Resizable (draggable then panel then shadow)
+			Draggable Panel with Resizable (draggable then panel then resizable)
 		</td>
 		<td class="result" >
 			<div set="behavior[draggable] and control[panel] and behavior[resizable]">
 				<div>I am draggable</div>
 			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Span
+		</td>
+		<td class="result" >
+			<span set="behavior[draggable]">
+			I am draggable
+			</span>
 		</td>
 	</tr>
 

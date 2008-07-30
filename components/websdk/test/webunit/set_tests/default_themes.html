@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:40%;
+}
+-->
+</style>
+</head>
+<body >
+<div set="theme[defaults,panel=dark,textarea=white_gradient,input=rounded_search,select=thinline,accordion=aqua_grey,tabpanel=green,button=iphone_green]"></div>
+<h3> Default Themes</h3> 
+<p>
+	These are basic tests for default themes
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Default Themes
+		</td>
+		<td class="result" >
+            <div set="control[panel,theme=white]">
+				I am a panel
+			</div>
+			<div style="margin:10px"></div>
+            <div set="control[accordion]">
+				<div title="one">one</div>
+				<div title="two">two</div>
+				<div title="three">three</div>
+				
+			</div>
+			<div style="margin:10px"></div>
+            <div set="control[tabpanel,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+				
+			</div>
+			<div style="margin:10px"></div>
+			<button set="theme">button</button>
+			<div style="margin:10px"></div>
+
+			<select set="theme">
+				<option value="1">one</option>
+				<option value="2">two </option>
+			</select>
+			<div style="margin:10px"></div>
+			<textarea set="theme">foo</textarea>
+			<div style="margin:10px"></div>
+			<input set="theme" type="text"/>
+			<div style="margin:10px"></div>
+			
+		</td>
+	</tr>
+
+
+</table>
+
+</body>
+</html>

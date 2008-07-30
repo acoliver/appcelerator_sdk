@@ -66,6 +66,7 @@
 
 .panel_dark_btm_text
 {
+	color:white;
 	font-size:11px;
 	padding:2px;
 	position:relative;
@@ -78,6 +79,7 @@
 
 .panel_dark_body
 {
+	color:white;
 	padding:10px;
 	border-left:1px solid #7d7d7d;	
 	border-right:1px solid #7d7d7d;	

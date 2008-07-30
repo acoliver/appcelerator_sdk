@@ -42,7 +42,7 @@ Appcelerator.UI.registerUIComponent('control','button',
 		var theme = $(id).theme;
 		Element.removeClassName(id + "_left"  ,"button_" + theme + "_left_disabled");
 		Element.removeClassName(id,"button_" + theme + "_middle_disabled");
-		Element.remveClassName(id + "_right" ,"button_" + theme + "_right_disabled");		
+		Element.removeClassName(id + "_right" ,"button_" + theme + "_right_disabled");		
 		$(id).removeAttribute("disabled");
 	},
 	getActions: function()

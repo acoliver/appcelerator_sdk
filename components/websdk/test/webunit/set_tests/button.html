@@ -11,6 +11,13 @@
 {
 	width:30%;
 }
+/* test how images perform with img styles */
+img
+{
+	padding:5px;
+	top:3px;
+	position:relative;
+}
 -->
 </style>
 </head>
@@ -109,6 +116,17 @@
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Button with padding and margin around it
+		</td>
+		<td class="result">
+            <div style="padding:5px;margin:5px">
+				<button set="theme[aqua_grey]" on="click then script[alert('it worked')]">Click Me</button>
+            </div>
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Button in a modal panel

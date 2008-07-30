@@ -41,6 +41,7 @@ Appcelerator.UI.registerUIComponent('control','rounded',
 	{
 		var html = element.innerHTML;
 		element.innerHTML = '';
+		
 		// determining rounding options
 		var roundTL =false; var roundTR =false; var roundBR = false; var roundBL = false;
 		var rOps = options['corners'].split(' ');
@@ -63,10 +64,14 @@ Appcelerator.UI.registerUIComponent('control','rounded',
 
 		// add center content 
 		element.innerHTML += '<div style="background-color:'+options['background-color']+';height:'+options['height']+'">'+html + '</div>' ;
+		
 		element.style.height=options['height'];
 		element.style.width=options['width'];
 		element.style.position="relative";
-		element.style.marginBottom = "10px";
+		element.style.marginBottom = "15px";
+		element.style.marginTop = "5px";
+		element.style.marginLeft = "5px";
+		element.style.marginRight = "5px";
 
 		// adjust margins based on tail
 		if (options['tail'] && options['tail'].startsWith('l'))

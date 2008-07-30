@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:15%;
+}
+/* test how images perform with img styles */
+img
+{
+	padding:5px;
+	top:3px;
+	position:relative;
+}
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Tabpanel Control</h3> 
+<p>
+	These are basic tests for the tabpanel control
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Basic
+		</td>
+		<td class="result" >
+            <div set="control[tabpanel,theme=arrows,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+            <div set="control[tabpanel,theme=basic,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+           <div set="control[tabpanel,theme=box,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+           <div set="control[tabpanel,theme=box,behavior=wires,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+           <div set="control[tabpanel,theme=box,behavior=harddrop,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+          <div set="control[tabpanel,theme=gradient_stacked,title=my title,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+          <div set="control[tabpanel,theme=green,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+	      <div set="control[tabpanel,theme=minimal,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+          <div set="control[tabpanel,theme=white,initial=one]">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<div style="margin:10px"></div>
+    		
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			State Test
+		</td>
+		<td class="result" >
+            <div set="control[tabpanel,theme=basic,initial=one]" id="tabpanel">
+				<div name="one">one</div>
+				<div name="two">two</div>
+				<div name="three">three</div>
+			</div>
+			<app:script on="tabpanel[one] then script[alert('you clicked one')]"></app:script>
+			<app:script on="tabpanel[two] then script[alert('you clicked two')]"></app:script>
+			<app:script on="tabpanel[three] then script[alert('you clicked three')]"></app:script>
+			
+		</td>
+	</tr>
+
+</table>
+
+</body>
+</html>

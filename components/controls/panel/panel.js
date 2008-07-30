@@ -10,6 +10,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		var T = Appcelerator.Types;
 		
 		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('panel')},
+				{name: 'height', optional: true, description: " height for panel" ,defaultValue: '30px', type: T.cssDimension},		 
 				{name: 'width', optional: true, description: " width for panel" ,defaultValue: '300px', type: T.cssDimension},		 
 				{name: 'footer', optional: true, description: " footer for panel" , defaultValue: ''},
 				{name: 'title', optional: true, description: " title for panel" , defaultValue: ''},
@@ -67,13 +68,13 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		Element.show(id);
 	},
 
-	hide:function(id,parameters,data,scope,version,attrs,direction,action)
+	close:function(id,parameters,data,scope,version,attrs,direction,action)
 	{
 		Element.hide(id);
 	},
 	getActions: function()
 	{
-		return ['title','footer','show','hide'];
+		return ['title','footer','show','close'];
 	},
 	
 	build: function(element,options)
@@ -89,30 +90,28 @@ Appcelerator.UI.registerUIComponent('control','panel',
 
 		if (options['closeable'] == true)
 		{
-			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close" on="click then l:app.close.panel[id='+element.id+']"></div>';			
+			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close" on="click then close"></div>';			
+			Appcelerator.Compiler.dynamicCompile($(element.id + "_close"));
+
 		}
-		
 		html += '<div  id="'+element.id+'_tr" class="'+classPrefix+'_tr"></div>';
 		html += '</div>';
 		
 		
-		html += '<div class="'+classPrefix+'_body">';
+		html += '<div class="'+classPrefix+'_body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
-		
 		html += '</div>';
 
 		html += '<div  id="'+element.id+'_btm" class="'+classPrefix+'_btm">';
 		html += '<div  id="'+element.id+'_bl" class="'+classPrefix+'_bl"></div>';
-		
-		if (options['footer'] != "")
-		{
-			html += '<div id="' + element.id + '_footer" class="'+classPrefix+'_btm_text ">'+options['footer']+'</div>';			
-		}
+		html += '<div id="' + element.id + '_footer" class="'+classPrefix+'_btm_text ">'+options['footer']+'</div>';			
 		html += '<div  id="'+element.id+'_br" class="'+classPrefix+'_br"></div>';
 
 		html += '</div>';			
 		html += '</div>';			
 		element.innerHTML = html;
+		element.style.width = options['width'];
+		element.style.height = "auto";
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
 		{

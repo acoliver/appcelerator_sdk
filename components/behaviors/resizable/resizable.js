@@ -57,7 +57,7 @@ Appcelerator.UI.registerUIComponent('behavior','resizable',
 		
 		element.resizable = new Resizeable(element.id, options);
 		
-		Appcelerator.Compiler.addTrash(container, function()
+		Appcelerator.Compiler.addTrash(element, function()
 		{
 			element.resizable.destroy();
 		});
