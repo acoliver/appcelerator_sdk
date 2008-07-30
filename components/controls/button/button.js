@@ -29,6 +29,10 @@ Appcelerator.UI.registerUIComponent('control','button',
 	{
 		return 1.0;
 	},
+	getConditions: function()
+    {
+        return ['change'];
+    },
 	disable: function(id,parameters,data,scope,version,attrs,direction,action)
 	{		
 		var theme = $(id).theme;
@@ -108,5 +112,14 @@ Appcelerator.UI.registerUIComponent('control','button',
 				self.enable(element.id);
 			};
 		}
+		
+		//
+    	// <button set="theme[aqua_grey]" on="change then script[alert('blah')]">Click Me</button>
+		//
+        // var testf = function(e)
+        //         {
+        //             Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id});
+        //         }
+        //         Appcelerator.Compiler.addEventListener(element,'click',testf,0);
 	}
 });

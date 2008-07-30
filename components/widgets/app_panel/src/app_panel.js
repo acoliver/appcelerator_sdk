@@ -163,13 +163,13 @@ Appcelerator.Widget.Panel =
     {
 		$(id).open=true;
         $(id).style.display = "block";
-        Appcelerator.Widget.fireWidgetCondition(id, 'open', {'id': id});
+        Appcelerator.Compiler.fireCustomCondition(id, 'open', {'id': id});
     },
     close: function(id,parameters,data,scope,version)
     {
 		$(id).open=false;
         $(id).style.display = "none";
-        Appcelerator.Widget.fireWidgetCondition(id, 'close', {'id': id});
+        Appcelerator.Compiler.fireCustomCondition(id, 'close', {'id': id});
     },
     shade: function(id,parameters,data,scope,version)
     {
@@ -180,7 +180,7 @@ Appcelerator.Widget.Panel =
             shadeButton.style.display = 'none';
             $(id + '_unshade').style.display = 'block';
             $(id).firstDescendant().addClassName("shade");
-            Appcelerator.Widget.fireWidgetCondition(id, 'shade', {'id': id});
+            Appcelerator.Compiler.fireCustomCondition(id, 'shade', {'id': id});
         }
     },
     unshade: function(id,parameters,data,scope,version)
@@ -192,7 +192,7 @@ Appcelerator.Widget.Panel =
             $(id + '_unshade').style.display = 'none';
             $(id + '_shade').style.display = 'block';
             $(id).firstDescendant().removeClassName("shade");        
-            Appcelerator.Widget.fireWidgetCondition(id, 'unshade', {'id': id});
+            Appcelerator.Compiler.fireCustomCondition(id, 'unshade', {'id': id});
         }
     },
     compileWidget: function(params)

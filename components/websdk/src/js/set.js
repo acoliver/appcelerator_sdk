@@ -105,6 +105,19 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				})();
 			}
 		}
+		if (f.getConditions)
+		{
+            Appcelerator.Compiler.customConditionObservers[element.id] = {};
+            var customConditions = f.getConditions();
+            for (var i = 0; i < customConditions.length; i++)
+            {
+                var custCond = customConditions[i];
+                var condFunct = Appcelerator.Compiler.customConditionFunctionCallback(custCond);
+                Appcelerator.Compiler.registerCustomCondition({conditionNames: [custCond]}, 
+                    condFunct, element.id);
+            }
+		}
+		Appcelerator.Compiler.parseOnAttribute(element);
 		if (callback)
 		{
 			callback();

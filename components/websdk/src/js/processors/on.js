@@ -4,6 +4,10 @@ Appcelerator.Compiler.registerAttributeProcessor('*','on',
 	{
 		if (value)
 		{
+		    if (element.getAttribute('set') != '') 
+		    {
+		        return;
+		    }
 			Appcelerator.Compiler.parseOnAttribute(element);
 		}
 	},

@@ -1263,10 +1263,10 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
         {
             Appcelerator.Compiler.customConditionObservers[id] = {};
             var customConditions = module.getConditions();
-            for(var i = 0; i < customConditions.length; i++)
+            for (var i = 0; i < customConditions.length; i++)
             {
                 var custCond = customConditions[i];
-                var condFunct = Appcelerator.Compiler.widgetCustomFunctionCallback(custCond);
+                var condFunct = Appcelerator.Compiler.customConditionFunctionCallback(custCond);
                 Appcelerator.Compiler.registerCustomCondition({conditionNames: [custCond]}, 
                     condFunct, element.id);
             }
@@ -1509,7 +1509,46 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	return compiledCode;
 };
 
-Appcelerator.Compiler.widgetCustomFunctionCallback = function(custCond)
+/**
+ * fire an custom condition from within the widget.  
+ */
+Appcelerator.Compiler.fireCustomCondition = function(id, name, data)
+{
+    var observersForElement = Appcelerator.Compiler.customConditionObservers[id];
+    if(observersForElement == null) {
+        $D('no custom condition found for id="'+id+'"');
+    }
+    else if (observersForElement[name] == null)
+    {
+        $D('no custom condition found for id="'+id+'" condition="'+name+'"');
+    }
+    else
+    {
+        var entries = observersForElement[name];
+        for(var i = 0; i < entries.length; i++) 
+        {   
+            var entry = entries[i];
+            params = entry.params;
+            var actionParams = params ? Appcelerator.Compiler.getParameters(params,false) : null;
+        	var paramsStr = (actionParams) ? Object.toJSON(actionParams) : null;
+            var ok = Appcelerator.Compiler.parseConditionCondition(paramsStr, data);
+            
+            var actionFunc;
+            if (ok)
+        	{
+        	    actionFunc = Appcelerator.Compiler.makeConditionalAction(id,entry.action,entry.ifCond,data);
+        	}
+        	else if (elseaction)
+        	{
+        	    actionFunc = Appcelerator.Compiler.makeConditionalAction(id,entry.elseAction,entry.ifCond,data);
+        	}
+            Appcelerator.Compiler.executeAfter(actionFunc,entry.delay);
+        }
+    }
+};
+
+
+Appcelerator.Compiler.customConditionFunctionCallback = function(custCond)
 {
     return function (element, condition, action, elseAction, delay, ifCond)
     {
