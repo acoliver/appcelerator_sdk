@@ -89,7 +89,6 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 					var action = f[actionName];
 					if (action)
 					{
-						Appcelerator.Compiler.buildCustomAction(actionName);
 						var xf = function(id,m,data,scope,version,customActionArguments,direction,type)
 						{
 							try
@@ -101,7 +100,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 								$E('Error executing '+actionName+' in container type: '+type+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
 							}
 						};
-						Appcelerator.Compiler.attachFunction(id,actionName,xf);
+						Appcelerator.Compiler.buildCustomElementAction(actionName, element, xf);
 					}
 				})();
 			}
