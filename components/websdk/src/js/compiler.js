@@ -567,6 +567,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	try
 	{
 		var name = Appcelerator.Compiler.getTagname(element);
+		var kind = element.getAttribute('kind');
 		if (name.indexOf(':')>0)
 		{
 			element.style.originalDisplay = element.style.display || 'block';
@@ -577,6 +578,18 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 				var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
 				state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element);
+				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
+			});
+		}
+		else if(kind && kind.length > 0)
+		{
+			var name = 'app:'+kind;
+			state.pending += 1;
+			Appcelerator.Core.requireModule(name,function()
+			{
+				var widgetJS = Appcelerator.Compiler.compileWidget(element,state,name);
+				state.pending -= 1;
+				Appcelerator.Compiler.checkLoadState(state);
 				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
 			});
 		}
@@ -1565,6 +1578,10 @@ Appcelerator.Compiler.customConditionFunctionCallback = function(custCond)
                 'elseAction': elseAction,
                 'ifCond': ifCond,
                 'params': params
+            }
+
+            if(Appcelerator.Compiler.customConditionObservers[id] == null) {
+                Appcelerator.Compiler.customConditionObservers[id] = {};
             }
 
             if (Appcelerator.Compiler.customConditionObservers[id][custCond])

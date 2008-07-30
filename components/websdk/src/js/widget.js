@@ -145,3 +145,11 @@ Appcelerator.Widget.loadWidgetCSS = function(name,css)
 {
 	Appcelerator.Core.loadModuleCSS(name,css);
 };
+
+/**
+ * fire a custom condition from within the widget.  
+ */
+Appcelerator.Widget.fireWidgetCondition = function(id, name, data)
+{
+    Appcelerator.Compiler.fireCustomCondition(id,name,data);
+};
