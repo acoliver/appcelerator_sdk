@@ -61,8 +61,7 @@ Appcelerator.Widget.ProgressBar =
     getAttributes: function()
     {
 		var T = Appcelerator.Types;
-        return [{name: 'borderClassName', optional: true, defaultValue: '', type: T.cssClass},
-                {name: 'fillClassName', optional: true, defaultValue: '', type: T.cssClass},
+        return [{name: 'class', optional: true, defaultValue: 'app_progressbar', type: T.cssClass},
                 {name: 'width', optional: true, defaultValue: '500px', type: T.cssDimension},
                 {name: 'height', optional: true, defaultValue: '30px', type: T.cssDimension},
                 {name: 'message', optional: true, type: T.messageReceive},
@@ -85,8 +84,6 @@ Appcelerator.Widget.ProgressBar =
 		var message = params['message'];
 		if (message)
 		{
-			message = Appcelerator.Compiler.convertMessageType(message);
-
 			var property = params['property'];
 			
 			$MQL(message,
@@ -108,8 +105,7 @@ Appcelerator.Widget.ProgressBar =
 	},
 	buildWidget: function(element, parameters)
 	{
-		var borderClassName = parameters['borderClassName'];
-		var fillClassName = parameters['fillClassName'];
+		var className = parameters['class'];
 		var width = parameters['width'];
 		var height = parameters['height'];
 		var id = element.id;
@@ -119,22 +115,12 @@ Appcelerator.Widget.ProgressBar =
 		var borderstyle = '"width: ' + width + '; height: ' + height + '"';
 		var borderid = '"' + id + '_progressbar_border"';
 		html += '<div style=' + borderstyle + ' id=' + borderid;
+        html += ' class="' + className + '">';
 
-		if (borderClassName != '') {
-			html += ' class="' + borderClassName + '">';
-        } else {
-			html += ' class="progressbar_border">'
-        }
-
-		var fillstyle = '"height: 100%; width: 0%;"';
+		var fillstyle = '"height: 100%;"';
 		var fillid = '"' + id + '_progressbar_fill"';
 		html += '<div style=' + fillstyle + ' id=' + fillid;
-
-		if (fillClassName != '') {
-			html += ' class="' + fillClassName + '">';
-        } else {
-			html += ' class="progressbar_fill">';
-        }
+		html += ' class="fill">';
 
 		html += '</div></div>';
 		

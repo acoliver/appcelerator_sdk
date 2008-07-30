@@ -1,9 +1,10 @@
-.progressbar_border {
-    border: inset medium gray;
-    height: 20px;
-    width: 500px;
+.app_progressbar {
+    border: 1px solid #aaa;
+    height: 12px;
+    width: 120px;
 }
 
-.progressbar_fill {
-    background: gray;
+.app_progressbar .fill {
+    background: maroon;
+    width:0%;
 }
