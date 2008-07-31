@@ -4,10 +4,12 @@ Appcelerator.Compiler.registerAttributeProcessor('*','on',
 	{
 		if (value)
 		{
-		    if (element.getAttribute('set') != '') 
-		    {
-		        return;
-		    }
+			var value = element.readAttribute('set');
+			if (value)
+			{
+				// set calls parse after its done, let it win
+				return;
+			}
 			Appcelerator.Compiler.parseOnAttribute(element);
 		}
 	},

@@ -40,7 +40,7 @@ task :default do
   jslite = js_dir+'/appcelerator-lite.js'
   
   LICENSE_HEADER=<<END_LICENSE
-/*
+/*!
  * This file is part of Appcelerator.
  *
  * Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
@@ -176,6 +176,11 @@ END_LICENSE
     zipfile.add("#{JS_PATH}/appcelerator-debug.js",jsdebug)
     zipfile.add("#{JS_PATH}/appcelerator.js",jsout)
     zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
+    %w(control layout theme behavior).each do |type|
+      Dir["#{STAGE_DIR}/#{type}*.zip"].each do |includefile|
+        zipfile.add "_install/#{File.basename(includefile)}", includefile
+      end
+    end
     Find.find("#{BUILD_DIR}/src/web") do |path|
       pathname = Pathname.new(path)
       path_root = Pathname.new("#{BUILD_DIR}/src/web")

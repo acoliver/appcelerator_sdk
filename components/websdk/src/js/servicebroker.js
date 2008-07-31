@@ -365,7 +365,7 @@ Appcelerator.Util.ServiceBroker =
                 return;
             }
         }
-        var stat = Appcelerator.Util.Performance.createStat();
+        var stat = Appcelerator.Util.Performance.logStats ? Appcelerator.Util.Performance.createStat() : null;
 
         var array = this.remoteDirectListeners[type];
         if (array && array.length > 0)
@@ -388,8 +388,7 @@ Appcelerator.Util.ServiceBroker =
                 }
             }
         }
-        Appcelerator.Util.Performance.endStat(stat,type,"remote");
-
+		if (Appcelerator.Util.Performance.logStats) Appcelerator.Util.Performance.endStat(stat,type,"remote");
     },
     sendToListener: function (listener, type, msg, datatype, from, scope)
     {
@@ -729,7 +728,7 @@ Appcelerator.Util.ServiceBroker =
         this.localTimer = setInterval(function()
         {
             var queue = this.localMessageQueue; 
-            if (queue && queue.length)
+            if (queue && queue.length > 0)
             {
                 var message = queue[0];
                 var name = message[0];
@@ -737,8 +736,8 @@ Appcelerator.Util.ServiceBroker =
                 var dest = message[2];
                 var scope = message[3];
                 var version = message[4];
-                var stat = Appcelerator.Util.Performance.createStat();
-                
+                var stat = Appcelerator.Util.Performance.logStats ? Appcelerator.Util.Performance.createStat() : null;
+
                 switch (dest)
                 {
                     case 'remote':
@@ -771,6 +770,7 @@ Appcelerator.Util.ServiceBroker =
                     {
                         arraydirect = this.localDirectListeners[name];
                         arraypattern = this.localPatternListeners;
+
                         if (arraydirect)
                         {
                             for (var c = 0, len = arraydirect.length; c < len; c++)
@@ -794,7 +794,8 @@ Appcelerator.Util.ServiceBroker =
                         break;
                     }
                 }
-                Appcelerator.Util.Performance.endStat(stat,name,dest);
+
+                if (Appcelerator.Util.Performance.logStats) Appcelerator.Util.Performance.endStat(stat,name,dest);
                 
                 queue.remove(message);
             }
@@ -1431,6 +1432,7 @@ Appcelerator.Compiler.afterDocumentCompile(function()
 {
     Appcelerator.Util.ServiceBroker.triggerComplete();
 });
+
 
 Appcelerator.Util.Performance = Class.create();
 Appcelerator.Util.Performance = 

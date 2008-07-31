@@ -170,6 +170,27 @@
 			</select>
 		</td>
 	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test10.1">Run Test</a>
+			SelectOption Action with array (multiple selects)
+			<app:script on="l:test10.1 then execute">
+			   $MQ('l:test10.1.1',{
+				'option':[
+				  1,3
+				]
+			   });
+			</app:script>
+		</td>
+		<td class="result">
+			only one and three should be selected below:
+			<select on="l:test10.1.1 then selectOption[option]" multiple="true">
+				<option value="1">one</option>
+				<option value="2">two</option>
+				<option value="3">three</option>
+			</select>
+		</td>
+	</tr>	
 
 	<tr>
 		<td class="test" valign="middle">

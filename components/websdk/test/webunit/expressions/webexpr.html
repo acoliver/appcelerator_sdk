@@ -127,12 +127,38 @@
 		<td class="test">l:test[!$duh]</td>
 		<td class="result" on="l:test[!$duh] then value['passed'] else value['failed']"></td>
 	</tr>
+	<tr>
+		<td class="test">WEM: simple macro</td>
+		<td class="result" on="#test1">failed</td>
+	</tr>
+	<tr>
+		<td class="test">WEM: partial macro</td>
+		<td class="result" on="#test2 then #test3">failed</td>
+	</tr>
+	<tr>
+		<td class="test">WEM: substitution</td>
+		<td class="result" on="#test4" id="wem1">failed</td>
+	</tr>
+	<tr>
+		<td class="test">WEM: substitution #2</td>
+		<td class="result" on="#test5[count=99,pass_fail=passed]">failed</td>
+	</tr>
 </table>
 
 <input type="hidden" id="foobar" value="100"/>
 <input type="hidden" id="heyya" value="true"/>
 <input type="hidden" id="duh" value="true"/>
-<app:message name="l:test" args="{count:'100','bar':null}"></app:message>
+<app:message name="l:test" args="{count:'100','bar':null,'id':'wem1'}"></app:message>
+
+<script>
+ $WEM({
+     'test1':"l:test then value['passed']",
+     'test2':"l:test",
+     'test3':"value['passed']",
+	 'test4':"l:test[id=#{id}] then value['passed']",
+	 'test5':"l:test[count>#{count}] then value['#{pass_fail}']"
+ });
+</script>
 
 </body>
 </html>

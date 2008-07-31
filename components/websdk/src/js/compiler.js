@@ -1619,12 +1619,13 @@ Appcelerator.Compiler.determineScope = function(element)
 
 Appcelerator.Compiler.parseOnAttribute = function(element)
 {
-    $D('parseOnAttribute ',element.id);
     try
     {
     	var on = element.getAttribute('on');
     	if (on && Object.isString(on))
     	{
+			element.removeAttribute('on'); // remove it so this method can only be called once
+		    $D('parseOnAttribute ',element.id,' on=',on);
     		Appcelerator.Compiler.compileExpression(element,on,false);
     		return true;
     	}
@@ -1782,6 +1783,8 @@ Appcelerator.Compiler.parseExpression = function(value)
 
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
+	value = Appcelerator.Compiler.processMacros(value,element.id);
+	
 	var clauses = Appcelerator.Compiler.parseExpression(value);
 	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
 	for(var i = 0; i < clauses.length; i++)
@@ -3282,4 +3285,61 @@ Object.extend(Array.prototype,
 		return this.without.apply(this, vals);
 	}
 });
+
+
+Appcelerator.Compiler.macros = {};
+Appcelerator.Compiler.macroRE = /(#[A-Za-z0-9_-]+(\[(.*)?\])?)/g;
+
+Appcelerator.Compiler.processMacros = function(expression,id,scope)
+{
+	return expression.gsub(Appcelerator.Compiler.macroRE,function(match)
+	{
+		var expr = match[0].substring(1);
+		var key = expr;
+		var idx1 = key.indexOf('[');
+		var idx2 = idx1 > 0 ? key.lastIndexOf(']') : -1;
+		if (idx1>0 && idx2>0)
+		{
+			key = key.substring(0,idx1);
+		}
+		var template = Appcelerator.Compiler.macros[key];
+		if (template)
+		{
+			scope = scope || {};
+
+			if (idx1>0 && idx2>0)
+			{
+				var options = expr.substring(idx1+1,idx2);
+				options.split(',').each(function(p)
+				{
+					var tok = p.split('=');
+					scope[tok[0].trim()]=tok[1].trim();
+				});
+			}
+			if (id)
+			{
+				var idvalue = scope['id'];
+				if (Object.isUndefined(idvalue))
+				{
+					scope['id'] = id;
+				}
+			}
+			return template(scope);
+		}
+		return key;
+	});
+};
+
+function $WEM(config)
+{
+	for (var name in config)
+	{
+		var value = config[name];
+		if (Object.isString(value))
+		{
+			Appcelerator.Compiler.macros[name]=Appcelerator.Compiler.compileTemplate(value);
+		}
+	}
+};
+
 
