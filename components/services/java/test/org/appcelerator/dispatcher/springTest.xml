@@ -14,4 +14,7 @@
   <bean class='org.appcelerator.dispatcher.TestService' id='testService'>
   	<property name="simpleProperty" value="foo"/>
   </bean>
+  <bean class='org.appcelerator.dispatcher.TestService' id='testServiceAbstract' abstract='true'>
+  	<property name="simpleProperty" value="foo"/>
+  </bean>
 </beans>

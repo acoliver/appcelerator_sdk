@@ -28,6 +28,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 /**
  * A {@link @ServiceDispatcher} which loads {@link @Service} annotations from
@@ -55,6 +57,9 @@ public class SpringBeanDispatcher implements BeanFactoryAware
 	{
 	    for (String name : factory.getBeanDefinitionNames())
 	    {
+	        BeanDefinition beandef = ((BeanDefinitionRegistry)factory).getBeanDefinition(name);
+	        if (beandef.isAbstract())
+	        	continue;
 	        Object bean = factory.getBean(name);
 	        try
 	        {
