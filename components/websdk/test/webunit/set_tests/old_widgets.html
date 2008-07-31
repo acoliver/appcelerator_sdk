@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+<!--
+.test
+{
+	width:50%;
+}
+/* test how images perform with img styles */
+img
+{
+	padding:5px;
+	top:3px;
+	position:relative;
+}
+
+-->
+</style>
+</head>
+<body>
+
+<h3> Backwards-compatible widget support </h3> 
+<p>
+	These are basic tests for using new control syntax with older widgets.
+</p>
+
+<table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Simple Iterator
+		</td>
+		<td class="result" >
+			You should see a list of developer names:
+			<div set="control[app:iterator]" on="l:test then execute" property="rows">
+				<div>#{name}</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Simple Panel
+		</td>
+		<td class="result" >
+			<div set="control[app:panel]">
+				<div>This is a panel. If you see this, you're GOOD!</div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<app:script>
+	$MQ('l:test',{
+	  'rows':[
+	   { 'name' : 'Jeff'},
+	   { 'name' : 'Nolan'},
+	   { 'name' : 'Tejus'},
+	   { 'name' : 'Mark'},
+	   { 'name' : 'Martin'},
+	   { 'name' : 'Amro'},
+	   { 'name' : 'Andrew'},
+	   { 'name' : 'Hamed'},
+	   { 'name' : 'Tyrus'}
+	  ]	
+	});
+</app:script>
+
+</body>
+</html>

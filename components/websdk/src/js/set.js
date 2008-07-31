@@ -414,10 +414,28 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 });
 
 Appcelerator.UI.ContainerManager = {};
+Appcelerator.UI.widgetRegex = /^app:/
+
 Appcelerator.UI.registerUIManager('control',function(type,element,options,callback)
 {
-   Element.addClassName(element,type);
-   Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);
+	// check for backwards-porting of widgets
+	// this will eventually be deprecated
+	if (Appcelerator.UI.widgetRegex.test(type))
+	{
+	    var state = Appcelerator.Compiler.createCompilerState();
+		state.pending += 1;
+		state.scanned = true;
+		Appcelerator.Core.requireModule(type,function()
+		{
+			var widgetJS = Appcelerator.Compiler.compileWidget(element,state,type);
+			state.pending -= 1;
+			Appcelerator.Compiler.checkLoadState(state);
+			Element.fire(element,'element:compiled:'+element.id,{id:element.id});
+		});
+		return;
+	}
+    Element.addClassName(element,type);
+    Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);
 });
 
 Appcelerator.UI.LayoutManager = {};
