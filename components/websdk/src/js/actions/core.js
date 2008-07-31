@@ -524,13 +524,24 @@ Appcelerator.Compiler.registerCustomAction('selectOption',
 
 		var selectedValue = Object.getNestedProperty(scope.data, key, def);
 		var targetSelect = $(id);
+		var isArray = Object.isArray(selectedValue);
+
+        targetSelect.selectedIndex = -1;
+
 		for (var j=0;j<targetSelect.options.length;j++)
 		{
-		    if (targetSelect.options[j].value == selectedValue)
-		    {
-		        targetSelect.selectedIndex = j;
-		        break;
-		    }
+			if (isArray)
+			{
+				targetSelect.options[j].selected = selectedValue.include(targetSelect.options[j].value);
+			}
+			else
+			{
+			    if (targetSelect.options[j].value == selectedValue)
+			    {
+			        targetSelect.selectedIndex = j;
+			        break;
+			    }
+			}
 		}
 		Appcelerator.Compiler.executeFunction(targetSelect,'revalidate');
 	}
