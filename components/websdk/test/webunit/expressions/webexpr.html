@@ -143,6 +143,26 @@
 		<td class="test">WEM: substitution #2</td>
 		<td class="result" on="#test5[count=99,pass_fail=passed]">failed</td>
 	</tr>
+	<tr>
+		<td class="test">compound conditions</td>
+		<td class="result" on="(l:test6 or l:test6.1) then l:test6.result[msg='pass ']">
+			<div>
+				You should see pass twice below after you click this button:
+				<button on="click then l:test6 and l:test6.1">Click me</button>
+			</div>
+			<div on="l:test6.result then value[msg,append=true]"></div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test">WEM: compound conditions</td>
+		<td class="result" on="#test7">
+			<div>
+				You should see pass twice below after you click this button:
+				<button on="click then l:test7 and l:test7.1">Click me</button>
+			</div>
+			<div on="l:test7.result then value[msg,append=true]"></div>
+		</td>
+	</tr>
 </table>
 
 <input type="hidden" id="foobar" value="100"/>
@@ -156,7 +176,8 @@
      'test2':"l:test",
      'test3':"value['passed']",
 	 'test4':"l:test[id=#{id}] then value['passed']",
-	 'test5':"l:test[count>#{count}] then value['#{pass_fail}']"
+	 'test5':"l:test[count>#{count}] then value['#{pass_fail}']",
+	 'test7':"(l:test7 or l:test7.1) then l:test7.result[msg='pass ']"
  });
 </script>
 

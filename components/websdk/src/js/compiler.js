@@ -1688,6 +1688,8 @@ Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
 	return validx;
 };
 
+Appcelerator.Compiler.compoundCondRE = /^\((.*)?\) then/g;
+
 Appcelerator.Compiler.parseExpression = function(value)
 {
 	if (!Object.isString(value))
@@ -1711,6 +1713,16 @@ Appcelerator.Compiler.parseExpression = function(value)
 			throw "syntax error: expected 'then' for expression: "+expression;
 		}
 		var condition = expression.substring(0,thenidx);
+		
+		// check to see if we have compound conditions - APPSDK-597
+		var condMatch = Appcelerator.Compiler.compoundCondRE.exec(expression);
+		if (condMatch)
+		{
+			var expressions = condMatch[1];
+			// turn it into an array of conditions
+			condition = Appcelerator.Compiler.smartSplit(expressions,' or ');
+		}
+		
 		var elseAction = null;
 		var nextstr = expression.substring(thenidx+6);
 		var elseidx = Appcelerator.Compiler.smartTokenSearch(nextstr, 'else');
@@ -1793,8 +1805,25 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
         $D('compiling expression for ',element.id,' => condition=[',clause[1],'], action=[',clause[2],'], elseAction=[',clause[3],'], delay=[',clause[4],'], ifCond=[',clause[5],']');
 
         clause[0] = element;
-        var handled = Appcelerator.Compiler.handleCondition.call(this, clause);
-
+		var handled = false;
+		
+		if (Object.isArray(clause[1]))
+		{
+			for (var c=0;c<clause[1].length;c++)
+			{
+				var cl = clause[1][c];
+				var copy = [element,cl,clause[2],clause[3],clause[4],clause[5]];
+		        handled = Appcelerator.Compiler.handleCondition.call(this, copy);
+		        if (!handled)
+		        {
+		            throw "syntax error: unknown condition type: "+clause[1]+" for "+value;
+		        }
+			}
+			continue;
+		}
+		
+        handled = Appcelerator.Compiler.handleCondition.call(this, clause);
+		
         if (!handled)
         {
             throw "syntax error: unknown condition type: "+clause[1]+" for "+value;
@@ -2031,6 +2060,23 @@ Appcelerator.Compiler.smartSplit = function(value,splitter)
 	for (var c=0;c<tokens.length;c++)
 	{
 		var line = tokens[c];
+		if (!current && line.charAt(0)=='(')
+		{
+			current = line + ' or ';
+			continue;
+		}
+		else if (current && current.charAt(0)=='(')
+		{
+			if (line.indexOf(') ')>0)
+			{
+				array.push(current+line);
+			}
+			else
+			{
+				current+=line + ' or ';
+			}
+			continue;
+		}
 		if (!current && line.indexOf('[')>=0 && line.indexOf(']')==-1)
 		{
 			if (current)
