@@ -3,7 +3,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'background-color', optional: true, description: "background color for modal",defaultValue: '#222'},
+		return [{name: 'modal-background-color', optional: true, description: "background color for modal",defaultValue: '#222'},
 	       	    {name: 'opacity', optional: true, description: "opacity for modal background",defaultValue: 0.6}		
 				];
 	},
@@ -28,7 +28,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 			modalContainer.style.zIndex = "2000";
 			modalContainer.style.width = width;
 			modalContainer.style.height = windowHeight + "px";
-			modalContainer.style.backgroundColor = options['background-color'];
+			modalContainer.style.backgroundColor = options['modal-background-color'];
 			modalContainer.style.opacity = options['opacity'];
 			modalContainer.style.filter = "alpha( opacity = "+options['opacity']*100+")";
 			modalContainer.setAttribute('on',on);

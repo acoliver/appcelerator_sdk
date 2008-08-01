@@ -14,6 +14,7 @@ Appcelerator.UI.registerUIComponent('layout','horizontal',
 		        {name: 'padding', optional: true, description: "cell padding for horizontal layout",defaultValue: '0'},
 				{name: 'hintPos', optional:true, description:"location of hint text", 'type':T.enumeration('bottom','right','input','top')},
 				{name: 'errorPos', optional:true, description:"location of error text", 'type':T.enumeration('bottom','right','top')},
+				{name: 'buttonPos', optional:true, description:"location of error text", 'type':T.enumeration('left','right'), defaultValue:"left"},
 				{name: 'labelWidth', optional:true, description:"width of label", defaultValue:"120px"}
 		];
 	},
@@ -48,7 +49,7 @@ Appcelerator.UI.registerUIComponent('layout','horizontal',
 		{
 			//element.style.width = options['width'];
 			html += Appcelerator.UI.LayoutManager._formatTable(options);
-			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'horizontal','colspan':'2','hintPos':options['hintPos'],'errorPos':options['errorPos'],'labelWidth':options['labelWidth']};
+			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'horizontal','colspan':'2','hintPos':options['hintPos'],'errorPos':options['errorPos'],'buttonPos':options['buttonPos'],'labelWidth':options['labelWidth']};
 			html = Appcelerator.UI.LayoutManager._buildForm(formOptions);
 			element.innerHTML = html;
 		}

@@ -35,6 +35,12 @@ img
 			Basic Select
 		</td>
 		<td class="result" >
+			<select set="theme[thinline]" on="l:foo then values[property=rows,value=value,text=text]">
+				<option></option>
+			</select>
+			<app:script>
+				$MQ('l:foo',{'rows':[{'value':'one','text':'one desc'},{'value':'one','text':'one desc'}]});
+			</app:script>
 		</td>
 	</tr>
 

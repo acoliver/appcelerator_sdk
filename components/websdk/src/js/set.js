@@ -452,6 +452,7 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	var colspan = options['colspan'];
 	var hintPos = options['hintPos'];
 	var errorPos = options['errorPos'];
+	var buttonPos = options['buttonPos'];
 	var labelWidth = options['labelWidth'];
 	var formElement = options['element'];
 	
@@ -465,7 +466,7 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 		var node = childNodes[c];
 		if (node.nodeType == 1)
 		{
-			if (node.tagName.toLowerCase() == 'input')
+			if (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase()== 'select')
 			{
 				inputHTML.push({'element':node});
 			}
@@ -650,13 +651,25 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 			}
 		})();
 	}
-	var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"10px";
-	html += '<tr><td colspan='+colspan+' style="padding-top:'+buttonPadding+'">';
-	for (var y=0;y<buttonHTML.length;y++)
+	if (buttonHTML.length > 0)
 	{
-		html += buttonHTML[y] + '<span style="padding-right:10px"></span>';
+		var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"10px";
+		if (buttonPos == "left")
+		{
+			html += '<tr><td colspan='+colspan+' style="padding-top:'+buttonPadding+'">';		
+		}
+		else
+		{
+			html += '<tr><td></td><td colspan="1" style="padding-top:'+buttonPadding+'">';
+		}
+		for (var y=0;y<buttonHTML.length;y++)
+		{
+			html += buttonHTML[y] + '<span style="padding-right:10px"></span>';
+		}
+		html += '</td></tr>';
+		
 	}
-	html += '</td></tr></table>';
+	html +="</table>";
 	return html;
 };
 

@@ -68,13 +68,13 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		Element.show(id);
 	},
 
-	close:function(id,parameters,data,scope,version,attrs,direction,action)
+	hide:function(id,parameters,data,scope,version,attrs,direction,action)
 	{
 		Element.hide(id);
 	},
 	getActions: function()
 	{
-		return ['title','footer','show','close'];
+		return ['title','footer','show','hide'];
 	},
 	
 	build: function(element,options)
@@ -90,8 +90,8 @@ Appcelerator.UI.registerUIComponent('control','panel',
 
 		if (options['closeable'] == true)
 		{
-			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close" on="click then close"></div>';			
-			Appcelerator.Compiler.dynamicCompile($(element.id + "_close"));
+			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close" on="click then hide"></div>';			
+			//Appcelerator.Compiler.dynamicCompile($(element.id + "_close"));
 
 		}
 		html += '<div  id="'+element.id+'_tr" class="'+classPrefix+'_tr"></div>';

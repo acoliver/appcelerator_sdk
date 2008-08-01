@@ -58,6 +58,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 	},
 	values:function(id,params,data,scope,version,attrs,direction,action)
 	{
+
 		// pull out properties
 		var property = Appcelerator.Compiler.findParameter(attrs,'property');
 		var row = Appcelerator.Compiler.findParameter(attrs,'row');

@@ -14,10 +14,12 @@ Object.extend(Appcelerator.Validator,
 		Appcelerator.Validator.names.push(name);
 	},
 
-	URI_REGEX: /(ftp|http|https|file):(\/){1,2}(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+	URI_REGEX: /^((([hH][tT][tT][pP][sS]?|[fF][tT][pP])\:\/\/)?([\w\.\-]+(\:[\w\.\&%\$\-]+)*@)?((([^\s\(\)\<\>\\\"\.\[\]\,@;:]+)(\.[^\s\(\)\<\>\\\"\.\[\]\,@;:]+)*(\.[a-zA-Z]{2,4}))|((([01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}([01]?\d{1,2}|2[0-4]\d|25[0-5])))(\b\:(6553[0-5]|655[0-2]\d|65[0-4]\d{2}|6[0-4]\d{3}|[1-5]\d{4}|[1-9]\d{0,3}|0)\b)?((\/[^\/][\w\.\,\?\'\\\/\+&%\$#\=~_\-@]*)*[^\.\,\?\"\'\(\)\[\]!;<>{}\s\x7F-\xFF])?)$/,
     ALPHANUM_REGEX: /^[0-9a-zA-Z]+$/,
     DECIMAL_REGEX: /^[-]?([1-9]{1}[0-9]{0,}(\.[0-9]{0,2})?|0(\.[0-9]{0,2})?|\.[0-9]{1,2})$/,
  	EMAIL_REGEX: /^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/,
+	PHONE_REGEX: /^(?:\([2-9]\d{2}\)\ ?|[2-9]\d{2}(?:\-?|\ ?))[2-9]\d{2}[- ]?\d{4}$/,
+	SSN_REGEX: /(^|\s)(00[1-9]|0[1-9]0|0[1-9][1-9]|[1-6]\d{2}|7[0-6]\d|77[0-2])(-?|[\. ])([1-9]0|0[1-9]|[1-9][1-9])\3(\d{3}[1-9]|[1-9]\d{3}|\d[1-9]\d{2}|\d{2}[1-9]\d)($|\s|[;:,!\.\?])/,
 
 	//
 	// DATE VALIDATION UTILS
@@ -80,6 +82,38 @@ Object.extend(Appcelerator.Validator,
     addValidator('email', function(value)
     {
         return Appcelerator.Validator.EMAIL_REGEX.test(value);
+    });
+
+    addValidator('zipcode_5', function(value)
+    {
+		return (value.length == 5 && Appcelerator.Validator.number(value)==true)?true:false
+    });
+
+    addValidator('zipcode_5_optional', function(value)
+    {
+	 	if (!value || value.trim().length == 0) return true;
+        return Appcelerator.Validator.zipcode(value);
+    });
+
+    addValidator('ssn', function(value)
+    {
+        return Appcelerator.Validator.SSN_REGEX.test(value);
+    });
+    addValidator('ssn_optional', function(value)
+    {
+	 	if (!value || value.trim().length == 0) return true;
+        return Appcelerator.Validator.ssn(value);
+    });
+
+    addValidator('phone_us', function(value)
+    {
+        return Appcelerator.Validator.PHONE_REGEX.test(value);
+    });
+
+    addValidator('phone_us_optional', function(value)
+    {
+	 	if (!value || value.trim().length == 0) return true;
+        return Appcelerator.Validator.phone_us(value);
     });
 
     addValidator('fullname_optional', function(value)
