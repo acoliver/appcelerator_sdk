@@ -29,13 +29,14 @@
 		<td class="result" >
             <div>
 				<input id="tip1" type="text" set="theme[thinblue]"/>
-				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd;width:200px" 
 					set="behavior[tooltip,id=tip1]">
 					I am a tooltip for an input
 				</div>
             </div>
 		</td>
 	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			DIV tooltip on panel
@@ -43,13 +44,14 @@
 		<td class="result" >
             <div>
 				<div set="control[panel]" id="tip2">I am a panel</div>
-				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd;width:200px" 
 					set="behavior[tooltip,id=tip2]">
 					I am a tooltip for a panel
 				</div>
             </div>
 		</td>
 	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			DIV tooltip on paragraph
@@ -57,7 +59,7 @@
 		<td class="result" >
             <div>
 				<p  id="tip3">I am a paragraph full of text</p>
-				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd;width:200px" 
 					set="behavior[tooltip,id=tip3]">
 					I am a tooltip for a paragraph
 				</div>
@@ -71,13 +73,40 @@
 		<td class="result" >
             <div>
 				<img src="warning.png"  id="tip4"/>
-				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd;width:200px" 
 					set="behavior[tooltip,id=tip4]">
 					I am a tooltip for an image
 				</div>
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Panel tooltip on DIV with shadow (shadow then tooltip)
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:10px;background-color:#ccc;border:1px solid #aaa" id="foo">I am a DIV</div>
+				<div set="behavior[shadow] and behavior[tooltip,id=foo] and control[panel]">
+					<div style="padding:5px">I am a tooltip for a DIV</div>
+				</div>
+            </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Panel tooltip on DIV with shadow (tooltip then shadow)
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:10px;background-color:#ccc;border:1px solid #aaa" id="foo2">I am a DIV</div>
+				<div set="behavior[tooltip,id=foo2] and control[panel] and behavior[shadow] ">
+					<div style="padding:5px">I am a tooltip for a DIV</div>
+				</div>
+            </div>
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Panel tooltip on DIV
@@ -91,6 +120,7 @@
             </div>
 		</td>
 	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Rounded tooltip on DIV

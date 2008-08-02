@@ -36,6 +36,7 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	{
 		var newContainer = document.createElement('div');
 		newContainer.className = 'behavior shadow';
+		newContainer.id = element.id + "_shadow_container";
 		var d1 = document.createElement("div");
 		d1.className = "shadow_" + options['theme'] + "_1";
 		var d2 = document.createElement("div");
@@ -50,6 +51,12 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 		element.wrap(newContainer);	
 		d3.appendChild(element);
 		newContainer.appendChild(clearDiv);
+		
+		if (element.getAttribute("set").indexOf('tooltip') != -1) 
+		{
+			Element.hide(newContainer);
+		}
+		
 		Appcelerator.Core.loadTheme('behavior','shadow',options['theme'],element,options);	
 	}
 });

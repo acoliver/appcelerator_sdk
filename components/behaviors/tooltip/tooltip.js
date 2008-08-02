@@ -36,13 +36,6 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 	build:  function(element,options)
 	{
 		element.style.display = "none";
-		var parent = null;
-		if (element.getAttribute("set").indexOf('shadow') != -1) 
-		{
-			parent = element.parentNode.parentNode.parentNode;
-			Element.hide(parent);
-		}
-
 		var timer;
 		
 		function startTimer(el)
@@ -62,6 +55,12 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 		{
 			cancelTimer();
 			Element.show(element);
+			var parent = null;
+			if (element.getAttribute("set").indexOf('shadow') != -1) 
+			{
+				// this is the shadow's parent element
+				parent = $(element.id + "_shadow_container");
+			}
 			if (parent != null)
 			{
 				parent.style.position = "absolute";
