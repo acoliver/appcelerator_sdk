@@ -360,7 +360,6 @@ module Appcelerator
     def Plugin.replace_jar_eclipse(to_version,to_path, tx,name)
       classpath = IO.readlines("#{to_path}/.classpath")
       classpath.each do |line|
-        puts "checking appcelerator-plugin-#{name}-([0-9\.])*\.jar in #{line}"
         line.gsub!(/appcelerator-plugin-#{name}-([0-9\.])*\.jar/,"appcelerator-plugin-#{name}-#{to_version}.jar")
       end
       tx.put "#{to_path}/.classpath",classpath.join("")
