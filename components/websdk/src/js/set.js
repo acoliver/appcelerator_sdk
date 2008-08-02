@@ -105,6 +105,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 				})();
 			}
 		}
+
 		if (f.getConditions)
 		{
             Appcelerator.Compiler.customConditionObservers[element.id] = {};
@@ -117,7 +118,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
                     condFunct, element.id);
             }
 		}
-		Appcelerator.Compiler.parseOnAttribute(element);
+		Appcelerator.Compiler.parseOnAttribute(element,true);
 		if (callback)
 		{
 			callback();
@@ -466,7 +467,8 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 		var node = childNodes[c];
 		if (node.nodeType == 1)
 		{
-			if (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase()== 'select')
+			if (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase()== 'select' 
+				|| node.tagName.toLowerCase() == 'textarea')
 			{
 				inputHTML.push({'element':node});
 			}
@@ -476,15 +478,15 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 				{
 					if (node.getAttribute("type") == "hint")
 					{
-						hintHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});
+						hintHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
 					}
 					else if (node.getAttribute("type") == "error")
 					{
-						errorHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});
+						errorHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
 					}
 					else
 					{
-						labelHTML.push({'id':node.getAttribute('for'),'element':node,'html':node.outerHTML});						
+						labelHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});						
 					}
 				}
 				else
@@ -521,7 +523,6 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	// horizontal: hint (top, right, bottom, input), error (top, right, bottom)
 	// vertical: hint (top, right, bottom, input), error (top, right, bottom)
 	// 
-	
 	for (var x=0;x<inputHTML.length;x++)
 	{
 		(function()
@@ -593,8 +594,8 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 					labelPadding = "9px";
 				}
 				
-				html += '<tr><td valign="'+valign+'" width="'+labelWidth+'" style="padding-bottom:'+labelPadding+';padding-top:'+topPadding+'" >' + label + '</td>';
-				html += '<td style="padding-bottom:'+inputPadding+'">';
+				html += '<tr><td align="left" valign="'+valign+'" width="'+labelWidth+'" style="padding-bottom:'+labelPadding+';padding-top:'+topPadding+'" >' + label + '</td>';
+				html += '<td align="left" style="padding-bottom:'+inputPadding+'">';
 				html += (hintPos == "top")?'<div>'+hint+'</div>':'';
 				html += (errorPos == "top")?'<div>'+error+'</div>':'';
 				if (hintPos == "input")
@@ -612,11 +613,11 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 			else
 			{
 				// create form
-				html += '<tr><td>' + label;
+				html += '<tr><td align="left">' + label;
 				html += (hintPos == "top")?hint:'';
 				html += (errorPos == "top")?error:'';
 				html += '</td></tr><tr>';
-				html += (errorPos != 'bottom' && hintPos != 'bottom')?'<td style="padding-bottom:5px">':'<td>';
+				html += (errorPos != 'bottom' && hintPos != 'bottom')?'<td align="left" style="padding-bottom:5px">':'<td align="left">';
 				if (hintPos == "input")
 				{
 					input.setAttribute("value",hint);
@@ -654,13 +655,13 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	if (buttonHTML.length > 0)
 	{
 		var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"10px";
-		if (buttonPos == "left")
+		if (buttonPos == "right")
 		{
-			html += '<tr><td colspan='+colspan+' style="padding-top:'+buttonPadding+'">';		
+			html += '<tr><td></td><td align="left" colspan="1" style="padding-top:'+buttonPadding+'">';
 		}
 		else
 		{
-			html += '<tr><td></td><td colspan="1" style="padding-top:'+buttonPadding+'">';
+			html += '<tr><td align="left" colspan='+colspan+' style="padding-top:'+buttonPadding+'">';		
 		}
 		for (var y=0;y<buttonHTML.length;y++)
 		{

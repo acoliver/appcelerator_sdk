@@ -42,15 +42,14 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 			overlayDataHTML.style.display = "none";
 			overlayDataHTML.setAttribute("on",on);
 			overlayDataHTML.setAttribute('align','center');
-			
+
 			new Insertion.Bottom(document.body,overlayDataHTML);
 			new Insertion.Bottom(document.body,modalContainer);
 
 			Appcelerator.Compiler.dynamicCompile(modalContainer);
 			Appcelerator.Compiler.dynamicCompile(overlayDataHTML);
 			
-			overlayDataHTML.appendChild(element);
-			
+			overlayDataHTML.appendChild(element);			
 		}
 		else
 		{

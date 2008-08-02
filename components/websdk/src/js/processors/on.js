@@ -4,7 +4,7 @@ Appcelerator.Compiler.registerAttributeProcessor('*','on',
 	{
 		if (value)
 		{
-			var value = element.readAttribute('set');
+			var value = element.getAttribute('set');
 			if (value)
 			{
 				// set calls parse after its done, let it win

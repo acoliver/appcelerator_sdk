@@ -63,18 +63,9 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		$(id + '_footer').innerHTML = Object.getNestedProperty(data,key) || '';
 	},
 	
-	show:function(id,parameters,data,scope,version,attrs,direction,action)
-	{
-		Element.show(id);
-	},
-
-	hide:function(id,parameters,data,scope,version,attrs,direction,action)
-	{
-		Element.hide(id);
-	},
 	getActions: function()
 	{
-		return ['title','footer','show','hide'];
+		return ['title','footer'];
 	},
 	
 	build: function(element,options)
@@ -90,9 +81,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 
 		if (options['closeable'] == true)
 		{
-			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close" on="click then hide"></div>';			
-			//Appcelerator.Compiler.dynamicCompile($(element.id + "_close"));
-
+			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close"></div>';			
 		}
 		html += '<div  id="'+element.id+'_tr" class="'+classPrefix+'_tr"></div>';
 		html += '</div>';
@@ -112,21 +101,36 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		element.innerHTML = html;
 		element.style.width = options['width'];
 		element.style.height = "auto";
+
+		// wire close	
+		if (options['closeable'] == true)
+		{
+			Element.observe(element.id+'_close','click',function(e)
+			{
+				if (element.getAttribute('set'))
+				{
+					if (element.getAttribute('set').indexOf('modal') != -1)
+					{
+						Element.hide(element.id + "_modal_container");
+					}
+				}
+				Element.hide(element.id);
+			});			
+		}
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
 		{
-			$(element.id + "_tl").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			$(element.id + "_hdr").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			$(element.id + "_tr").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			$(element.id + "_bl").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			$(element.id + "_btm").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
-			$(element.id + "_br").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
+			$(element.id + "_tl").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			$(element.id + "_hdr").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			$(element.id + "_tr").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			$(element.id + "_bl").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			$(element.id + "_btm").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
+			$(element.id + "_br").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			if (options['closeable'])
 			{
-				$(element.id + "_close").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');
+				$(element.id + "_close").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			}
 		}
-		
 		Appcelerator.Core.loadTheme('control','panel',options['theme'],element,options);	
 	}
 });

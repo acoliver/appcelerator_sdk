@@ -46,7 +46,7 @@
 				<button on="click then l:show.modal[v=form]">Click Me</button>
 				<div on="l:show.modal[v=form] then show or l:close.modal[v=form] then hide"
 					set="behavior[modal] and control[panel,theme=white,title=Login]" style="height:120px">
-					<form set="layout[vertical]">
+					<form set="layout[horizontal,buttonPos=right,labelWidth=90px]" style="margin-top:20px;margin-left:20px">
 						<label for="input_one">Username:</label>
 						<label for="input_two">Password:</label>
 						<input type="text" id="input_one"/>

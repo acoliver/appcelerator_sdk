@@ -13,7 +13,6 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 			    {name: 'spacing', optional: true, description: "cell spacing for vertical layout",defaultValue: '0'},
 		        {name: 'padding', optional: true, description: "cell padding for vertical layout",defaultValue: '0'},
 				{name: 'hintPos', optional:true, description:"location of hint text", 'type':T.enumeration('bottom','right','input','top')},
-				{name: 'buttonPos', optional:true, description:"location of error text", 'type':T.enumeration('left','right'), defaultValue:"left"},
 				{name: 'errorPos', optional:true, description:"location of error text", 'type':T.enumeration('bottom','right','top')}				
 		];
 
@@ -48,7 +47,7 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 		if (element.tagName.toLowerCase() == 'form')
 		{
 			html += Appcelerator.UI.LayoutManager._formatTable(options);
-			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'vertical','colspan':'1','hintPos':options['hintPos'],'errorPos':options['errorPos'],'buttonPos':options['buttonPos']};
+			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'vertical','colspan':'1','hintPos':options['hintPos'],'errorPos':options['errorPos']};
 			html = Appcelerator.UI.LayoutManager._buildForm(formOptions);
 			element.innerHTML = html;
 		}

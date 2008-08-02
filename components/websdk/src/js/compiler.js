@@ -1617,14 +1617,15 @@ Appcelerator.Compiler.determineScope = function(element)
 	element.scope = scope;
 };
 
-Appcelerator.Compiler.parseOnAttribute = function(element)
+Appcelerator.Compiler.parseOnAttribute = function(element, leaveOn)
 {
     try
     {
     	var on = element.getAttribute('on');
     	if (on && Object.isString(on))
     	{
-			element.removeAttribute('on'); // remove it so this method can only be called once
+			if (!leaveOn)
+				element.removeAttribute('on'); // remove it so this method can only be called once
 		    $D('parseOnAttribute ',element.id,' on=',on);
     		Appcelerator.Compiler.compileExpression(element,on,false);
     		return true;
@@ -1796,7 +1797,6 @@ Appcelerator.Compiler.parseExpression = function(value)
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	value = Appcelerator.Compiler.processMacros(value,element.id);
-	
 	var clauses = Appcelerator.Compiler.parseExpression(value);
 	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
 	for(var i = 0; i < clauses.length; i++)
