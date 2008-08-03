@@ -308,13 +308,20 @@ module Appcelerator
     def PluginUtil.compile(libdir,java_source, java_classes)
         PluginUtil.clean_dir(java_classes)
         FileUtils.mkdir_p java_classes
-        src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<f }
+        src = Dir["#{java_source}/**/*.java"].inject([]) {|a,f| a<<wrapfilename(f)}
         FileUtils.mkdir_p "#{java_classes}" unless File.exists? "#{java_classes}"
         java_path_separator = separator
         FileUtils.cd("#{libdir}") do |dir|
-          cp = Dir["**/*.jar"].inject([]) {|a,f| a<<f }
+          cp = Dir["**/*.jar"].inject([]) {|a,f| a<<wrapfilename(f)}
           system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
         end
+    end
+    def PluginUtil.wrapfilename(file)
+      if file.index(" ").nil?
+        file
+      else
+        '"'+file+'"'
+      end
     end
     
     def PluginUtil.separator
