@@ -313,7 +313,7 @@ module Appcelerator
         java_path_separator = separator
         FileUtils.cd("#{libdir}") do |dir|
           cp = Dir["**/*.jar"].inject([]) {|a,f| a<<wrapfilename(f)}
-          system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{java_classes}"
+          system "javac -g -cp #{cp.join(java_path_separator)} #{src.join(' ')} -target 1.5 -d #{wrapfilename(java_classes)}"
         end
     end
     def PluginUtil.wrapfilename(file)
