@@ -158,12 +158,13 @@ Appcelerator.Widget.Datatable =
 		var arrow_up_img = '<img src="'+ Appcelerator.Widget.Datatable.modulePath + 'images/arrow_up.png" title="sort ascending" style="position:relative;top:-1px; left: 2px;" />';
 		var arrow_down_img = '<img src="'+ Appcelerator.Widget.Datatable.modulePath + 'images/arrow_down.png" title="sort ascending" style="position:relative;top:-1px; left: 2px;" />';
 		var spacer_img = '<img src="'+ Appcelerator.Widget.Datatable.modulePath + 'images/arrow_spacer.png" title="sort ascending" style="position:relative;top:-1px; left: 2px;" />';
-	
+		
 		//Add spacers to the header (initially) and clear up any extra icons
 		if (add_spacers_to_header)
 		{
 			for(var i = 0, len = header_array.length; i < len; i++)
 			{
+				console.log(Object.toJSON(header_array[i]));
 				header_array[i]['cell'] = header_array[i]['cell'].replace(arrow_up_img,'');
 				header_array[i]['cell'] = header_array[i]['cell'].replace(arrow_down_img,'');
 				header_array[i]['cell'] = header_array[i]['cell'].replace(spacer_img,'');
@@ -607,7 +608,7 @@ Appcelerator.Widget.Datatable =
 					if (headertext)
 						header_object['dynamicproperty'] = new Template(headertext);
 				} else {
-					header_object['cell'] = Appcelerator.Compiler.getHtml(element_children[i],true);						
+					header_object['cell'] = Appcelerator.Compiler.getHtml(element_children[i],true);
 				}
 					
 				//Header's 'on' attribute, compile it later
@@ -623,7 +624,7 @@ Appcelerator.Widget.Datatable =
 
 				//Header's sort function
 				header_object['sorter'] = element_children[i].getAttribute('sorter')||''; 
-				header_object['sort'] = element_children[i].getAttribute('sort')||"true"; 
+				header_object['sort'] = element_children[i].getAttribute('sort')||element_children[i].getAttribute('sortable')||"true"; 
 				
 				//Header's formatter function
 				header_object['formatter'] = element_children[i].getAttribute('formatter')||''; 
