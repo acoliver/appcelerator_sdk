@@ -164,7 +164,6 @@ Appcelerator.Widget.Datatable =
 		{
 			for(var i = 0, len = header_array.length; i < len; i++)
 			{
-				console.log(Object.toJSON(header_array[i]));
 				header_array[i]['cell'] = header_array[i]['cell'].replace(arrow_up_img,'');
 				header_array[i]['cell'] = header_array[i]['cell'].replace(arrow_down_img,'');
 				header_array[i]['cell'] = header_array[i]['cell'].replace(spacer_img,'');
