@@ -318,12 +318,18 @@ module Appcelerator
     end
     def PluginUtil.wrapfilename(file)
       if file.index(" ").nil?
-        file
+        towin32(file)
       else
-        '"'+file+'"'
+        '"'+towin32(file)+'"'
       end
     end
-    
+    def PluginUtil.towin32(path)
+      case Config::CONFIG['target_os']
+        when /(windows|win32)/
+          return path.gsub("/","\\")
+      end
+      return path
+    end
     def PluginUtil.separator
       case Config::CONFIG['target_os']
         when /darwin/
