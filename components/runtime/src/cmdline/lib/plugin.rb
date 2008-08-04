@@ -423,10 +423,10 @@ module Appcelerator
           # puts tidy.diagnostics
           xml
         end
+        f = File.open to,'w'
+        f.write xml
+        f.close
       end
-      f = File.open to,'w'
-      f.write xml
-      f.close
     end
     def PluginUtil.load_tidy
       begin
