@@ -606,6 +606,8 @@ Appcelerator.Widget.Datatable =
 					var headertext = Appcelerator.Compiler.getHtml(element_children[i],true);
 					if (headertext)
 						header_object['dynamicproperty'] = new Template(headertext);
+				} else {
+					header_object['cell'] = Appcelerator.Compiler.getHtml(element_children[i],true);						
 				}
 					
 				//Header's 'on' attribute, compile it later
