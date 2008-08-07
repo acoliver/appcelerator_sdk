@@ -16,6 +16,7 @@ namespace Appcelerator
         INFO = 0,
         WARN = 1,
         ERROR = 2,
-        DEBUG = 3
+        DEBUG = 3,
+        OFF = 4
     }
 }

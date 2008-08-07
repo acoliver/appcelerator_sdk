@@ -58,6 +58,7 @@ namespace Appcelerator
 
             String outgoing_messages = getResponseHeader(content_type, session_id);
 
+            int i = 0;
             while (id_queue[session_id].Count > 0)
             {
                 lock (padlock)
@@ -66,6 +67,7 @@ namespace Appcelerator
                     switch (content_type)
                     {
                         case ServiceBroker.APPLICATION_JSON:
+                            outgoing_messages += (i++ > 0) ? "," : "";
                             outgoing_messages += message.GetMessageJSON();
                             break;
                         case ServiceBroker.XML_JSON:

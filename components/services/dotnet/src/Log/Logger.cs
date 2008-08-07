@@ -18,7 +18,7 @@ namespace Appcelerator
     class Logger
     {
         private static readonly Logger instance = new Logger();
-        private static LoggingLevel loggingLevel = LoggingLevel.ERROR;
+        private static LoggingLevel loggingLevel = LoggingLevel.OFF;
         private static StreamWriter writer;
         static readonly object padlock = new object();
 
@@ -38,6 +38,7 @@ namespace Appcelerator
 
         public void Log(LoggingLevel logLevel, String logMessage)
         {
+            if (Logger.Instance.LoggingLevel == LoggingLevel.OFF) return;
             if (writer == null) setupLogFile();
             String level = logLevel.ToString();
 
@@ -92,12 +93,12 @@ namespace Appcelerator
                 {
                     Logger.Instance.LoggingLevel = StringToLoggingLevel(logLevelSetting);
                 }
-                catch { Logger.Instance.LoggingLevel = LoggingLevel.ERROR; }
+                catch { Logger.Instance.LoggingLevel = LoggingLevel.OFF; }
             }
             catch 
             {
                 //If we can't open the settings file
-                Logger.Instance.LoggingLevel = LoggingLevel.ERROR;
+                Logger.Instance.LoggingLevel = LoggingLevel.OFF;
                 writer.AutoFlush = true;
             }
         }
@@ -127,7 +128,7 @@ namespace Appcelerator
                     levelToUse = LoggingLevel.INFO;
                     break;
                 default:
-                    levelToUse = LoggingLevel.ERROR;
+                    levelToUse = LoggingLevel.OFF;
                     break;
             }
 
