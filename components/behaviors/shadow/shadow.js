@@ -34,9 +34,9 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	 */
 	build:  function(element,options)
 	{
-		var newContainer = document.createElement('div');
+		var newContainer = document.createElement('div');	
+		newContainer.id = element.id + "_shadow";	
 		newContainer.className = 'behavior shadow';
-		newContainer.id = element.id + "_shadow_container";
 		var d1 = document.createElement("div");
 		d1.className = "shadow_" + options['theme'] + "_1";
 		var d2 = document.createElement("div");
@@ -52,11 +52,34 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 		d3.appendChild(element);
 		newContainer.appendChild(clearDiv);
 		
-		if (element.getAttribute("set").indexOf('tooltip') != -1) 
+
+		// add modal dependency
+		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','behavior', 'modal', function(element)
+		{
+			if (element.style.width == '')
+			{
+				throw "Shadow behavior requires an explicit width via the 'style' attribute when used with the modal behavior";
+				return;
+			}
+			newContainer.style.width = element.style.width;	
+		});		
+
+		
+		// add tooltip dependency
+		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','behavior', 'tooltip', function(element)
 		{
 			Element.hide(newContainer);
+		});		
+
+		// deal with IE PNG issue
+		if (Appcelerator.Browser.isIE6)
+		{
+			$(d1).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+			$(d2).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+			$(d3).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');				
 		}
-		
+
 		Appcelerator.Core.loadTheme('behavior','shadow',options['theme'],element,options);	
+
 	}
 });

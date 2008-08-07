@@ -73,10 +73,8 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		var classPrefix = "panel_" + options['theme'];
 		
 		var html = '<div id="'+element.id+'_panel" style="width:'+options['width']+'" class="'+classPrefix+'">';
-		html += '<div id="'+element.id+'_hdr" class="' + classPrefix + '_hdr">';
-				
+		html += '<div id="'+element.id+'_hdr" class="' + classPrefix + '_hdr">';				
 		html += '<div  id="'+element.id+'_tl" class="'+classPrefix+'_tl"></div>';
-		
 		html += '<div id="' + element.id + '_title" class="'+classPrefix+'_title">'+options['title']+'</div>';			
 
 		if (options['closeable'] == true)
@@ -90,12 +88,10 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		html += '<div class="'+classPrefix+'_body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
 		html += '</div>';
-
 		html += '<div  id="'+element.id+'_btm" class="'+classPrefix+'_btm">';
 		html += '<div  id="'+element.id+'_bl" class="'+classPrefix+'_bl"></div>';
 		html += '<div id="' + element.id + '_footer" class="'+classPrefix+'_btm_text ">'+options['footer']+'</div>';			
 		html += '<div  id="'+element.id+'_br" class="'+classPrefix+'_br"></div>';
-
 		html += '</div>';			
 		html += '</div>';			
 		element.innerHTML = html;
@@ -105,17 +101,23 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		// wire close	
 		if (options['closeable'] == true)
 		{
-			Element.observe(element.id+'_close','click',function(e)
+			var mainHandler = Element.observe(element.id+'_close','click',function(e)
 			{
-				if (element.getAttribute('set'))
-				{
-					if (element.getAttribute('set').indexOf('modal') != -1)
-					{
-						Element.hide(element.id + "_modal_container");
-					}
-				}
 				Element.hide(element.id);
 			});			
+
+			// add modal dependency
+			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'modal', function(element)
+			{
+				Event.stopObserving(element.id,'click', mainHandler)
+				Element.observe(element.id+'_close','click',function(e)
+				{
+					Element.hide(element.id + "_modal_container");
+					Element.hide(element.id + "_modal_dialog");
+
+				});
+			});		
+
 		}
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)

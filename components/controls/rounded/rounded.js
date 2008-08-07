@@ -72,6 +72,27 @@ Appcelerator.UI.registerUIComponent('control','rounded',
 		element.style.marginTop = "5px";
 		element.style.marginLeft = "5px";
 		element.style.marginRight = "5px";
+			
+		// add shadow dependency
+		Appcelerator.UI.addElementUIDependency(element,'control','rounded','behavior', 'shadow', function(element)
+		{
+			if (Appcelerator.Browser.isIE6)
+			{
+				element.style.marginTop = "0px";
+				element.style.marginLeft = "-3px";
+				element.style.marginBottom = "1px";
+				element.style.marginRight = "1px";
+			}
+			else
+			{
+				element.style.marginRight = "-1px";
+				element.style.marginBottom = "9px";
+				element.style.marginTop = "0px";
+				element.style.marginLeft = "0px";
+				
+			}
+		});		
+
 
 		// adjust margins based on tail
 		if (options['tail'] && options['tail'].startsWith('l'))

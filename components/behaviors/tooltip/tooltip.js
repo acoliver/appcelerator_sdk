@@ -37,7 +37,7 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 	{
 		element.style.display = "none";
 		var timer;
-		
+
 		function startTimer(el)
 		{
 			cancelTimer();
@@ -51,15 +51,23 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 				timer = null;
 			}				
 		}
+
+		// setup shadow dependency
+		var parent = null;
+		var shadow = false
+		Appcelerator.UI.addElementUIDependency(element,'behavior','tooltip','behavior', 'shadow', function(element)
+		{
+			shadow = true;
+		});		
+
+
 		Event.observe($(options['id']),'mouseover',function(e)
 		{
 			cancelTimer();
 			Element.show(element);
-			var parent = null;
-			if (element.getAttribute("set").indexOf('shadow') != -1) 
+			if ((parent == null) && (shadow == true))
 			{
-				// this is the shadow's parent element
-				parent = $(element.id + "_shadow_container");
+				parent = $(element.id + "_shadow");
 			}
 			if (parent != null)
 			{

@@ -9,7 +9,7 @@
 <!--
 .test
 {
-	width:70%;
+	width:50%;
 }
 -->
 </style>
@@ -24,7 +24,22 @@
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Modal DIV (custom close)
+			Modal DIV using hideMessage/showMessage
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#fff" 
+					set="behavior[modal,showMessage=l:show,hideMessage=l:hide]">
+					<button on="click then l:hide">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV using on expression
 		</td>
 		<td class="result" >
             <div>
@@ -60,7 +75,7 @@
 
 	<tr>
 		<td class="test" valign="middle">
-			Modal DIV (custom close/custom background-color)
+			Modal DIV (custom background-color)
 		</td>
 		<td class="result" >
             <div>
@@ -75,7 +90,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal DIV (custom close/ No opacity)
+			Modal DIV (No opacity)
 		</td>
 		<td class="result" >
             <div>
@@ -90,7 +105,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal DIV (custom close/ custom background / custom opacity)
+			Modal DIV (custom background / custom opacity)
 		</td>
 		<td class="result" >
             <div>
@@ -105,7 +120,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal DIV (custom close/ custom width)
+			Modal DIV (custom width)
 		</td>
 		<td class="result" >
             <div>
@@ -120,7 +135,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal Panel (custom close, panel then behavior)
+			Modal Panel (panel then behavior)
 		</td>
 		<td class="result" >
             <div>
@@ -134,7 +149,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal Panel (custom close, behavior then panel)
+			Modal Panel (behavior then panel)
 		</td>
 		<td class="result" >
             <div>
@@ -148,7 +163,7 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Modal Rounded (custom close, behavior then rounded)
+			Modal Rounded (behavior then rounded)
 		</td>
 		<td class="result" >
             <div>
@@ -160,6 +175,21 @@
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal Rounded (rounded then behavior)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:show.modal[v=81]">Click Me</button>
+				<div on="l:show.modal[v=81] then show or l:close.modal[v=81] then hide"
+					set="control[rounded] and behavior[modal]">
+					<button on="click then l:close.modal[v=81]">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Modal with nested themed button
@@ -182,7 +212,7 @@
             <div>
 				<button on="click then l:show.modal[v=10]">Click Me</button>
 				<div on="l:show.modal[v=10] then show or l:close.modal[v=10] then hide"
-					set="behavior[modal] and behavior[shadow] and control[panel]">
+					set="behavior[modal,opacity=0] and behavior[shadow] and control[panel]" style="width:300px">
 					<button on="click then l:close.modal[v=10]" set="theme[thinblue]">Close</button>
 				</div>
             </div>
@@ -196,7 +226,7 @@
             <div>
 				<button on="click then l:show.modal[v=11]">Click Me</button>
 				<div on="l:show.modal[v=11] then show or l:close.modal[v=11] then hide"
-					set="behavior[shadow] and behavior[modal] and control[panel]">
+					set="behavior[shadow] and behavior[modal,opacity=0] and control[panel]" style="width:300px">
 					<button on="click then l:close.modal[v=11]" set="theme[thinblue]">Close</button>
 				</div>
             </div>
@@ -210,7 +240,7 @@
             <div>
 				<button on="click then l:show.modal[v=12]">Click Me</button>
 				<div on="l:show.modal[v=12] then show or l:close.modal[v=12] then hide"
-					set="control[panel] and behavior[shadow] and behavior[modal]">
+					set="control[panel] and behavior[shadow] and behavior[modal,opacity=0]" style="width:300px">
 					<button on="click then l:close.modal[v=12]" set="theme[thinblue]">Close</button>
 				</div>
             </div>
@@ -224,7 +254,7 @@
             <div>
 				<button on="click then l:show.modal[v=13]">Click Me</button>
 				<div on="l:show.modal[v=13] then show or l:close.modal[v=13] then hide"
-					set="control[panel] and behavior[modal] and behavior[shadow]">
+					set="control[panel] and behavior[modal,opacity=0] and behavior[shadow]" style="width:300px">
 					<button on="click then l:close.modal[v=13]" set="theme[thinblue]">Close</button>
 				</div>
             </div>

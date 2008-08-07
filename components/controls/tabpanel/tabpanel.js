@@ -107,8 +107,6 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 		container.innerHTML = html;
 		element.innerHTML = '';
 		element.appendChild(container);		
-		Appcelerator.Compiler.dynamicCompile(container);
-
 
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)

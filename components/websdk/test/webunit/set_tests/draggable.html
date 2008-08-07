@@ -157,6 +157,7 @@
 	<tr>
 		<td class="test" valign="middle">
 			Draggable Rounded with Shadow (draggable then rounded then shadow)
+			DISABLED FOR IE6
 		</td>
 		<td class="result" >
 			<div set="behavior[draggable] and control[rounded] and behavior[shadow]">
@@ -166,10 +167,34 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Draggable Panel with Resizable (draggable then panel then resizable)
+			Draggable Rounded with Shadow (rounded then shadow then draggable)
+			DISABLED FOR IE6
 		</td>
 		<td class="result" >
-			<div set="behavior[draggable] and control[panel] and behavior[resizable]">
+			<div set="control[rounded] and behavior[shadow] and behavior[draggable]  ">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			Draggable Panel with Shadow (draggable then rounded then shadow)
+			DISABLED FOR IE6
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and control[panel,theme=white] and behavior[shadow]">
+				<div>I am draggable</div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="test" valign="middle">
+			Draggable DIV with Resizable (draggable then resizable)
+		</td>
+		<td class="result" >
+			<div set="behavior[draggable] and behavior[resizable]">
 				<div>I am draggable</div>
 			</div>
 		</td>

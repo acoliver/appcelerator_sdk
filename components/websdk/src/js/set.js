@@ -71,6 +71,10 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 			try
 			{
 				f.build(element,formattedOptions);
+				
+				// keep track of elements and their UI attributes
+				Appcelerator.UI.addElementUI(element,type,name);
+				
 			}
 			catch (e)
 			{
@@ -126,12 +130,15 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 	}
 	else
 	{
-		if (failIfNotFound)
+		if (failIfNotFound==true)
 		{
 			Appcelerator.UI.UIManager.handleLoadError(element,type,name);
 		}
 		else
 		{
+			// added for API calls
+			if (!element.state)element.state = {};
+			
 			element.state.pending+=1;
 			var path = Appcelerator.DocumentPath + '/components/'+type+'s/'+name+'/'+name+'.js';
 			Appcelerator.Core.remoteLoadScript(path,function()
@@ -160,6 +167,73 @@ Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype,p
 	//top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
 };
 
+/************************************
+ *  API FUNCTIONS
+ ***********************************/
+Appcelerator.UI.createControl = function (element,type,args)
+{
+	Appcelerator.loadUIManager('control',type,element,(args)?args:{},false);
+};
+Appcelerator.UI.addBehavior = function(element,type,args)
+{
+	Appcelerator.loadUIManager('behavior',type,element,(args)?args:{},false);
+};
+Appcelerator.UI.createLayout = function(element,type,args)
+{
+	Appcelerator.loadUIManager('layout',type,element,(args)?args:{},false);
+};
+
+/****************************************************
+  HANDLE CROSS-CONTROL/BEHAVIOR/LAYOUT DEPENDENCIES
+*****************************************************/
+Appcelerator.UI.dependencyMap = [];
+Appcelerator.UI.elementMap = {};
+
+//
+// allow components to register their dependencies for an element
+//
+Appcelerator.UI.addElementUIDependency = function(element,ui,type,dependencyUI, dependencyType, callback)
+{
+
+	// see if element already has UI attribute that is a dependency
+	if (Appcelerator.UI.elementMap[element.id + "_" + dependencyUI +"_" + dependencyType])
+	{
+		callback(element);
+	}
+	
+	// otherwise store it for later
+	else
+	{
+		Appcelerator.UI.dependencyMap.push({element:element,ui:ui,type:type,dependencyUI:dependencyUI,dependencyType:dependencyType,callback:callback});	
+	}
+};
+
+// 
+// Keep track of an element's UI attributes (controls, behaviors, layouts, etc)
+// 
+Appcelerator.UI.addElementUI = function(element, ui, type)
+{
+	// is UI attribute combo part of an existing dependency
+	var map = Appcelerator.UI.dependencyMap;
+	for (var i=0;i<map.length;i++)
+	{
+		if (map[i].element.id == element.id)
+		{
+			// new UI + TYPE has a dependency for this element
+			if ((map[i].dependencyUI == ui) && (map[i].dependencyType == type))
+			{
+				// see if element already has UI + TYPE 
+				if (Appcelerator.UI.elementMap[element.id + "_" + map[i].ui + "_" + map[i].type])
+				{
+					map[i].callback(element);
+				}
+			}
+		}
+	}
+	Appcelerator.UI.elementMap[element.id + "_" + ui + "_" + type] = {element:element};
+	
+};
+
 /**
  * called by a UI to load a UI manager
  */
@@ -179,7 +253,7 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 	} 
 	else
 	{
-		if (failIfNotFound)
+		if (failIfNotFound==true)
 		{
 			$E('UI not found for '+ui+', type: '+type);
 		}
@@ -201,6 +275,8 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 			});
 		}
 	}
+	
+	
 };
 
 Appcelerator.Compiler.registerAttributeProcessor('*','set',

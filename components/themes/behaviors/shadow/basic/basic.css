@@ -3,27 +3,54 @@
 	float:left;
 	background:url(shadow.png) right bottom no-repeat;
 	margin-top:11px;
-	_background:url(shadow.gif) right bottom no-repeat;	
-	_margin-top:0px;
 }
 
 .shadow_basic_2
 {
 	background:url(corner_bl.png) -13px 100% no-repeat;
 	margin-left:-11px;
-
-	_background:url(corner_bl.gif) -13px 100% no-repeat;
-	_margin-left:0px;
 }
 
 .shadow_basic_3
 {
 	padding:0 8px 8px 0;
 	margin-top:-11px;
-	margin-left:-5px;
+	margin-left:4px;
 	background:url(corner_tr.png) 100% -13px no-repeat;
+	
+}
 
-	_background:url(corner_tr.gif) 100% -13px no-repeat;
-	_margin-top:0px;
+/**
+ * IE 7 STYLES
+ */
+
+body.ie7 .shadow_basic_3
+{
+	position:relative;
+	z-index:1;
+	margin-left:0px;
+}
+
+/**
+ * IE 6 STYLES
+ */
+body.ie6 .shadow_basic_1
+{
+	background:url(shadow.gif) no-repeat bottom right;	
+	margin-top:0px;
+	
+}
+body.ie6 .shadow_basic_2
+{
+	background:url(corner_bl.gif) -13px 100% no-repeat;
+
+	margin-left:0px;
+}
+body.ie6 .shadow_basic_3
+{
+	background:url(corner_tr.gif) 100% -13px no-repeat;
+	margin:0px;
+	margin-left:-2px;
+	margin-top:-2px;
 }
 

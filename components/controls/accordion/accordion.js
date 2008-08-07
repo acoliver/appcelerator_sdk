@@ -81,13 +81,8 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 	build:  function(element,options)
 	{
 		var classPrefix = "accordion_" + options['theme'];
-		var container = document.createElement('div');
-		container.className = classPrefix + "_container";
-		container.style.width = options['width'];
-		if (element.getAttribute("on"))
-		{
-			container.setAttribute("on",element.getAttribute("on"));
-		}
+		element.className = classPrefix + "_container";
+		element.style.width = options['width'];
 		var html = '';
 		var count = 0;
 		for (var c=0,len=element.childNodes.length;c<len;c++)
@@ -123,19 +118,16 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 
 			}
 		}	
-		container.innerHTML = html;
-		Appcelerator.Compiler.dynamicCompile(container);
-		new Insertion.Before(element,container);
-		element.innerHTML = '';
+		element.innerHTML = html;
 
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)
 		{
 			for (var i=0;i<count;i++)
 			{
-				$(element.id +"_accordion_left_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
-				$(element.id +"_accordion_middle_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
-				$(element.id +"_accordion_right_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/js/appcelerator/common/images/iepngfix.htc');	
+				$(element.id +"_accordion_left_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+				$(element.id +"_accordion_middle_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
+				$(element.id +"_accordion_right_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
 			}
 		}
 		

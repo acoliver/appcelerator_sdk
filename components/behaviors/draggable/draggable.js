@@ -13,8 +13,8 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 				{name: 'revert', optional: true, description: "revert to original position"},
 		        {name: 'ghosting', optional: true, description: "leave original container in place while dragging ",defaultValue: false},
 		        {name: 'handle', optional: true, description: "id of handle that is draggable "},
-		        {name: 'constraint', optional: true, description: "constrain draggable direction ",defaultValue: '',type: T.enumeration('horizontal','vertical')},
-		        {name: 'corners', optional: true, description: "round top corners ",defaultValue:"top bottom"}
+		        {name: 'constraint', optional: true, description: "constrain draggable direction ",type: T.enumeration('horizontal','vertical')},
+		        {name: 'corners', optional: true, description: "round top corners "}
 		];
 		
 	},
@@ -82,11 +82,28 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 				}
 			}
 			var d = new Draggable(element.id,options);
-			//var d = new Draggable(element.id,options);
 			Appcelerator.Compiler.addTrash(element,function()
 			{
 				d.destroy();
 			});
+
+			// add shadow dependency
+			Appcelerator.UI.addElementUIDependency(element,'behavior','draggable','behavior', 'shadow', function(element)
+			{
+				d.destroy();
+
+				if (!Appcelerator.Browser.isIE6)
+				{
+					var s = new Draggable(element.id + "_shadow",options);
+					Appcelerator.Compiler.addTrash(element,function()
+					{
+						s.destroy();
+					});					
+				}
+			});		
+
 		});
+
+
 	}
 });

@@ -9,7 +9,7 @@
 <!--
 .test
 {
-	width:70%;
+	width:20%;
 }
 /* test how images perform with img styles */
 img
@@ -32,17 +32,31 @@ img
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Shadow on DIV
+			Shadow on DIV with fixed width
 		</td>
 		<td class="result" >
             <div>
-				<div style="padding:10px;border:2px solid #ccc;background-color:#ddd" 
+				<div style="border:2px solid #ccc;background-color:#ddd;width:80px" 
 					set="behavior[shadow]">
 					I have a shadow
 				</div>
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Shadow on DIV with padding
+		</td>
+		<td class="result" >
+            <div>
+				<div style="padding:20px;border:2px solid #ccc;background-color:#ddd;width:200px" 
+					set="behavior[shadow]">
+					I have a shadow
+				</div>
+            </div>
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Shadow on Panel (shadow then panel)
@@ -89,86 +103,6 @@ img
 				<div set="control[rounded] and behavior[shadow]">
 					I have a shadow
 				</div>
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on Rounded with bottom tail (rounded then shadow)
-		</td>
-		<td class="result" >
-            <div>
-				<div set="control[rounded,tail=bl] and behavior[shadow]">
-					I have a shadow
-				</div>
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on Rounded with left tail (rounded then shadow)
-		</td>
-		<td class="result" >
-            <div>
-				<div set="control[rounded,tail=lt] and behavior[shadow]">
-					I have a shadow
-				</div>
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on Rounded with right tail (rounded then shadow)
-		</td>
-		<td class="result" >
-            <div>
-				<div set="control[rounded,tail=rt] and behavior[shadow]">
-					I have a shadow
-				</div>
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on input 
-		</td>
-		<td class="result" >
-            <div>
-				<input set="theme[thinblue] and behavior[shadow]"/>
-			
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on input with 3 images 
-		</td>
-		<td class="result" >
-            <div>
-				<input set="theme[rounded_search] and behavior[shadow]"/>
-			
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on button (theme then shadow)
-		</td>
-		<td class="result" >
-            <div>
-				<button set="theme[iphone_green] and behavior[shadow]">hello</button>
-			
-            </div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Shadow on button (shadow then theme)
-		</td>
-		<td class="result" >
-            <div>
-				<button set="behavior[shadow] and theme[iphone_green]">hello</button>
-			
             </div>
 		</td>
 	</tr>
