@@ -1,49 +1,62 @@
 .button_iphone_grey_left
 {
 	background:transparent url(images/left.png);
-	height:48px;
-	width:16px;
 	position:relative;
-	
-	
-	/* browser specific positioning */
 	top:19px;
-	_top:4px; /* IE 6 */
-	*top:4px; /* IE 7 */	
+
+	padding:0 !important;
+	height:48px  !important;
+	width:16px  !important;
+
 }
 
 .button_iphone_grey_middle
 {
 	background:transparent url(images/middle.png) repeat-x;
-	height:48px;
-	color:white;
-	font-size:14px;
-	font-weight:bold;
-	border:0px none;
-	margin-left:-1px;
-	margin-right:-1px;
+	cursor:pointer;
+
+	height:48px  !important;
+	color:white  !important;
+	font-size:14px  !important;
+	font-weight:bold !important;
+	border:0px none !important;
+	margin-left:-1px !important;
+	margin-right:-1px !important;	
 }
 
 .button_iphone_grey_right
 {
 	background:transparent url(images/right.png);
-	height:48px;
-	width:16px;
 	position:relative;
-		
-	/* browser specific positioning */
-	top:19px;
-	_top:4px; /* IE 6 */
-	*top:4px; /* IE 7 */	
+	top:19px;	
+	
+	height:48px !important;
+	width:16px !important;
+	padding:0 !important;
 	
 }
 
-/* FF Specific Styles for left and right image */
-.button_iphone_grey_geckofix
+/* IE Styles */
+body.msie .button_iphone_grey_left
 {
-	top:18px;
+	top:4px !important;
+}
+body.msie .button_iphone_grey_right
+{
+	top:4px !important;
 }
 
+/* FF Specific Styles for left and right image */
+body.gecko .button_iphone_grey_left
+{
+	top:17px !important;
+}
+body.gecko .button_iphone_grey_right
+{
+	top:17px !important;
+}
+
+/* Disabled Styles */
 .button_iphone_grey_left_disabled
 {
 	background:url(images/left_disabled.png);

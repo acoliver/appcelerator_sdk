@@ -7,9 +7,11 @@
 	padding-right:15px;
 	padding-left:15px;
 	outline:none;
+	cursor:pointer;
+	
 }
 
-.input_white_gradient_middle:hover
+.button_white_gradient_middle:hover
 {
 	background-position:0pt -400px;
 	border:1px solid #AAA;

@@ -2,50 +2,58 @@
 {
 	position:relative;
 	background:transparent url(images/left.png) no-repeat;
-	height:23px;
-	width:13px;
-
-	/* browser specific positioning */
-	top:7px;
-	_top:4px; /* IE 6 */
-	*top:4px; /* IE 7 */	
+	top:7px ;
+	height:23px !important;
+	width:13px !important;
+	padding:0px !important;
 }
 
 .button_aqua_blue_middle
 {
 	background:transparent url(images/middle.png) repeat-x;
-	height:23px;
-	border:0px none;
-	font-size:12px;
-	margin-left:-1px;
-	margin-right:-1px;
-	padding-bottom:2px;
-
-	/* IE padding */
-	_padding-bottom:0px;
-
+	line-height:23px;
+    cursor:pointer;
+	
+	font-size:12px !important;	
+	border:0px none !important;
+	height:23px !important;
+	margin-left:0px !important; 
+	margin-right:0px !important;
+	padding-bottom:2px !important;
+	padding-top:0px !important;
+	padding-right:0px !important;
+	padding-left:0px !important;
 }
+
 
 .button_aqua_blue_right
 {
 	position:relative;
 	background:transparent url(images/right.png) no-repeat;
-	height:23px;
-	width:13px;
-
-	/* browser specific positioning */
 	top:7px;
-	_top:4px; /* IE 6 */
-	*top:4px; /* IE 7 */	
-	
+
+	padding:0px !important;	
+	height:23px !important;
+	width:13px !important;
 }
 
-/* FF Specific Styles for left and right image */
-.button_aqua_blue_geckofix
+/* IE styles */
+body.msie .button_aqua_blue_right
 {
-	top:7px;
+	top:4px !important;
+}
+body.msie .button_aqua_blue_middle
+{
+	padding-bottom:0px !important;
+}
+body.msie .button_aqua_blue_left
+{
+	top:4px !important;
 }
 
+
+
+/* Disabled styles */
 .button_aqua_blue_left_disabled
 {
 	opacity:0.6;

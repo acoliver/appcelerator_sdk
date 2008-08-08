@@ -1,0 +1,49 @@
+.accordion_bluegrey_gradient_container
+{
+	width: auto !important;
+}
+.accordion_bluegrey_gradient_row
+{
+	clear:both;
+	height:31px;
+}
+.accordion_bluegrey_gradient_row_left
+{
+	
+}
+.accordion_bluegrey_gradient_row_middle
+{
+	background:#a2a2a2 url(bar.gif) no-repeat scroll left top;
+	height:31px !important;
+	width:221px !important;
+	line-height:31px;
+	color:#000 !important;
+	font-size:12px !important;
+	padding: 0 0 0 15px !important;
+	cursor:pointer;
+	
+}
+.accordion_bluegrey_gradient_row_right
+{
+}
+.accordion_bluegrey_gradient_row_data
+{
+	clear:both;
+	width:221px !important;
+	
+}
+
+.accordion_bluegrey_gradient_row_left_active
+{
+	
+}
+.accordion_bluegrey_gradient_row_middle_active
+{
+	background:#a2a2a2 url(bar.gif) no-repeat scroll right top;
+	color:#fff !important;
+	
+}
+.accordion_bluegrey_gradient_row_right_active
+{
+}
+.

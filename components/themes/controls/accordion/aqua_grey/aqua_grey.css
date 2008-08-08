@@ -15,7 +15,7 @@
 	height:23px;
 	width:13px;
 	float:left;
-	
+	cursor:pointer;	
 }
 .accordion_aqua_grey_row_middle
 {
@@ -25,6 +25,7 @@
 	font-size:11px;
 	line-height:23px;
 	color:#444;
+	cursor:pointer;
 }
 .accordion_aqua_grey_row_right
 {
@@ -32,6 +33,8 @@
 	height:23px;
 	width:13px;
 	float:left;
+	cursor:pointer;
+	
 }
 .accordion_aqua_grey_row_data
 {

@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('control','button','itunes_back',
+Appcelerator.Core.registerTheme('control','accordion','bluegrey_gradient',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 
