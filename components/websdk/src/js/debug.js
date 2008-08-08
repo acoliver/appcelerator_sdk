@@ -1,12 +1,12 @@
-
-var APPCELERATOR_DEBUG = window.location.href.indexOf('debug=1') > 0 || Appcelerator.Parameters.get('debug')=='1';
+var APPCELERATOR_DEBUG_LEVEL = Appcelerator.Parameters.get('debug');
+var APPCELERATOR_DEBUG = window.location.href.indexOf('debug=1') > 0 || APPCELERATOR_DEBUG_LEVEL=='1';
 var log4javascript_threshold = Appcelerator.Parameters.get('log4javascript');
 
 var Logger = Class.create();
 $$l = Logger;
 var _logAppender = null;
 var _logEnabled = true;
-Logger.toLevel = function(value, logger) 
+Logger.toLevel = function(value, logger)
 {
 	if (!value)
 		return log4javascript.Level.INFO;
@@ -42,7 +42,7 @@ else
 {
 	_logAppender = true;
 	_logEnabled = _logEnabled && typeof(console)!='undefined';
-	_log = 
+	_log =
 	{
 		console:function(type,msg)
 		{
@@ -52,7 +52,7 @@ else
 			}
 			catch(e)
 			{
-				
+
 			}
 		},
 		debug:function(msg) { if (APPCELERATOR_DEBUG) this.console('debug',msg);  },
@@ -153,3 +153,18 @@ if(typeof out == 'undefined') {
         }
     };
 }
+
+if (APPCELERATOR_DEBUG_LEVEL == '2')
+{
+	//Can do w/ 1 $MQ but we need to know whether it's remote or local..so we do two..
+	$MQL('r:~.*',function(type,msg,datatype,from)
+	{
+	    Logger.info('Message Type: r:' + type + '\nMessage Data: ' + Object.toJSON(msg));
+	});
+
+	$MQL('l:~.*',function(type,msg,datatype,from)
+	{
+	    Logger.info('Message Type: l:' + type + '\nMessage Data: ' + Object.toJSON(msg));
+	});
+}
+
