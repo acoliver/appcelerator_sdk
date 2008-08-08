@@ -12,9 +12,9 @@ Appcelerator.UI.registerUIComponent('layout','horizontal',
 		return [{name: 'width', optional: true, description: "width for horizontal layout",defaultValue: '100%'},
 			    {name: 'cellspacing', optional: true, description: "cell spacing for horizontal layout",defaultValue: '0'},
 		        {name: 'cellpadding', optional: true, description: "cell padding for horizontal layout",defaultValue: '0'},
-				{name: 'hintPos', optional:true, description:"location of hint text", 'type':T.enumeration('bottom','right','input','top')},
-				{name: 'errorPos', optional:true, description:"location of error text", 'type':T.enumeration('bottom','right','top')},
-				{name: 'buttonPos', optional:true, description:"location of error text", 'type':T.enumeration('left','right'), defaultValue:"left"},
+				{name: 'hintPos', optional:true, description:"location of hint text", defaultValue:'top', 'type':T.enumeration('bottom','right','input','top')},
+				{name: 'errorPos', optional:true, description:"location of error text",defaultValue:'right', type:T.enumeration('bottom','right','top')},
+				{name: 'buttonPos', optional:true, description:"location of error text", type:T.enumeration('left','right'), defaultValue:"left"},
 				{name: 'labelWidth', optional:true, description:"width of label", defaultValue:"120px"}
 		];
 	},
@@ -52,6 +52,8 @@ Appcelerator.UI.registerUIComponent('layout','horizontal',
 			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'horizontal','colspan':'2','hintPos':options['hintPos'],'errorPos':options['errorPos'],'buttonPos':options['buttonPos'],'labelWidth':options['labelWidth']};
 			html = Appcelerator.UI.LayoutManager._buildForm(formOptions);
 			element.innerHTML = html;
+			Appcelerator.Core.loadTheme('layout','horizontal','form',element,options);	
+			
 		}
 		// otherwise treat like a div
 		else

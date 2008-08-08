@@ -12,8 +12,8 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 		return [{name: 'width', optional: true, description: "width for vertical layout",defaultValue: '100%'},
 			    {name: 'cellspacing', optional: true, description: "cell spacing for vertical layout",defaultValue: '0'},
 		        {name: 'cellpadding', optional: true, description: "cell padding for vertical layout",defaultValue: '0'},
-				{name: 'hintPos', optional:true, description:"location of hint text", 'type':T.enumeration('bottom','right','input','top')},
-				{name: 'errorPos', optional:true, description:"location of error text", 'type':T.enumeration('bottom','right','top')}				
+				{name: 'hintPos', optional:true, description:"location of hint text",defaultValue:'bottom', type:T.enumeration('bottom','right','input','top')},
+				{name: 'errorPos', optional:true, description:"location of error text", defaultValue:'top', type:T.enumeration('bottom','right','top')}				
 		];
 
 	},
@@ -50,6 +50,8 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 			formOptions = {'element':element,'childNodes':element.childNodes,'html':html,'align':'vertical','colspan':'1','hintPos':options['hintPos'],'errorPos':options['errorPos']};
 			html = Appcelerator.UI.LayoutManager._buildForm(formOptions);
 			element.innerHTML = html;
+			Appcelerator.Core.loadTheme('layout','vertical','form',element,options);	
+			
 		}
 		// otherwise treat like a div
 		else

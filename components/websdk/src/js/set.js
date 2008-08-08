@@ -582,7 +582,7 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 					
 				}
 			}
-			else if (node.tagName.toLowerCase() == 'button')
+			else if ((node.tagName.toLowerCase() == 'button') || (node.getAttribute('type') == 'button'))
 			{
 				if (Appcelerator.Browser.isIE)
 				{
@@ -644,7 +644,6 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 
 			if (align=='horizontal')
 			{
-				// define vertical align for <td>
 				var valign = 'middle';
 				var labelPadding = "5px";
 				var inputPadding = "5px";
@@ -674,33 +673,24 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 				html += '<td align="left" style="padding-bottom:'+inputPadding+'">';
 				html += (hintPos == "top")?'<div>'+hint+'</div>':'';
 				html += (errorPos == "top")?'<div>'+error+'</div>':'';
-				if (hintPos == "input")
-				{
-					input.setAttribute("value",hint);
-				}
 				html += Appcelerator.Util.Dom.toXML(input,true,Appcelerator.Compiler.getTagname(input));
-				html += (hintPos == 'right')?hint:'';				
-				html += (errorPos == 'right')?error:'';
+				html += (hintPos == "right")?'<span style="padding-left:5px">'+hint+'</span>':'';
+				html += (errorPos == "right")?'<span style="padding-left:5px">'+error+'</span>':'';
 				html += (hintPos == 'bottom')?'<div style="margin-bottom:10px;position:relative;top:-1px">'+hint + '</div>':'';				
 				html += (errorPos == 'bottom')?'<div style="margin-bottom:10px;position:relative;top:-1px">'+error + '</div>':'';
 				html += '</td></tr>';
-
 			}
 			else
 			{
 				// create form
 				html += '<tr><td align="left">' + label;
-				html += (hintPos == "top")?hint:'';
-				html += (errorPos == "top")?error:'';
+				html += (hintPos == "top")?'<span style="padding-left:5px">'+hint+'</span>':'';
+				html += (errorPos == "top")?'<span style="padding-left:5px">'+error+'</span>':'';
 				html += '</td></tr><tr>';
 				html += (errorPos != 'bottom' && hintPos != 'bottom')?'<td align="left" style="padding-bottom:5px">':'<td align="left">';
-				if (hintPos == "input")
-				{
-					input.setAttribute("value",hint);
-				}
 				html += Appcelerator.Util.Dom.toXML(input,true,Appcelerator.Compiler.getTagname(input));
-				html += (hintPos == 'right')?hint:'';				
-				html += (errorPos == 'right')?error:'';
+				html += (hintPos == "right")?'<span style="padding-left:5px">'+hint+'</span>':'';
+				html += (errorPos == "right")?'<span style="padding-left:5px">'+error+'</span>':'';
 				html += (hintPos == 'bottom')?'<div style="margin-bottom:5px;position:relative;top:-1px">'+hint + '</div>':'';				
 				html += (errorPos == 'bottom')?'<div style="margin-bottom:5px;position:relative;top:-1px">'+error + '</div>':'';
 				html += '</td></tr>';
@@ -710,11 +700,18 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 			{
 				formElement.observe('element:compiled:'+formElement.id,function(a)
 				{
+					if (hintPos == "input")
+					{
+						$(input.id).value = hint;
+						Element.addClassName($(input.id),'layout_form_hinttext');
+					}
+
 					Event.observe(input.id,'click',function(e)
 					{
 						if ($(input.id).value == hint)
 						{
 							$(input.id).value = '';
+							Element.removeClassName($(input.id),'layout_form_hinttext');
 						}
 					});
 					Event.observe(input.id,'blur',function(e)
@@ -722,6 +719,8 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 						if ($(input.id).value == '')
 						{
 							$(input.id).value = hint;
+							Element.addClassName($(input.id),'layout_form_hinttext');
+
 						}
 					});
 				});
@@ -730,7 +729,7 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	}
 	if (buttonHTML.length > 0)
 	{
-		var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"10px";
+		var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"5px";
 		if (buttonPos == "right")
 		{
 			html += '<tr><td></td><td align="left" colspan="1" style="padding-top:'+buttonPadding+'">';
