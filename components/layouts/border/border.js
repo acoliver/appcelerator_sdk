@@ -47,62 +47,110 @@ Appcelerator.UI.registerUIComponent('layout','border',
 		var n = element.down('*[pos=north]');
 		var s = element.down('*[pos=south]');
 		var c = element.down('*[pos=center]');
-		
+
 		var html = "<table width='100%' class='borderlayout' border='0' cellpadding='0' cellspacing='0'>";
-		
-		html+='<tr>';
-		html+='<td colspan="3" align="center">';
-		html+='<div id="' + element.id + '_north" class="borderlayout_north"></div>'
-		html+='</td>';
-		html+='</tr>';
-		html+='<tr>';
-		html+='<td colspan="1" align="left">';
-		html+='<div id="' + element.id + '_west" class="borderlayout_left"></div>'
-		html+='</td>';
-		html+='<td colspan="1" align="center">';
-		html+='<div id="' + element.id + '_center" class="borderlayout_center"></div>'
-		html+='</td>';
-		html+='<td colspan="1" align="right">';
-		html+='<div id="' + element.id + '_east" class="borderlayout_east"></div>'
-		html+='</td>';
-		html+='</tr>';
-		html+='<tr>';
-		html+='<td colspan="3" align="center">';
-		html+='<div id="' + element.id + '_south" class="borderlayout_south"></div>'
-		html+='</td>';
-		html+='</tr>';
-		html+='</table>';
-		element.innerHTML = html;
 		
 		if (n)
 		{
-			var ne = $(element.id+'_north');
-			ne.appendChild(n);
-			ne.parentNode.setAttribute('align',n.getAttribute('align')||'center');
+			html+='<tr>';
+			html+='<td colspan="3"';
+			html += (n.getAttribute('valign'))?' valign="' + n.getAttribute('valign')+'" ': ' valign="middle" ';
+			html += (n.getAttribute('align'))?' align="' + n.getAttribute('align')+'" ': ' align="center" ';
+			html+='<div id="' + element.id + '_north" class="borderlayout_north"></div>';
+
+			if (Appcelerator.Browser.isIE)
+			{
+				html += n.outerHTML;
+			}
+			else
+			{				
+				html += Appcelerator.Util.Dom.toXML(n,true,Appcelerator.Compiler.getTagname(n))
+			}
+			html+='</td>';
+			html+='</tr>';
 		}
-		if (s)
-		{
-			var ne = $(element.id+'_south');
-			ne.appendChild(s);
-			ne.parentNode.setAttribute('align',s.getAttribute('align')||'center');
-		}
-		if (e)
-		{
-			var ne = $(element.id+'_east');
-			ne.appendChild(e);
-			ne.parentNode.setAttribute('align',e.getAttribute('align')||'right');
-		}
+		
+		html+='<tr>';
+
 		if (w)
 		{
-			var ne = $(element.id+'_west');
-			ne.appendChild(w);
-			ne.parentNode.setAttribute('align',w.getAttribute('align')||'left');
+			html+='<td colspan="1"';
+			html += (w.getAttribute('valign'))?' valign="' + w.getAttribute('valign')+'" ': ' valign="middle" ';
+			html += (w.getAttribute('align'))?' align="' + w.getAttribute('align')+'" ': ' align="left" ';
+			html+='<div id="' + element.id + '_west" class="borderlayout_west"></div>';
+
+			if (Appcelerator.Browser.isIE)
+			{
+				html += w.outerHTML;
+			}
+			else
+			{				
+				html += Appcelerator.Util.Dom.toXML(w,true,Appcelerator.Compiler.getTagname(w))
+			}
+			html+='</td>';
 		}
+
 		if (c)
 		{
-			var ne = $(element.id+'_center');
-			ne.appendChild(c);
-			ne.parentNode.setAttribute('align',c.getAttribute('align')||'center');
+			html+='<td colspan="1"';
+			html += (c.getAttribute('valign'))?' valign="' + c.getAttribute('valign')+'" ': ' valign="middle" ';
+			html += (c.getAttribute('align'))?' align="' + c.getAttribute('align')+'" ': ' align="center" ';
+			html+='<div id="' + element.id + '_center" class="borderlayout_center"></div>';
+
+			if (Appcelerator.Browser.isIE)
+			{
+				html += c.outerHTML;
+			}
+			else
+			{				
+				html += Appcelerator.Util.Dom.toXML(c,true,Appcelerator.Compiler.getTagname(c))
+			}
+			html+='</td>';
 		}
+
+		if (e)
+		{
+			html+='<td colspan="1"';
+			html += (e.getAttribute('valign'))?' valign="' + e.getAttribute('valign')+'" ': ' valign="middle" ';
+			html += (e.getAttribute('align'))?' align="' + e.getAttribute('align')+'" ': ' align="right" ';
+			html+='<div id="' + element.id + '_east" class="borderlayout_easst"></div>';
+
+			if (Appcelerator.Browser.isIE)
+			{
+				html += e.outerHTML;
+			}
+			else
+			{				
+				html += Appcelerator.Util.Dom.toXML(e,true,Appcelerator.Compiler.getTagname(e))
+			}
+			html+='</td>';
+		}
+
+		html+='</tr>';
+		html+='<tr>';
+
+		if (s)
+		{
+			html+='<tr>';
+			html+='<td colspan="3"';
+			html += (s.getAttribute('valign'))?' valign="' + s.getAttribute('valign')+'" ': ' valign="middle" ';
+			html += (s.getAttribute('align'))?' align="' + s.getAttribute('align')+'" ': ' align="center" ';
+			html+='<div id="' + element.id + '_south" class="borderlayout_south"></div>';
+
+			if (Appcelerator.Browser.isIE)
+			{
+				html += s.outerHTML;
+			}
+			else
+			{				
+				html += Appcelerator.Util.Dom.toXML(s,true,Appcelerator.Compiler.getTagname(s))
+			}
+			html+='</td>';
+			html+='</tr>';
+		}
+
+		html+='</table>';
+		element.innerHTML = html;
+		
 	}
 });

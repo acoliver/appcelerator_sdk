@@ -42,49 +42,49 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Three Vertical DIVs (no options)
+			Three Vertical DIVs (with align property)
 		</td>
 		<td class="result" >
             <div set="layout[vertical]">
-				<div class="layoutbox" >one</div>
-				<div class="layoutbox" >two</div>
-				<div class="layoutbox" >three</div>
+				<div align="left" class="layoutbox" >one</div>
+				<div align="middle" class="layoutbox" >two</div>
+				<div align="right" class="layoutbox" >three</div>
             </div>
 		</td>
 	</tr>
 
 	<tr>
 		<td class="test" valign="middle">
-			 Vertical Parent, Two Nested Horizontal
+			 Vertical Parent, Two Nested Horizontal with width property
 		</td>
 		<td class="result" >
             <div set="layout[vertical]">
 				<div set="layout[horizontal]">
-					<div props="width=80px" class="layoutbox" >one</div>
-					<div props="width=80px" class="layoutbox" >two</div>
-					<div props="width=80px" class="layoutbox" >three</div>
-					<div props="width=80px" class="layoutbox" >four</div>
+					<div width="80px" class="layoutbox" >one</div>
+					<div width="80px" class="layoutbox" >two</div>
+					<div width="80px" class="layoutbox" >three</div>
+					<div width="80px" class="layoutbox" >four</div>
             	</div>
 				<div set="layout[horizontal]">
-					<div props="width=80px" class="layoutbox" >five</div>
-					<div props="width=80px" class="layoutbox" >six</div>
-					<div props="width=80px" class="layoutbox" >seven</div>
-					<div props="width=80px" class="layoutbox" >eight</div>
+					<div width="80px" class="layoutbox" >five</div>
+					<div width="80px" class="layoutbox" >six</div>
+					<div width="80px" class="layoutbox" >seven</div>
+					<div width="80px" class="layoutbox" >eight</div>
             	</div>
 			</div>
 		</td>
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			 Vertical Parent, Three Rows, Nested Horizontal (2nd row)
+			 Vertical Parent, Three Rows, Nested Horizontal (2nd row) with valign,align and width properties
 		</td>
 		<td class="result" height="250px" valign="top">
             <div set="layout[vertical]" style="width:300px;">
 				<div props="pos=mc" class="layoutbox" >header</div>
 				<div set="layout[horizontal]">
-					<div props="width=80px,pos=tc" style="height:150px" class="layoutbox" >one</div>
-					<div props="width=80px,pos=mc" class="layoutbox" >two</div>
-					<div props="width=80px,pos=bc" class="layoutbox" >three</div>
+					<div width="80px" valign="top" align="center" style="height:150px" class="layoutbox" >one</div>
+					<div width="80px" valign="middle" align="center" class="layoutbox" >two</div>
+					<div width="80px" valign="bottom" align="center" class="layoutbox" >three</div>
             	</div>
 				<div props="pos=mc" class="layoutbox" >footer</div>
 			</div>
@@ -123,6 +123,20 @@
 				<div class="layoutbox" pos="west">west</div>
 				<div class="layoutbox"  pos="center">center</div>
 				
+           </div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Border Layout with align/valign properties
+		</td>
+		<td class="result" width="200px;height:300px">
+			<div set="layout[border]">
+				<div class="layoutbox"  pos="north" valign="top" align="right">north</div>
+				<div class="layoutbox"  pos="east" valign="bottom" align="center">east</div>
+				<div class="layoutbox"  pos="center" valign="top" align="left">center</div>
+				<div class="layoutbox" pos="west" valign="middle" align="center">west</div>
+				<div class="layoutbox"  pos="south" valign="bottom" align="right">south</div>
            </div>
 		</td>
 	</tr>

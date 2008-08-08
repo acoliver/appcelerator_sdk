@@ -10,8 +10,8 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 		var T = Appcelerator.Types;
 		
 		return [{name: 'width', optional: true, description: "width for vertical layout",defaultValue: '100%'},
-			    {name: 'spacing', optional: true, description: "cell spacing for vertical layout",defaultValue: '0'},
-		        {name: 'padding', optional: true, description: "cell padding for vertical layout",defaultValue: '0'},
+			    {name: 'cellspacing', optional: true, description: "cell spacing for vertical layout",defaultValue: '0'},
+		        {name: 'cellpadding', optional: true, description: "cell padding for vertical layout",defaultValue: '0'},
 				{name: 'hintPos', optional:true, description:"location of hint text", 'type':T.enumeration('bottom','right','input','top')},
 				{name: 'errorPos', optional:true, description:"location of error text", 'type':T.enumeration('bottom','right','top')}				
 		];
@@ -55,16 +55,6 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 		else
 		{
 			html += Appcelerator.UI.LayoutManager._formatTable(options);
-			var position = {'tl':{'code':'valign="top" align="left"'},
-							'tr':{'code':'valign="top" align="right"'},
-							'tc':{'code':'valign="top" align="center"'},
-							'ml':{'code':'valign="middle" align="left"'},
-							'mr':{'code':'valign="middle" align="right"'},
-							'mc':{'code':'valign="middle" align="center"'},
-							'bl':{'code':'valign="bottom" align="left"'},
-							'br':{'code':'valign="bottom" align="right"'},
-							'bc':{'code':'valign="bottom" align="center"'}
-			};
 
 			for (var c=0,len=element.childNodes.length;c<len;c++)
 			{
@@ -72,24 +62,10 @@ Appcelerator.UI.registerUIComponent('layout','vertical',
 				if (node.nodeType == 1)
 				{
 					html += '<tr><td ';
-					if (node.getAttribute("props"))
-					{
-						var args = Appcelerator.UI.UIManager.attrToJSON(node.getAttribute("props"));
-						if (args['width'])
-						{
-							html+= ' width=' + args['width'];
-						}
-
-						if (args['pos'])
-						{
-							if (position[args['pos']])
-							{
-								html+= position[args['pos']].code;				
-							}
-						}
-					}
+					html +=  (node.getAttribute("width"))?' width="'+node.getAttribute('width')+'"':'';
+					html +=  (node.getAttribute("valign"))?' valign="'+node.getAttribute('valign')+'" ':' valign="middle" ';
+					html +=  (node.getAttribute("align"))?' align="'+node.getAttribute('align')+'" ':' align="left" ';
 					html += '>';
-					;
 					if (Appcelerator.Browser.isIE)
 					{
 						html += node.outerHTML;	

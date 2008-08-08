@@ -518,7 +518,7 @@ Appcelerator.UI.registerUIManager('control',function(type,element,options,callba
 Appcelerator.UI.LayoutManager = {};
 Appcelerator.UI.LayoutManager._formatTable = function(options)
 {
-   return '<table width="'+options['width']+'" cellspacing="'+(options['spacing'] || '') +'" cellpadding="'+ (options['padding'] || '0') + '">';
+   return '<table width="'+options['width']+'" cellspacing="'+(options['cellspacing'] || '') +'" cellpadding="'+ (options['cellpadding'] || '0') + '">';
 };
 
 Appcelerator.UI.LayoutManager._buildForm = function(options)
