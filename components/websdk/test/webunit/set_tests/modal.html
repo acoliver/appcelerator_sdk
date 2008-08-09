@@ -169,7 +169,7 @@
             <div>
 				<button on="click then l:show.modal[v=8]">Click Me</button>
 				<div on="l:show.modal[v=8] then show or l:close.modal[v=8] then hide"
-					set="behavior[modal] and control[rounded]">
+					set="behavior[modal] and behavior[rounded]">
 					<button on="click then l:close.modal[v=8]">Close</button>
 				</div>
             </div>
@@ -183,7 +183,7 @@
             <div>
 				<button on="click then l:show.modal[v=81]">Click Me</button>
 				<div on="l:show.modal[v=81] then show or l:close.modal[v=81] then hide"
-					set="control[rounded] and behavior[modal]">
+					set="behavior[rounded] and behavior[modal]">
 					<button on="click then l:close.modal[v=81]">Close</button>
 				</div>
             </div>

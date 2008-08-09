@@ -33,7 +33,7 @@
 		<td class="result" >
 			<button set="theme[aqua_blue]" on="click then l:show.modal">Show Modal</button>
 			<div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:close.modal then hide">
-	            <div set="control[rounded]" style="width:200px;height:100px">
+	            <div set="behavior[rounded]" style="width:200px;height:100px">
 					<div class="rounded_content">I am rounded</div>
 					<input type="text" set="theme[thinblue]" style="width:50px"/>
 					<button set="theme[thinblue]" on="click then l:close.modal">close</button>
@@ -47,7 +47,7 @@
 			Simple Rounded
 		</td>
 		<td class="result" >
-            <div set="control[rounded]">
+            <div set="behavior[rounded]">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -58,7 +58,7 @@
 		</td>
 		<td class="result" >
 			<div style="margin:5px;padding:5px">
-	            <div set="control[rounded]">
+	            <div set="behavior[rounded]">
 					<div class="rounded_content">I am rounded</div>
 	            </div>
 			</div>
@@ -70,7 +70,7 @@
 			Custom Background Color
 		</td>
 		<td class="result" >
-            <div set="control[rounded,background-color=#336699]">
+            <div set="behavior[rounded,background-color=#336699]">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -80,7 +80,7 @@
 			Custom Width / Height
 		</td>
 		<td class="result" >
-            <div set="control[rounded,width=200px,height=50px]">
+            <div set="behavior[rounded,width=200px,height=50px]">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -91,7 +91,7 @@
 			 Width / Height using style attribute
 		</td>
 		<td class="result" >
-            <div set="control[rounded]" style="width:200px;height:50px">
+            <div set="behavior[rounded]" style="width:200px;height:50px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -101,7 +101,7 @@
 			 Tail (left top)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=lt]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=lt]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -111,7 +111,7 @@
 			 Tail (left bottom)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=lb]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=lb]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -121,7 +121,7 @@
 			 Tail (right bottom)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=rb]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=rb]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -131,7 +131,7 @@
 			 Tail (right top)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=rt]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=rt]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -141,7 +141,7 @@
 			 Tail (bottom left)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=bl]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=bl]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -151,7 +151,7 @@
 			 Tail (bottom right)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,tail=br]" style="width:100px;height:100px">
+            <div set="behavior[rounded,tail=br]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -161,7 +161,7 @@
 			  Custom corners (left top)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=tl]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=tl]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -171,7 +171,7 @@
 			 Custom corners (right top)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=tr]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=tr]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -181,7 +181,7 @@
 			 Custom corners (top)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=top]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=top]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -191,7 +191,7 @@
 			Custom corners (right bottom)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=br]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=br]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -201,7 +201,7 @@
 			 Custom corners (left bottom)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=bl]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=bl]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -211,7 +211,7 @@
 			 Custom corners (bottom)
 		</td>
 		<td class="result" >
-            <div set="control[rounded,corners=bottom]" style="width:100px;height:100px">
+            <div set="behavior[rounded,corners=bottom]" style="width:100px;height:100px">
 				<div class="rounded_content">I am rounded</div>
             </div>
 		</td>
@@ -222,7 +222,7 @@
 		</td>
 		<td class="result" >
 			<div set="control[panel]">
-	            <div set="control[rounded]" style="width:100px;height:100px">
+	            <div set="behavior[rounded]" style="width:100px;height:100px">
 					<div class="rounded_content">I am rounded</div>
 	            </div>
 			</div>
@@ -234,11 +234,11 @@
 		</td>
 		<td class="result" >
 			<div set="layout[border]">
-				<div position="east"><div set="control[rounded]"><div class="rounded_content">east</div></div></div>
-				<div position="west"><div set="control[rounded]"><div class="rounded_content">west</div></div></div>
-				<div position="north"><div set="control[rounded]"><div class="rounded_content">north</div></div></div>
-				<div position="south"><div set="control[rounded]"><div class="rounded_content">south</div></div></div>
-				<div position="center"><div set="control[rounded]"><div class="rounded_content">center</div></div></div>
+				<div position="east"><div set="behavior[rounded]"><div class="rounded_content">east</div></div></div>
+				<div position="west"><div set="behavior[rounded]"><div class="rounded_content">west</div></div></div>
+				<div position="north"><div set="behavior[rounded]"><div class="rounded_content">north</div></div></div>
+				<div position="south"><div set="behavior[rounded]"><div class="rounded_content">south</div></div></div>
+				<div position="center"><div set="behavior[rounded]"><div class="rounded_content">center</div></div></div>
 			</div>
 		</td>
 	</tr>
@@ -247,10 +247,10 @@
 			Stacked Rounded
 		</td>
 		<td class="result" >
-			<div set="control[rounded]">
+			<div set="behavior[rounded]">
 				<div class="rounded_content">Foo</div>
 			</div>
-			<div set="control[rounded]">
+			<div set="behavior[rounded]">
 				<div class="rounded_content">Foo</div>
 			</div>
 
@@ -261,7 +261,7 @@
 			 Rounded with form fields
 		</td>
 		<td class="result" >
-			<div set="control[rounded]" style="height:200px;width:300px">
+			<div set="behavior[rounded]" style="height:200px;width:300px">
 				<div class="rounded_content">
 					<div>Username:</div>
 					<input type="text" set="theme[thinblue]" style="width:100px"/>
@@ -281,7 +281,7 @@
 			 Rounded draggable
 		</td>
 		<td class="result" >
-			<div set="control[rounded] and behavior[draggable]" style="height:200px;width:300px">
+			<div set="behavior[rounded] and behavior[draggable]" style="height:200px;width:300px">
 				<div class="rounded_content">foo</div>
 					
 			</div>

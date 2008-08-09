@@ -1,4 +1,4 @@
-Appcelerator.UI.registerUIComponent('control','rounded',
+Appcelerator.UI.registerUIComponent('behavior','rounded',
 {
 	/**
 	 * The attributes supported by the controls. This metadata is 
@@ -74,7 +74,7 @@ Appcelerator.UI.registerUIComponent('control','rounded',
 		element.style.marginRight = "5px";
 			
 		// add shadow dependency
-		Appcelerator.UI.addElementUIDependency(element,'control','rounded','behavior', 'shadow', function(element)
+		Appcelerator.UI.addElementUIDependency(element,'behavior','rounded','behavior', 'shadow', function(element)
 		{
 			if (Appcelerator.Browser.isIE6)
 			{
