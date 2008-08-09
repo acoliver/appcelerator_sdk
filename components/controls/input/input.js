@@ -62,12 +62,6 @@ Appcelerator.UI.registerUIComponent('control','input',
 		img2.className = "input_" + theme + "_right";
 		new Insertion.After(element,img2);
 
-		// FF positioning is off - fix it
-		if (Appcelerator.Browser.isGecko)
-		{
-			Element.addClassName(img1,"input_" + theme + "_geckofix");
-			Element.addClassName(img2,"input_" + theme + "_geckofix");
-		}
 
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
