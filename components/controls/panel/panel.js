@@ -10,7 +10,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		var T = Appcelerator.Types;
 		
 		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('panel')},
-				{name: 'height', optional: true, description: " height for panel" ,defaultValue: '30px', type: T.cssDimension},		 
+				{name: 'height', optional: true, description: " height for panel" ,defaultValue: 'auto', type: T.cssDimension},		 
 				{name: 'width', optional: true, description: " width for panel" ,defaultValue: '300px', type: T.cssDimension},		 
 				{name: 'footer', optional: true, description: " footer for panel" , defaultValue: ''},
 				{name: 'title', optional: true, description: " title for panel" , defaultValue: ''},
@@ -84,7 +84,10 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		html += '<div  id="'+element.id+'_tr" class="'+classPrefix+'_tr"></div>';
 		html += '</div>';
 		
-		
+		if (Appcelerator.Browser.isIE6)
+		{
+			options['height'] = (options['height']=='auto')?'30px':options['height'];
+		}
 		html += '<div class="'+classPrefix+'_body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
 		html += '</div>';

@@ -83,5 +83,13 @@
 	padding:10px;
 	border-left:1px solid #7d7d7d;	
 	border-right:1px solid #7d7d7d;	
+	margin:0px !important;
+	
+}
+
+body.ie7 .panel_dark_body div
+{
+	margin:0px !important;
+	
 }
 

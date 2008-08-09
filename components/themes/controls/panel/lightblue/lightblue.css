@@ -97,9 +97,15 @@
 	padding:7px;
 	border-left:1px solid #cdd8f7;
 	border-right:1px solid #cdd8f7;
+	margin:0px !important;
 	
 	/* IE6 HACKS */
 	_margin-bottom:-1px;
 	_line-height:16px;
 }
 
+body.ie7 .panel_lightblue_body div
+{
+	margin:0px !important;
+	
+}

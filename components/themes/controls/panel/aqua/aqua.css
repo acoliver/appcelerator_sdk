@@ -98,5 +98,12 @@
 	border:1px solid #AEAEAE;
 	padding:10px;
 	background-color:white;
+	margin:0px !important;
+}
+
+body.ie7 .panel_aqua_body div
+{
+	margin:0px !important;
+	
 }
 

@@ -72,7 +72,8 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		element.style.marginTop = "5px";
 		element.style.marginLeft = "5px";
 		element.style.marginRight = "5px";
-			
+
+		
 		// add shadow dependency
 		Appcelerator.UI.addElementUIDependency(element,'behavior','rounded','behavior', 'shadow', function(element)
 		{

@@ -55,6 +55,7 @@
 	position:absolute;
 	height:22px;
 	width:8px;
+	
 }
 
 .panel_white_br
@@ -65,6 +66,7 @@
 	position:absolute;
 	height:22px;
 	width:9px;
+	
 }
 
 .panel_white_btm_text
@@ -93,11 +95,18 @@
 
 .panel_white_body
 {
+	margin:0px !important;
 	background-color:white;   
 	padding:7px;
 	border-left:1px solid #cdcdcd;
 	border-right:1px solid #cdcdcd;
-	
+
 	/* IE6 HACK */
 	_line-height:16px;
 }
+body.ie7 .panel_white_body div
+{
+	margin:0px !important;
+	
+}
+

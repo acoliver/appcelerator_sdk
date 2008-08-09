@@ -32,11 +32,12 @@
 		</td>
 		<td class="result" >
 			<button set="theme[aqua_blue]" on="click then l:show.modal">Show Modal</button>
-			<div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:close.modal then hide">
+			<div set="control[panel,theme=white] and behavior[modal]" on="l:show.modal then show or l:close.modal then hide">
 	            <div set="behavior[rounded]" style="width:200px;height:100px">
-					<div class="rounded_content">I am rounded</div>
+					<div class="rounded_content">I am rounded
 					<input type="text" set="theme[thinblue]" style="width:50px"/>
 					<button set="theme[thinblue]" on="click then l:close.modal">close</button>
+					</div>
 	            </div>
 			</div>
 		</td>
@@ -207,6 +208,7 @@
 		</td>
 	</tr>
 	<tr>
+		
 		<td class="test" valign="middle">
 			 Custom corners (bottom)
 		</td>
@@ -221,24 +223,10 @@
 			 Rounded in a Panel
 		</td>
 		<td class="result" >
-			<div set="control[panel]">
+			<div set="control[panel,theme=white]">
 	            <div set="behavior[rounded]" style="width:100px;height:100px">
 					<div class="rounded_content">I am rounded</div>
 	            </div>
-			</div>
-		</td>
-	</tr>
-	<tr>
-		<td class="test" valign="middle">
-			Rounded in a border layout
-		</td>
-		<td class="result" >
-			<div set="layout[border]">
-				<div position="east"><div set="behavior[rounded]"><div class="rounded_content">east</div></div></div>
-				<div position="west"><div set="behavior[rounded]"><div class="rounded_content">west</div></div></div>
-				<div position="north"><div set="behavior[rounded]"><div class="rounded_content">north</div></div></div>
-				<div position="south"><div set="behavior[rounded]"><div class="rounded_content">south</div></div></div>
-				<div position="center"><div set="behavior[rounded]"><div class="rounded_content">center</div></div></div>
 			</div>
 		</td>
 	</tr>
