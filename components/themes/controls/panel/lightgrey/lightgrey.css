@@ -103,7 +103,7 @@
 	_line-height:16px;
 }
 
-body.ie7 .panel_lightgrey_body div
+body.msie .panel_lightgrey_body div
 {
 	margin:0px !important;
 	

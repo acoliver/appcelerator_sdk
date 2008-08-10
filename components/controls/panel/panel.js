@@ -131,7 +131,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			$(element.id + "_bl").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			$(element.id + "_btm").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			$(element.id + "_br").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
-			if (options['closeable'])
+			if (options['closeable'] == true)
 			{
 				$(element.id + "_close").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			}

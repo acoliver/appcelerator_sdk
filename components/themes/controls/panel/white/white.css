@@ -104,7 +104,8 @@
 	/* IE6 HACK */
 	_line-height:16px;
 }
-body.ie7 .panel_white_body div
+
+body.msie .panel_white_body div
 {
 	margin:0px !important;
 	
