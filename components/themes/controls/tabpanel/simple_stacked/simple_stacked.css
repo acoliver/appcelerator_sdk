@@ -4,11 +4,11 @@
 	height:18px;
 	background-color:#7a7a7a;
 	border-bottom:1px solid #fff;
-	font-size:9px;
-	color:#d8d8d8;
+	font-size:12px;
+	color:#fff;
 	cursor:pointer;
 	height:25px;
-	line-height:25px;
+	line-height:24px;
 	padding:5px;
 	padding-left:10px;
 	width:100px;
@@ -17,13 +17,13 @@
 /* TAB ACTIVE */
 .tabpanel_simple_stacked_tab_mid_active
 {
-	background:#c7693c url(images/triangle.gif) no-repeat center left;
+	background:#336699 url(images/triangle.gif) no-repeat center left;
 }
 
 /* TAB HOVER */
 .tabpanel_simple_stacked_tab_mid:hover
 {
-	background-color:#c7693c;
+	background-color:#336699;
 }
 
 /* DIVIDER LINE UNDER TABS */

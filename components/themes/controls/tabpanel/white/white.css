@@ -17,12 +17,11 @@
 	line-height:22px;
 	text-align:center;
 	position:relative;
-/*	top:1px;
-*/	
-	/* IE 6/7 */
-	*top:2px;
-	*margin-bottom:0px;
-	_width:100px;
+}
+
+body.msie .tabpanel_white_tab_mid
+{
+	width:100px;
 }
 
 /* TAB ACTIVE */
@@ -39,12 +38,13 @@
 	height:1px;
 	background-color:#d7dcdf;
 	clear:both;
-	
-	/* IE 6 */
-	_border-top:1px solid #d7dcdf;
-	_background-color:none;
 }
-
+body.ie6 .tabpanel_white_divider
+{
+	border-top:1px solid #d7dcdf;
+	background-color:transparent;
+	font-size:0px;
+}
 .tabpanel_white_left
 {
 	width:20px;
@@ -80,10 +80,6 @@
 	position:relative;
 	border:none;
 	float:left;
-/*	top:1px ;
-*/
-	/* IE 6/7 */
-	*top:2px;
 
 }
 .tabpanel_white_tab_right
@@ -95,10 +91,6 @@
 	position:relative;
 	border:none;
 	float:left;
-/*	top:1px;
-*/
-	/* IE 6/7 */
-	*top:2px;
 }
 
 /* TAB HOVER */

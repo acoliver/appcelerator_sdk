@@ -16,10 +16,12 @@
 	float:left;
 	margin-bottom:-3px;
 	
-	/* IE */
-	*line-height:23px;
 }	
 
+body.msie .tabpanel_green_tab_mid
+{
+	line-height:20px;
+}
 
 /* TAB ACTIVE */
 .tabpanel_green_tab_mid_active
@@ -38,19 +40,27 @@
 /* DIVIDER LINE UNDER TABS */
 .tabpanel_green_divider
 {
-	height:3px;
-	background-color:#15cd00;
-	border-bottom:1px solid #a1df71;
+	height:2px;
+	background-color:#73d02c;
+	border-top:1px solid #73d02c;
 	clear:both;
 	
-
-	/* IE 6 */
-	_height:1px;
-	_border-bottom:none;
-	_border-top:2px solid #15cd00;
-	_background-color:none;
 }
 
+body.webkit .tabpanel_green_divider
+{
+	background-color:#15cd00;
+	border-top:1px solid #15cd00;
+	
+}
+body.ie6 .tabpanel_green_divider
+{
+	height:1px;
+	border-bottom:none;
+	border-top:2px solid #73d02c;
+	background-color:transparent;
+	
+}
 /* UNUSED CLASSES */
 .tabpanel_green_left
 {

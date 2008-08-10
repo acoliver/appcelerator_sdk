@@ -43,9 +43,12 @@
 	right:10px;
 	top:10px;
 	width:16px;
-	_height:32px;
-	_clip:rect(0px 16px 16px 0px);
 } 
+body.ie6 .panel_dark_close
+{
+	height:32px;
+	clip:rect(0px 16px 16px 0px);
+}
 
 .panel_dark_btm
 {

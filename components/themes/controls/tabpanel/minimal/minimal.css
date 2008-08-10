@@ -21,6 +21,8 @@
 	z-index:2;
 	line-height:10px;
 	font-size:12px;
+	cursor:pointer;
+	
 }
 
 /* TAB ACTIVE */
@@ -41,7 +43,6 @@
 	clear:both;
 }
 
-/* UNUSED CLASSES */
 .tabpanel_minimal_left
 {
 	/* left end of tab panel */

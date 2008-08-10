@@ -67,7 +67,7 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 		var container = document.createElement("div");
 
 		// add left end of tab
-		var html = '<ul style="margin:0;float:left;list-style-type:none"><li id="'+element.id+'_left" class="'+classPrefix+'_left"></li>';
+		var html = '<ul style="margin:0;float:left;list-style-type:none" class="'+classPrefix+'_container"><li id="'+element.id+'_left" class="'+classPrefix+'_left"></li>';
 		
 		var tabCount = 0;
  		for (var c=0,len=element.childNodes.length;c<len;c++)

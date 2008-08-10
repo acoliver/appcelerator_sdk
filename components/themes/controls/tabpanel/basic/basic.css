@@ -17,12 +17,13 @@
 	margin-left:0px;	
 	float:left;
 	margin-bottom:-1px;
-		
-	/* IE  */
-	*position:relative;
-	*z-index:2;
 }
 
+body.msie tabpanel_basic_tab_mid
+{
+	position:relative;
+	z-index:2;
+}
 /* TAB ACTIVE */
 .tabpanel_basic_tab_mid_active
 {

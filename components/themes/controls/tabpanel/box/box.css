@@ -8,11 +8,18 @@
 	position:relative;
 	left:60px;
 }
-
+body.msie .tabpanel_box_wire
+{
+	top:-2px;
+}
 .tabpanel_box_container
 {
-	height:80px;
+	height:50px;
+	padding:0px;
+	border-top:1px solid #ccc;
+	font-size:0px;
 }
+
 
 /* TAB */
 .tabpanel_box_tab_mid
@@ -23,16 +30,22 @@
 	background-color:#ccc;
 	float:left;
 	margin-left:1px;
-	font-size:10px;
+	font-size:11px;
 	padding:10px;
 	vertical-align:bottom;
 	text-align:center;
 	cursor:pointer;
 	position:relative;
 	z-index:2;
+	margin-top:0px;
+	line-height:10px;
 	
 }
 
+body.msie .tabpanel_box_tab_mid
+{
+	margin-top:-2px;
+}
 /* TAB ACTIVE */
 .tabpanel_box_tab_mid_active
 {
@@ -53,13 +66,9 @@
 	clear:both;
 }
 
-/* UNUSED CLASSES */
 .tabpanel_box_left
 {
-	/* left end of tab panel */
-	height:1px;
-	background-color:#ccc;
-	margin-left:2px;
+	width:0px;
 }
 .tabpanel_box_right
 {

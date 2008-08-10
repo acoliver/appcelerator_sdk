@@ -101,8 +101,11 @@
 	border-left:1px solid #cdcdcd;
 	border-right:1px solid #cdcdcd;
 
-	/* IE6 HACK */
-	_line-height:16px;
+}
+
+body.ie6 .panel_white_body
+{
+	line-height:16px;
 }
 
 body.msie .panel_white_body div
