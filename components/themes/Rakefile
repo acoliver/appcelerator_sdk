@@ -30,17 +30,27 @@ task :default => [:stage] do
   
   themes = []
 
-  Dir["#{BUILD_DIR}/*"].each do |dir|
-    next unless File.directory?(dir)
-    type = File.basename(dir)
+  Dir["#{BUILD_DIR}/*"].each do |typedir|
+    next unless File.directory?(typedir)
+    type = File.basename(typedir)
     Dir["#{BUILD_DIR}/#{type}/*"].each do |dir|
       next unless File.directory?(dir)
       name = File.basename(dir)
-      FileUtils.cd(dir) do |d|
-        call_rake
-        FileUtils.cp_r "#{name}.zip", "#{theme_dir}/#{type}_#{name}_theme.zip"
-        themes << name
+      Dir["#{BUILD_DIR}/#{type}/#{name}/*"].each do |themedir|
+        next unless File.directory?(themedir)
+        themename = File.basename(themedir)
+        themes << {:name=>themename,:dir=>themedir,:filename=>"theme_#{name}_#{themename}.zip"}
       end
+    end
+  end
+  
+  themes.uniq.each do |entry|
+    FileUtils.cd(entry[:dir]) do |dir|
+      $stderr.puts "!! Invalid control theme - no Rakefile found in #{dir}" unless File.exists? "#{dir}/Rakefile"
+      next unless File.exists? "#{dir}/Rakefile"
+      puts entry[:filename]
+      call_rake
+      FileUtils.cp_r "#{entry[:name]}.zip", "#{theme_dir}/#{entry[:filename]}"
     end
   end
   

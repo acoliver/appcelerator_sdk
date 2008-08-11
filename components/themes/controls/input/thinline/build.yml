@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: input thinline theme
-:control: input
+:control: control
 :version: 1.0
 :name: input:thinline
 :tags: 

@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: input white_gradient theme
-:control: input
+:control: control
 :version: 1.0
 :name: input:white_gradient
 :tags: 

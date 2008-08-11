@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: panel basic theme
-:control: panel
+:control: control
 :version: 1.0
 :name: panel:basic
 :tags: 

@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: tabpanel basic theme
-:control: tabpanel
+:control: control
 :version: 1.0
 :name: tabpanel:basic
 :tags: 

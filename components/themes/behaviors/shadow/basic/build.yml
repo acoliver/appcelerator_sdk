@@ -1,9 +1,9 @@
 --- 
 :type: theme
-:description: tabpanel minimal theme
-:control: control
+:description: shadow basic theme
+:control: behavior
 :version: 1.0
-:name: tabpanel:minimal
+:name: shadow:basic
 :tags: 
 - theme
 :release_notes: initial release

@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: button aqua_grey theme
-:control: button
+:control: control
 :version: 1.0
 :name: button:aqua_grey
 :tags: 

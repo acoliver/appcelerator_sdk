@@ -1,9 +1,9 @@
 --- 
 :type: theme
-:description: tabpanel minimal theme
+:description: accordion aqua_grey theme
 :control: control
 :version: 1.0
-:name: tabpanel:minimal
+:name: accordion:aqua_grey
 :tags: 
 - theme
 :release_notes: initial release

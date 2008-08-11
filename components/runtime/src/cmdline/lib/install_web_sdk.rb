@@ -39,12 +39,41 @@ module Appcelerator
       options[:websdk] = web_version
       options[:installed_widgets] = []
 
+      puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
+
       event = {:options=>options,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
       PluginManager.dispatchEvents('copy_web',event) do
         
         Installer.copy(tx, "#{source_dir}/javascripts/.", options[:javascript])
         Installer.copy(tx, "#{source_dir}/swf/.", options[:web] + '/swf')
         Installer.copy(tx, "#{source_dir}/common/.", options[:widgets] + '/common')
+
+        add_thing_options = {
+          :quiet=>true,
+          :quiet_if_installed=>true,
+          :tx=>tx,
+          :ignore_path_check=>true,
+          :no_save=>false,
+          :verbose=>false,
+          :force_overwrite=>true
+        }
+
+        puts "Installing components ..." unless OPTIONS[:quiet]
+        
+        cur_quiet = OPTIONS[:quiet]
+        OPTIONS[:quiet] = true
+        
+        
+        # include any bundled components automagically
+        Dir["#{source_dir}/_install/*.zip"].each do |filename|
+          type = File.basename(filename).split('_')
+          next unless type.length > 0
+          type = type.first
+          CommandRegistry.execute("install:#{type}",[filename],add_thing_options)
+          CommandRegistry.execute("add:#{type}",[filename,options[:project]],add_thing_options)
+        end
+        
+        OPTIONS[:quiet] = cur_quiet
         
         if not update
           Installer.copy(tx, "#{source_dir}/images/.", options[:images])

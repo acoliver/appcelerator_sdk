@@ -35,7 +35,7 @@ task :default => [:stage] do
     name = File.basename(dir)
     FileUtils.cd(dir) do |d|
       call_rake
-      FileUtils.cp_r "#{name}.zip", "#{control_dir}/#{name}_control.zip"
+      FileUtils.cp_r "#{name}.zip", "#{control_dir}/control_#{name}.zip"
       controls << name
     end
   end

@@ -63,13 +63,14 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
       
       theme_names = args[:name].split(',').uniq
       theme_names.each do |name|
-                
-        control = args[:name][0,args[:name].index(':')]
-        theme_name = args[:name][args[:name].index(':')+1..-1]
-
+            
         theme = Installer.require_component(:theme, name, options[:version], options)
         
-        to_dir = "#{Dir.pwd}/public/components/#{control}/themes/#{theme_name}"
+        control = theme[:control]
+        control_type = theme[:name][0,theme[:name].index(':')]
+        theme_name = theme[:name][theme[:name].index(':')+1..-1]
+        
+        to_dir = "#{Dir.pwd}/public/components/themes/#{control}/#{control_type}/#{theme_name}"
         tx.mkdir to_dir
 
         event = {:name=>name,:control=>control,:theme_name=>theme_name,:version=>theme[:version],:theme_dir=>theme[:dir],:to_dir=>to_dir}

@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: button lightblue_gradient theme
-:control: button
+:control: control
 :version: 1.0
 :name: button:lightblue_gradient
 :tags: 

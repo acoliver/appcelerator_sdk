@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: select white_gradient theme
-:control: select
+:control: control
 :version: 1.0
 :name: select:white_gradient
 :tags: 

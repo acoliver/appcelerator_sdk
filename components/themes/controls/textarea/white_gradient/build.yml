@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: textarea white_gradient theme
-:control: textarea
+:control: control
 :version: 1.0
 :name: textarea:white_gradient
 :tags: 

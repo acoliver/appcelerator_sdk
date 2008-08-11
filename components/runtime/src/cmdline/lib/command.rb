@@ -186,9 +186,9 @@ module Appcelerator
         end
         
         begin
-          argHash = extractArgs(args, command_info[:args])
+          argHash = extractArgs(args, command_info[:args]) 
           opts = extractOptionalArgs(opts, command_info[:opts])
-        
+          
           Boot.boot unless name=='help' or name.index('help:')
           event = {:name=>name,:args=>argHash,:options=>opts}
           PluginManager.dispatchEvents('command',event) do

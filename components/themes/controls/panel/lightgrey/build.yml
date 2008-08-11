@@ -1,7 +1,7 @@
 --- 
 :type: theme
 :description: panel lightgrey theme
-:control: panel
+:control: control
 :version: 1.0
 :name: panel:lightgrey
 :tags: 

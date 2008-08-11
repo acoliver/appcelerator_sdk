@@ -23,7 +23,7 @@ require File.expand_path("#{BUILD_DIR}/build.rb")
 task :default => [:all] do
 end
 
-task :all => %w(widget:all layout:all control:all theme:all service:all websdk:all installer:all plugin:all) do
+task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all installer:all plugin:all) do
 end
 
 namespace :layout do
@@ -40,6 +40,16 @@ namespace :control do
   
   task :all do 
     FileUtils.cd(File.expand_path("#{BUILD_DIR}/controls")) do |d|
+      call_rake " all"
+    end
+  end
+
+end
+
+namespace :behavior do
+  
+  task :all do 
+    FileUtils.cd(File.expand_path("#{BUILD_DIR}/behaviors")) do |d|
       call_rake " all"
     end
   end

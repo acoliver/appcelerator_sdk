@@ -861,7 +861,7 @@ HELP
 
       Installer.add_installed_component(component)
       
-      puts
+      puts unless OPTIONS[:quiet]
       puts "Installed #{component[:name]} #{component[:version]}" unless OPTIONS[:quiet]
     end
     

@@ -35,10 +35,17 @@ CommandRegistry.registerCommand('create:theme','create a new theme project',[
     :help=>'name of the control:theme to create (such as input:my_theme)',
     :required=>true,
     :type=>Types::StringType
+  },
+  {
+    :name=>'type',
+    :help=>'type of theme to create such as control (default) or behavior',
+    :required=>false,
+    :default=>'control',
+    :type=>Types::StringType
   }
 ],nil,[
   'create:theme c:\tmp input:mytheme',
-  'create:theme ~/mydir panel:mytheme'
+  'create:theme ~/mydir panel:mytheme control'
 ]) do |args,options|
   
   name = args[:name]
@@ -57,7 +64,8 @@ as the second part
 ERROR_MESSAGE
     raise UserError.new(message)
   end
-  
+
+  control_type = args[:type]
   control = args[:name][0,args[:name].index(':')]
   theme_name = args[:name][args[:name].index(':')+1..-1]
   
@@ -110,6 +118,7 @@ ERROR_MESSAGE
       :name=>name,
       :version=>1.0,
       :type=>'theme',
+      :control=>control_type,
       :description=>"#{control} #{theme_name} theme",
       :release_notes=>"initial release",
       :tags=> ['theme'],
