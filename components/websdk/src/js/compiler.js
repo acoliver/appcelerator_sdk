@@ -3372,7 +3372,7 @@ Appcelerator.Compiler.processMacros = function(expression,id,scope)
 			}
 			return template(scope);
 		}
-		return key;
+		return match[0];
 	});
 };
 
