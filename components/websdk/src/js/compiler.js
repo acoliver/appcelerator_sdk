@@ -3334,7 +3334,7 @@ Object.extend(Array.prototype,
 
 
 Appcelerator.Compiler.macros = {};
-Appcelerator.Compiler.macroRE = /(#[A-Za-z0-9_-]+(\[(.*)?\])?)/g;
+Appcelerator.Compiler.macroRE = /(#[A-Za-z0-9_-]+(\[(.*)?\])?)/;
 
 Appcelerator.Compiler.processMacros = function(expression,id,scope)
 {
