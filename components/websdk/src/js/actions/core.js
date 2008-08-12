@@ -661,6 +661,9 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var append = false;
 		var valueExpr = parameters;
 		var form = false;
+		
+//		alert('execute = '+id+',action='+action+',parameters='+parameters+',scope='+Object.toJSON(scope));
+		
 		if (parameters.charAt(0)=='"' || parameters.charAt(0)=="'")
 		{
 			valueHtml = parameters.substr(1, parameters.length - 2);
@@ -712,7 +715,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 			if (expressionMatch)
 			{
 				// allow them to specify exact javascript expression to run
-                // valueHtml = eval(expressionMatch[1], scope);
                 var valFunc = function()
     	        {
     	            return eval(expressionMatch[1]);
@@ -864,7 +866,8 @@ Appcelerator.Compiler.registerCustomAction('value',
 			{
 				//Guarantee that the form will not auto-submit when someone hits enter by adding 1 display:none text field
 				var new_input_id = id+'_no_submit';
-				if (!$(new_input_id)) {
+				if (!$(new_input_id)) 
+				{
 					var new_input = document.createElement('input');
 					new_input.id = new_input_id;
 					new_input.type = 'text';
@@ -873,7 +876,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 					element.appendChild(new_input);
 				}
 
-				//Set form to true so we clear html var below -- we deligate to subsequent calls to handleCondition
+				//Set form to true so we clear html var below -- we delegate to subsequent calls to handleCondition
 				form = true;
 
 				//e.g. value[bar]
@@ -882,13 +885,15 @@ Appcelerator.Compiler.registerCustomAction('value',
 				var clause = this.findMatchingFormClause(element,elementAction);
 
 				var descendants = element.descendants();
+				var handlers = [];
+				
 				for (var c = 0; c < descendants.length; c++)
 				{
 					var child = descendants[c];
-
+					
 					//need an id to handle the condition later and probably need one anyway so make sure it's there
 					Appcelerator.Compiler.getAndEnsureId(child);
-					var child_parameter = '';
+					var child_parameter;
 					switch(Appcelerator.Compiler.getTagname(child))
 					{
 						 case 'select':
@@ -896,30 +901,25 @@ Appcelerator.Compiler.registerCustomAction('value',
 						 case 'input':
 						 {
 							  child_parameter = child.getAttribute('name') || child.id || ''
-								break;
+							  break;
 						 }
 						 default:
 						 {
-								/*
-								 * We don't look for an id as the value to read out on normal elements since divs, spans, etc.
-								 * may have ids for styling, etc. but we do not want to overwrite text for labels etc.
-								 * For divs, spans, etc. we require the name attribute if they are to be populated with data
-								 * without their own explicit on expression (that is when the on expression is on a form tag).
+							  /**
+							   * We don't look for an id as the value to read out on normal elements since divs, spans, etc.
+							   * may have ids for styling, etc. but we do not want to overwrite text for labels etc.
+							   * For divs, spans, etc. we require the name attribute if they are to be populated with data
+							   * without their own explicit on expression (that is when the on expression is on a form tag).
 							   */
-								child_parameter = child.getAttribute('name') || '';
+							   child_parameter = child.getAttribute('name') || '';
 						 }
 					}
-
-					if (child_parameter != '')
+					
+					if (child_parameter)
 					{
 						//e.g. value[bar.idx]
 						var action = 'value['+parameters + '.' + child_parameter+']';
-						//the current child element is the one we want to handle the condition on
-						clause[0] = child;
-						//the condition to handle for this child element
-						clause[2] = action;
-
-						Appcelerator.Compiler.handleCondition.call(this, clause);
+						Appcelerator.Compiler.handleCondition.call(this, [child,true,action,scope,null,null]);
 					}
 				}
 				break;

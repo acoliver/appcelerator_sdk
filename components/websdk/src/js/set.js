@@ -122,7 +122,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
                     condFunct, element.id);
             }
 		}
-		Appcelerator.Compiler.parseOnAttribute(element,true);
+		Appcelerator.Compiler.parseOnAttribute(element);
 		if (callback)
 		{
 			callback();

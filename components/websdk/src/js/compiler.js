@@ -1617,15 +1617,13 @@ Appcelerator.Compiler.determineScope = function(element)
 	element.scope = scope;
 };
 
-Appcelerator.Compiler.parseOnAttribute = function(element, leaveOn)
+Appcelerator.Compiler.parseOnAttribute = function(element)
 {
     try
     {
     	var on = element.getAttribute('on');
     	if (on && Object.isString(on))
     	{
-			if (!leaveOn)
-				element.removeAttribute('on'); // remove it so this method can only be called once
 		    $D('parseOnAttribute ',element.id,' on=',on);
     		Appcelerator.Compiler.compileExpression(element,on,false);
     		return true;
@@ -1693,8 +1691,14 @@ Appcelerator.Compiler.compoundCondRE = /^\((.*)?\) then/g;
 
 Appcelerator.Compiler.parseExpression = function(value)
 {
+	if (!value)
+	{
+		return [];
+	}
+
 	if (!Object.isString(value))
 	{
+		alert('framework error: value was '+value+' -- unexpected type: '+typeof(value));
 	    throw "value: "+value+" is not a string!";
 	}
 	value = value.gsub('\n',' ');
@@ -1797,6 +1801,10 @@ Appcelerator.Compiler.parseExpression = function(value)
 Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 {
 	value = Appcelerator.Compiler.processMacros(value,element.id);
+	if (!value)
+	{
+		alert('value returned null for '+element.id);
+	}
 	var clauses = Appcelerator.Compiler.parseExpression(value);
 	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
 	for(var i = 0; i < clauses.length; i++)
@@ -1974,6 +1982,12 @@ Appcelerator.Compiler.handleCondition = function(clause)
 {
     var element = clause[0];
     $D('handleCondition called for ',element);
+
+	if (clause[1] && Object.isBoolean(clause[1]))
+	{
+	    var f = Appcelerator.Compiler.makeAction(element.id,clause[2]);
+		return f.call(this,clause[3]);
+	}
 
     //first loop through custom conditions defined by the widget
     for (var f=0;f<Appcelerator.Compiler.customElementConditions.length;f++)
