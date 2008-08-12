@@ -883,7 +883,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 				var clause = this.findMatchingFormClause(element,elementAction);
 
 				var descendants = element.descendants();
-				var handlers = [];
 				
 				for (var c = 0; c < descendants.length; c++)
 				{
