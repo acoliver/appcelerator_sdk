@@ -662,8 +662,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var valueExpr = parameters;
 		var form = false;
 		
-//		alert('execute = '+id+',action='+action+',parameters='+parameters+',scope='+Object.toJSON(scope));
-		
 		if (parameters.charAt(0)=='"' || parameters.charAt(0)=="'")
 		{
 			valueHtml = parameters.substr(1, parameters.length - 2);
