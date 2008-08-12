@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+<style>
+</style>
+</head>
+<body>
+	
+	<!-- TOOLTIP TESTS -->
+	<input type="text" id="input"/>
+	<div id="tooltip">I am tooltip 1</div>
+	<input type="text" id="input2"/>
+	<div id="tooltip2">I am tooltip 2</div>
+
+	<div style="margin:20px"></div>
+
+	<!-- SIMPLE PANEL TEST -->
+	<div id="panel">
+		I should be a panel
+	</div>
+	
+	<div style="margin:20px"></div>
+	
+	<!-- TABPANEL TEST -->
+	<div id="tabpanel">
+		<div name="one">one</div>
+		<div name="two">two</div>
+		<div name="three">three</div>
+	</div>
+	
+	<div style="margin:20px"></div>
+
+	<!-- BUTTON TEST -->
+	<button id="button">Click Me</button>
+	<div style="margin:20px"></div>
+	
+	<!-- MODAL,PANEL, SHADOW TEST -->
+	<div id="panel_shadow" style="width:400px">
+		I should be a panel with a shadow
+	</div>
+	<button on="click then l:show">show modal</button>
+	<div style="margin:20px"></div>
+	
+	
+	<!-- SHADOW PANEL TEST -->
+	<div id="panel_shadow2" style="width:400px">
+		I should be a panel with a shadow
+	</div>
+	<div style="margin:20px"></div>
+
+
+	<!-- ACCORDION TEST -->
+	<div id="accordion">
+		<div title="one">I am the content for one</div>
+		<div title="two">I am the content for two</div>
+		<div title="three">I am the content for three</div>
+		<div title="four">I am the content for four</div>
+	</div>
+	
+	<div style="margin:20px"></div>
+	
+	<!-- ROUNDED  TEST -->
+	<div id="rounded_shadow">foo</div>
+
+	<div style="margin:20px"></div>
+
+	<!-- THEME TEST -->
+	<button id="button_theme">Theme Button</button>
+
+	<div style="margin:20px"></div>
+	
+	<!-- LAYOUT  TEST -->
+	<div id="h_layout">
+		<div style="height:20px;width:30px;padding:5px;background-color:#ccc">one</div>
+		<div style="height:20px;width:30px;padding:5px;background-color:#ccc">two</div>
+		<div style="height:20px;width:30px;padding:5px;background-color:#ccc">three</div>
+		
+	</div>
+
+	
+	<script>
+		/* panel */
+		Appcelerator.UI.createControl($('panel'),'panel',{'theme':'basic'});
+
+		/* tabpanel */
+		Appcelerator.UI.createControl($('tabpanel'),'tabpanel',{'theme':'green','initial':'one'});
+		
+		/* button */
+		Appcelerator.UI.createControl($('button'),'button',{'theme':'iphone_green'});
+		$('button').on("click then script[alert('foo')]");
+		
+		/* panel with modal shadow */
+		Appcelerator.UI.createControl($('panel_shadow'),'panel',{'theme':'white'});
+		Appcelerator.UI.addBehavior($('panel_shadow'),'shadow');
+		Appcelerator.UI.addBehavior($('panel_shadow'),'modal',{'opacity':'0','showMessage':'l:show'});
+
+		/* panel with  shadow */
+		Appcelerator.UI.addBehavior($('panel_shadow2'),'shadow');
+		Appcelerator.UI.createControl($('panel_shadow2'),'panel',{'theme':'white'});
+
+		/* accordion */
+		Appcelerator.UI.createControl($('accordion'),'accordion',{theme:'basic'});
+		
+		/* tooltip */
+		Appcelerator.UI.addBehavior($('tooltip'),'rounded');
+		Appcelerator.UI.addBehavior($('tooltip'),'tooltip',{id:'input'});
+		Appcelerator.UI.addBehavior($('tooltip'),'shadow');
+
+		/* tooltip */
+		Appcelerator.UI.addBehavior($('tooltip2'),'rounded');
+		Appcelerator.UI.addBehavior($('tooltip2'),'shadow');
+		Appcelerator.UI.addBehavior($('tooltip2'),'tooltip',{id:'input2'});
+		
+		/* rounded shadow */
+		Appcelerator.UI.addBehavior($('rounded_shadow'),'rounded');
+		Appcelerator.UI.addBehavior($('rounded_shadow'),'shadow');
+		
+		/* theme button */
+		Appcelerator.UI.createControl($('button_theme'),'button',{'theme':'thinblue'});
+		
+		/* horizontal layout */
+		Appcelerator.UI.createLayout($('h_layout'),'horizontal');
+		
+	</script>	
+		
+		
+</body>
