@@ -54,110 +54,133 @@ Appcelerator.UI.registerUIManager = function(ui,impl)
  */
 Appcelerator.UI.registerUIComponent = function(type,name,impl)
 {
-	Appcelerator.UI.UIComponents[type+':'+name] = impl;
+	var f = Appcelerator.UI.UIComponents[type+':'+name];
+	
+	if (!f)
+	{
+		f = {};
+		Appcelerator.UI.UIComponents[type+':'+name]=f;
+	}
+
+	f.impl = impl;
+	f.loaded = true;
+
+	if (impl.setPath)
+	{
+		impl.setPath.call(impl,f.dir);
+	}
+
+	if (f.elements)
+	{
+		for (var c=0;c<f.elements.length;c++)
+		{
+			var obj = f.elements[c];
+			Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options);
+		}
+
+		f.elements = null;
+	}
+};
+
+Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,options)
+{
+	var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,impl,options);
+	if (formattedOptions!=false)
+	{
+		try
+		{
+			impl.build(element,formattedOptions);
+
+			// keep track of elements and their UI attributes
+			Appcelerator.UI.addElementUI(element,type,name);
+		}
+		catch (e)
+		{
+			Appcelerator.Compiler.handleElementException(element,e);
+		}
+	}
+	if (impl.getActions)
+	{
+		var actions = impl.getActions();
+		var id = element.id;
+		for (var c=0;c<actions.length;c++)
+		{
+			(function()
+			{
+				var actionName = actions[c];
+				var action = impl[actionName];
+				if (action)
+				{
+					var xf = function(id,m,data,scope,version,customActionArguments,direction,type)
+					{
+						try
+						{
+							action.apply(impl,[id,formattedOptions,data,scope,version,customActionArguments,direction,type]);
+						}
+						catch (e)
+						{
+							$E('Error executing '+actionName+' in container type: '+type+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
+						}
+					};
+					Appcelerator.Compiler.buildCustomElementAction(actionName, element, xf);
+				}
+			})();
+		}
+	}
+
+	if (impl.getConditions)
+	{
+        Appcelerator.Compiler.customConditionObservers[element.id] = {};
+        var customConditions = impl.getConditions();
+        for (var i = 0; i < customConditions.length; i++)
+        {
+            var custCond = customConditions[i];
+            var condFunct = Appcelerator.Compiler.customConditionFunctionCallback(custCond);
+            Appcelerator.Compiler.registerCustomCondition({conditionNames: [custCond]}, 
+                condFunct, element.id);
+        }
+	}
+	
+	Appcelerator.Compiler.parseOnAttribute(element);
 };
 
 /**
  * called to load UI component by UI manager
  */ 
-Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound,callback,dir)
+Appcelerator.UI.loadUIComponent = function(type,name,element,options)
 {
 	var f = Appcelerator.UI.UIComponents[type+':'+name];
 	if (f)
 	{
-		if (f.setPath && dir)
+		if (f.loaded)
 		{
-			f.setPath(dir);
+			Appcelerator.UI.activateUIComponent(f.impl,f.dir,{type:type,name:name,element:element,options:options});
 		}
-		var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,f,options);
-		if (formattedOptions!=false)
+		else
 		{
-			try
-			{
-				f.build(element,formattedOptions);
-				
-				// keep track of elements and their UI attributes
-				Appcelerator.UI.addElementUI(element,type,name);
-				
-			}
-			catch (e)
-			{
-				Appcelerator.Compiler.handleElementException(element,e);
-			}
-		}
-		if (f.getActions)
-		{
-			var actions = f.getActions();
-			var id = element.id;
-			for (var c=0;c<actions.length;c++)
-			{
-				(function()
-				{
-					var actionName = actions[c];
-					var action = f[actionName];
-					if (action)
-					{
-						var xf = function(id,m,data,scope,version,customActionArguments,direction,type)
-						{
-							try
-							{
-								action.apply(f,[id,formattedOptions,data,scope,version,customActionArguments,direction,type]);
-							}
-							catch (e)
-							{
-								$E('Error executing '+actionName+' in container type: '+type+'. Error '+Object.getExceptionDetail(e)+', stack='+e.stack);
-							}
-						};
-						Appcelerator.Compiler.buildCustomElementAction(actionName, element, xf);
-					}
-				})();
-			}
-		}
-
-		if (f.getConditions)
-		{
-            Appcelerator.Compiler.customConditionObservers[element.id] = {};
-            var customConditions = f.getConditions();
-            for (var i = 0; i < customConditions.length; i++)
-            {
-                var custCond = customConditions[i];
-                var condFunct = Appcelerator.Compiler.customConditionFunctionCallback(custCond);
-                Appcelerator.Compiler.registerCustomCondition({conditionNames: [custCond]}, 
-                    condFunct, element.id);
-            }
-		}
-		Appcelerator.Compiler.parseOnAttribute(element);
-		if (callback)
-		{
-			callback();
+			f.elements.push({type:type,name:name,element:element,options:options});
 		}
 	}
 	else
 	{
-		if (failIfNotFound==true)
+		// added for API calls
+		if (!element.state)element.state = {};
+		
+		element.state.pending+=1;
+		var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
+		var path = dir+'/'+name+'.js';
+		Appcelerator.UI.UIComponents[type+':'+name] = {dir:dir,loaded:false,elements:[{type:type,name:name,element:element,options:options}]};
+
+		Appcelerator.Core.remoteLoadScript(path,function()
 		{
-			Appcelerator.UI.UIManager.handleLoadError(element,type,name);
-		}
-		else
+			element.state.pending-=1;
+			Appcelerator.Compiler.checkLoadState(element);
+		},function()
 		{
-			// added for API calls
-			if (!element.state)element.state = {};
-			
-			element.state.pending+=1;
-			var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
-			var path = dir+'/'+name+'.js';
-			Appcelerator.Core.remoteLoadScript(path,function()
-			{
-				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback,dir);
-				element.state.pending-=1;
-				Appcelerator.Compiler.checkLoadState(element);
-			},function()
-			{
-				Appcelerator.UI.UIManager.handleLoadError(element,type,name,null,path);
-				element.state.pending-=1;
-				Appcelerator.Compiler.checkLoadState(element);
-			});
-		}
+			Appcelerator.UI.UIManager.handleLoadError(element,type,name,null,path);
+			element.state.pending-=1;
+			Appcelerator.Compiler.checkLoadState(element);
+		});
 	}
 };
 
@@ -454,7 +477,7 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 		{
 			if (themeImpl.impl.setPath)
 			{
-				themeImpl.impl.setPath(path);
+				themeImpl.impl.setPath.call(themeImpl.impl,path);
 			}
 			themeImpl.impl.build(element,options);
 		}
@@ -473,7 +496,7 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 		var js_path = path + '/' +theme+  '.js';
 		Appcelerator.Core.remoteLoadScript(js_path,null,function()
 		{
-			Appcelerator.UI.UIManager.handleLoadError(element,pkg,theme,container);
+			Appcelerator.UI.UIManager.handleLoadError(element,pkg,theme,container,js_path);
 		});
 	}
 };
