@@ -60,11 +60,15 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 /**
  * called to load UI component by UI manager
  */ 
-Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound,callback)
+Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFound,callback,dir)
 {
 	var f = Appcelerator.UI.UIComponents[type+':'+name];
 	if (f)
 	{
+		if (f.setPath && dir)
+		{
+			f.setPath(dir);
+		}
 		var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,f,options);
 		if (formattedOptions!=false)
 		{
@@ -97,7 +101,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 						{
 							try
 							{
-								action(id,formattedOptions,data,scope,version,customActionArguments,direction,type);
+								action.apply(f,[id,formattedOptions,data,scope,version,customActionArguments,direction,type]);
 							}
 							catch (e)
 							{
@@ -140,10 +144,11 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,failIfNotFo
 			if (!element.state)element.state = {};
 			
 			element.state.pending+=1;
-			var path = Appcelerator.DocumentPath + '/components/'+type+'s/'+name+'/'+name+'.js';
+			var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
+			var path = dir+'/'+name+'.js';
 			Appcelerator.Core.remoteLoadScript(path,function()
 			{
-				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback);
+				Appcelerator.UI.loadUIComponent(type,name,element,options,true,callback,dir);
 				element.state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element);
 			},function()
@@ -426,10 +431,11 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 	var key = Appcelerator.Core.getThemeKey(pkg,container,theme);
 	var themeImpl = Appcelerator.UI.themes[key];
 	var fetch = false;
+	var path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme;
 
 	if (!themeImpl)
 	{
-		themeImpl = { callbacks: [], impl: null, loaded: false };
+		themeImpl = { callbacks: [], impl: null, loaded: false, path: path };
 		Appcelerator.UI.themes[key] = themeImpl;
 		fetch = true;
 	}
@@ -446,6 +452,10 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 		}
 		if (element!=null && options!=null && themeImpl.impl && themeImpl.impl.build)
 		{
+			if (themeImpl.impl.setPath)
+			{
+				themeImpl.impl.setPath(path);
+			}
 			themeImpl.impl.build(element,options);
 		}
 		themeImpl.callbacks = null;
@@ -457,10 +467,10 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 	
 	if (fetch)
 	{
-		var css_path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.css';
+		var css_path =  path + '/' +theme+  '.css';
 		Appcelerator.Core.remoteLoadCSS(css_path);
 
-		var js_path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme+ '/' +theme+  '.js';
+		var js_path = path + '/' +theme+  '.js';
 		Appcelerator.Core.remoteLoadScript(js_path,null,function()
 		{
 			Appcelerator.UI.UIManager.handleLoadError(element,pkg,theme,container);
