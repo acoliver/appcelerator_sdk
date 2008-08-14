@@ -19,7 +19,7 @@
  *
  */
 
-package org.appcelerator.dispatcher;
+package org.appcelerator.service;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -34,8 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.annotation.Service;
-import org.appcelerator.dispatcher.visitor.DispatchVisitor;
-import org.appcelerator.dispatcher.visitor.NullDispatchVisitor;
+import org.appcelerator.locator.visitor.DispatchVisitor;
+import org.appcelerator.locator.visitor.NullDispatchVisitor;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
 
@@ -73,7 +73,7 @@ public class ServiceRegistry
     {
         return downloadables.get(name);
     }
-    
+
     /**
      * unregister a specific service
      * 
@@ -94,32 +94,32 @@ public class ServiceRegistry
         }
         adapter=null;
     }
-    
+
     public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance, String dispatcher) throws Exception
     {
         for (Method method : serviceClass.getDeclaredMethods())
         {
-           Service serviceAnnotation = method.getAnnotation(Service.class);
-           
-           if (serviceAnnotation == null)
-		   {
-               continue;
-		   }
+            Service serviceAnnotation = method.getAnnotation(Service.class);
 
-           if (LOG.isDebugEnabled()) LOG.debug("register service for "+serviceAnnotation.request()+" -> "+serviceClass.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
+            if (serviceAnnotation == null)
+            {
+                continue;
+            }
 
-           if (instance == null)
-		   {
-               instance = serviceClass.newInstance();
-		   }
+            if (LOG.isDebugEnabled()) LOG.debug("register service for "+serviceAnnotation.request()+" -> "+serviceClass.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
 
-           MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
-           ServiceRegistry.registerService(adapter, unregisterIfFound);
+            if (instance == null)
+            {
+                instance = serviceClass.newInstance();
+            }
 
-           if (registrations != null)
-		   {
-    		  registrations.add(adapter);
-		   }
+            MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
+            ServiceRegistry.registerService(adapter, unregisterIfFound);
+
+            if (registrations != null)
+            {
+                registrations.add(adapter);
+            }
         }
     }
 
@@ -127,86 +127,88 @@ public class ServiceRegistry
     {
         for (Method method : serviceClass.getDeclaredMethods())
         {
-           Downloadable service = method.getAnnotation(Downloadable.class);
-           if (service!=null)
-           {
-               ServiceRegistry.registerDownloadable(service.name(),serviceClass,instance,method,service,unregisterIfFound);
-           }
+            Downloadable service = method.getAnnotation(Downloadable.class);
+            if (service!=null)
+            {
+                ServiceRegistry.registerDownloadable(serviceClass,instance,method,service,unregisterIfFound);
+            }
         }
     }
 
-	/**
-	 * register a downloadable service
-	 */
-	public static void registerDownloadable (String name, Class<? extends Object> clazz, Object instance, 
+    /**
+     * register a downloadable service
+     */
+    public static void registerDownloadable (Class<? extends Object> clazz, Object instance, 
             Method method, Downloadable service, boolean unregisterIfFound)  throws Exception
-	{
+            {
+        String name = service.name();
+
         if (LOG.isDebugEnabled()) LOG.debug("register download service for "+name+" -> "+clazz.getName()+"."+method.getName());
-		
-		DownloadableAdapter adapter = downloadables.get(name);
-		
-		if (adapter!=null)
-		{
-			if (unregisterIfFound)
-			{
-				downloadables.remove(name);
-			}
-			else
-			{
-				LOG.warn("duplicate download service detected for "+name+", class="+clazz);
-				return;
-			}
-		}
-		
-		if (instance==null)
-		{
-			instance = clazz.newInstance();
-		}
-		
+
+        DownloadableAdapter adapter = downloadables.get(name);
+
+        if (adapter!=null)
+        {
+            if (unregisterIfFound)
+            {
+                downloadables.remove(name);
+            }
+            else
+            {
+                LOG.warn("duplicate download service detected for "+name+", class="+clazz);
+                return;
+            }
+        }
+
+        if (instance==null)
+        {
+            instance = clazz.newInstance();
+        }
+
         adapter= new DownloadableAdapter(instance,method,service);
-		downloadables.put(name,adapter);
-	}
+        downloadables.put(name,adapter);
+            }
 
-	/**
-	 * Register a service with the ServiceRegistry
-	 * @param type the type of service
-	 * @param adapter a ServiceAdapter which encapsulates this service
-	 * @param service an annotation describing this service
-	 * @param unregisterIfFound if a duplicate service is found, unregister the old one
-	 * @return true if a service is registered, false if not
-	 * @throws Exception
-	 */
-	public static boolean registerService(ServiceAdapter adapter, boolean unregisterIfFound) throws Exception {
+    /**
+     * Register a service with the ServiceRegistry
+     * @param type the type of service
+     * @param adapter a ServiceAdapter which encapsulates this service
+     * @param service an annotation describing this service
+     * @param unregisterIfFound if a duplicate service is found, unregister the old one
+     * @return true if a service is registered, false if not
+     * @throws Exception
+     */
+    public static boolean registerService(ServiceAdapter adapter, boolean unregisterIfFound) throws Exception {
 
-		String type = adapter.getRequest();
-		
-		Set<ServiceAdapter> adapters = services.get(type);
-		
-		if (adapters == null)
-			adapters = new HashSet<ServiceAdapter>();
-		
-		// check for duplicates in the set of adapters
-		for (ServiceAdapter possibleDuplicate : adapters) 
-		{
-			if (possibleDuplicate.is(adapter)) 
-			{
-				if (unregisterIfFound) {
-					adapters.remove(possibleDuplicate);
-				} else {
-					return false;
-				}
-			}
-		}
-		
-		adapters.add(adapter);
-		services.put(type, adapters);
-		
-		return true;
-	}
+        String type = adapter.getRequest();
+
+        Set<ServiceAdapter> adapters = services.get(type);
+
+        if (adapters == null)
+            adapters = new HashSet<ServiceAdapter>();
+
+        // check for duplicates in the set of adapters
+        for (ServiceAdapter possibleDuplicate : adapters) 
+        {
+            if (possibleDuplicate.is(adapter)) 
+            {
+                if (unregisterIfFound) {
+                    adapters.remove(possibleDuplicate);
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        adapters.add(adapter);
+        services.put(type, adapters);
+
+        return true;
+    }
 
     public static boolean dispatch (Message request, List<Message> responses)
     {
-    	Object token = instance.dispatchVisitor.startVisit(request, responses);
+        Object token = instance.dispatchVisitor.startVisit(request, responses);
         Set<ServiceAdapter> adapters = ServiceRegistry.getRegisteredServices(request.getType());
         if (adapters!=null && !adapters.isEmpty())
         {
@@ -237,23 +239,23 @@ public class ServiceRegistry
         return false;
     }
 
-	/**
-	 * dispatch an incoming downloadable
-	 */
+    /**
+     * dispatch an incoming downloadable
+     */
     public static boolean dispatch (HttpServletRequest request, String ticket, String name, HttpServletResponse response)
     {
         DownloadableAdapter adapter = ServiceRegistry.getRegisteredDownloadable(name);
-		if (adapter!=null)
-		{
-			adapter.dispatch(request,ticket,name,response);
-			return true;
-		}
+        if (adapter!=null)
+        {
+            adapter.dispatch(request,ticket,name,response);
+            return true;
+        }
         return false;
     }
-	public DispatchVisitor getDispatchVisitor() {
-		return dispatchVisitor;
-	}
-	public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
-		this.dispatchVisitor = dispatchVisitor;
-	}
+    public DispatchVisitor getDispatchVisitor() {
+        return dispatchVisitor;
+    }
+    public void setDispatchVisitor(DispatchVisitor dispatchVisitor) {
+        this.dispatchVisitor = dispatchVisitor;
+    }
 }

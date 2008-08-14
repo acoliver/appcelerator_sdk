@@ -37,8 +37,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.annotation.ServiceTransport;
-import org.appcelerator.dispatcher.ServiceDispatcherManager;
+import org.appcelerator.locator.ServiceLocatorManager;
 import org.appcelerator.marshaller.ServiceMarshallerManager;
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
@@ -69,6 +70,18 @@ public class AjaxServiceTransportServlet extends HttpServlet
         {
         	performValidation = Boolean.parseBoolean(validate);
         }
+        
+
+        if (this.embeddedMode)
+        {
+            AnnotationHelper.initializeAnnotationDBFromClasspath();
+        }
+        else
+        {
+            AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
+        }
+        
+        ServiceLocatorManager.intialize(config.getServletContext());
     }
 	/**
 	 * called to indicate that the class path must be used when loading annotations instead
@@ -192,7 +205,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
                     data.put("remoteuser", req.getRemoteUser());
                 }
 
-                ServiceDispatcherManager.dispatch(request,responses);
+                ServiceLocatorManager.dispatch(request,responses);
             }
             
             if (responses.isEmpty())

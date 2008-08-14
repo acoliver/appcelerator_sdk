@@ -19,7 +19,7 @@
  *
  */
 
-package org.appcelerator.dispatcher;
+package org.appcelerator.service;
 
 import org.appcelerator.messaging.Message;
 

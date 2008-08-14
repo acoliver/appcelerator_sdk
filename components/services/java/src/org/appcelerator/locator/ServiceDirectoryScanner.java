@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.appcelerator.dispatcher;
+package org.appcelerator.locator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +37,8 @@ import javassist.CtClass;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.appcelerator.service.ServiceAdapter;
+import org.appcelerator.service.ServiceRegistry;
 
 /**
  * This class is responsible for scanning a directory for Java based files which contain

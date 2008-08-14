@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.appcelerator.dispatcher;
+package org.appcelerator.service;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

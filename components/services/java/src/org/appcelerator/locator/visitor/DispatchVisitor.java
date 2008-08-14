@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.appcelerator.dispatcher.visitor;
+package org.appcelerator.locator.visitor;
 
 import java.util.List;
 

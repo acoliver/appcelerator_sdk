@@ -18,27 +18,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package org.appcelerator.dispatcher.visitor;
+package org.appcelerator.annotation;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.appcelerator.messaging.Message;
-
-public class NullDispatchVisitor implements DispatchVisitor
+/**
+ * methods which can dispatch services will annotate their methods
+ * using this annotation
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ServiceLocator
 {
-	private static final Log LOG = LogFactory.getLog(NullDispatchVisitor.class);
 
-	public NullDispatchVisitor() 
-	{
-		LOG.debug("NullDispatchVisitor created");
-	}
-	public void endVisit(Object obj, Message request, List<Message> responses) 
-	{
-	}
-	public Object startVisit(Message request, List<Message> responses) 
-	{
-		return null;
-	}
 }

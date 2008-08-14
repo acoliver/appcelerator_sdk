@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.dispatcher.ServiceDirectoryScanner;
+import org.appcelerator.locator.ServiceDirectoryScanner;
 import org.appcelerator.transport.AjaxServiceTransportServlet;
 import org.appcelerator.transport.DownloadTransportServlet;
 import org.appcelerator.transport.ProxyTransportServlet;
