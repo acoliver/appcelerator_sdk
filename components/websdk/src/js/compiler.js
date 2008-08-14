@@ -2278,43 +2278,14 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 			data[p] = Appcelerator.Compiler.getEvaluatedValue(data[p],data,scopedata);
 		}
 
-		var local = type.startsWith('local:') || type.startsWith('l:');
+		var localMode = type.startsWith('local:') || type.startsWith('l:');
 
 		if (fieldset)
 		{
-			var fields = Appcelerator.Compiler.fieldSets[fieldset];
-			if (fields && fields.length > 0)
-			{
-				for (var c=0,len=fields.length;c<len;c++)
-				{
-					var fieldid = fields[c];
-					var field = $(fieldid);
-					var name = field.name || fieldid;
-
-					if (null == data[name])
-					{
-						// special case type field we only want to add
-						// the value if it's checked
-						if (field.type == 'radio' && !field.checked)
-						{
-							continue;
-						}
-						var newvalue = Appcelerator.Compiler.getElementValue(field,true,local);
-						var valuetype = typeof(newvalue);
-						if (newvalue!=null && (valuetype=='object' || newvalue.length > 0 || valuetype=='boolean'))
-						{
-							Object.setNestedProperty(data, name, newvalue);
-						}
-						else
-						{
-							Object.setNestedProperty(data, name, '');
-						}
-					}
-				}
-			}
+            Appcelerator.Compiler.fetchFieldset(fieldset, localMode, data);
 		}
 
-		if (local)
+		if (localMode)
 		{
 			if (data['id'] == null)
 			{
@@ -2338,6 +2309,56 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 	}).defer();
 };
 
+
+/*
+ Pluck the current values from a fieldset and return in a hash/dict/object.
+ If a third argument is passed, the key/value pairs from the fieldset will be added to that object. 
+*/
+Appcelerator.Compiler.fetchFieldset = function(fieldset, localMode, data) {
+    if(!data) {
+        data = {};
+    }
+    
+    var fields = Appcelerator.Compiler.fieldSets[fieldset];
+	if (fields && fields.length > 0)
+	{
+		for (var c=0,len=fields.length;c<len;c++)
+		{
+			var fieldid = fields[c];
+			var field = $(fieldid);
+			var name = field.getAttribute('name') || fieldid;
+            
+            // don't overwrite other values in the payload
+			if (data[name] == null)
+			{
+				// special case type field we only want to add
+				// the value if it's checked
+				if (field.type == 'radio' && !field.checked)
+				{
+					continue;
+				}
+				var newvalue = Appcelerator.Compiler.getElementValue(field,true,localMode);
+				var valuetype = typeof(newvalue);
+				if (newvalue != null && (valuetype=='object' || newvalue.length > 0 || valuetype=='boolean'))
+				{
+					data[name] = newvalue;
+				}
+				else
+				{
+					data[name] = '';
+				}
+			}
+			else
+			{
+			    if(field.type != 'radio')
+			    {
+			        Logger.warn('fieldset value for "'+name+'" ignored because it conflicts with existing data payload value');
+		        }
+			}
+		}
+	}
+	return data;
+};
 
 /**
  * return the elements value depending on the type of
@@ -2368,6 +2389,24 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
             {
                 return Appcelerator.Compiler.getInputFieldValue(elem,true,local);
             }
+            case 'select':
+            {
+                if(elem.hasAttribute('multiple'))
+                {
+                    var selected = [];
+                    var options = elem.options;
+                    var optionsLen = elem.options.length;
+                    for(var i = 0; i < optionsLen; i++)
+                    {
+                        if(options[i].selected)
+                        {
+                            selected.push(options[i].value);
+                        }
+                    }
+                    return selected;
+                }
+                break; // if not multi-select, we use 
+            }
             case 'img':
             case 'iframe':
             {
@@ -2378,17 +2417,14 @@ Appcelerator.Compiler.getElementValue = function (elem, dequote, local)
                 //TODO
                 return '';
             }
-            default:
-            {
-                // allow the element to set the value otherwise use the
-                // innerHTML of the component
-                if (elem.value != undefined)
-                {
-                    return elem.value;
-                }
-                return elem.innerHTML;
-            }
         }
+        // allow the element to set the value otherwise use the
+        // innerHTML of the component
+        if (elem.value != undefined)
+        {
+            return elem.value;
+        }
+        return elem.innerHTML;
     }
 };
 
@@ -3065,7 +3101,7 @@ Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)
 				var field = $(fieldid);
 				var name = field.name || field.getAttribute('name') || fieldid;
 				var val = Object.getNestedProperty(data, name, null);
-				if (val)
+				if (val != null)
 				{
 					Appcelerator.Compiler.setElementValue(field, val);
 				}
@@ -3076,9 +3112,10 @@ Appcelerator.Compiler.updateFieldsetValues = function(fieldset, values, key)
 
 Appcelerator.Compiler.setElementValue = function (element, value)
 {
-    var revalidate;
+    var revalidate = false;
+    var fireChange = false;
 
-    if (element && value)
+    if (element && value != null)
     {
         var widget = element.widget;
         if (widget)
@@ -3131,6 +3168,19 @@ Appcelerator.Compiler.setElementValue = function (element, value)
                             }
                             break;
                         }
+                        case 'radio':
+                        {
+                            revalidate = true;
+                            if (value == element.getAttribute('value'))
+                            {
+                                element.checked = true;
+                            }
+                            else
+                            {
+                                element.checked = false;
+                            }
+                            break;
+                        }
                     }
                     break;
                 }
@@ -3142,20 +3192,48 @@ Appcelerator.Compiler.setElementValue = function (element, value)
                 }
                 case 'select':
                 {
-                    var options = element.options;
-
-                    for (var i = 0; i<options.length;i++)
+                    if(element.hasAttribute('multiple'))
                     {
-                        if (options[i].value == value)
+                        var values = Appcelerator.Util.makeSet(value)
+                        var options = element.options;
+                        for (var i = 0; i < options.length; i++)
                         {
-                            element.selectedIndex = i;
-                            try {
-                                Event.cache[element._eventID]['change'][0]({});
-                            } catch(e) {
-                                $D('failed to find change listener for element ' + element.id);
+                            var option = options[i];
+                            if (values[option.value])
+                            {
+                                if(!option.selected)
+                                {
+                                    option.selected = true;
+                                    fireChange = true;
+                                    revalidate = true;
+                                }
+                                // else ignore, already selected
                             }
-                            revalidate = true;
-                            break;
+                            else
+                            {
+                                if(option.selected)
+                                {
+                                    option.selected = false;
+                                    fireChange = true;
+                                    revalidate = true;
+                                }
+                                // else ignore, already un-selected
+                            }
+                        }                        
+                    }
+                    else
+                    {
+                        var options = element.options;
+
+                        for (var i = 0; i < options.length; i++)
+                        {
+                            if (options[i].value == value)
+                            {
+                                element.selectedIndex = i;
+                                fireChange = true;
+                                revalidate = true;
+                                break;
+                            }
                         }
                     }
                     break;
@@ -3177,6 +3255,15 @@ Appcelerator.Compiler.setElementValue = function (element, value)
                     break;
                 }
             }
+        }
+    }
+
+    if(fireChange)
+    {
+        try {
+            Event.cache[element._eventID]['change'][0]({});
+        } catch(e) {
+            $D('failed to fire change listener for element: '+element.id);
         }
     }
 

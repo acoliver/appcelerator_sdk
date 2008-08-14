@@ -185,3 +185,13 @@ Object.cloneWithout = function(obj, without) {
 	}
 	return clone;
 }
+
+Appcelerator.Util.makeSet = function(array) {
+    var set = {};
+    var arrayLen = array.length;
+    for(var i = 0; i < arrayLen; i++)
+    {
+        set[array[i]] = true;
+    }
+    return set;
+};
