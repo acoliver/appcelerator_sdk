@@ -118,7 +118,10 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 
 			}
 		}	
-		element.innerHTML = html;
+		
+		var container = 'accordion_container_' + element.id;
+		
+		element.innerHTML = '<div id="'+container+'">' + html + '</div>';
 
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)
@@ -130,6 +133,8 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 				$(element.id +"_accordion_right_"+i).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
 			}
 		}
+		
+		Appcelerator.Compiler.dynamicCompile($(container));
 		
 		Appcelerator.Core.loadTheme('control','accordion',options['theme'],element,options);	
 	}
