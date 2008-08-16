@@ -567,7 +567,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	try
 	{
 		var name = Appcelerator.Compiler.getTagname(element);
-		var kind = element.getAttribute('kind');
+		var kind = element.getAttribute('kind');  //FIXME: deprecate this
 		if (name.indexOf(':')>0)
 		{
 			element.style.originalDisplay = element.style.display || 'block';

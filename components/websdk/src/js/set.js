@@ -54,31 +54,38 @@ Appcelerator.UI.registerUIManager = function(ui,impl)
  */
 Appcelerator.UI.registerUIComponent = function(type,name,impl)
 {
-	var f = Appcelerator.UI.UIComponents[type+':'+name];
-	
-	if (!f)
+	try
 	{
-		f = {};
-		Appcelerator.UI.UIComponents[type+':'+name]=f;
-	}
+		var f = Appcelerator.UI.UIComponents[type+':'+name];
 
-	f.impl = impl;
-	f.loaded = true;
-
-	if (impl.setPath)
-	{
-		impl.setPath.call(impl,f.dir);
-	}
-
-	if (f.elements)
-	{
-		for (var c=0;c<f.elements.length;c++)
+		if (!f)
 		{
-			var obj = f.elements[c];
-			Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options);
+			f = {};
+			Appcelerator.UI.UIComponents[type+':'+name]=f;
 		}
 
-		f.elements = null;
+		f.impl = impl;
+		f.loaded = true;
+
+		if (impl.setPath)
+		{
+			impl.setPath.call(impl,f.dir);
+		}
+
+		if (f.elements)
+		{
+			for (var c=0;c<f.elements.length;c++)
+			{
+				var obj = f.elements[c];
+				Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options);
+			}
+
+			f.elements = null;
+		}
+	}
+	catch(e)
+	{
+		Appcelerator.Compiler.handleElementException(null,e,'registerUIComponent for '+type+':'+name);
 	}
 };
 
@@ -96,7 +103,7 @@ Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,opt
 		}
 		catch (e)
 		{
-			Appcelerator.Compiler.handleElementException(element,e);
+			Appcelerator.Compiler.handleElementException(element,e,'activateUIComponent for '+type+':'+name);
 		}
 	}
 	if (impl.getActions)
@@ -154,7 +161,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options)
 	{
 		if (f.loaded)
 		{
-			Appcelerator.UI.activateUIComponent(f.impl,f.dir,{type:type,name:name,element:element,options:options});
+			Appcelerator.UI.activateUIComponent(f.impl,f.dir,type,name,element,options);
 		}
 		else
 		{
@@ -297,14 +304,12 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 				Appcelerator.Compiler.checkLoadState(element.state);
 			},function()
 			{
-				Appcelerator.Compiler.handleElementException(element,'error loading '+type+'['+name+']');
+				Appcelerator.Compiler.handleElementException(element,null,'error loading '+type+'['+name+']');
 				element.state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element.state);
 			});
 		}
 	}
-	
-	
 };
 
 Appcelerator.Compiler.registerAttributeProcessor('*','set',
@@ -533,7 +538,6 @@ Appcelerator.UI.registerUIManager('control',function(type,element,options,callba
 	if (Appcelerator.UI.widgetRegex.test(type))
 	{
 	    var state = Appcelerator.Compiler.createCompilerState();
-		state.pending += 1;
 		state.scanned = true;
 		Appcelerator.Core.requireModule(type,function()
 		{
