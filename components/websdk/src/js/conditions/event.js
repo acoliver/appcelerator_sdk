@@ -40,7 +40,7 @@ Appcelerator.Compiler.actionId = 0;
 
 Appcelerator.Compiler.isEventSelector = function (token)
 {
-    if (token.indexOf(':')!=-1 || token.indexOf('[')!=-1)
+    if (token.indexOf(':')!=-1)
     {
         return false;
     }
@@ -58,6 +58,7 @@ Appcelerator.Compiler.isEventSelector = function (token)
 		
 		var i = token.indexOf('.');
 		realtoken = token.substring(i+1);
+		realtoken = Appcelerator.Compiler.parseEventConditionName(realtoken);
 		if (realtoken==Appcelerator.Compiler.Events[c])
 		{
 			return true;
@@ -65,7 +66,48 @@ Appcelerator.Compiler.isEventSelector = function (token)
 	}
 	return false;
 };
-
+Appcelerator.Compiler.filteredEvent = function(event, filters) 
+{
+	if (filters!=null) {
+		for(var i=0;i<filters.length;i++) 
+		{
+			filter = filters[i];
+			var expected = filter.value;
+			var actual = "" + event[filter.name];
+			if (actual != expected)
+				return true;
+		}
+	}
+	return false;
+};
+Appcelerator.Compiler.parseEventConditionName = function(condition) 
+{
+	if (condition.indexOf('[')==-1)
+		return condition;
+	else
+		return condition.substring(0,condition.indexOf('['));
+};
+Appcelerator.Compiler.parseEventConditionFilters = function(condition) 
+{
+	if (condition.indexOf('[')!=-1) 
+	{
+		filters = new Array();
+		var start = (condition.indexOf('[')+1);
+		var end = (condition.indexOf(']'));
+		var namevalue = condition.substring(start,end);
+		var pairs = (namevalue.split(','));
+		for (var i=0;i<pairs.length;i++)
+		{
+			var pair = pairs[i].split('=');
+			filters.push({name:pair[0],value:pair[1]});
+		}
+		return filters;
+	}
+	else
+	{
+		return null;
+	}
+};
 Appcelerator.Compiler.registerCustomCondition(
 {
 	conditionPrefixes: Appcelerator.Compiler.EventTargets.map(function(targetName){ return targetName+'.'}),
@@ -91,6 +133,9 @@ function(element,condition,action,elseAction,delay,ifCond)
 		stopEvent = true;
 		condition = condition.substring(0,condition.length-1);
 	}
+
+	var filters = Appcelerator.Compiler.parseEventConditionFilters(condition);
+	condition = Appcelerator.Compiler.parseEventConditionName(condition);
 
 	var i = condition.indexOf('.');
 	var event = condition, target = element.id, children = false;
@@ -161,6 +206,8 @@ function(element,condition,action,elseAction,delay,ifCond)
 	{
 		var f = function(e)
 		{
+			if (Appcelerator.Compiler.filteredEvent(e,filters))
+				return;
 			var child = element.options[element.selectedIndex||0];
 			var me = child;
 			if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
@@ -201,6 +248,8 @@ function(element,condition,action,elseAction,delay,ifCond)
 						$D('adding listener to '+child.id+' for event: '+event);
 						var cf = function(event)
 						{
+							if (Appcelerator.Compiler.filteredEvent(event,filters))
+								return;
 							var me = child;
 							if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
 							var actionFunc = Appcelerator.Compiler.makeConditionalAction(Appcelerator.Compiler.getAndEnsureId(child),action,ifCond);
@@ -212,6 +261,8 @@ function(element,condition,action,elseAction,delay,ifCond)
 						{
 							f = function(e)
 							{
+								if (Appcelerator.Compiler.filteredEvent(e,filters))
+									return;
 								cf(e);
 								Event.stop(e);
 								return false;
@@ -240,6 +291,8 @@ function(element,condition,action,elseAction,delay,ifCond)
 			var scope = {id:target.id};
 			var cf = function(event)
 			{
+				if (Appcelerator.Compiler.filteredEvent(event,filters))
+					return;
 				var me = $(scope.id);
 				if (Element.isDisabled(me) || Element.isDisabled(me.parentNode)) return;
 			    var __method = actionFunc, args = $A(arguments);
@@ -250,6 +303,8 @@ function(element,condition,action,elseAction,delay,ifCond)
 			{
 				f = function(e)
 				{
+					if (Appcelerator.Compiler.filteredEvent(e,filters))
+						return;
 					cf(e);
 					Event.stop(e);
 					return false;
