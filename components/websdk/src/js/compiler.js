@@ -1943,8 +1943,7 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 				}
 				else if (!matched)
 				{
-					ok = not_cond ? null == x : null != x;
-					//ok = not_cond && empty ? (null == x : null != x) : (null != x : null == x);
+					ok = not_cond ? !x : x;
 				}
 			}
 			if (!ok) break;

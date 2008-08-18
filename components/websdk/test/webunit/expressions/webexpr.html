@@ -23,6 +23,10 @@
 		<td class="result" on="l:test[!foo] then value['passed'] else value['failed']"></td>
 	</tr>
 	<tr>
+		<td class="test">l:test[length!=0] (length is not present in payload)</td>
+		<td class="result" on="l:test[length!=0] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
 		<td class="test">l:test[count>0]</td>
 		<td class="result" on="l:test[count>0] then value['passed'] else value['failed']"></td>
 	</tr>
