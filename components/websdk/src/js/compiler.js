@@ -2129,14 +2129,15 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 	    var f = Appcelerator.Compiler.makeAction(id,action,additionalParams);
 	    if (ifCond)
 	    {
-	        var ifFunc = function()
-	        {
-	            return eval(ifCond);
-	        }.bind(scope);
-	        if (ifFunc())
-	        {
+			if (Object.isUndefined(scope.id))
+			{
+				scope.id = id;
+			}
+			
+			if (Object.evalWithinScope(ifCond,scope))
+			{
 	            f(scope);
-	        }
+			}
 	    }
 	    else
 	    {
@@ -2729,7 +2730,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	var operator = null;
 	
 	// extract out our expressions prior to processing normal strings
-	if (containsExpr)
+	if (containsExpr && !asjson)
 	{
 		while ( true ) 
 		{ 	
@@ -2738,14 +2739,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			{ 		
 				break; 	
 			} 	
-			if (asjson)
-			{
-				data[expr[0]]=null;
-			}
-			else
-			{
-				data.push({key:expr[1],value:null,expression:true});
-			}
+			data.push({key:expr[1],value:null,expression:true});
 			str = str.replace(expr[0],'');
 		} 
 	}
