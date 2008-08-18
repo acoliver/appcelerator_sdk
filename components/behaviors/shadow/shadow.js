@@ -36,7 +36,7 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	{
 		var newContainer = document.createElement('div');	
 		newContainer.id = element.id + "_shadow";	
-		newContainer.className = 'behavior shadow';
+		newContainer.className = 'shadow_' + options['theme'];
 		var d1 = document.createElement("div");
 		d1.className = "shadow_" + options['theme'] + "_1";
 		var d2 = document.createElement("div");

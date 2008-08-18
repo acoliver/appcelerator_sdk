@@ -1,8 +1,6 @@
 Appcelerator.UI.registerUIComponent('control','select',
 {
 	//TODOS:
-	// 1. figure out "value" versus "values" and change values and init
-	// 2. support overloaded condition names (focus, change)
 	// 3. add support for selectOption action
 
 	// track initial options
@@ -56,9 +54,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 	{
 		this.changeListeners[id] = {'action':actionFunc,'ifcond':ifCond,'delay':delay};
 	},
-	values:function(id,params,data,scope,version,attrs,direction,action)
+	value:function(id,params,data,scope,version,attrs,direction,action)
 	{
-
 		// pull out properties
 		var property = Appcelerator.Compiler.findParameter(attrs,'property');
 		var row = Appcelerator.Compiler.findParameter(attrs,'row');
@@ -88,7 +85,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 		        }
 		        if (rowData)
 		        {
-					html += '<div id="'+id+'_combo_'+c+'" class="select_'+this.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_value[value='+rowData.text+'] or mouseover then add[class=select_'+this.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+this.activeThemes[id]+'_dropdown_hover]">'+rowData.text+'</div>';
+					html += '<div id="'+id+'_combo_'+c+'" class="select_'+this.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_rowclick[row='+c+'] or mouseover then add[class=select_'+this.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+this.activeThemes[id]+'_dropdown_hover]">'+rowData.text+'</div>';
 					values.push({'index':c,'id':id+'_combo_'+c,'value':rowData.value,'text':rowData.text});
 		        }
 		    }
@@ -103,34 +100,73 @@ Appcelerator.UI.registerUIComponent('control','select',
 			// set tracking variables
 			this.selectOptions[id] = values;
 			this.currentOptions[id] = values;
-			this.activeSelects[id].selectedIndex=-1;
+			this.activeSelects[id].selectedIndex=0;
 			this.activeSelects[id].lastOption=ar.length - 1;
 
+			// select first value
+			Appcelerator.Compiler.fireCustomCondition(id, 'change', {'id': id,'value':this.currentOptions[id][this.activeSelects[id].selectedIndex].text});
+			this._setValue(id,this.currentOptions[id][this.activeSelects[id].selectedIndex].text );
+			
 			// resize dropdown
 			$(id+"_combo_box").style.height = this._getDropdownHeight(ar.length);
 
 		}
 	},
 
-	init:function(id,params,data,scope,version,attrs,direction,action)
+	reset:function(id,params,data,scope,version,attrs,direction,action)
 	{
-		self.activeSelects[id].selectedIndex = 0;
-		
-		//FIXME - fire this is a condition instead of a generic message
-		$MQ('l:'+id+'_combo_value',{'value':self.currentOptions[id][self.activeSelects[id].selectedIndex].text});
+		this.activeSelects[id].selectedIndex = 0;
+		this._setValue(id,this.currentOptions[id][this.activeSelects[id].selectedIndex].text );		
+		Appcelerator.Compiler.fireCustomCondition(id, 'change', {'id': id,'value':this.currentOptions[id][this.activeSelects[id].selectedIndex].text});
 	},
 
+	selectOption:function(id,params,data,scope,version,attrs,direction,action)
+	{
+		var key = attrs[0].key;
+		var value = data[key];
+		var curOptions = this.selectOptions[id];
+		for (var i=0;i<curOptions.length;i++)
+		{
+			if (curOptions[i].value == value)
+			{
+				// set active select, fire change condition and set value
+				Element.removeClassName($(id+"_combo_" + this.activeSelects[id].selectedIndex),'select_'+this.activeThemes[id]+'_dropdown_hover');			
+				this.activeSelects[id].selectedIndex = i;				
+				Appcelerator.Compiler.fireCustomCondition(id, 'change', {'id': id,'value':this.currentOptions[id][this.activeSelects[id].selectedIndex].text});
+				this._setValue(id,curOptions[i].text );
+				return;
+			}
+		}
+	},
+	
 	getActions: function()
 	{
-		return ['values','init'];
+		return ['value','reset','selectOption'];
+	},
+	
+	toggle_list:function(id,params,data,scope,version)
+	{
+		// TODO: FIGURE OUT WHY FRAMEWORK IS REQUIRING THIS DEF
 	},
 
+	change: function(id,parameters,data,scope,version)
+    {
+		// TODO: FIGURE OUT WHY FRAMEWORK IS REQUIRING THIS DEF
+    },
+
+	getConditions: function()
+	{
+		return ['change','toggle_list'];
+	},
+
+	
 	/**
 	 * This is called when the control is loaded and applied for a specific element that 
 	 * references (or uses implicitly) the control.
 	 */
 	build: function(element,options)
 	{	
+		// get theme
 		var theme = options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('select');
 
 		var self = this;
@@ -161,27 +197,62 @@ Appcelerator.UI.registerUIComponent('control','select',
 			html = '<span id="'+element.id+'"  class="select_'+theme+'" '+on+'>';
 		}
 
+		// build new select component markup
 		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif';
-
-		html += '<span id="'+element.id+'_container" style="position:relative">';
-		html += '<input style="width:'+options['width']+';" type="text" id="'+element.id+'_input" class="select_' + theme + '_input" on="l:'+element.id+'_combo_value then value[value] or click then l:'+element.id+'_combo_click"/>';
-		html += '<img id="'+element.id+'_combo_img" src="'+blankImg+'" class="select_' + theme + '_arrow" on="click then l:'+element.id+'_combo_click and focus[id='+element.id+'_input]"/>';
-		html +='<div id="'+element.id+'_combo_box" on="l:'+element.id+'_combo_click then toggle[display]" style="display:none;width:'+options['width']+';" class="select_'+theme+'_dropdown">';
+		html += '<span id="'+element.id+'_container" class="select_'+theme+'" style="position:relative">';
+		html += '<input style="width:'+options['width']+';" type="text" id="'+element.id+'_input" class="select_' + theme + '_input"/>';
+		html += '<img id="'+element.id+'_combo_img" src="'+blankImg+'" class="select_' + theme + '_arrow"/>';
+		html +='<div id="'+element.id+'_combo_box" style="display:none;width:'+options['width']+';" class="select_'+theme+'_dropdown">';
 		html += self._getOptions(element,theme);
 		html += '</div></span></span>';
 		new Insertion.Before(element,html);
 
+		// track click in dropdown img
+		Event.observe($(element.id+"_combo_img"),'click',function(ev)
+		{
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			self._toggleList(element.id);
+		});
+		
+		// track individual row clicks
+		$MQL(element.id + "_combo_rowclick",function(type,data,datatype,from)
+		{
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			self._setValue(element.id,self.currentOptions[element.id][data.row].text );
+			self.activeSelects[element.id].selectedIndex = data.row;				
+		});
+		
+		// track row mouseovers
+		$MQL(element.id + "_combo_mouseover",function(type,data,datatype,from)
+		{
+			if (data.row != self.activeSelects[element.id].selectedIndex)
+			{
+				// remove from old mouseovered row
+				Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');			
+				self.activeSelects[element.id].selectedIndex = data.row;				
+			}
+		});
+		
+		// track click input field
+		Event.observe($(element.id+"_input"),'click',function(ev)
+		{
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			self._toggleList(element.id);
+			Event.stop(ev);
+		});
 
+		
 		// track document clicks to trigger closing 
-		// of the dropdown
+		// of the dropdown when outside dropdown area
 		Event.observe(document,'click',function(ev)
 		{
 			ev = Event.getEvent(ev);
 			var target = Event.element(ev);
 			if (($(element.id + "_combo_box").style.display != "none") && (target.id !== element.id +"_combo_img"))
 			{
-				//FIXME - fire condition here instead of generic message
-				$MQ('l:'+element.id + '_combo_click');				
+				Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+				self._toggleList(element.id);
 			}
 			Event.stop(ev);
 		});
@@ -200,8 +271,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 					case Event.KEY_RIGHT:
 					case Event.KEY_ESC:
 					{
-						//FIXME - fire condition here instead of generic message
-						$MQ('l:'+element.id + "_combo_click");
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+						self._toggleList(element.id);
 						Event.stop(event);
 						return;
 					}
@@ -209,11 +280,10 @@ Appcelerator.UI.registerUIComponent('control','select',
 					// select current value
 					case Event.KEY_RETURN:
 					{
-						//FIXME - fire condition here instead of generic message
-						$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
-						$MQ('l:'+element.id + "_combo_click");
-						Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');	
-
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+						self._setValue(element.id,self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text );
+						self._toggleList(element.id);
 						Event.stop(event);
 						return;
 					}
@@ -225,8 +295,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 						{
 							Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
 							self.activeSelects[element.id].selectedIndex--;
-							//FIXME - fire condition here instead of generic message
-							$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							self._setValue(element.id,self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text );
 							Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');							
 						}
 						Event.stop(event);
@@ -240,8 +310,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 						{
 							Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
 							self.activeSelects[element.id].selectedIndex++;
-							//FIXME - fire condition here instead of generic message
-							$MQ('l:'+element.id+'_combo_value',{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							self._setValue(element.id,self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text );
 							Element.addClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');	
 						}
 						Event.stop(event);
@@ -253,8 +323,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 					{
 						if ($(element.id + "_combo_box").style.display == "none")
 						{
-							//FIXME - fire condition here instead of generic message
-							$MQ("l:"+element.id + "_combo_click");
+							Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							self._toggleList(element.id);
 						}
 						var values = self.selectOptions[element.id];
 						var options = [];
@@ -281,18 +351,6 @@ Appcelerator.UI.registerUIComponent('control','select',
 			})();
 		};
 
-		//FIXME review this -- should be action instead
-		// add mouseover listener for dropdown
-		$MQL('l:'+element.id+'_combo_mouseover', 
-		function(t, data, datatype, direction)
-		{
-			if (data.row != self.activeSelects[element.id].selectedIndex)
-			{
-				Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');			
-				self.activeSelects[element.id].selectedIndex = data.row;				
-			}
-		});
-
 		// remove original element
 		Appcelerator.Compiler.removeElementId(element.id);		
 		Element.remove(element);
@@ -307,40 +365,13 @@ Appcelerator.UI.registerUIComponent('control','select',
 			return self.currentOptions[id][self.activeSelects[id].selectedIndex].value
 		}
 
-
-		//FIXME review this -- should be action instead
-		// create condition listener for select condition
-		$MQL('l:'+element.id+'_combo_value', 
-		function(t, data, datatype, direction)
-		{
-			var entry = self.changeListeners[element.id];
-			if (entry)
-			{
-				var action = entry['action'];
-				var delay = entry['delay'];
-				var ifcond = entry['ifcond'];
-				var actionFunc = Appcelerator.Compiler.makeConditionalAction(element.id,action,ifcond,{'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].value});
-
-				Appcelerator.Compiler.executeAfter(actionFunc,delay);
-			}
-		});
-
 		// resize dropdown
 		$(element.id+"_combo_box").style.height = this._getDropdownHeight(selectOptions.length);
 
-		//FIXME: review these, I thought they needed to hang off this interface 
-		// register custom conditions
-		Appcelerator.Compiler.registerCustomCondition(
-		{
-			conditionNames: ['change'],
-			description: "respond to change events for select"
-		},
-		function(element,condition,action,elseAction,delay,ifCond)
-		{
-			self.registerChangeListener(element.id,action,ifCond,delay);
-			return true;
-		});
-
+		// set initial value if exists
+		this._setValue(element.id,this.currentOptions[element.id][this.activeSelects[element.id].selectedIndex].text);
+		
+		
 		// load select theme
 		Appcelerator.Core.loadTheme('control','select',theme,element,options);	
 	},
@@ -352,12 +383,12 @@ Appcelerator.UI.registerUIComponent('control','select',
 		var html = '';
 		for (var i=0;i<options.length;i++)
 		{
-			html += '<div id="'+element.id+'_combo_'+i+'" class="select_'+theme+'_dropdown_item" on="click then l:'+element.id+'_combo_value[value='+options[i].text+'] or mouseover then add[class=select_'+theme+'_dropdown_hover] and l:'+element.id+'_combo_mouseover[row='+i+'] or mouseout then remove[class=select_'+theme+'_dropdown_hover]">'+options[i].text+'</div>';
+			html += '<div id="'+element.id+'_combo_'+i+'" class="select_'+theme+'_dropdown_item" on="click then l:'+element.id+'_combo_rowclick[row='+i+'] or mouseover then add[class=select_'+theme+'_dropdown_hover] and l:'+element.id+'_combo_mouseover[row='+i+'] or mouseout then remove[class=select_'+theme+'_dropdown_hover]">'+options[i].text+'</div>';
 		}
 
 		// update and recompile
 		selectBox.innerHTML = html;
-		Appcelerator.Compiler.destroy($(element.id+"_combo_box"));
+		Appcelerator.Compiler.destroy(selectBox);
 		Appcelerator.Compiler.dynamicCompile(selectBox);
 
 	},
@@ -379,16 +410,26 @@ Appcelerator.UI.registerUIComponent('control','select',
 			var values = [];
 			for (var i=0;i<element.options.length;i++)
 			{
-				html += '<div id="'+element.id+'_combo_'+i+'" class="select_'+theme+'_dropdown_item" on="click then l:'+element.id+'_combo_value[value='+element.options[i].text+'] or mouseover then add[class=select_'+theme+'_dropdown_hover] and l:'+element.id+'_combo_mouseover[row='+i+'] or mouseout then remove[class=select_'+theme+'_dropdown_hover]">'+element.options[i].text+'</div>';
+				html += '<div id="'+element.id+'_combo_'+i+'" class="select_'+theme+'_dropdown_item" on="click then l:'+element.id+'_combo_rowclick[row='+i+'] or mouseover then add[class=select_'+theme+'_dropdown_hover] and l:'+element.id+'_combo_mouseover[row='+i+'] or mouseout then remove[class=select_'+theme+'_dropdown_hover]">'+element.options[i].text+'</div>';
 				values.push({'index':i,'id':element.id+'_combo_'+i,'value':element.options[i].value,'text':element.options[i].text});
+
 			}
 			this.selectOptions[element.id] = values;
 			this.currentOptions[element.id] = values;
 			this.activeSelects[element.id].selectedIndex = 0;
-			$MQ('l:'+element.id+'_combo_value',{'value':this.currentOptions[element.id][this.activeSelects[element.id].selectedIndex].text});
 
 			return html;
 		}
 		return '';
-	}
+	},
+	_toggleList: function(id)
+	{
+		Element.toggle(id + "_combo_box");
+		Element.addClassName($(id+"_combo_" + this.activeSelects[id].selectedIndex),'select_'+this.activeThemes[id]+'_dropdown_hover');									
+	},	
+	
+	_setValue: function(id,value)
+	{
+		$(id + "_input").value = value;
+	}	
 });

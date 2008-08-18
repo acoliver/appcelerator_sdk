@@ -100,7 +100,8 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		element.innerHTML = html;
 		element.style.width = options['width'];
 		element.style.height = "auto";
-
+		Element.addClassName(element,classPrefix);
+		
 		// wire close	
 		if (options['closeable'] == true)
 		{

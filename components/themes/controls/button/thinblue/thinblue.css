@@ -1,12 +1,30 @@
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
+.button_thinblue_container img
+{
+	padding:0px !important;
+	margin:0px !important;
+}
+.button_thinblue_container button
+{
+	padding:0px;
+	margin:0px !important;
+	padding-bottom:2px !important;
+		
+}
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
 .button_thinblue_left
 {
 	position:relative;
 	background:transparent url(images/left.png) no-repeat;
 	top:6px;
-	height:21px !important;
-	padding:0px !important;
-	width:6px !important;
-
+	height:21px;
+	width:6px;
 }
 
 .button_thinblue_middle
@@ -17,22 +35,15 @@
 	margin-left:-1px;
 	margin-right:-1px;
 	font-size:12px;
-	padding-bottom:2px;
 	cursor:pointer;
-
-	padding-left:0px !important;
-	padding-right:0px !important;
-	padding-top:0px !important;
-	
 }
 
 .button_thinblue_right
 {
 	position:relative;
 	background:transparent url(images/right.png) no-repeat;
-	height:21px !important;
-	padding:0px !important;
-	width:6px !important;
+	height:21px;
+	width:6px;
 	top:6px;
 }
 

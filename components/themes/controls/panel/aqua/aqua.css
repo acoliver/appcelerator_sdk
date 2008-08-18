@@ -1,6 +1,13 @@
 .panel_aqua
 {
 	position:relative;
+	padding:0px;
+	margin:0px;
+}
+.panel_aqua div
+{
+	padding:0px;
+	margin:0px;
 }
 .panel_aqua_hdr
 {
@@ -9,8 +16,8 @@
 	background:url(images/header.gif) repeat-x; 
 	color:#000; 
 	height:22px; 
-	margin-left:6px; 
-	margin-right:6px; 
+	margin-left:6px !important; 
+	margin-right:6px !important; 
 	text-align:center; 
 	overflow:visible; 
 }
@@ -83,7 +90,7 @@
 .panel_aqua_btm_text
 {
 	font-size:11px;
-	padding:2px;
+	padding:2px !important;
 	position:relative;
 	left:5px;
 }
@@ -96,7 +103,7 @@
 .panel_aqua_body
 {
 	border:1px solid #AEAEAE;
-	padding:10px;
+	padding:10px  !important;
 	background-color:white;
 	margin:0px !important;
 }

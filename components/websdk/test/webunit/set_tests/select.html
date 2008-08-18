@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 <style>
 <!--
@@ -14,11 +14,26 @@
 /* test how images perform with img styles */
 img
 {
-	padding:5px;
-	top:3px;
+	padding:10px;
+	top:10px;
 	position:relative;
 }
-
+input[type=text] 
+{
+	padding:10px;
+	margin:10px;
+}
+span
+{
+	padding:10px;
+	margin:10px;
+}
+div
+{
+	padding:10px;
+	margin:10px;
+	
+}
 -->
 </style>
 </head>
@@ -32,19 +47,99 @@ img
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Basic Select
+			Value Action (if the select has values it worked)
 		</td>
 		<td class="result" >
-			<select set="theme[thinline]" on="l:foo then values[property=rows,value=value,text=text]">
+			<select  id="select1" set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text]">
 				<option></option>
 			</select>
 			<app:script>
-				$MQ('l:foo',{'rows':[{'value':'one','text':'one desc'},{'value':'one','text':'one desc'}]});
+				$MQ('l:foo',{'rows':[{'value':'one','text':'one desc'},{'value':'two','text':'two desc'},{'value':'three','text':'three desc'},{'value':'four','text':'four desc'}]});
+			</app:script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Reset Action
+		</td>
+		<td class="result" >
+			<input type="button" on="click then l:foo2" value="reset"/>
+			<select set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text] or l:foo2 then reset">
+				<option></option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Change condition
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text] or change then script[alert('it worked')]">
+				<option></option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Hard-coded options + change condition
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" on="change then l:change2">
+				<option value="1">one</option>
+				<option value="1">two</option>
+				<option value="1">three</option>
+				
+			</select>
+			<app:script on="l:change2 then execute">
+			alert('you selected ' + Object.toJSON(this.data.value));
 			</app:script>
 		</td>
 	</tr>
 
+	<tr>
+		<td class="test" valign="middle">
+			Fieldset test
+		</td>
+		<td class="result" >
+			<input type="button" on="click then r:submit" value="submit" fieldset="select_fieldset"/>
+			<select id="select_value" fieldset="select_fieldset" set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text]">
+				<option></option>
+			</select>
+			<app:script on="r:submit then script[alert(Object.toJSON(this.data))]"></app:script>
+		</td>
+	</tr>
 
+	<tr>
+		<td class="test" valign="middle">
+			Select an option via message + fieldset test
+		</td>
+		<td class="result" >
+			<input type="button" on="click then l:foo5[option=four]" value="set value" />
+			<select fieldset="select_fieldset2" set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text] or l:foo5 then selectOption[option]">
+				<option></option>
+			</select>
+			<input type="button" on="click then r:submit2" value="submit" fieldset="select_fieldset2"/>
+			<app:script on="r:submit2 then script[alert(Object.toJSON(this.data))]"></app:script>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Theme test
+		</td>
+		<td class="result" >
+			<select  set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text]">
+				<option></option>
+			</select>
+			<select set="theme[thinblue]" on="l:foo then value[property=rows,value=value,text=text]">
+				<option></option>
+			</select>
+			<select set="theme[white_gradient]" on="l:foo then value[property=rows,value=value,text=text]">
+				<option></option>
+			</select>
+	
+		</td>
+	</tr>
 </table>
 
 </body>

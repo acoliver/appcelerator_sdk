@@ -51,6 +51,19 @@ img
 			</div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Calendar
+		</td>
+		<td class="result" >
+			<input type="text" id="mydate" value="click me" on="focus then l:show.calendar"/>
+			<button on="click then l:show.calendar">Set Date</button>
+			<div set="control[app:calendar]" title="Pick a Date" inputId="mydate" close="true" 
+				on="l:show.calendar then execute">
+			</div>
+		</td>
+	</tr>
+
 </table>
 
 <app:script>

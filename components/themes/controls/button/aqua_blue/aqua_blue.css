@@ -1,28 +1,39 @@
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
+.button_aqua_blue_container img
+{
+	padding:0px !important;
+	margin:0px !important;
+}
+.button_aqua_blue_container button
+{
+	padding:0px;
+	margin:0px !important;
+	padding-bottom:2px !important;	
+}
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
 .button_aqua_blue_left
 {
 	position:relative;
 	background:transparent url(images/left.png) no-repeat;
 	top:7px ;
-	height:23px !important;
-	width:13px !important;
-	padding:0px !important;
+	height:23px;
+	width:13px;
 }
 
 .button_aqua_blue_middle
 {
 	background:transparent url(images/middle.png) repeat-x;
 	line-height:23px;
-    cursor:pointer;
-	
+    cursor:pointer;	
 	font-size:12px !important;	
-	border:0px none !important;
-	height:23px !important;
-	margin-left:0px !important; 
-	margin-right:0px !important;
-	padding-bottom:2px !important;
-	padding-top:0px !important;
-	padding-right:0px !important;
-	padding-left:0px !important;
+	border:0px none;
+	height:23px;
 }
 
 
@@ -31,10 +42,8 @@
 	position:relative;
 	background:transparent url(images/right.png) no-repeat;
 	top:7px;
-
-	padding:0px !important;	
-	height:23px !important;
-	width:13px !important;
+	height:23px;
+	width:13px;
 }
 
 /* IE styles */

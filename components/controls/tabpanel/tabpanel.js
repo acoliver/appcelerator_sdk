@@ -106,8 +106,10 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 		html += '</ul><div class="'+classPrefix+'_divider"></div>';
 		container.innerHTML = html;
 		element.innerHTML = '';
-		element.appendChild(container);		
-
+		element.appendChild(container);	
+		Element.addClassName(element,classPrefix);	
+		Appcelerator.Compiler.dynamicCompile(container);
+		
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)
 		{

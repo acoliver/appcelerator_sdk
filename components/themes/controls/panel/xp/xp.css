@@ -2,8 +2,14 @@
 {
 	position:relative;
 	background:url(images/border_right.gif) no-repeat top right;  
+	padding:0px;
+	margin:0px;
 }
-
+.panel_xp div
+{
+	padding:0px;
+	margin:0px;
+}
 .panel_xp_hdr
 {
 	padding:0; 
@@ -11,8 +17,8 @@
 	background:url(images/header.gif) repeat-x; 
 	color:#000; 
 	height:30px; 
-	margin-left:6px; 
-	margin-right:6px; 
+	margin-left:6px !important; 
+	margin-right:6px !important; 
 	text-align:center; 
 	overflow:visible; 
 }
@@ -75,7 +81,7 @@
 .panel_xp_btm_text
 {
 	font-size:11px;
-	padding:2px;
+	padding:2px !important;
 	line-height:21px;
 	position:relative;
 	left:7px;
@@ -99,9 +105,9 @@
 
 .panel_xp_body
 {
-	margin:0 4px 0 0; 
+	margin:0 4px 0 0 !important; 
 	background:#FFF url(images/border_left.gif) repeat-y;  
-	padding:10px;
+	padding:10px !important;
 	
 }
 

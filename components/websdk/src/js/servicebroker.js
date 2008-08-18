@@ -953,7 +953,7 @@ function $MQL (type,f,myscope,element)
             }
             catch(e)
             {
-                Appcelerator.Compiler.handleElementException(element,e,'service broker handling => '+type+':'+message);
+                Appcelerator.Compiler.handleElementException(element,e,'service broker handling => '+type+':'+msg);
             }
         }
     };

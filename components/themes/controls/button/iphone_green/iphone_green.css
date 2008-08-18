@@ -1,12 +1,28 @@
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
+.button_iphone_green_container img
+{
+	padding:0px !important;
+	margin:0px !important;
+}
+.button_iphone_green_container button
+{
+	padding:0px !important;
+	margin:0px !important;	
+}
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
 .button_iphone_green_left
 {
 	background:transparent url(images/left.png);
 	position:relative;
 	top:19px;
-
-	padding:0 !important;
-	height:48px  !important;
-	width:16px  !important;
+	height:48px;
+	width:16px;
 
 }
 
@@ -14,14 +30,13 @@
 {
 	background:transparent url(images/middle.png) repeat-x;
 	cursor:pointer;
-	
-	height:48px  !important;
+	height:48px;
 	color:white  !important;
 	font-size:14px  !important;
 	font-weight:bold !important;
-	border:0px none !important;
-	margin-left:-1px !important;
-	margin-right:-1px !important;	
+	border:0px none;
+	margin-left:-1px;
+	margin-right:-1px;	
 }
 
 .button_iphone_green_right
@@ -29,10 +44,8 @@
 	background:transparent url(images/right.png);
 	position:relative;
 	top:19px;	
-	
-	height:48px !important;
-	width:16px !important;
-	padding:0 !important;
+	height:48px;
+	width:16px;
 	
 }
 
@@ -49,11 +62,11 @@ body.msie .button_iphone_green_right
 /* FF Specific Styles for left and right image */
 body.gecko .button_iphone_green_left
 {
-	top:18px !important;
+	top:17px !important;
 }
 body.gecko .button_iphone_green_right
 {
-	top:18px !important;
+	top:17px !important;
 }
 
 /* Disabled Styles */

@@ -1,13 +1,30 @@
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
+/* this is the root element - we need this style
+   in case there are global DIV styles defined */
+.accordion_aqua_grey
+{
+	padding:0px;
+	margin:0px;
+	width:auto !important;
+
+}
+/* this is the newly created container for the accordion */
 .accordion_aqua_grey_container
 {
-	width:auto !important;
+	padding:0px;
+	margin:0px;
 }
 
 .accordion_aqua_grey_row
 {
 	clear:both;
-	margin:0px;
 	height:23px;
+	padding:0px;
+	margin:0px;
 }
 .accordion_aqua_grey_row_left
 {
@@ -16,6 +33,8 @@
 	width:13px;
 	float:left;
 	cursor:pointer;	
+	padding:0px;
+	margin:0px;
 }
 .accordion_aqua_grey_row_middle
 {
@@ -26,6 +45,8 @@
 	line-height:23px;
 	color:#444;
 	cursor:pointer;
+	padding:0px;
+	margin:0px;
 }
 .accordion_aqua_grey_row_right
 {
@@ -34,12 +55,16 @@
 	width:13px;
 	float:left;
 	cursor:pointer;
+	padding:0px;
+	margin:0px;
 	
 }
 .accordion_aqua_grey_row_data
 {
 	clear:both;
 	padding-left:5px;
+	margin:0px;
+	padding:0px;
 
 }
 .accordion_aqua_grey_active

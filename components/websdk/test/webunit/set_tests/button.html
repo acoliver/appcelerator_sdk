@@ -11,13 +11,19 @@
 {
 	width:30%;
 }
-/* test how images perform with img styles */
+/* add styles for control's element to test behavior when present */
 img
 {
-	padding:5px;
-	
+	padding:10px;
+	margin:10px;
 	top:3px;
 	position:relative;
+}
+button
+{
+	border:2px solid #999;
+	padding:10px;
+	margin:10px;
 }
 -->
 </style>
@@ -40,8 +46,10 @@ img
 				<button set="theme[aqua_blue]">Click Me</button>
 				<button set="theme[white_gradient]">Click Me</button><br/>
 				<button set="theme[thinblue]">Click Me</button>
-				<button set="theme[lightblue_gradient]">Click Me</button>
-				<button set="theme[iphone_green]">Click Me</button><br/>
+				<button set="theme[lightblue_gradient]">Click Me</button><br/>
+				
+				<button set="theme[iphone_green]">Click Me</button>
+				
 				<button set="theme[iphone_red]">Click Me</button>
 				<button set="theme[iphone_grey]">Click Me</button>
 				
@@ -58,14 +66,35 @@ img
 				<button set="theme[aqua_blue]" disabled="true">Click Me</button>
 				<button set="theme[white_gradient]" disabled="true">Click Me</button><br/>
 				<button set="theme[thinblue]" disabled="true">Click Me</button>
-				<button set="theme[lightblue_gradient]" disabled="true">Click Me</button>
-				<button set="theme[iphone_green]" disabled="true">Click Me</button><br/>
+				<button set="theme[lightblue_gradient]" disabled="true">Click Me</button><br/>
+				<button set="theme[iphone_green]" disabled="true">Click Me</button>
 				<button set="theme[iphone_red]" disabled="true">Click Me</button>
 				<button set="theme[iphone_grey]" disabled="true">Click Me</button>
 				
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Margin/Padding Test on native element
+		</td>
+		<td class="result" >
+            <div>
+				<button set="theme[aqua_grey]" style="margin-right:5px;padding:10px">Click Me</button>
+				<button set="theme[aqua_blue]" style="margin-right:5px;padding:10px">Click Me</button><br/>
+				<button set="theme[white_gradient]" style="margin-right:5px;padding:10px">Click Me</button>
+				<button set="theme[thinblue]" style="margin-right:5px;padding:10px">Click Me</button><br/>
+				<button set="theme[lightblue_gradient]" style="margin-right:5px;padding:10px">Click Me</button>
+				
+				<button set="theme[thinblue]" style="margin-right:5px;padding:10px">Click Me</button><br/>
+				
+				<button set="theme[iphone_red]" style="margin-right:5px;padding:10px">Click Me</button>
+				<button set="theme[iphone_grey]" style="margin-right:5px;padding:10px">Click Me</button>
+				
+            </div>
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Enable/Disable Actions

@@ -1,15 +1,21 @@
 .panel_basic
 {
 	position:relative;
+	padding:0px;
+	margin:0px;
 }
-
+.panel_basic div
+{
+	padding:0px;
+	margin:0px;	
+}
 .panel_basic_hdr
 {
 	padding:0; 
 	border:none; 
 	color:#000; 
-	margin-left:6px; 
-	margin-right:6px; 
+	margin-left:6px !important; 
+	margin-right:6px  !important; 
 	text-align:center; 
 	overflow:visible; 
 	background-color:#ccc;
@@ -77,7 +83,7 @@
 .panel_basic_btm_text
 {
 	font-size:11px;
-	padding:2px;
+	padding:2px !important;
 	position:relative;
 	left:5px;
 }
@@ -100,15 +106,9 @@
 .panel_basic_body
 {
 	border:1px solid #AEAEAE;
-	padding:10px;
+	padding:10px !important;
 	background-color:white;
-	margin:0px !important;
 	
 }
 
-body.msie .panel_basic_body div
-{
-	margin:0px !important;
-	
-}
 

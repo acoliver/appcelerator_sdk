@@ -1,3 +1,19 @@
+.tabpanel_gradient_stacked
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_gradient_stacked ul
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_gradient_stacked li
+{
+	margin:0px;
+	padding:0px;
+}
+
 /* TAB */
 .tabpanel_gradient_stacked_tab_mid
 {
@@ -8,14 +24,15 @@
 	border-right:1px solid #e1e1e1;
 	background:#fafafa url(images/arrow.gif) no-repeat scroll 0pt 50%;
 	width:194px;
-	font-size:11px;
+	font-size:11px  !important;
 	color:#595959;
 	cursor:pointer;
 	height:25px;
 	line-height:25px;
-	padding:5px;
-	padding-left:10px;
-	margin-left:1px;
+	padding:5px !important;
+	padding-left:10px !important;
+	margin-left:1px !important;
+	
 }
 
 /* TAB ACTIVE */
@@ -55,16 +72,16 @@
 	background:#fafafa url(images/bottom.gif) no-repeat;
 	width:213px;
 	height:7px;
-	margin-top:-5px;
-	margin-bottom:0px;
+	margin-top:-5px !important;
+
 }
 body.ie7 .tabpanel_gradient_stacked_right
 {
-	margin-top:-9px;
+	margin-top:-9px !important;
 }
 body.ie6 .tabpanel_gradient_stacked_right
 {
-	margin-top:-1px;
+	margin-top:-1px !important;
 }
 
 .tabpanel_gradient_stacked_tab_left_active

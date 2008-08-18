@@ -51,17 +51,35 @@ Appcelerator.UI.registerUIComponent('control','input',
 		var theme = options['theme'] || Appcelerator.UI.UIManager.getDefaultTheme('input')
 		Element.addClassName(element,"input_" + theme + "_input");
 		
+		var span = document.createElement('span');
+		if (Appcelerator.Browser.isIE)
+		{
+			span.style.cssText = element.style.cssText;
+		}
+		else
+		{			
+			span.setAttribute('style',element.getAttribute('style'));
+		}
+		span.className = "input_" + theme + "_container";
+		
+		// remove style from button
+		element.removeAttribute('style');
+
+		new Insertion.Before(element,span);
+		
 		// wrap input with two images (left and right)
 		var img1 = document.createElement('img');
 		var blankImg = Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/blank.gif';
 		img1.src= blankImg;
 		img1.className = "input_" + theme + "_left";		
-		new Insertion.Before(element,img1);	
 		var img2 = document.createElement('img');
 		img2.src = blankImg;
 		img2.className = "input_" + theme + "_right";
-		new Insertion.After(element,img2);
 
+		// add elements
+		span.appendChild(img1);
+		span.appendChild(element);
+		span.appendChild(img2);
 
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)

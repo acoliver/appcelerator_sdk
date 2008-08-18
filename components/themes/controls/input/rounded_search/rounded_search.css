@@ -1,3 +1,21 @@
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
+.input_rouned_search_container img
+{
+	padding:0px;
+	margin:0px;
+}
+.input_rounded_search_container input
+{
+	padding:0px;
+	margin:0px;
+}
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
 
 .input_rounded_search_input
 {
@@ -6,15 +24,15 @@
 	font-size:11px;
 	height:19px;
 	line-height:19px;
-	padding:2px 1px 1px;
-	margin-left:-1px;
-	margin-right:-1px;
+	padding:2px 1px 1px !important;
+	margin-left:-1px !important;
+	margin-right:-1px !important;
 	outline:none;
 	font-family:"arial",sans-serif;
 }
 body.gecko .input_rounded_search_input
 {
-	padding:4px 1px 1px;
+	padding:4px 1px 1px !important;
 }
 .input_rounded_search_left
 {
@@ -35,6 +53,7 @@ body.gecko .input_rounded_search_input
 	top:5px;
 }
 
+/* IE STYLES */
 body.msie .input_rounded_search_left
 {
 	top:3px;
@@ -45,5 +64,5 @@ body.msie .input_rounded_search_right
 }
 body.msie .input_rounded_search_input
 {
-	padding:0px 1px 1px;
+	padding:0px 1px 1px !important;
 }

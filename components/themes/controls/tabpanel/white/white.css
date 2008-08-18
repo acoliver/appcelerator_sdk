@@ -1,3 +1,20 @@
+.tabpanel_white
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_white ul
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_white li
+{
+	margin:0px;
+	padding:0px;
+}
+
+
 /* TAB */
 .tabpanel_white_tab_mid
 {
@@ -5,13 +22,13 @@
 	bottom:0pt;
 	height:22px;
 	color:#666;
-	font-size:12px;
+	font-size:12px !important;
 	cursor:pointer;
 	border-bottom:1px solid #d7dcdf;
 	min-width:100px;
-	margin-left:-1px;
-	margin-right:-1px;
-	margin-bottom:-1px;
+	margin-left:-1px !important;
+	margin-right:-1px !important;
+	margin-bottom:-1px !important;
 	font-weight:bold;
 	float:left;
 	line-height:22px;
@@ -48,6 +65,7 @@ body.ie6 .tabpanel_white_divider
 .tabpanel_white_left
 {
 	width:20px;
+	height:22px;
 	float:left;
 }
 
@@ -80,18 +98,19 @@ body.ie6 .tabpanel_white_divider
 	position:relative;
 	border:none;
 	float:left;
-
 }
 .tabpanel_white_tab_right
 {
 	background:url(images/tr_grey.gif) no-repeat;
 	width:8px;
 	height:22px;
-	margin-right:10px;
+	margin-right:10px !important;
 	position:relative;
 	border:none;
 	float:left;
+	
 }
+
 
 /* TAB HOVER */
 .tabpanel_white_tab_mid:hover

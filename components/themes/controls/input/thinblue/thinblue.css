@@ -1,3 +1,21 @@
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
+.input_thinblue_container img
+{
+	padding:0px !important;
+	margin:0px !important;
+}
+.input_thinblue_container button
+{
+	padding:0px !important;
+	margin:0px !important;
+}
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
+
 .input_thinblue_input
 {
 	background:#FFFFFF url(images/input.gif) repeat-x scroll 0pt;

@@ -1,3 +1,19 @@
+.tabpanel_basic
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_basic ul
+{
+	margin:0px;
+	padding:0px;
+}
+.tabpanel_basic li
+{
+	margin:0px;
+	padding:0px;
+}
+
 /* TAB */
 .tabpanel_basic_tab_mid
 {
@@ -6,17 +22,16 @@
 	border-top:1px solid #bbb;
 	border-right:1px solid #bbb;
 	border-bottom:1px solid #bbb;
-	font-size:12px;
+	font-size:12px  !important;
 	font-weight:bold;
 	color:#666;
 	cursor:pointer;
-	padding-left:20px;
-	padding-right:20px;
+	padding-left:20px !important;
+	padding-right:20px !important;
 	height:20px;
 	line-height:20px;
-	margin-left:0px;	
 	float:left;
-	margin-bottom:-1px;
+	margin-bottom:-1px !important;
 }
 
 body.msie tabpanel_basic_tab_mid

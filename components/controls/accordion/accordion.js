@@ -81,8 +81,8 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 	build:  function(element,options)
 	{
 		var classPrefix = "accordion_" + options['theme'];
-		element.className = classPrefix + "_container";
 		element.style.width = options['width'];
+		Element.addClassName(element,classPrefix);
 		var html = '';
 		var count = 0;
 		for (var c=0,len=element.childNodes.length;c<len;c++)
@@ -90,8 +90,6 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 			var node = element.childNodes[c];
 			if (node.nodeType == 1)
 			{
-				
-				// row container
 				html +='<div class="'+classPrefix + '_row" on="click then l:accordion.'+element.id+'.click[val='+count+']">';
 				html +=' <div id="'+element.id + '_accordion_left_'+count+'" class="'+classPrefix+'_row_left" on="l:accordion.'+element.id+'.click[val='+count+'] then add[class='+classPrefix+'_row_left_active] else remove[class='+classPrefix+'_row_left_active]"></div>';
 				html +=' <div id="'+element.id + '_accordion_middle_'+count+'" class="'+classPrefix+'_row_middle" style="width:'+options['width']+'"  on="l:accordion.'+element.id+'.click[val='+count+'] then add[class='+classPrefix+'_row_middle_active] else remove[class='+classPrefix+'_row_middle_active]">';
@@ -120,8 +118,7 @@ Appcelerator.UI.registerUIComponent('control','accordion',
 		}	
 		
 		var container = 'accordion_container_' + element.id;
-		
-		element.innerHTML = '<div id="'+container+'">' + html + '</div>';
+		element.innerHTML = '<div id="'+container+'" class="'+classPrefix + '_container">' + html + '</div>';
 
 		// deal with IE PNG issue
 		if (Appcelerator.Browser.isIE6)
