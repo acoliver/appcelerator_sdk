@@ -77,7 +77,7 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 			for (var c=0;c<f.elements.length;c++)
 			{
 				var obj = f.elements[c];
-				Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options);
+				Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options,obj.callback);
 			}
 
 			f.elements = null;
@@ -89,7 +89,7 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 	}
 };
 
-Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,options)
+Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,options,callback)
 {
 	var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,impl,options);
 	if (formattedOptions!=false)
@@ -149,23 +149,28 @@ Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,opt
 	}
 	
 	Appcelerator.Compiler.parseOnAttribute(element);
+	
+	if (callback)
+	{
+		callback();
+	}
 };
 
 /**
  * called to load UI component by UI manager
  */ 
-Appcelerator.UI.loadUIComponent = function(type,name,element,options)
+Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 {
 	var f = Appcelerator.UI.UIComponents[type+':'+name];
 	if (f)
 	{
 		if (f.loaded)
 		{
-			Appcelerator.UI.activateUIComponent(f.impl,f.dir,type,name,element,options);
+			Appcelerator.UI.activateUIComponent(f.impl,f.dir,type,name,element,options,callback);
 		}
 		else
 		{
-			f.elements.push({type:type,name:name,element:element,options:options});
+			f.elements.push({type:type,name:name,element:element,options:options,callback:callback});
 		}
 	}
 	else
@@ -176,7 +181,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options)
 		element.state.pending+=1;
 		var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
 		var path = dir+'/'+name+'.js';
-		Appcelerator.UI.UIComponents[type+':'+name] = {dir:dir,loaded:false,elements:[{type:type,name:name,element:element,options:options}]};
+		Appcelerator.UI.UIComponents[type+':'+name] = {dir:dir,loaded:false,elements:[{type:type,name:name,element:element,options:options,callback:callback}]};
 
 		Appcelerator.Core.remoteLoadScript(path,function()
 		{
@@ -205,17 +210,17 @@ Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype,p
 /************************************
  *  API FUNCTIONS
  ***********************************/
-Appcelerator.UI.createControl = function (element,type,args)
+Appcelerator.UI.createControl = function (element,type,args,callback)
 {
-	Appcelerator.loadUIManager('control',type,element,(args)?args:{},false);
+	Appcelerator.loadUIManager('control',type,element,args||{},callback);
 };
-Appcelerator.UI.addBehavior = function(element,type,args)
+Appcelerator.UI.addBehavior = function(element,type,args,callback)
 {
-	Appcelerator.loadUIManager('behavior',type,element,(args)?args:{},false);
+	Appcelerator.loadUIManager('behavior',type,element,args||{},callback);
 };
-Appcelerator.UI.createLayout = function(element,type,args)
+Appcelerator.UI.createLayout = function(element,type,args,callback)
 {
-	Appcelerator.loadUIManager('layout',type,element,(args)?args:{},false);
+	Appcelerator.loadUIManager('layout',type,element,args||{},callback);
 };
 
 /****************************************************
@@ -295,7 +300,6 @@ Appcelerator.loadUIManager=function(ui,type,element,args,failIfNotFound,callback
 		else
 		{
 			element.state.pending+=1;
-			//FIXME
 			Appcelerator.Core.requireCommonJS('appcelerator/'+ui+'s/'+ui+'s.js',function()
 			{
 				Appcelerator.UI.fireEvent(ui,type,'register');
@@ -524,7 +528,7 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 		Element.addClassName(element,'themed');
 		var type = element.nodeName.toLowerCase();
 		options['theme']=theme;
-		Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);		
+		Appcelerator.UI.loadUIComponent('control',type,element,options,callback);		
 	}
 });
 
@@ -538,6 +542,7 @@ Appcelerator.UI.registerUIManager('control',function(type,element,options,callba
 	if (Appcelerator.UI.widgetRegex.test(type))
 	{
 	    var state = Appcelerator.Compiler.createCompilerState();
+		state.pending+=1;
 		state.scanned = true;
 		Appcelerator.Core.requireModule(type,function()
 		{
@@ -549,7 +554,7 @@ Appcelerator.UI.registerUIManager('control',function(type,element,options,callba
 		return;
 	}
     Element.addClassName(element,type);
-    Appcelerator.UI.loadUIComponent('control',type,element,options,false,callback);
+    Appcelerator.UI.loadUIComponent('control',type,element,options,callback);
 });
 
 Appcelerator.UI.LayoutManager = {};
@@ -790,12 +795,12 @@ Appcelerator.UI.registerUIManager('layout', function(type,element,options,callba
 {
    Element.addClassName(element,'layout');
    Element.addClassName(element,type);
-   Appcelerator.UI.loadUIComponent('layout',type,element,options,false,callback);
+   Appcelerator.UI.loadUIComponent('layout',type,element,options,callback);
 });
 
 Appcelerator.UI.registerUIManager('behavior', function(type,element,options,callback)
 {
-   Appcelerator.UI.loadUIComponent('behavior',type,element,options,false,callback);
+   Appcelerator.UI.loadUIComponent('behavior',type,element,options,callback);
 });
 
 
