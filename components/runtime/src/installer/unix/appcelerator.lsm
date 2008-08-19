@@ -1,6 +1,6 @@
 Begin3
 Title:          appcelerator
-Version:        2.1
+Version:        0.0.0
 Description:    The Appcelerator RIA Platform is a set of software for building
                 rich Internet applications (RIA) on a service-oriented
                 architecture (SOA). 
@@ -10,5 +10,5 @@ Maintained-by:  Appcelerator Community (info@appcelerator.com)
 Original-site:  http://www.appcelerator.org
 Home-Page:      http://www.appcelerator.org
 Platform:       Unix, Win32, MacOSX
-Copying-policy: GPLv3
+Copying-policy: BSD
 End

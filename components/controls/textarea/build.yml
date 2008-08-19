@@ -1,7 +1,7 @@
 --- 
 :release_notes: initial release
 :type: control
-:licenses: [1]
+:licenses: [4]
 
 :description: textarea control
 :name: textarea

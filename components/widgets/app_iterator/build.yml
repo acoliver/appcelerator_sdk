@@ -7,5 +7,5 @@
   :version: ">=2.1.2"
   :name: websdk
 :tags: [ layout ]
-:licenses: [1]
+:licenses: [4]
 :description: "app:iterator is a UI control for iterating over a set of array values from a message"

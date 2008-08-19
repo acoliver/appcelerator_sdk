@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ uicontrol, layout ]
-:licenses: [1]
+:licenses: [4]
 :description: "app:tabpanel is a UI control for displaying content in tabs"

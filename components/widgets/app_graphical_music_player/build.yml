@@ -6,7 +6,7 @@
   :name: websdk
   :version: ">=2.1"
 :name: app:graphical_music_player
-:licenses: [1]
+:licenses: [4]
 
 :description: app:graphical_music_player widget
 :tags: [ audio, mp3, flash ]

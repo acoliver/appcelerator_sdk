@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ uicontrol ]
-:licenses: [1]
+:licenses: [4]
 :description: "app:progressbar is a UI control for displaying a progress bar and driving the progress values based on a message"

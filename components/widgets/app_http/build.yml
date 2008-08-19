@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ rest, network ]
-:licenses: [1]
+:licenses: [4]
 :description: "app:http is a non-visual control for executing REST-style services"
