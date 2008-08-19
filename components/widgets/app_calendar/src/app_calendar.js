@@ -58,7 +58,7 @@ Appcelerator.Widget.Calendar =
     },
     getActions: function()
     {
-        return ['execute'];
+        return ['execute','close'];
     },
     getAttributes: function()
     {
