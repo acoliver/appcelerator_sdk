@@ -295,24 +295,19 @@ end
 #
 namespace :release do
   task :all do
-    server = ENV['SERVER'] || 'http://updatesite.appcelerator.org'
+    server = ENV['UPDATESITE'] || ENV['SERVER'] || 'http://updatesite.appcelerator.org'
     puts "==> releasing all widgets"
     system "app release #{STAGE_DIR}/all_widgets.zip --server=#{server}"
     puts "==> releasing websdk"
     system "app release #{Dir.glob(STAGE_DIR + '/websdk_*.zip').first} --server=#{server}"
     puts "==> releasing installer_update"
     system "app release #{Dir.glob(STAGE_DIR + '/installer_update_*.zip').first} --server=#{server}"
-    Dir.glob(STAGE_DIR+'/service_*.zip').each do |name|
-      puts "==> releasing #{File.basename(name)}"
-      system "app release #{name} --server=#{server}"
-    end
-    Dir.glob(STAGE_DIR+'/installer_*.zip').each do |name|
-      puts "==> releasing #{File.basename(name)}"
-      system "app release #{name} --server=#{server}"
-    end
-    Dir.glob(STAGE_DIR+'/plugin_*.zip').each do |name|
-      puts "==> releasing #{File.basename(name)}"
-      system "app release #{name} --server=#{server}"
+
+    %w(service installer plugin layout control behavior theme).each do |type|
+      Dir.glob("#{STAGE_DIR}/#{type}_*.zip").each do |name|
+        puts "==> releasing #{File.basename(name)}"
+        system "app release #{name} --server=#{server}"
+      end
     end
   end
 end

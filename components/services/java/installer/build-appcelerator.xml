@@ -10,7 +10,7 @@
 	</target>
 	<target name="banner">
 		<echo>Appcelerator RIA Platform for Java</echo>
-		<echo>Licensed under the GNU GPL version 3 or later</echo>
+		<echo>Licensed under the New BSD License</echo>
 		<echo>Please see COPYING for more details on license requirements</echo>
 	</target>
 	<target name="compile" description="Compiles the Java code" depends="init,pre_compile,execute_compile,post_compile">
