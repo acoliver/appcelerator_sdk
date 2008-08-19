@@ -143,10 +143,10 @@ Appcelerator.Compiler.afterDocumentCompile(function()
         // because the hash thing will be fixed in the next major
         // version of Safari. So even if they fix the history.length
         // bug, all this will still work!
-        counter = history.length;
+        var counter = history.length;
         
         // On Gecko and Opera, we just need to watch the hash...
-        hash = null; // set it to null so we can start off in a null state to check for first change
+        var hash = null; // set it to null so we can start off in a null state to check for first change
         
         setInterval( function () 
         {
@@ -155,6 +155,7 @@ Appcelerator.Compiler.afterDocumentCompile(function()
 
             newHash = document.location.hash;
             newCounter = history.length;
+
             if ( newHash !== hash ) 
             {
                 hash = newHash;
