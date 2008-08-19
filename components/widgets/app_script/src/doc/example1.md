@@ -1,8 +1,8 @@
 Title: Simple Example
 
-This is a simple example that uses the `<app:script>`.
+This is a simple example that uses the `<app:script>`.  Please note that only C-style comments are supported (/ * comment here * /).
 
-++example	
+++example
 <button on="click then l:get.current.datetime">
     Get time and date
 </button>
