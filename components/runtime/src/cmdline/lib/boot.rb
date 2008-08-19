@@ -126,7 +126,7 @@ module Appcelerator
       save=false
       
       if not OPTIONS[:server]
-        OPTIONS[:server] = config[:server] || ET_PHONE_HOME
+        OPTIONS[:server] = config[:server] || ENV['UPDATESITE'] || ET_PHONE_HOME
       end
       
       return nil if OPTIONS[:no_remote]
