@@ -317,6 +317,20 @@
             </div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Modal DIV using hideMessage/showMessage (testing ScrollTo top)
+		</td>
+		<td class="result" >
+            <div>
+				<button on="click then l:showScroll">Click Me</button>
+				<div style="padding:10px;border:2px solid #ccc;background-color:#fff" 
+					set="behavior[modal,showMessage=l:showScroll,hideMessage=l:hideScroll]">
+					<button on="click then l:hideScroll">Close</button>
+				</div>
+            </div>
+		</td>
+	</tr>
 
 </table>
 

@@ -130,6 +130,19 @@ Object.extend(Appcelerator.Decorator,
         this.checkInvalid(element, valid, decId, 'required');
     });
 
+    addDecorator('zipcode_5', function(element, valid, decId)
+    {
+        this.checkInvalid(element, valid, decId, '5 digit zipcode required');
+    });
+    addDecorator('phone_us', function(element, valid, decId)
+    {
+        this.checkInvalid(element, valid, decId, '10 digit phone number required (###-###-####)');
+    });
+    addDecorator('ssn', function(element, valid, decId)
+    {
+        this.checkInvalid(element, valid, decId, '9 digit ssn required (###-##-####)');
+    });
+
     addDecorator('email', function(element, valid, decId)
     {
         this.checkInvalid(element, valid, decId, 'enter a valid email address');

@@ -9,8 +9,8 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 	{
 		var T = Appcelerator.Types;
 		return [{name: 'background-color', optional: true, description: "container color for rounded ",defaultValue: '#dddddd'},
-		        {name: 'width', optional: true, description: "container width for rounded ",defaultValue: '300px'},
-		        {name: 'height', optional: true, description: "container height for rounded ",defaultValue: '50px'},
+		        {name: 'width', optional: true, description: "container width for rounded ",defaultValue: 'auto'},
+		        {name: 'height', optional: true, description: "container height for rounded ",defaultValue: 'auto'},
 		        {name: 'tail', optional: true, description: "tail position ",defaultValue: '',type: T.enumeration('lt','lb','rt','rb','bl','br')},
 		        {name: 'corners', optional: true, description: "round top corners ",defaultValue:"top bottom"}
 		];
@@ -61,9 +61,9 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		{
 			this._roundContent(element,i, options['background-color'], roundTL, roundTR);
 		}
-
+		
 		// add center content 
-		element.innerHTML += '<div style="background-color:'+options['background-color']+';height:'+options['height']+'">'+html + '</div>' ;
+		element.innerHTML += '<div style="padding-left:10px;padding-right:10px;background-color:'+options['background-color']+';height:'+options['height']+'">'+html + '</div>' ;
 		
 		element.style.height=options['height'];
 		element.style.width=options['width'];
@@ -72,22 +72,30 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		element.style.marginTop = "5px";
 		element.style.marginLeft = "5px";
 		element.style.marginRight = "5px";
+		
+		// set width if set to auto (IE!!!)
+		if (Appcelerator.Browser.isIE && options['width']=='auto')
+		{
+			element.style.width = "300px"
+		}
 
 		
 		// add shadow dependency
 		Appcelerator.UI.addElementUIDependency(element,'behavior','rounded','behavior', 'shadow', function(element)
 		{
+			// set margins
 			if (Appcelerator.Browser.isIE6)
 			{
 				element.style.marginTop = "0px";
 				element.style.marginLeft = "-3px";
 				element.style.marginBottom = "1px";
 				element.style.marginRight = "1px";
+				
 			}
 			else
 			{
 				element.style.marginRight = "-1px";
-				element.style.marginBottom = "9px";
+				element.style.marginBottom = (options['height'] == 'auto')?"0px":"9px";
 				element.style.marginTop = "0px";
 				element.style.marginLeft = "0px";
 				
@@ -119,10 +127,10 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		}
 		if (options['tail'] != '')
 		{
-			this._buildTail(element,options['background-color'],options['tail']);
+			this._buildTail(element,options['background-color'],options['tail'],options['height']);
 		}
 	},
-	_buildTail: function(container, color, position)
+	_buildTail: function(container, color, position,height)
 	{
 		// ARGH, IE!
 		var positions = null;
@@ -139,14 +147,34 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		}
 		else
 		{
-			positions = {'lt':{'value':'top:20px;left:-18px;'},
-							'lb':{'value':'bottom:10px;left:-18px;'},
+			positions = {'lt':{'value':'top:20px;left:-19px;'},
+							'lb':{'value':'bottom:10px;left:-19px;'},
 							'rt':{'value':'top:20px;right:-18px;'},
 							'rb':{'value':'bottom:10px;right:-18px;'},
 							'bl':{'value':'bottom:-28px;left:20px;'},
 							'br':{'value':'bottom:-29px;right:20px;'}};			
 		}
+		
+		if (height =='auto')
+		{
+			if (Appcelerator.Browser.isIE6)
+			{
+				positions['bl'].value = 'bottom:-26px;left:20px;';
+				positions['br'].value = 'bottom:-26px;right:20px;';				
+				positions['lt'].value = 'top:9px;left:-11px;';
+				positions['rt'].value = 'top:9px;right:-11px;';
 
+			}
+			else
+			{
+				positions['bl'].value = 'bottom:-18px;left:20px;';
+				positions['br'].value = 'bottom:-19px;right:20px;';
+				positions['lt'].value = 'top:9px;left:-19px;';
+				positions['rt'].value = 'top:9px;right:-18px;';
+				
+				
+			}
+		}
 		var html ='<div style="position:absolute;'+positions[position].value+'display:block;">';
 
 		if (position.startsWith('r') || position == 'bl')
@@ -161,10 +189,9 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		else
 		{
 			var total = 19;
-			if (Appcelerator.Browser.isIE6) total = 11;
-			for (var i=0;i<19;i++)
+			for (var i=0;i<total;i++)
 			{
-				html += '<div style="height:1px;font-size:0pt;width:'+(19-i)+'px;margin-left:'+i+'px;background-color:'+color+';"></div>';
+				html += '<div style="height:1px;font-size:0pt;width:'+(total-i)+'px;margin-left:'+i+'px;background-color:'+color+';"></div>';
 			}
 		}
 		html+='</div>';

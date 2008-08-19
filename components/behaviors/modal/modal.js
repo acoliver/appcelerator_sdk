@@ -59,6 +59,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 		{
 			$MQL(options['showMessage'],function(t, data, datatype, direction)
 			{
+				window.scrollTo(0,0)
 				Element.show(modalContainer);
 				Element.show(overlayDataHTML);
 				Element.show(element)

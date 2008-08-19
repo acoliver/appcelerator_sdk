@@ -92,7 +92,7 @@ Object.extend(Appcelerator.Validator,
     addValidator('zipcode_5_optional', function(value)
     {
 	 	if (!value || value.trim().length == 0) return true;
-        return Appcelerator.Validator.zipcode(value);
+        return Appcelerator.Validator.zipcode_5(value);
     });
 
     addValidator('ssn', function(value)

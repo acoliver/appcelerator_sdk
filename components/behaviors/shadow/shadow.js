@@ -71,13 +71,6 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 			Element.hide(newContainer);
 		});		
 
-		// deal with IE PNG issue
-		if (Appcelerator.Browser.isIE6)
-		{
-			$(d1).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
-			$(d2).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');	
-			$(d3).addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');				
-		}
 
 		Appcelerator.Core.loadTheme('behavior','shadow',options['theme'],element,options);	
 

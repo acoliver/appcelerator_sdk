@@ -11,7 +11,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		
 		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('panel')},
 				{name: 'height', optional: true, description: " height for panel" ,defaultValue: 'auto', type: T.cssDimension},		 
-				{name: 'width', optional: true, description: " width for panel" ,defaultValue: '300px', type: T.cssDimension},		 
+				{name: 'width', optional: true, description: " width for panel" ,defaultValue: 'auto', type: T.cssDimension},		 
 				{name: 'footer', optional: true, description: " footer for panel" , defaultValue: ''},
 				{name: 'title', optional: true, description: " title for panel" , defaultValue: ''},
 				{name: 'closeable', optional: true, description: " is panel closeable" , defaultValue: true}
@@ -101,7 +101,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		element.style.width = options['width'];
 		element.style.height = "auto";
 		Element.addClassName(element,classPrefix);
-		
+
 		// wire close	
 		if (options['closeable'] == true)
 		{
@@ -123,6 +123,29 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			});		
 
 		}
+
+		// IE7 with Shadow -set width
+		if (Appcelerator.Browser.isIE)
+		{
+			// always set if IE6
+			if (Appcelerator.Browser.isIE6 && options['width']=='auto')
+			{
+				$(element.id + "_panel").style.width = "300px";	
+				element.style.width = "300px";			
+			}
+			// set for shadow for all IEs
+			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'shadow', function(element)
+			{
+				// must set width on IE with shadow
+				if (options['width']=='auto')
+				{
+					$(element.id + "_panel").style.width = "300px";
+					element.style.width = "300px";			
+
+				}
+			});
+		}
+
 		// fix PNGs
 		if (Appcelerator.Browser.isIE6)
 		{
@@ -137,6 +160,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 				$(element.id + "_close").addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
 			}
 		}
+
 		Appcelerator.Core.loadTheme('control','panel',options['theme'],element,options);	
 	}
 });
