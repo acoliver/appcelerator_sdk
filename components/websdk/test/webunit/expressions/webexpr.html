@@ -34,7 +34,6 @@
 		<td class="test">l:test[count>1]</td>
 		<td class="result" on="l:test[count>1] then value['passed'] else value['failed']"></td>
 	</tr>
-	
 	<tr>
 		<td class="test">l:test[count<101]</td>
 		<td class="result" on="l:test[count<101] then value['passed'] else value['failed']"></td>
@@ -114,8 +113,12 @@
 	<tr>
 		<td class="test">l:test[expr(this.count > 1),count>99,expr(this.count==100)]</td>
 		<td class="result" on="l:test[expr(this.count > 1),count>99,expr(this.count==100)] then value['passed'] else value['failed']"></td>
-	</tr>
+	</tr> 
 	<tr>
+		<td class="test">l:test then value[value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + ' PASSED')]</td>
+		<td class="result" on="l:test then value[value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + ' PASSED')]"></td>
+	</tr>
+ 	<tr>
 		<td class="test">l:test[count,expr(1+1>1)]</td>
 		<td class="result" on="l:test[count,expr(1+1>1)] then value['passed'] else value['failed']"></td>
 	</tr>

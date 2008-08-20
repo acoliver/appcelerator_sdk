@@ -2728,19 +2728,22 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	var quotedStart = false, tickStart = false;
 	var operator = null;
 	
-	// extract out our expressions prior to processing normal strings
-	if (containsExpr && !asjson)
+	function transformValue(key,value,tick)
 	{
-		while ( true ) 
-		{ 	
-			var expr = str.match(/expr\((.*?)\)/,""); 	
-			if (!expr) 	
-			{ 		
-				break; 	
-			} 	
-			data.push({key:expr[1],value:null,expression:true});
-			str = str.replace(expr[0],'');
-		} 
+		var str = Appcelerator.Compiler.decodeParameterValue(value,tick);
+		if (!asjson)
+		{
+			var expr = str && Object.isString(str) ? str.match(/expr\((.*?)\)/,"") : str;
+			if (expr && Object.isArray(expr))
+			{
+				return {key:expr[1],value:null,expression:true};
+			}
+			else
+			{
+				return {key:key,value:str};
+			}
+		}
+		return str;
 	}
 
 	for (var c=0,len=str.length;c<len;c++)
@@ -2801,11 +2804,11 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 							append = false;
 							if (asjson)
 							{
-								data[key]=Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart);
+								data[key]=transformValue(key,currentstr,quotedStart||tickStart);
 							}
 							else
 							{
-								data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart)});
+								data.push(transformValue(key,currentstr,quotedStart||tickStart));
 							}
 							key = null;
 							quotedStart = false, tickStart = false;
@@ -2869,7 +2872,8 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						}
 						else
 						{
-							data.push({key:currentstr,value:null,empty:true,operator:operator});
+							var entry = transformValue(key,currentstr);
+							data.push({key:entry.value,value:null,empty:true,operator:operator});
 						}
 						key = null;
 						quotedStart = false, tickStart = false;
@@ -2884,11 +2888,13 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 							append = false;
 							if (asjson)
 							{
-								data[key]=Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart);
+								data[key]=transformValue(key,currentstr,quotedStart||tickStart);
 							}
 							else
 							{
-								data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
+								var entry = transformValue(key,currentstr);
+								entry.operator = operator;
+								data.push(entry);
 							}
 							key = null;
 							quotedStart = false, tickStart = false;
@@ -2930,11 +2936,13 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 					currentstr+='}';
 					if (asjson)
 					{
-						data[key]=Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart);
+						data[key]=transformValue(key,currentstr,quotedStart||tickStart);
 					}
 					else
 					{
-						data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
+						var entry = transformValue(key,currentstr);
+						entry.operator = operator;
+						data.push(entry);
 					}
 					key = null;
 					quotedStart = false, tickStart = false;
@@ -2969,11 +2977,13 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			currentstr = currentstr.strip();
 			if (asjson)
 			{
-				data[key]=Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart);
+				data[key]=transformValue(key,currentstr,quotedStart||tickStart);
 			}
 			else
 			{
-				data.push({key:key,value:Appcelerator.Compiler.decodeParameterValue(currentstr,quotedStart||tickStart),operator:operator});
+				var entry = transformValue(key,currentstr);
+				entry.operator = operator;
+				data.push(entry);
 			}
 		}
 	}
@@ -2986,7 +2996,12 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 		}
 		else
 		{
-			data.push({key:currentstr,value:null,empty:true,operator:operator});
+			var entry = transformValue(key,currentstr);
+			entry.key = entry.value;
+			entry.value = null;
+			entry.empty = true;
+			entry.operator = operator;
+			data.push(entry);
 		}
 	}
 	return data;
