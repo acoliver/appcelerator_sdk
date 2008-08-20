@@ -21,7 +21,8 @@ Appcelerator.UI.registerUIComponent('control','input',
 				'optional': true,
 				'description': 'name of theme to use for this control',
 				'type': T.identifier
-			}
+			},
+			{name: 'width', optional: true, description: "container width for select ",defaultValue: 'auto'}
 		];
 	},
 	/**
@@ -52,19 +53,23 @@ Appcelerator.UI.registerUIComponent('control','input',
 		Element.addClassName(element,"input_" + theme + "_input");
 		
 		var span = document.createElement('span');
+		span.className = "input_" + theme + "_container";
+
+		var cssText = (Appcelerator.Browser.isIE)?element.style.cssText:element.getAttribute('style');
+		element.removeAttribute('style');
+
 		if (Appcelerator.Browser.isIE)
 		{
-			span.style.cssText = element.style.cssText;
+			span.style.cssText = cssText
 		}
 		else
 		{			
-			span.setAttribute('style',element.getAttribute('style'));
+			span.setAttribute('style',cssText);
 		}
-		span.className = "input_" + theme + "_container";
 		
-		// remove style from button
-		element.removeAttribute('style');
-
+		// add width style
+		element.style.width = options['width'];
+		
 		new Insertion.Before(element,span);
 		
 		// wrap input with two images (left and right)

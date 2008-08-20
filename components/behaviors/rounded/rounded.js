@@ -100,6 +100,12 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 				element.style.marginLeft = "0px";
 				
 			}
+			
+			// FF needs width with shadow
+			if (Appcelerator.Browser.isGecko)
+			{
+				element.style.width = "300px"
+			}
 		});		
 
 

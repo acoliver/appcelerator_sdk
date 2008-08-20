@@ -6,7 +6,9 @@
 	padding:0px;
 	margin:0px;
 }
-
+/*********************************************************
+ * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
+ *********************************************************/
 .select_thinline img
 {
 	padding:0px;
@@ -22,6 +24,10 @@
 	padding:0px;
 	margin:0px;
 }
+
+/********************************************************
+* CONTROL STYLES
+*********************************************************/
 .select_thinline_input
 {
 	background:#ffffff;
@@ -84,6 +90,10 @@ body.ie7 .select_thinline_arrow
 body.msie .select_thinline_dropdown
 {
 	top:27px;
+}
+body.gecko .select_thinline_dropdown
+{
+	top:22px;
 }
 
 .select_thinline_dropdown_item

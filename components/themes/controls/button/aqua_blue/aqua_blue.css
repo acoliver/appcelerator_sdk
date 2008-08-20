@@ -5,12 +5,13 @@
 {
 	padding:0px !important;
 	margin:0px !important;
+	position:static;
 }
 .button_aqua_blue_container button
 {
 	padding:0px;
 	margin:0px !important;
-	padding-bottom:2px !important;	
+	position:static;
 }
 
 /********************************************************
@@ -19,47 +20,31 @@
 
 .button_aqua_blue_left
 {
-	position:relative;
 	background:transparent url(images/left.png) no-repeat;
-	top:7px ;
 	height:23px;
 	width:13px;
+	vertical-align:middle;
 }
 
 .button_aqua_blue_middle
 {
 	background:transparent url(images/middle.png) repeat-x;
-	line-height:23px;
     cursor:pointer;	
 	font-size:12px !important;	
 	border:0px none;
 	height:23px;
+	line-height:23px;
+	vertical-align:middle;
 }
 
 
 .button_aqua_blue_right
 {
-	position:relative;
 	background:transparent url(images/right.png) no-repeat;
-	top:7px;
 	height:23px;
 	width:13px;
+	vertical-align:middle;
 }
-
-/* IE styles */
-body.msie .button_aqua_blue_right
-{
-	top:4px !important;
-}
-body.msie .button_aqua_blue_middle
-{
-	padding-bottom:0px !important;
-}
-body.msie .button_aqua_blue_left
-{
-	top:4px !important;
-}
-
 
 
 /* Disabled styles */

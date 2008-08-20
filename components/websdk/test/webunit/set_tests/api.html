@@ -4,7 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
-	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 <style>
 </style>
 </head>
@@ -32,11 +31,12 @@
 		<div name="three">three</div>
 	</div>
 	
-	<div style="margin:20px"></div>
 
-	<!-- BUTTON TEST -->
+	<button id="button2">Click Me</button>
+	<button id="button4">Click Me</button>
+	<button id="button5">Click Me</button>
 	<button id="button">Click Me</button>
-	<div style="margin:20px"></div>
+	<button id="button3">Click Me</button>
 	
 	<!-- MODAL,PANEL, SHADOW TEST -->
 	<div id="panel_shadow" style="width:400px">
@@ -90,8 +90,16 @@
 		Appcelerator.UI.createControl($('tabpanel'),'tabpanel',{'theme':'green','initial':'one'});
 		
 		/* button */
-		Appcelerator.UI.createControl($('button'),'button',{'theme':'iphone_green'});
+		Appcelerator.UI.createControl($('button'),'button',{'theme':'iphone_red'});
 		$('button').on("click then script[alert('foo')]");
+		Appcelerator.UI.createControl($('button2'),'button',{'theme':'thinblue'});
+		$('button2').on("click then script[alert('foo')]");
+		Appcelerator.UI.createControl($('button3'),'button',{'theme':'iphone_green'});
+		$('button3').on("click then script[alert('foo')]");
+		Appcelerator.UI.createControl($('button4'),'button',{'theme':'aqua_blue'});
+		$('button4').on("click then script[alert('foo')]");
+		Appcelerator.UI.createControl($('button5'),'button',{'theme':'lightblue_gradient'});
+		$('button5').on("click then script[alert('foo')]");
 		
 		/* panel with modal shadow */
 		Appcelerator.UI.createControl($('panel_shadow'),'panel',{'theme':'white'});

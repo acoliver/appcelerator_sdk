@@ -1,15 +1,17 @@
 /*********************************************************
  * OVERRIDE ANY GLOBAL STYLES ON CONTROL'S BASE ELEMENTS
  *********************************************************/
-.input_rouned_search_container img
+.input_rounded_search_container img
 {
 	padding:0px;
 	margin:0px;
+	position:static;
 }
 .input_rounded_search_container input
 {
 	padding:0px;
 	margin:0px;
+	position:static;
 }
 
 /********************************************************
@@ -21,48 +23,38 @@
 {
 	background:transparent url(images/input.png) repeat-x;
 	border:0px none;
-	font-size:11px;
 	height:19px;
 	line-height:19px;
-	padding:2px 1px 1px !important;
-	margin-left:-1px !important;
-	margin-right:-1px !important;
+	padding:2px 1px 1px;
+	vertical-align:middle;
 	outline:none;
-	font-family:"arial",sans-serif;
-}
-body.gecko .input_rounded_search_input
-{
-	padding:4px 1px 1px !important;
 }
 .input_rounded_search_left
 {
 	background:transparent url(images/left.png) no-repeat;
 	height:19px;
 	width:20px;
-	position:relative;
-	padding:0px !important;
-	top:5px;
+	padding:2px 0px 1px;
+	vertical-align:middle;
 }
 .input_rounded_search_right
 {
 	background:transparent url(images/right.png) no-repeat ;
 	height:19px;
 	width:10px;
-	position:relative;
-	padding:0px !important;
-	top:5px;
+	padding:2px 0px 1px;
+	vertical-align:middle;
 }
 
-/* IE STYLES */
+body.msie .input_rounded_search_input
+{
+	padding:0px !important;
+}
 body.msie .input_rounded_search_left
 {
-	top:3px;
+	padding:0px !important;
 }
 body.msie .input_rounded_search_right
 {
-	top:3px;
-}
-body.msie .input_rounded_search_input
-{
-	padding:0px 1px 1px !important;
+	padding:0px !important;
 }

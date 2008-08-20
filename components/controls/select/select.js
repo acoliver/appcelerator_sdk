@@ -12,14 +12,11 @@ Appcelerator.UI.registerUIComponent('control','select',
 	// track theme for each select
 	activeThemes:{},
 
-	// track vars for each select
+	// tracking vars for each select
 	activeSelects:{},
 
-	// select count number (decrements)
+	// select count number (decrements - this is for IE bug)
 	selectCount: 1000,
-
-	//change listeners'
-	changeListeners: {},
 
 	/**
 	 * The attributes supported by the controls. This metadata is 
@@ -50,10 +47,11 @@ Appcelerator.UI.registerUIComponent('control','select',
 	{
 		return 1.0;
 	},
-	registerChangeListener: function(id,actionFunc,ifCond,delay)
-	{
-		this.changeListeners[id] = {'action':actionFunc,'ifcond':ifCond,'delay':delay};
-	},
+	
+	/**
+	 *  Value action - populate select based on message payload
+	 *
+	 */
 	value:function(id,params,data,scope,version,attrs,direction,action)
 	{
 		// pull out properties
@@ -112,7 +110,11 @@ Appcelerator.UI.registerUIComponent('control','select',
 
 		}
 	},
-
+	
+	/**
+	 *  Reset action - set dropdown to first option
+	 *
+	 */
 	reset:function(id,params,data,scope,version,attrs,direction,action)
 	{
 		this.activeSelects[id].selectedIndex = 0;
@@ -120,6 +122,10 @@ Appcelerator.UI.registerUIComponent('control','select',
 		Appcelerator.Compiler.fireCustomCondition(id, 'change', {'id': id,'value':this.currentOptions[id][this.activeSelects[id].selectedIndex].text});
 	},
 
+	/**
+	 *  selectOption action - select dropdown option based on message payload
+	 *
+	 */
 	selectOption:function(id,params,data,scope,version,attrs,direction,action)
 	{
 		var key = attrs[0].key;
@@ -210,15 +216,15 @@ Appcelerator.UI.registerUIComponent('control','select',
 		// track click in dropdown img
 		Event.observe($(element.id+"_combo_img"),'click',function(ev)
 		{
-			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 			self._toggleList(element.id);
 		});
 		
-		// track individual row clicks
+		// track individual dropdown row clicks
 		$MQL(element.id + "_combo_rowclick",function(type,data,datatype,from)
 		{
 			Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
-			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 			self._setValue(element.id,self.currentOptions[element.id][data.row].text );
 			self.activeSelects[element.id].selectedIndex = data.row;				
 		});
@@ -237,7 +243,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 		// track click input field
 		Event.observe($(element.id+"_input"),'click',function(ev)
 		{
-			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+			Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 			self._toggleList(element.id);
 			Event.stop(ev);
 		});
@@ -251,7 +257,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 			var target = Event.element(ev);
 			if (($(element.id + "_combo_box").style.display != "none") && (target.id !== element.id +"_combo_img"))
 			{
-				Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+				Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 				self._toggleList(element.id);
 			}
 			Event.stop(ev);
@@ -271,8 +277,14 @@ Appcelerator.UI.registerUIComponent('control','select',
 					case Event.KEY_RIGHT:
 					case Event.KEY_ESC:
 					{
-						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 						self._toggleList(element.id);
+
+						// set value to start value
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.activeSelects[element.id].startValue});						
+						self._setValue(element.id,self.activeSelects[element.id].startValue);
+						Element.removeClassName($(element.id+"_combo_" + self.activeSelects[element.id].selectedIndex),'select_'+theme+'_dropdown_hover');
+						self.activeSelects[element.id].selectedIndex = self.activeSelects[element.id].startIndex;
 						Event.stop(event);
 						return;
 					}
@@ -281,7 +293,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 					case Event.KEY_RETURN:
 					{
 						Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
-						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+						Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 						self._setValue(element.id,self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text );
 						self._toggleList(element.id);
 						Event.stop(event);
@@ -323,7 +335,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 					{
 						if ($(element.id + "_combo_box").style.display == "none")
 						{
-							Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id,'value':self.currentOptions[element.id][self.activeSelects[element.id].selectedIndex].text});
+							Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 							self._toggleList(element.id);
 						}
 						var values = self.selectOptions[element.id];
@@ -362,7 +374,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 		$(element.id).widget = {};
 		$(element.id).widget.getValue = function(id, parms)
 		{
-			return self.currentOptions[id][self.activeSelects[id].selectedIndex].value
+			var idx = self._getIndexForValue(element.id, $(element.id + "_input").value);
+			return self.currentOptions[element.id][idx].value;
 		}
 
 		// resize dropdown
@@ -392,6 +405,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 		Appcelerator.Compiler.dynamicCompile(selectBox);
 
 	},
+	
+	// size dropdown based on number of options
 	_getDropdownHeight: function(length)
 	{
 		if (length<20)
@@ -422,14 +437,36 @@ Appcelerator.UI.registerUIComponent('control','select',
 		}
 		return '';
 	},
+	
+	// toggle dropdown list visibility
 	_toggleList: function(id)
 	{
+		if ($(id + "_combo_box").style.display == 'none')
+		{
+			// record start value and index based on input value
+			this.activeSelects[id].startValue = $(id +"_input").value;
+			this.activeSelects[id].startIndex = this.activeSelects[id].selectedIndex = this._getIndexForValue(id,this.activeSelects[id].startValue);
+			Element.addClassName($(id+"_combo_" + this.activeSelects[id].selectedIndex),'select_'+this.activeThemes[id]+'_dropdown_hover');									
+		}
 		Element.toggle(id + "_combo_box");
-		Element.addClassName($(id+"_combo_" + this.activeSelects[id].selectedIndex),'select_'+this.activeThemes[id]+'_dropdown_hover');									
 	},	
 	
+	// set input value
 	_setValue: function(id,value)
 	{
 		$(id + "_input").value = value;
+	},
+	
+	// get index for value
+	_getIndexForValue: function(id, value)
+	{
+		for (var i=0;i<this.currentOptions[id].length;i++)
+		{
+			if (this.currentOptions[id][i].text == value)
+			{
+				return i;
+			}
+		}
+		return -1;
 	}	
 });

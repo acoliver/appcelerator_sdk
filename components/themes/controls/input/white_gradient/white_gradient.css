@@ -19,6 +19,7 @@
 	color:#333;
 	padding:3px;
 	outline:none;
+	vertical-align:middle;
 }
 
 .input_white_gradient_input:focus

@@ -5,13 +5,13 @@
 {
 	padding:0px !important;
 	margin:0px !important;
+	position:static;
 }
 .button_thinblue_container button
 {
 	padding:0px;
 	margin:0px !important;
-	padding-bottom:2px !important;
-		
+	position:static;
 }
 
 /********************************************************
@@ -20,53 +20,32 @@
 
 .button_thinblue_left
 {
-	position:relative;
 	background:transparent url(images/left.png) no-repeat;
-	top:6px;
 	height:21px;
 	width:6px;
+	vertical-align:middle;
 }
 
 .button_thinblue_middle
 {
 	background:url(images/middle.png) repeat-x;
-	height:21px;
 	border:0px none;
 	margin-left:-1px;
 	margin-right:-1px;
+	height:21px;
+	line-height:21px;
 	font-size:12px;
 	cursor:pointer;
+	vertical-align:middle;
 }
 
 .button_thinblue_right
 {
-	position:relative;
 	background:transparent url(images/right.png) no-repeat;
 	height:21px;
 	width:6px;
-	top:6px;
+	vertical-align:middle;
 }
-
-/* IE Styles */
-body.msie .button_thinblue_left
-{
-	top:4px !important;
-}
-body.msie .button_thinblue_right
-{
-	top:4px !important;
-}
-body.msie .button_thinblue_middle
-{
-	padding-bottom:0px !important;
-}
-
-/* Webkit Styles */
-body.webkit .button_thinblue_middle
-{
-	line-height:21px;
-}
-
 .button_thinblue_left_disabled
 {
 	opacity:0.6;

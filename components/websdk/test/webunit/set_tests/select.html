@@ -47,14 +47,14 @@ div
 <table width="90%">
 	<tr>
 		<td class="test" valign="middle">
-			Value Action (if the select has values it worked)
+			Value Action (if the select has values it worked) + style width
 		</td>
 		<td class="result" >
-			<select  id="select1" set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text]">
+			<select style="width:200px" id="select1" set="theme[thinline]" on="l:foo then value[property=rows,value=value,text=text]">
 				<option></option>
 			</select>
 			<app:script>
-				$MQ('l:foo',{'rows':[{'value':'one','text':'one desc'},{'value':'two','text':'two desc'},{'value':'three','text':'three desc'},{'value':'four','text':'four desc'}]});
+				$MQ('l:foo',{'rows':[{'value':'one','text':'one desc'},{'value':'two','text':'two desc very very long'},{'value':'three','text':'three desc'},{'value':'four','text':'four desc'}]});
 			</app:script>
 		</td>
 	</tr>

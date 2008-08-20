@@ -124,13 +124,5 @@ Appcelerator.UI.registerUIComponent('control','button',
 			};
 		}
 		
-		//
-    	// <button set="theme[aqua_grey]" on="change then script[alert('blah')]">Click Me</button>
-		//
-        // var testf = function(e)
-        //         {
-        //             Appcelerator.Compiler.fireCustomCondition(element.id, 'change', {'id': element.id});
-        //         }
-        //         Appcelerator.Compiler.addEventListener(element,'click',testf,0);
 	}
 });

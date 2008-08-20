@@ -124,8 +124,8 @@ Appcelerator.UI.registerUIComponent('control','panel',
 
 		}
 
-		// IE7 with Shadow -set width
-		if (Appcelerator.Browser.isIE)
+		// IE and FF shadow + panel needs width
+		if (Appcelerator.Browser.isIE || Appcelerator.Browser.isGecko)
 		{
 			// always set if IE6
 			if (Appcelerator.Browser.isIE6 && options['width']=='auto')
