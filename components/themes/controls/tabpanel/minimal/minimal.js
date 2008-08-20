@@ -48,10 +48,10 @@ Appcelerator.Core.registerTheme('control','tabpanel','minimal',
 		Element.addClassName(hoverBox,'tabpanel_minimal_hoverbox');
 		hoverBox.id = element.id + "_hoverbox";
 		hoverBox.style.position = "relative";
-		hoverBox.style.left = "105px";
-		new Insertion.Before(tabs[0],hoverBox);
+		hoverBox.style.left = -(109 * (tabs.length/3)) +"px";
+		new Insertion.After(tabs[(tabs.length -1)],hoverBox);
 
-		var tabCount = (tabs.length-2)/3;
+		var tabCount = (tabs.length)/3;
 		var id = element.id;
 
 		// add tab listeners

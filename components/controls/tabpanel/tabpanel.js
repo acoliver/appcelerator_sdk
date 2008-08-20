@@ -4,20 +4,28 @@ Appcelerator.UI.getTabs = function(element)
 	var nodes = element.childNodes;
 	for (var i=0;i<nodes.length;i++)
 	{
-		if (nodes[i].nodeType == 1 && nodes[i].nodeName.toUpperCase() == "DIV")
+		if (nodes[i].nodeName.toUpperCase() == "DIV")
 		{
 			var ulNodes = nodes[i].childNodes;
 			for (var j=0;j<ulNodes.length;j++)
 			{
-				if (ulNodes[j].nodeType == 1 && ulNodes[j].nodeName.toUpperCase() == "UL")
+				if (ulNodes[j].nodeName.toUpperCase() == "UL")
 				{
-					var liNodes = ulNodes[j].childNodes
-					for (var k=0;k<liNodes.length;k++)
+					var spanNodes = ulNodes[j].childNodes
+					for (var k=0;k<spanNodes.length;k++)
 					{
-						if (liNodes[k].nodeType == 1 && liNodes[k].nodeName.toUpperCase() == "LI")
+						if (spanNodes[k].nodeName.toUpperCase() == "DIV")
 						{
-							tabs.push(liNodes[k]);
+							var liNodes = spanNodes[k].childNodes
+							for (var l=0;l<liNodes.length;l++)
+							{
+								if (liNodes[l].nodeName.toUpperCase() == "LI")
+								{
+									tabs.push(liNodes[l]);
+								}
+							}
 						}
+
 					}
 				}
 			}
@@ -91,15 +99,19 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 				// initial is either specified as option *or* it's always the first tab specified
 				if ((initial && initial == tabName) || tabCount==1)
 				{
+					html += '<div id="'+tabId+'" on="click then statechange['+element.id+'='+tabName+']" class="'+classPrefix+'_tab_container">';  
 					html += '<li id="'+element.id+'_tableft_'+tabCount+'" class="'+classPrefix+'_tab_left '+classPrefix+'_tab_left_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
-					html += '<li id="'+tabId+'" class="'+classPrefix+'_tab_mid '+classPrefix+'_tab_mid_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tabmid_'+tabCount+'" class="'+classPrefix+'_tab_mid '+classPrefix+'_tab_mid_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
 					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right '+classPrefix+'_tab_right_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
+					html += '</div>';
 				}
 				else
 				{
+					html += '<div id="'+tabId+'" on="click then statechange['+element.id+'='+tabName+']" class="'+classPrefix+'_tab_container">';  
 					html += '<li id="'+element.id+'_tableft_'+tabCount+'" class="'+classPrefix+'_tab_left" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
-					html += '<li id="'+tabId+'" class="'+classPrefix+'_tab_mid" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tabmid_'+tabCount+'" class="'+classPrefix+'_tab_mid" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
 					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
+					html += '</div>';
 				}
 			}
 		}

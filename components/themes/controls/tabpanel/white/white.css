@@ -16,6 +16,10 @@
 
 
 /* TAB */
+.tabpanel_white_tab_container
+{
+	float:left;
+}
 .tabpanel_white_tab_mid
 {
 	background:url(images/top_grey.png) repeat-x;

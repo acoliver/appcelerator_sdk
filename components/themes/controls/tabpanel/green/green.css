@@ -16,6 +16,10 @@
 
 
 /* TAB */
+.tabpanel_green_tab_container
+{
+	float:left;
+}
 .tabpanel_green_tab_mid
 {
 	height:26px;
@@ -76,6 +80,8 @@ body.ie6 .tabpanel_green_divider
 	border-bottom:none;
 	border-top:2px solid #73d02c;
 	background-color:transparent;
+	position:relative;
+	top:-2px;
 	
 }
 

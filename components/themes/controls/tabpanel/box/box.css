@@ -15,6 +15,7 @@
 }
 
 /* additional class for wire */
+
 .tabpanel_box_wire
 {
 	float:left;
@@ -39,6 +40,10 @@ body.msie .tabpanel_box_wire
 
 
 /* TAB */
+.tabpanel_box_tab_container
+{
+	float:left;
+}
 .tabpanel_box_tab_mid
 {
 	height:10px;

@@ -24,7 +24,21 @@
 }
 
 
+
 /* TAB */
+.tabpanel_minimal_tab_container
+{
+	float:left;
+}
+.tabpanel_minimal_tab_left
+{
+	float:left;
+}
+.tabpanel_minimal_tab_right
+{
+	float:left;
+}
+
 .tabpanel_minimal_tab_mid
 {
 	height:10px;
@@ -65,11 +79,13 @@
 	height:20px;
 	width:1px;
 	background-color:#999;
+
 }
 .tabpanel_minimal_right
 {
 	/* right end of tab panel */
 	float:left;
+
 }
 .tabpanel_minimal_tab_left_active
 {

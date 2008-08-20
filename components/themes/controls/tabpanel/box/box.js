@@ -45,7 +45,7 @@ Appcelerator.Core.registerTheme('control','tabpanel','box',
 		if (options.behavior)
 		{
 			var tabs = Appcelerator.UI.getTabs(element);
-			var tabCount = (tabs.length-2)/3;
+			var tabCount = (tabs.length)/3;
 			for (var i=1;i<=tabCount;i++)
 			{
 				(function()

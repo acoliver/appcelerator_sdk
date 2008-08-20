@@ -14,7 +14,12 @@
 	padding:0px;
 }
 
+
 /* TAB */
+.tabpanel_basic_tab_container
+{
+	float:left;
+}
 .tabpanel_basic_tab_mid
 {
 	height:18px;
