@@ -37,7 +37,7 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 	{
 		var T = Appcelerator.Types;
 		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('tabpanel')},
-				{name: 'initial', optional: false, description: "the initial active tab"}];
+				{name: 'initial', optional: true, description: "the initial active tab"}];
 	},
 	/**
 	 * The version of the control. This will automatically be corrected when you
@@ -69,7 +69,9 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 		// add left end of tab
 		var html = '<ul style="margin:0;float:left;list-style-type:none" class="'+classPrefix+'_container"><li id="'+element.id+'_left" class="'+classPrefix+'_left"></li>';
 		
+		var initial = options['initial'];
 		var tabCount = 0;
+		
  		for (var c=0,len=element.childNodes.length;c<len;c++)
 		{
 			var node = element.childNodes[c];
@@ -79,24 +81,26 @@ Appcelerator.UI.registerUIComponent('control','tabpanel',
 				var tabName = node.getAttribute("name");
 				if (!tabName)
 				{
-					Appcelerator.Compiler.handleElementException(element,null,'name attribute is required for each tab, id = ' + node.innerHTML);		
-					return;
+					// use the index of the tab if not specified as the state name
+					tabName = String(tabCount);
 				}
 				Appcelerator.Compiler.StateMachine.addState(element.id,tabName,null);
+				
+				var tabId = node.id || (element.id + "_tab" + tabCount);
 
-				if (options['initial'] == tabName)
+				// initial is either specified as option *or* it's always the first tab specified
+				if ((initial && initial == tabName) || tabCount==1)
 				{
-					html += '<li id="'+element.id+'_tableft_'+tabCount+'"  class="'+classPrefix+'_tab_left '+classPrefix+'_tab_left_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
-					html += '<li id="'+element.id+'_tabmid_'+tabCount+'"   class="'+classPrefix+'_tab_mid '+classPrefix+'_tab_mid_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tableft_'+tabCount+'" class="'+classPrefix+'_tab_left '+classPrefix+'_tab_left_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
+					html += '<li id="'+tabId+'" class="'+classPrefix+'_tab_mid '+classPrefix+'_tab_mid_active" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
 					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right '+classPrefix+'_tab_right_active" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
 				}
 				else
 				{
-					html += '<li id="'+element.id+'_tableft_'+tabCount+'"  class="'+classPrefix+'_tab_left" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
-					html += '<li id="'+element.id+'_tabmid_'+tabCount+'"   class="'+classPrefix+'_tab_mid" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
+					html += '<li id="'+element.id+'_tableft_'+tabCount+'" class="'+classPrefix+'_tab_left" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_left_active] else remove[class='+classPrefix+'_tab_left_active]"></li>';
+					html += '<li id="'+tabId+'" class="'+classPrefix+'_tab_mid" on="click then statechange['+element.id+'='+tabName+'] or '+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_mid_active] else remove[class='+classPrefix+'_tab_mid_active]">'+node.innerHTML+'</li>';
 					html += '<li id="'+element.id+'_tabright_'+tabCount+'" class="'+classPrefix+'_tab_right" on="'+element.id+'['+tabName+'] then add[class='+classPrefix+'_tab_right_active] else remove[class='+classPrefix+'_tab_right_active]"></li>';
 				}
-
 			}
 		}
 		
