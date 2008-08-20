@@ -65,7 +65,7 @@ Appcelerator.Version =
 	}
 };
 
-Appcelerator.LicenseType = 'GNU Public License (GPL), version 3.0 or later';
+Appcelerator.LicenseType = 'New BSD - see http://license.appcelerator.org';
 Appcelerator.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
 Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
 Appcelerator.Parameters = $H({});
