@@ -8,7 +8,12 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 	getAttributes: function()
 	{
 		var T = Appcelerator.Types;
-		return [{name: 'id', optional: false, description: "element id that triggers tooltip"}
+		return [
+			{name: 'id', optional: false, description: "element id that triggers tooltip"},
+			{name: 'position', optional: true, description: "position of tooltip - either relative or fixed", type: T.enumeration('fixed','relative'), defaultValue: 'relative'},
+			{name: 'delay', optional: true, description: "delay before hiding", type: T.number, defaultValue: '500'},
+			{name: 'showEffect', optional: true, description: "effect to use when showing", type: T.string},
+			{name: 'hideEffect', optional: true, description: "effect to use when hiding", type: T.string}
 		];
 	},
 	/**
@@ -41,20 +46,48 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 		// setup shadow dependency
 		var parent = null;
 		var shadow = false
-		Appcelerator.UI.addElementUIDependency(element,'behavior','tooltip','behavior', 'shadow', function(element)
+		Appcelerator.UI.addElementUIDependency(element,'behavior','tooltip','behavior','shadow', function(element)
 		{
 			shadow = true;
 		});		
+		
+		var position = options['position'];
+		var delay = Appcelerator.Util.DateTime.timeFormat(options['delay']);
+		
+		var hide = function(el)
+		{
+			var effect = options['hideEffect'];
+			if (effect)
+			{
+				Effect[effect](el);
+			}
+			else
+			{
+				Element.hide(el);
+			}
+		};
+		var show = function(el)
+		{
+			var effect = options['showEffect'];
+			if (effect)
+			{
+				Effect[effect](el);
+			}
+			else
+			{
+				Element.show(el);
+			}
+		};
 
 		function startTimer(el)
 		{
 			cancelTimer();
 			timer = setTimeout(function()
 			{
-				Element.hide(el);
 				if (parent != null)Element.hide(parent);
+				hide(el);
 			}
-			,500);
+			,delay);
 		}
 		function cancelTimer()
 		{
@@ -64,41 +97,54 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 				timer = null;
 			}				
 		}
-		Event.observe($(options['id']),'mouseover',function(e)
+		
+		// we call this in a defer to allow processing to continue
+		// and in case ID hasn't yet been seen or compiled
+		(function()
 		{
-			cancelTimer();
-			Element.show(element);
-			if ((parent == null) && (shadow == true))
+			Event.observe($(options['id']),'mouseover',function(e)
 			{
-				parent = $(element.id + "_shadow");
-			}
-			if (parent != null)
+				cancelTimer();
+				if ((parent == null) && (shadow == true))
+				{
+					parent = $(element.id + "_shadow");
+				}
+				if (parent != null)
+				{
+					if (position == 'relative')
+					{
+						parent.style.position = "absolute";
+						parent.style.zIndex = 1000;
+						parent.style.top = Event.pointerY(e) + 10 + "px";
+						parent.style.left = Event.pointerX(e) + 10 + "px";	
+					}
+					Element.show(parent)			
+				}
+				else
+				{
+					if (position == 'relative')
+					{
+						element.style.position = "absolute";
+						element.style.zIndex = 1000;
+						element.style.top = Event.pointerY(e) + 10 + "px";
+						element.style.left = Event.pointerX(e) + 10 + "px";
+					}
+				}
+				show(element);
+			});
+			Event.observe($(options['id']),'mouseout',function(e)
 			{
-				parent.style.position = "absolute";
-				parent.style.zIndex = 1;
-				parent.style.top = Event.pointerY(e) + 10 + "px";
-				parent.style.left = Event.pointerX(e) + 10 + "px";	
-				Element.show(parent)			
-			}
-			else
+				startTimer(element);
+			});	
+			Event.observe(element,'mouseover',function(e)
 			{
-				element.style.position = "absolute";
-				element.style.zIndex = 1;
-				element.style.top = Event.pointerY(e) + 10 + "px";
-				element.style.left = Event.pointerX(e) + 10 + "px";
-			}
-		});
-		Event.observe($(options['id']),'mouseout',function(e)
-		{
-			startTimer(element);
-		});	
-		Event.observe(element,'mouseover',function(e)
-		{
-			cancelTimer();
-		});		
-		Event.observe(element,'mouseout',function(e)
-		{
-			startTimer(element);
-		});		
+				cancelTimer();
+			});		
+			Event.observe(element,'mouseout',function(e)
+			{
+				startTimer(element);
+			});		
+		}).defer();
 	}
 });
+
