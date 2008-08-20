@@ -202,6 +202,8 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 Appcelerator.UI.UIManager.handleLoadError = function(element,type,name,subtype,path)
 {
 	$E("error loading - type:"+type+",name:"+name+",subtype:"+subtype+"\nfor "+element.id+' from url='+path);
+	Appcelerator.Compiler.handleElementException(element,null,"couldn't load "+type+":"+name+" for : "+path);
+
 	//TODO: determine if we're online or offline to determine action here
 	//FIXME: add widget error handling
 	//top.document.location.href = Appcelerator.DocumentPath + 'component_notfound.html?type='+encodeURIComponent(type)+'&name='+encodeURIComponent(name)+'&url='+encodeURIComponent(top.document.location.href)+'&'+(subtype ? ('&subtype='+encodeURIComponent(subtype)) : '');
