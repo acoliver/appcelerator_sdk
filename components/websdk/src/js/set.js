@@ -379,8 +379,6 @@ Appcelerator.UI.UIManager.defaultThemes =
 	'accordion':'basic'
 };
 
-//FIXME - change to add type (control, behavior)
-
 Appcelerator.UI.UIManager.getDefaultTheme = function(type)
 {
 	return Appcelerator.UI.UIManager.defaultThemes[type];
@@ -522,6 +520,7 @@ Appcelerator.UI.registerUIManager('theme', function(theme,element,options,callba
 		{
 			Appcelerator.UI.UIManager.setDefaultThemes(key,options[key])
 		}
+		Appcelerator.Compiler.compileElementChildren(element);
 	}
 	else
 	{
