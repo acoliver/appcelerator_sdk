@@ -315,12 +315,29 @@
             <div on="l:appsdk532.two then value[Test Passed] if expr[this.data.test]"></div>
         </td>
     </tr>
+	<tr>
+		<td class="test">Programmatic "on" expressions</td>
+		<td class="result" id="p_on1">
+			Failed
+		</td>
+	</tr>
+	<tr>
+		<td class="test">Programmatic "on" expressions as array</td>
+		<td class="result" id="p_on2">
+			Failed
+		</td>
+	</tr>
 </table>
 
 <app:statemachine id="test" initial="valid">
 	<state name="invalid" if="l:statetest[valid=false]"></state>
 	<state name="valid" if="l:statetest[valid=true]"></state>
 </app:statemachine>
+
+<script>
+$('p_on1').on("l:app.compiled then value['passed']");
+$$('#p_on2').on("l:app.compiled then value['passed']");
+</script>
 
 </body>
 </html>
