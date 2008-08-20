@@ -393,6 +393,38 @@ Appcelerator.Parameters = $H({});
 				{
 					Element.addClassName(document.body,'msie');
 				}
+				if (Appcelerator.Browser.isIPhone)
+				{
+					Element.addClassName(document.body,'width_narrow');
+					Element.addClassName(document.body,'height_short');
+				}
+				else
+				{
+					if (window.screen.height < 480)
+					{
+						Element.addClassName(document.body,'height_short');
+					}
+					else if (window.screen.height >= 480 && window.screen.height <= 800)
+					{
+						Element.addClassName(document.body,'height_medium');
+					}
+					else if (window.screen.height > 800)
+					{
+						Element.addClassName(document.body,'height_long');
+					}
+					if (window.screen.width < 640)
+					{
+						Element.addClassName(document.body,'width_narrow');
+					}
+					else if (window.screen.width >= 640 && window.screen.width <= 1280)
+					{
+						Element.addClassName(document.body,'width_medium');
+					}
+					else if (window.screen.width > 1280)
+					{
+						Element.addClassName(document.body,'width_wide');
+					}
+				}
 			});
             throw $break;
         }
