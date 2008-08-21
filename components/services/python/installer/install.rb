@@ -49,8 +49,8 @@ module Appcelerator
       end
       
       FileUtils.cd project_location do
-        if not quiet_system("#{paster} create -t pylons #{project_name}")
-          puts 'Unable to run "paster", this command creates the pylons project and ought to have been downloaded by the installer'
+        if not quiet_system("#{paster} create --no-interactive -t pylons #{project_name}")
+          puts 'Failure when running "paster", this command creates the pylons project and ought to have been downloaded by the installer'
           return false
         end
       end
@@ -77,12 +77,18 @@ module Appcelerator
     overroot = os.path.dirname(root)
     appcelerator_static = StaticURLParser(
         os.path.join(overroot,'public'),
-        root_directory=overroot)
-    app = Cascade([appcelerator_static, static_app, javascripts_app, app])
+        root_directory=overroot
+    )
+
 END_CODE
+        if content.include?('javascripts_app')
+          static_cascade += '    app = Cascade([appcelerator_static, static_app, javascripts_app, app])'
+        else
+          static_cascade += '    app = Cascade([appcelerator_static, static_app, app])'
+        end
         
         # could write a do-block to check and use indentation level
-        content.sub(/\s+app = Cascade\(\[static_app, javascripts_app, app\]\)/, static_cascade)
+        content.sub(/\s+app = Cascade[^\n]+/, static_cascade)
       end
       
       tx.rm "#{app_path}/public" # pylons makes this

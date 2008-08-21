@@ -37,10 +37,12 @@ module Appcelerator
       
       project_name = config[:name]
       
-      assert( !(project_name.include?(' ') or project_name.include?(';')))
+      unless project_name =~ /^(?!-)[a-z\d\-]{1,100}$/
+        die 'AppEngine projects must have names that match this regex: /^(?!-)[a-z\d\-]{1,100}$/'
+      end
+      
       FileUtils.cd to_path do
         
-        # iotx is nonsense
         FileUtils.cp_r(from_path+'/project/.', to_path)
       
         [ "public/appcelerator.xml",
