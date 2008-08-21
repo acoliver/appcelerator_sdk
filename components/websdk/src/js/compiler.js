@@ -3041,7 +3041,15 @@ Appcelerator.Compiler.handleElementException = function(element,e,context)
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
 	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] with ID: '+(element.id||element)+' has an error: <div>'+Object.getExceptionDetail(e,true)+'</div>' + (context ? '<div>in <pre>'+context+'</pre></div>' : '') + '</div>';
 	$E(msg);
-	element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
+	if (tag == 'IMG')
+	{
+		new Insertion.Before(element,msg);
+	}
+	else
+	{
+		element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
+	}
+	Element.show(element);
 };
 
 Appcelerator.Compiler.fieldSets = {};
