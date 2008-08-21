@@ -88,7 +88,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		{
 			options['height'] = (options['height']=='auto')?'30px':options['height'];
 		}
-		html += '<div class="'+classPrefix+'_body" style="height:'+options['height']+'">';
+		html += '<div class="panel_body '+classPrefix+'_body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
 		html += '</div>';
 		html += '<div  id="'+element.id+'_btm" class="'+classPrefix+'_btm">';
@@ -124,6 +124,19 @@ Appcelerator.UI.registerUIComponent('control','panel',
 
 		}
 
+		// if tooltip and IE need width
+		if (Appcelerator.Browser.isIE)
+		{
+			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'tooltip', function(element)
+			{
+				// must set width on IE with shadow
+				if (options['width']=='auto')
+				{
+					$(element.id + "_panel").style.width = "300px";
+					element.style.width = "300px";			
+				}
+			});
+		}
 		// IE and FF shadow + panel needs width
 		if (Appcelerator.Browser.isIE || Appcelerator.Browser.isGecko)
 		{

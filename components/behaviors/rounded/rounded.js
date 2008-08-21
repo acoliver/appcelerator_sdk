@@ -79,7 +79,6 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 			element.style.width = "300px"
 		}
 
-		
 		// add shadow dependency
 		Appcelerator.UI.addElementUIDependency(element,'behavior','rounded','behavior', 'shadow', function(element)
 		{
@@ -125,6 +124,15 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 			element.style.marginBottom = "30px";
 		}
 
+		// if parent is panel remove margin
+		// TODO: Need a better way of doing child dependencies
+		if (Appcelerator.Browser.isIE)
+		{
+			if (element.parentNode && Element.hasClassName(element.parentNode,"panel_body"))
+			{
+				element.style.marginBottom = "0px";
+			}
+		}
 
 		// build bottom
 		for(var i=4;i>0;i--)

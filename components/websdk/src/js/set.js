@@ -773,13 +773,14 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	if (buttonHTML.length > 0)
 	{
 		var buttonPadding = (errorPos == 'bottom' || hintPos == 'bottom')?"0px":"5px";
+		var paddingBottom = "5px";
 		if (buttonPos == "right")
 		{
-			html += '<tr><td></td><td align="left" colspan="1" style="padding-top:'+buttonPadding+'">';
+			html += '<tr><td></td><td align="left" colspan="1" style="padding-top:'+buttonPadding+';padding-bottom:'+paddingBottom+'">';
 		}
 		else
 		{
-			html += '<tr><td align="left" colspan='+colspan+' style="padding-top:'+buttonPadding+'">';		
+			html += '<tr><td align="left" colspan='+colspan+' style="padding-top:'+buttonPadding+';padding-bottom:'+paddingBottom+'">';		
 		}
 		for (var y=0;y<buttonHTML.length;y++)
 		{
