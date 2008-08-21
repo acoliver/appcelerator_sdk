@@ -86,7 +86,8 @@ class RunRubyPlugin < Appcelerator::Plugin
         
       event = {:project_dir=>pwd,:service=>'ruby'}
       PluginManager.dispatchEvents('run_server',event) do
-        if not system cmd
+        system cmd
+        if ($?.exitstatus == 127) or ($?.exitstatus == 126)
           puts 'Failed to run the Rails server script'
         end
       end

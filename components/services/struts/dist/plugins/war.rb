@@ -36,7 +36,8 @@ class WARPlugin < Appcelerator::Plugin
     Appcelerator::CommandRegistry.registerCommand('project:war','build Appcelerator project Java WAR',nil,nil,nil) do |args,options|
       event = {:project_dir=>Dir.pwd}
       Appcelerator::PluginManager.dispatchEvents('create_war',event) do
-        if not system("ant war")
+        system("ant war")
+        if $?.exitstatus == 127
           puts "Could not find Apache Ant on your path. Please download and configure Ant so that we can run 'ant war' in this directory"
         end
       end

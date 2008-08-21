@@ -16,7 +16,8 @@ module Appcelerator
         @python = File.join(latest_windows_python,'python.exe')
       else
         # on unixy things
-        if not quiet_system('python -V')
+        quiet_system('python -V')
+        if $?.exitstatus == 127
           found_no_python
         end
         @python = 'python'
@@ -32,7 +33,7 @@ module Appcelerator
         
     def easy_install
       if on_windows
-        find_latest_script 'easy_install.exe'
+        find_latest_script('easy_install.exe')
       else
         'sudo easy_install'
       end
@@ -42,15 +43,13 @@ module Appcelerator
       if on_windows
         File.exists?(find_latest_script('easy_install.exe'))
       else
-        # this could check that a file exists more efficiently that actually running it,
-        # like using the system path plus File.exists?
         quiet_system('easy_install --help')
       end
     end
     
     def paster
       if on_windows
-        find_latest_script 'paster.exe'
+        find_latest_script('paster.exe')
       else
         'paster'
       end
@@ -90,7 +89,7 @@ module Appcelerator
       global.merge(user)
     end
     
-    def find_version_in_registry registry_hive
+    def find_version_in_registry(registry_hive)
       paths = {}
       begin
         registry_hive.open('SOFTWARE\Python\PythonCore') do |reg|
@@ -113,12 +112,12 @@ module Appcelerator
 
     def find_latest_script(script_name)
       @windows_pythons.each do |version,path|
-        paster_path = File.join(path,'Scripts',script_name)
-        if File.exists? paster_path
-          return paster_path
+        script_file_path = File.join(path,'Scripts',script_name)
+        if File.exists?(script_file_path)
+          return script_file_path
         end
       end
-      nil
+      return nil # couldn't find it
     end
     
     def on_windows

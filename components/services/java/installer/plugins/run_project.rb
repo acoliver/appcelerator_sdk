@@ -78,7 +78,8 @@ class RunJavaPlugin < Appcelerator::Plugin
         # test to make sure we have java on our path
         nullout = RUBY_PLATFORM=~/win32/ ? 'NUL' : '/dev/null'
         
-        if not system "java -version 2>#{nullout}"
+        system "java -version 2>#{nullout}"
+        if $?.exitstatus == 127
           puts "Failed to find java, you need to have java installed and on your path."
           exit 1
         end

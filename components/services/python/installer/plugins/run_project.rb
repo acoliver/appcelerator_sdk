@@ -101,7 +101,8 @@ class RunPythonPlugin < Appcelerator::Plugin
       
       event = {:project_dir=>pwd,:service=>'python'}
       PluginManager.dispatchEvents('run_server',event) do
-        if not system(cmd)
+        system(cmd)
+        if $?.exitstatus == 127
           puts 'The "paster" command was not found or failed with an error. Please check that Paste (http://pythonpaste.org/) is installed and on your PATH.'
         end
       end
