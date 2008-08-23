@@ -127,11 +127,12 @@ Appcelerator.Parameters = $H({});
 	{
 		if (!baseHref)
 		{
-			var hostIdx = Appcelerator.jsFileLocation.indexOf('://');
+			// see if it's a full URI
+			var hostIdx = Appcelerator.jsFileLocation.indexOf(':/');
 			if (hostIdx > 0)
 			{
 				var jsHostPath = Appcelerator.jsFileLocation.substring(hostIdx + 3, Appcelerator.jsFileLocation.indexOf('/',hostIdx + 4));
-				var docIdx = Appcelerator.DocumentPath.indexOf('://');
+				var docIdx = Appcelerator.DocumentPath.indexOf(':/');
 				if (docIdx > 0)
 				{
 					var docHostPath = Appcelerator.DocumentPath.substring(docIdx + 3, Appcelerator.DocumentPath.indexOf('/',docIdx+4));
@@ -140,6 +141,18 @@ Appcelerator.Parameters = $H({});
 						// if on the same host then always prefer the JS location (one directory up) as the base href
 						// such that we can have multiple content directories that include the JS relatively from the top
 						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,Appcelerator.jsFileLocation.lastIndexOf('/')) + '/../'
+					}
+				}
+			}
+			else
+			{
+				// relative URI we need to adjust the DocumentPath
+				if (Appcelerator.jsFileLocation.startsWith('/') || Appcelerator.jsFileLocation.startsWith('.'))
+				{
+					var idx = Appcelerator.jsFileLocation.lastIndexOf('/');
+					if (idx!=-1)
+					{
+						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,idx+1) + '../';
 					}
 				}
 			}

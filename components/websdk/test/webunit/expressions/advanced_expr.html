@@ -5,6 +5,10 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+    <script>
+		window.someGlobalVariable = 'Test passed';
+    	window.someGlobalFunction = function(){ return 'Test passed'; };
+	</script>
 </head>
 <body>
 
@@ -136,13 +140,12 @@
                 Waiting on click...
             </div>
         </td>
-    </tr>
+    </tr> 
     <tr>
         <td class="test" valign="middle">
             Dynamic javascript property
         </td>
         <td class="result">
-            <script>window.someGlobalVariable = 'Test passed';</script>
             <a on="click then l:set.field2[result=expr(someGlobalVariable)]">Click to run</a>
 
             <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
@@ -182,7 +185,6 @@
             Dynamic javascript property by calling function
         </td>
         <td class="result">
-            <script>window.someGlobalFunction = function(){ return 'Test passed'; };</script>
             <a on="click then l:set.field3[result=expr(someGlobalFunction())]">Click to run</a>
 
             <div style="background-color:#ffffcc;border:1px solid #999;padding:5px;margin-top:2px" 
@@ -227,7 +229,7 @@
     <tr>
         <td class="test" valign="middle">
             <!-- APPSDK-100 Code tabs are broken in opera-->
-            Message with right hand side of a paramater equal to the name of an input.
+            Message with right hand side of a parameter equal to the name of an input.
         </td>
         <td class="result">
             <a on="click then l:appsdk100[show=code]">Click to run</a>

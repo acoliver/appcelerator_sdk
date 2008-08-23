@@ -575,7 +575,7 @@ Appcelerator.Compiler.compileElement = function(element,state,recursive)
 	        state.pending+=1;
 			Appcelerator.Core.requireModule(name,function()
 			{
-				var widgetJS = Appcelerator.Compiler.compileWidget(element,state);
+				Appcelerator.Compiler.compileWidget(element,state);
 				state.pending-=1;
 				Appcelerator.Compiler.checkLoadState(element);
 				Element.fire(element,'element:compiled:'+element.id,{id:element.id});
@@ -1199,7 +1199,7 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
 	name = name || Appcelerator.Compiler.getTagname(element);
 	var module = Appcelerator.Core.widgets[name];
 	var compiledCode = '';
-
+	
     $D('compiled widget '+element+', id='+element.id+', tag='+name+', module='+module);
 
 	if (module)
@@ -1689,7 +1689,7 @@ Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
 
 Appcelerator.Compiler.compoundCondRE = /^\((.*)?\) then/g;
 
-Appcelerator.Compiler.parseExpression = function(value)
+Appcelerator.Compiler.parseExpression = function(value,element)
 {
 	if (!value)
 	{
@@ -1708,14 +1708,23 @@ Appcelerator.Compiler.parseExpression = function(value)
 
 	var thens = [];
 	var ors = Appcelerator.Compiler.smartSplit(value,' or ');
-
+	
 	for (var c=0,len=ors.length;c<len;c++)
 	{
 		var expression = ors[c].trim();
 		var thenidx = expression.indexOf(' then ');
 		if (thenidx <= 0)
 		{
-			throw "syntax error: expected 'then' for expression: "+expression;
+			// we allow widgets to have a short-hand syntax for execute
+			if (Appcelerator.Compiler.getTagname(element).indexOf(':'))
+			{
+				expression = expression + ' then execute';
+				thenidx = expression.indexOf(' then ');
+			}
+			else
+			{
+				throw "syntax error: expected 'then' for expression: "+expression;
+			}
 		}
 		var condition = expression.substring(0,thenidx);
 		
@@ -1805,7 +1814,7 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	{
 		alert('value returned null for '+element.id);
 	}
-	var clauses = Appcelerator.Compiler.parseExpression(value);
+	var clauses = Appcelerator.Compiler.parseExpression(value,element);
 	$D('on expression for ',element.id,' has ',clauses.length,' condition/action pairs');
 	for(var i = 0; i < clauses.length; i++)
 	{
@@ -1821,6 +1830,7 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 			{
 				var cl = clause[1][c];
 				var copy = [element,cl,clause[2],clause[3],clause[4],clause[5]];
+
 		        handled = Appcelerator.Compiler.handleCondition.call(this, copy);
 		        if (!handled)
 		        {
@@ -1830,8 +1840,9 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 			continue;
 		}
 		
-        handled = Appcelerator.Compiler.handleCondition.call(this, clause);
 		
+        handled = Appcelerator.Compiler.handleCondition.call(this, clause);
+
         if (!handled)
         {
             throw "syntax error: unknown condition type: "+clause[1]+" for "+value;
@@ -1843,109 +1854,103 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 {
     var ok = true;
     var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
-    
+
     if (actionParams)
     {
     	for (var c=0,len=actionParams.length;c<len;c++)
     	{
     		var p = actionParams[c];
-    		var not_cond = p.key.charAt(p.key.length-1) == '!';
-			var bnot_cond = p.key.charAt(0)=='!';
-    		var k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
-			k = bnot_cond ? k.substring(1) : k;
-			var v = Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.expression);
+			
+			if (!p.key && p.empty && p.value)
+			{
+				p.key = p.value;
+				p.value = null;
+			}
+
+			var k = null;
+			var not_cond = p.key && p.key.charAt(p.key.length-1) == '!';
+			var bnot_cond = p.key && p.key.charAt(0)=='!';
+			
+			var negate = (not_cond || bnot_cond);
+			var idref = false;
+			
+			if (p.key)
+			{
+				k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
+				k = bnot_cond ? k.substring(1) : k;
+				idref = k.charAt(0)=='$';
+				k = (p.keyExpression || idref) ? Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.keyExpression) : k;
+			}
 			
 			// mathematics
-			if ((p.operator == '<' || p.operator == '>') && (p.value && typeof(p.value)=='string' && p.value.charAt(0)=='='))
+			if ((p.operator == '<' || p.operator == '>') && (p.value && Object.isString(p.value) && p.value.charAt(0)=='='))
 			{
 				p.operator += '=';
 				p.value = p.value.substring(1);
 			}
+
+			var v = p.operator ? Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.valueExpression) : p.value ? Appcelerator.Compiler.getEvaluatedValue(p.value,data,data,p.valueExpression) : null;
 			
 			// regular expression
-			if (p.value && typeof(p.value)=='string' && p.value.charAt(0)=='~')
+			if (p.value && Object.isString(p.value) && p.value.charAt(0)=='~')
 			{
 				p.regex = true;
 				p.value = p.value.substring(1);
 			}
 			
-    		// added x to eval $args
-    		var x = Appcelerator.Compiler.getEvaluatedValue(p.value,data);
-			var matched = p.expression ? v : (k!=v);
+			// added x to eval $args
+			var x = p.value ? Appcelerator.Compiler.getEvaluatedValue(p.value,data) : null;
+			var matched = p.keyExpression ? k : p.valueExpression ? (v || k) : idref ? (k && String(k).charAt(0)!='$') : Object.getNestedProperty(data,k);
 			
-//			alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression+',p.value='+p.value);
-//			top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression);
+			//alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nkeyExpression='+p.keyExpression+'\nvalueExpression='+p.valueExpression+'\np.value='+p.value+'\npayload='+Object.toJSON(data));
+			// top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression);
 			
-			if (bnot_cond)
+			if (matched)
 			{
-				if (p.regex)
+				switch(p.operator)
 				{
-					var r = new RegExp(x);
-					ok = !r.test(v);
-				}
-				else
-				{
-					ok =  p.empty ? matched ? x==null : v!=null : !(v==x);
+					case '<':
+					{
+						ok = v < x;
+						break;
+					}
+					case '>':
+					{
+						ok = v > x;
+						break;
+					}
+					case '<=':
+					{
+						ok = v <= x;
+						break;
+					}
+					case '>=':
+					{
+						ok = v >= x;
+						break;
+					}
+					default:
+					{
+						if (p.regex)
+						{
+							var r = new RegExp(x);
+							ok = r.test(v);
+						}
+						else
+						{
+							ok = p.empty ? matched : p.valueExpression ? v : v==x;
+						}
+						break;
+					}
 				}
 			}
 			else
 			{
-				if (matched && not_cond)
-				{
-					if (p.regex)
-					{
-						var r = new RegExp(x);
-						ok = !r.test(v);
-					}
-					else
-					{
-						ok = v!=x;
-					}
-				}
-				else if (matched && !not_cond)
-				{
-					switch(p.operator)
-					{
-						case '<':
-						{
-							ok = v < x;
-							break;
-						}
-						case '>':
-						{
-							ok = v > x;
-							break;
-						}
-						case '<=':
-						{
-							ok = v <= x;
-							break;
-						}
-						case '>=':
-						{
-							ok = v >= x;
-							break;
-						}
-						default:
-						{
-							if (p.regex)
-							{
-								var r = new RegExp(x);
-								ok = r.test(v);
-							}
-							else
-							{
-								ok = p.empty || p.expression ? v : v==x;
-							}
-							break;
-						}
-					}
-				}
-				else if (!matched)
-				{
-					ok = not_cond ? !x : x;
-				}
+				ok = false;
 			}
+			
+			ok = negate ? !ok : ok;
+			
 			if (!ok) break;
     	}
     }
@@ -2066,6 +2071,7 @@ Appcelerator.Compiler.properCase = function (value)
 
 Appcelerator.Compiler.smartSplit = function(value,splitter)
 {
+	value = value.trim();
 	var tokens = value.split(splitter);
 	if(tokens.length == 1) return tokens;
 	var array = [];
@@ -2080,9 +2086,10 @@ Appcelerator.Compiler.smartSplit = function(value,splitter)
 		}
 		else if (current && current.charAt(0)=='(')
 		{
-			if (line.indexOf(') ')>0)
+			if (line.indexOf(') ')!=-1)
 			{
 				array.push(current+line);
+				current = null;
 			}
 			else
 			{
@@ -2132,7 +2139,6 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 			{
 				scope.id = id;
 			}
-			
 			if (Object.evalWithinScope(ifCond,scope))
 			{
 	            f(scope);
@@ -2159,36 +2165,39 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 {
     var actionFuncs = [];
-	var actions = Appcelerator.Compiler.smartSplit(value,' and ');
+	var actions = Appcelerator.Compiler.smartSplit(value.trim(),' and ');
 
 	for (var c=0,len=actions.length;c<len;c++)
 	{
         (function()
         {
     		var actionstr = actions[c].trim();
-    		var remote_msg = actionstr.startsWith('remote:') || actionstr.startsWith('r:');
+			var wildcard = actionstr.startsWith('both:') || actionstr.startsWith('*:');
+    		var remote_msg = !wildcard && actionstr.startsWith('remote:') || actionstr.startsWith('r:');
     		var local_msg = !remote_msg && (actionstr.startsWith('local:') || actionstr.startsWith('l:'));
     		var actionParams = Appcelerator.Compiler.parameterRE.exec(actionstr);
-    		var params = actionParams!=null ? Appcelerator.Compiler.getParameters(actionParams[2],(remote_msg||local_msg)) : null;
+    		var params = actionParams!=null ? Appcelerator.Compiler.getParameters(actionParams[2].trim(),false) : null;
     		var action = actionParams!=null ? actionParams[1] : actionstr;
 
-    		if (local_msg || remote_msg)
+    		if (local_msg || remote_msg || wildcard)
     		{
-    			params = (params || {});
-    			if (local_msg && params['id']==null)
-    			{
-    			 	params['id'] = id;
-    			}
+				params = params || [];
     			if (additionalParams)
     			{
     				for (var p in additionalParams)
     				{
-    					params[p] = additionalParams[p];
+    					params.push({key:p,value:additionalParams[p]});
     				}
     			}
     			var f = function(scope)
     			{
-    			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, params, scope);
+					var newparams = {};
+					for (var x=0;x<params.length;x++)
+					{
+						var entry = params[x];
+						newparams[Appcelerator.Compiler.getEvaluatedValue(entry.key,scope,scope,entry.keyExpression)]=Appcelerator.Compiler.getEvaluatedValue(entry.value,scope,scope,entry.valueExpression);
+					}
+    			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, newparams, scope);
     			}
     			actionFuncs.push({func: f, action: action});
     		}
@@ -2209,7 +2218,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			//
     			var f = builder.parseParameters;
 
-    			if (f && typeof(f)=='function')
+    			if (f && Object.isFunction(f))
     			{
     				// this is called as a function to custom parse parameters in the action between brackets []
     				params = f(id,action,actionParams?actionParams[2]||actionstr:actionstr);
@@ -2229,18 +2238,19 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 	}
     var actionFunction = function(scope)
     {
+		var perf = Appcelerator.Config['perfmon'];
         for (var i=0; i < actionFuncs.length; i++)
         {
             actionFunc = actionFuncs[i];
             var timeStart = null;
-            if (Appcelerator.Config['perfmon'])
+            if (perf)
             {
-                timeStart = new Date();
+                timeStart = new Date;
             }
             actionFunc.func(scope);
-            if (Appcelerator.Config['perfmon'])
+            if (perf)
             {
-                var time = (new Date()).getTime() - timeStart.getTime();
+                var time = (new Date).getTime() - timeStart.getTime();
                 $MQ('l:perfmon.action', {id: id, action: actionFunc.action, time: time});
             }
         }
@@ -2250,7 +2260,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 
 Appcelerator.Compiler.convertMessageType = function(type)
 {
-	return type.replace(/^r:/,'remote:').replace(/^l:/,'local:');
+	return Appcelerator.Util.ServiceBroker.convertType(type);
 };
 
 Appcelerator.Compiler.getMessageType = function (value)
@@ -2272,10 +2282,11 @@ Appcelerator.Compiler.fireServiceBrokerMessage = function (id, type, args, scope
 			fieldset = element.getAttribute('fieldset');
 			scope = element.scope;
 		}
-
+		
 		for (var p in data)
 		{
-			data[p] = Appcelerator.Compiler.getEvaluatedValue(data[p],data,scopedata);
+			var entry = data[p];
+			data[p] = Appcelerator.Compiler.getEvaluatedValue(entry,data,scopedata);
 		}
 
 		var localMode = type.startsWith('local:') || type.startsWith('l:');
@@ -2486,25 +2497,6 @@ Appcelerator.Compiler.getInputFieldValue = function(elem,dequote,local)
 	return Appcelerator.Compiler.formatValue(v,!dequote);
 };
 
-Appcelerator.Compiler.getKeyValue = function (value)
-{
-	if (!value) return null;
-
-	if (value.charAt(0)=='$')
-	{
-		return value;
-	}
-	else
-	{
-		// special syntax to allow
-		if (Appcelerator.Compiler.expressionRE.test(value))
-		{
-			return value;
-		}
-	}
-	return Appcelerator.Compiler.formatValue(value,false);
-};
-
 Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope,isExpression)
 {
 	if (v && typeof(v) == 'string')
@@ -2687,7 +2679,7 @@ Appcelerator.Compiler.decodeParameterValue = function(token,wasquoted)
 	return value == null ? token : value;
 };
 
-Appcelerator.Compiler.parameterSeparatorRE = /[=:><!]+/;
+Appcelerator.Compiler.parameterSeparatorRE = /[\$=:><!]+/;
 
 /**
  * method will parse out a loosely typed json like structure
@@ -2703,8 +2695,9 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		return asjson ? {} : [];
 	}
-	
-	var containsExpr = /expr\((.*?)\)/.test(str);
+		
+	var exprRE = /expr\((.*?)\)/;
+	var containsExpr = exprRE.test(str);
 	
 	// this is just a simple optimization to 
 	// check and make sure we have at least a key/value
@@ -2727,30 +2720,112 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	var data = asjson ? {} : [];
 	var quotedStart = false, tickStart = false;
 	var operator = null;
-	
-	function transformValue(key,value,tick)
+	var expressions = containsExpr ? {} : null;
+	if (containsExpr)
 	{
-		var str = Appcelerator.Compiler.decodeParameterValue(value,tick);
-		if (!asjson)
+		var expressionExtractor = function(e)
 		{
-			var expr = str && Object.isString(str) ? str.match(/expr\((.*?)\)/,"") : str;
-			if (expr && Object.isArray(expr))
+			var start = e.indexOf('expr(');
+			if (start < 0) return null;
+			var p = start + 5;
+			var end = e.length-1;
+			var value = '';
+			while ( true )
 			{
-				return {key:expr[1],value:null,expression:true};
+				var idx = e.indexOf(')',p);
+				if (idx < 0) break;
+				value+=e.substring(p,idx);
+				if (idx == e.length-1)
+				{
+					end = idx+1;
+					break;
+				}
+				var b = false;
+				var x = idx + 1;
+				for (;x<e.length;x++)
+				{
+					switch(e.charAt(x))
+					{
+						case ',':
+						{
+							end = x;
+							b = true;
+							break;
+						}
+						case ' ':
+						{
+							break;
+						}
+						default:
+						{
+							p = idx+1;
+							break;
+						}
+					}
+				}
+				if (x==e.length-1)
+				{
+					end = x;
+					break;
+				}
+				if (b) break;
+				value+=')';
+			}
+			var fullexpr = e.substring(start,end);
+			return [fullexpr,value];
+		};
+		
+		var ec = 0;
+		while(true)
+		{
+			var m = expressionExtractor(str);
+			if (!m)
+			{
+				break;
+			}
+			var k = '__E__'+(ec++);
+			expressions[k] = m[1];
+			str = str.replace(m[0],k);
+		}
+	}
+	
+	function transformValue(k,v,tick)
+	{
+		if (k && k.startsWith('__E__'))
+		{
+			if (!asjson)
+			{
+				return {key:expressions[k],value:v,keyExpression:true,valueExpression:false};
 			}
 			else
 			{
-				return {key:key,value:str};
+				return expressions[k];
 			}
 		}
-		return str;
+		if (v && v.startsWith('__E__'))
+		{
+			if (!asjson)
+			{
+				return {key:k,value:expressions[v],valueExpression:true,keyExpression:false};
+			}
+			else
+			{
+				return expressions[v];
+			}
+		}
+		var s = Appcelerator.Compiler.decodeParameterValue(v,tick);
+		if (!asjson)
+		{
+			return {key:k,value:s};
+		}
+		return s;
 	}
-
+	
 	for (var c=0,len=str.length;c<len;c++)
 	{
 		var ch = str.charAt(c);
 		var append = true;
-
+		
 		switch (ch)
 		{
 			case '"':
@@ -2824,11 +2899,14 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			case '=':
 			case ':':
 			{
-				if (ch == '<' || ch == '>')
+				if (state == STATE_LOOKING_FOR_VARIABLE_END)
 				{
-					key = currentstr.trim();
-					currentstr = '';
-					state = STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER;
+					if (ch == '<' || ch == '>')
+					{
+						key = currentstr.trim();
+						currentstr = '';
+						state = STATE_LOOKING_FOR_VARIABLE_VALUE_MARKER;
+					}
 				}
 				switch (state)
 				{
@@ -2873,7 +2951,9 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						else
 						{
 							var entry = transformValue(key,currentstr);
-							data.push({key:entry.value,value:null,empty:true,operator:operator});
+							entry.operator = operator;
+							entry.empty = true;
+							data.push(entry);
 						}
 						key = null;
 						quotedStart = false, tickStart = false;
@@ -2997,13 +3077,12 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 		else
 		{
 			var entry = transformValue(key,currentstr);
-			entry.key = entry.value;
-			entry.value = null;
 			entry.empty = true;
 			entry.operator = operator;
 			data.push(entry);
 		}
 	}
+	// alert('=>'+Object.toJSON(data));
 	return data;
 };
 

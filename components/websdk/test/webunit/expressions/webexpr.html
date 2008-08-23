@@ -14,94 +14,104 @@
 </p>
 
 <table width="90%">
-	<tr>
-		<td class="test">l:test[foo]</td>
-		<td class="result" on="l:test[foo] then value['failed'] else value['passed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!foo]</td>
-		<td class="result" on="l:test[!foo] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[length!=0] (length is not present in payload)</td>
-		<td class="result" on="l:test[length!=0] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count>0]</td>
-		<td class="result" on="l:test[count>0] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count>1]</td>
-		<td class="result" on="l:test[count>1] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count<101]</td>
-		<td class="result" on="l:test[count<101] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count&lt;=100]</td>
-		<td class="result" on="l:test[count<=100] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count&gt;=100]</td>
-		<td class="result" on="l:test[count>=100] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!count&gt;101]</td>
-		<td class="result" on="l:test[!count>101] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!count&gt;=101]</td>
-		<td class="result" on="l:test[!count>=101] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!count&lt;101]</td>
-		<td class="result" on="l:test[!count<101] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!count&lt;=200]</td>
-		<td class="result" on="l:test[!count<=200] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count!=200]</td>
-		<td class="result" on="l:test[count!=200] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count=100]</td>
-		<td class="result" on="l:test[count=100] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count=~100]</td>
-		<td class="result" on="l:test[count=~100] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count=~1]</td>
-		<td class="result" on="l:test[count=~1] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count=~^1]</td>
-		<td class="result" on="l:test[count=~^1] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count=~0$]</td>
-		<td class="result" on="l:test[count=~0$] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!count=~9$]</td>
-		<td class="result" on="l:test[!count=~9$] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count]</td>
-		<td class="result" on="l:test[count] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[!foobar]</td>
-		<td class="result" on="l:test[!foobar] then value['passed'] else value['failed']"></td>
-	</tr>
-	<tr>
-		<td class="test">l:test[count,!foobar]</td>
-		<td class="result" on="l:test[count,!foobar] then value['passed'] else value['failed']"></td>
-	</tr>
+    	<tr>
+    		<td class="test">l:test[foo]</td>
+    		<td class="result" on="l:test[foo] then value['failed'] else value['passed']"></td>
+    	</tr> 
+    	<tr>
+    		<td class="test">l:test[!foo]</td>
+    		<td class="result" on="l:test[!foo] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[length!=0] (length is not present in payload)</td>
+    		<td class="result" on="l:test[length!=0] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[id=wem1,countfoo=100] then value['failed'] else value['passed'] (multiple payloads with one missing)</td>
+    		<td class="result">
+    			<div on="l:test[id=wem1,countfoo=100] then value['failed'] else value['passed']"></div>
+    		</td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count>0]</td>
+    		<td class="result" on="l:test[count>0] then value['passed'] else value['failed']"></td>
+    	</tr> 
+    	<tr>
+    		<td class="test">l:test[count>1]</td>
+    		<td class="result" on="l:test[count>1] then value['passed'] else value['failed']"></td>
+    	</tr> 
+    	<tr>
+    		<td class="test">l:test[count>99,count&lt;100,count=100]</td>
+    		<td class="result" on="l:test[count>99,count<101,count=100] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count<101]</td>
+    		<td class="result" on="l:test[count<101] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count&lt;=100]</td>
+    		<td class="result" on="l:test[count<=100] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count&gt;=100]</td>
+    		<td class="result" on="l:test[count>=100] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[!count&gt;101]</td>
+    		<td class="result" on="l:test[!count>101] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[!count&gt;=101]</td>
+    		<td class="result" on="l:test[!count>=101] then value['passed'] else value['failed']"></td>
+    	</tr> 
+    	<tr>
+    		<td class="test">l:test[!count&lt;101]</td>
+    		<td class="result" on="l:test[!count<101] then value['failed'] else value['passed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[!count&lt;=200]</td>
+    		<td class="result" on="l:test[!count<=200] then value['failed'] else value['passed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count!=200]</td>
+    		<td class="result" on="l:test[count!=200] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count=100]</td>
+    		<td class="result" on="l:test[count=100] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count=~100]</td>
+    		<td class="result" on="l:test[count=~100] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count=~1]</td>
+    		<td class="result" on="l:test[count=~1] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count=~^1]</td>
+    		<td class="result" on="l:test[count=~^1] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count=~0$]</td>
+    		<td class="result" on="l:test[count=~0$] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[!count=~9$]</td>
+    		<td class="result" on="l:test[!count=~9$] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count]</td>
+    		<td class="result" on="l:test[count] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[!foobar]</td>
+    		<td class="result" on="l:test[!foobar] then value['passed'] else value['failed']"></td>
+    	</tr>
+    	<tr>
+    		<td class="test">l:test[count,!foobar]</td>
+    		<td class="result" on="l:test[count,!foobar] then value['passed'] else value['failed']"></td>
+    	</tr>
 	<tr>
 		<td class="test">l:test[expr(this.count > 1)]</td>
 		<td class="result" on="l:test[expr(this.count > 1)] then value['passed'] else value['failed']"></td>
@@ -109,11 +119,11 @@
 	<tr>
 		<td class="test">l:test[expr(this.count > 1),count=100]</td>
 		<td class="result" on="l:test[expr(this.count > 1),count=100] then value['passed'] else value['failed']"></td>
-	</tr>
+	</tr>  
 	<tr>
 		<td class="test">l:test[expr(this.count > 1),count>99,expr(this.count==100)]</td>
 		<td class="result" on="l:test[expr(this.count > 1),count>99,expr(this.count==100)] then value['passed'] else value['failed']"></td>
-	</tr> 
+	</tr>
 	<tr>
 		<td class="test">l:test then value[value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + ' PASSED')]</td>
 		<td class="result" on="l:test then value[value=expr('[' + Appcelerator.Util.DateTime.get12HourTime() + '] ' + this.direction+':' + this.type + ' => ' + ' PASSED')]"></td>
@@ -129,30 +139,58 @@
 	<tr>
 		<td class="test">l:test[$heyya]</td>
 		<td class="result" on="l:test[$heyya] then value['passed'] else value['failed']"></td>
+	</tr> 
+	<tr>
+		<td class="test">l:test[$heyya2] (id reference doesn't exit)</td>
+		<td class="result" on="l:test[$heyya2] then value['failed'] else value['passed']"></td>
 	</tr>
 	<tr>
 		<td class="test">l:test[!$duh]</td>
-		<td class="result" on="l:test[!$duh] then value['passed'] else value['failed']"></td>
+		<td class="result" on="l:test[!$duh] then value['failed'] else value['passed']"></td>
 	</tr>
 	<tr>
-		<td class="test">WEM: simple macro</td>
+		<td class="test">l:test[sub.p=passed]</td>
+		<td class="result" on="l:test[sub.p=passed] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[sub.p!=failed]</td>
+		<td class="result" on="l:test[sub.p!=failed] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[sub.i > 0]</td>
+		<td class="result" on="l:test[sub.i > 0] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[sub.b]</td>
+		<td class="result" on="l:test[sub.b] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test[expr(Appcelerator.Browser.isSafari || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isIE)]</td>
+		<td class="result" on="l:test[expr(Appcelerator.Browser.isSafari || Appcelerator.Browser.isFirefox ||  Appcelerator.Browser.isIE)] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
+		<td class="test">l:test then value[expr(this.sub.p)]</td>
+		<td class="result" on="l:test then value[expr(this.sub.p)]"></td>
+	</tr>
+	<tr>
+		<td class="test">#test1 (WEM: simple macro)</td>
 		<td class="result" on="#test1">failed</td>
 	</tr>
 	<tr>
-		<td class="test">WEM: partial macro</td>
+		<td class="test">#test2 then #test3 (WEM: partial macro)</td>
 		<td class="result" on="#test2 then #test3">failed</td>
 	</tr>
 	<tr>
-		<td class="test">WEM: substitution</td>
+		<td class="test">#test4 (WEM: substitution)</td>
 		<td class="result" on="#test4" id="wem1">failed</td>
 	</tr>
 	<tr>
-		<td class="test">WEM: substitution #2</td>
+		<td class="test">#test5[count=99,pass_fail=passed] (WEM: substitution #2)</td>
 		<td class="result" on="#test5[count=99,pass_fail=passed]">failed</td>
 	</tr>
 	<tr>
-		<td class="test">compound conditions</td>
-		<td class="result" on="(l:test6 or l:test6.1) then l:test6.result[msg='pass ']">
+		<td class="test">(l:test6 or l:test6.1) then l:test6.result[msg='passed '] (compound conditions)</td>
+		<td class="result" on="(l:test6 or l:test6.1) then l:test6.result[msg='passed ']">
 			<div>
 				You should see pass twice below after you click this button:
 				<button on="click then l:test6 and l:test6.1">Click me</button>
@@ -161,7 +199,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td class="test">WEM: compound conditions</td>
+		<td class="test">#test7 (WEM: compound conditions)</td>
 		<td class="result" on="#test7">
 			<div>
 				You should see pass twice below after you click this button:
@@ -170,12 +208,28 @@
 			<div on="l:test7.result then value[msg,append=true]"></div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test">Compound condition with an or expression afterwards (should turn yellow on first click, red on second and back to green on third and say 'passed')</td>
+		<td class="result">
+			<div on="(click or l:test.button) then set[backgroundColor=yellow] and script[if(!window.ctR)window.ctR=0;window.ctR+=1;] or l:reset.button then set[backgroundColor=red] or l:test.button[expr(window.ctR>1)] then value['passed'] and set[backgroundColor=green,color=white]" style="width:100px;background-color:red;border:2px solid blue;padding:10px;">
+			 click me first
+			</div>
+			<button on="click then l:reset.button">click me second</button>
+			<button on="click then l:test.button">click me third</button>
+		</td>
+	</tr>
+	<tr>
+		<td class="test">Widget short-hand web expression</td>
+		<td class="result" id="wsr">failed</td>
+	</tr>
 </table>
 
 <input type="hidden" id="foobar" value="100"/>
 <input type="hidden" id="heyya" value="true"/>
 <input type="hidden" id="duh" value="true"/>
-<app:message name="l:test" args="{count:'100','bar':null,'id':'wem1'}"></app:message>
+
+<app:message name="l:test" args="{count:'100','bar':null,'id':'wem1', 'sub':{'p':'passed','b':true,'i':109}}"></app:message>
+<app:script on="l:test">$('wsr').innerHTML='passed'</app:script>
 
 <script>
  $WEM({
@@ -184,9 +238,9 @@
      'test3':"value['passed']",
 	 'test4':"l:test[id=#{id}] then value['passed']",
 	 'test5':"l:test[count>#{count}] then value['#{pass_fail}']",
-	 'test7':"(l:test7 or l:test7.1) then l:test7.result[msg='pass ']"
+	 'test7':"(l:test7 or l:test7.1) then l:test7.result[msg='passed ']"
  });
-</script>
+</script> 
 
 </body>
 </html>

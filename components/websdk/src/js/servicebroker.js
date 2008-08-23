@@ -22,7 +22,7 @@ Appcelerator.Util.ServiceBroker =
     localPatternListeners: [],
     remotePatternListeners: [],
     devmode: (window.location.href.indexOf('devmode=1') > 0),
-    disabled: this.devmode || (window.location.href.indexOf('file:/') == 0) || Appcelerator.Parameters.get('mbDisabled')=='1',
+    disabled: this.devmode || (window.location.href.indexOf('file:/') != -1) || Appcelerator.Parameters.get('mbDisabled')=='1',
     remoteDisabled: this.disabled || Appcelerator.Parameters.get('remoteDisabled')=='1',
     marshaller:'xml/json',
     transport:'appcelerator',
@@ -47,8 +47,9 @@ Appcelerator.Util.ServiceBroker =
 
     convertType: function (t)
     {
-        if (t.startsWith('l:')) return t.replace(/^l:/,'local:');
-        if (t.startsWith('r:')) return t.replace(/^r:/,'remote:');
+        if (t.startsWith('l:')) return 'local:'+t.substring(2);
+        if (t.startsWith('r:')) return 'remote:'+t.substring(2);
+        if (t.startsWith('*:')) return 'both:'+t.substring(2);
         return t;
     },
 
@@ -969,6 +970,15 @@ function $MQL (type,f,myscope,element)
     }
 
     return listener;
+}
+
+if (APPCELERATOR_DEBUG_LEVEL == '2')
+{
+	//Can do w/ 1 $MQ but we need to know whether it's remote or local..so we do two..
+	$MQL('*:~.*',function(type,msg,datatype,from,scope)
+	{
+	    Logger.info('Message Type: '+from+':' + type + '\nMessage Data: ' + Object.toJSON(msg));
+	});
 }
 
 

@@ -154,17 +154,3 @@ if(typeof out == 'undefined') {
     };
 }
 
-if (APPCELERATOR_DEBUG_LEVEL == '2')
-{
-	//Can do w/ 1 $MQ but we need to know whether it's remote or local..so we do two..
-	$MQL('r:~.*',function(type,msg,datatype,from)
-	{
-	    Logger.info('Message Type: r:' + type + '\nMessage Data: ' + Object.toJSON(msg));
-	});
-
-	$MQL('l:~.*',function(type,msg,datatype,from)
-	{
-	    Logger.info('Message Type: l:' + type + '\nMessage Data: ' + Object.toJSON(msg));
-	});
-}
-

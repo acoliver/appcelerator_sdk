@@ -5,7 +5,7 @@
 //
 Appcelerator.Compiler.registerCustomCondition(
 {
-	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:'],
+	conditionPrefixes: ['local:', 'remote:', 'l:', 'r:', 'both:', '*:'],
 	freeformSuffix: true,
 	description: "Respond to a local or remote message"
 },
@@ -14,7 +14,9 @@ function(element,condition,action,elseAction,delay,ifCond)
 	if (condition.startsWith('local:') ||
 	       condition.startsWith('l:') || 
 	       condition.startsWith('remote:') ||
-	       condition.startsWith('r:'))
+	       condition.startsWith('r:') ||
+		   condition.startsWith('both:') ||
+		   condition.startsWith('*:') )
 	{
 		var id = element.id;
 		var actionParams = Appcelerator.Compiler.parameterRE.exec(condition);

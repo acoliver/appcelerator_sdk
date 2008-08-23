@@ -304,79 +304,85 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 		{
 			throw "syntax error: expected parameter key:value for action: "+action;
 		}
-		var obj = params[0];
-		var key = obj.key;
-		var value = obj.value;
-		if (Appcelerator.Compiler.isCSSAttribute(key))
+		
+		var setStyles = null;
+		
+		for (var c=0;c<params.length;c++)
 		{
-			key = Appcelerator.Compiler.convertCSSAttribute(key);
-			var params = {};
-			params[key] = Appcelerator.Compiler.generateSetter(value,scope);
-			Element.setStyle(id, params);
-			return;
-		}
-		else if (key == 'class')
-		{
-			if (action=='set')
+			var obj = params[c];
+			var key = obj.key;
+			var value = obj.value;
+			if (Appcelerator.Compiler.isCSSAttribute(key))
 			{
-				$(id).className = Appcelerator.Compiler.generateSetter(value,scope);
-				return;
+				key = Appcelerator.Compiler.convertCSSAttribute(key);
+				if (!setStyles) setStyles = {};
+				setStyles[key] = Appcelerator.Compiler.generateSetter(value,scope);
+				continue;
 			}
-			Element.addClassName(id, Appcelerator.Compiler.generateSetter(value,scope));
-			return;
-		}
-		else if (key.startsWith('style'))
-		{
-		    $(id)[key] = Appcelerator.Compiler.generateSetter(value,scope);
-		    return;
-	    }
-	    else
-	    {
-			var e = $(id);
-			if (!e)
+			else if (key == 'class')
 			{
-			    throw "syntax error: element with ID: "+id+" doesn't exist";
+				if (action=='set')
+				{
+					$(id).className = Appcelerator.Compiler.generateSetter(value,scope);
+				}
+				Element.addClassName(id, Appcelerator.Compiler.generateSetter(value,scope));
 			}
-			if (e.nodeName=='IFRAME' && key=='src')
+			else if (key.startsWith('style'))
 			{
-			    var onload = e.getAttribute('onloaded');
-			    if (onload)
-			    {
-			        Appcelerator.Util.IFrame.monitor(e, function()
-			        {
-			            $MQ(onload,{},e.scope);
-			        });
-		        }
-		    }
-			if (e[key]!=null)
-			{
-    			switch(key)
-    			{
-    				case 'checked':
-    				case 'selected':
-    				case 'disabled':
-    				{
-    				    e[key] = ('true' == Appcelerator.Compiler.generateSetter(value,scope));
-    					break;
-					}
-    				default:
-    				{
-            			var isOperaSetIframe = Appcelerator.Browser.isOpera && e.nodeName=='IFRAME' && key=='src';
-    				    if (isOperaSetIframe)
-    				    {
-    				        e.location.href = Appcelerator.Compiler.generateSetter(value,scope);
-    				    }
-    				    else
-    				    {
-    				        e[key] = Appcelerator.Compiler.generateSetter(value,scope);
-    				    }
-					}
-    			}
+			    $(id)[key] = Appcelerator.Compiler.generateSetter(value,scope);
 		    }
 		    else
 		    {
-		        e.setAttribute(key, Appcelerator.Compiler.generateSetter(value,scope));
-		    }
+				var e = $(id);
+				if (!e)
+				{
+				    throw "syntax error: element with ID: "+id+" doesn't exist";
+				}
+				if (e.nodeName=='IFRAME' && key=='src')
+				{
+				    var onload = e.getAttribute('onloaded');
+				    if (onload)
+				    {
+				        Appcelerator.Util.IFrame.monitor(e, function()
+				        {
+				            $MQ(onload,{},e.scope);
+				        });
+			        }
+			    }
+				if (e[key]!=null)
+				{
+	    			switch(key)
+	    			{
+	    				case 'checked':
+	    				case 'selected':
+	    				case 'disabled':
+	    				{
+	    				    e[key] = ('true' == Appcelerator.Compiler.generateSetter(value,scope));
+	    					break;
+						}
+	    				default:
+	    				{
+	            			var isOperaSetIframe = Appcelerator.Browser.isOpera && e.nodeName=='IFRAME' && key=='src';
+	    				    if (isOperaSetIframe)
+	    				    {
+	    				        e.location.href = Appcelerator.Compiler.generateSetter(value,scope);
+	    				    }
+	    				    else
+	    				    {
+	    				        e[key] = Appcelerator.Compiler.generateSetter(value,scope);
+	    				    }
+						}
+	    			}
+			    }
+			    else
+			    {
+			        e.setAttribute(key, Appcelerator.Compiler.generateSetter(value,scope));
+			    }
+			}
+		}
+		if (setStyles)
+		{
+			Element.setStyle(id, setStyles);
 		}
 	}
 
@@ -669,87 +675,45 @@ Appcelerator.Compiler.registerCustomAction('value',
 		else
 		{
 			params = Appcelerator.Compiler.getParameters(parameters,false);
+			
 			for (var c=0,len=params.length;c<len;c++)
 			{
 				var param = params[c];
-				if (params.length == 1 && null==param.value && param.key.charAt(0)=='$')
+				// alert('value = '+Object.toJSON(param));
+				if (param.empty)
 				{
-					targetId = param.key;
-					idFound=true;
-				}
-				else if (param.key == 'id')
-				{
-					if (param.value!=null)
+					// if empty, must be a standalone value
+					if (param.keyExpression || param.valueExpression)
 					{
-						targetId = param.value;
-						idFound=true;
+						valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.keyExpression||param.valueExpression);
 					}
 					else
 					{
-						idFound=false;
+						valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.key||param.value,scope.data,scope,param.keyExpression||param.valueExpression);
 					}
 				}
-				else if (param.key == 'append')
+				else 
 				{
-					append = param.value==true || param.value=='true';
-				}
-				else if (param.key == 'value')
-				{
-					// this is a hack to allow multiple parameters and an expression
-					if (param.value == 'expr(')
+					switch(param.key)
 					{
-						var i = parameters.indexOf('expr(');
-						var l = parameters.lastIndexOf(')');
-						valueExpr = parameters.substring(i,l+1);
+						case 'id':
+						{
+							targetId = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.valueExpression);
+							idFound = true;
+							break;
+						}
+						case 'append':
+						{
+							append=true;
+							break;
+						}
+						case 'value':
+						{
+							valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.valueExpression);
+							break;
+						}
 					}
-					else
-					{
-						valueExpr = param.value;
-					}
 				}
-			}
-			var expressionMatch = Appcelerator.Compiler.expressionRE.exec(valueExpr);
-
-			if (expressionMatch)
-			{
-				// allow them to specify exact javascript expression to run
-                var valFunc = function()
-    	        {
-    	            return eval(expressionMatch[1]);
-    	        }.bind(scope);
-    	        valueHtml = valFunc();
-			}
-			else if (params[0].key.charAt(0)=='$')
-			{
-			    valueHtml = Appcelerator.Compiler.getElementValue($(params[0].key.substring(1)));
-			}
-			else
-			{
-				// assume its a property
-				var key = params[0].key;
-				// see if we have a default value in case key isn't found
-				var def = params[0].value || key;
-				if (def=='$null')
-				{
-					// default $null string is a special keyword to mean empty value
-					def = '';
-				}
-				valueHtml = Object.getNestedProperty(scope.data, key, def);
-			}
-			if (valueHtml==null)
-			{
-				if (targetId.charAt(0)=='$')
-				{
-					targetId = targetId.substring(1);
-				}
-				var target = $(targetId);
-
-				if (!target)
-				{
-					throw "syntax error: couldn't find target with ID: "+targetId+" for value action";
-				}
-
-                valueHtml = Appcelerator.Compiler.getElementValue($(targetId));
 			}
 		}
 
@@ -758,7 +722,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var variable = '';
 		var expression = '';
 
-		//TODO: select
 		var revalidate = false;
 
 		switch (Appcelerator.Compiler.getTagname(element))
