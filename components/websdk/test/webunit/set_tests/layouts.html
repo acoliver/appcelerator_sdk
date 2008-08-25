@@ -17,6 +17,11 @@
 	background-color:#e6e6e6;
 	padding:10px;
 }
+
+.box 
+{
+	background-color:#ccc;
+}
 -->
 </style>
 </head>
@@ -28,6 +33,87 @@
 </p>
 
 <table width="90%">
+	<tr>
+		<td class="test" valign="middle">
+			Grid Layout (no args)
+		</td>
+		<td class="result" >
+            <div set="layout[grid]">
+				<div cols="12" style="height:50px" class="box">
+					header
+				</div>
+            </div>
+            <div set="layout[grid]">
+				<div cols="3" style="height:50px"  class="box">
+					left
+				</div>
+				<div cols="6" style="height:50px"  class="box">
+					center
+				</div>
+				<div cols="3" style="height:50px"  class="box">
+					right
+				</div>
+
+            </div>
+            <div set="layout[grid]">
+				<div cols="12" style="height:50px"  class="box">
+					footer
+				</div>
+            </div>
+
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Grid Layout (16 cols)
+		</td>
+		<td class="result" >
+            <div set="layout[grid,size=16]">
+				<div cols="16" style="height:50px" class="box">
+					header
+				</div>
+            </div>
+            <div set="layout[grid,size=16]">
+				<div cols="4">
+					<div style="height:50px;background-color:#ccc">
+						row 1
+					</div>
+					<div style="height:50px;background-color:#ccc">
+						row 2
+					</div>
+					
+				</div>
+				<div cols="8">
+					<div style="height:100px;background-color:#ccc;padding:10px">
+						row 1 (I have padding)
+					</div>
+					<div style="height:100px;background-color:#ccc">
+						row 2
+					</div>
+				</div>
+				<div cols="4">
+					<div style="height:60px;background-color:#ccc">
+						row 1
+					</div>
+					<div style="height:60px;background-color:#ccc">
+						row 2
+					</div>
+					<div style="height:60px;background-color:#ccc">
+						row 3
+					</div>
+
+				</div>
+
+            </div>
+            <div set="layout[grid,size=16]">
+				<div cols="16" style="height:50px" class="box">
+					footer
+				</div>
+            </div>
+
+		</td>
+	</tr>
+
 	<tr>
 		<td class="test" valign="middle">
 			Three Horizontal DIVs (no options)
