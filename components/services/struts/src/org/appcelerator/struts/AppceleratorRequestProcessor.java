@@ -21,6 +21,8 @@ import net.sf.json.JsonConfig;
 import net.sf.json.util.CycleDetectionStrategy;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.struts.Globals;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -31,15 +33,12 @@ import org.apache.struts.action.InvalidCancelException;
 import org.apache.struts.action.RequestProcessor;
 import org.apache.struts.config.ModuleConfig;
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.dispatcher.ServiceDispatcherManager;
+import org.appcelerator.locator.ServiceLocatorManager;
 import org.appcelerator.marshaller.ServiceMarshallerManager;
 import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
-import org.appcelerator.messaging.MessageDirection;
 import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 
 public class AppceleratorRequestProcessor extends RequestProcessor {
@@ -135,7 +134,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
             
             // original appcelerator service dispatching
             try {
-                ServiceDispatcherManager.dispatch(incommingMessage, outgoingMessages);
+                ServiceLocatorManager.dispatch(incommingMessage, outgoingMessages);
             } catch (Exception e) {
                 e.printStackTrace();
             }
