@@ -28,7 +28,7 @@
 }
 .accordion_aqua_grey_row_left
 {
-	background:url(left.png) no-repeat ;
+	background:url(images/left.png) no-repeat ;
 	height:23px;
 	width:13px;
 	float:left;
@@ -38,7 +38,7 @@
 }
 .accordion_aqua_grey_row_middle
 {
-	background:url(middle.png) repeat-x;
+	background:url(images/middle.png) repeat-x;
 	height:23px;
 	float:left;
 	font-size:11px;
@@ -50,7 +50,7 @@
 }
 .accordion_aqua_grey_row_right
 {
-	background:url(right.png) no-repeat;;
+	background:url(images/right.png) no-repeat;;
 	height:23px;
 	width:13px;
 	float:left;
