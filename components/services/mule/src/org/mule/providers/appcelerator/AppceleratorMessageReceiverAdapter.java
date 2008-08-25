@@ -1,7 +1,7 @@
 package org.mule.providers.appcelerator;
 
-import org.appcelerator.dispatcher.ServiceAdapter;
 import org.appcelerator.messaging.Message;
+import org.appcelerator.service.ServiceAdapter;
 
 public class AppceleratorMessageReceiverAdapter extends ServiceAdapter {
 

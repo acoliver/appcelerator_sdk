@@ -14,9 +14,9 @@ import java.net.URI;
 
 import net.sf.json.JSONObject;
 
-import org.appcelerator.dispatcher.ServiceRegistry;
 import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
+import org.appcelerator.service.ServiceRegistry;
 import org.mule.config.i18n.MessageFactory;
 import org.mule.impl.MuleMessage;
 import org.mule.providers.AbstractMessageReceiver;
