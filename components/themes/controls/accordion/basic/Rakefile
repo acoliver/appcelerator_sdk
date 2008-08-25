@@ -41,7 +41,7 @@ require 'yaml'
 require 'find'
 require 'pathname'
 
-NAME = 'white_gradient'
+NAME = 'basic'
 ZIPFILE = File.expand_path "#{NAME}.zip"
 
 desc 'default build which makes the theme'
