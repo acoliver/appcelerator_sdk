@@ -7,6 +7,22 @@ Appcelerator.Compiler.StateMachine.isStateCondition = function (token)
 {
 	return Appcelerator.Compiler.parameterRE.test(token);
 };
+Appcelerator.Compiler.getTransitionSource = function(moniker) {
+	if (moniker.indexOf(':')==-1)
+		return '';
+	else {
+		value =  moniker.split(':')[0];
+		return ''+value;
+	}
+};
+Appcelerator.Compiler.getTransitionTarget = function(moniker) {
+	if (moniker.indexOf(':')==-1)
+		return moniker;
+	else {
+		value =  moniker.split(':')[1];
+		return ''+value;
+	}
+};
 
 Appcelerator.Compiler.registerCustomCondition(
 {
@@ -65,10 +81,11 @@ function(element,condition,action,elseAction,delay,ifCond)
 		
 		var actionParams = Appcelerator.Compiler.parameterRE.exec(token);
 		var statemachine = actionParams[1];
-		var state = actionParams[2];
-		
-		statemachines.push([statemachine,state]);
-		condition += cond + 'Appcelerator.Compiler.StateMachine.isStateValid("'+statemachine+'","'+state+'")';
+		var state = Appcelerator.Compiler.getTransitionTarget(actionParams[2]);
+		var oldstate = Appcelerator.Compiler.getTransitionSource(actionParams[2]);
+		statemachines.push([statemachine,state,oldstate]);
+		if (state !='' && state)
+			condition += cond + 'Appcelerator.Compiler.StateMachine.isStateValid("'+statemachine+'","'+state+'")';
 	}
 	
 	// pre-compile conditions
@@ -87,15 +104,21 @@ function(element,condition,action,elseAction,delay,ifCond)
 	for (var c=0,len=statemachines.length;c<len;c++)
 	{
 		var statemachine = statemachines[c][0];
-		var state = statemachines[c][1];
-
-		$D('adding state change listener for '+statemachine+'['+state+']');
+		var curstate = statemachines[c][1];
+		var curoldstate = statemachines[c][2];
+		$D('adding state change listener for '+statemachine+'['+curstate+']');
 	
-		Appcelerator.Compiler.StateMachine.registerStateListener(statemachine,function(statemachine,statechange,valid)
+		Appcelerator.Compiler.StateMachine.registerStateListener(statemachine,function(statemachinein,statechange,valid, old_state)
 		{
-			var result = compiledCondition();
-			$D('statemachine: '+statemachine+'['+statechange+'] logic returned => '+result);
-
+			var result=false;
+			if (curoldstate!='') {
+				var validold = curoldstate == (''+old_state) || curoldstate=='';
+				var validnew = curstate == (''+statechange) || curstate=='';
+				result = validold && validnew;
+			} else {
+				result = compiledCondition();
+				$D('statemachine: '+statemachinein+'['+statechange+'] logic returned => '+result);
+			}
 			if (result)
 			{
 				Appcelerator.Compiler.executeAfter(actionFunc,delay);
@@ -269,6 +292,7 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 	{
 		var different = false;
 		var old_state = 'state_'+m.activeState;
+		var old_state_simple = m.activeState;
 				
 		for (var s in m.states)
 		{
@@ -308,7 +332,7 @@ Appcelerator.Compiler.StateMachine.fireStateMachineChange = function (statemachi
 			for (var c=0,len=m.listeners.length;c<len;c++)
 			{
 				var listener = m.listeners[c];
-				listener.apply(listener,[statemachine,state,on_off]);
+				listener.apply(listener,[statemachine,state,on_off, old_state_simple]);
 			}
 		}
 	}
