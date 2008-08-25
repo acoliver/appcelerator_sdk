@@ -71,11 +71,12 @@ module Appcelerator
           :force_overwrite=>true
         }
 
-        puts "Installing components ..." unless OPTIONS[:quiet]
+        puts "Installing components ... (this may take a few seconds)" unless OPTIONS[:quiet]
         
         cur_quiet = OPTIONS[:quiet]
         OPTIONS[:quiet] = true
         
+        count = 0
         
         # include any bundled components automagically
         Dir["#{source_dir}/_install/*.zip"].each do |filename|
@@ -84,7 +85,10 @@ module Appcelerator
           type = type.first
           CommandRegistry.execute("install:#{type}",[filename],add_thing_options)
           CommandRegistry.execute("add:#{type}",[filename,options[:project]],add_thing_options)
+          count+=1
         end
+
+        puts "#{count} components installed ... " unless OPTIONS[:quiet]
         
         OPTIONS[:quiet] = cur_quiet
         
