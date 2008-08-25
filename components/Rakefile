@@ -267,6 +267,18 @@ namespace :service do
     end
   end
 
+  task :mule do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      call_rake " mule"
+    end
+  end
+
+  task :struts do
+    FileUtils.cd("#{BUILD_DIR}/services") do |d|
+      call_rake " struts"
+    end
+  end
+
 end
 
 namespace :plugin do

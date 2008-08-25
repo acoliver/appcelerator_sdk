@@ -92,3 +92,15 @@ task :merb do
     system "rake"
   end
 end
+
+task :mule do
+  FileUtils.cd("#{BUILD_DIR}/mule") do |d|
+    system "rake"
+  end
+end
+
+task :struts do
+  FileUtils.cd("#{BUILD_DIR}/struts") do |d|
+    system "rake"
+  end
+end
