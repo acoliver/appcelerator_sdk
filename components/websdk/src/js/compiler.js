@@ -2952,6 +2952,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 						{
 							var entry = transformValue(key,currentstr);
 							entry.operator = operator;
+							entry.key = entry.value;
 							entry.empty = true;
 							data.push(entry);
 						}
@@ -3078,6 +3079,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 		{
 			var entry = transformValue(key,currentstr);
 			entry.empty = true;
+			entry.key = entry.value;
 			entry.operator = operator;
 			data.push(entry);
 		}
