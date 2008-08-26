@@ -91,7 +91,14 @@ end
 #
 # set up temp directory and delete it on exit
 #
-APP_TEMP_DIR=FileUtils.mkdir_p(File.join(ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP'] || '.',"appcelerator.#{rand(10000)}.#{$$}"))
+tmp_dir = ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP']
+if (not(tmp_dir) and File.directory?('/tmp'))
+    tmp_dir = '/tmp'
+else
+    tmp_dir = '.'
+end
+APP_TEMP_DIR=FileUtils.mkdir_p(File.join(tmp_dir, "appcelerator.#{rand(10000)}.#{$$}"))
+
 APP_TEMP_FILES = Array.new
 
 def recursive_deltree(dir)
