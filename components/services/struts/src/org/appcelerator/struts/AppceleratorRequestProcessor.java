@@ -114,7 +114,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
 
         HttpSession session = servletRequest.getSession();
         InetAddress address = InetAddress.getByName(servletRequest.getRemoteAddr());
-        String instanceid = servletRequest.getParameter("instanceid");
+        //String instanceid = servletRequest.getParameter("instanceid");
 
         // General purpose preprocessing hook
         // TODO: Check this
@@ -410,7 +410,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
         //Iterator names = request.getParameterNames();
         
         for (Iterator names = message.getData().keySet().iterator(); names.hasNext(); ) {
-            String name = (String) names.next();  // Downcasting is required pre
+            String name = (String) names.next();
             String stripped = name;
 
             if (prefix != null) {

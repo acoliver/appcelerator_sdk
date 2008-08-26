@@ -59,9 +59,8 @@ import org.mortbay.jetty.servlet.SessionHandler;
 import org.mortbay.resource.Resource;
 
 /**
- * HTTPEndpoint is a class which implements a partial Jetty embedded webserver
- * for running the environment without the need for an external webserver.  Perfect
- * for development mode.
+ * StrutsEndpoint is a Jetty endpoint which can handle Appcelerator messages
+ * with Struts services.
  */
 public class StrutsEndpoint
 {
