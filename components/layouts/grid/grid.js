@@ -154,7 +154,7 @@ Appcelerator.UI.registerUIComponent('layout','grid',
 		}
 		
 		// process last child of a grid
-		if (children == true && nodes[lastIndex].style && nodes[lastIndex].getAttribute('cols'))
+		if (children == true && nodes[lastIndex] && nodes[lastIndex].getAttribute('cols'))
 		{
 			nodes[lastIndex].style.marginRight = "0px"
 			nodes[lastIndex].style.marginLeft = "10px"
