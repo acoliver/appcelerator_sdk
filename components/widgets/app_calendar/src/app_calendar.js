@@ -254,10 +254,15 @@ Appcelerator.Widget.Calendar =
         {
             throw "inputId or elementId or fieldset is required";
         }
-        
+
         parameters['name'] = 'app_calendar_' + Appcelerator.Widget.Calendar.calendarCount++;
-		var html = '<div style="position:absolute;z-index:1000;display:none" id="'+parameters['name']+'" on="' + 
-		        parameters['on'] + '"></div>';
+		var html = '<div style="position:absolute;z-index:1000;display:none" id="'+parameters['name']+'"';
+		
+		if (parameters['on'])
+		{
+			html+=' on="' + parameters['on'] + '"';
+		}
+		html+='></div>';
         
         return {
             'position' : Appcelerator.Compiler.POSITION_REPLACE,
