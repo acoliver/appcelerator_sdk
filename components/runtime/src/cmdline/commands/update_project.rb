@@ -65,12 +65,14 @@ CommandRegistry.registerCommand('update:project','update project components',[
       websdk_component = {
         :type => :websdk,
         :name => 'websdk',
-        :version => config[:websdk]
+        :version => config[:websdk],
+        :checksum => config[:checksum]
       }
       service_component = {
         :type => :service,
         :name => config[:service],
-        :version => config[:service_version]
+        :version => config[:service_version],
+        :checksum => config[:checksum]
       }
       
       project_websdk = Installer.get_component(:local, websdk_component) || websdk_component
@@ -151,7 +153,7 @@ def ask_to_update(components, updates, type=nil)
     
     project_cm[:type] = type if type
     current = Installer.get_current_available_component(project_cm)
-    if current and Installer.should_update(project_cm[:version], current[:version])
+    if current and Installer.should_update(project_cm[:version], current[:version], project_cm[:checksum], current[:checksum])
       
       if OPTIONS[:force_update] or confirm_yes "There is a newer version of '#{project_cm[:name]}' (yours: #{project_cm[:version]}, available: #{current[:version]})  Install? [Yna]"
         puts "Will update to => #{project_cm[:name]} #{current[:version]}" if OPTIONS[:verbose]

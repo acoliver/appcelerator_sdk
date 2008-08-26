@@ -51,9 +51,12 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
             
             local_version = entry[:version]
             remote_version = e[:version]
+            local_checksum = entry[:checksum]
+            remote_checksum = e[:checksum]
             
             if OPTIONS[:debug]
               puts "local_version=#{local_version},remote_version=#{remote_version}"
+              puts "local_checksum=#{local_checksum},remote_checksum=#{remote_checksum}"
               puts "local_entry=#{entry.to_yaml}"
               puts "remote_entry=#{e.to_yaml}"
               puts
@@ -62,7 +65,7 @@ CommandRegistry.registerCommand(%w(install:updates install:update),'attempt to u
             same_checksum = (e[:checksum].to_s == entry[:checksum].to_s)
             same_but_different = (local_version == remote_version and not same_checksum)
             
-            update = Installer.should_update(local_version,remote_version) || same_but_different
+            update = Installer.should_update(local_version,remote_version,local_checksum,remote_checksum) || same_but_different
             
             puts "should updated? #{update}" if OPTIONS[:debug]
 

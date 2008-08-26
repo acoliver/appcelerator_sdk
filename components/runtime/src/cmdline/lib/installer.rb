@@ -811,7 +811,7 @@ HELP
             component = install_from_devnetwork(remote, options)
             finish_install(component, options)
                         
-          elsif remote and should_update(local[:version],remote[:version])
+          elsif remote and should_update(local[:version],remote[:version],local[:checksum],remote[:checksum])
             # upgrading
             if OPTIONS[:force_update] or confirm_yes("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
               component = install_from_devnetwork(remote, options)
@@ -1128,13 +1128,14 @@ HELP
     #
     # Version Utils
     #
-    def Installer.compare_versions(first, second)
+    def Installer.compare_versions(first, second, checksum1, checksum2)
       return 0 unless (first and second)
+      return -1 unless (checksum1 == checksum2)
       first.to_s.split('.').map {|n| n.to_i} <=> second.to_s.split('.').map {|n| n.to_i}
     end
         
-    def Installer.should_update(local_version, remote_version)
-      case compare_versions(local_version, remote_version)
+    def Installer.should_update(local_version, remote_version, local_checksum, remote_checksum)
+      case compare_versions(local_version, remote_version, local_checksum, remote_checksum)
         when 1
           false # mine is newer
         when 0
@@ -1153,7 +1154,7 @@ HELP
     
       if update
         
-        if compare_versions(build_config[:version], update[:version]) == -1
+        if compare_versions(build_config[:version], update[:version], build_config[:checksum], update[:checksum]) == -1
           if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
             update_component = Installer.fetch_network_component(update,1,1)
