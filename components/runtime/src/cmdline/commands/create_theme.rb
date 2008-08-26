@@ -106,6 +106,7 @@ ERROR_MESSAGE
     template = File.read "#{template_dir}/theme.js"
     template.gsub! 'TYPE', control
     template.gsub! 'THEME', theme_name
+    template.gsub! 'COMPONENT', control_type
     
     FileUtils.cp "#{template_dir}/LICENSING.readme", "#{dir}/LICENSING.readme" 
     Installer.put "#{dir}/#{theme_name}.js", template
