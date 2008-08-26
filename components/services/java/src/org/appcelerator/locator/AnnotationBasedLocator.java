@@ -46,8 +46,7 @@ import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceLocator;
 import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+
 
 /**
  * Utility class which will auto-register all @Service method implementations in the 
@@ -58,7 +57,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class AnnotationBasedLocator implements Locator
 {
     private static final Log LOG = LogFactory.getLog(AnnotationBasedLocator.class);
-    private List <Class<? extends Object>> candidateServices;
+    protected List <Class<? extends Object>> candidateServices;
+    protected ServletContext servletContext = null;
+
     /**
      * called by dispatcher manager to create an instance of this dispatcher
      * 
@@ -74,10 +75,12 @@ public class AnnotationBasedLocator implements Locator
     public void initialize(ServletContext sc) {
         this.candidateServices = Arrays.asList(AnnotationHelper.findAnnotation(Service.class));
         
+        this.servletContext = sc;
+        
         /* 
          * initialize Spring services first, so that they can be associated with their respective beans.
          */
-        initializeSpringServices(sc);
+        initializeSpringServices();
         
         /*
          * Now initialize non-Spring services
@@ -97,57 +100,70 @@ public class AnnotationBasedLocator implements Locator
     }
 
 
-    private void initializeSpringServices(ServletContext sc) {
+    private void initializeSpringServices() {
 
         // don't register any Spring services if we are not running in Servlet
-        if (sc == null)
+        if (servletContext == null)
             return;
 
         // detect if we are running a Spring container, if not -- quit early, as this
         // following code will throw a ClassNotFound exception (bad news bears!)
-        if (sc.getAttribute("org.springframework.web.context.WebApplicationContext.ROOT") == null) {
+        if (servletContext.getAttribute("org.springframework.web.context.WebApplicationContext.ROOT") == null) {
             return;
         }
+        
 
         /*
-         * Now we need to find all classes that contain methods that are annotated with @Service
-         * and correlate them with Spring managed beans. Both types of Services (Spring and non-spring)
-         * needs to be created only once, so from the list of @Service annotated classes we need to
-         *  - select Spring managed services and register them with ServiceRegistry
-         *  - create instances of non-spring managed services and register them with ServiceRegistry
-         *  Non-spring managed services will be added to a temporary list (nonSpringServices) which
-         *  will be processed later
+         * Wrap this in an inner class to hide Spring dependencies
          */
-        List<Class<? extends Object>> nonSpringServices = new ArrayList<Class<? extends Object>>();
-        ApplicationContext aCtx = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
-        String[] beanNames = aCtx.getBeanDefinitionNames();
-
-        for (Class<?> candidateService : this.candidateServices) {
-
-            Boolean foundBean = false;
-            for (String name : beanNames) {
-                Object bean = aCtx.getBean(name);
-                Class<?> clazz = bean.getClass();
-
-                // this is not the bean you are looking for <waves hand>
-                if (!candidateService.equals(clazz))
-                    continue;
-
-                for (Method method : bean.getClass().getDeclaredMethods()) {
-                    registerServiceMethod(method, bean.getClass(), bean);
-                    registerDownloadableMethod(method, bean.getClass(), bean);
+        class SpringHelper {
+            public List<Class<? extends Object>> execute() {
+                /*
+                 * Now we need to find all classes that contain methods that are annotated with @Service
+                 * and correlate them with Spring managed beans. Both types of Services (Spring and non-spring)
+                 * needs to be created only once, so from the list of @Service annotated classes we need to
+                 *  - select Spring managed services and register them with ServiceRegistry
+                 *  - create instances of non-spring managed services and register them with ServiceRegistry
+                 *  Non-spring managed services will be added to a temporary list (nonSpringServices) which
+                 *  will be processed later
+                 */
+                List<Class<? extends Object>> nonSpringServices = new ArrayList<Class<? extends Object>>();
+                org.springframework.context.ApplicationContext aCtx = org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext(servletContext);
+                if (aCtx == null) {
+                    return candidateServices;
                 }
+                String[] beanNames = aCtx.getBeanDefinitionNames();
+                for (Class<?> candidateService : candidateServices) {
 
-                if (!foundBean)
-                    nonSpringServices.add(candidateService);
+                    Boolean foundBean = false;
+                    for (String name : beanNames) {
+                        Object bean = aCtx.getBean(name);
+                        Class<?> clazz = bean.getClass();
+
+                        if (candidateService.equals(clazz)) {
+                            foundBean = true;
+                            for (Method method : bean.getClass().getDeclaredMethods()) {
+                                registerServiceMethod(method, bean.getClass(), bean);
+                                registerDownloadableMethod(method, bean.getClass(), bean);
+                            }
+                        }
+                    }
+
+                    if (!foundBean)
+                        nonSpringServices.add(candidateService);
+                }
+                
+                return nonSpringServices;
             }
-
-            // these will be processed next by the non-Spring location code
-            this.candidateServices = nonSpringServices;
         }
+        
+        
+        SpringHelper helper = new SpringHelper();
+        this.candidateServices = helper.execute(); // processed in initializeServices
+
     }
 
-    private Object registerServiceMethod(Method method, Class<?> service, Object instance) {
+    public Object registerServiceMethod(Method method, Class<?> service, Object instance) {
         Service annotation = method.getAnnotation(Service.class);
         if (annotation != null) {
             try {
@@ -165,7 +181,7 @@ public class AnnotationBasedLocator implements Locator
         return instance;
     }
 
-    private Object registerDownloadableMethod(Method method, Class<?> service, Object instance) {
+    public Object registerDownloadableMethod(Method method, Class<?> service, Object instance) {
         Downloadable dAnnotation = method.getAnnotation(Downloadable.class);
         if (dAnnotation != null) {
             try {
