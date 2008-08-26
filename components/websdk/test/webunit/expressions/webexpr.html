@@ -165,6 +165,10 @@
 		<td class="result" on="l:test[sub.b] then value['passed'] else value['failed']"></td>
 	</tr>
 	<tr>
+		<td class="test">l:test[val=0]</td>
+		<td class="result" on="l:test[val=0] then value['passed'] else value['failed']"></td>
+	</tr>
+	<tr>
 		<td class="test">l:test[expr(Appcelerator.Browser.isSafari || Appcelerator.Browser.isFirefox || Appcelerator.Browser.isIE)]</td>
 		<td class="result" on="l:test[expr(Appcelerator.Browser.isSafari || Appcelerator.Browser.isFirefox ||  Appcelerator.Browser.isIE)] then value['passed'] else value['failed']"></td>
 	</tr>
@@ -228,7 +232,7 @@
 <input type="hidden" id="heyya" value="true"/>
 <input type="hidden" id="duh" value="true"/>
 
-<app:message name="l:test" args="{count:'100','bar':null,'id':'wem1', 'sub':{'p':'passed','b':true,'i':109}}"></app:message>
+<app:message name="l:test" args="{count:'100','bar':null,'id':'wem1', 'sub':{'p':'passed','b':true,'i':109}, 'val':0}"></app:message>
 <app:script on="l:test">$('wsr').innerHTML='passed'</app:script>
 
 <script>

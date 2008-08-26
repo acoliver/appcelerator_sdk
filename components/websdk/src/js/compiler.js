@@ -1852,6 +1852,8 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 
 Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data) 
 {
+	//OPTIMIZE: there is a hot spot here where this is called a lot of times. we need to look to optimize this/the caller
+	
     var ok = true;
     var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
 
@@ -1899,8 +1901,11 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
 			}
 			
 			// added x to eval $args
-			var x = p.value ? Appcelerator.Compiler.getEvaluatedValue(p.value,data) : null;
+			var x = !Object.isUndefined(p.value) ? Appcelerator.Compiler.getEvaluatedValue(p.value,data) : null;
 			var matched = p.keyExpression ? k : p.valueExpression ? (v || k) : idref ? (k && String(k).charAt(0)!='$') : Object.getNestedProperty(data,k);
+			
+			// we need to convert to boolean because 0 is a valid value but will set matched to false if you just check matched
+			matched = Object.isBoolean(matched) ? matched : !Object.isUndefined(matched);
 			
 			//alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nkeyExpression='+p.keyExpression+'\nvalueExpression='+p.valueExpression+'\np.value='+p.value+'\npayload='+Object.toJSON(data));
 			// top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression);
