@@ -78,6 +78,7 @@ var RandomSeed
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
+
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -163,9 +164,22 @@ Section
   
   DownloadComplete:
 
-  DetailPrint "The ruby install will take a few moments, please wait..."
-  SetDetailsView show
-  ExecWait '"$INSTDIR\ruby-installer.exe" /S' $0
+  ;DetailPrint "The ruby install will take a few moments, please wait..."
+  ;SetDetailsView show
+  Var ALTERNATIVE_GUI_TITLE 
+  Var ALTERNATIVE_TEXT 
+  Var ALTERNATIVE_FOLDER 
+  !define MUI_DIRECTORYPAGE_VARIABLE          $ALTERNATIVE_FOLDER   ;selected by user 
+  !define MUI_DIRECTORYPAGE_TEXT_DESTINATION  $ALTERNATIVE_TEXT     ;descriptive text 
+  !define MUI_DIRECTORYPAGE_TEXT_TOP          $ALTERNATIVE_GUI_TITLE  ; GUI page title 
+  !insertmacro MUI_PAGE_DIRECTORY  ; this pops-up the GUI page 
+    
+  Function .onInit 
+      StrCpy $ALTERNATIVE_GUI_TITLE "Select a folder for ALTERNATIVE" 
+      StrCpy $ALTERNATIVE_TEXT "ALTERNATIVE Folder"   
+      StrCpy $ALTERNATIVE_FOLDER "$INSTDIR\ALTERNATIVE"    ;default path 
+  FunctionEnd 
+  ExecWait '"$INSTDIR\ruby-installer.exe"' $0
 
   DetailPrint "The ruby install completed successfully"
   goto complete
