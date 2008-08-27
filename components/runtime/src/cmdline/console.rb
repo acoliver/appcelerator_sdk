@@ -40,10 +40,6 @@ ET_PHONE_HOME = 'http://updatesite.appcelerator.org'
 OPTIONS = {}
 ARGS = []
 SCRIPTNAME = 'app'
-SCRIPTDIR = File.dirname(__FILE__)
-LIB_DIR = "#{SCRIPTDIR}/lib"
-RELEASE_DIR = File.join(SCRIPTDIR,'releases')
-PLUGINS_DIR = File.join(SCRIPTDIR,'lib','plugins')
 OPTIONS[:subprocess] = (ARGV.include? '--subprocess') # bootstrapping
 
 GLOBAL_OPTS = {
@@ -137,8 +133,28 @@ if RUBY_PLATFORM=~/(windows|win32)/ and not OPTIONS[:subprocess]
 else
   parse_options_unix
 end
+
 ACTION = ARGS.shift
 sanitize_options
+
+
+SYSTEMDIR = OPTIONS[:system]
+require File.join(SYSTEMDIR,'lib','util.rb')
+
+
+SCRIPTDIR = OPTIONS[:home]
+LIB_DIR = File.join(SYSTEMDIR,'lib')
+RELEASE_DIR = File.join(SCRIPTDIR,'releases')
+PLUGINS_DIR = File.join(SCRIPTDIR,'lib','plugins')
+
+
+if OPTIONS[:debug]
+puts "SYSTEMDIR=#{SYSTEMDIR}"
+puts "SCRIPTDIR=#{SCRIPTDIR}"
+puts "LIB_DIR=#{LIB_DIR}"
+puts "RELEASE_DIR=#{RELEASE_DIR}"
+puts "PLUGINS_DIR=#{PLUGINS_DIR}"
+end
 
 # Override open uri to include support for authenticated proxies
 
@@ -235,7 +251,7 @@ end
 #
 # load all our core libraries in alpha order
 #
-Dir["#{SCRIPTDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
+Dir["#{SYSTEMDIR}/lib/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
   next if file=~/^_/ # don't auto-load _ files
   puts "Loading library: #{file}" if OPTIONS[:debug]
   require File.expand_path(file)
@@ -244,7 +260,7 @@ end
 #
 # load all our user commands in alpha order
 #
-Dir["#{SCRIPTDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
+Dir["#{SYSTEMDIR}/commands/*.rb"].sort{|a,b| File.basename(a)<=>File.basename(b) }.each do |file|
   require File.expand_path(file)
 end
 

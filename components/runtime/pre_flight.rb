@@ -47,6 +47,7 @@ module Appcelerator
       def Patch.install
         from_dir = $Installer[:to_dir]
 
+
   		  STDOUT.puts 
   		  STDOUT.print "+ Performing self-update patch ... one moment "
   		  STDOUT.flush
@@ -62,7 +63,12 @@ module Appcelerator
           next if File.directory? file
           target = file.gsub("#{from_dir}/",'')
           overwrite = File.exists? target
+          puts "!!! #{target}, overwrite=#{overwrite}"
           if overwrite 
+            if not File.writable? target
+              person = is_win32 ? 'Administrator' : 'root'
+              die "Can't write to file: #{target}. You must re-run this command as #{person}.  Sorry!"
+            end
             old_checksum = crc32( File.read(file) )
 			      new_checksum = crc32( File.read(target) )          
 			      overwrite = old_checksum!=new_checksum
@@ -78,7 +84,7 @@ module Appcelerator
 	        end
         end
         
-        STDOUT.puts "Update patch complete..."
+        STDOUT.puts 'Update patch complete...'
       end
     end
   end

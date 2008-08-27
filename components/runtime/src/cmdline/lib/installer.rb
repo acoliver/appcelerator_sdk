@@ -1151,10 +1151,10 @@ HELP
       build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
       cm = {:type=>:update, :name=>'update', :version=>version}
       update = Installer.get_component(:remote, cm)
-    
+
       if update
         
-        if compare_versions(build_config[:version], update[:version], build_config[:checksum], update[:checksum]) == -1
+        if compare_versions(build_config[:version], update[:version], 1, 1) == -1
           if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
             update_component = Installer.fetch_network_component(update,1,1)
@@ -1166,9 +1166,8 @@ HELP
             cf.close
             puts "This program has been self-updated. Please run your command again."
           else
-            puts "You must self-update this program before updating any other components."
+            return build_config[:version]
           end
-          exit 0
         elsif version
           die "You can't update to an previous version of the command-line tool"
         else

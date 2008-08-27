@@ -35,16 +35,6 @@ require 'fileutils'
 
 Signal.trap("INT") { puts; exit }
 
-#REQUIRED_GEMS = %w(mongrel rubyzip sqlite3-ruby)
-REQUIRED_GEMS = %w(rubyzip)
-MYFILE = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
-TARGET_DIR = File.expand_path File.dirname(MYFILE)
-UPDATE_DIR = File.join(TARGET_DIR,'updates')
-WIN32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
-GEM_CMD = WIN32 ? 'gem.bat' : 'gem'
-FORCE_INSTALL = ARGV.first == '--force-update'
-INSTALLING = ARGV.first == '--install'
-
 def is_gem_installed(gem)
   installed = Gem.cache.search gem
   return !installed.empty?
@@ -56,21 +46,9 @@ def check_required_gem(gem,array)
   end
 end
 
-def check_for_appadmin
-  file = File.expand_path File.join(TARGET_DIR,'appadmin.zip')
-  return nil unless File.exists? file
-
-  STDOUT.puts "Installing Appcenter (admin console) ... One moment."
-  cmd = "ruby \"#{TARGET_DIR}/console.rb\" install:appadmin \"#{file}\" --no-remote --force"
-  system cmd
-  STDOUT.puts "Installed ...."
-  
-  FileUtils.rm_rf file
-  exit 0
-end
-
 def check_for_initial
-  install_file = File.expand_path File.join(TARGET_DIR,'releases','.installed')
+  
+  install_file = home_path 'releases','.installed'
   return nil if File.exists? install_file and not INSTALLING
   
   if not WIN32 and not system 'gem --version >/dev/null'
@@ -130,34 +108,60 @@ def check_for_initial
     STDOUT.puts
     
   end
-
+  
   # write out our file
   FileUtils.mkdir_p File.join(TARGET_DIR,'releases')
   f = File.new install_file,'w+'
   f.puts Time.now.to_s
   f.close
   
-  FileUtils.touch File.join(TARGET_DIR,'releases','config.yml')
-  FileUtils.chmod 0666, File.join(TARGET_DIR,'releases','config.yml')
+  FileUtils.cp File.join(SYSTEMDIR,'build.yml'), home_path('build.yml')
+end
 
-  FileUtils.touch File.join(TARGET_DIR,'releases','login.yml')
-  FileUtils.chmod 0666, File.join(TARGET_DIR,'releases','login.yml')
+def check_for_migration
+  path = File.join(SYSTEMDIR,'releases','login.yml')
+  migration = home_path('releases','.migrated-1.2.0')
+  if File.exists? path and not File.exists? migration
+    # we need to migrate from old version to new version of runtime
+    FileUtils.cp path, home_path('releases','login.yml')
+    FileUtils.touch migration
+    if File.writable? path
+      FileUtils.rm_rf path
+    end
+  end
+end
 
-  FileUtils.touch File.join(TARGET_DIR,'build.yml')
-  FileUtils.chmod 0666, File.join(TARGET_DIR,'build.yml')
-  FileUtils.chmod 0666, File.join(TARGET_DIR,'console.rb')
+REQUIRED_GEMS = %w(rubyzip)
+MYFILE = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+SYSTEMDIR = File.dirname(MYFILE)
+
+require File.join(SYSTEMDIR,'lib','util.rb')
+
+TARGET_DIR = home_path
+UPDATE_DIR = home_path 'updates'
+WIN32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
+GEM_CMD = WIN32 ? 'gem.bat' : 'gem'
+FORCE_INSTALL = ARGV.first == '--force-update'
+INSTALLING = ARGV.first == '--install'
+
+
+def run
+  check_for_initial
   
-end
-
-check_for_initial
-
-if INSTALLING
-  exit 0
-end
+  if INSTALLING
+    exit 0
+  end
   
-args = ['ruby', TARGET_DIR+'/console.rb'] + ARGV
-if exec *args
-  exit 0
-else
-  exit $?.exitstatus
+  check_for_migration
+
+  args = ['ruby', File.join(SYSTEMDIR,'console.rb')] + ARGV + ["--home=\"#{TARGET_DIR}\"","--system=\"#{SYSTEMDIR}\""]
+  
+  if exec *args
+    exit 0
+  else
+    exit $?.exitstatus
+  end
+
 end
+
+run

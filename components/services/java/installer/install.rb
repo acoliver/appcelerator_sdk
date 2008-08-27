@@ -135,7 +135,6 @@ module Appcelerator
         classpath<<"<classpath>"
         classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
         classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
-        classpath<<"<classpathentry kind=\"src\" path=\"public\"/>"
         classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
         classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
       

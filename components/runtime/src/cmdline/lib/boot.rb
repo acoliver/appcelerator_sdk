@@ -128,6 +128,8 @@ module Appcelerator
 
       config = Appcelerator::Installer.load_config
       
+      puts "CONFIG=#{config.to_yaml}"
+      
       username=nil
       password=nil
       save=false
@@ -142,7 +144,7 @@ module Appcelerator
 
         # nothing required
         
-      elsif ACTION != 'network:login'  
+      elsif ACTION != 'login'  
 
         # first time user - we need to either allow them to signup or allow them to login
         
