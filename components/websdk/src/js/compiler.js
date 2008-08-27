@@ -2712,11 +2712,13 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 	{
 		if (asjson)
 		{
-			return {str:null};
+			var valueless_key = {};
+			valueless_key[str] = '';
+			return valueless_key;
 		}
 		else
 		{
-			return [{key:str,value:null,empty:true}];
+			return [{key:str,value:'',empty:true}];
 		}
 	}
 	var state = 0;
