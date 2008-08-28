@@ -62,10 +62,14 @@ Object.extend(Effect.Transitions,
   
   easeTo: function(pos) {
     return Math.pow(pos,0.25);
-  },
+  }
 });
 
-$w('elastic swingFromTo swingTo bounce bouncePast easeFromTo easeFrom easeTo').each(function(name)
+for (var p in Effect.Transitions)
 {
-	Effect.Transitions[String(name.charAt(0)).toUpperCase()+name.substring(1)] = Effect.Transitions[name];
-});
+	var v = Effect.Transitions[p];
+	if (Object.isFunction(v))
+	{
+		Effect.Transitions[String(p.charAt(0)).toUpperCase()+p.substring(1)] = v;
+	}
+}
