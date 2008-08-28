@@ -413,30 +413,46 @@ Appcelerator.Parameters = $H({});
 				}
 				else
 				{
-					if (window.screen.height < 480)
+					function calcDim()
 					{
-						Element.addClassName(document.body,'height_short');
+						var cn = Element.classNames(document.body);
+						if (cn)
+						{
+							cn._each(function(name)
+							{
+								if (name.startsWith('height_') || name.startsWith('width_'))
+								{
+									cn.remove(name);
+								}
+							});
+						}
+						if (window.screen.height < 480)
+						{
+							Element.addClassName(document.body,'height_short');
+						}
+						else if (window.screen.height >= 480 && window.screen.height <= 800)
+						{
+							Element.addClassName(document.body,'height_medium');
+						}
+						else if (window.screen.height > 800)
+						{
+							Element.addClassName(document.body,'height_long');
+						}
+						if (window.screen.width < 640)
+						{
+							Element.addClassName(document.body,'width_narrow');
+						}
+						else if (window.screen.width >= 640 && window.screen.width <= 1280)
+						{
+							Element.addClassName(document.body,'width_medium');
+						}
+						else if (window.screen.width > 1280)
+						{
+							Element.addClassName(document.body,'width_wide');
+						}
 					}
-					else if (window.screen.height >= 480 && window.screen.height <= 800)
-					{
-						Element.addClassName(document.body,'height_medium');
-					}
-					else if (window.screen.height > 800)
-					{
-						Element.addClassName(document.body,'height_long');
-					}
-					if (window.screen.width < 640)
-					{
-						Element.addClassName(document.body,'width_narrow');
-					}
-					else if (window.screen.width >= 640 && window.screen.width <= 1280)
-					{
-						Element.addClassName(document.body,'width_medium');
-					}
-					else if (window.screen.width > 1280)
-					{
-						Element.addClassName(document.body,'width_wide');
-					}
+					Event.observe(window,'resize',calcDim);
+					calcDim();
 				}
 			});
             throw $break;
