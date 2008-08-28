@@ -586,54 +586,62 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 		var node = childNodes[c];
 		if (node.nodeType == 1)
 		{
-			if (node.tagName.toLowerCase() == 'input' || node.tagName.toLowerCase()== 'select' 
-				|| node.tagName.toLowerCase() == 'textarea')
+			switch (node.tagName.toLowerCase())
 			{
-				inputHTML.push({'element':node});
-			}
-			else if (node.tagName.toLowerCase() == 'label')
-			{
-				if (Appcelerator.Browser.isIE)
+				case 'input':
+				case 'select':
+				case 'textarea':
 				{
-					if (node.getAttribute("type") == "hint")
+					inputHTML.push({'element':node});
+					break;
+				}
+				case 'label':
+				{
+					if (Appcelerator.Browser.isIE)
 					{
-						hintHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
-					}
-					else if (node.getAttribute("type") == "error")
-					{
-						errorHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
+						if (node.getAttribute("type") == "hint")
+						{
+							hintHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
+						}
+						else if (node.getAttribute("type") == "error")
+						{
+							errorHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});
+						}
+						else
+						{
+							labelHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});						
+						}
 					}
 					else
 					{
-						labelHTML.push({'id':node.htmlFor,'element':node,'html':node.outerHTML});						
+						if (node.getAttribute("type") == "hint")
+						{
+							hintHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
+						}
+						else if (node.getAttribute("type") == "error")
+						{
+							errorHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
+						}
+						else
+						{
+							labelHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});						
+						}
 					}
+					break;
 				}
-				else
+				default:
 				{
-					if (node.getAttribute("type") == "hint")
+					if ((node.tagName.toLowerCase() == 'button') || (node.getAttribute('type') == 'button'))
 					{
-						hintHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
+						if (Appcelerator.Browser.isIE)
+						{
+							buttonHTML.push(node.outerHTML);
+						}
+						else
+						{
+							buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
+						}
 					}
-					else if (node.getAttribute("type") == "error")
-					{
-						errorHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});
-					}
-					else
-					{
-						labelHTML.push({'id':node.getAttribute('for'),'element':node,'html':Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node))});						
-					}
-					
-				}
-			}
-			else if ((node.tagName.toLowerCase() == 'button') || (node.getAttribute('type') == 'button'))
-			{
-				if (Appcelerator.Browser.isIE)
-				{
-					buttonHTML.push(node.outerHTML);
-				}
-				else
-				{
-					buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
 				}
 			}
 		}	

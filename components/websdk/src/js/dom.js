@@ -273,6 +273,10 @@ Appcelerator.Util.Dom =
                     }
                     
                     var attr = String.escapeXML(item.value);
+					if (Object.isUndefined(attr) || (!attr && nodeName=='input' && item.name == 'value'))
+					{
+						attr = '';
+					}
                     xml.push(" " + item.name + "=\"" + attr + "\"");
                     x++;
                 }
