@@ -96,8 +96,8 @@ Appcelerator.Compiler.registerCustomEffect('Bounce', function(id,params)
 {
 	opts = Appcelerator.Compiler.getMoveByOpts(params)
 	new Effect.MoveBy( $(id), opts['x'], opts['y'], {duration: opts['duration'], transition: Effect.Transitions.SwingTo});
-		
 });
+
 Appcelerator.Compiler.registerCustomEffect('Bang', function(id,params)
 {
 	opts = Appcelerator.Compiler.getMoveByOpts(params)
@@ -112,57 +112,83 @@ Appcelerator.Compiler.registerCustomAction('effect',
 		requiresParameters: true,
 		shorthandParameters: true,
 		optionalParameterKeys: Appcelerator.Compiler.effects,
-	    description: "Invokes a Scriptaculous visual effect on this element"
+	    description: "Invokes a visual effect on this element"
 	},
 
 	execute: function(id,action,params)
 	{
 		if (params && params.length > 0)
 		{
-
 			// split first param to get effect name
 			var arg1= params[0].key.split(",");
 			var effectName = arg1[0];
 			effectName = effectName.dasherize().camelize();
 		  	effectName = effectName.charAt(0).toUpperCase() + effectName.substring(1);
 
-			// check for standard effects
-			if (Appcelerator.Compiler.effects.indexOf(effectName) != -1)
-			{
-				var options = {};
-				var target=id
+			var options = {};
+			var target=id
 
-				// get remaining options
-				if (params.length > 1)
+			// get remaining options
+			if (params.length > 1)
+			{
+				for (var c=1;c<params.length;c++)
 				{
-					for (var c=1;c<params.length;c++)
+					// if option is id, set target element for effect
+					if (params[c].key=="id")
 					{
-						// if option is id, set target element for effect
-						if (params[c].key=="id")
+						target = params[c].value;
+						options['id']=target;
+					}
+					// is it a transition
+					else if (params[c].key == "transition")
+					{
+						var t = params[c].value;
+						if (!t.startsWith('Effect.Transitions.'))
 						{
-							target = params[c].value;
+							// this will simply first see if the effect is standalong (outside of effects package)
+							// and if not, attempt to add the package and try again... this allows us to use 
+							// shorthand transitions for core such as SwingTo
+							var error = false;
+							var x = 0;
+							while (x < 1)
+							{
+								x=1;
+								// we first check to see if this is a valid object
+								eval("try { " + t + "; error = false;} catch(e) { error = true; }");
+								if (error)
+								{
+									t = 'Effect.Transitions.' + t;
+								}
+								else
+								{
+									break;
+								}
+							}
 						}
-						// is it a transition
-						else if (params[c].key == "transition")
+						var f = Object.evalWithinScope(t,{});
+						if (Object.isFunction(f))
 						{
-						    options[params[c].key] = eval(params[c].value);
-						}
-						// otherwise, its an effect option
-						else
-						{
-						    options[params[c].key] = params[c].value;
-							
+						    options[params[c].key] = f;
 						}
 					}
+					// otherwise, its an effect option
+					else
+					{
+					    options[params[c].key] = params[c].value;
+					}
 				}
-
-				Element.visualEffect(target,effectName,options);
-				
 			}
-			else if (Appcelerator.Compiler.customEffects[effectName])
+
+			// first allow overriden built-in effects 
+			if (Appcelerator.Compiler.customEffects[effectName])
 			{
 				var f = Appcelerator.Compiler.customEffects[effectName];
-				f(id,params);
+				f(id,options);
+			}
+			// and now check for standard effects
+			else if (Appcelerator.Compiler.effects.indexOf(effectName) != -1)
+			{
+				Element.visualEffect(target,effectName,options);
 			}
 			else
 			{
@@ -306,12 +332,18 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 		}
 		
 		var setStyles = null;
+		var target = id;
 		
 		for (var c=0;c<params.length;c++)
 		{
 			var obj = params[c];
 			var key = obj.key;
 			var value = obj.value;
+			if (key == 'id')
+			{
+				target = value;
+				continue;
+			}
 			if (Appcelerator.Compiler.isCSSAttribute(key))
 			{
 				key = Appcelerator.Compiler.convertCSSAttribute(key);
@@ -323,20 +355,20 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 			{
 				if (action=='set')
 				{
-					$(id).className = Appcelerator.Compiler.generateSetter(value,scope);
+					$(target).className = Appcelerator.Compiler.generateSetter(value,scope);
 				}
 				Element.addClassName(id, Appcelerator.Compiler.generateSetter(value,scope));
 			}
 			else if (key.startsWith('style'))
 			{
-			    $(id)[key] = Appcelerator.Compiler.generateSetter(value,scope);
+			    $(target)[key] = Appcelerator.Compiler.generateSetter(value,scope);
 		    }
 		    else
 		    {
-				var e = $(id);
+				var e = $(target);
 				if (!e)
 				{
-				    throw "syntax error: element with ID: "+id+" doesn't exist";
+				    throw "syntax error: element with ID: "+target+" doesn't exist";
 				}
 				if (e.nodeName=='IFRAME' && key=='src')
 				{
@@ -382,7 +414,7 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 		}
 		if (setStyles)
 		{
-			Element.setStyle(id, setStyles);
+			Element.setStyle(target, setStyles);
 		}
 	}
 

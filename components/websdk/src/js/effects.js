@@ -5,8 +5,8 @@ This work is subject to the terms in http://www.robertpenner.com/easing_terms_of
 
 Adapted for Scriptaculous by Ken Snyder (kendsnyder ~at~ gmail ~dot~ com) June 2006
 */
-
-Object.extend(Effect.Transitions, {
+Object.extend(Effect.Transitions, 
+{
   elastic: function(pos) {
     return -1 * Math.pow(4,-8*pos) * Math.sin((pos*6-1)*(2*Math.PI)/2) + 1;
   },
@@ -62,5 +62,10 @@ Object.extend(Effect.Transitions, {
   
   easeTo: function(pos) {
     return Math.pow(pos,0.25);
-  }
+  },
+});
+
+$w('elastic swingFromTo swingTo bounce bouncePast easeFromTo easeFrom easeTo').each(function(name)
+{
+	Effect.Transitions[String(name.charAt(0)).toUpperCase()+name.substring(1)] = Effect.Transitions[name];
 });
