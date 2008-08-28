@@ -105,6 +105,11 @@ Appcelerator.Compiler.registerCustomEffect('Bang', function(id,params)
 		
 });
 
+Appcelerator.Compiler.registerCustomEffect('ScrollTo', function(id,params)
+{
+	Effect.ScrollTo(params['id']||id,params);
+});
+
 Appcelerator.Compiler.registerCustomAction('effect',
 {
 	metadata:
