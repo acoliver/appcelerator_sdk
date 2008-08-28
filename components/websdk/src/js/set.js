@@ -576,6 +576,8 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 	var labelWidth = options['labelWidth'];
 	var formElement = options['element'];
 	
+	var defaultFieldset = formElement.getAttribute('fieldset') || formElement.id+'_fieldset';
+	
 	var inputHTML = [];
 	var labelHTML = [];
 	var buttonHTML = [];
@@ -592,7 +594,26 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 				case 'select':
 				case 'textarea':
 				{
-					inputHTML.push({'element':node});
+					if (node.getAttribute('type') == 'button')
+					{
+						if (Appcelerator.Browser.isIE)
+						{
+							buttonHTML.push(node.outerHTML);
+						}
+						else
+						{
+							buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
+						}
+					}
+					else
+					{
+						var fs = node.getAttribute('fieldset');
+						if (!fs)
+						{
+							node.setAttribute('fieldset',defaultFieldset);
+						}
+						inputHTML.push({'element':node});
+					}
 					break;
 				}
 				case 'label':
@@ -629,19 +650,17 @@ Appcelerator.UI.LayoutManager._buildForm = function(options)
 					}
 					break;
 				}
-				default:
+				case 'button':
 				{
-					if ((node.tagName.toLowerCase() == 'button') || (node.getAttribute('type') == 'button'))
+					if (Appcelerator.Browser.isIE)
 					{
-						if (Appcelerator.Browser.isIE)
-						{
-							buttonHTML.push(node.outerHTML);
-						}
-						else
-						{
-							buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
-						}
+						buttonHTML.push(node.outerHTML);
 					}
+					else
+					{
+						buttonHTML.push(Appcelerator.Util.Dom.toXML(node,true,Appcelerator.Compiler.getTagname(node)));	
+					}
+					break;
 				}
 			}
 		}	

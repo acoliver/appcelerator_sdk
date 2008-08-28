@@ -80,6 +80,26 @@ Appcelerator.Compiler.registerAttributeProcessor(['textarea','input','select'],'
 				{
 					decorator.apply(Appcelerator.Decorator,[element,element.validatorValid,decoratorId]);
 				}
+				if (!value)
+				{
+					Element.addClassName(element,'validator_empty');
+					Element.removeClassName(element,'validator_value');
+				}
+				else
+				{
+					Element.addClassName(element,'validator_value');
+					Element.removeClassName(element,'validator_empty');
+				}
+				if (valid)
+				{
+					Element.removeClassName(element,'validator_invalid');
+					Element.addClassName(element,'validator_valid');
+				}
+				else
+				{
+					Element.removeClassName(element,'validator_valid');
+					Element.addClassName(element,'validator_invalid');
+				}
 				if (same)
 				{
 					// if the same, don't refire events
