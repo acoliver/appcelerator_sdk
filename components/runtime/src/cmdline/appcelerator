@@ -154,7 +154,7 @@ def run
   
   check_for_migration
 
-  args = ['ruby', File.join(SYSTEMDIR,'console.rb')] + ARGV + ["--home=\"#{TARGET_DIR}\"","--system=\"#{SYSTEMDIR}\""]
+  args = ['ruby', File.join(SYSTEMDIR,'console.rb')] + ARGV + ["--home=\"#{TARGET_DIR}\"","--system=\"#{SYSTEMDIR}\"", "--subprocess"]
   
   if exec *args
     exit 0
