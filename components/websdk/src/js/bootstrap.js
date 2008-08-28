@@ -430,11 +430,11 @@ Appcelerator.Parameters = $H({});
 						{
 							Element.addClassName(document.body,'height_short');
 						}
-						else if (window.screen.height >= 480 && window.screen.height <= 800)
+						else if (window.screen.height >= 480 && window.screen.height <= 1024)
 						{
 							Element.addClassName(document.body,'height_medium');
 						}
-						else if (window.screen.height > 800)
+						else if (window.screen.height >1024)
 						{
 							Element.addClassName(document.body,'height_long');
 						}
