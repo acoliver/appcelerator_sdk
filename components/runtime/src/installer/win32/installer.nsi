@@ -66,6 +66,7 @@ RequestExecutionLevel admin
 AutoCloseWindow false
     
 var RandomSeed
+var NeedsRuby
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "header.bmp"
@@ -78,6 +79,21 @@ var RandomSeed
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
+
+; custom page for installing Ruby
+Var RUBY_GUI_TITLE
+Var RUBY_TEXT
+Var RUBY_FOLDER
+!define MUI_DIRECTORYPAGE_VARIABLE          $RUBY_FOLDER 
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION  $RUBY_TEXT
+!define MUI_DIRECTORYPAGE_TEXT_TOP          $RUBY_GUI_TITLE
+!define MUI_PAGE_CUSTOMFUNCTION_PRE needsRubyPage
+!insertmacro MUI_PAGE_DIRECTORY
+Function .onInit
+StrCpy $RUBY_GUI_TITLE "Appcelerator requires Ruby to be installed. Where would you like to install it?"
+StrCpy $RUBY_TEXT "Ruby Installation"
+StrCpy $RUBY_FOLDER "C:\Ruby"
+FunctionEnd
 
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -106,35 +122,9 @@ Section
   File /r "lib"
   File "rubyzip-0.9.1.gem"
 
-  ; check to see if we have ruby installed
-  nsExec::ExecToStack '"ruby" --version'
-  Pop $0
-  Pop $1
-  ;MessageBox MB_OK "$0, $1"
+  StrCmp $NeedsRuby "0" 0 +2
+    Goto noinstall
 
-  ; if command ran find, will exit with 0
-  StrCmp $0 "0" checkver install
-
-  ; now check the version of ruby
-  checkver:
-  DetailPrint "Ruby looks to already be installed: $1"
-  DetailPrint "Checking for correct version"
-  StrCpy $R2 "$1" 5 5
-  StrCpy $R3 "$R2" 1 0
-  StrCpy $R4 "$R2" 1 2
-  StrCpy $R5 "$R2" 1 4
-
-  ;MessageBox MB_OK "major[$R3] [$R4] [$R5]"
-
-  ; needs to be >= 1.8.6
-  IntCmp $R3 1 checkminor noinstall install
-
-  checkminor:
-  IntCmp $R4 8 checkbuild noinstall install
-  
-  checkbuild:
-  IntCmp $R5 6 noinstall noinstall
-  
   install:
   ; Uncomment the following lines to re-enable downloads 
   ;    of ruby from the internet.  We decided to bundle to 
@@ -166,7 +156,7 @@ Section
 
   DetailPrint "The ruby install will take a few moments, please wait..."
   SetDetailsView show
-  ExecWait '"$INSTDIR\ruby-installer.exe"' $0
+  ExecWait '"$INSTDIR\ruby-installer.exe" /S /D=$RUBY_FOLDER' $0
 
   DetailPrint "The ruby install completed successfully"
   goto complete
@@ -181,6 +171,7 @@ Section
   Call AddToPath
   
   ReadRegStr $R0 HKLM "${RUBY_REGKEY}" "DefaultPath"
+  ;MessageBox MB_OK "$RO"
   
   ;Store installation folder
   WriteRegStr HKCU "Software\Appcelerator" "" $INSTDIR
@@ -200,17 +191,17 @@ Section
 
   ; attempt to install gem dependencies
   DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\cgi_multipart_eof_fix-2.5.0.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\gem_plugin-0.2.3.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\windows-pr-0.8.0.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\win32-service-0.5.2-mswin32.gem" -v "0.5.2" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\fastthread-1.0.1-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\sqlite3-ruby-1.2.1-mswin32.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel-1.1.4-x86-mswin32-60.gem" -y --no-ri --no-rdoc' $R1
-;  nsExec::Exec '"$0" /c $R0\bin\gem.bat install "$INSTDIR\mongrel_service-0.3.4-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\cgi_multipart_eof_fix-2.5.0.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\gem_plugin-0.2.3.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\windows-pr-0.8.0.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\win32-service-0.5.2-mswin32.gem" -v "0.5.2" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\fastthread-1.0.1-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\sqlite3-ruby-1.2.1-mswin32.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\mongrel-1.1.4-x86-mswin32-60.gem" -y --no-ri --no-rdoc' $R1
+;  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install "$INSTDIR\mongrel_service-0.3.4-i386-mswin32.gem" -y --no-ri --no-rdoc' $R1
 
 
-  nsExec::Exec '"$0" /c $R0\bin\gem.bat install rubyzip-0.9.1.gem --no-ri --no-rdoc' $R1
+  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install rubyzip-0.9.1.gem --no-ri --no-rdoc' $R1
 
   DetailPrint "Executing postflight installer script"
   ExecWait '"$R0\bin\rubyw.exe" "$INSTDIR\post-flight.rb" "$R0\bin\ruby.exe" "$INSTDIR"'
@@ -549,4 +540,45 @@ RndEnd:
 	Exch $R1
 	Exch
 	Exch $R0
+FunctionEnd
+
+Function needsRubyPage
+  ; check to see if we have ruby installed
+  nsExec::ExecToStack '"ruby" --version'
+  Pop $0
+  Pop $1
+  ;MessageBox MB_OK "$0, $1"
+
+  ; if command ran fine, will exit with 0
+  StrCmp $0 "0" checkver install
+
+  ; now check the version of ruby
+  checkver:
+  StrCpy $R2 "$1" 5 5
+  StrCpy $R3 "$R2" 1 0
+  StrCpy $R4 "$R2" 1 2
+  StrCpy $R5 "$R2" 1 4
+
+  ;MessageBox MB_OK "major[$R3] [$R4] [$R5]"
+
+  ; needs to be >= 1.8.6
+  IntCmp $R3 1 checkminor noinstall install
+
+  checkminor:
+  IntCmp $R4 8 checkbuild noinstall install
+  
+  checkbuild:
+  IntCmp $R5 6 noinstall install
+
+  install:
+    IntOp $NeedsRuby $0 + 1
+    Goto fend
+
+  noinstall:
+    IntOp $NeedsRuby $0 + 0
+    Abort
+    Goto fend
+
+  fend:
+
 FunctionEnd
