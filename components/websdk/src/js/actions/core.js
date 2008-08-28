@@ -74,6 +74,11 @@ Appcelerator.Compiler.effects = $H(Effect).select(function(kv) {
     return Effect.Methods[lowerName] || val.superclass == Effect.Base;
 }).pluck('0');
 
+// push ScrollTo since it's valid but doesn't extend Effect.Base
+Appcelerator.Compiler.effects.push('ScrollTo');
+
+
+
 Appcelerator.Compiler.customEffects = {};
 
 Appcelerator.Compiler.registerCustomEffect = function(effect,callback)
@@ -103,11 +108,6 @@ Appcelerator.Compiler.registerCustomEffect('Bang', function(id,params)
 	opts = Appcelerator.Compiler.getMoveByOpts(params)
 	new Effect.MoveBy( $(id), opts['x'], opts['y'], {duration: opts['duration'], transition: Effect.Transitions.Bounce});
 		
-});
-
-Appcelerator.Compiler.registerCustomEffect('ScrollTo', function(id,params)
-{
-	Effect.ScrollTo(params['id']||id,params);
 });
 
 Appcelerator.Compiler.registerCustomAction('effect',
