@@ -90,7 +90,7 @@ Var RUBY_FOLDER
 !define MUI_PAGE_CUSTOMFUNCTION_PRE needsRubyPage
 !insertmacro MUI_PAGE_DIRECTORY
 Function .onInit
-StrCpy $RUBY_GUI_TITLE "Appcelerator requires a verion of Ruby greater than 1.8.6 to be installed. Where would you like to install it?"
+StrCpy $RUBY_GUI_TITLE "Appcelerator requires a version of Ruby greater than 1.8.6 to be installed. Where would you like to install it?"
 StrCpy $RUBY_TEXT "Ruby Installation"
 StrCpy $RUBY_FOLDER "C:\Ruby"
 FunctionEnd
