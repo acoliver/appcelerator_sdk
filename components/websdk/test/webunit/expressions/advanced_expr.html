@@ -329,6 +329,12 @@
 			Failed
 		</td>
 	</tr>
+	<tr>
+		<td class="test">Programmatic condition listener</td>
+		<td class="result" id="p_cl1">
+			Failed
+		</td>
+	</tr>
 </table>
 
 <app:statemachine id="test" initial="valid">
@@ -339,6 +345,25 @@
 <script>
 $('p_on1').on("l:app.compiled then value['passed']");
 $$('#p_on2').on("l:app.compiled then value['passed']");
+
+
+Appcelerator.Compiler.registerConditionListener($('p_cl1'),'foo',function(element,condition)
+{
+	if (element.id != 'p_cl1')
+	{
+		$('p_cl1').innerHTML = "Failed: element.id in parameter didn't match. Expected: p_cl1, was: "+element.id;
+		return;
+	}
+	if (condition != 'foo')
+	{
+		$('p_cl1').innerHTML = "Failed: condition in parameter didn't match. Expected 'foo', was: "+condition;
+		return;
+	}
+	element.innerHTML = 'passed';
+});
+
+Appcelerator.Compiler.fireConditionEvent($('p_cl1'),'foo');
+
 </script>
 
 </body>

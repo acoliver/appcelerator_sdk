@@ -1987,6 +1987,36 @@ Appcelerator.Compiler.registerCustomCondition = function(metadata, condition, el
 	}
 };
 
+Appcelerator.Compiler.conditionListeners = {};
+
+/**
+ * register for when a condition is begin fired for an element
+ */
+Appcelerator.Compiler.registerConditionListener = function(element,condition,callback)
+{
+	var key = $(element).id + "__" + condition;
+	var listeners = Appcelerator.Compiler.conditionListeners[key];
+	if (!listeners)
+	{
+		listeners = [];
+		Appcelerator.Compiler.conditionListeners[key]=listeners;
+	}
+	listeners.push(callback);
+};
+
+Appcelerator.Compiler.fireConditionEvent = function(element,condition)
+{
+	var key = $(element).id + "__" + condition;
+	var listeners = Appcelerator.Compiler.conditionListeners[key];
+	if (listeners)
+	{
+		for (var c=0;c<listeners.length;c++)
+		{
+			listeners[c](element,condition);
+		}
+	}
+};
+
 Appcelerator.Compiler.handleCondition = function(clause)
 {
     var element = clause[0];
@@ -1997,6 +2027,9 @@ Appcelerator.Compiler.handleCondition = function(clause)
 	    var f = Appcelerator.Compiler.makeAction(element.id,clause[2]);
 		return f.call(this,clause[3]);
 	}
+	
+	// let any listeners have at it
+	Appcelerator.Compiler.fireConditionEvent(element,clause[1]);
 
     //first loop through custom conditions defined by the widget
     for (var f=0;f<Appcelerator.Compiler.customElementConditions.length;f++)
