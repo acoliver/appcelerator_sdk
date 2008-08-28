@@ -128,8 +128,6 @@ module Appcelerator
 
       config = Appcelerator::Installer.load_config
       
-      puts "CONFIG=#{config.to_yaml}"
-      
       username=nil
       password=nil
       save=false
