@@ -322,6 +322,21 @@ if (Appcelerator.Browser.isIPhone)
 {
 	window.onorientationchange = function() 
 	{
+		if (!Element.hasClassName('orientation_'+window.orientation))
+		{
+			var cn = Element.classNames(document.body);
+			if (cn)
+			{
+				cn._each(function(name)
+				{
+					if (name.startsWith('orientation_'))
+					{
+						cn.remove(name);
+					}
+				});
+			}
+			Element.addClassName(document.body,'orientation_'+window.orientation);
+		}
 		var evt = document.createEvent("Events");
 		evt.initEvent('orientationchange', true, true); //true for can bubble, true for cancelable
 		document.body.dispatchEvent(evt);
