@@ -79,8 +79,9 @@ input
 			<button on="click then l:show.modal">click me </button>
             <div set="control[panel] and behavior[modal]" on="l:show.modal then show or l:hide.modal then hide">
 				<input set="theme[rounded_search]" type="text"/>
+				<div>
 				<button set="theme[aqua_grey]" on="click then l:hide.modal">close</button>
-				
+				</div>
             </div>
 		</td>
 	</tr>

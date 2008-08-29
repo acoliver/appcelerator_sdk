@@ -25,7 +25,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 	{
 		// leave this as-is and only configure from the build.yml file 
 		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
+		return '1.0';
 	},
 	/**
 	 * The control spec version.  This is used to maintain backwards compatability as the
@@ -62,7 +62,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		}
 		$(id + '_footer').innerHTML = Object.getNestedProperty(data,key) || '';
 	},
-	
+
 	getActions: function()
 	{
 		return ['title','footer'];
@@ -88,7 +88,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		{
 			options['height'] = (options['height']=='auto')?'30px':options['height'];
 		}
-		html += '<div class="panel_body '+classPrefix+'_body" style="height:'+options['height']+'">';
+		html += '<div  class="panel_body '+classPrefix+'_body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
 		html += '</div>';
 		html += '<div  id="'+element.id+'_btm" class="'+classPrefix+'_btm">';
@@ -108,19 +108,9 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			var mainHandler = Element.observe(element.id+'_close','click',function(e)
 			{
 				Element.hide(element.id);
+				Appcelerator.Compiler.fireCustomCondition(element.id, 'hide', {'id': element.id});
+				
 			});			
-
-			// add modal dependency
-			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'modal', function(element)
-			{
-				Event.stopObserving(element.id,'click', mainHandler)
-				Element.observe(element.id+'_close','click',function(e)
-				{
-					Element.hide(element.id + "_modal_container");
-					Element.hide(element.id + "_modal_dialog");
-
-				});
-			});		
 
 		}
 
@@ -129,7 +119,6 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		{
 			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'tooltip', function(element)
 			{
-				// must set width on IE with shadow
 				if (options['width']=='auto')
 				{
 					$(element.id + "_panel").style.width = "300px";
@@ -138,22 +127,32 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			});
 		}
 		// IE and FF shadow + panel needs width
-		if (Appcelerator.Browser.isIE || Appcelerator.Browser.isGecko)
+		if (Appcelerator.Browser.isIE6 || Appcelerator.Browser.isGecko)
 		{
+			var parentWidth = Element.getStyle(element.parentNode,'width');
+			var width = "220px"
+			
+			// use parent if we are in a grid layout
+			if (parentWidth && parentWidth.endsWith('px') && element.parentNode.getAttribute('cols'))
+			{
+				width = parentWidth;
+			}
+
 			// always set if IE6
 			if (Appcelerator.Browser.isIE6 && options['width']=='auto')
 			{
-				$(element.id + "_panel").style.width = "300px";	
-				element.style.width = "300px";			
+				$(element.id + "_panel").style.width =width;	
+				element.style.width = width;
 			}
+
 			// set for shadow for all IEs
 			Appcelerator.UI.addElementUIDependency(element,'control','panel','behavior', 'shadow', function(element)
 			{
 				// must set width on IE with shadow
 				if (options['width']=='auto')
 				{
-					$(element.id + "_panel").style.width = "300px";
-					element.style.width = "300px";			
+					$(element.id + "_panel").style.width = width;
+					element.style.width = width;
 
 				}
 			});

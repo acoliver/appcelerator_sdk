@@ -34,6 +34,19 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 	{
 		return 1.0;
 	},
+	hide:function(id,parameters,data,scope,version,attrs,direction,action)
+	{
+		Appcelerator.Compiler.fireCustomCondition(id, 'hide', {'id': id});
+	},
+	show:function(id,parameters,data,scope,version,attrs,direction,action)
+	{
+		Appcelerator.Compiler.fireCustomCondition(id, 'show', {'id': id});
+	},
+	getActions: function()
+	{
+		return ['hide','show'];
+	},
+	
 	/**
 	 * This is called when the behavior is loaded and applied for a specific element that 
 	 * references (or uses implicitly) the behavior.
@@ -42,7 +55,8 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 	{
 		element.style.display = "none";
 		var timer;
-
+		var self = this;
+		
 		// setup shadow dependency
 		var parent = null;
 		var shadow = false
@@ -65,6 +79,8 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 			{
 				Element.hide(el);
 			}
+			self.hide(el.id);
+
 		};
 		var show = function(el)
 		{
@@ -77,6 +93,8 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 			{
 				Element.show(el);
 			}
+			self.show(el.id);
+			
 		};
 
 		function startTimer(el)
@@ -117,8 +135,10 @@ Appcelerator.UI.registerUIComponent('behavior','tooltip',
 						parent.style.zIndex = 1000;
 						parent.style.top = Event.pointerY(e) + 10 + "px";
 						parent.style.left = Event.pointerX(e) + 10 + "px";	
+						
 					}
 					Element.show(parent)			
+
 				}
 				else
 				{

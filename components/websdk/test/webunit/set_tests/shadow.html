@@ -36,7 +36,7 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div style="border:2px solid #ccc;background-color:#ddd;width:80px" 
+				<div style="background-color:#ddd;width:180px;height:30px" 
 					set="behavior[shadow]">
 					I have a shadow
 				</div>
@@ -49,9 +49,9 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div style="padding:20px;border:2px solid #ccc;background-color:#ddd;width:200px" 
+				<div style="background-color:#ddd;width:200px" 
 					set="behavior[shadow]">
-					I have a shadow
+					<div style="padding:20px">I have a shadow</div>
 				</div>
             </div>
 		</td>
@@ -63,7 +63,7 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div set="behavior[shadow] and control[panel]">
+				<div set="behavior[shadow] and control[panel]" style="width:300px">
 					I have a shadow
 				</div>
             </div>
@@ -75,7 +75,7 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div set="control[panel] and behavior[shadow]">
+				<div set="control[panel,theme=white] and behavior[shadow]" style="width:300px">
 					I have a shadow
 				</div>
             </div>
@@ -87,7 +87,7 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div set="behavior[shadow] and behavior[rounded]">
+				<div set="behavior[shadow] and behavior[rounded]" style="width:500px">
 					I have a shadow
 				</div>
             </div>
@@ -100,7 +100,7 @@ img
 		</td>
 		<td class="result" >
             <div>
-				<div set="behavior[rounded] and behavior[shadow]">
+				<div set="behavior[rounded] and behavior[shadow]" style="width:500px">
 					I have a shadow
 				</div>
             </div>
@@ -109,11 +109,11 @@ img
 
 	<tr>
 		<td class="test" valign="middle">
-			Shadow on Rounded (rounded then shadow with height)
+			Shadow on Rounded (rounded then shadow)
 		</td>
 		<td class="result" >
             <div>
-				<div set="behavior[rounded,height=80px] and behavior[shadow]">
+				<div set="behavior[rounded,height=80px] and behavior[shadow]" style="width:300px">
 					<div style="padding:10px">I have a shadow</div>
 				</div>
             </div>

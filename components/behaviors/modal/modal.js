@@ -4,19 +4,63 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 	{
 		var T = Appcelerator.Types;
 		return [{name: 'modal-background-color', optional: true, description: "background color for modal",defaultValue: '#222'},
-	       	    {name: 'opacity', optional: true, description: "opacity for modal background",defaultValue: 0.6},
-	       	    {name: 'showMessage', optional: true, description: "message that activates modal state", defaultValue:null},
-	       	    {name: 'hideMessage', optional: true, description: "message that activates modal state", defaultValue:null}
-	
+	       	    {name: 'opacity', optional: true, description: "opacity for modal background",defaultValue: 0.6}
 				];
 	},
+	
+	hide:function(id,parameters,data,scope,version,attrs,direction,action)
+	{
+		this._hideModal(id);
+		Appcelerator.Compiler.fireCustomCondition(id, 'hide', {'id': id});
+	},
+	show:function(id,parameters,data,scope,version,attrs,direction,action)
+	{
+		window.scrollTo(0,0)
+		Element.show($(id + "_modal_container"));
+		Element.show($(id + "_modal_dialog"));
+		Element.show($(id));
+		if (Appcelerator.Browser.isIE)
+		{
+			document.documentElement.style.overflow = "hidden";
+		}
+		else
+		{
+			document.body.style.overflow = "hidden";
+		}
+		Appcelerator.Compiler.fireCustomCondition(id, 'show', {'id': id});
+	},
+	
+	_hideModal: function(id)
+	{
+		Element.hide($(id + "_modal_container"));
+		Element.hide($(id + "_modal_dialog"));
+		Element.hide($(id));
+		if (Appcelerator.Browser.isIE)
+		{
+			document.documentElement.style.overflow = "auto";
+		}
+		else
+		{
+			document.body.style.overflow = "auto";
+		}		
+		
+	},
+	
+	getActions: function()
+	{
+		return ['hide','show'];
+	},	
+	
 	build: function(element,options)
 	{
 		var on = element.getAttribute("on");
+
 		// window size
 		var windowHeight = (Appcelerator.Browser.isIE)?document.documentElement.clientHeight:window.outerHeight;
 		var windowWidth = (Appcelerator.Browser.isIE)?document.documentElement.clientWidth:window.innerWidth;
 		var width = (Appcelerator.Browser.isIE6)? windowWidth + "px":"100%";
+		
+		var elementHeight = Element.getStyle(element,'height');
 
 		// modal container
 		var modalContainer = document.createElement('div');
@@ -28,7 +72,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 		modalContainer.style.left = "0px";
 		modalContainer.style.zIndex = "2000";
 		modalContainer.style.width = width;
-		modalContainer.style.height = windowHeight + "px";
+		modalContainer.style.height = "1200px";
 		modalContainer.style.backgroundColor = options['modal-background-color'];
 		modalContainer.style.opacity = options['opacity'];
 		modalContainer.style.filter = "alpha( opacity = "+options['opacity']*100+")";
@@ -54,27 +98,7 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 			Appcelerator.Compiler.dynamicCompile(modalContainer);
 			Appcelerator.Compiler.dynamicCompile(overlayDataHTML);
 		}
-		
-		if (options['showMessage'] != null)
-		{
-			$MQL(options['showMessage'],function(t, data, datatype, direction)
-			{
-				window.scrollTo(0,0)
-				Element.show(modalContainer);
-				Element.show(overlayDataHTML);
-				Element.show(element)
-			});
-		}
 
-		if (options['hideMessage'] != null)
-		{
-			$MQL(options['hideMessage'],function(t, data, datatype, direction)
-			{
-				Element.hide(modalContainer);
-				Element.hide(overlayDataHTML);
-				Element.hide(element);
-			});
-		}
 		// if element already has a shadow then use it
 		if ($(element.id + "_shadow"))
 		{
@@ -84,6 +108,16 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 		{
 			overlayDataHTML.appendChild(element);			
 		}
+		
+		var self = this;
+		Appcelerator.UI.addElementUIDependency(element,'behavior','modal','control', 'panel', function(element)
+		{
+			Appcelerator.Compiler.registerConditionListener(element,'hide',function(el,condition)
+			{
+				self._hideModal(element.id);
+			});
+		});		
+		
 		
 	}
 });

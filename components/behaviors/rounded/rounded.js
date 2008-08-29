@@ -23,7 +23,7 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 	{
 		// leave this as-is and only configure from the build.yml file 
 		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
+		return '1.0';
 	},
 	/**
 	 * The control spec version.  This is used to maintain backwards compatability as the
@@ -69,14 +69,13 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 		element.style.width=options['width'];
 		element.style.position="relative";
 		element.style.marginBottom = "15px";
-		element.style.marginTop = "5px";
 		element.style.marginLeft = "5px";
 		element.style.marginRight = "5px";
 		
 		// set width if set to auto (IE!!!)
 		if (Appcelerator.Browser.isIE && options['width']=='auto')
 		{
-			element.style.width = "300px"
+			element.style.width = "220px"
 		}
 
 		// add shadow dependency
@@ -85,7 +84,6 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 			// set margins
 			if (Appcelerator.Browser.isIE6)
 			{
-				element.style.marginTop = "0px";
 				element.style.marginLeft = "-3px";
 				element.style.marginBottom = "1px";
 				element.style.marginRight = "1px";
@@ -95,15 +93,14 @@ Appcelerator.UI.registerUIComponent('behavior','rounded',
 			{
 				element.style.marginRight = "-1px";
 				element.style.marginBottom = (options['height'] == 'auto')?"0px":"9px";
-				element.style.marginTop = "0px";
 				element.style.marginLeft = "0px";
 				
 			}
 			
 			// FF needs width with shadow
-			if (Appcelerator.Browser.isGecko)
+			if (Appcelerator.Browser.isGecko && options['width']=='auto')
 			{
-				element.style.width = "300px"
+				element.style.width = "220px"
 			}
 		});		
 

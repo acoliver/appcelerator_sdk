@@ -18,7 +18,7 @@ Appcelerator.UI.registerUIComponent('layout','grid',
 	{
 		// leave this as-is and only configure from the build.yml file 
 		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
+		return '1.0';
 	},
 	/**
 	 * The layout spec version.  This is used to maintain backwards compatability as the
@@ -40,19 +40,20 @@ Appcelerator.UI.registerUIComponent('layout','grid',
 				// ignore if no cols attribute
 				if (!nodes[i].getAttribute("cols") && children==true)
 				{
-					nodes[i].style.marginBottom = "20px";
-					
+					nodes[i].style.marginBottom = "20px";									
+						
 					// unset parent margin
 					if (nodes[i].parentNode.style)
 					{
 						nodes[i].parentNode.style.marginBottom = "0px"						
 					}
 					
-					// unset top-level marginBottom if IE7
-					if (Appcelerator.Browser.isIE7 && element.parentNode.style)
+					// unset top-level marginBottom if IE
+					if (Appcelerator.Browser.isIE && element.parentNode.style)
 					{
 						element.parentNode.style.marginBottom = "0px";
 					}
+					
 					continue;						
 				}
 
@@ -154,7 +155,7 @@ Appcelerator.UI.registerUIComponent('layout','grid',
 		}
 		
 		// process last child of a grid
-		if (children == true && nodes[lastIndex] && nodes[lastIndex].getAttribute('cols'))
+		if (children == true && nodes[lastIndex] && nodes[lastIndex].style && nodes[lastIndex].getAttribute('cols'))
 		{
 			nodes[lastIndex].style.marginRight = "0px"
 			nodes[lastIndex].style.marginLeft = "10px"
@@ -172,9 +173,16 @@ Appcelerator.UI.registerUIComponent('layout','grid',
 		// set container styles
 		element.style.marginLeft = "auto";
 		element.style.marginRight = "auto"
-		element.style.width = "960px";
+		if (Appcelerator.Browser.isIE6)
+		{
+			element.style.width = "980px"
+		}
+		else
+		{
+			element.style.width = "960px";			
+		}
 
-		if (Appcelerator.Browser.isIE7)
+		if (Appcelerator.Browser.isIE)
 		{
 			element.style.marginBottom = "20px";
 		}

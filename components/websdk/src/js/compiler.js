@@ -1527,6 +1527,10 @@ Appcelerator.Compiler.compileWidget = function(element,state,name)
  */
 Appcelerator.Compiler.fireCustomCondition = function(id, name, data)
 {
+	// let any listeners have at it
+	Appcelerator.Compiler.fireConditionEvent(id,name);
+
+	
     var observersForElement = Appcelerator.Compiler.customConditionObservers[id];
     if(observersForElement == null) {
         $D('no custom condition found for id="'+id+'"');
@@ -2012,7 +2016,7 @@ Appcelerator.Compiler.fireConditionEvent = function(element,condition)
 	{
 		for (var c=0;c<listeners.length;c++)
 		{
-			listeners[c](element,condition);
+			listeners[c]($(element),condition);
 		}
 	}
 };
@@ -2028,9 +2032,6 @@ Appcelerator.Compiler.handleCondition = function(clause)
 		return f.call(this,clause[3]);
 	}
 	
-	// let any listeners have at it
-	Appcelerator.Compiler.fireConditionEvent(element,clause[1]);
-
     //first loop through custom conditions defined by the widget
     for (var f=0;f<Appcelerator.Compiler.customElementConditions.length;f++)
     {

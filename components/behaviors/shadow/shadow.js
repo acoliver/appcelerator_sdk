@@ -18,7 +18,7 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	{
 		// leave this as-is and only configure from the build.yml file 
 		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
+		return '1.0';
 	},
 	/**
 	 * The behavior spec version.  This is used to maintain backwards compatability as the
@@ -36,22 +36,10 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 	{
 		var newContainer = document.createElement('div');	
 		newContainer.id = element.id + "_shadow";	
-		newContainer.className = 'shadow_' + options['theme'];
-		var d1 = document.createElement("div");
-		d1.className = "shadow_" + options['theme'] + "_1";
-		var d2 = document.createElement("div");
-		d2.className = "shadow_" + options['theme'] + "_2";
-		var d3 = document.createElement("div");
-		d3.className = "shadow_" + options['theme'] + "_3";;
-		newContainer.appendChild(d1);
-		d1.appendChild(d2);
-	 	d2.appendChild(d3);
-		var clearDiv = document.createElement("div");
-		clearDiv.style.clear = "both";
+		Element.addClassName(newContainer,"shadow");
+		Element.addClassName(newContainer,'shadow_' + options['theme']);
 		element.wrap(newContainer);	
-		d3.appendChild(element);
-		newContainer.appendChild(clearDiv);
-		
+	
 
 		// add modal dependency
 		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','behavior', 'modal', function(element)
@@ -64,11 +52,17 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 			newContainer.style.width = element.style.width;	
 		});		
 
-		
 		// add tooltip dependency
 		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','behavior', 'tooltip', function(element)
 		{
 			Element.hide(newContainer);
+		});		
+
+		// add rounded dependency
+		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','behavior', 'rounded', function(element)
+		{
+			element.style.height = "auto";
+			
 		});		
 
 
