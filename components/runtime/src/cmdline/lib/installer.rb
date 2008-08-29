@@ -1128,12 +1128,16 @@ HELP
     #
     # Version Utils
     #
-    def Installer.compare_versions(first, second, checksum1, checksum2)
+    def Installer.compare_versions(first, second, *checksums) 
       return 0 unless (first and second)
-      return -1 unless (checksum1 == checksum2)
+
+      if (checksums.length >= 2)
+          return -1 unless (checksums[0] == checksums[1])
+      end
+
       first.to_s.split('.').map {|n| n.to_i} <=> second.to_s.split('.').map {|n| n.to_i}
     end
-        
+
     def Installer.should_update(local_version, remote_version, local_checksum, remote_checksum)
       case compare_versions(local_version, remote_version, local_checksum, remote_checksum)
         when 1
@@ -1154,7 +1158,7 @@ HELP
 
       if update
         
-        if compare_versions(build_config[:version], update[:version], 1, 1) == -1
+        if compare_versions(build_config[:version], update[:version]) == -1
           if confirm_yes "Self-update this program from #{build_config[:version]} to #{update[:version]} ? [Yna]"
 
             update_component = Installer.fetch_network_component(update,1,1)
