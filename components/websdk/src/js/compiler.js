@@ -2235,7 +2235,25 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 					for (var x=0;x<params.length;x++)
 					{
 						var entry = params[x];
-						newparams[Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope,entry.keyExpression)]=Appcelerator.Compiler.getEvaluatedValue(entry.value,scope,scope,entry.valueExpression);
+						var key = entry.key, value = entry.value;
+						if (entry.keyExpression)
+						{
+							key = Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope,entry.keyExpression);
+						}
+						else if (entry.valueExpression)
+						{
+							value = Appcelerator.Compiler.getEvaluatedValue(entry.value,null,scope,entry.valueExpression);
+						}
+						else if (entry.empty)
+						{
+							value = Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope);
+						}
+						else
+						{
+							key = Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope);
+							value = Appcelerator.Compiler.getEvaluatedValue(entry.value,null,scope);
+						}
+						newparams[key]=value;
 					}
     			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, newparams, scope);
     			}
@@ -2270,16 +2288,35 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			//
     			var f = function(scope)
     			{
-					for (var x=0;x<params.length;x++)
+					scope = scope || window;
+					if (Object.isArray(params))
 					{
-						var entry = params[x];
-						if (entry.keyExpression)
+						for (var x=0;x<params.length;x++)
 						{
-							entry.key = Object.evalWithinScope(entry.key,scope);
-						}
-						if (entry.valueExpression)
-						{
-							entry.value = Object.evalWithinScope(entry.value,scope);
+							var entry = params[x];
+							if (entry.keyExpression)
+							{
+								entry.key = Appcelerator.Compiler.getEvaluatedValue(entry.key,scope.data,scope,entry.keyExpression);
+							 	entry.keyExpression = false;
+							}
+							else if (entry.valueExpression)
+							{
+								entry.value = Appcelerator.Compiler.getEvaluatedValue(entry.value,scope.data,scope,entry.valueExpression);
+								entry.valueExpression = false;
+								if (entry.empty)
+								{
+									entry.key = entry.value;
+								}
+							}
+							else if (entry.empty)
+							{
+								entry.value = Appcelerator.Compiler.getEvaluatedValue(entry.key,scope.data,scope);
+							}
+							else
+							{
+								entry.key = Appcelerator.Compiler.getEvaluatedValue(entry.key,scope.data,scope);
+								entry.value = Appcelerator.Compiler.getEvaluatedValue(entry.value,scope.data,scope);
+							}
 						}
 					}
     			    builder.execute(id, action, params, scope);
@@ -2579,7 +2616,7 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope,isExpression)
 				var expr = isExpression ? v : match[1];
 				var func = expr.toFunction();
 				var s = scope ? Object.clone(scope) : {};
-				if (data && data!=window)
+				if (data)
 				{
 					for (var k in data)
 					{

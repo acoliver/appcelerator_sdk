@@ -115,8 +115,11 @@ Object.evalWithinScope = function (code, scope)
 {
     if (code == '{}') return {};
 
+	// make sure we escape any quotes given we're building a string with quotes
+	var expr = code.gsub('"',"\\\"");
+	
     // create the function
-    var func = eval('var f=function(){return eval(code)};f');
+    var func = eval('var f = function(){return eval("(' + expr + ')")}; f;');
 
     // now invoke our scoped eval with scope as the this reference
     return func.call(scope);

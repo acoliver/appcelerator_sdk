@@ -387,6 +387,7 @@ Appcelerator.Compiler.findTargetFromParams = function(id,params)
 		{
 			var obj = params[c];
 			var key = obj.key;
+			if (!Object.isString(key)) continue;
 			var value = obj.value;
 			if (Appcelerator.Compiler.isCSSAttribute(key))
 			{
@@ -758,6 +759,8 @@ Appcelerator.Compiler.registerCustomAction('value',
 		var valueHtml = null;
 		var append = false;
 		var form = false;
+		var key = null;
+		var value = null;
 		
 		if (params)
 		{
@@ -776,6 +779,50 @@ Appcelerator.Compiler.registerCustomAction('value',
 						valueHtml = param.value;
 						break;
 					}
+					default:
+					{
+						key = param.key;
+						value = param.value;
+						if (param.empty)
+						{
+							if (key.startsWith("'") && key.endsWith("'"))
+							{
+								value = Appcelerator.Compiler.dequote(param.key);
+								value = null;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		Logger.info('key='+key+',value='+value+',valueHtml='+valueHtml+',params='+Object.toJSON(params));
+		
+		if (!key && !valueHtml)
+		{
+			key = params[0].key;
+			value = params[0].value;
+		}
+		
+		if (!valueHtml)
+		{
+			if (!value && key && key.startsWith("'") && key.endsWith("'"))
+			{
+				valueHtml = Appcelerator.Compiler.dequote(key);
+			}
+			else if (!value)
+			{
+				valueHtml = Object.getNestedProperty(scope,key);
+			}
+			else if (value)
+			{
+				if (typeof(value)=='object')
+				{
+					valueHtml = Object.getNestedProperty(value,key);
+				}
+				else
+				{
+					valueHtml = value;
 				}
 			}
 		}
@@ -903,7 +950,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 				form = true;
 
 				//e.g. value[bar]
-				var elementAction = 'value['+parameters+']';
+				var elementAction = 'value['+key+']';
 				//find the matching clause (in case the form has several actions in its on expression); e.g. r:foo
 				var clause = this.findMatchingFormClause(element,elementAction);
 
@@ -940,7 +987,7 @@ Appcelerator.Compiler.registerCustomAction('value',
 					if (child_parameter)
 					{
 						//e.g. value[bar.idx]
-						var action = 'value['+parameters + '.' + child_parameter+']';
+						var action = 'value['+ key + '.' + child_parameter+']';
 						Appcelerator.Compiler.handleCondition.call(this, [child,true,action,scope,null,null]);
 					}
 				}
