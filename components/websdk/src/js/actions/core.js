@@ -21,9 +21,35 @@ Appcelerator.Compiler.registerCustomAction('hide',
 	{
 		if (params && params.length > 0)
 		{
-			var obj = params[0];
-			var key = obj.key;
-			Element.hide(key);
+			var optional = false;
+			var key = null;
+			for (var c=0;c<params.length;c++)
+			{
+				if (params[c].key=='optional')
+				{
+					optional = params[c].value;
+					continue;
+				}
+				if (params[c].key=='id')
+				{
+					key = params[c].value;
+					continue;
+				}
+				if (!key)
+				{
+					key = params[c].key;
+				}
+			}
+			if (!key && !optional)
+			{
+				throw "no key specified for hide action";
+			}
+			var el = $(key);
+			if (!el && !optional)
+			{
+				throw "no element with id: "+key+" found for hide action";
+			}
+			if (el) Element.hide(el);
 		}
 		else
 		{
@@ -202,7 +228,7 @@ Appcelerator.Compiler.registerCustomAction('effect',
 		}
 		else
 		{
-			throw "syntax error: effect action must have parameters";
+			throw "syntax error: effect action must have parameters.";
 		}
 	}
 });
@@ -327,6 +353,24 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
     }
 };
 
+Appcelerator.Compiler.findTargetFromParams = function(id,params)
+{
+	var target = id;
+	if (params && params.length > 0)
+	{
+		for (var c=0;c<params.length;c++)
+		{
+			var entry = params[c];
+			if (entry.key == 'id')
+			{
+				target = entry.value;
+				break;
+			}
+		}
+	}
+	return $(target);
+};
+
 (function()
 {
 	var addsetBuildFunction = function(id,action,params,scope)
@@ -337,18 +381,13 @@ Appcelerator.Compiler.generateSetter = function(value,scope)
 		}
 		
 		var setStyles = null;
-		var target = id;
+		var target = Appcelerator.Compiler.findTargetFromParams(id,params);
 		
 		for (var c=0;c<params.length;c++)
 		{
 			var obj = params[c];
 			var key = obj.key;
 			var value = obj.value;
-			if (key == 'id')
-			{
-				target = value;
-				continue;
-			}
 			if (Appcelerator.Compiler.isCSSAttribute(key))
 			{
 				key = Appcelerator.Compiler.convertCSSAttribute(key);
@@ -447,18 +486,40 @@ Appcelerator.Compiler.registerCustomAction('remove',
 	{
 		if (params.length == 0)
 		{
-			throw "syntax error: expected parameter key:value for action: "+action;
+			throw "syntax error: expected parameter for action: "+action;
 		}
-		var obj = params[0];
-		var key = obj.key;
-		var value = obj.value;
-		switch (key)
+		var target = Appcelerator.Compiler.findTargetFromParams(id,params);
+		var key = null;
+		var value = null;
+		var optional = false;
+		for (var c=0;c<params.length;c++)
 		{
-			case 'class':
-			    Element.removeClassName(id,Appcelerator.Compiler.formatValue(value,false));
-			    break;
-			default:
-    			$(id).removeAttribute(key);
+			if (params[c].key == 'id') continue;
+			if (params[c].key == 'optional') 
+			{
+				optional = params[c].value;
+				continue;
+			}
+			if (!key)
+			{
+				key = params[c].key;
+				value = params[c].value;
+			}
+		}
+		if (!key && !optional)
+		{
+			throw "couldn't find key to remove";
+		}
+		if (key)
+		{
+			switch (key)
+			{
+				case 'class':
+				    Element.removeClassName(target,Appcelerator.Compiler.formatValue(value,false));
+				    break;
+				default:
+	    			target.removeAttribute(key);
+			}
 		}
 	}
 });
@@ -691,70 +752,34 @@ Appcelerator.Compiler.registerCustomAction('value',
 		optionalParameterKeys: ['text','append','id','property'],
 		description: "Sets the value of the current element with data from the message payload"
     },
-	parseParameters: function (id,action,params)
+	execute: function(id,action,params,scope)
 	{
-		return params;
-	},
-	execute: function(id,action,parameters,scope)
-	{
-		var targetId = id;
-		var idFound = false;
+		var element = Appcelerator.Compiler.findTargetFromParams(id,params);
 		var valueHtml = null;
-		var params = parameters;
 		var append = false;
-		var valueExpr = parameters;
 		var form = false;
 		
-		if (parameters.charAt(0)=='"' || parameters.charAt(0)=="'")
+		if (params)
 		{
-			valueHtml = parameters.substr(1, parameters.length - 2);
-		}
-		else
-		{
-			params = Appcelerator.Compiler.getParameters(parameters,false);
-			
 			for (var c=0,len=params.length;c<len;c++)
 			{
 				var param = params[c];
-				// alert('value = '+Object.toJSON(param));
-				if (param.empty)
+				switch(param.key)
 				{
-					// if empty, must be a standalone value
-					if (param.keyExpression || param.valueExpression)
+					case 'append':
 					{
-						valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.keyExpression||param.valueExpression);
+						append=true;
+						break;
 					}
-					else
+					case 'value':
 					{
-						valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.key||param.value,scope.data,scope,param.keyExpression||param.valueExpression);
-					}
-				}
-				else 
-				{
-					switch(param.key)
-					{
-						case 'id':
-						{
-							targetId = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.valueExpression);
-							idFound = true;
-							break;
-						}
-						case 'append':
-						{
-							append=true;
-							break;
-						}
-						case 'value':
-						{
-							valueHtml = Appcelerator.Compiler.getEvaluatedValue(param.value,scope.data,scope,param.valueExpression);
-							break;
-						}
+						valueHtml = param.value;
+						break;
 					}
 				}
 			}
 		}
 
-		var element = $(id);
 		var html = '';
 		var variable = '';
 		var expression = '';

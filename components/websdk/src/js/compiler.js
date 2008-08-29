@@ -1691,7 +1691,7 @@ Appcelerator.Compiler.smartTokenSearch = function(searchString, value)
 	return validx;
 };
 
-Appcelerator.Compiler.compoundCondRE = /^\((.*)?\) then/g;
+Appcelerator.Compiler.compoundCondRE = /^\((.*)?\) then$/;
 
 Appcelerator.Compiler.parseExpression = function(value,element)
 {
@@ -1733,7 +1733,8 @@ Appcelerator.Compiler.parseExpression = function(value,element)
 		var condition = expression.substring(0,thenidx);
 		
 		// check to see if we have compound conditions - APPSDK-597
-		var condMatch = Appcelerator.Compiler.compoundCondRE.exec(expression);
+		var testExpr = expression.substring(0,thenidx+5);
+		var condMatch = Appcelerator.Compiler.compoundCondRE.exec(testExpr);
 		if (condMatch)
 		{
 			var expressions = condMatch[1];
@@ -2218,23 +2219,23 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     		var params = actionParams!=null ? Appcelerator.Compiler.getParameters(actionParams[2].trim(),false) : null;
     		var action = actionParams!=null ? actionParams[1] : actionstr;
 
+			params = params || [];
+			if (additionalParams)
+			{
+				for (var p in additionalParams)
+				{
+					params.push({key:p,value:additionalParams[p]});
+				}
+			}
     		if (local_msg || remote_msg || wildcard)
     		{
-				params = params || [];
-    			if (additionalParams)
-    			{
-    				for (var p in additionalParams)
-    				{
-    					params.push({key:p,value:additionalParams[p]});
-    				}
-    			}
     			var f = function(scope)
     			{
 					var newparams = {};
 					for (var x=0;x<params.length;x++)
 					{
 						var entry = params[x];
-						newparams[Appcelerator.Compiler.getEvaluatedValue(entry.key,scope,scope,entry.keyExpression)]=Appcelerator.Compiler.getEvaluatedValue(entry.value,scope,scope,entry.valueExpression);
+						newparams[Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope,entry.keyExpression)]=Appcelerator.Compiler.getEvaluatedValue(entry.value,scope,scope,entry.valueExpression);
 					}
     			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, newparams, scope);
     			}
@@ -2269,6 +2270,18 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
     			//
     			var f = function(scope)
     			{
+					for (var x=0;x<params.length;x++)
+					{
+						var entry = params[x];
+						if (entry.keyExpression)
+						{
+							entry.key = Object.evalWithinScope(entry.key,scope);
+						}
+						if (entry.valueExpression)
+						{
+							entry.value = Object.evalWithinScope(entry.value,scope);
+						}
+					}
     			    builder.execute(id, action, params, scope);
     			}
     			actionFuncs.push({func: f, action: action});
@@ -2565,8 +2578,8 @@ Appcelerator.Compiler.getEvaluatedValue = function(v,data,scope,isExpression)
 			{
 				var expr = isExpression ? v : match[1];
 				var func = expr.toFunction();
-				var s = scope || {};
-				if (data)
+				var s = scope ? Object.clone(scope) : {};
+				if (data && data!=window)
 				{
 					for (var k in data)
 					{
@@ -3609,7 +3622,8 @@ Appcelerator.Compiler.processMacros = function(expression,id,scope)
 					scope['id'] = id;
 				}
 			}
-			return template(scope);
+			// recursive in case you reference a macro in a macro
+			return Appcelerator.Compiler.processMacros(template(scope),id,scope);
 		}
 		return match[0];
 	});

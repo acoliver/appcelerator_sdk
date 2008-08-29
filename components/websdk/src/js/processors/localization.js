@@ -15,7 +15,6 @@ Appcelerator.Localization.AttributeProcessor =
 			     Logger.error("couldn't find localization key for "+value);
 			     return;
 			}
-            Logger.info(Appcelerator.Compiler.getTagname(element));
 			switch (Appcelerator.Compiler.getTagname(element))
 			{
 				case 'select':

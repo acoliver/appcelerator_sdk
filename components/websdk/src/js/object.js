@@ -116,7 +116,7 @@ Object.evalWithinScope = function (code, scope)
     if (code == '{}') return {};
 
     // create the function
-    var func = eval('var f = function(){return eval("(' + code + ')")}; f;');
+    var func = eval('var f=function(){return eval(code)};f');
 
     // now invoke our scoped eval with scope as the this reference
     return func.call(scope);
