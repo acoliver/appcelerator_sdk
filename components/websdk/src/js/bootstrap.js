@@ -428,27 +428,35 @@ Appcelerator.Parameters = $H({});
 						}
 						if (window.screen.height < 480)
 						{
-							Element.addClassName(document.body,'height_short');
+							Element.addClassName(document.body,'height_tiny');
 						}
-						else if (window.screen.height >= 480 && window.screen.height <= 1024)
+						else if (window.screen.height >= 480 && window.screen.height <= 768)
+						{
+							Element.addClassName(document.body,'height_small');
+						}
+						else if (window.screen.height > 768  && window.screen.height < 1200)
 						{
 							Element.addClassName(document.body,'height_medium');
 						}
-						else if (window.screen.height >1024)
+						else if (window.screen.height >= 1200)
 						{
-							Element.addClassName(document.body,'height_long');
+							Element.addClassName(document.body,'height_large');
 						}
-						if (window.screen.width < 640)
+						if (window.screen.width <= 640)
 						{
-							Element.addClassName(document.body,'width_narrow');
+							Element.addClassName(document.body,'width_tiny');
 						}
-						else if (window.screen.width >= 640 && window.screen.width <= 1280)
+						else if (window.screen.width > 640 && window.screen.width <= 1024)
+						{
+							Element.addClassName(document.body,'width_small');
+						}
+						else if (window.screen.width > 1024 && window.screen.width <=1280 )
 						{
 							Element.addClassName(document.body,'width_medium');
 						}
 						else if (window.screen.width > 1280)
 						{
-							Element.addClassName(document.body,'width_wide');
+							Element.addClassName(document.body,'width_large');
 						}
 					}
 					Event.observe(window,'resize',calcDim);

@@ -796,8 +796,6 @@ Appcelerator.Compiler.registerCustomAction('value',
 			}
 		}
 		
-		Logger.info('key='+key+',value='+value+',valueHtml='+valueHtml+',params='+Object.toJSON(params));
-		
 		if (!key && !valueHtml)
 		{
 			key = params[0].key;
