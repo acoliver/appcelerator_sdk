@@ -10,7 +10,7 @@
 }
 .tabpanel_simple_stacked li
 {
-	margin:0px;
+	margin:0px !important;
 	padding:0px;
 }
 

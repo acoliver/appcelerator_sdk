@@ -10,7 +10,10 @@
 }
 .tabpanel_basic li
 {
-	margin:0px;
+	margin-top:0px !important;
+	margin-left:0px !important;
+	margin-right:0px !important;	
+	margin-bottom:-1px !important;
 	padding:0px;
 }
 
@@ -36,7 +39,6 @@
 	height:20px;
 	line-height:20px;
 	float:left;
-	margin-bottom:-1px !important;
 }
 
 body.msie tabpanel_basic_tab_mid
