@@ -176,8 +176,8 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
     var element = document.createElement(tag);
     element.setAttribute('type',type);
 
-	// make sure if we have a double slash in path that we replace it with a single path
-	path = path.gsub("//",'/');
+	// fixup the URI
+	path = Appcelerator.URI.absolutizeURI(path,Appcelerator.DocumentPath);
 
     switch(tag)
     {
