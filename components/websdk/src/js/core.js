@@ -160,6 +160,11 @@ Appcelerator.Core.remoteLoadCSS = function(path,onload,onerror)
  */
 Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
 {
+	$D('remoteLoad '+tag+',type='+type+',path='+path+',onload='+onload+',onerror='+onerror);
+
+	// fixup the URI
+	path = Appcelerator.URI.absolutizeURI(path,Appcelerator.DocumentPath);
+	
     var array = Appcelerator.Core.fetching[path];
     if (array)
     {
@@ -176,9 +181,6 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
     var element = document.createElement(tag);
     element.setAttribute('type',type);
 
-	// fixup the URI
-	path = Appcelerator.URI.absolutizeURI(path,Appcelerator.DocumentPath);
-
     switch(tag)
     {
         case 'script':
@@ -192,16 +194,17 @@ Appcelerator.Core.remoteLoad = function(tag,type,path,onload,onerror)
 	var timer = null;
     var loader = function()
     {
+	   $D('loaded '+path);
+	   if (timer) clearTimeout(timer);
        var callbacks = Appcelerator.Core.fetching[path];
        if (callbacks)
        {
            for (var c=0;c<callbacks.length;c++)
            {
-               callbacks[c]();
+               try { callbacks[c](); } catch (E) { }
            }
            delete Appcelerator.Core.fetching[path];
        }
-	   if (timer) clearTimeout(timer);
     };    
     if (tag == 'script')
     {

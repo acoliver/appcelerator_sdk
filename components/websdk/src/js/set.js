@@ -176,7 +176,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 	else
 	{
 		// added for API calls
-		if (!element.state)element.state = {};
+		if (!element.state)element.state = {pending:0};
 		
 		element.state.pending+=1;
 		var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
