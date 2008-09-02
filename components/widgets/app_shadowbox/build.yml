@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ dialog ]
-:licenses: [4]
+:licenses: [6]
 :description: "app:shadowbox wraps the Shadowbox library useful for viewing media in a modal dialog"

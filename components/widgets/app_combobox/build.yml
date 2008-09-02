@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ uicontrol ]
-:licenses: [4]
+:licenses: [6]
 :description: "app:combobox is a nicer looking control for doing combo boxes as an alternative to HTML selects"

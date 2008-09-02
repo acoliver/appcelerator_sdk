@@ -1,7 +1,7 @@
 --- 
 :release_notes: initial release
 :type: control
-:licenses: [4]
+:licenses: [6]
 
 :description: select control
 :name: select

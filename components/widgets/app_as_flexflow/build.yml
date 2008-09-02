@@ -1,7 +1,7 @@
 --- 
 :release_notes: initial release
 :type: widget
-:licenses: [4]
+:licenses: [6]
 
 :dependencies: 
 - :type: websdk

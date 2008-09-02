@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ ]
-:licenses: [4]
+:licenses: [6]
 :description: "app:upload is a component which makes dynamic upload of multipart attachments simple."

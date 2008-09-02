@@ -3,7 +3,7 @@
 
 :type: widget
 :release_notes: initial release
-:licenses: [ 1 ]
+:licenses: [6]
 
 :name: app:image_cropper
 :dependencies: 

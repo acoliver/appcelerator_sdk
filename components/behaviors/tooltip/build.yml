@@ -1,7 +1,7 @@
 --- 
 :release_notes: initial release
 :type: behavior
-:licenses: [4]
+:licenses: [6]
 
 :description: tooltip behavior
 :name: tooltip

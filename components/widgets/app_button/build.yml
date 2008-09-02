@@ -7,5 +7,5 @@
   :version: ">=2.1.2"
   :name: websdk
 :tags: [ uicontrol ]
-:licenses: [4]
+:licenses: [6]
 :description: "app:button is a fancier looking button that can be used in place of a normal HTML button"

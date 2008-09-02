@@ -7,5 +7,5 @@
   :version: ">=2.1"
   :name: websdk
 :tags: [ upload, maps, yui ]
-:licenses: [4]
+:licenses: [6]
 :description: "app:yui_map is a Yahoo! based map UI control which supports dynamic mapping from messages"
