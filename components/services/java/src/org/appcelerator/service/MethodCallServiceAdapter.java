@@ -94,7 +94,7 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         }
 
         MethodCallServiceAdapter target = (MethodCallServiceAdapter) sa;
-        if (this.method.equals(target.method))
+        if (this.method.equals(target.method) && this.instance == target.instance)
         {
             return true;
         }

@@ -221,33 +221,38 @@ public class ServiceRegistry
     {
         Object token = instance.dispatchVisitor.startVisit(request, responses);
         Set<ServiceAdapter> adapters = ServiceRegistry.getRegisteredServices(request.getType());
-        if (adapters!=null && !adapters.isEmpty())
+
+        if (adapters == null || adapters.isEmpty())
         {
-            for (ServiceAdapter adapter : adapters)
+            instance.dispatchVisitor.endVisit(token, request, responses);
+            return false;
+        }
+
+        for (ServiceAdapter adapter : adapters)
+        {
+            String version = adapter.getVersion();
+            if (version == null || version.equals("") || version.equals(request.getVersion()))
             {
-                String version = adapter.getVersion();
-                if (version == null || version.equals("") || version.equals(request.getVersion()))
+                Message response = null;
+                if (adapter.getResponse() != null)
                 {
-                    Message response = null;
-                    boolean hasResponse = false;
-                    if (adapter.getResponse() !=null)
-                    {
-                        response = MessageUtils.createResponseMessage(request);
-                        response.setType(adapter.getResponse());
-                        hasResponse = true;
-                    }
-                    adapter.dispatch(request, response);
-                    if (hasResponse)
-                    {
-                        responses.add(response);
-                    }
-                    instance.dispatchVisitor.endVisit(token, request, responses);
-                    return true;
+                    response = MessageUtils.createResponseMessage(request);
+                    response.setType(adapter.getResponse());
                 }
+
+                adapter.dispatch(request, response);
+
+                if (response != null)
+                {
+                    responses.add(response);
+                }
+                
             }
         }
+
         instance.dispatchVisitor.endVisit(token, request, responses);
-        return false;
+        return true;
+
     }
 
     /**
