@@ -954,7 +954,7 @@ function $MQL (type,f,myscope,element)
             }
             catch(e)
             {
-                Appcelerator.Compiler.handleElementException(element,e,'service broker handling => '+type+':'+msg);
+                Appcelerator.Compiler.handleElementException(element,e,'service broker handling => '+from+':'+type+' ('+Object.toJSON(msg)+'), tried invoking function:'+f);
             }
         }
     };

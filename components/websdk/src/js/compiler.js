@@ -2250,7 +2250,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 						}
 						else
 						{
-							key = Appcelerator.Compiler.getEvaluatedValue(entry.key,null,scope);
+							key = Appcelerator.Compiler.getEvaluatedValue(entry.key);
 							value = Appcelerator.Compiler.getEvaluatedValue(entry.value,null,scope);
 						}
 						newparams[key]=value;
@@ -2314,7 +2314,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 							}
 							else
 							{
-								entry.key = Appcelerator.Compiler.getEvaluatedValue(entry.key,scope.data,scope);
+								entry.key = Appcelerator.Compiler.getEvaluatedValue(entry.key);
 								entry.value = Appcelerator.Compiler.getEvaluatedValue(entry.value,scope.data,scope);
 							}
 						}

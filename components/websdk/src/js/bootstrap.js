@@ -233,6 +233,7 @@ Appcelerator.Parameters = $H({});
     Appcelerator.Browser.isEpiphany = Appcelerator.Browser.isMozilla && ua.indexOf('epiphany') > 0;
 	Appcelerator.Browser.isFluid = (window.fluid != null);
 	Appcelerator.Browser.isGears = (window.google && google.gears) != null;
+	Appcelerator.Browser.isChromium = Appcelerator.Browser.isWebkit && ua.indexOf('chrome/') > 0;
     
 	Appcelerator.Browser.isWindows = false;
 	Appcelerator.Browser.isMac = false;
@@ -374,6 +375,10 @@ Appcelerator.Parameters = $H({});
 					Element.addClassName(document.body,'iphone');
 					Element.addClassName(document.body,'webkit');
 					Element.addClassName(document.body,'safari');
+				}
+				if (Appcelerator.Browser.isChromium)
+				{
+					Element.addClassName(document.body,'chromium');
 				}
 				if (Appcelerator.Browser.isSafari)
 				{
