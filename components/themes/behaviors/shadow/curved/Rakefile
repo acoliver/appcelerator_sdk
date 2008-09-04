@@ -29,7 +29,7 @@ require 'find'
 require 'pathname'
 
 NAME = 'curved'
-ZIPFILE = File.expand_path "shadow_curved.zip"
+ZIPFILE = File.expand_path "curved.zip"
 
 desc 'default build which makes the theme'
 task :default => [:zip] do
