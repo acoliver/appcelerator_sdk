@@ -32,40 +32,62 @@ module Appcelerator
         from_dir = $Installer[:to_dir]
 
 
-  		  STDOUT.puts 
-  		  STDOUT.print "+ Performing self-update patch ... one moment "
-  		  STDOUT.flush
+            STDOUT.puts 
+            STDOUT.print "+ Performing self-update patch ... one moment \n"
+            STDOUT.flush
 
         require 'digest/md5'
 
         
         # these are files that can't be patched
-        excludes = %W(#{from_dir}/build.yml #{from_dir}/pre_flight.rb #{from_dir}/appcelerator)
+        excludes = %W(#{from_dir}/build.yml #{from_dir}/pre_flight.rb)
         
+        begin
+
+        is_win32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
+        files_to_copy = []
+
         Dir["#{from_dir}/**/**"].each do |file|
           next if excludes.include? file
           next if File.directory? file
           target = file.gsub("#{from_dir}/",'')
+          target = File.join(SCRIPTDIR, target)
           overwrite = File.exists? target
-          puts "!!! #{target}, overwrite=#{overwrite}"
+
           if overwrite 
+            old_checksum = crc32( File.read(file) )
+            new_checksum = crc32( File.read(target) )
+            overwrite = old_checksum!=new_checksum
+          end
+
+          puts "!!! #{target}, overwrite=#{overwrite}"
+
+          if overwrite
             if not File.writable? target
               person = is_win32 ? 'Administrator' : 'root'
               die "Can't write to file: #{target}. You must re-run this command as #{person}.  Sorry!"
             end
-            old_checksum = crc32( File.read(file) )
-			      new_checksum = crc32( File.read(target) )          
-			      overwrite = old_checksum!=new_checksum
-			    else
-			      overwrite = true
-			    end
-			    if overwrite
-			      src = file
-			      dst = File.expand_path(SCRIPTDIR+'/'+target)
-			      dstdir = File.dirname dst
-	          FileUtils.mkdir_p(dstdir)
-	          FileUtils.cp_r(src,dst)
-	        end
+
+          end
+
+          # attempt to create the directory now
+          # to trigger any exceptions before file copies
+          FileUtils.mkdir_p(File.dirname(target))
+          files_to_copy << [file, target]
+        end
+
+        # do the actual copy in another step
+        # once we know we can write all these
+        # files without persmissions issues
+        files_to_copy.each do |pair|
+            source = pair[0]
+            target = pair[1]
+            FileUtils.cp_r(source, target)
+        end
+
+        rescue Exception => e
+          puts "Exception: #{e.class}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
+          exit 1
         end
         
         STDOUT.puts 'Update patch complete...'
