@@ -20,12 +20,10 @@ function(element,condition,action,elseAction,delay,ifCond)
     {
         token = condition.substring(8,condition.indexOf(']'));
     }
-    
-    if (!token)
-    {
-        return false;
-    }
-    
+
+	// allow token to be empty string which is essentially wildcard
+    token = token || '';
+
 	var id = element.id;
 	var actionFunc = Appcelerator.Compiler.makeConditionalAction(id,action,ifCond);
 	var elseActionFunc = elseAction ? Appcelerator.Compiler.makeConditionalAction(id,elseAction,null) : null;
