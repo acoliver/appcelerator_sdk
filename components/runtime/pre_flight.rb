@@ -42,7 +42,6 @@ module Appcelerator
         # these are files that can't be patched
         excludes = %W(#{from_dir}/build.yml #{from_dir}/pre_flight.rb)
         
-        begin
 
         is_win32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
         files_to_copy = []
@@ -85,11 +84,6 @@ module Appcelerator
             FileUtils.cp_r(source, target)
         end
 
-        rescue Exception => e
-          puts "Exception: #{e.class}: #{e.message}\n\t#{e.backtrace.join("\n\t")}"
-          exit 1
-        end
-        
         STDOUT.puts 'Update patch complete...'
       end
     end
