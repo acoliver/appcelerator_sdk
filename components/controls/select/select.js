@@ -55,7 +55,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 	value:function(id,params,data,scope,version,attrs,direction,action)
 	{
 		// pull out properties
-		var property = Appcelerator.Compiler.findParameter(attrs,'property');
+		var ar = Appcelerator.Compiler.findParameter(attrs,'property');
 		var row = Appcelerator.Compiler.findParameter(attrs,'row');
 		var value = Appcelerator.Compiler.findParameter(attrs,'value');
 		var text = Appcelerator.Compiler.findParameter(attrs,'text');
@@ -66,7 +66,6 @@ Appcelerator.UI.registerUIComponent('control','select',
 		var values = [];
 		var html = '';
 		var dropdown = $(id + "_combo_box");
-		var ar = Object.getNestedProperty(data, property)
 		if (ar)
 		{
 			// loop through data
@@ -107,7 +106,6 @@ Appcelerator.UI.registerUIComponent('control','select',
 			
 			// resize dropdown
 			$(id+"_combo_box").style.height = this._getDropdownHeight(ar.length);
-
 		}
 	},
 	
