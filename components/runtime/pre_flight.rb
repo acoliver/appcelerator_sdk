@@ -50,7 +50,7 @@ module Appcelerator
           next if excludes.include? file
           next if File.directory? file
           target = file.gsub("#{from_dir}/",'')
-          target = File.join(SCRIPTDIR, target)
+          target = File.join(SYSTEMDIR, target)
           overwrite = File.exists? target
 
           if overwrite 
