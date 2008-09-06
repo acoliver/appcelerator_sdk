@@ -9,12 +9,12 @@ Appcelerator.Compiler.registerCustomCondition(
 },
 function(element,condition,action,elseAction,delay,ifCond)
 {
-    var token = null;
-
     if (!condition.startsWith('history:') && !condition.startsWith('history['))
 	{
 		return false;
 	}
+
+    var token = null;
 
     if (condition.startsWith('history:'))
     {
