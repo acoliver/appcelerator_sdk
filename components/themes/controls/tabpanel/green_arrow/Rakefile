@@ -29,7 +29,7 @@ require 'find'
 require 'pathname'
 
 NAME = 'green_arrow'
-ZIPFILE = File.expand_path "tabpanel_green_arrow.zip"
+ZIPFILE = File.expand_path "green_arrow.zip"
 
 desc 'default build which makes the theme'
 task :default => [:zip] do
