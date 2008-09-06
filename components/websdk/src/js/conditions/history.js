@@ -10,7 +10,12 @@ Appcelerator.Compiler.registerCustomCondition(
 function(element,condition,action,elseAction,delay,ifCond)
 {
     var token = null;
-    
+
+    if (!condition.startsWith('history:'))
+	{
+		return false;
+	}
+
     if (condition.startsWith('history:'))
     {
         token = condition.substring(8);
