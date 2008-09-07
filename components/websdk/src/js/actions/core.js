@@ -433,8 +433,17 @@ Appcelerator.Compiler.findTargetFromParams = function(id,params)
 	    				case 'checked':
 	    				case 'selected':
 	    				case 'disabled':
+						case 'defaultChecked':
 	    				{
-	    				    e[key] = ('true' == Appcelerator.Compiler.generateSetter(value,scope));
+							var value = Appcelerator.Compiler.generateSetter(value,scope);
+							if (value)
+							{
+								e.setAttribute(key,value);
+							}
+							else
+							{
+								e.removeAttribute(key);
+							}
 	    					break;
 						}
 	    				default:

@@ -361,6 +361,24 @@
 	</tr>	
 	<tr>
 		<td class="test" valign="middle">
+			<a on="click then l:test28.1">Run Test</a>
+			Disable Action from setter
+		</td>
+		<td class="result">	
+			<input type="button" value="disable me" on="l:test28.1 then set[disabled=true]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test28.2">Run Test</a>
+			Enable Action from setter
+		</td>
+		<td class="result">	
+			<input type="button" value="enable me" disabled on="l:test28.2 then set[disabled=false]"/>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
 			<a on="click then l:test29">Run Test</a>
 			Focus Action
 		</td>
