@@ -140,6 +140,84 @@ div
 	
 		</td>
 	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Dynamic population test (defaults)
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" 
+			    on="l:populate_select00 then value[property=rows]">
+			    <option></option>
+			</select>
+			<script>
+			$MQ('l:populate_select00',{'rows':[
+			    {'value':'one','text':'option 1'},
+			    {'value':'two','text':'option 2'},
+			    {'value':'three','text':'option 3'}
+			    ]});
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Dynamic population test (same text,value)
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" 
+			    on="l:populate_select0 then value[property=rows,value=value,text=text]">
+			    <option></option>
+			</select>
+			<script>
+			$MQ('l:populate_select0',{'rows':[
+			    {'value':'one','text':'option 1'},
+			    {'value':'two','text':'option 2'},
+			    {'value':'three','text':'option 3'}
+			    ]});
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Dynamic population test (explicit text,value)
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" 
+			    on="l:populate_select then value[property=rows,value=id,text=desc]">
+			    <option></option>
+			</select>
+			<script>
+			$MQ('l:populate_select',{'rows':[
+			    {'id':'one','desc':'option 1'},
+			    {'id':'two','desc':'option 2'},
+			    {'id':'three','desc':'option 3'}
+			    ]});
+			</script>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			Dynamic population test (dotted notation text,value)
+		</td>
+		<td class="result" >
+			<select set="theme[thinline]" 
+			    on="l:populate_select2 then value[property=rows,value=a.id,text=b.desc]">
+			    <option></option>
+			</select>
+			<script>
+			$MQ('l:populate_select2',{'rows':[
+			    {
+					a: {'id':'one'}, b:{'desc':'option 1'}
+				},
+			    {
+					a: {'id':'two'}, b:{'desc':'option 2'}
+				},
+			    {
+					a: {'id':'three'}, b:{'desc':'option 3'}
+				}
+			    ]});
+			</script>
+		</td>
+	</tr>
 </table>
 
 </body>

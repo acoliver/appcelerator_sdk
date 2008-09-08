@@ -57,10 +57,9 @@ Appcelerator.UI.registerUIComponent('control','select',
 		// pull out properties
 		var ar = Appcelerator.Compiler.findParameter(attrs,'property');
 		var row = Appcelerator.Compiler.findParameter(attrs,'row');
-		var value = Appcelerator.Compiler.findParameter(attrs,'value');
-		var text = Appcelerator.Compiler.findParameter(attrs,'text');
+		var value = Appcelerator.Compiler.findParameter(attrs,'value') || 'value';
+		var text = Appcelerator.Compiler.findParameter(attrs,'text') || 'text';
 		if (!ar) throw "required parameter named 'property' not found in value parameter list";
-		if (!value) throw "required parameter named 'value' not found in value parameter list";
 		if (!text) text = value;
 
 		var values = [];
@@ -82,8 +81,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 		        }
 		        if (rowData)
 		        {
-					html += '<div id="'+id+'_combo_'+c+'" class="select_'+this.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_rowclick[row='+c+'] or mouseover then add[class=select_'+this.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+this.activeThemes[id]+'_dropdown_hover]">'+rowData.text+'</div>';
-					values.push({'index':c,'id':id+'_combo_'+c,'value':rowData.value,'text':rowData.text});
+					html += '<div id="'+id+'_combo_'+c+'" class="select_'+this.activeThemes[id]+'_dropdown_item" on="click then l:'+id+'_combo_rowclick[row='+c+'] or mouseover then add[class=select_'+this.activeThemes[id]+'_dropdown_hover] and l:'+id+'_combo_mouseover[row='+c+'] or mouseout then remove[class=select_'+this.activeThemes[id]+'_dropdown_hover]">'+Object.getNestedProperty(rowData,text)+'</div>';
+					values.push({'index':c,'id':id+'_combo_'+c,'value':Object.getNestedProperty(rowData,value),'text':Object.getNestedProperty(rowData,text)});
 		        }
 		    }
 
