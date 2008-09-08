@@ -431,35 +431,38 @@ Appcelerator.Parameters = $H({});
 								}
 							});
 						}
-						if (window.screen.height < 480)
+                        var width = document.documentElement.clientWidth || window.screen.width;
+                        var height = document.documentElement.clientHeight || window.screen.height;
+
+						if (height < 480)
 						{
 							Element.addClassName(document.body,'height_tiny');
 						}
-						else if (window.screen.height >= 480 && window.screen.height <= 768)
+						else if (height >= 480 && height <= 768)
 						{
 							Element.addClassName(document.body,'height_small');
 						}
-						else if (window.screen.height > 768  && window.screen.height < 1100)
+						else if (height > 768  && height < 1100)
 						{
 							Element.addClassName(document.body,'height_medium');
 						}
-						else if (window.screen.height >= 1100)
+						else if (height >= 1100)
 						{
 							Element.addClassName(document.body,'height_large');
 						}
-						if (window.screen.width <= 640)
+						if (width <= 640)
 						{
 							Element.addClassName(document.body,'width_tiny');
 						}
-						else if (window.screen.width > 640 && window.screen.width <= 1024)
+						else if (width > 640 && width <= 1024)
 						{
 							Element.addClassName(document.body,'width_small');
 						}
-						else if (window.screen.width > 1024 && window.screen.width <=1280 )
+						else if (width > 1024 && width <=1280 )
 						{
 							Element.addClassName(document.body,'width_medium');
 						}
-						else if (window.screen.width > 1280)
+						else if (width > 1280)
 						{
 							Element.addClassName(document.body,'width_large');
 						}
