@@ -256,8 +256,8 @@ Appcelerator.UI.registerUIComponent('control','select',
 			{
 				Appcelerator.Compiler.fireCustomCondition(element.id, 'toggle_list', {'id': element.id});
 				self._toggleList(element.id);
+				Event.stop(ev);
 			}
-			Event.stop(ev);
 		});
 
 		// create handle for input keystrokes
