@@ -59,7 +59,7 @@ Appcelerator.UI.registerUIComponent('control','select',
 		var row = Appcelerator.Compiler.findParameter(attrs,'row');
 		var value = Appcelerator.Compiler.findParameter(attrs,'value');
 		var text = Appcelerator.Compiler.findParameter(attrs,'text');
-		if (!property) throw "required parameter named 'property' not found in value parameter list";
+		if (!ar) throw "required parameter named 'property' not found in value parameter list";
 		if (!value) throw "required parameter named 'value' not found in value parameter list";
 		if (!text) text = value;
 
