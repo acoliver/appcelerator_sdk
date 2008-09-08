@@ -41,7 +41,12 @@ module Appcelerator
         
         # these are files that can't be patched
         excludes = %W(#{from_dir}/build.yml #{from_dir}/pre_flight.rb)
-        
+
+        if defined? SYSTEMDIR
+            system_dir = SYSTEMDIR 
+        else
+            system_dir = SCRIPTDIR
+        end
 
         is_win32 = !(RUBY_PLATFORM =~ /(windows|win32)/).nil?
         files_to_copy = []
@@ -50,7 +55,7 @@ module Appcelerator
           next if excludes.include? file
           next if File.directory? file
           target = file.gsub("#{from_dir}/",'')
-          target = File.join(SYSTEMDIR, target)
+          target = File.join(system_dir, target)
           overwrite = File.exists? target
 
           if overwrite 
