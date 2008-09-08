@@ -25,7 +25,7 @@
 	border:0px none;
 	height:19px;
 	line-height:19px;
-	padding:2px 1px 1px;
+	padding:2px 1px 1px !important;
 	vertical-align:middle;
 	outline:none;
 }
@@ -34,7 +34,7 @@
 	background:transparent url(images/left.png) no-repeat;
 	height:19px;
 	width:20px;
-	padding:2px 0px 1px;
+	padding:2px 0px 1px !important;
 	vertical-align:middle;
 }
 .input_rounded_search_right
@@ -42,7 +42,7 @@
 	background:transparent url(images/right.png) no-repeat ;
 	height:19px;
 	width:10px;
-	padding:2px 0px 1px;
+	padding:2px 0px 1px !important;
 	vertical-align:middle;
 }
 

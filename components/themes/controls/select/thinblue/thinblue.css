@@ -27,6 +27,7 @@
 	border:1px solid #B5B8C8;
 	padding:1px 3px !important;
 	height:18px;
+	font-size:12px !important;
 	outline:none;
 }
 
@@ -64,6 +65,7 @@ body.msie .select_thinblue_arrow
 	display:block;
 	background-color:#fff;
 	left:0px;
+	line-height:normal;
 	height:200px;
 	margin:0px !important;
 	top:19px;

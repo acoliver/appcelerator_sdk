@@ -37,6 +37,7 @@
 	height:20px;
 	line-height:20px;
 	outline:none;
+	font-size:12px !important;
 	margin-bottom:1px;
 }
 
@@ -82,6 +83,7 @@ body.ie7 .select_thinline_arrow
 	background-color:#fff;
 	left:0px;
 	height:200px;
+	line-height:normal;
 	margin:0px;
 	top:21px;
 	padding-right:7px !important;

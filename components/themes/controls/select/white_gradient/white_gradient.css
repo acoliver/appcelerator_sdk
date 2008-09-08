@@ -30,6 +30,7 @@
 	color:#333333;
 	padding:3px !important;
 	outline:none;
+	font-size:12px !important;
 	height:15px;
 }
 
@@ -65,7 +66,9 @@ body.msie .select_white_gradient_arrow
 	position:absolute;
 	z-index:100;
 	display:block;
-	background-color:#fff;
+	background-
+	color:#fff;
+	line-height:normal;
 	left:0px;
 	height:200px;
 	margin:0px;

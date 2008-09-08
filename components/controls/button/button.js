@@ -73,10 +73,14 @@ Appcelerator.UI.registerUIComponent('control','button',
 			span.setAttribute('style',element.getAttribute('style'));
 		}
 		span.className = "button_" + theme + "_container";
+
+		var width = Element.getStyle(element,'width');
 		
 		// remove style from button
 		element.removeAttribute('style');
-		
+
+		element.style.width = (width)?width:'auto';
+
 		new Insertion.Before(element,span);
 		
 		var img1 = document.createElement('img');
