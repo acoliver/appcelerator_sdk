@@ -91,14 +91,18 @@ final class Appcelerator_Service {
                 continue;
             }
         
+            // no hidden files or directories
+            if (strpos($listing, ".") === 0) {
+                continue;
+            }
+
             // recursively scan directories
             if (is_dir($path)) {
                 $files = Appcelerator_Service::collectFiles($path, $files);
             }
 
-            // service files must be named [^.](.*)Service.php -- no hidden files
-            // they might be vim swap files or something similar
-            if (strpos($listing, ".") === 0 || !stristr($listing, 'Service')) {
+            // service files must be named [^.](.+)Service.php
+            if (!stristr($listing, 'Service')) {
                 continue;
             }
 
