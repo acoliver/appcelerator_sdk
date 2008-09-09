@@ -71,7 +71,9 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         PluginManager.dispatchEvents('add_widget', event) do
           Installer.copy tx, widget[:dir], to_dir
 
-          widgets = config[:widgets] ||= []
+          config[:widgets] = [] unless config.has_key?(:widgets)
+          widgets = config[:widgets]
+
           widgets.delete_if { |w| w[:name] == name } 
           widgets << {:name=>widget[:name],:version=>widget[:version]}
         end

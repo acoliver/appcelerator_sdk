@@ -71,7 +71,9 @@ CommandRegistry.registerCommand(%w(add:layout add:layouts),'add layout to a proj
         PluginManager.dispatchEvents('add_layout', event) do
           Installer.copy tx, layout[:dir], to_dir
 
-          layouts = config[:layouts] ||= []
+          config[:layouts] = [] unless config.has_key?(:layouts)
+          layouts = config[:layouts]
+
           layouts.delete_if { |w| w[:name] == name } 
           layouts << {:name=>layout[:name],:version=>layout[:version]}
         end

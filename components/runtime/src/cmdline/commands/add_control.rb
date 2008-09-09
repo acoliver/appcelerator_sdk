@@ -71,7 +71,9 @@ CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a p
         PluginManager.dispatchEvents('add_control', event) do
           Installer.copy tx, control[:dir], to_dir
 
-          controls = config[:controls] ||= []
+          config[:controls] = [] unless config.has_key?(:controls)
+          controls = config[:controls]
+
           controls.delete_if { |w| w[:name] == name } 
           controls << {:name=>control[:name],:version=>control[:version]}
         end

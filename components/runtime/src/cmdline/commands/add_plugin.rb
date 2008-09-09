@@ -51,7 +51,9 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
   pwd = File.expand_path(args[:path] || Dir.pwd)
   plugin_names = args[:name].split(',').uniq
   config = options[:project_config] || Installer.get_project_config(pwd)
-  plugins = config[:plugins] ||= []
+
+  config[:plugins] = [] unless config.has_key?(:plugins)
+  plugins = config[:plugins]
   
   FileUtils.cd(pwd) do 
     # make sure we're in a project directory, unless passing option to skip this test

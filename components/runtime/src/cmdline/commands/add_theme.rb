@@ -75,7 +75,9 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
         PluginManager.dispatchEvents('add_theme', event) do
           Installer.copy tx, theme[:dir], to_dir
 
-          themes = config[:themes] ||= []
+          config[:themes] = [] unless config.has_key?(:themes)
+          themes = config[:themes]
+
           themes.delete_if { |w| w[:name] == name } 
           themes << {:name=>theme[:name],:version=>theme[:version]}
         end

@@ -71,7 +71,9 @@ CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to 
         PluginManager.dispatchEvents('add_behavior', event) do
           Installer.copy tx, behavior[:dir], to_dir
 
-          behaviors = config[:behaviors] ||= []
+          config[:behaviors] = [] unless config.has_key?(:behaviors)
+          behaviors = config[:behaviors]
+
           behaviors.delete_if { |w| w[:name] == name } 
           behaviors << {:name=>behavior[:name],:version=>behavior[:version]}
         end
