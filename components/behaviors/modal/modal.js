@@ -23,7 +23,8 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 		{
 			document.documentElement.style.overflow = "hidden";
 		}
-		else
+		// SAFARI CANNOT DYNAMICALLY CHANGE TO OVERFLOW
+		else if (!Appcelerator.Browser.isSafari)
 		{
 			document.body.style.overflow = "hidden";
 		}
@@ -39,11 +40,11 @@ Appcelerator.UI.registerUIComponent('behavior','modal',
 		{
 			document.documentElement.style.overflow = "auto";
 		}
-		else
+		// SAFARI CANNOT DYNAMICALLY CHANGE TO OVERFLOW
+		else if (!Appcelerator.Browser.isSafari)
 		{
 			document.body.style.overflow = "auto";
-		}		
-		
+		}
 	},
 	
 	getActions: function()
