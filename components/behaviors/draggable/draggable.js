@@ -13,8 +13,7 @@ Appcelerator.UI.registerUIComponent('behavior','draggable',
 				{name: 'revert', optional: true, description: "revert to original position"},
 		        {name: 'ghosting', optional: true, description: "leave original container in place while dragging ",defaultValue: false},
 		        {name: 'handle', optional: true, description: "id of handle that is draggable "},
-		        {name: 'constraint', optional: true, description: "constrain draggable direction ",type: T.enumeration('horizontal','vertical')},
-		        {name: 'corners', optional: true, description: "round top corners "}
+		        {name: 'constraint', optional: true, description: "constrain draggable direction ",type: T.enumeration('horizontal','vertical')}		
 		];
 		
 	},

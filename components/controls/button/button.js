@@ -74,7 +74,7 @@ Appcelerator.UI.registerUIComponent('control','button',
 		}
 		span.className = "button_" + theme + "_container";
 
-		var width = Element.getStyle(element,'width');
+		var width = options['width'];
 		
 		// remove style from button
 		element.removeAttribute('style');
