@@ -49,11 +49,15 @@ class RunAppEnginePythonPlugin < Appcelerator::Plugin
       cmd_name = 'dev_appserver.py'
       config = PythonConfig.new
       if config.on_windows
-        # this is like running: python `which dev_appserver.py`
-        path = ENV['PATH']
-        path.match(/;([^;]*google_appengine[^;]*)/)
-        cmd_path = File.join($1,cmd_name)
-        run_cmd = "#{config.python} \"#{cmd_path}\""
+        begin
+            # this is like running: python `which dev_appserver.py`
+            path = ENV['PATH']
+            path.match(/;([^;]*google_appengine[^;]*)/)
+            cmd_path = File.join($1,cmd_name)
+            run_cmd = "#{config.python} \"#{cmd_path}\""
+        rescue 
+          puts 'The "dev_appserver.py" command was not found. Please check that the Google App Engine is installed and that the "dev_appserver.py" command is on your PATH.'
+        end
       else
         run_cmd = cmd_name
       end
