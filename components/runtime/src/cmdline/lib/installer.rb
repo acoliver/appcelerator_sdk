@@ -1051,6 +1051,21 @@ HELP
     end
     
     
+    def Installer.compare_with_local(component)
+        if (component.class == String) # path to a zipfile
+            component = Installer.get_build_from_zip(component)
+        end
+        installed_component = get_component(:local, component)
+
+        if component
+            return compare_versions(component, installed_component)
+        else
+            # no local version installed, so
+            # this component is considered newer
+            return 1 
+        end
+    end
+
     #
     # Site Configuration (Things installed locally in the $APPCELERATOR/releases directory) 
     #

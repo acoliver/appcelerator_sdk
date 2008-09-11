@@ -76,7 +76,8 @@ module Appcelerator
           :project=>project
         }
 
-        puts "Installing components ... (this may take a few seconds)" unless OPTIONS[:quiet]
+        print 'Installing components (this may take a few seconds)...' unless OPTIONS[:quiet]
+        $stdout.flush()
 
         cur_quiet = OPTIONS[:quiet]
         OPTIONS[:quiet] = true
@@ -88,13 +89,18 @@ module Appcelerator
           type = File.basename(filename).split('_')
           next unless type.length > 0
           type = type.first
-          CommandRegistry.execute("install:#{type}",[filename],add_thing_options)
+
+          # only install new components
+          if (compare_with_local(filename) > 0)
+              CommandRegistry.execute("install:#{type}",[filename],add_thing_options)
+          end
           CommandRegistry.execute("add:#{type}",[filename,project.path],add_thing_options)
+
           count+=1
         end
 
         OPTIONS[:quiet] = cur_quiet
-        puts "#{count} components installed ... " unless OPTIONS[:quiet]
+        printf "#{count} components installed\n" unless OPTIONS[:quiet]
 
         if not update
           Installer.copy(tx, "#{source_dir}/images/.", project.get_web_path("images"))
