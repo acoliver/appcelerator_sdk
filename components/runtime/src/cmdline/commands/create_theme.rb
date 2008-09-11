@@ -62,27 +62,26 @@ ERROR_MESSAGE
     raise UserError.new(message)
   end
 
+
   control_type = args[:type]
   control = args[:name][0,args[:name].index(':')]
   theme_name = args[:name][args[:name].index(':')+1..-1]
   
   out_dir = args[:path].path
 
-  if Installer.is_project_dir?(out_dir)
-    config = Project.get_config(out_dir)
-    out_dir = File.join(config[:controls],control,'themes')
-  end
-  
-  ##TODO: do we have control installed?
-  
+  if Project.is_project_dir?(out_dir)
+    project = Project.load(out_dir)
+    out_dir = project.get_web_path("components/#{control}/themes")
+  end 
+
   dir = File.expand_path(File.join(out_dir,theme_name))
   
+  ##TODO: do we have control installed?
   ##TODO: exists?
   
   Installer.mkdir dir unless File.exists? dir
   
   event = {:dir=>dir,:name=>name,:control=>control,:theme=>theme_name}
-
   PluginManager.dispatchEvents('create_theme',event) do
     
     template_dir = "#{File.dirname(__FILE__)}/templates"

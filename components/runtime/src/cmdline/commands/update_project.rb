@@ -38,88 +38,88 @@ CommandRegistry.registerCommand('update:project','update project components',[
   FileUtils.cd(pwd) do 
 
     # this is used to make sure we're in a project directory
-    lang = Project.get_service(pwd)
+    project = Project.load(pwd)
     
     puts "One moment, determining latest versions ..." if OPTIONS[:verbose]
 
     updates = []
 
-    Installer.with_project_config(pwd,false) do |config|
+    config = project.config
       
-      websdk_component = {
-        :type => :websdk,
-        :name => 'websdk',
-        :version => config[:websdk],
-        :checksum => config[:checksum]
-      }
-      service_component = {
-        :type => :service,
-        :name => config[:service],
-        :version => config[:service_version],
-        :checksum => config[:checksum]
-      }
-      
-      project_websdk = Installer.get_component(:local, websdk_component) || websdk_component
-      project_service = Installer.get_component(:local, service_component) || service_component
-            
-      ask_to_update(config[:widgets], updates, :widget)
-      ask_to_update(config[:plugins], updates, :plugin)
-      ask_to_update([project_websdk, project_service], updates)
-    end  
-      
-      
+    websdk_component = {
+      :type => :websdk,
+      :name => 'websdk',
+      :version => config[:websdk],
+      :checksum => config[:checksum]
+    }
+    service_component = {
+      :type => :service,
+      :name => config[:service],
+      :version => config[:service_version],
+      :checksum => config[:checksum]
+    }
+
+    project_websdk = Installer.get_component(:local, websdk_component) || websdk_component
+    project_service = Installer.get_component(:local, service_component) || service_component
+
+    ask_to_update(config[:widgets], updates, :widget)
+    ask_to_update(config[:plugins], updates, :plugin)
+    ask_to_update([project_websdk, project_service], updates)
+
+
     if not updates.empty?
       with_io_transaction(pwd) do |tx|
 
-        Installer.with_project_config(pwd,true) do |config|
-          config[:last_updated] = Time.now
-          event = {:project_dir=>pwd,:config=>config,:tx=>tx}
-          PluginManager.dispatchEvents('update_project',event) do
-            opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
-            updates.each do |component|
-              case component[:type].to_sym
+        config[:last_updated] = Time.now
+        event = {:project_dir=>pwd,:config=>config,:tx=>tx}
+        PluginManager.dispatchEvents('update_project',event) do
+          opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
+          updates.each do |component|
+            case component[:type].to_sym
+            
+              when :widget
+                opts[:version] = component[:version]
+                CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
               
-                when :widget
-                  opts[:version] = component[:version]
-                  CommandRegistry.execute('add:widget',[component[:name],pwd],opts)
-                
-                when :plugin
-                  opts[:version] = component[:version]
-                  CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
+              when :plugin
+                opts[:version] = component[:version]
+                CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
+            
+              when :websdk
+                Installer.create_project(pwd,File.basename(pwd),config[:lang],config[:service_version],tx,true,component)
+                config[:websdk] = component[:version]
               
-                when :websdk
-                  Installer.create_project(pwd,File.basename(pwd),lang,config[:service_version],tx,true,component)
-                  config[:websdk] = component[:version]
+              when :service
+                Installer.require_component(:service, component[:name], component[:version], opts)
                 
-                when :service
-                  Installer.require_component(:service, component[:name], component[:version], opts)
-                  
-                  from_version = config[:service_version]
-                  to_version = config[:service_version] = component[:version]
-                  
-                  service_dir = Installer.get_component_directory(component)
-                  service_name = Project.make_service_name(component[:name])
-                  script = File.join(service_dir,'install.rb')
-                  puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
-                  project_config = Project.get_config(pwd) 
-                  project_config.merge!(config)
-                  require script
-                  installer = Appcelerator.const_get(service_name).new
-                  if installer.respond_to?(:update_project)
-                    if installer.update_project(service_dir,pwd,project_config,tx,from_version,to_version)
-                      puts "Updated service '#{component[:name]}' to #{to_version}"
-                    end
-                  else
-                    if installer.create_project(service_dir,pwd,project_config,tx)
-                      puts "Updated service '#{component[:name]}' to #{to_version}"
-                    end
+                from_version = config[:service_version]
+                to_version = config[:service_version] = component[:version]
+                
+                service_dir = Installer.get_component_directory(component)
+                service_name = Project.make_service_name(component[:name])
+                script = File.join(service_dir,'install.rb')
+                puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
+                project_config = Project.get_config(pwd) 
+                project_config.merge!(config)
+                require script
+                installer = Appcelerator.const_get(service_name).new
+                if installer.respond_to?(:update_project)
+                  if installer.update_project(service_dir,pwd,project_config,tx,from_version,to_version)
+                    puts "Updated service '#{component[:name]}' to #{to_version}"
                   end
-              else
-                puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]
-              end
+                else
+                  if installer.create_project(service_dir,pwd,project_config,tx)
+                    puts "Updated service '#{component[:name]}' to #{to_version}"
+                  end
+                end
+            else
+              puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]
             end
           end
         end
+
+        project.save_config()
+
       end
     else
       if Installer.logged_in

@@ -49,7 +49,7 @@ CommandRegistry.registerCommand(%w(add:layout add:layouts),'add layout to a proj
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   Project.get_service(pwd) unless options[:ignore_path_check]
@@ -64,22 +64,22 @@ CommandRegistry.registerCommand(%w(add:layout add:layouts),'add layout to a proj
         layout = Installer.require_component(:layout, name, options[:version], options)
         layout_name = layout[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/components/layouts/#{layout_name}"
+        to_dir = project.get_web_path("components/layouts/#{layout_name}")
         tx.mkdir to_dir
 
         event = {:layout_name=>layout[:name],:version=>layout[:version],:layout_dir=>layout[:dir],:to_dir=>to_dir}
         PluginManager.dispatchEvents('add_layout', event) do
           Installer.copy tx, layout[:dir], to_dir
 
-          config[:layouts] = [] unless config.has_key?(:layouts)
-          layouts = config[:layouts]
+          project.config[:layouts] = [] unless project.config.has_key?(:layouts)
+          layouts = project.config[:layouts]
 
           layouts.delete_if { |w| w[:name] == name } 
-          layouts << {:name=>layout[:name],:version=>layout[:version]}
+          layouts << layout.clone_keys(:name, :version, :checksum)
         end
         puts "Added #{layout[:name]} #{layout[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
     
   end

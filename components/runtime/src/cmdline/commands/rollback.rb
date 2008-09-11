@@ -39,9 +39,9 @@ CommandRegistry.registerCommand('rollback:project','rollback project change (ins
 
   FileUtils.cd(pwd) do 
     # this is used to make sure we're in a project directory
-    lang = Project.get_service(pwd)
+    project = Project.load(pwd)
   
-    rollback_dir = "#{pwd}/tmp/rollback"
+    rollback_dir = project.get_path(:tmp) + '/rollback'
   
     if not File.exists?(rollback_dir)
       STDERR.puts "No rollbacks found for project at #{pwd}"

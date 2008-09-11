@@ -51,7 +51,7 @@ CommandRegistry.registerCommand('publish:assets','publish asset files to Amazon 
   rb = File.expand_path(File.join(File.dirname(__FILE__),'s3','s3sync.rb'))
   
   # this is used to make sure we're in a project directory
-  lang = Project.get_service
+  project = Project.load(Dir.pwd)
 
   # assets dir
   public_dir = File.join(Dir.pwd,'public')

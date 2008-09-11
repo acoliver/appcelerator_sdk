@@ -49,17 +49,18 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  plugin_names = args[:name].split(',').uniq
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
 
-  config[:plugins] = [] unless config.has_key?(:plugins)
-  plugins = config[:plugins]
+  plugin_names = args[:name].split(',').uniq
+
+  project.config[:plugins] = [] unless project.config.has_key?(:plugins)
+  plugins = project.config[:plugins]
   
   FileUtils.cd(pwd) do 
     # make sure we're in a project directory, unless passing option to skip this test
     Project.get_service(pwd) unless options[:ignore_path_check]
     
-    with_io_transaction(pwd,options[:tx]) do |tx|
+    with_io_transaction(projects, options[:tx]) do |tx|
       
       plugin_names.each do |name|
         class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
@@ -70,18 +71,18 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         
         die "Couldn't find plugin named: #{name}." unless plugin
         
-        to_dir = File.expand_path "#{pwd}/plugins/#{plugin_name}"
+        to_dir = project.get_path("plugins/#{plugin_name}")
         tx.mkdir to_dir
         
         event = {:name=>name,:version=>plugin[:version],:plugin_dir=>plugin[:dir],:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
         PluginManager.dispatchEvents('add_plugin',event) do
           plugins.delete_if { |w| w[:name] == name } 
-          plugins << {:name=>name,:version=>plugin[:version]}        
+          plugins << plugins.clone_keys(:name, :version, :checksum)
         end
         puts "Added Plugin: #{name}, #{plugin[:version]} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
       
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
   end
 end

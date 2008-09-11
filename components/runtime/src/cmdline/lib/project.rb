@@ -17,6 +17,83 @@
 module Appcelerator
   class Project
 
+    attr_accessor :config
+    attr_accessor :path
+    attr_accessor :config_path
+
+    def Project.create(path)
+      project = Project.new
+      project.path = path
+      project.make_default_config()
+      project.config_path = "#{path}/config/appcelerator.config"
+
+      project
+    end
+
+    def Project.load(path=Dir.pwd())
+
+      if not(Project.is_project_dir?(path))
+        message = 'This directory doesn\'t look like' +
+                  ' an Appcelerator project. Please switch' +
+                  ' to your project directory and re-run'
+        die message
+        #throw :configNotFound
+      end
+
+      project = Project.new
+      project.path = path
+      project.config_path = "#{path}/config/appcelerator.config"
+
+      project.config = YAML::load_file(project.config_path)
+
+      project
+    end
+
+    def Project.is_project_dir?(path=Dir.pwd())
+      return File.exists?("#{path}/config/appcelerator.config")
+    end
+
+    def Project.load_or_create(path=Dir.pwd())
+      config_path = "#{path}/config/appcelerator.config"
+      if File.exists?(config_path)
+        return Project.load(path)
+      else
+        return Project.create(path)
+      end
+    end
+
+    def make_default_config
+      @config = {
+        :paths => {
+          :services => "app/services",
+          :scripts => "script",
+          :config => "config",
+          :tmp => "tmp",
+          :log => "log",
+          :plugins => "plugins",
+          :web => "public"
+        },
+        :plugins => []
+      }
+    end
+
+    def get_path(path)
+      if path.class == String
+        return File.join(@path, path)
+      elsif path.class == Symbol
+        return File.join(@path, @config[:paths][path])
+      end
+    end
+
+    def get_web_path(rel_path)
+      File.join(@path, @config[:paths][:web], rel_path)
+    end
+
+    def save_config()
+      puts "saving project config = #{dir}" if OPTIONS[:debug]
+      Installer.put @config_path, YAML::dump(@config), true
+    end
+
     def Project.make_service_name(service)
       "#{service[0,1].upcase}#{service[1..-1]}"
     end

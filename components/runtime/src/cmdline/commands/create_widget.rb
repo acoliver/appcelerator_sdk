@@ -57,7 +57,13 @@ ERROR_MESSAGE
   class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
   widget_name = name.gsub ':', '_'
   
-  dir = File.join(args[:path].path,widget_name)
+  dir = args[:path].path
+  if Project.is_project_dir?(dir)
+    project = Project.load(dir)
+    dir = project.get_web_path("widgets")
+  end 
+  dir = File.join(dir, widget_name)
+
   event = {:widget_dir=>dir,:name=>name}
   PluginManager.dispatchEvents('create_widget',event) do
     

@@ -17,8 +17,9 @@ require 'fileutils'
 
 module Appcelerator
   class Installer
-    def Installer.create_project(path,name,service_name,service_version,tx,update=false,webcomponent=nil)
-      
+
+    def Installer.create_project(path, config, tx, update=false, webcomponent=nil)
+
       if OPTIONS[:verbose]
         if update
           puts "Updating project at #{path} with name: #{name} for #{service_name}"
@@ -26,42 +27,35 @@ module Appcelerator
           puts "Creating new project at #{path} with name: #{name} for #{service_name}"
         end
       end
-      
-      public_path="#{path}/public"
 
-      mkdir %W(#{path}/app/services #{path}/script #{path}/config #{path}/tmp #{path}/log #{path}/plugins)
-      mkdir %W(#{public_path}/javascripts #{public_path}/images #{public_path}/stylesheets #{public_path}/swf #{public_path}/widgets)
+      project = Project.load_or_create(path)
+
+      project.config.merge!(config)
+
+      project.config[:paths].values.each { |rel_path|
+        mkdir project.get_path(rel_path)
+      }
+
+      mkdir project.get_web_path("javascripts")
+      mkdir project.get_web_path("images")
+      mkdir project.get_web_path("stylesheets")
+      mkdir project.get_web_path("swf")
+      mkdir project.get_web_path("widgets")
 
       template_dir = File.join(File.dirname(__FILE__),'templates')
-      
       copy tx, "#{template_dir}/COPYING", "#{path}/COPYING"
       copy tx, "#{template_dir}/README", "#{path}/README"
-      
-      config = Project.get_config(path)
-      config[:name] = name
-      config[:service_version] = service_version
-      config[:service] = service_name
-      
+
       # write out our main configuration file
-      props = {
-        :name => name,
-        :installed=>Time.now,
-        :service=>service_name,
-        :service_version=>service_version,
-        :plugins=>[]
-      }
-      Installer.save_project_config path,props unless update
+      Installer.save_project_config path,project.config unless update
 
       # install the web files
-      config = Installer.install_web_project(config,tx,update,webcomponent)
-
-      props[:widgets] = config[:installed_widgets]
-      props[:websdk] = config[:websdk]
+      Installer.install_web_project(project,tx,update,webcomponent)
 
       # resize to update changes from web
-      Installer.save_project_config path,props unless update
+      Installer.save_project_config path,project.config unless update
 
-      return config,props
+      return config
     end
     
   end

@@ -29,17 +29,25 @@ CommandRegistry.registerCommand('create:html','create a new html file',[
 ]) do |args,options|
 
   name = args[:name].gsub('.html','')
-  
-  # this is used to make sure we're in a project directory
-  lang = Project.get_service
+
+  if Project.is_project_dir?()
+    project = Project.load()
+    out_dir = project.get_path(:web)
+  else
+    out_dir = Dir.pwd
+  end
+
+  out_file = File.join(out_dir, "#{name}.html")
 
   with_io_transaction(Dir.pwd) do |tx|
-    event = {:file=>"#{Dir.pwd}/public/#{name}.html", :service=>lang, :project_dir=> Dir.pwd}
-    PluginManager.dispatchEvent 'before_create_html',event
-    template = File.read "#{File.dirname(__FILE__)}/templates/template.html"
-    tx.put "#{Dir.pwd}/public/#{name}.html", template
-    PluginManager.dispatchEvent 'after_create_html',event
-    puts "Created HTML file => #{Dir.pwd}/public/#{name}.html" unless OPTIONS[:quiet]
+    event = {:file=>out_file, :name=>name}
+
+    PluginManager.dispatchEvents('create_html', event) do
+        template = File.read "#{File.dirname(__FILE__)}/templates/template.html"
+        tx.put out_file, template
+    end
+
+    puts "Created HTML file => #{out_file}" unless OPTIONS[:quiet]
   end
 
 end

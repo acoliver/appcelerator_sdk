@@ -49,7 +49,8 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
+
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   Project.get_service(pwd) unless options[:ignore_path_check]
@@ -64,22 +65,22 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         widget = Installer.require_component(:widget, name, options[:version], options)
         widget_name = widget[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/widgets/#{widget_name}"
+        to_dir = project.get_web_path("widgets/#{widget_name}")
         tx.mkdir to_dir
 
         event = {:widget_name=>widget[:name],:version=>widget[:version],:widget_dir=>widget[:dir],:to_dir=>to_dir}
         PluginManager.dispatchEvents('add_widget', event) do
           Installer.copy tx, widget[:dir], to_dir
 
-          config[:widgets] = [] unless config.has_key?(:widgets)
-          widgets = config[:widgets]
+          project.config[:widgets] = [] unless project.config.has_key?(:widgets)
+          widgets = project.config[:widgets]
 
           widgets.delete_if { |w| w[:name] == name } 
-          widgets << {:name=>widget[:name],:version=>widget[:version]}
+          widgets << widget.clone_keys(:name, :version, :checksum)
         end
         puts "Added #{widget[:name]} #{widget[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
     
   end

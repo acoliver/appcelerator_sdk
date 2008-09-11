@@ -55,9 +55,9 @@ ERROR_MESSAGE
 
   out_dir = args[:path].path
 
-  if Installer.is_project_dir?(out_dir)
-    config = Project.get_config(out_dir)
-    out_dir = config[:controls]
+  if Project.is_project_dir?(out_dir)
+    project = Project.load(out_dir)
+    out_dir = project.get_web_path("components/controls")
   end
   
   dir = File.expand_path(File.join(out_dir,name))

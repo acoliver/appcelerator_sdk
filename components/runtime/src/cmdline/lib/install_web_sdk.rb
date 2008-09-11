@@ -18,12 +18,7 @@ include Appcelerator
 module Appcelerator
   class Installer
 
-    def Installer.install_web_project(options,tx,update=false,sdk=nil)
-      
-      raise "Invalid options, must specify :web option" unless options[:web]
-      raise "Invalid options, must specify :javascript option" unless options[:javascript]
-      raise "Invalid options, must specify :images option" unless options[:images]
-      raise "Invalid options, must specify :widgets option" unless options[:widgets]
+    def Installer.install_web_project(project,tx,update=false,sdk=nil)
 
       if sdk.nil?
         sdk = Installer.require_component(:websdk, 'websdk', nil,
@@ -32,18 +27,18 @@ module Appcelerator
       end
       source_dir = Installer.get_component_directory(sdk)
       web_version = sdk[:version]
-      
-      options[:websdk] = web_version
-      options[:installed_widgets] = []
+
+      project.config[:websdk] = web_version
+      project.config[:widgets] = []
 
       puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
 
-      event = {:options=>options,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
+      event = {:project=>project,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
       PluginManager.dispatchEvents('copy_web',event) do
         
-        Installer.copy(tx, "#{source_dir}/javascripts/.", options[:javascript])
-        Installer.copy(tx, "#{source_dir}/swf/.", options[:web] + '/swf')
-        Installer.copy(tx, "#{source_dir}/common/.", options[:widgets] + '/common')
+        Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_web_path("javascripts"))
+        Installer.copy(tx, "#{source_dir}/swf/.", project.get_web_path("swf"))
+        Installer.copy(tx, "#{source_dir}/common/.", project.get_web_path("widgets/common"))
 
         add_thing_options = {
           :quiet=>true,
@@ -52,7 +47,8 @@ module Appcelerator
           :ignore_path_check=>true,
           :no_save=>false,
           :verbose=>false,
-          :force_overwrite=>true
+          :force_overwrite=>true,
+          :project=>project
         }
 
         puts "Installing components ... (this may take a few seconds)" unless OPTIONS[:quiet]
@@ -68,7 +64,7 @@ module Appcelerator
           next unless type.length > 0
           type = type.first
           CommandRegistry.execute("install:#{type}",[filename],add_thing_options)
-          CommandRegistry.execute("add:#{type}",[filename,options[:project]],add_thing_options)
+          CommandRegistry.execute("add:#{type}",[filename,project.path],add_thing_options)
           count+=1
         end
 
@@ -77,8 +73,8 @@ module Appcelerator
         OPTIONS[:quiet] = cur_quiet
         
         if not update
-          Installer.copy(tx, "#{source_dir}/images/.", options[:images])
-          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), options[:web])
+          Installer.copy(tx, "#{source_dir}/images/.", project.get_web_path("images"))
+          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_path(:web))
           
           widgets = Installer.find_dependencies_for(sdk) || []
           # install our widgets
@@ -89,15 +85,14 @@ module Appcelerator
               :quiet_if_installed=>true,
               :tx=>tx,
               :ignore_path_check=>true,
-              :no_save=>true
+              :no_save=>true,
+              :project=>project
             }
-            CommandRegistry.execute('add:widget',[widget[:name],options[:project]],add_widget_options)
-            options[:installed_widgets] << {:name=>widget[:name],:version=>widget[:version]}
+            CommandRegistry.execute('add:widget',[widget[:name],project.path],add_widget_options)
           end
         end
       end
-      
-      options
+
     end
   end
 end

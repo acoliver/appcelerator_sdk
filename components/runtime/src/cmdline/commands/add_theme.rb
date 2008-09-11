@@ -49,7 +49,7 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   Project.get_service(pwd) unless options[:ignore_path_check]
@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
         control_type = theme[:name][0,theme[:name].index(':')]
         theme_name = theme[:name][theme[:name].index(':')+1..-1]
         
-        to_dir = "#{Dir.pwd}/public/components/#{control}s/#{control_type}/themes/#{theme_name}"
+        to_dir = project.get_web_path("components/#{control}s/#{control_type}/themes/#{theme_name}")
         tx.mkdir to_dir
 
         event = {:name=>name,:control=>control,:theme_name=>theme_name,:version=>theme[:version],:theme_dir=>theme[:dir],:to_dir=>to_dir}
@@ -75,15 +75,15 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
         PluginManager.dispatchEvents('add_theme', event) do
           Installer.copy tx, theme[:dir], to_dir
 
-          config[:themes] = [] unless config.has_key?(:themes)
-          themes = config[:themes]
+          project.config[:themes] = [] unless project.config.has_key?(:themes)
+          themes = project.config[:themes]
 
           themes.delete_if { |w| w[:name] == name } 
-          themes << {:name=>theme[:name],:version=>theme[:version]}
+          themes << theme.clone_keys(:name, :version, :checksum)
         end
         puts "Added #{theme[:name]} #{theme[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
     
   end

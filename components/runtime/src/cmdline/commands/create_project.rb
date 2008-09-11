@@ -79,6 +79,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   success = false
 
   service_installer = Appcelerator.const_get(service_name).new
+
   if service_installer.respond_to? :check_dependencies
     case service_installer.method(:check_dependencies).arity
       when 0
@@ -89,7 +90,13 @@ CommandRegistry.registerCommand('create:project','create a new project',[
         raise "Service #{service[:name]} has method 'check_dependencies' but it requires more than one argument"
     end
   end
-  
+
+  if service_installer.respond_to? :default_arguments
+    config = service_installer.default_arguments
+  else 
+    config = {}
+  end
+
   event = nil
 
   with_io_transaction(to) do |tx|
@@ -97,7 +104,13 @@ CommandRegistry.registerCommand('create:project','create a new project',[
              :service=>service[:name], :version=>service[:version], :tx=>tx}
     PluginManager.dispatchEvent 'before_create_project',event
     begin
-      config, props = Installer.create_project(to,args[:name],service[:name],service[:version],tx)
+
+      config = {
+        :name => args[:name],
+        :service => service[:name],
+        :service_version => service[:version]
+      }
+      config = Installer.create_project(to, config, tx)
 
       # now execute the install script
       if service_installer.create_project(from,to,config,tx)

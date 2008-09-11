@@ -69,7 +69,7 @@ CommandRegistry.registerCommand('compile:assets','compile files to setup asset h
   count = args[:count]
   
   # this is used to make sure we're in a project directory
-  lang = Project.get_service
+  project = Project.load(Dir.pwd)
   
   if Gem.cache.search('hpricot').empty?
     $stderr.puts "This plugin requires the Ruby hpricot gem. Please run `gem install hpricot` and re-run this command."
@@ -79,10 +79,12 @@ CommandRegistry.registerCommand('compile:assets','compile files to setup asset h
   require 'hpricot'
 
   with_io_transaction(Dir.pwd) do |tx|
-    event = {:service=>lang, :project_dir=> Dir.pwd, :hostname=>pattern, :count=>count}
+    event = {:service=>project.config[:service], :project_dir=> Dir.pwd, :hostname=>pattern, :count=>count}
     PluginManager.dispatchEvent 'before_compile_assets',event
     count=0
-    Dir["#{Dir.pwd}/public/**/*"].each do |file|
+
+    files = project.get_path(:web) + '/**/*'
+    Dir[files].each do |file|
       next unless File.extname(file) =~ /\.html$/
       html = AssetCompiler.compile file,pattern,count
       tx.put file, html

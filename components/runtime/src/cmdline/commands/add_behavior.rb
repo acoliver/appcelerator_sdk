@@ -49,7 +49,7 @@ CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to 
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   Project.get_service(pwd) unless options[:ignore_path_check]
@@ -64,22 +64,22 @@ CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to 
         behavior = Installer.require_component(:behavior, name, options[:version], options)
         behavior_name = behavior[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/components/behaviors/#{behavior_name}"
+        to_dir = project.get_web_path("components/behaviors/#{behavior_name}")
         tx.mkdir to_dir
 
         event = {:behavior_name=>behavior[:name],:version=>behavior[:version],:behavior_dir=>behavior[:dir],:to_dir=>to_dir}
         PluginManager.dispatchEvents('add_behavior', event) do
           Installer.copy tx, behavior[:dir], to_dir
 
-          config[:behaviors] = [] unless config.has_key?(:behaviors)
-          behaviors = config[:behaviors]
+          project.config[:behaviors] = [] unless project.config.has_key?(:behaviors)
+          behaviors = project.config[:behaviors]
 
           behaviors.delete_if { |w| w[:name] == name } 
-          behaviors << {:name=>behavior[:name],:version=>behavior[:version]}
+          behaviors << behavior.clone_keys(:name, :version, :checksum)
         end
         puts "Added #{behavior[:name]} #{behavior[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
     
   end

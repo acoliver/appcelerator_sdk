@@ -34,12 +34,17 @@ CommandRegistry.registerCommand('refresh:project',
   project_dir = File.expand_path(args[:path] || Dir.pwd)
 
   FileUtils.cd(project_dir) do 
-    lang = Project.get_service(project_dir)
-    
-    Installer.with_project_config(project_dir) do |config|      
-      refresh_components(Dir['public/widgets/*/build.yml'], config[:widgets])          
-      refresh_components(Dir['plugins/*/build.yml'], config[:plugins]) # are plugins installed like this?
-    end
+    project = Project.load(project_dir)
+
+    config = project.config
+    widgets_dir = project.get_web_path("widgets")
+    plugins_dir = project.get_path(:plugins)
+    refresh_components(Dir["#{widgets_dir}/*/build.yml"], project.config[:widgets])          
+
+    # are plugins installed like this?
+    refresh_components(Dir["#{plugins_dir}/*/build.yml"], project.config[:plugins])
+
+    project.save_config()
   end
 end
 

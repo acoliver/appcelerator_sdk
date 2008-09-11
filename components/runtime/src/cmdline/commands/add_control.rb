@@ -49,14 +49,14 @@ CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a p
 ]) do |args,options|
   
   pwd = File.expand_path(args[:path] || Dir.pwd)
-  config = options[:project_config] || Installer.get_project_config(pwd)
+  project = options[:project] || Project.load(pwd)
   # this is used to make sure we're in a project directory
   # but only if we didn't pass in path
   Project.get_service(pwd) unless options[:ignore_path_check]
     
   FileUtils.cd(pwd) do 
 
-    with_io_transaction(pwd,options[:tx]) do |tx|
+    with_io_transaction(project, options[:tx]) do |tx|
       
       control_names = args[:name].split(',').uniq
       control_names.each do |name|
@@ -64,22 +64,22 @@ CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a p
         control = Installer.require_component(:control, name, options[:version], options)
         control_name = control[:name].gsub ':', '_'
         
-        to_dir = "#{Dir.pwd}/public/components/controls/#{control_name}"
+        to_dir = project.get_web_path("components/controls/#{control_name}")
         tx.mkdir to_dir
 
         event = {:control_name=>control[:name],:version=>control[:version],:control_dir=>control[:dir],:to_dir=>to_dir}
         PluginManager.dispatchEvents('add_control', event) do
           Installer.copy tx, control[:dir], to_dir
 
-          config[:controls] = [] unless config.has_key?(:controls)
-          controls = config[:controls]
+          project.config[:controls] = [] unless project.config.has_key?(:controls)
+          controls = project.config[:controls]
 
           controls.delete_if { |w| w[:name] == name } 
-          controls << {:name=>control[:name],:version=>control[:version]}
+          controls << control.clone_keys(:name, :version, :checksum)
         end
         puts "Added #{control[:name]} #{control[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
-      Installer.save_project_config(pwd,config) unless options[:no_save]
+      project.save_config() unless options[:no_save]
     end
     
   end

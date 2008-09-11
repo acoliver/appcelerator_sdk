@@ -1093,13 +1093,7 @@ HELP
     
     def Installer.save_project_config(dir,config)
       puts "saving project config = #{dir}" if OPTIONS[:debug]
-      
-      out = "---\n"
-
-      config.keys.sort {|a,b| a.to_s<=>b.to_s}.each do |k|
-        out << ":#{k}: #{config[k].to_yaml[4..-1]}"
-      end
-      
+      out = YAML::dump(config)
       Installer.put "#{dir}/config/appcelerator.config", out, true
     end
     
