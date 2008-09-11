@@ -32,6 +32,7 @@ import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceLocator;
 import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
+import org.springframework.context.ConfigurableApplicationContext;
 
 
 /**
@@ -115,6 +116,7 @@ public class AnnotationBasedLocator implements Locator
                  */
                 List<Class<? extends Object>> nonSpringServices = new ArrayList<Class<? extends Object>>();
                 org.springframework.context.ApplicationContext aCtx = org.springframework.web.context.support.WebApplicationContextUtils.getWebApplicationContext(servletContext);
+                
                 if (aCtx == null) {
                     return candidateServices;
                 }
@@ -123,8 +125,16 @@ public class AnnotationBasedLocator implements Locator
 
                     Boolean foundBean = false;
                     for (String name : beanNames) {
+                        
+                        /* don't register abstract beans */
+                        if (aCtx instanceof org.springframework.context.ConfigurableApplicationContext
+                            && ((org.springframework.context.ConfigurableApplicationContext) aCtx).getBeanFactory().getBeanDefinition(name).isAbstract()) {
+                            continue;
+                        }
+                        
                         Object bean = aCtx.getBean(name);
                         Class<?> clazz = bean.getClass();
+
 
                         if (candidateService.equals(clazz)) {
                             foundBean = true;
