@@ -65,6 +65,14 @@ Appcelerator.UI.registerUIComponent('behavior','shadow',
 			
 		});		
 
+		// add dependency for closeable panel
+		Appcelerator.UI.addElementUIDependency(element,'behavior','shadow','control', 'panel', function(element)
+		{
+			Appcelerator.Compiler.registerConditionListener(element,'hide',function(el,condition)
+			{
+				Element.hide(newContainer);
+			});
+		});		
 
 		Appcelerator.Core.loadTheme('behavior','shadow',options['theme'],element,options);	
 
