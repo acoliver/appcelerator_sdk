@@ -2291,7 +2291,6 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 						}
 						newparams[key]=value;
 					}
-					Logger.info('firing = '+Object.toJSON(newparams));
     			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, newparams, scope);
     			}
     			actionFuncs.push({func: f, action: action});
@@ -2356,7 +2355,6 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 							}
 						}
 					}
-					Logger.info('builder = '+Object.toJSON(params));
     			    builder.execute(id, action, params, scope);
     			}
     			actionFuncs.push({func: f, action: action});

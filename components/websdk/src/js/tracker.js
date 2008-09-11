@@ -27,15 +27,18 @@ if (window.onerror)
 
 Appcelerator.TrackStat = function(evt,extra)
 {
-	try
+	if (Appcelerator.Config['track_stats'])
 	{
-		var i = new Image;
-		var d = new Date().getTime() - (Appcelerator.started || new Date).getTime();
-		i.src = Appcelerator.StatsURI + '?t='+Number(new Date)+'&dur=' + d + '&evt=' + evt + '&appuid=' + Appcelerator.appuid + '&tid=' + Appcelerator.started.getTime() + '&' + (extra || ''); 
+		try
+		{
+			var i = new Image;
+			var d = new Date().getTime() - (Appcelerator.started || new Date).getTime();
+			i.src = Appcelerator.StatsURI + '?t='+Number(new Date)+'&dur=' + d + '&evt=' + evt + '&appuid=' + Appcelerator.appuid + '&tid=' + Appcelerator.started.getTime() + '&' + (extra || ''); 
+		}
+		catch(e)
+		{
+		}	
 	}
-	catch(e)
-	{
-	}	
 };
 
 window.onerror = function(msg,url,line)
