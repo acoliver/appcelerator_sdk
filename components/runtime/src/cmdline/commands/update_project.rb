@@ -37,7 +37,6 @@ CommandRegistry.registerCommand('update:project','update project components',[
 
   FileUtils.cd(pwd) do 
 
-    # this is used to make sure we're in a project directory
     project = Project.load(pwd)
     
     puts "One moment, determining latest versions ..." if OPTIONS[:verbose]
@@ -66,14 +65,17 @@ CommandRegistry.registerCommand('update:project','update project components',[
     ask_to_update(config[:plugins], updates, :plugin)
     ask_to_update([project_websdk, project_service], updates)
 
-
     if not updates.empty?
       with_io_transaction(pwd) do |tx|
 
         config[:last_updated] = Time.now
         event = {:project_dir=>pwd,:config=>config,:tx=>tx}
         PluginManager.dispatchEvents('update_project',event) do
-          opts = {:force=>true,:quiet=>true,:tx=>tx,:ignore_path_check=>true,:no_save=>true,:project_config=>config}
+          opts = {:force=>true,
+                  :quiet=>true,
+                  :tx=>tx,:ignore_path_check=>true,
+                  :no_save=>true,
+                  :project=>project}
           updates.each do |component|
             case component[:type].to_sym
             
@@ -86,7 +88,7 @@ CommandRegistry.registerCommand('update:project','update project components',[
                 CommandRegistry.execute('add:plugin',[component[:name],pwd],opts)
             
               when :websdk
-                Installer.create_project(pwd,File.basename(pwd),config[:lang],config[:service_version],tx,true,component)
+                Installer.install_websdk(project, tx, true, component)
                 config[:websdk] = component[:version]
               
               when :service

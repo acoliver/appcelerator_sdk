@@ -26,6 +26,17 @@ module Appcelerator
       project.path = path
       project.make_default_config()
       project.config_path = "#{path}/config/appcelerator.config"
+    
+      if Project.is_project_dir?(path)
+        die 'This directory looks like' +
+                  ' it\'s already an Appcelerator project.'
+      end
+
+      # create all necessary project paths
+      project.config[:paths].keys.each { |path_key|
+        to_make = project.get_path(path_key)
+        FileUtils.mkdir_p(to_make) unless File.exists?(to_make)
+      }
 
       project
     end
@@ -33,10 +44,9 @@ module Appcelerator
     def Project.load(path=Dir.pwd())
 
       if not(Project.is_project_dir?(path))
-        message = 'This directory doesn\'t look like' +
-                  ' an Appcelerator project. Please switch' +
-                  ' to your project directory and re-run'
-        die message
+        die 'This directory doesn\'t look like' +
+            ' an Appcelerator project. Please switch' +
+            ' to your project directory and re-run'
         #throw :configNotFound
       end
 
@@ -90,7 +100,7 @@ module Appcelerator
     end
 
     def save_config()
-      puts "saving project config = #{dir}" if OPTIONS[:debug]
+      puts "saving project config = #{@config_path}" if OPTIONS[:debug]
       Installer.put @config_path, YAML::dump(@config), true
     end
 

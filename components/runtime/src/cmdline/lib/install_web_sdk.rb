@@ -14,28 +14,53 @@
 # limitations under the License. 
 
 
-include Appcelerator
+require 'fileutils'
+
 module Appcelerator
   class Installer
 
-    def Installer.install_web_project(project,tx,update=false,sdk=nil)
+    def Installer.install_websdk(project,tx,update=false,sdk=nil)
 
       if sdk.nil?
         sdk = Installer.require_component(:websdk, 'websdk', nil,
                                           :tx=>tx, :force=>update,
                                           :quiet_if_installed=>true)
       end
-      source_dir = Installer.get_component_directory(sdk)
-      web_version = sdk[:version]
+      die "Couldn't find a version of the websdk to install" unless sdk
 
+      # make web folder directories
+      FileUtils.mkdir_p project.get_web_path("javascripts")
+      FileUtils.mkdir_p project.get_web_path("images")
+      FileUtils.mkdir_p project.get_web_path("stylesheets")
+      FileUtils.mkdir_p project.get_web_path("swf")
+      FileUtils.mkdir_p project.get_web_path("widgets")
+
+     #Installer.install_web_project(project,tx,update,webcomponent)
+     #def Installer.install_web_project(project,tx,update=false,sdk=nil)
+
+      source_dir = Installer.get_component_directory(sdk)
+
+      web_version = sdk[:version]
       project.config[:websdk] = web_version
       project.config[:widgets] = []
 
       puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
+      if OPTIONS[:verbose]
+        if update
+          puts "Updating to websdk version #{sdk[:version]} at #{path}"
+        else
+          puts "Installing websdk version  #{sdk[:version]} at #{path}"
+        end
+      end
 
-      event = {:project=>project,:source_dir=>source_dir,:version=>web_version,:tx=>tx}
+      event = {:project=>project,
+               :source_dir=>source_dir,
+               :version=>web_version,
+               :tx=>tx}
+
       PluginManager.dispatchEvents('copy_web',event) do
-        
+
+        # TODO: make web directories configurable
         Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_web_path("javascripts"))
         Installer.copy(tx, "#{source_dir}/swf/.", project.get_web_path("swf"))
         Installer.copy(tx, "#{source_dir}/common/.", project.get_web_path("widgets/common"))
@@ -52,12 +77,12 @@ module Appcelerator
         }
 
         puts "Installing components ... (this may take a few seconds)" unless OPTIONS[:quiet]
-        
+
         cur_quiet = OPTIONS[:quiet]
         OPTIONS[:quiet] = true
-        
+
         count = 0
-        
+
         # include any bundled components automagically
         Dir["#{source_dir}/_install/*.zip"].each do |filename|
           type = File.basename(filename).split('_')
@@ -68,15 +93,15 @@ module Appcelerator
           count+=1
         end
 
-        puts "#{count} components installed ... " unless OPTIONS[:quiet]
-        
         OPTIONS[:quiet] = cur_quiet
-        
+        puts "#{count} components installed ... " unless OPTIONS[:quiet]
+
         if not update
           Installer.copy(tx, "#{source_dir}/images/.", project.get_web_path("images"))
           Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_path(:web))
-          
+
           widgets = Installer.find_dependencies_for(sdk) || []
+
           # install our widgets
           widgets.each do |widget|
             add_widget_options = {
@@ -90,9 +115,15 @@ module Appcelerator
             }
             CommandRegistry.execute('add:widget',[widget[:name],project.path],add_widget_options)
           end
+
         end
+        project.save_config()
+
       end
 
     end
+
+
   end
 end
+

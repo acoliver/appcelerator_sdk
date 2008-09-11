@@ -47,13 +47,17 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   'create:project C:\mydir myproject ruby'
 ]) do |args,options|
 
-  service_name = args[:service]
-  service = Installer.require_component(:service, service_name, options[:version],
+  service_type = args[:service]
+  project_name = args[:name]
+  path = args[:path]
+
+  service = Installer.require_component(:service, service_type, options[:version],
               :quiet_if_installed=>true)
+
+  die "Couldn't find a service named '#{service_type}'." unless service
+  service_version = service[:version]
   
-  die "Couldn't find a service named '#{service_name}'." unless service
-  
-  puts "Using service #{service[:name]} #{service[:version]}" unless OPTIONS[:quiet]
+  puts "Using service #{service_type} #{service_version}" unless OPTIONS[:quiet]
   
   if OPTIONS[:debug]
     puts "service_dir=#{service[:dir]}"
@@ -63,7 +67,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   end
   
   from = service[:dir]
-  to = File.expand_path(File.join(args[:path].path,args[:name]))
+  to = File.expand_path(File.join(path.path,project_name))
   
   # find the installer script
   script = File.join(from,'install.rb')
@@ -74,7 +78,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   # from and to directories
   service_name = Project.make_service_name(service[:name])
   
-  puts "Creating #{service[:name]} project #{service[:version]} from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{service_name} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
   
   success = false
 
@@ -97,32 +101,47 @@ CommandRegistry.registerCommand('create:project','create a new project',[
     config = {}
   end
 
-  event = nil
+
+  event = {:project_dir=>to,
+           :service_dir=>from,
+           :name=>project_name,
+           :service=>service_type,
+           :version=>service_version}
 
   with_io_transaction(to) do |tx|
-    event = {:project_dir=>to, :service_dir=>from,:name=>args[:name],
-             :service=>service[:name], :version=>service[:version], :tx=>tx}
-    PluginManager.dispatchEvent 'before_create_project',event
-    begin
+
+    event[:tx] = tx
+
+    PluginManager.dispatchEvents('create_project', event) do
 
       config = {
         :name => args[:name],
         :service => service[:name],
         :service_version => service[:version]
       }
-      config = Installer.create_project(to, config, tx)
 
-      # now execute the install script
+      project = Project.create(to)
+      project.config.merge!(config)
+
+      template_dir = File.join(File.dirname(__FILE__),'templates')
+      Installer.copy(tx, "#{template_dir}/COPYING", "#{project.path}/COPYING")
+      Installer.copy(tx, "#{template_dir}/README", "#{project.path}/README")
+
+      # write out project config here, just in case any commands
+      # misbehave and don't try to read the project we pass in
+      project.save_config()
+      Installer.install_websdk(project, tx)
+
+      # now execute the service-specific script
       if service_installer.create_project(from,to,config,tx)
         puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
         success = true
       end
-    ensure
+
       event[:success] = success
     end
-  end
 
-  PluginManager.dispatchEvent 'after_create_project',event
+  end
 
   success
 end

@@ -63,11 +63,11 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
             
         theme = Installer.require_component(:theme, name, options[:version], options)
         
-        control = theme[:control]
-        control_type = theme[:name][0,theme[:name].index(':')]
+        control_type = theme[:control]
+        control = theme[:name][0,theme[:name].index(':')]
         theme_name = theme[:name][theme[:name].index(':')+1..-1]
         
-        to_dir = project.get_web_path("components/#{control}s/#{control_type}/themes/#{theme_name}")
+        to_dir = project.get_web_path("components/#{control_type}s/#{control}/themes/#{theme_name}")
         tx.mkdir to_dir
 
         event = {:name=>name,:control=>control,:theme_name=>theme_name,:version=>theme[:version],:theme_dir=>theme[:dir],:to_dir=>to_dir}
@@ -79,7 +79,7 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
           themes = project.config[:themes]
 
           themes.delete_if { |w| w[:name] == name } 
-          themes << theme.clone_keys(:name, :version, :checksum)
+          themes << theme.clone_keys(:name, :version, :checksum, :control)
         end
         puts "Added #{theme[:name]} #{theme[:version]}" unless OPTIONS[:quiet] or options[:quiet]
       end
