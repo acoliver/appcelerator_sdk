@@ -1855,10 +1855,20 @@ Appcelerator.Compiler.compileExpression = function (element,value,notfunction)
 	}
 };
 
+Appcelerator.Compiler.isIDRef = function(value)
+{
+	if (value)
+	{
+		if (Object.isString(value))
+		{
+			return value.charAt(0)=='$';
+		}
+	}
+	return false;
+};
+
 Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data) 
 {
-	//OPTIMIZE: there is a hot spot here where this is called a lot of times. we need to look to optimize this/the caller
-	
     var ok = true;
     var actionParams = actionParamsStr ? actionParamsStr.evalJSON() : null;
 
@@ -1867,104 +1877,130 @@ Appcelerator.Compiler.parseConditionCondition = function(actionParamsStr,data)
     	for (var c=0,len=actionParams.length;c<len;c++)
     	{
     		var p = actionParams[c];
-			
-			if (!p.key && p.empty && p.value)
+			var negate = false, regex = false;
+			if (p.empty && p.value)
 			{
+				// swap these out
 				p.key = p.value;
+				p.keyExpression = p.valueExpression;
 				p.value = null;
 			}
-
-			var k = null;
-			var not_cond = p.key && p.key.charAt(p.key.length-1) == '!';
-			var bnot_cond = p.key && p.key.charAt(0)=='!';
-			
-			var negate = (not_cond || bnot_cond);
-			var idref = false;
-			
-			if (p.key)
+			var lhs = p.key, rhs = p.value, operator = p.operator||'';
+			if (p.key && p.key.charAt(0)=='!')
 			{
-				k = not_cond ? p.key.substring(0,p.key.length-1) : p.key;
-				k = bnot_cond ? k.substring(1) : k;
-				idref = k.charAt(0)=='$';
-				k = (p.keyExpression || idref) ? Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.keyExpression) : k;
+				negate = true;
+				lhs = p.key.substring(1);
 			}
-			
-			// mathematics
-			if ((p.operator == '<' || p.operator == '>') && (p.value && Object.isString(p.value) && p.value.charAt(0)=='='))
+			else if (p.key && p.key.charAt(p.key.length-1)=='!')
 			{
-				p.operator += '=';
-				p.value = p.value.substring(1);
+				negate = true;
+				lhs = p.key.substring(0,p.key.length-1);
 			}
-
-			var v = p.operator ? Appcelerator.Compiler.getEvaluatedValue(k,data,data,p.valueExpression) : p.value ? Appcelerator.Compiler.getEvaluatedValue(p.value,data,data,p.valueExpression) : null;
-			
-			// regular expression
-			if (p.value && Object.isString(p.value) && p.value.charAt(0)=='~')
+			var preLHS = lhs;
+			if (p.keyExpression || Appcelerator.Compiler.isIDRef(lhs))
 			{
-				p.regex = true;
-				p.value = p.value.substring(1);
-			}
-			
-			// added x to eval $args
-			var x = !Object.isUndefined(p.value) ? Appcelerator.Compiler.getEvaluatedValue(p.value,data) : null;
-			var matched = p.keyExpression ? k : p.valueExpression ? (v || k) : idref ? (k && String(k).charAt(0)!='$') : Object.getNestedProperty(data,k);
-			
-			// we need to convert to boolean because 0 is a valid value but will set matched to false if you just check matched
-			matched = Object.isBoolean(matched) ? matched : !Object.isUndefined(matched);
-			
-			//alert('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nkeyExpression='+p.keyExpression+'\nvalueExpression='+p.valueExpression+'\np.value='+p.value+'\npayload='+Object.toJSON(data));
-			// top.Logger.info('k='+k+'\nv='+v+'\nx='+x+'\nregex='+p.regex+'\noperator='+p.operator+'\nmatched='+matched+'\nnot='+not_cond+'\n!not='+bnot_cond+'\nempty='+p.empty+'\nexpression='+p.expression);
-			
-			if (matched)
-			{
-				switch(p.operator)
+				var out = Appcelerator.Compiler.getEvaluatedValue(lhs,data,data,p.keyExpression);
+				if (!p.keyExpression && Appcelerator.Compiler.isIDRef(lhs) && lhs == out)
 				{
-					case '<':
-					{
-						ok = v < x;
-						break;
-					}
-					case '>':
-					{
-						ok = v > x;
-						break;
-					}
-					case '<=':
-					{
-						ok = v <= x;
-						break;
-					}
-					case '>=':
-					{
-						ok = v >= x;
-						break;
-					}
-					default:
-					{
-						if (p.regex)
-						{
-							var r = new RegExp(x);
-							ok = r.test(v);
-						}
-						else
-						{
-							ok = p.empty ? matched : p.valueExpression ? v : v==x;
-						}
-						break;
-					}
+					lhs = null;
+				}
+				else
+				{
+					lhs = out;
 				}
 			}
 			else
 			{
-				ok = false;
+				lhs = Appcelerator.Compiler.getEvaluatedValue(lhs,data);
 			}
-			
-			ok = negate ? !ok : ok;
-			
-			if (!ok) break;
-    	}
-    }
-    return ok;
+			if (lhs == preLHS)
+			{
+				// left hand side must evaluate to a value -- if we get here and it's the same, that 
+				// means we didn't find it
+				lhs = null;
+			}
+			// mathematics
+			if ((operator == '<' || operator == '>') && (rhs && Object.isString(rhs) && rhs.charAt(0)=='='))
+			{
+				operator += '=';
+				rhs = rhs.substring(1);
+			}
+			if (rhs && Object.isString(rhs) && rhs.charAt(0)=='~')
+			{
+				regex = true;
+				rhs = rhs.substring(1);
+			}
+			if (p.empty)
+			{
+				rhs = lhs;
+			}
+			else if (p.keyExpression || Appcelerator.Compiler.isIDRef(rhs))
+			{
+				var out = Appcelerator.Compiler.getEvaluatedValue(rhs,data,data,p.valueExpression);
+				if (!p.valueExpression && Appcelerator.Compiler.isIDRef(rhs) && rhs == out)
+				{
+					rhs = null;
+				}
+				else
+				{
+					rhs = out;
+				}
+			}
+			else
+			{
+				rhs = Appcelerator.Compiler.getEvaluatedValue(rhs,data);
+			}
+			if (regex)
+			{
+				var r = new RegExp(rhs);
+				ok = r.test(lhs);
+			}
+			else if (!operator && p.empty && rhs == null)
+			{
+				ok = lhs;
+			}
+			else
+			{
+				switch(operator||'=')
+				{
+					case '<':
+					{
+						ok = parseInt(lhs) < parseInt(rhs);
+						break;
+					}
+					case '>':
+					{
+						ok = parseInt(lhs) > parseInt(rhs);
+						break;
+					}
+					case '<=':
+					{
+						ok = parseInt(lhs) <= parseInt(rhs);
+						break;
+					}
+					case '>=':
+					{
+						ok = parseInt(lhs) >= parseInt(rhs);
+						break;
+					}
+					default:
+					{
+						ok = String(lhs) == String(rhs);
+						break;
+					}
+				}
+			}
+			if (negate)
+			{
+				ok = !ok;
+			}
+			if (!ok)
+			{
+				break;
+			}
+		}
+	}
+	return ok;
 };
 
 /*
@@ -2255,6 +2291,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 						}
 						newparams[key]=value;
 					}
+					Logger.info('firing = '+Object.toJSON(newparams));
     			    Appcelerator.Compiler.fireServiceBrokerMessage(id, action, newparams, scope);
     			}
     			actionFuncs.push({func: f, action: action});
@@ -2319,6 +2356,7 @@ Appcelerator.Compiler.makeAction = function (id,value,additionalParams)
 							}
 						}
 					}
+					Logger.info('builder = '+Object.toJSON(params));
     			    builder.execute(id, action, params, scope);
     			}
     			actionFuncs.push({func: f, action: action});
