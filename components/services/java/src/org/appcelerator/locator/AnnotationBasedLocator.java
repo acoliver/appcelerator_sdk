@@ -32,7 +32,6 @@ import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceLocator;
 import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
-import org.springframework.context.ConfigurableApplicationContext;
 
 
 /**
