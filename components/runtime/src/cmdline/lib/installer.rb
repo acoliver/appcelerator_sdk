@@ -445,20 +445,6 @@ HELP
       true
     end
 
-    def Installer.remove_prev_jar(tx,name,dir)
-      exists = File.exists? dir
-      if exists
-        Dir.foreach("#{dir}") do |file|
-          puts "checking #{name}-([0-9]\.)*.jar against '#{file}'" if OPTIONS[:verbose]
-          if file =~ Regexp.new("#{name}-[0-9]+.*.jar") or file == "#{name}.jar"
-            puts "removing " + File.expand_path(file, dir) if OPTIONS[:verbose]
-            tx.rm File.expand_path(file, dir)
-          end
-        end
-      else
-        FileUtils.mkdir dir
-      end
-    end
 
     def Installer.copy(tx,from_path,to_path,excludes=nil,force=false)
 

@@ -66,7 +66,7 @@ module Appcelerator
     
     private
     def install(from_path,to_path,config,tx,update)
-      Installer.remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
+      remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
       Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
       Installer.copy(tx,from_path,to_path, [ "#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
         'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
@@ -108,7 +108,7 @@ module Appcelerator
       if update==false
         Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml")
       else
-        Appcelerator::PluginUtil.merge_webxml("#{to_path}/config/web.xml","#{from_path}/templates/web.xml",tx,nil,to_path)
+        merge_webxml("#{to_path}/config/web.xml","#{from_path}/templates/web.xml",tx,nil,to_path)
       end
       if not update or not File.exists? "#{to_path}/.classpath"
         #
@@ -189,6 +189,130 @@ STR
       true
     end
   end
+
+  def merge_webxml (to,from,tx,event,project_dir=nil)
+    error = false
+    filename = "web.xml"
+    require "rexml/document"
+    project_dir = event[:project_dir] if project_dir.nil?
+  
+    tofile = File.read to
+    todoc = REXML::Document.new(tofile)
+  
+    fromfile = File.read from
+    fromdoc = REXML::Document.new(fromfile)
+  
+    fromdoc.root.elements.each("/web-app//context-param") do |fromcontextparam|
+      paramname = get_subelementtext(fromcontextparam,"param-name")
+      tocontextparam = ensure_element_namedsubelment(todoc.root,"context-param","param-name",paramname,["param-value"])
+      tocontextparam.get_elements("param-value")[0].text = fromcontextparam.get_elements("param-value")[0].text
+      # puts "merged: #{tocontextparam}"
+    end
+    fromdoc.root.elements.each("/web-app//listener") do |listener|
+      listenerclass = get_subelementtext(listener,"listener-class")
+      tolistener = ensure_element_subelment(todoc.root,"listener","listener-class",listenerclass)
+      tolistener.get_elements("listener-class")[0].text = listener.get_elements("listener-class")[0].text
+      # puts "merged: #{tolistener}"
+    end
+    fromdoc.root.elements.each("/web-app//servlet") do |fromservlet|
+      servletname = get_subelementtext(fromservlet,"servlet-name")
+      toservlet = ensure_element_namedsubelment(todoc.root,"servlet","servlet-name",servletname,["servlet-class","load-on-startup"])
+      toservlet.get_elements("servlet-class")[0].text = fromservlet.get_elements("servlet-class")[0].text
+      toservlet.get_elements("load-on-startup")[0].text = fromservlet.get_elements("load-on-startup")[0].text
+      fromservlet.elements.each("//init-param") do |frominitparam|
+        paramname = get_subelementtext(frominitparam,"param-name")
+        if !paramname.nil? && paramname!=""
+          # puts "adding init param #{paramname} for servlet #{servletname}"
+          toinitparam = ensure_element_namedsubelment(toservlet,"init-param","param-name",paramname,["param-value"])
+          toinitparam.get_elements("param-value")[0].text = frominitparam.get_elements("param-value")[0].text
+        end
+      end
+      # puts "merged: #{toservlet}"
+    end
+    fromdoc.root.elements.each("/web-app//servlet-mapping") do |fromservletmapping|
+      servletname = get_subelementtext(fromservletmapping,"servlet-name")
+      toservletmapping = ensure_element_namedsubelment(todoc.root,"servlet-mapping","servlet-name",servletname,["url-pattern"])
+      toservletmapping.get_elements("url-pattern")[0].text = fromservletmapping.get_elements("url-pattern")[0].text
+      # puts "merged: #{toservletmapping}"
+    end
+    if not error
+      backfile = "#{project_dir}/tmp/#{filename}.#{Time.new.to_i}"
+      tmpoutfile = "#{project_dir}/tmp/#{filename}"
+      FileUtils.cp(to,"#{backfile}")
+      puts "writing file"
+      f = File.new(tmpoutfile, "w")
+      todoc.write(f,-1)
+      f.flush
+      f.close
+      Appcelerator::Installer.copy tx,tmpoutfile,to
+    end
+  end
+  
+  def ensure_element_subelment(parentelement,name,sub_name,value)
+    parentelement.each_element("//" +name) do |element|
+      subelement = element.get_elements(sub_name)
+      if !subelement.nil? && !subelement.empty?
+        curvalue = subelement[0].get_text
+        # puts "comparing #{curvalue} to #{value}"
+        if curvalue == value
+          # puts "found for #{value}: #{subelement}"
+          return element
+        end
+      end
+    end
+    newelement = parentelement.add_element(name)
+    newelement.add_element(sub_name)
+    # puts "new: #{newelement}"
+    return newelement
+  end
+
+  def ensure_simple_element(element,name)
+    element.each_element(name) do |element|
+      return element
+    end
+    return element.add_element(name)
+  end
+
+  def get_subelementtext(element,subtag)
+    subelement = element.get_elements(subtag)[0]
+    subelement.get_text
+  end
+  
+  def ensure_element_namedsubelment(parentelement,name,sub_name,value,sub_values)
+    parentelement.each_element("//" +name) do |element|
+      subelement = element.get_elements(sub_name)
+      if !subelement.nil? && !subelement.empty?
+        curvalue = subelement[0].get_text
+        # puts "comparing #{curvalue} to #{value}"
+        if curvalue == value
+          # puts "found for #{value}: #{subelement}"
+          return element
+        end
+      end
+    end
+    newelement = parentelement.add_element(name)
+    newelement.add_element(sub_name).text=value
+    sub_values.each do |sub_value|
+      newelement.add_element(sub_value)
+    end
+    # puts "new: #{newelement}"
+    return newelement
+  end
+
+  def remove_prev_jar(tx,name,dir)
+    exists = File.exists? dir
+    if exists
+      Dir.foreach("#{dir}") do |file|
+        puts "checking #{name}-([0-9]\.)*.jar against '#{file}'" if OPTIONS[:verbose]
+        if file =~ Regexp.new("#{name}-[0-9]+.*.jar") or file == "#{name}.jar"
+          puts "removing " + File.expand_path(file, dir) if OPTIONS[:verbose]
+          tx.rm File.expand_path(file, dir)
+        end
+      end
+    else
+      FileUtils.mkdir dir
+    end
+  end
 end
 class Properties < Hash
     def initialize(filename=nil)
@@ -196,6 +320,7 @@ class Properties < Hash
         load filename
       end
     end
+
     def load(properties_string)
         properties_string.each_line do |line|
             line.strip!
@@ -215,6 +340,7 @@ class Properties < Hash
        file = File.new(filename,"w+")
        each_pair {|key,value| file.puts "#{key}=#{value}\n" }
     end
+
 end
 
 
