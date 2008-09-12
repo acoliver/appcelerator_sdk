@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:layout add:layouts),'add layout to a proj
         to_dir = project.get_web_path("components/layouts/#{layout_name}")
         tx.mkdir to_dir
 
-        event = {:layout_name=>layout[:name],:version=>layout[:version],:layout_dir=>layout[:dir],:to_dir=>to_dir}
+        event = {:project=>project, :layout=>layout}
         PluginManager.dispatchEvents('add_layout', event) do
           Installer.copy tx, layout[:dir], to_dir
 

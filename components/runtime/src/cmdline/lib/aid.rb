@@ -3,14 +3,13 @@ module Appcelerator
   class AID
 
     def AID.generate_new(project_dir)
-      require 'tmpdir'
-      file = UUID.setup(File.expand_path(File.join(Dir::tmpdir,'uuid.state')))
-      UUID.config :state_file => file.to_s
+      file = UUID.setup(File.expand_path(File.join(APP_TEMP_DIR,'uuid.state')))
+      UUID.config(:state_file => file.to_s)
       UUID.new
     end
     
-    def AID.new_config_entry(project_dir,entry,value)
-      f = File.expand_path File.join(project_dir,'public','appcelerator.xml')
+    def AID.new_config_entry(project,entry,value)
+      f = project.get_web_path('appcelerator.xml')
       if File.exists?(f)
         xml = File.read(f)
         if xml.index("<#{entry}>").nil?
@@ -22,15 +21,16 @@ module Appcelerator
       end
     end
     
-    def AID.generate(project_dir,sid,save=true)
-      aid = AID.generate_new project_dir
-      AID.new_config_entry(project_dir,'aid',aid)
-      AID.new_config_entry(project_dir,'sid',sid)
+    def AID.generate(project,sid,save=true)
+      aid = AID.generate_new(project)
+      AID.new_config_entry(project,'aid',aid)
+      AID.new_config_entry(project,'sid',sid)
+      project.config[:aid] = aid
+
       if save
-        Installer.with_project_config(project_dir,true) do |config|
-          config[:aid] = aid
-        end
+        project.save_config()
       end
+
       aid
     end
   end

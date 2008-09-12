@@ -102,26 +102,31 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   end
 
 
-  event = {:project_dir=>to,
-           :service_dir=>from,
-           :name=>project_name,
-           :service=>service_type,
-           :version=>service_version}
 
   with_io_transaction(to) do |tx|
 
-    event[:tx] = tx
 
-    PluginManager.dispatchEvents('create_project', event) do
+    config = {
+      :name => args[:name],
+      :service => service[:name],
+      :service_version => service[:version]
+    }
 
-      config = {
-        :name => args[:name],
-        :service => service[:name],
-        :service_version => service[:version]
-      }
+    project = Project.create(to)
+    project.config.merge!(config)
 
-      project = Project.create(to)
-      project.config.merge!(config)
+    event = {
+              :project=>project, 
+              :service_dir=>from,
+              :name=>project_name,
+              :tx => tx,
+              :service=>service_type,
+              :version=>service_version
+             }
+
+     PluginManager.dispatchEvents('create_project', event) do
+
+      project.create_project_layout() # creates project directories
 
       template_dir = File.join(File.dirname(__FILE__),'templates')
       Installer.copy(tx, "#{template_dir}/COPYING", "#{project.path}/COPYING")

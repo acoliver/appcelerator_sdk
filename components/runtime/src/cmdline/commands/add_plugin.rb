@@ -74,7 +74,7 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         to_dir = project.get_path("plugins/#{plugin_name}")
         tx.mkdir to_dir
         
-        event = {:name=>name,:version=>plugin[:version],:plugin_dir=>plugin[:dir],:to_dir=>to_dir,:project_dir=>pwd,:tx=>tx}
+        event = {:project=>project, :plugin=>plugin}
         PluginManager.dispatchEvents('add_plugin',event) do
           plugins.delete_if { |w| w[:name] == name } 
           plugins << plugins.clone_keys(:name, :version, :checksum)

@@ -72,6 +72,8 @@ ERROR_MESSAGE
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
     out_dir = project.get_web_path("components/#{control}/themes")
+  else
+    project = nil
   end 
 
   dir = File.expand_path(File.join(out_dir,theme_name))
@@ -81,7 +83,7 @@ ERROR_MESSAGE
   
   Installer.mkdir dir unless File.exists? dir
   
-  event = {:dir=>dir,:name=>name,:control=>control,:theme=>theme_name}
+  event = {:dir=>dir,:name=>name,:control=>control,:theme=>theme_name,:project=>project}
   PluginManager.dispatchEvents('create_theme',event) do
     
     template_dir = "#{File.dirname(__FILE__)}/templates"

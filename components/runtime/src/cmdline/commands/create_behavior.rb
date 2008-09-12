@@ -58,15 +58,17 @@ ERROR_MESSAGE
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
     out_dir = project.get_web_path("components/behaviors")
+  else
+    project = nil
   end
   
   dir = File.expand_path(File.join(out_dir,name))
   
   Installer.mkdir dir unless File.exists? dir
   
-  event = {:dir=>dir,:name=>name}
+  event = {:dir=>dir, :name=>name, :project=>project}
 
-  PluginManager.dispatchEvents('create_behavior',event) do
+  PluginManager.dispatchEvents('create_behavior', event) do
     
     template_dir = "#{File.dirname(__FILE__)}/templates"
     

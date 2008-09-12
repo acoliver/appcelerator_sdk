@@ -68,7 +68,7 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         to_dir = project.get_web_path("widgets/#{widget_name}")
         tx.mkdir to_dir
 
-        event = {:widget_name=>widget[:name],:version=>widget[:version],:widget_dir=>widget[:dir],:to_dir=>to_dir}
+        event = {:project=>project, :widget=>widget}
         PluginManager.dispatchEvents('add_widget', event) do
           Installer.copy tx, widget[:dir], to_dir
 

@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a p
         to_dir = project.get_web_path("components/controls/#{control_name}")
         tx.mkdir to_dir
 
-        event = {:control_name=>control[:name],:version=>control[:version],:control_dir=>control[:dir],:to_dir=>to_dir}
+        event = {:project=>project, :control=>control}
         PluginManager.dispatchEvents('add_control', event) do
           Installer.copy tx, control[:dir], to_dir
 

@@ -69,7 +69,10 @@ CommandRegistry.registerCommand('update:project','update project components',[
       with_io_transaction(pwd) do |tx|
 
         config[:last_updated] = Time.now
-        event = {:project_dir=>pwd,:config=>config,:tx=>tx}
+        event = {
+          :project=>project,
+          :tx=>tx
+        }
         PluginManager.dispatchEvents('update_project',event) do
           opts = {:force=>true,
                   :quiet=>true,

@@ -70,8 +70,7 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
         to_dir = project.get_web_path("components/#{control_type}s/#{control}/themes/#{theme_name}")
         tx.mkdir to_dir
 
-        event = {:name=>name,:control=>control,:theme_name=>theme_name,:version=>theme[:version],:theme_dir=>theme[:dir],:to_dir=>to_dir}
-
+        event = {:project=>project, :theme=>theme}
         PluginManager.dispatchEvents('add_theme', event) do
           Installer.copy tx, theme[:dir], to_dir
 

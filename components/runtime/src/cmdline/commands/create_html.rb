@@ -34,13 +34,14 @@ CommandRegistry.registerCommand('create:html','create a new html file',[
     project = Project.load()
     out_dir = project.get_path(:web)
   else
+    project = nil
     out_dir = Dir.pwd
   end
 
   out_file = File.join(out_dir, "#{name}.html")
 
   with_io_transaction(Dir.pwd) do |tx|
-    event = {:file=>out_file, :name=>name}
+    event = {:file=>out_file, :name=>name, :project=>project}
 
     PluginManager.dispatchEvents('create_html', event) do
         template = File.read "#{File.dirname(__FILE__)}/templates/template.html"

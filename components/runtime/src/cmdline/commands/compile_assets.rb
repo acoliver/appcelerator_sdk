@@ -79,7 +79,7 @@ CommandRegistry.registerCommand('compile:assets','compile files to setup asset h
   require 'hpricot'
 
   with_io_transaction(Dir.pwd) do |tx|
-    event = {:service=>project.config[:service], :project_dir=> Dir.pwd, :hostname=>pattern, :count=>count}
+    event = {:project=>project, :hostname=>pattern, :count=>count}
     PluginManager.dispatchEvent 'before_compile_assets',event
     count=0
 

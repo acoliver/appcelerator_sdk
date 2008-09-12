@@ -48,10 +48,12 @@ CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
   if Project.is_project_dir?(dir)
     project = Project.load(dir)
     dir = project.get_path(:plugins)
+  else
+    project = nil
   end 
   dir = File.join(dir, plugin_name)
   
-  event = {:plugin_dir=>dir,:name=>args[:name]}
+  event = {:dir=>dir,:name=>args[:name],:project=>project}
   PluginManager.dispatchEvents('create_plugin',event) do
     
     FileUtils.mkdir_p(dir) unless File.exists?(dir)

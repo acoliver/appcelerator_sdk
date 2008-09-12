@@ -21,6 +21,7 @@ module Appcelerator
     attr_accessor :path
     attr_accessor :config_path
 
+
     def Project.create(path)
       project = Project.new
       project.path = path
@@ -31,12 +32,6 @@ module Appcelerator
         die 'This directory looks like' +
                   ' it\'s already an Appcelerator project.'
       end
-
-      # create all necessary project paths
-      project.config[:paths].keys.each { |path_key|
-        to_make = project.get_path(path_key)
-        FileUtils.mkdir_p(to_make) unless File.exists?(to_make)
-      }
 
       project
     end
@@ -57,6 +52,12 @@ module Appcelerator
       project.config = YAML::load_file(project.config_path)
 
       project
+    end
+
+    def create_project_layout()
+      @config[:paths].keys.each { |path_key|
+        FileUtils.mkdir_p(get_path(path_key))
+      }
     end
 
     def Project.is_project_dir?(path=Dir.pwd())

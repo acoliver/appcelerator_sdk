@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to 
         to_dir = project.get_web_path("components/behaviors/#{behavior_name}")
         tx.mkdir to_dir
 
-        event = {:behavior_name=>behavior[:name],:version=>behavior[:version],:behavior_dir=>behavior[:dir],:to_dir=>to_dir}
+        event = {:project=>project, :behavior=>behavior}
         PluginManager.dispatchEvents('add_behavior', event) do
           Installer.copy tx, behavior[:dir], to_dir
 
