@@ -129,7 +129,7 @@ require File.join(SYSTEMDIR,'lib','util.rb')
 SCRIPTDIR = OPTIONS[:home]
 LIB_DIR = File.join(SYSTEMDIR,'lib')
 RELEASE_DIR = File.join(SCRIPTDIR,'releases')
-PLUGINS_DIR = File.join(SCRIPTDIR,'lib','plugins')
+PLUGINS_DIR = File.join(SYSTEMDIR,'lib','plugins')
 
 
 if OPTIONS[:debug]
