@@ -133,17 +133,8 @@ Appcelerator.Widget.Content =
 			{
 				asynchronous:true,
 				method:'get',
-				onFailed:function(e)
-				{
-					alert(e);
-				},
-				onException:function(e)
-				{
-					alert(e);
-				},
 				onSuccess:function(resp)
 				{
-					alert('success='+resp);
 					if (target._executed) self.unload(target);
 		
 					target._executed=true;
