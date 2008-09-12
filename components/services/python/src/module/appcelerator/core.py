@@ -334,6 +334,9 @@ class DatastoreJsonEncoder(json.JSONEncoder):
                 
             return result
         
+        elif isinstance(obj, db.Query):
+            return list(obj)
+        
         elif hasattr(obj, 'isoformat'):
             return obj.isoformat()
             

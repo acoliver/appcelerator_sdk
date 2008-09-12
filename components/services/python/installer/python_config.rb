@@ -41,7 +41,7 @@ module Appcelerator
     
     def easy_install_installed?
       if on_windows
-        File.exists?(find_latest_script('easy_install.exe'))
+        find_latest_script('easy_install.exe') != nil
       else
         quiet_system('easy_install --help')
       end
