@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+    <script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/test.css" />
 </head>
 <body>
@@ -45,6 +45,81 @@
                 if (this.data.state == 'catchall')
                 {
                     $('catchall_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Regular expression (parenthesis)
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#history_regex">Click me</a>
+            <div id="history_regex_div"></div>
+            <app:script on="history[~^history] then execute">
+                if (this.data.state == 'history_regex')
+                {
+                    $('history_regex_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Regular expression (colon)
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#history_regex2">Click me</a>
+            <div id="history_regex2_div"></div>
+            <app:script on="history:~^history then execute">
+                if (this.data.state == 'history_regex2')
+                {
+                    $('history_regex2_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Wildcards (ends with)
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#history_wc">Click me</a>
+            <div id="history_wc_div"></div>
+            <app:script on="history[history_w*] then execute">
+                if (this.data.state == 'history_wc')
+                {
+                    $('history_wc_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Wildcards (starts with)
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#wc_history">Click me</a>
+            <div id="wc_history_div"></div>
+            <app:script on="history[*_history] then execute">
+                if (this.data.state == 'wc_history')
+                {
+                    $('wc_history_div').innerHTML = 'Test Passed';
+                }
+            </app:script>
+        </td>
+    </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            History Wildcards (multiples)
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#wc_history_wc">Click me</a>
+            <div id="wc_history_wc_div"></div>
+            <app:script on="history[*_history_*] then execute">
+                if (this.data.state == 'wc_history_wc')
+                {
+                    $('wc_history_wc_div').innerHTML = 'Test Passed';
                 }
             </app:script>
         </td>
