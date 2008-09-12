@@ -124,6 +124,34 @@
             </app:script>
         </td>
     </tr>    
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Multiple history conditions with else
+        </td>
+        <td class="result" width="65%" valign="top" align="left">
+            <a href="#m1_history">Click me first</a>
+            <a href="#m2_history">Click me second</a>
+            <div id="m_history_div"></div>
+            <app:script on="(history[m1_history] or history[m2_history]) then execute">
+				switch(this.data.state)
+				{
+					case 'm1_history':
+					{
+						window.m_history = 1;
+						break;
+					}
+					case 'm2_history':
+					{
+						if (window.m_history===1)
+						{
+							$('m_history_div').innerHTML = 'Test Passed';
+						}
+						break
+					}
+				}
+            </app:script>
+        </td>
+    </tr>    
 </table>
 
 </body>
