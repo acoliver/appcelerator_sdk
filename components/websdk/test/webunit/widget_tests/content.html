@@ -3,13 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
-<style>
-<!--
-
--->
-</style>
 </head>
 <body>
 
@@ -91,25 +86,13 @@
 	</tr>
 	<tr>
 		<td class="test" valign="middle">
-			Load HTML file (with &lt;style&gt; element and &lt;link&gt; element -- testing css order)
+			Load HTML file (with &lt;style&gt; element and &lt;link&gt; element - testing css order)
 		</td>
 		<td class="result" id="content_result_8">
 			<app:content src="content/content_styled_3.html"></app:content>
 		</td>
 	</tr>
 	<tr>
-		<td class="test" valign="middle">
-			Load HTML file with reload = false
-		</td>
-		<td class="result" id="content_result_9">
-			<app:script>
-				content_file3 = 0;
-			</app:script>
-			<app:content reload="false" src="content/content_file3.html" on="l:content_file3 then execute"></app:content>
-			<app:message name="l:content_file3" interval="2000">
-			</app:message>
-		</td>
-	</tr>	
 	<tr>
 		<td class="test" valign="middle">
 			Load HTML file with useframe = true (defaults to false)
@@ -142,6 +125,22 @@
 			<app:content useframe="true" src="content/content_file4.html"></app:content>
 			<div class="passed" style="display: none" on="l:content.file4 then show">
 				<img srcexpr="Appcelerator.ImagePath + 'confirm.png'"/> This test passed.
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test" valign="middle">
+			multiple loads of content with validators
+		</td>
+		<td class="result" id="content_result_13">
+			<app:content src="content/content_file5.html" on="l:content.file5 then execute"></app:content>
+			<div>
+				<button on="click then l:content.file5[count=1]">Click me 1st</button>
+				<button on="click then l:content.file5[count=2]">Click me 2nd</button>
+			</div>
+			<div>
+				If you don't get any errors and the input field is valid and decorators are 
+				valid after the 2nd click, the test passed
 			</div>
 		</td>
 	</tr>	

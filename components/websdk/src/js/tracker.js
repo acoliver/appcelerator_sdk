@@ -45,6 +45,8 @@ window.onerror = function(msg,url,line)
 {
 	try
 	{
+		Logger.error('generic uncaught error = '+msg+', url = '+url+', line = '+line);
+		
 		// track app errors to improve common issues
 		var s = 'msg=' + encodeURIComponent(String(msg).encode64()) + '&url='+encodeURIComponent(String(url||'').encode64()) + '&line='+encodeURIComponent(line||-1);
 		

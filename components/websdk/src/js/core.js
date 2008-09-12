@@ -76,7 +76,7 @@
 					{
 						// if on the same host then always prefer the JS location (one directory up) as the base href
 						// such that we can have multiple content directories that include the JS relatively from the top
-						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,Appcelerator.jsFileLocation.lastIndexOf('/')) + '/../'
+						Appcelerator.DocumentPath = Appcelerator.URI.absolutizeURI(Appcelerator.jsFileLocation.substring(0,Appcelerator.jsFileLocation.lastIndexOf('/')) + '/../',Appcelerator.DocumentPath);
 					}
 				}
 			}
@@ -88,7 +88,7 @@
 					var idx = Appcelerator.jsFileLocation.lastIndexOf('/');
 					if (idx!=-1)
 					{
-						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,idx+1) + '../';
+						Appcelerator.DocumentPath = Appcelerator.URI.absolutizeURI(Appcelerator.jsFileLocation.substring(0,idx+1) + '../',Appcelerator.DocumentPath);
 					}
 				}
 			}

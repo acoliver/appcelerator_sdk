@@ -53,7 +53,7 @@ Appcelerator.Widget.Content =
 	},
 	getActions: function()
 	{
-		return ['execute'];
+		return ['execute','show'];
 	},	
 	getAttributes: function()
 	{
@@ -66,8 +66,6 @@ Appcelerator.Widget.Content =
 				 description: "Used to replace text in the content file."},
 				{name: 'lazy', optional: true, defaultValue: 'false', type: T.bool,
 				 description: "Indicates whether the content file should be lazy loaded."},
-				{name: 'reload', optional: true, defaultValue: 'true', type: T.bool,
-				 description: "Indicates whether the content file should be refetched and reloaded on every execute. If false, execute will do nothing if already executed."},
 				{name: 'onload', optional: true, type: T.messageSend,
 				 description: "Fire this message when content file is loaded."},
 				{name: 'onfetch', optional: true, type: T.messageSend,
@@ -84,41 +82,50 @@ Appcelerator.Widget.Content =
 	    {
 	        parameterMap['src'] = data[parameterMap['property']];
 	    }
-		if (!parameterMap['reload'])
+		Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
+	},
+	show: function(id,parameterMap,data,scope)
+	{
+		var el = $(id);
+		if (Object.isUndefined(el._executed))
 		{
-			if (!$(id).fetched && !parameterMap['fetched'])
-			{
-				Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
-				$(id).fetched = true;
-			}
+			this.execute(id,parameterMap,data,scope);
 		}
-		else
-		{
-			Appcelerator.Widget.Content.fetch(id,parameterMap['src'],parameterMap['args'],parameterMap['onload'],parameterMap['onfetch'],parameterMap['useframe']);
-		}
+		Element.show(el);
 	},
 	compileWidget: function(parameters)
 	{
 		if (!(parameters['lazy'] == 'true') && parameters['src'])
 		{
 			Appcelerator.Widget.Content.fetch(parameters['id'],parameters['src'],parameters['args'],parameters['onload'],parameters['onfetch'],parameters['useframe']);
-			parameters['fetched'] = true;
 		}
 	},
 	buildWidget: function(element,parameters,state)
 	{
-		parameters['reload'] = (parameters['reload'] == 'true');
-		
 		return {
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
 			'presentation' : '',
 			'compile' : true
 		};
 	},
+	unload: function(target)
+	{
+		var child = $(target).firstChild;
+		if (child && child.nodeType == 1)
+		{
+			 Appcelerator.Compiler.destroy(child);
+		}
+	},
 	fetch: function (target,src,args,onload,onfetch,useframe)
 	{
+		src = Appcelerator.URI.absolutizeURI(src,Appcelerator.DocumentPath);
+		
+		$D('fetching '+src+' to target='+target);
+		
         target = $(target);
         target.style.visibility='hidden';
+		var self = this;
+		
 
 		if (useframe != 'true')
 		{
@@ -126,8 +133,21 @@ Appcelerator.Widget.Content =
 			{
 				asynchronous:true,
 				method:'get',
+				onFailed:function(e)
+				{
+					alert(e);
+				},
+				onException:function(e)
+				{
+					alert(e);
+				},
 				onSuccess:function(resp)
 				{
+					alert('success='+resp);
+					if (target._executed) self.unload(target);
+		
+					target._executed=true;
+		
 					if (onfetch)
 					{
 						$MQ(onfetch,{'src':src,'args':args});
@@ -171,11 +191,15 @@ Appcelerator.Widget.Content =
 		{
 			Appcelerator.Util.IFrame.fetch(src,function(doc)
 			{
+				if (target._executed) self.unload(target);
+		
+				target._executed=true;
+		
 				if (onfetch)
 				{
 					$MQ(onfetch,{'src':src,'args':args});
 				}
-
+		
 				var scope = target.getAttribute('scope') || target.scope;
 				doc.setAttribute('scope',scope);
 				doc.scope = scope;
