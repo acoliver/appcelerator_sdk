@@ -95,16 +95,16 @@ CommandRegistry.registerCommand('update:project','update project components',[
                 config[:websdk] = component[:version]
               
               when :service
-                Installer.require_component(:service, component[:name], component[:version], opts)
+                service = Installer.require_component(:service, component[:name], component[:version], opts)
                 
                 from_version = config[:service_version]
                 to_version = config[:service_version] = component[:version]
                 
-                service_dir = Installer.get_component_directory(component)
-                service_name = Project.make_service_name(component[:name])
+                service_dir = service[:dir]
+                service_name = component[:name].capitalize()
                 script = File.join(service_dir,'install.rb')
                 puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
-                project_config = Project.get_config(pwd) 
+                project_config = project.config()
                 project_config.merge!(config)
                 require script
                 installer = Appcelerator.const_get(service_name).new
@@ -138,6 +138,8 @@ CommandRegistry.registerCommand('update:project','update project components',[
 end
 
 def ask_to_update(components, updates, type=nil)
+  return if components.nil?
+
   components.each do |project_cm|
     
     project_cm[:type] = type if type

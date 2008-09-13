@@ -47,87 +47,25 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   'create:project C:\mydir myproject ruby'
 ]) do |args,options|
 
+
   service_type = args[:service]
+  service_version = args[:version]
   project_name = args[:name]
   path = args[:path]
 
-  service = Installer.require_component(:service, service_type, options[:version],
-              :quiet_if_installed=>true)
-
-  die "Couldn't find a service named '#{service_type}'." unless service
-  service_version = service[:version]
-  
-  puts "Using service #{service_type} #{service_version}" unless OPTIONS[:quiet]
-  
-  if OPTIONS[:debug]
-    puts "service_dir=#{service[:dir]}"
-    puts "name=#{service[:name]}"
-    puts "version=#{service[:version]}"
-    puts "checksum=#{service[:checksum]}"
-  end
-  
-  from = service[:dir]
   to = File.expand_path(File.join(path.path,project_name))
-  
-  # find the installer script
-  script = File.join(from,'install.rb')
-   
-  # load the create script for the version+language
-  require script
+  puts "Using service #{service_type} #{service_version}" unless OPTIONS[:quiet]
+  puts "Creating #{service_type}-#{service_version} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
 
-  # from and to directories
-  service_name = Project.make_service_name(service[:name])
-  
-  puts "Creating #{service_name} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
-  
-  success = false
-
-  service_installer = Appcelerator.const_get(service_name).new
-
-  if service_installer.respond_to? :check_dependencies
-    case service_installer.method(:check_dependencies).arity
-      when 0
-        service_installer.check_dependencies
-      when 1
-        service_installer.check_dependencies(service)
-      else
-        raise "Service #{service[:name]} has method 'check_dependencies' but it requires more than one argument"
-    end
-  end
-
-  if service_installer.respond_to? :default_arguments
-    config = service_installer.default_arguments
-  else 
-    config = {}
-  end
-
-
+  success = true
+  project = Project.create(to, project_name, service_type, service_version)
 
   with_io_transaction(to) do |tx|
 
-
-    config = {
-      :name => args[:name],
-      :service => service[:name],
-      :service_version => service[:version]
-    }
-
-    project = Project.create(to)
-    project.config.merge!(config)
-
-    event = {
-              :project=>project, 
-              :service_dir=>from,
-              :name=>project_name,
-              :tx => tx,
-              :service=>service_type,
-              :version=>service_version
-             }
-
-     PluginManager.dispatchEvents('create_project', event) do
+    event = {:project=>project, :tx=>tx}
+    PluginManager.dispatchEvents('create_project', event) do
 
       project.create_project_layout() # creates project directories
-
       template_dir = File.join(File.dirname(__FILE__),'templates')
       Installer.copy(tx, "#{template_dir}/COPYING", "#{project.path}/COPYING")
       Installer.copy(tx, "#{template_dir}/README", "#{project.path}/README")
@@ -137,10 +75,14 @@ CommandRegistry.registerCommand('create:project','create a new project',[
       project.save_config()
       Installer.install_websdk(project, tx)
 
-      # now execute the service-specific script
-      if service_installer.create_project(from,to,config,tx)
-        puts "Appcelerator #{service_name} project created ... !" unless OPTIONS[:quiet]
-        success = true
+      # now execute the service-specific script (no longer necessary)
+      if project.respond_to?(:create_project)
+        success = project.create_project(project.service_dir, project.path, project.config, tx)
+      end
+
+      project.save_config()
+      if success
+          puts "Appcelerator #{project.service_type} project created ... !" unless OPTIONS[:quiet]
       end
 
       event[:success] = success

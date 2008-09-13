@@ -29,14 +29,11 @@ module Appcelerator
       die "Couldn't find a version of the websdk to install" unless sdk
 
       # make web folder directories
-      FileUtils.mkdir_p project.get_web_path("javascripts")
-      FileUtils.mkdir_p project.get_web_path("images")
-      FileUtils.mkdir_p project.get_web_path("stylesheets")
-      FileUtils.mkdir_p project.get_web_path("swf")
-      FileUtils.mkdir_p project.get_web_path("widgets")
-
-     #Installer.install_web_project(project,tx,update,webcomponent)
-     #def Installer.install_web_project(project,tx,update=false,sdk=nil)
+      paths = ["javascripts", "images", "stylesheets", "swf", "widgets"]
+      paths.each do |path|
+        path = project.get_web_path(path)
+        FileUtils.mkdir_p path unless File.exists? path
+      end
 
       source_dir = Installer.get_component_directory(sdk)
 

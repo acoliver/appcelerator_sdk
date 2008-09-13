@@ -7,7 +7,7 @@ class ProjectPlugin < Appcelerator::Plugin
       begin
         if project.config[:aid].nil?
           sid = Installer.get_config[:sid]
-          aid = AID.generate(event[:project_dir],sid,false)
+          aid = AID.generate(project.path,sid,false)
         end
       rescue
       end
@@ -20,8 +20,12 @@ class ProjectPlugin < Appcelerator::Plugin
         Installer.login_if_required
         sid = Installer.get_config[:sid]
         aid = AID.generate(project, sid)
-        message = {'sid' => sid, 'aid' => aid, 'os' => RUBY_PLATFORM, 'name' => event[:name], 
-          'directory' => event[:project_dir], 'service' => event[:service]}
+        message = {'sid' => sid,
+                   'aid' => aid,
+                   'os' => RUBY_PLATFORM,
+                   'name' => project.name,
+                   'directory' => project.path,
+                   'service' => project.service_type }
         response = Installer.get_client.send('project.create.request', message)[:data]
       rescue
       end
@@ -32,14 +36,17 @@ class ProjectPlugin < Appcelerator::Plugin
 
       begin
         Installer.login_if_required(true)
-        config = Installer.get_project_config(Dir.pwd)
         sid = Installer.get_config[:sid]
-        aid = config[:aid]
+        aid = project.config[:aid]
         if aid.nil?
-          aid = AID.create(event[:project_dir],sid) rescue nil
+          aid = AID.create(project.path, sid) rescue nil
         end
-        message = {'sid' => sid, 'aid' => aid, 'os' => RUBY_PLATFORM, 'name' => config[:name], 
-          'directory' => event[:project_dir], 'service' => event[:service]}
+        message = {'sid' => sid,
+                   'aid' => aid,
+                   'os' => RUBY_PLATFORM,
+                   'name' => project.config[:name],
+                   'directory' => project.path,
+                   'service' => project.service_type }
         response = Installer.get_client.send('project.run.request', message)[:data]
       rescue
       end
