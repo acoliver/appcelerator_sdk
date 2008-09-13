@@ -24,15 +24,15 @@ module Appcelerator
     attr_accessor :config_path
     attr_accessor :service_dir
 
-    @@paths = [
-      [:services, "app/services", "Appcelerator services"],
-      [:scripts, "scripts", "Scripts"],
-      [:config, "config", "Appcelerator configuration files"],
-      [:tmp, "tmp", "Temporary and working files"],
-      [:log, "log", "Program logs"],
-      [:plugins, "plugins", "Appcelerator plugins directory"],
-      [:web, "public", "Static web files"]
-    ]
+    @@paths = {
+      :services => ["app/services", "Appcelerator services"],
+      :scripts => ["scripts", "Scripts"],
+      :config => ["config", "Appcelerator configuration files"],
+      :tmp => ["tmp", "Temporary and working files"],
+      :log => ["log", "Program logs"],
+      :plugins => ["plugins", "Appcelerator plugins directory"],
+      :web => ["public", "Static web files"]
+    }
 
     def Project.create(path, project_name, service_type, service_version)
       if Project.is_project_dir?(path)
@@ -159,10 +159,8 @@ module Appcelerator
     def fill_default_paths()
       if not @config.has_key?(:paths)
         @config[:paths] = {}
-        @@paths.each { |path_desc|
-          path_key = path_desc[0]
-          path = path_desc[1]
-          @config[:paths][path_key] = path
+        @@paths.each { |key, value|
+          @config[:paths][key] = value[0]
         }
       end
     end
