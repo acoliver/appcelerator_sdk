@@ -2,19 +2,16 @@ Object.extend(Array.prototype,
 {
 	remove: function(obj) 
 	{
-		var a = [];
-  		for (var i=0; i<this.length; i++)
+		var idx = this.indexOf(obj);
+		if (idx != -1)
 		{
-    		if (this[i] != obj) 
-			{
-      			a.push(this[i]);
-    		}
-  		}
-		this.clear();
-		for (var i=0; i<a.length; i++)
-		{
-			this.push(a[i]);
+			this.removeAt(idx);
 		}
-  		return a;
+		return this;
+	},
+	removeAt: function(index)
+	{
+		if (-index > this.length) return; 
+		return this.splice(index, 1)[0];
 	}
 });

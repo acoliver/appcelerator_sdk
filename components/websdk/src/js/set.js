@@ -179,7 +179,7 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 		if (!element.state)element.state = {pending:0};
 		
 		element.state.pending+=1;
-		var dir = Appcelerator.DocumentPath + '/components/'+type+'s/'+name;
+		var dir = Appcelerator.DocumentPath + 'components/'+type+'s/'+name;
 		var path = dir+'/'+name+'.js';
 		Appcelerator.UI.UIComponents[type+':'+name] = {dir:dir,loaded:false,elements:[{type:type,name:name,element:element,options:options,callback:callback}]};
 
