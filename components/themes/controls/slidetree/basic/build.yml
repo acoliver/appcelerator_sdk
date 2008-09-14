@@ -1,0 +1,11 @@
+--- 
+:type: theme
+:control: control
+:version: 1.0
+:release_notes: initial release
+:name: slidetree:basic
+:licenses: [6]
+
+:tags: 
+- theme
+:description: slidetree basic theme
