@@ -169,7 +169,8 @@ END_CODE
     end
     
     def install_paster_if_needed
-      if not quiet_system(paster)
+      paster_cmd = paster
+      if not (paster_cmd and quiet_system(paster_cmd))
         confirm("Appcelerator:Python requires PasteScript to be installed before continuing. Install now? [Yn]")
         quiet_system("#{easy_install} pastescript")
       end
@@ -180,6 +181,8 @@ END_CODE
       if not quiet_system(appc_version_check)
         puts "Installing new Appcelerator module" unless OPTIONS[:quiet]
         quiet_system("#{easy_install} \"#{dir}/module/\"")
+        # attempt to avoid this http://groups.google.com/group/pylons-devel/browse_thread/thread/2c740abef6eb4b9e
+        quiet_system("#{easy_install} -U simplejson")
       end
     end
     
