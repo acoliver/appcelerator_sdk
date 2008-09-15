@@ -64,7 +64,7 @@ CommandRegistry.registerCommand(%w(add:control add:controls),'add control to a p
         control = Installer.require_component(:control, name, options[:version], options)
         control_name = control[:name].gsub ':', '_'
         
-        to_dir = project.get_web_path("components/controls/#{control_name}")
+        to_dir = project.get_control_path(control_name)
         tx.mkdir to_dir
 
         event = {:project=>project, :control=>control}

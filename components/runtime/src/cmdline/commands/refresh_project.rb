@@ -37,7 +37,7 @@ CommandRegistry.registerCommand('refresh:project',
     project = Project.load(project_dir)
 
     config = project.config
-    widgets_dir = project.get_web_path("widgets")
+    widgets_dir = project.get_widgets_path()
     plugins_dir = project.get_path(:plugins)
     refresh_components(Dir["#{widgets_dir}/*/build.yml"], project.config[:widgets])          
 

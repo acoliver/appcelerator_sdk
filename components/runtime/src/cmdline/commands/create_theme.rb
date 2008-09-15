@@ -66,17 +66,16 @@ ERROR_MESSAGE
   control_type = args[:type]
   control = args[:name][0,args[:name].index(':')]
   theme_name = args[:name][args[:name].index(':')+1..-1]
-  
-  out_dir = args[:path].path
 
+  dir = args[:path].path
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
-    out_dir = project.get_web_path("components/#{control}/themes")
+    dir = project.get_theme_path(control_type, control, theme_name)
   else
     project = nil
+    dir = File.expand_path(File.join(out_dir,theme_name))
   end 
 
-  dir = File.expand_path(File.join(out_dir,theme_name))
   
   ##TODO: do we have control installed?
   ##TODO: exists?

@@ -67,7 +67,7 @@ CommandRegistry.registerCommand(%w(add:theme add:themes),'add theme to a project
         control = theme[:name][0,theme[:name].index(':')]
         theme_name = theme[:name][theme[:name].index(':')+1..-1]
         
-        to_dir = project.get_web_path("components/#{control_type}s/#{control}/themes/#{theme_name}")
+        to_dir = project.get_theme_path(control_type, control, theme_name)
         tx.mkdir to_dir
 
         event = {:project=>project, :theme=>theme}

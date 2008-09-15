@@ -64,7 +64,7 @@ CommandRegistry.registerCommand(%w(add:layout add:layouts),'add layout to a proj
         layout = Installer.require_component(:layout, name, options[:version], options)
         layout_name = layout[:name].gsub ':', '_'
         
-        to_dir = project.get_web_path("components/layouts/#{layout_name}")
+        to_dir = project.get_layout_path(layout_name)
         tx.mkdir to_dir
 
         event = {:project=>project, :layout=>layout}

@@ -64,7 +64,7 @@ CommandRegistry.registerCommand(%w(add:behavior add:behaviors),'add behavior to 
         behavior = Installer.require_component(:behavior, name, options[:version], options)
         behavior_name = behavior[:name].gsub ':', '_'
         
-        to_dir = project.get_web_path("components/behaviors/#{behavior_name}")
+        to_dir = project.get_behavior_path(behavior_name)
         tx.mkdir to_dir
 
         event = {:project=>project, :behavior=>behavior}

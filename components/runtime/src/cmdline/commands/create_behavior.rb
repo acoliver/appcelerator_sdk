@@ -53,19 +53,17 @@ ERROR_MESSAGE
     raise UserError.new(message)
   end
   
-  out_dir = args[:path].path
+  dir = args[:path].path
 
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
-    out_dir = project.get_web_path("components/behaviors")
+    dir = project.get_behavior_path(name)
   else
     project = nil
+    dir = File.expand_path(File.join(dir, name))
   end
-  
-  dir = File.expand_path(File.join(out_dir,name))
-  
+
   Installer.mkdir dir unless File.exists? dir
-  
   event = {:dir=>dir, :name=>name, :project=>project}
 
   PluginManager.dispatchEvents('create_behavior', event) do

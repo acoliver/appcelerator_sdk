@@ -60,11 +60,11 @@ ERROR_MESSAGE
   dir = args[:path].path
   if Project.is_project_dir?(dir)
     project = Project.load(dir)
-    dir = project.get_web_path("widgets")
+    dir = project.get_widget_path(widget_name)
   else
     project = nil
+    dir = File.join(dir, widget_name)
   end 
-  dir = File.join(dir, widget_name)
 
   event = {:dir=>dir,:name=>name,:project=>project}
   PluginManager.dispatchEvents('create_widget',event) do

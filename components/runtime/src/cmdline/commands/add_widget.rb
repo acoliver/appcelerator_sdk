@@ -65,7 +65,7 @@ CommandRegistry.registerCommand(%w(add:widget add:widgets),'add widget to a proj
         widget = Installer.require_component(:widget, name, options[:version], options)
         widget_name = widget[:name].gsub ':', '_'
         
-        to_dir = project.get_web_path("widgets/#{widget_name}")
+        to_dir = project.get_widget_path(widget_name)
         tx.mkdir to_dir
 
         event = {:project=>project, :widget=>widget}

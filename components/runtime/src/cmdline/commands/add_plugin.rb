@@ -71,7 +71,7 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         
         die "Couldn't find plugin named: #{name}." unless plugin
         
-        to_dir = project.get_path("plugins/#{plugin_name}")
+        to_dir = project.get_plugin_path(plugin_name)
         tx.mkdir to_dir
         
         event = {:project=>project, :plugin=>plugin}
