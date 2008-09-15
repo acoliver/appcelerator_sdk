@@ -77,7 +77,9 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 
       # now execute the service-specific script (no longer necessary)
       if project.respond_to?(:create_project)
-        success = project.create_project(project.service_dir, project.path, project.config, tx)
+        success = project.create_project(tx)
+      else
+        success = project.service_installer.create_project(project.service_dir, project.path, project.config, tx)
       end
 
       project.save_config()

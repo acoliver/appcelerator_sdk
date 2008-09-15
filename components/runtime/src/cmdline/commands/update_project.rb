@@ -95,28 +95,8 @@ CommandRegistry.registerCommand('update:project','update project components',[
                 config[:websdk] = component[:version]
               
               when :service
-                service = Installer.require_component(:service, component[:name], component[:version], opts)
-                
-                from_version = config[:service_version]
-                to_version = config[:service_version] = component[:version]
-                
-                service_dir = service[:dir]
-                service_name = component[:name].capitalize()
-                script = File.join(service_dir,'install.rb')
-                puts "attempting to load service install.rb from #{script}" if OPTIONS[:debug]
-                project_config = project.config()
-                project_config.merge!(config)
-                require script
-                installer = Appcelerator.const_get(service_name).new
-                if installer.respond_to?(:update_project)
-                  if installer.update_project(service_dir,pwd,project_config,tx,from_version,to_version)
-                    puts "Updated service '#{component[:name]}' to #{to_version}"
-                  end
-                else
-                  if installer.create_project(service_dir,pwd,project_config,tx)
-                    puts "Updated service '#{component[:name]}' to #{to_version}"
-                  end
-                end
+                project = project.update(component, tx)
+
             else
               puts "Unknown component type: #{component[:type]}" if OPTIONS[:verbose]
             end

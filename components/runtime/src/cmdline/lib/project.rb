@@ -23,6 +23,7 @@ module Appcelerator
     attr_accessor :path
     attr_accessor :config_path
     attr_accessor :service_dir
+    attr_accessor :service_installer
 
     @@paths = {
       :services => ["app/services", "Appcelerator services"],
@@ -96,17 +97,17 @@ module Appcelerator
       require File.join(service[:dir], 'install.rb') # load service class
 
       begin
-        service_class = Appcelerator.const_get(service_type.capitalize).new
+        service_obj = Appcelerator.const_get(service_type.capitalize).new
       rescue
         die "Couldn't load service object for '#{service_type}-#{service_version}'."
       end
 
-      if is_new and service_class.respond_to? :check_dependencies
-        case service_class.method(:check_dependencies).arity
+      if is_new and service_obj.respond_to? :check_dependencies
+        case service_obj.method(:check_dependencies).arity
           when 0
-            service_class.check_dependencies
+            service_obj.check_dependencies
           when 1
-            service_class.check_dependencies(service)
+            service_obj.check_dependencies(service)
           else
             raise "Service class #{service[:name]}-#{service[:version]} " +
                   + 'has method check_dependencies but it requires more '
@@ -115,11 +116,14 @@ module Appcelerator
       end
 
       # old style service
-      if not(service.is_a?(Project))
+      if not(service_obj.is_a?(Project))
         project = Project.new()
+        project.service_installer = service_obj
+      else
+        project = service_obj
       end
 
-      project.service_dir = service[:directory]
+      project.service_dir = service[:dir]
       project.config = config
 
       # this will cause old projects to
@@ -167,22 +171,17 @@ module Appcelerator
       return File.exists?("#{path}/config/appcelerator.config")
     end
 
-    def Project.load_or_create(path=Dir.pwd())
-      config_path = "#{path}/config/appcelerator.config"
-      if File.exists?(config_path)
-        return Project.load(path)
-      else
-        return Project.create(path)
-      end
-    end
-
     def fill_default_paths()
       if not @config.has_key?(:paths)
         @config[:paths] = {}
-        @@paths.each { |key, value|
-          @config[:paths][key] = value[0]
-        }
       end
+
+      @@paths.each { |key, value|
+        if not @config[:paths].has_key?(key)
+          @config[:paths][key] = value[0]
+        end
+      }
+
     end
 
     def get_path(path)
@@ -200,6 +199,71 @@ module Appcelerator
     def save_config()
       puts "saving project config = #{@config_path}" if OPTIONS[:debug]
       Installer.put @config_path, YAML::dump(@config), true
+    end
+
+    def update(component, tx)
+      from_version = service_version()
+      to_version = component[:version]
+
+      service = Installer.require_component(:service,
+                                            component[:name],
+                                            component[:version], 
+                                            :quiet_if_installed=>true)
+
+      begin
+        Appcelerator.class_eval do
+          remove_const :Java
+        end
+        GC.start 
+
+        load File.join(service[:dir], 'install.rb') # load service class
+        service_obj = Appcelerator.const_get(service[:name].capitalize).new
+      rescue
+        print "An error occurred: ",$!, "\n"
+        die "Couldn't load service object for '#{component[:name]}-#{component[:version]}'."
+      end
+
+      if service_obj.is_a?(Project)
+        project = service_obj
+      else
+        project = Project.new
+        project.service_installer = service_obj
+      end
+
+      project.path = @path
+      project.config_path = @config_path
+      project.config = {}
+
+      project.config.merge!(@config)
+      project.fill_default_paths()
+
+      project.service_dir = service[:dir]
+      project.config[:service_version] = service[:version] # might have been nil
+
+      if service_obj.is_a?(Project) and service_obj.respond_to?(:update_project)
+        was_ok = project.update_project(from_version, to_version, tx)
+
+      elsif service_obj.is_a?(Project)
+        was_ok = project.create_project(tx)
+
+      elsif service_obj.respond_to?(:update_project)
+        was_ok = service_obj.update_project(project.service_dir,
+                                            project.path,
+                                            project.config,
+                                            tx,from_version,to_version)
+      else
+        was_ok = service_obj.create_project(project.service_dir,
+                                            project.path,
+                                            project.config,tx)
+      end
+
+      if was_ok
+        puts "Updated service '#{project.service_type()}' to #{to_version}"
+      else
+        die "Failed to update service '#{project.service_type()}' to #{to_version}"
+      end
+
+      project
     end
 
     def Project.get_service(pwd=Dir.pwd,fail_if_not_found=true)
