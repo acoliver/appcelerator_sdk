@@ -23,6 +23,13 @@ Appcelerator.UI.registerUIComponent('layout','split',
 			 	type: T.enumeration('vertical', 'horizontal')
 			},
 			{
+				name: 'initial', 
+				optional: true, 
+				description: 'initial width of left/top pane', 
+				defaultValue: '200',
+			 	type: T.integer
+			},
+			{
 				name: 'splitterWidth', 
 				optional: true, 
 				description: 'width of splitter', 
@@ -113,6 +120,7 @@ Appcelerator.UI.registerUIComponent('layout','split',
 		var size = parseInt(data['size']);
 		var splitter = $(id + '_splitter');
 		var splitterWidth = parseInt(options['splitterWidth']);
+		var left = splitter.previous('div.splitpane');
 		var right = splitter.next('div.splitpane');
 		var args = {duration:0.3};
 		switch(options['mode'])
@@ -127,6 +135,10 @@ Appcelerator.UI.registerUIComponent('layout','split',
 					new Effect.Morph(splitter,
 					{
 						style:'left:' + pos + 'px'
+					}),
+					new Effect.Morph(left,
+					{
+						style:'width:' + pos + 'px'
 					}),
 					new Effect.Morph(right,
 					{
@@ -145,6 +157,10 @@ Appcelerator.UI.registerUIComponent('layout','split',
 					new Effect.Morph(splitter,
 					{
 						style:'top:'+pos+'px'
+					}),
+					new Effect.Morph(left,
+					{
+						style:'height:' + pos + 'px'
 					}),
 					new Effect.Morph(right,
 					{
@@ -246,7 +262,7 @@ Appcelerator.UI.registerUIComponent('layout','split',
 		{
 			case 'horizontal':
 			{
-				var rememberedLeftPosition = splitter.rememberedLeftPosition || 220;
+				var rememberedLeftPosition = splitter.rememberedLeftPosition || parseInt(options['initial']);
 				new Effect.Parallel([
 					new Effect.Morph(splitter,
 					{
@@ -261,7 +277,7 @@ Appcelerator.UI.registerUIComponent('layout','split',
 			}
 			case 'vertical':
 			{
-				var rememberedTopPosition = splitter.rememberedTopPosition || 220;
+				var rememberedTopPosition = splitter.rememberedTopPosition || parseInt(options['initial']);
 				new Effect.Parallel([
 					new Effect.Morph(splitter,
 					{
@@ -287,7 +303,8 @@ Appcelerator.UI.registerUIComponent('layout','split',
 	{
 		var left = container.down('div');
 		var right = left.next('div');
-		var gripper = options['gripper']=='true';
+		
+		var gripper = Boolean(options['gripper']);
 		
 		function calculateHeight()
 		{
@@ -334,12 +351,14 @@ Appcelerator.UI.registerUIComponent('layout','split',
 		var splitter = document.createElement('div');
 		splitter.id = container.id + '_splitter';
 		
+		var initial = parseInt(options['initial']);
+		
 		Element.setStyle(splitter,{
 			'width':splitterWidth+'px',
 			'backgroundColor':options['splitterBg'],
 			'top':'0',
 			'position':'absolute',
-			'left':'200px',
+			'left': initial + 'px',
 			'bottom':'0',
 			'cursor':'col-resize',
 			'height':'100%'
@@ -419,58 +438,12 @@ Appcelerator.UI.registerUIComponent('layout','split',
 
 		right.style.position='absolute';
 		right.style.overflow = 'auto';
+		// make the right panel able to cover the left one (or bottom/top)
+		right.style.zIndex = parseInt(Element.getStyle(left,'z-index') || 0) + 1;
 
-		if (options['mode'] == 'horizontal')
-		{
-			left.style.top='0';
-			left.style.bottom='0';
-			left.style.left='0';
-			left.style.width='200px';
-
-			right.style.top='0';
-			right.style.bottom='0';
-			right.style.left= 200+splitterWidth+'px';
-			right.style.right='0';
-		}
-		else
-		{
-			left.style.top='0';
-			left.style.height='200px';
-			left.style.left= '0';
-			left.style.right='0';
-			left.style.width='100%';
-
-			right.style.top=200+splitterWidth+'px';
-			right.style.bottom='0';
-			right.style.left= '0';
-			right.style.right='0';
-
-			Element.setStyle(splitter,{
-				'height':splitterWidth+'px',
-				'backgroundColor':options['splitterBg'],
-				'position':'absolute',
-				'top':'200px',
-				'bottom':'0',
-				'left':'0',
-				'right':'0',
-				'cursor':'row-resize',
-				'width':'100%'
-			});
-		}
-		Element.addClassName(left,'splitpane');
-		Element.addClassName(right,'splitpane');
-		
-		var draggable = new Draggable(splitter,{
-			ghosting: options['ghosting'],
-			constraint: options['mode']
-		});
-		
 		var splitterBg = Element.getStyle(splitter,'background-color');
 		
-		Droppables.add(left);
-		Droppables.add(right);		
-		
-		Draggables.addObserver(
+		var eventHandler = 
 		{
 			onStart: function(eventName, draggable, event) 
 			{
@@ -492,24 +465,7 @@ Appcelerator.UI.registerUIComponent('layout','split',
 			},
 			drop:function(element) 
 			{
-				var dimensions = Element.getDimensions(container);
-				var basePosition = Position.positionedOffset(splitter);
-				if (options['mode']=='horizontal')
-				{
-					var div2NewLeft = basePosition[0]+splitterWidth;	
-					var padding = Element.getStyle(right,'padding') || 0 + Element.getStyle(right,'padding-right') || 0 + Element.getStyle(right,'padding-left') || 0;
-					var div1Width = basePosition[0];
-					var div2Width = dimensions.width-(div1Width+splitterWidth+padding);
-					this.setHorizontal(div1Width, div2Width, div2NewLeft, div2NewLeft-splitterWidth);
-				}
-				else
-				{
-					var div1Height = basePosition[1];
-					var padding = Element.getStyle(right,'padding') || 0 + Element.getStyle(right,'padding-top') || 0 + Element.getStyle(right,'padding-bottom') || 0;
-					var div2NewTop = basePosition[1]+ splitterWidth;	
-					var div2Height = dimensions.height-(div1Height+splitterWidth+padding);
-					this.setVertical(div1Height, div2Height, div2NewTop, basePosition[1]);
-				}
+				position();
 			},
 			setHorizontal:function(firstDivWidth, secondDivWidth, secondDivLeft, splitterLeft) 
 			{
@@ -525,6 +481,78 @@ Appcelerator.UI.registerUIComponent('layout','split',
 				Element.setStyle(splitter, {top:splitterTop+'px'});
 				Element.setStyle(splitterContainer, {top:0});
 			}
+		};		
+
+		function position()
+		{
+			var dimensions = Element.getDimensions(container);
+			var basePosition = Position.positionedOffset(splitter);
+			if (options['mode']=='horizontal')
+			{
+				var div2NewLeft = basePosition[0]+splitterWidth;	
+				var padding = Element.getStyle(right,'padding') || 0 + Element.getStyle(right,'padding-right') || 0 + Element.getStyle(right,'padding-left') || 0;
+				var div1Width = basePosition[0];
+				var div2Width = dimensions.width-(div1Width+splitterWidth+padding);
+				eventHandler.setHorizontal(div1Width, div2Width, div2NewLeft, div2NewLeft-splitterWidth);
+			}
+			else
+			{
+				var div1Height = basePosition[1];
+				var padding = Element.getStyle(right,'padding') || 0 + Element.getStyle(right,'padding-top') || 0 + Element.getStyle(right,'padding-bottom') || 0;
+				var div2NewTop = basePosition[1]+ splitterWidth;	
+				var div2Height = dimensions.height-(div1Height+splitterWidth+padding);
+				eventHandler.setVertical(div1Height, div2Height, div2NewTop, basePosition[1]);
+			}
+		};
+
+		if (options['mode'] == 'horizontal')
+		{
+			left.style.top='0';
+			left.style.bottom='0';
+			left.style.left='0';
+			left.style.width= initial + 'px';
+
+			right.style.top='0';
+			right.style.bottom='0';
+			right.style.left= initial+splitterWidth+'px';
+			right.style.right='0';
+		}
+		else
+		{
+			left.style.top='0';
+			left.style.height=initial+'px';
+			left.style.left= '0';
+			left.style.right='0';
+
+			right.style.top=initial+splitterWidth+'px';
+			right.style.bottom='0';
+			right.style.left= '0';
+			right.style.right='0';
+			
+			Element.setStyle(splitter,{
+				'height':splitterWidth+'px',
+				'backgroundColor':options['splitterBg'],
+				'position':'absolute',
+				'top': initial +'px',
+				'bottom':'0',
+				'left':'0',
+				'right':'0',
+				'cursor':'row-resize',
+				'width':'100%'
+			});
+		}
+		Element.addClassName(left,'splitpane');
+		Element.addClassName(right,'splitpane');
+		
+		var draggable = new Draggable(splitter,{
+			ghosting: options['ghosting'],
+			constraint: options['mode']
 		});
+		
+		Droppables.add(left);
+		Droppables.add(right);		
+		
+		Draggables.addObserver(eventHandler);
+		position();
 	}
 });
