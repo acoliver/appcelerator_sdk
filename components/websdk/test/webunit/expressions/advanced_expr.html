@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
     <script>
 		window.someGlobalVariable = 'Test passed';
@@ -335,6 +335,18 @@
 			Failed
 		</td>
 	</tr>
+	<tr>
+		<td class="test">Programmatic on expressions using functions</td>
+		<td class="result"> 
+			<div id="p_onex1r"></div>
+		</td>
+	</tr>
+	<tr>
+		<td class="test">Programmatic on expressions using functions (event)</td>
+		<td class="result"> 
+			<div id="p_onex2r">Click me</div>
+		</td>
+	</tr>
 </table>
 
 <app:statemachine id="test" initial="valid">
@@ -346,6 +358,25 @@
 $('p_on1').on("l:app.compiled then value['passed']");
 $$('#p_on2').on("l:app.compiled then value['passed']");
 
+$('p_onex1r').on('l:test.p.on',function()
+{
+	if (this.data && this.data.rows && this.data.rows[0]=='1')
+	{
+		$('p_onex1r').innerHTML='Passed';
+	}
+	else
+	{
+		$('p_onex1r').innerHTML='Failed - data payload missing';
+	}
+});
+$MQ('test.p.on',{
+	'rows':[1,2,3]
+});
+
+$('p_onex2r').on('click',function()
+{
+	$('p_onex2r').innerHTML = 'Passed';
+});
 
 Appcelerator.Compiler.registerConditionListener($('p_cl1'),'foo',function(element,condition)
 {

@@ -2208,7 +2208,7 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 {
 	var actionFunc = function(scope)
 	{
-	    var f = Appcelerator.Compiler.makeAction(id,action,additionalParams);
+	    var f = Object.isFunction(action) ? action.bind(scope) : Appcelerator.Compiler.makeAction(id,action,additionalParams);
 	    if (ifCond)
 	    {
 			if (Object.isUndefined(scope.id))
@@ -3596,7 +3596,6 @@ Appcelerator.Compiler.setHTML = function(element,html)
 	$(element).innerHTML = html;
 };
 
-
 /**
  * attach a method which can dynamically compile an expression passed in
  * for a given element. this allows a more unobstrutive or standards based
@@ -3611,18 +3610,28 @@ var AppceleratorCompilerMethods =
         Appcelerator.Compiler.destroy(re);
         if (parameters)
         {
-            for (var key in parameters)
-            {
-                if (Object.isString(key))
-                {
-                    var value = parameters[key];
-                    if (Object.isString(value) || Object.isNumber(value) || Object.isBoolean(value))
-                    {
-                        re.setAttribute(key,value);
-                    }
-                }
-            }
-            Appcelerator.Compiler.delegateToAttributeListeners(re);
+			if (Object.isFunction(parameters))
+			{
+				// APPSDK-638 - programmatic on actions
+				var copy = [re,webexpr,parameters,null,0,null];
+		        Appcelerator.Compiler.handleCondition(copy);
+				return re;
+			}
+			else
+			{
+	            for (var key in parameters)
+	            {
+	                if (Object.isString(key))
+	                {
+	                    var value = parameters[key];
+	                    if (Object.isString(value) || Object.isNumber(value) || Object.isBoolean(value))
+	                    {
+	                        re.setAttribute(key,value);
+	                    }
+	                }
+	            }
+	            Appcelerator.Compiler.delegateToAttributeListeners(re);
+			}
         }
         Appcelerator.Compiler.compileExpression(re,webexpr,false);
         return re;
