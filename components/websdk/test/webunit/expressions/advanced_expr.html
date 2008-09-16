@@ -347,6 +347,12 @@
 			<div id="p_onex2r">Click me</div>
 		</td>
 	</tr>
+	<tr>
+		<td class="test">Programmatic on expressions using functions (else in message)</td>
+		<td class="result"> 
+			<div id="p_onex3r">Click me</div>
+		</td>
+	</tr>
 </table>
 
 <app:statemachine id="test" initial="valid">
@@ -369,14 +375,22 @@ $('p_onex1r').on('l:test.p.on',function()
 		$('p_onex1r').innerHTML='Failed - data payload missing';
 	}
 });
-$MQ('test.p.on',{
-	'rows':[1,2,3]
-});
-
 $('p_onex2r').on('click',function()
 {
 	$('p_onex2r').innerHTML = 'Passed';
 });
+$('p_onex3r').on('l:test.p.on[foo]',function()
+{
+	$('p_onex3r').innerHTML = 'Failed';
+},function()
+{
+	$('p_onex3r').innerHTML = 'Passed';
+});
+
+$MQ('l:test.p.on',{
+	'rows':[1,2,3]
+});
+
 
 Appcelerator.Compiler.registerConditionListener($('p_cl1'),'foo',function(element,condition)
 {

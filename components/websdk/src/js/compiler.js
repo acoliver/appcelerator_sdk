@@ -2215,7 +2215,16 @@ Appcelerator.Compiler.makeConditionalAction = function(id, action, ifCond, addit
 			{
 				scope.id = id;
 			}
-			if (Object.evalWithinScope(ifCond,scope))
+			var passed = false;
+			if (Object.isFunction(ifCond))
+			{
+				passed = ifCond.call(scope);
+			}
+			else
+			{
+				passed = Object.evalWithinScope(ifCond,scope);
+			}
+			if (passed)
 			{
 	            f(scope);
 			}
@@ -3605,7 +3614,7 @@ Appcelerator.Compiler.setHTML = function(element,html)
  */
 var AppceleratorCompilerMethods =
 {
-    on: function(re,webexpr,parameters)
+    on: function(re,webexpr,parameters,elseCond)
     {
         Appcelerator.Compiler.destroy(re);
         if (parameters)
@@ -3613,7 +3622,7 @@ var AppceleratorCompilerMethods =
 			if (Object.isFunction(parameters))
 			{
 				// APPSDK-638 - programmatic on actions
-				var copy = [re,webexpr,parameters,null,0,null];
+				var copy = [re,webexpr,parameters,elseCond,0,null];
 		        Appcelerator.Compiler.handleCondition(copy);
 				return re;
 			}
