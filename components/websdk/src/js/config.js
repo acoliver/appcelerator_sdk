@@ -102,24 +102,6 @@ Appcelerator.Util.ServerConfig.loadComplete = function()
 
 Appcelerator.Util.ServerConfig.addConfigListener(function ()
 {
-    Appcelerator.Util.ServerConfig.setValues('cookie_check', true);
-    Appcelerator.Util.ServerConfig.setValues('browser_check', true);
-    Appcelerator.Util.ServerConfig.setValues('hide_body', false);
-    Appcelerator.Util.ServerConfig.setValues('perfmon', false);
-    Appcelerator.Util.ServerConfig.setValues('usegears', true);
-    Appcelerator.Util.ServerConfig.setValues('report_stats', true);
-    Appcelerator.Util.ServerConfig.setValues('track_stats', true);
-
-	// allow the user to override our defaults
-	if (window.AppceleratorConfig)
-	{
-		for (var key in window.AppceleratorConfig)
-		{
-			var value = window.AppceleratorConfig[key];
-			Appcelerator.Util.ServerConfig.setValues(key,value);
-		}
-	}
-
 	Appcelerator.Browser.autocheckBrowserSupport = Appcelerator.Config['browser_check'];
 	Appcelerator.Browser.autoReportStats = Appcelerator.Config['report_stats'];
 });
@@ -156,5 +138,22 @@ Appcelerator.Util.ServerConfig.setValues = function(key, def)
         Appcelerator.Config[key] = def;
     }
 }
+
+// allow the user to override our defaults
+if (window.AppceleratorConfig)
+{
+	for (var key in window.AppceleratorConfig)
+	{
+		var value = window.AppceleratorConfig[key];
+		Appcelerator.Util.ServerConfig.setValues(key,value);
+	}
+}
+Appcelerator.Util.ServerConfig.setValues('cookie_check', true);
+Appcelerator.Util.ServerConfig.setValues('browser_check', true);
+Appcelerator.Util.ServerConfig.setValues('hide_body', false);
+Appcelerator.Util.ServerConfig.setValues('perfmon', false);
+Appcelerator.Util.ServerConfig.setValues('usegears', true);
+Appcelerator.Util.ServerConfig.setValues('report_stats', true);
+Appcelerator.Util.ServerConfig.setValues('track_stats', true);
 
 Appcelerator.Core.onload(Appcelerator.Util.ServerConfig.load);
