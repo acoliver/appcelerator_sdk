@@ -93,19 +93,21 @@
     google.gears = {factory: factory};
   }
 
-
-  // APPCELERATOR BOOTSTRAP CODE START
-  google.gears.appcelerator = {};
-  google.gears.appcelerator.workerPool = google.gears.factory.create('beta.workerpool');	
-
-  google.gears.appcelerator.workerPool.onmessage = function(a, b, message) 
+  if (window.location.href.indexOf('file:/') < 0)
   {
-	Appcelerator.Util.ServiceBroker.gearsDispatch(message.text);
-  };
+	  // APPCELERATOR BOOTSTRAP CODE START
+	  google.gears.appcelerator = {};
+	  google.gears.appcelerator.workerPool = google.gears.factory.create('beta.workerpool');	
 
-  var baseScriptPath = (Appcelerator.WidgetPath + 'common/js/gears/').replace(window.location,'');
-  google.gears.appcelerator.serviceBrokerId = google.gears.appcelerator.workerPool.createWorkerFromUrl(baseScriptPath + 'servicebroker_remote.js');
+	  google.gears.appcelerator.workerPool.onmessage = function(a, b, message) 
+	  {
+		Appcelerator.Util.ServiceBroker.gearsDispatch(message.text);
+	  };
 
-  Appcelerator.Core.requireCommonJS('gears/servicebroker_local.js');
+	  var baseScriptPath = (Appcelerator.WidgetPath + 'common/js/gears/').replace(window.location,'');
+	  google.gears.appcelerator.serviceBrokerId = google.gears.appcelerator.workerPool.createWorkerFromUrl(baseScriptPath + 'servicebroker_remote.js');
+
+	  Appcelerator.Core.requireCommonJS('gears/servicebroker_local.js');
+  }
 })();
 
