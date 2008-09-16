@@ -16,7 +16,14 @@
 
 include Appcelerator
 module Appcelerator
-  class Java
+  class Java < Project
+
+    @@paths.merge!({
+      :src => ["src", "Java source code for this project"],
+      :stage => ["stage", "Stage directory"],
+      :config => ["config", "Java/Appcelerator configuration files, including web.xml"],
+      :lib => ["lib", "Contains all necessary jars"]
+    })
 
     #
     # this method is called when a project:update command is run on an existing
@@ -24,10 +31,10 @@ module Appcelerator
     # we're forcing and re-install.  they could be different if moving from one
     # version to the next
     #
-    def update_project(from_path,to_path,config,tx,from_version,to_version)
+    def update_project(from_version, to_version, tx)
       puts "Updating java from #{from_version} to #{to_version}" if OPTIONS[:verbose]
-      install(from_path,to_path,config,tx,true)
-      replace_jar_eclipse(to_version,to_path,tx)
+      install(tx, true)
+      replace_jar_eclipse(to_version,@path,tx)
       true
     end
 
@@ -36,10 +43,10 @@ module Appcelerator
     # command *might* be called instead of update_project in the case the user
     # ran --force-update on an existing project using create:project
     #
-    def create_project(from_path,to_path,config,tx)
-      install(from_path,to_path,config,tx,false)
+    def create_project(tx)
+      install(tx, false)
     end
-    
+
     def get_property(propertyfile,property)
       begin
         props = Properties.new
@@ -53,7 +60,7 @@ module Appcelerator
       rescue
       end
     end
-    
+
     def save_property(name,value,propertyfile)
       begin
         file = File.new propertyfile
@@ -63,54 +70,70 @@ module Appcelerator
       rescue
       end
     end
-    
+
     private
-    def install(from_path,to_path,config,tx,update)
-      remove_prev_jar(tx,"appcelerator","#{to_path}/lib")
-      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{to_path}/lib/appcelerator-#{config[:service_version]}.jar")
-      Installer.copy(tx,from_path,to_path, [ "#{__FILE__}",'war.rb','install.rb','build.yml','appcelerator.xml','build.xml','build.properties','lib\/appcelerator.jar',
-        'build-override.xml','app/services/org/appcelerator/test/EchoService.java'])
-      tx.mkdir "#{to_path}/app/services/org/appcelerator/test"
-      Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{to_path}/build-appcelerator.xml")
-      tx.rm "#{to_path}/app/services/EchoService.java" if File.exists? "#{to_path}/app/services/EchoService.java"
-      Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java", "#{to_path}/app/services/org/appcelerator/test/EchoService.java")
-      Installer.copy(tx,"#{from_path}/appcelerator.xml", "#{to_path}/public/appcelerator.xml")
+    def install(tx, update)
+
+      from_path = @service_dir
+      lib_dir = get_path(:lib)
+      services_dir = get_path(:services)
+      config_dir = get_path(:config)
+      src_dir = get_path(:src)
+
+      remove_prev_jar(tx,"appcelerator", lib_dir)
+      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{lib_dir}/appcelerator-#{service_version()}.jar")
+
+      files_to_skip = [
+         "#{__FILE__}",'war.rb','install.rb',
+        'build.yml','appcelerator.xml','build.xml',
+        'build.properties','lib\/appcelerator.jar',
+        'build-override.xml','app/services/org/appcelerator/test/EchoService.java']
+      Installer.copy(tx, from_path, @path, files_to_skip)
+
+      tx.mkdir "#{services_dir}/org/appcelerator/test"
+
+      tx.rm "#{services_dir}/EchoService.java" if File.exists? "#{services_dir}/EchoService.java"
+      Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java",
+                        "#{services_dir}/org/appcelerator/test/EchoService.java")
+
+      Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{@path}/build-appcelerator.xml")
       if update==false or update.nil?
-        Installer.copy(tx,"#{from_path}/build-override.xml", "#{to_path}/build-override.xml")
+        Installer.copy(tx,"#{from_path}/build-override.xml", "#{@path}/build-override.xml")
       end
-      
+
+      Installer.copy(tx,"#{from_path}/appcelerator.xml", get_web_path("appcelerator.xml"))
+
       # re-write the application name to be the name of the directory
-      name = get_property "#{to_path}/config/build.properties","app.name"
-      if name.nil?
-        name = File.basename(to_path)
-      end
-      temp1 = Installer.tempfile
-      FileUtils.cp "#{from_path}/build.properties",temp1.path
-      # save_property('service_version',config[:service_version],temp1.path)
+      name = get_property("#{config_dir}/build.properties","app.name")
+      name = config[:name] if name.nil?
+
+      build_properties = "#{config_dir}/build.properties"
+      FileUtils.cp("#{from_path}/build.properties", build_properties)
+      save_property("app.name", name, build_properties)
+      save_property("stage.dir", @config[:stage], build_properties)
+      save_property("src.dir", @config[:src], build_properties)
+      save_property("lib.dir", @config[:lib], build_properties)
+      save_property("web.dir", @config[:web], build_properties)
+      save_property("config.dir", @config[:config], build_properties)
 
       temp2 = Installer.tempfile
       FileUtils.cp "#{from_path}/build.xml",temp2.path
-      
-      replace_app_name name,temp1.path
-      replace_app_name name,temp2.path
-
-      Installer.copy tx, temp1.path, "#{to_path}/config/build.properties"
-      Installer.copy tx, temp2.path, "#{to_path}/build.xml"
-      
-      temp1.close
+      replace_app_name(name, temp2.path)
+      Installer.copy tx, temp2.path, "#{@path}/build.xml"
       temp2.close
 
-      tx.mkdir "#{to_path}/src/java"
-      tx.mkdir "#{to_path}/src/war"
+
+      tx.mkdir "#{src_dir}/java"
+      tx.mkdir "#{src_dir}/war"
       
       template_dir = File.join(File.dirname(__FILE__),'templates')
-      tx.mkdir "#{to_path}/src/war/WEB-INF"
+      tx.mkdir "#{src_dir}/war/WEB-INF"
       if update==false
-        Installer.copy(tx,"#{template_dir}/web.xml","#{to_path}/config/web.xml")
+        Installer.copy(tx,"#{template_dir}/web.xml","#{config_dir}/web.xml")
       else
-        merge_webxml("#{to_path}/config/web.xml","#{from_path}/templates/web.xml",tx,nil,to_path)
+        merge_webxml("#{config_dir}/web.xml","#{from_path}/templates/web.xml",tx)
       end
-      if not update or not File.exists? "#{to_path}/.classpath"
+      if not update or not File.exists? "#{@path}/.classpath"
         #
         # create an Eclipse .project/.classpath file      
         #
@@ -123,20 +146,20 @@ module Appcelerator
         classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
       
         Dir["#{from_path}/lib/**/*"].each do |dir|
-          dir = dir.gsub("#{from_path}",'')
+          dir = dir.gsub("#{from_path}/lib", lib_dir)
           if dir =~ /^\//
             dir = dir[1..-1]
           end
-          dir = "lib/appcelerator-#{config[:service_version]}.jar" if dir=="lib/appcelerator.jar"
+          dir = "#{lib_dir}/appcelerator-#{service_version()}.jar" if dir=="#{lib_dir}/appcelerator.jar"
           classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
         end
       
         classpath<<"</classpath>"
       
-        tx.put "#{to_path}/.classpath",classpath.join("\n")
+        tx.put "#{@path}/.classpath",classpath.join("\n")
       end
       
-      if not update or (update and not File.exists? "#{to_path}/.project")
+      if not update or (update and not File.exists? "#{@path}/.project")
 
         project=<<STR
 <projectDescription>
@@ -159,17 +182,18 @@ module Appcelerator
 STR
      
         project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
-        tx.put "#{to_path}/.project",project
+        tx.put "#{@path}/.project",project
       end
     
       %w(templates script log).each do |name|
-        tx.rm "#{to_path}/#{name}" if File.exists? "#{to_path}/#{name}"
+        tx.rm "#{@path}/#{name}" if File.exists? "#{@path}/#{name}"
       end
 
       Dir["#{from_path}/plugins/*.rb"].each do |fpath|
         fname = File.basename(fpath)
-        Installer.copy tx, fpath,"#{to_path}/plugins/#{fname}"
+        Installer.copy tx, fpath, get_plugin_path(fname)
       end
+
       true
     end
     def replace_jar_eclipse(to_version,to_path, tx)
@@ -190,11 +214,10 @@ STR
     end
   end
 
-  def merge_webxml (to,from,tx,event,project_dir=nil)
+  def merge_webxml(to, from, tx)
     error = false
     filename = "web.xml"
     require "rexml/document"
-    project_dir = event[:project_dir] if project_dir.nil?
   
     tofile = File.read to
     todoc = REXML::Document.new(tofile)
@@ -236,15 +259,12 @@ STR
       # puts "merged: #{toservletmapping}"
     end
     if not error
-      backfile = "#{project_dir}/tmp/#{filename}.#{Time.new.to_i}"
-      tmpoutfile = "#{project_dir}/tmp/#{filename}"
-      FileUtils.cp(to,"#{backfile}")
       puts "writing file"
-      f = File.new(tmpoutfile, "w")
-      todoc.write(f,-1)
-      f.flush
-      f.close
-      Appcelerator::Installer.copy tx,tmpoutfile,to
+      tmpoutfile = Installer.tempfile
+      todoc.write(tmpoutfile,-1)
+      tmpoutfile.flush
+      tmpoutfile.close
+      Appcelerator::Installer.copy tx,tmpoutfile.path,to
     end
   end
   

@@ -55,22 +55,28 @@ class RunJavaPlugin < Appcelerator::Plugin
       pwd = File.expand_path(args[:path] || Dir.pwd)
       port = options[:port]
       scanperiod = options[:scan_period]
+
       sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
       pathsep = RUBY_PLATFORM=~/win32/ ? '\\' : '/'
+
+      project = Project.load(pwd)
+
       FileUtils.cd Dir.pwd do |dir|
-        
+
         # test to make sure we have java on our path
         nullout = RUBY_PLATFORM=~/win32/ ? 'NUL' : '/dev/null'
-        
+
         system "java -version 2>#{nullout}"
         if $?.exitstatus == 127
           puts "Failed to find java, you need to have java installed and on your path."
           exit 1
         end
-        
-        webdir = "public"
-        servicesdir = "app/services"
-        jars = Dir["lib/**/**"].inject([]) do |jars,file|
+
+        webdir = project.config[:web]
+        servicesdir = project.config[:services]
+        libdir = project.config[:lib]
+
+        jars = Dir["#{libdir}/**/**"].inject([]) do |jars,file|
           jars << "#{file}".gsub(/\//,pathsep) if File.extname '.jar'
         end
         props = []
@@ -81,15 +87,18 @@ class RunJavaPlugin < Appcelerator::Plugin
         props = props.join(' ')
         cp = "#{servicesdir}"
         cp << sep
+
         if File.exists?("output/classes")
           cp << "output#{pathsep}classes" 
           cp << sep
         end
+
         cp << jars.join(sep)
+
         cmd = "java -cp #{cp} #{props} org.appcelerator.endpoint.HTTPEndpoint #{port} \"#{webdir}\" \"#{servicesdir}\" #{scanperiod}"
         puts cmd if OPTIONS[:verbose]
-        
-        event = {:project_dir=>pwd,:service=>'java'}
+
+        event = {:project=>project}
         PluginManager.dispatchEvents('run_server',event) do
           system(cmd)
         end

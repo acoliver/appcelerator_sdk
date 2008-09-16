@@ -20,7 +20,7 @@
 	<target name="execute_compile" description="Compiles the Java code" depends="init,pre_compile">
 		<mkdir dir="${stage.dir}/java/classes"/>
 		<mkdir dir="${stage.dir}/lib"/>
-		<javac debug="true" srcdir="app/services" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
+		<javac debug="true" srcdir="${services.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
 		<javac debug="true" srcdir="${src.java.dir}" destdir="${stage.dir}/java/classes" classpathref="classpath" includeAntRuntime="false"/>
 		<jar destfile="${stage.dir}/lib/${app.name}-${version.major}.${version.minor}.${version.rev}.jar">
 			<fileset dir="${stage.dir}/java/classes">
