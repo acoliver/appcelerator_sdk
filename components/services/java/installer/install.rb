@@ -19,10 +19,9 @@ module Appcelerator
   class Java < Project
 
     @@paths.merge!({
-      :src => ["src", "Java source code for this project"],
-      :stage => ["stage", "Stage directory"],
-      :config => ["config", "Java/Appcelerator configuration files, including web.xml"],
-      :lib => ["lib", "Contains all necessary jars"]
+      :src => ["src", "Java source code"],
+      :stage => ["stage", "staging"],
+      :lib => ["lib", "necessary jars"]
     })
 
     #
@@ -80,28 +79,24 @@ module Appcelerator
       config_dir = get_path(:config)
       src_dir = get_path(:src)
 
-      remove_prev_jar(tx,"appcelerator", lib_dir)
-      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{lib_dir}/appcelerator-#{service_version()}.jar")
-
       files_to_skip = [
-         "#{__FILE__}",'war.rb','install.rb',
+        "#{__FILE__}", 'war.rb','install.rb',
         'build.yml','appcelerator.xml','build.xml',
         'build.properties','lib\/appcelerator.jar',
         'build-override.xml','app/services/org/appcelerator/test/EchoService.java']
-      Installer.copy(tx, from_path, @path, files_to_skip)
 
-      tx.mkdir "#{services_dir}/org/appcelerator/test"
-
-      tx.rm "#{services_dir}/EchoService.java" if File.exists? "#{services_dir}/EchoService.java"
-      Installer.copy(tx,"#{from_path}/app/services/org/appcelerator/test/EchoService.java",
-                        "#{services_dir}/org/appcelerator/test/EchoService.java")
-
-      Installer.copy(tx,"#{from_path}/build-appcelerator.xml", "#{@path}/build-appcelerator.xml")
-      if update==false or update.nil?
-        Installer.copy(tx,"#{from_path}/build-override.xml", "#{@path}/build-override.xml")
+      if update != false and not(update.nil?)
+        excludes = ['build-override.xml']
       end
 
-      Installer.copy(tx,"#{from_path}/appcelerator.xml", get_web_path("appcelerator.xml"))
+      Installer.copy("#{from_path}/pieces/root", @path, excludes)
+      Installer.copy("#{from_path}/pieces/lib", get_path(:lib), ['appcelerator.jar'])
+      Installer.copy("#{from_path}/pieces/config" get_path(:config))
+      Installer.copy("#{from_path}/pieces/plugins" get_path(:plugins))
+      Installer.copy("#{from_path}/pieces/public" get_path(:web))
+
+      remove_prev_jar(tx,"appcelerator", lib_dir)
+      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{lib_dir}/appcelerator-#{service_version()}.jar")
 
       # re-write the application name to be the name of the directory
       name = get_property("#{config_dir}/build.properties","app.name")
@@ -123,16 +118,12 @@ module Appcelerator
       temp2.close
 
 
-      tx.mkdir "#{src_dir}/java"
-      tx.mkdir "#{src_dir}/war"
-      
-      template_dir = File.join(File.dirname(__FILE__),'templates')
       tx.mkdir "#{src_dir}/war/WEB-INF"
-      if update==false
-        Installer.copy(tx,"#{template_dir}/web.xml","#{config_dir}/web.xml")
-      else
+
+      if update != false and not(update.nil?)
         merge_webxml("#{config_dir}/web.xml","#{from_path}/templates/web.xml",tx)
       end
+
       if not update or not File.exists? "#{@path}/.classpath"
         #
         # create an Eclipse .project/.classpath file      
