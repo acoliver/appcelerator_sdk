@@ -26,14 +26,17 @@ module Appcelerator
     attr_accessor :service_installer
 
     @@paths = {
-      :services => ["app/services", "Appcelerator services"],
-      :scripts => ["scripts", "Scripts"],
-      :config => ["config", "Appcelerator configuration files"],
-      :tmp => ["tmp", "Temporary and working files"],
-      :log => ["log", "Program logs"],
-      :plugins => ["plugins", "Appcelerator plugins directory"],
-      :web => ["public", "Static web files"]
+      :services => ["app/services", "appcelerator services"],
+      :scripts => ["scripts", "scripts"],
+      :config => ["config", "config files"],
+      :tmp => ["tmp", "temporary files"],
+      :log => ["log", "logs"],
+      :plugins => ["plugins", "appcelerator plugins"],
+      :web => ["public", "static web files"]
     }
+    def default_paths
+        @@paths
+    end
 
     def Project.create(path, project_name, service_type, service_version)
       if Project.is_project_dir?(path)
@@ -161,10 +164,32 @@ module Appcelerator
         get_web_path("widgets")
     end
 
-    def create_project_layout()
+    def create_project_on_disk(tx)
+
+      # creates project directories
       @config[:paths].keys.each { |path_key|
         FileUtils.mkdir_p(get_path(path_key))
       }
+
+      template_dir = File.join(File.dirname(__FILE__),'templates')
+      Installer.copy(tx, "#{template_dir}/COPYING", "#{@path}/COPYING")
+      Installer.copy(tx, "#{template_dir}/README", "#{@path}/README")
+
+      # write out project config here, just in case any commands
+      # misbehave and don't try to read the project we pass in
+      save_config()
+      Installer.install_websdk(self, tx)
+
+      # now execute the service-specific script (no longer necessary)
+      if self.respond_to?(:create_project)
+        success = create_project(tx)
+      else
+        success = service_installer.create_project(@service_dir, @path, @config, tx)
+      end
+
+      save_config()
+
+      success
     end
 
     def Project.is_project_dir?(path=Dir.pwd())

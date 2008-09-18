@@ -65,24 +65,8 @@ CommandRegistry.registerCommand('create:project','create a new project',[
     event = {:project=>project, :tx=>tx}
     PluginManager.dispatchEvents('create_project', event) do
 
-      project.create_project_layout() # creates project directories
-      template_dir = File.join(File.dirname(__FILE__),'templates')
-      Installer.copy(tx, "#{template_dir}/COPYING", "#{project.path}/COPYING")
-      Installer.copy(tx, "#{template_dir}/README", "#{project.path}/README")
+      project.create_project_on_disk(tx)
 
-      # write out project config here, just in case any commands
-      # misbehave and don't try to read the project we pass in
-      project.save_config()
-      Installer.install_websdk(project, tx)
-
-      # now execute the service-specific script (no longer necessary)
-      if project.respond_to?(:create_project)
-        success = project.create_project(tx)
-      else
-        success = project.service_installer.create_project(project.service_dir, project.path, project.config, tx)
-      end
-
-      project.save_config()
       if success
           puts "Appcelerator #{project.service_type} project created ... !" unless OPTIONS[:quiet]
       end
