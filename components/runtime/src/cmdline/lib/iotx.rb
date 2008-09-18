@@ -37,6 +37,7 @@ module Appcelerator
       @fileindex = 0
       @dirindex = 0
       @recorder = nil
+      @after_tx_blocks = []
       STDOUT.puts "=> creating new transaction for #{@project_dir}, #{@temp_dir}" if debug
     end
 
@@ -76,6 +77,13 @@ module Appcelerator
           failed = true unless success
           break unless success
         end
+
+        begin
+            @after_tx_blocks.each {|block| block.call } 
+        rescue => e
+            STDERR.puts "Error trying to execute post-commit block. Error: #{e}"
+        end
+
         if not failed
           f = File.new "#{@temp_dir}/rollback.yml", 'w+'
           f.puts @completed.to_yaml
@@ -191,6 +199,11 @@ module Appcelerator
     def delete
       FileUtils.rm_rf @temp_dir if @temp_dir
       @temp_dir = nil
+    end
+
+    def after_tx(&block)
+      raise "Cannot use transaction since one has not yet been started" unless @operations
+      @after_tx_blocks << block
     end
 
     private
