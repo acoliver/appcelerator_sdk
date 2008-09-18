@@ -74,10 +74,7 @@ module Appcelerator
     def install(tx, update)
 
       from_path = @service_dir
-      lib_dir = get_path(:lib)
-      services_dir = get_path(:services)
       config_dir = get_path(:config)
-      src_dir = get_path(:src)
 
       files_to_skip = [
         "#{__FILE__}", 'war.rb','install.rb',
@@ -87,17 +84,19 @@ module Appcelerator
 
       if update != false and not(update.nil?)
         excludes = ['build-override.xml', 'web.xml']
+      else
+        excludes = []
       end
 
-      Installer.copy("#{from_path}/pieces/root", @path, excludes)
-      Installer.copy("#{from_path}/pieces/lib", get_path(:lib), ['appcelerator.jar'])
-      Installer.copy("#{from_path}/pieces/config" get_path(:config))
-      Installer.copy("#{from_path}/pieces/plugins" get_path(:plugins))
-      Installer.copy("#{from_path}/pieces/src" get_path(:src))
-      Installer.copy("#{from_path}/pieces/public" get_path(:web))
+      remove_prev_jar(tx,"appcelerator", get_path(:lib))
 
-      remove_prev_jar(tx,"appcelerator", lib_dir)
-      Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{lib_dir}/appcelerator-#{service_version()}.jar")
+      Installer.copy(tx, "#{from_path}/pieces/root", @path, excludes)
+      Installer.copy(tx, "#{from_path}/pieces/lib", get_path(:lib))
+      Installer.copy(tx, "#{from_path}/pieces/config", get_path(:config))
+      Installer.copy(tx, "#{from_path}/pieces/plugins", get_path(:plugins))
+      Installer.copy(tx, "#{from_path}/pieces/src", get_path(:src))
+      Installer.copy(tx, "#{from_path}/pieces/public", get_path(:web))
+      Installer.copy(tx, "#{from_path}/pieces/services", get_path(:services))
 
       tx.after_tx { 
         build_properties = "#{config_dir}/build.properties"
@@ -111,7 +110,7 @@ module Appcelerator
         replace_app_name(@config[:name], "#{@path}/build.xml")
 
         if update != false and not(update.nil?)
-          merge_webxml("#{config_dir}/web.xml","#{from_path}/pieces/config/web.xml",tx)
+          merge_webxml("#{config_dir}/web.xml","#{from_path}/pieces/config/web.xml")
         end
 
         update_classpath_file("#{@path}/.classpath", update)
@@ -125,7 +124,7 @@ module Appcelerator
       if not update or not(File.exists?(filepath))
         project=<<STR
 <projectDescription>
-   <name>#{name}</name>
+   <name>#{@config[:name]}</name>
    <comment>Appcelerator Java Project</comment>
    <projects>
    </projects>
@@ -143,7 +142,10 @@ module Appcelerator
 </projectDescription>
 STR
         project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
-        tx.put(filepath, project)
+
+        File.open(filepath, 'w') do |f|  
+          f.puts project
+        end
       end
 
 
@@ -160,27 +162,34 @@ STR
         classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
         classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
       
+        from_path = @service_dir
         Dir["#{from_path}/pieces/lib/**/*"].each do |dir|
-          dir = dir.gsub("#{from_path}/pieces/lib", lib_dir)
+          dir = dir.gsub("#{from_path}/pieces/lib", get_path(:lib))
           if dir =~ /^\//
             dir = dir[1..-1]
           end
-          dir = "#{lib_dir}/appcelerator-#{service_version()}.jar" if dir=="#{lib_dir}/appcelerator.jar"
+          dir = "#{get_path(:lib)}/appcelerator-#{service_version()}.jar" if dir=="#{get_path(:lib)}/appcelerator.jar"
           classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
         end
       
         classpath<<"</classpath>"
-      
-        tx.put (filepath, classpath.join("\n"))
+
+        File.open(filepath, 'w') do |f|  
+           f.puts classpath.join("\n")
+        end
+
       end
     end
 
-    def replace_jar_eclipse(to_version,to_path, tx)
+    def replace_jar_eclipse(to_version,to_path)
       classpath = IO.readlines("#{to_path}/.classpath")
       classpath.each do |line|
         line.gsub!(/appcelerator-([0-9\.])*\.jar/,"appcelerator-#{to_version}.jar")
       end
-      tx.put "#{to_path}/.classpath",classpath.join("")
+
+      File.open("#{to_path}/.classpath", 'w') do |f|  
+         f.puts classpath.join("\n")
+      end
     end
 
     def replace_app_name(name, file)
@@ -194,7 +203,7 @@ STR
     end
   end
 
-  def merge_webxml(to, from, tx)
+  def merge_webxml(to, from)
     error = false
     filename = "web.xml"
     require "rexml/document"
@@ -244,7 +253,7 @@ STR
       todoc.write(tmpoutfile,-1)
       tmpoutfile.flush
       tmpoutfile.close
-      Appcelerator::Installer.copy tx,tmpoutfile.path,to
+      FileUtils.cp(tmpoutfile.path, to)
     end
   end
   
