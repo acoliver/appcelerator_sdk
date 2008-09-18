@@ -86,72 +86,43 @@ module Appcelerator
         'build-override.xml','app/services/org/appcelerator/test/EchoService.java']
 
       if update != false and not(update.nil?)
-        excludes = ['build-override.xml']
+        excludes = ['build-override.xml', 'web.xml']
       end
 
       Installer.copy("#{from_path}/pieces/root", @path, excludes)
       Installer.copy("#{from_path}/pieces/lib", get_path(:lib), ['appcelerator.jar'])
       Installer.copy("#{from_path}/pieces/config" get_path(:config))
       Installer.copy("#{from_path}/pieces/plugins" get_path(:plugins))
+      Installer.copy("#{from_path}/pieces/src" get_path(:src))
       Installer.copy("#{from_path}/pieces/public" get_path(:web))
 
       remove_prev_jar(tx,"appcelerator", lib_dir)
       Installer.copy(tx,"#{from_path}/lib/appcelerator.jar", "#{lib_dir}/appcelerator-#{service_version()}.jar")
 
-      # re-write the application name to be the name of the directory
-      name = get_property("#{config_dir}/build.properties","app.name")
-      name = config[:name] if name.nil?
+      tx.after_tx { 
+        build_properties = "#{config_dir}/build.properties"
+        save_property("app.name", @config[:name], build_properties)
+        save_property("stage.dir", @config[:stage], build_properties)
+        save_property("src.dir", @config[:src], build_properties)
+        save_property("lib.dir", @config[:lib], build_properties)
+        save_property("web.dir", @config[:web], build_properties)
+        save_property("config.dir", @config[:config], build_properties)
 
-      build_properties = "#{config_dir}/build.properties"
-      FileUtils.cp("#{from_path}/build.properties", build_properties)
-      save_property("app.name", name, build_properties)
-      save_property("stage.dir", @config[:stage], build_properties)
-      save_property("src.dir", @config[:src], build_properties)
-      save_property("lib.dir", @config[:lib], build_properties)
-      save_property("web.dir", @config[:web], build_properties)
-      save_property("config.dir", @config[:config], build_properties)
+        replace_app_name(@config[:name], "#{@path}/build.xml")
 
-      temp2 = Installer.tempfile
-      FileUtils.cp "#{from_path}/build.xml",temp2.path
-      replace_app_name(name, temp2.path)
-      Installer.copy tx, temp2.path, "#{@path}/build.xml"
-      temp2.close
-
-
-      tx.mkdir "#{src_dir}/war/WEB-INF"
-
-      if update != false and not(update.nil?)
-        merge_webxml("#{config_dir}/web.xml","#{from_path}/templates/web.xml",tx)
-      end
-
-      if not update or not File.exists? "#{@path}/.classpath"
-        #
-        # create an Eclipse .project/.classpath file      
-        #
-        classpath=[]
-        classpath<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-        classpath<<"<classpath>"
-        classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
-        classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
-        classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
-        classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
-      
-        Dir["#{from_path}/lib/**/*"].each do |dir|
-          dir = dir.gsub("#{from_path}/lib", lib_dir)
-          if dir =~ /^\//
-            dir = dir[1..-1]
-          end
-          dir = "#{lib_dir}/appcelerator-#{service_version()}.jar" if dir=="#{lib_dir}/appcelerator.jar"
-          classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
+        if update != false and not(update.nil?)
+          merge_webxml("#{config_dir}/web.xml","#{from_path}/pieces/config/web.xml",tx)
         end
-      
-        classpath<<"</classpath>"
-      
-        tx.put "#{@path}/.classpath",classpath.join("\n")
-      end
-      
-      if not update or (update and not File.exists? "#{@path}/.project")
 
+        update_classpath_file("#{@path}/.classpath", update)
+        update_eclipse_project_file("#{@path}/.project", update)
+      }
+
+      true
+    end
+
+    def update_eclipse_project_file(filepath, update)
+      if not update or not(File.exists?(filepath))
         project=<<STR
 <projectDescription>
    <name>#{name}</name>
@@ -171,22 +142,39 @@ module Appcelerator
    </natures>
 </projectDescription>
 STR
-     
         project = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + project
-        tx.put "#{@path}/.project",project
-      end
-    
-      %w(templates script log).each do |name|
-        tx.rm "#{@path}/#{name}" if File.exists? "#{@path}/#{name}"
+        tx.put(filepath, project)
       end
 
-      Dir["#{from_path}/plugins/*.rb"].each do |fpath|
-        fname = File.basename(fpath)
-        Installer.copy tx, fpath, get_plugin_path(fname)
-      end
 
-      true
     end
+    def update_classpath_file(filepath, update)
+      if not update or not File.exists? filepath
+
+        # create an Eclipse .project/.classpath file
+        classpath=[]
+        classpath<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        classpath<<"<classpath>"
+        classpath<<"<classpathentry kind=\"src\" path=\"src/java\"/>"
+        classpath<<"<classpathentry kind=\"src\" path=\"app/services\"/>"
+        classpath<<"<classpathentry kind=\"con\" path=\"org.eclipse.jdt.launching.JRE_CONTAINER\"/>"
+        classpath<<"<classpathentry kind=\"output\" path=\"output/classes\"/>"
+      
+        Dir["#{from_path}/pieces/lib/**/*"].each do |dir|
+          dir = dir.gsub("#{from_path}/pieces/lib", lib_dir)
+          if dir =~ /^\//
+            dir = dir[1..-1]
+          end
+          dir = "#{lib_dir}/appcelerator-#{service_version()}.jar" if dir=="#{lib_dir}/appcelerator.jar"
+          classpath << "<classpathentry kind=\"lib\" path=\"#{dir}\" />" if File.extname(dir)=='.jar'
+        end
+      
+        classpath<<"</classpath>"
+      
+        tx.put (filepath, classpath.join("\n"))
+      end
+    end
+
     def replace_jar_eclipse(to_version,to_path, tx)
       classpath = IO.readlines("#{to_path}/.classpath")
       classpath.each do |line|
@@ -194,7 +182,8 @@ STR
       end
       tx.put "#{to_path}/.classpath",classpath.join("")
     end
-    def replace_app_name(name,file)
+
+    def replace_app_name(name, file)
       content = File.read file
       f = File.open file,'w+'
       content.gsub!('myapp',name)
