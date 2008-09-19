@@ -44,12 +44,12 @@ module Appcelerator
         pp = File.expand_path(@path)
         final = ""
 
-        while (File.expand_path(pp) != File.expand_path(final))
+        while (pp != from_dir)
             from_dir = File.expand_path(File.join(from_dir, ".."))
             final = final + "../"
         end
 
-        if not final.nil? and final.length > 0
+        if not(final.nil?) and final.length > 0
             File.join(final, to_path)
         else
             to_path
