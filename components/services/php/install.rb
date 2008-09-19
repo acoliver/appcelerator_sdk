@@ -16,13 +16,16 @@
 
 
 module Appcelerator
-  class Php
-    def create_project(from_path,to_path,config,tx)
-      Appcelerator::Installer.copy(tx,from_path,"#{to_path}/public",["#{__FILE__}",'build.yml','test_service.php'])
-      Appcelerator::Installer.copy(tx,"#{from_path}/test_service.php","#{to_path}/app/services")
-      %w(log script).each do |name|
-        FileUtils.rm_rf "#{to_path}/#{name}"
-      end
+  class Php < Project
+    def create_project(tx)
+
+      from_path = @service_dir
+
+      excludes = []
+      Installer.copy(tx, "#{from_path}/pieces/root", @path, excludes)
+      Installer.copy(tx, "#{from_path}/pieces/services", get_path(:services))
+      Installer.copy(tx, "#{from_path}/pieces/public", get_path(:web))
+
       true
     end
   end
