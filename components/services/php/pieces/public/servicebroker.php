@@ -104,7 +104,7 @@ else if ($method != 'POST')
     return;
 }
 
-$dir = dirname(__FILE__) . '/../app/services';
+$dir = dirname(__FILE__) . '/@@path@@';
 
 if (!is_dir($dir))
 {
