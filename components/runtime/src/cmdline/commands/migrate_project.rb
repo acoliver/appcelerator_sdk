@@ -77,6 +77,11 @@ def repl_loop(project)
 
         # make relative and remove leading dir separators
         path = File.expand_path(path).sub(pp, "")
+
+        if path.nil? or path.length < 1
+            path = "."
+        end
+
         if path[0].chr == File::SEPARATOR
             path = path[1..-1]
         end
