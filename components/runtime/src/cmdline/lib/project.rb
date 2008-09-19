@@ -28,7 +28,6 @@ module Appcelerator
     @@paths = {
       :services => ["app/services", "appcelerator services"],
       :scripts => ["scripts", "scripts"],
-      :config => ["config", "config files"],
       :tmp => ["tmp", "temporary files"],
       :log => ["log", "logs"],
       :plugins => ["plugins", "appcelerator plugins"],
@@ -170,6 +169,9 @@ module Appcelerator
       @config[:paths].keys.each { |path_key|
         FileUtils.mkdir_p(get_path(path_key))
       }
+
+      config_dir = "#{@path}/config"
+      FileUtils.mkdir_p(config_dir) unless File.exists?(config_dir) 
 
       template_dir = File.join(File.dirname(__FILE__),'templates')
       Installer.copy(tx, "#{template_dir}/COPYING", "#{@path}/COPYING")
