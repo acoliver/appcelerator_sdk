@@ -19,8 +19,8 @@ module Appcelerator
   class Java < Project
 
     @@paths.merge!({
-      :src => ["src", "Java source code"],
-      :stage => ["stage", "staging"],
+      :src_java => ["src/java", "Java source"],
+      :src_war => ["src/war", "war includes"],
       :lib => ["lib", "necessary jars"]
     })
 
@@ -94,18 +94,19 @@ module Appcelerator
       Installer.copy(tx, "#{from_path}/pieces/lib", get_path(:lib))
       Installer.copy(tx, "#{from_path}/pieces/config", get_path(:config))
       Installer.copy(tx, "#{from_path}/pieces/plugins", get_path(:plugins))
-      Installer.copy(tx, "#{from_path}/pieces/src", get_path(:src))
       Installer.copy(tx, "#{from_path}/pieces/public", get_path(:web))
       Installer.copy(tx, "#{from_path}/pieces/services", get_path(:services))
 
       tx.after_tx { 
         build_properties = "#{config_dir}/build.properties"
-        save_property("app.name", @config[:name], build_properties)
-        save_property("stage.dir", @config[:stage], build_properties)
-        save_property("src.dir", @config[:src], build_properties)
-        save_property("lib.dir", @config[:lib], build_properties)
-        save_property("web.dir", @config[:web], build_properties)
-        save_property("config.dir", @config[:config], build_properties)
+        save_property("app.name", @config[:paths][:name], build_properties)
+        save_property("stage.dir", @config[:paths][:stage], build_properties)
+        save_property("src.war.dir", @config[:paths][:src_war], build_properties)
+        save_property("src.java.dir", @config[:paths][:src_java], build_properties)
+        save_property("lib.dir", @config[:paths][:lib], build_properties)
+        save_property("web.dir", @config[:paths][:web], build_properties)
+        save_property("config.dir", @config[:paths][:config], build_properties)
+        save_property("tmp.dir", @config[:paths][:tmp], build_properties)
 
         replace_app_name(@config[:name], "#{@path}/build.xml")
 
