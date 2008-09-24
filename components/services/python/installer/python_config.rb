@@ -123,5 +123,42 @@ module Appcelerator
     def on_windows
       RUBY_PLATFORM =~ /(mswin|mingw|windows|win32)/
     end
+    
+    
+    #
+    # Refactored out from the original Pylons install script,
+    # for use by the Django install script
+    #
+    
+    def install_easy_install_if_needed(installer)
+      if not easy_install_installed?
+        installer.confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install? [Yn]")
+        
+        require 'open-uri'
+        require 'tempfile'
+        ez_setup_src = open('http://peak.telecommunity.com/dist/ez_setup.py').read
+        ez_file = Tempfile.new('ez_setup.py')
+        ez_file.write(ez_setup_src)
+        ez_file.close
+        
+        if on_windows
+          quiet_system("#{python} #{ez_file.path}")
+        else
+          puts "__MAGIC__|ask|Please enter your password to install the python easy_install tool|true|__MAGIC__" if OPTIONS[:subprocess]
+          quiet_system("sudo #{python} #{ez_file.path}")
+        end
+      end
+    end
+    
+    def install_appcelerator_egg_if_needed(dir,version)
+      appc_version_check = "#{python} -c \"from pkg_resources import require;require('Appcelerator==#{version}')\""
+      if not quiet_system(appc_version_check)
+        puts "Installing new Appcelerator module" unless OPTIONS[:quiet]
+        quiet_system("#{easy_install} \"#{dir}/module/\"")
+        # attempt to avoid this http://groups.google.com/group/pylons-devel/browse_thread/thread/2c740abef6eb4b9e
+        quiet_system("#{easy_install} -U simplejson")
+      end
+    end
+    
   end
 end

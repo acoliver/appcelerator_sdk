@@ -91,7 +91,7 @@ END_CODE
       puts "Updating Python project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
 
       @pyconfig = PythonConfig.new
-      install_appcelerator_egg_if_needed(from_path, config[:service_version])
+      @pyconfig.install_appcelerator_egg_if_needed(from_path, config[:service_version])
       
       project_path = to_path
       project_name = config[:name]
@@ -134,30 +134,10 @@ END_CODE
     def check_dependencies(component)
       @pyconfig = PythonConfig.new
       
-      install_easy_install_if_needed
+      @pyconfig.install_easy_install_if_needed(self)
       install_pylons_if_needed
       install_paster_if_needed
-      install_appcelerator_egg_if_needed(component[:dir], component[:version])
-    end
-    
-    def install_easy_install_if_needed
-      if not @pyconfig.easy_install_installed?
-        confirm("Appcelerator:Python requires easy_install to be installed before continuing. Install? [Yn]")
-        
-        require 'open-uri'
-        require 'tempfile'
-        ez_setup_src = open('http://peak.telecommunity.com/dist/ez_setup.py').read
-        ez_file = Tempfile.new('ez_setup.py')
-        ez_file.write(ez_setup_src)
-        ez_file.close
-        
-        if on_windows
-          quiet_system("#{python} #{ez_file.path}")
-        else
-          puts "__MAGIC__|ask|Please enter your password to install the python easy_install tool|true|__MAGIC__" if OPTIONS[:subprocess]
-          quiet_system("sudo #{python} #{ez_file.path}")
-        end
-      end
+      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], component[:version])
     end
     
     def install_pylons_if_needed
@@ -175,17 +155,7 @@ END_CODE
         quiet_system("#{easy_install} pastescript")
       end
     end
-    
-    def install_appcelerator_egg_if_needed(dir,version)
-      appc_version_check = "#{python} -c \"from pkg_resources import require;require('Appcelerator==#{version}')\""
-      if not quiet_system(appc_version_check)
-        puts "Installing new Appcelerator module" unless OPTIONS[:quiet]
-        quiet_system("#{easy_install} \"#{dir}/module/\"")
-        # attempt to avoid this http://groups.google.com/group/pylons-devel/browse_thread/thread/2c740abef6eb4b9e
-        quiet_system("#{easy_install} -U simplejson")
-      end
-    end
-    
+        
     require 'forwardable'
     extend Forwardable
     def_delegators :@pyconfig,   :python, :easy_install, :paster, :quiet_system, :on_windows
