@@ -90,6 +90,24 @@ input[type=text]
     </tr>
     <tr>
         <td class="test" valign="middle">
+            Inside of an iterator table without else (complex)
+        </td>
+        <td class="result" >
+             <app:iterator id="manage_messages_iterator" on="l:test_iterator_if then execute" property="rows" table="true" headers="name,city" headerids="testiterator_1,testiterator_2" headerstyles="text-align:center,text-align:left">
+	             <app:if expr="false"  style="display:none" parent_tag="td" deleteelse="true">
+	                 <html:td>#{name} Should not be shown (test failed)</html:td>
+	             </app:if>
+                <html:td>
+					#{city}
+                </html:td>
+            </app:iterator>
+			<app:script on="l:test_iterator_if then execute after 250">
+				Element.hide($('testiterator_1'));
+			</app:script>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" valign="middle">
             If inside of an iterator inside of a content file
         </td>
         <td class="result" >

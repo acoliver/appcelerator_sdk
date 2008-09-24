@@ -16,7 +16,6 @@
  */
 
 
-
 Appcelerator.Widget.If =
 {
 	getName: function()
@@ -29,7 +28,7 @@ Appcelerator.Widget.If =
 	},
 	getVersion: function()
 	{
-		return '__VERSION__';
+		return 1.0;
 	},
 	getSpecVersion: function()
 	{
@@ -58,6 +57,24 @@ Appcelerator.Widget.If =
             optional: false,
             type: Appcelerator.Types.javascriptExpr,
             description: "The javascript expression to execute"
+        },		
+		{
+            name: 'position',
+            optional: true,
+            type: Appcelerator.Types.number,
+            description: "defaults to Appcelerator.Compiler.POSITION_REMOVE"
+        },
+		{
+            name: 'deleteelse',
+            optional: true,
+            type: Appcelerator.Types.bool,
+            description: "whether or not to delete if fails if condition"
+        },
+		{
+            name: 'parent_tag',
+            optional: true,
+            type: Appcelerator.Types.identifier,
+            description: "defaults to Appcelerator.Compiler.POSITION_REMOVE"
         }];
 	},
 	getChildNodes: function()
@@ -79,7 +96,7 @@ Appcelerator.Widget.If =
 	compileWidget: function(params)
 	{
 		var id = params['id'];
-		
+
 		if (eval(Appcelerator.Widget.If.generateConditional(params['ifcond']['cond'])))
 		{
 			$(id).innerHTML = params['ifcond']['code'];
@@ -87,10 +104,15 @@ Appcelerator.Widget.If =
 		}
 		else
 		{
+			if (''+params['deleteelse']=="true")
+			{
+				Logger.info('removing '+id);
+				Element.remove($(id));
+			}
 			for (var c=0;c<params['elseifconds'].length;c++)
 			{
 				var condition = params['elseifconds'][c];
-				
+
 				if (eval(Appcelerator.Widget.If.generateConditional(condition['cond'])))
 				{
 					$(id).innerHTML = condition.code;
@@ -98,7 +120,7 @@ Appcelerator.Widget.If =
 					return;
 				}
 			}
-			
+
 			var elsecond = params['elsecond'];
 			if (elsecond)
 			{
@@ -123,16 +145,25 @@ Appcelerator.Widget.If =
 		var ifcond = {code: '', cond: params['expr']};
 		var elseifconds = [];
 		var elsecond;
-		
+
 		if (Appcelerator.Browser.isIE)
-		{
-			// NOTE: in IE, you have to append with namespace
-			var newhtml = element.innerHTML;
-			newhtml = newhtml.replace(/<ELSEIF/g,'<APP:ELSEIF').replace(/\/ELSEIF>/g,'/APP:ELSEIF>');
-			newhtml = newhtml.replace(/<ELSE/g,'<APP:ELSE').replace(/\/ELSE>/g,'/APP:ELSE>');
-			element.innerHTML = newhtml;
-		}
-		
+			{
+				// NOTE: in IE, you have to append with namespace
+				var newhtml = element.innerHTML;
+				if (newhtml.indexOf('<ELSEIF')>0)
+				{
+					newhtml = newhtml.replace(/<ELSEIF/g,'<APP:ELSEIF').replace(/\/ELSEIF>/g,'/APP:ELSEIF>');
+				}
+				if (newhtml.indexOf('<ELSE')>0)
+				{
+					newhtml = newhtml.replace(/<ELSE/g,'<APP:ELSE').replace(/\/ELSE>/g,'/APP:ELSE>');
+				}
+				if (newhtml.indexOf('<APP:ELSE')>0)
+				{
+					element.innerHTML = newhtml;
+				}
+			}
+
         if (Appcelerator.Browser.isOpera)
         {
             // NOTE: opera returns case-sensitive tag names, causing the conditions to fail
@@ -141,14 +172,14 @@ Appcelerator.Widget.If =
             newhtml = newhtml.replace(/<ELSE/gi,'<ELSE').replace(/\/ELSE>/gi,'/ELSE>');
             element.innerHTML = newhtml;
         }
-        
+
 		for (var c=0; c<element.childNodes.length; c++)
 		{
 			(function()
 			{
 				var code, cond;
 				var node = element.childNodes[c];
-				
+
 				if (node.nodeType == 1 && node.nodeName == 'ELSEIF')
 				{
 					if (elsecond)
@@ -184,15 +215,16 @@ Appcelerator.Widget.If =
 				}
 			})();
 		}
-		
 		params['ifcond'] = ifcond;		
 		params['elseifconds'] = elseifconds;
 		params['elsecond'] = elsecond;
-
+		var position = params['position']||Appcelerator.Compiler.POSITION_REPLACE;
+		var parent_tag = params['parent_tag'] || 'div';
 		return {
 			'presentation' : '',
-			'position' : Appcelerator.Compiler.POSITION_REPLACE,
-			'compile' : true
+			'position' : position,
+			'compile' : true,
+			'parent_tag' : parent_tag
 		};
 	}
 };
