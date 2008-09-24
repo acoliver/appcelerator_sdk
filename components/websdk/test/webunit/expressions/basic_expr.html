@@ -157,6 +157,35 @@
 	</tr>	
 	<tr>
 		<td class="test" valign="middle">
+			<a on="click then l:test9b">Run Test</a>
+			<app:script on="l:test9b then execute">
+				$MQ('l:test9b.final',{id:22});
+			</app:script>
+			Value Action (input with attribute id as number)
+		</td>
+		<td class="result">
+			<div>
+				Value should be set to 22 <input type="text" on="l:test9b.final then value[id]"></input>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test9c">Run Test</a>
+			<app:script on="l:test9c then execute">
+				friend = {id:""};
+				$MQ('l:test9c.final',{friend:friend});
+			</app:script>
+			Value Action (input with compound empty string)
+		</td>
+		<td class="result">
+			<div>
+				Value should be set to empty string <input type="text" on="l:test9c.final then value[friend.id]"></input>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
 			<a on="click then l:test10[option=3]">Run Test</a>
 			SelectOption Action
 		</td>
@@ -731,6 +760,30 @@
 				i should turn red
 			</div>
 		</td>
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test33">Run Test</a>
+			State Machine Condition (transition from)
+		</td>
+		<td class="result">	
+			<div  on="test[valid:] then set[color=red]">
+				i should turn red
+			</div>
+		</td>
+		
+	</tr>	
+	<tr>
+		<td class="test" valign="middle">
+			<a on="click then l:test33">Run Test</a>
+			State Machine Condition (transition from:to)
+		</td>
+		<td class="result">	
+			<div  on="test[valid:invalid] then set[color=red]">
+				i should turn red
+			</div>
+		</td>
+		
 	</tr>	
     <tr>
         <td class="test" valign="middle">
