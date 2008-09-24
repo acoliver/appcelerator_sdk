@@ -251,7 +251,7 @@ th
         </td>
         <td class="result" >
              <app:iterator on="l:test_iterator_rowon then execute" property="rows" table="true" headers="name,city" headerids="testiteratorrowon_1,testiteratorrowon_2" headerstyles="text-align:center,text-align:left" rowOn="l:test_iterator_rowonselect[name=#{name}] then set[class=selected] else remove[class=selected]">
-                <html:td> <html:a href="javascript:void();" on="click then l:test_iterator_rowonselect[name=#{name}]">#{name}</html:a></html:td>
+                <html:td> <html:a href="javascript:void(0);" on="click then l:test_iterator_rowonselect[name=#{name}]">#{name}</html:a></html:td>
                 <html:td>
 					#{city}
                 </html:td>
