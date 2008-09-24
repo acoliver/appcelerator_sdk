@@ -59,12 +59,15 @@ Appcelerator.Widget.Iterator =
                 {name: 'items', optional: true, type: T.json,
 				 description: "Literal (or template-replaced) JSON array to iterate over"},
                 {name: 'property', optional: true, type: T.identifier},
-                
+
                 {name: 'rowEvenClassName', optional: true, type: T.cssClass},
                 {name: 'rowOddClassName', optional: true, type: T.cssClass},
                 {name: 'table', optional: true, defaultValue: 'false', type: T.bool},
                 {name: 'width', optional: true, defaultValue: '100%', type: T.cssDimension},
                 {name: 'headers', optional: true, defaultValue: ',', type: T.commaSeparated},
+				{name: 'headerids', optional: true, defaultValue: ',', type: T.commaSeparated},
+				{name: 'headerstyles', optional: true, defaultValue: ',', type: T.commaSeparated},
+				{name: 'rowOn', optional: true, defaultValue: '', type: T.identifier},
                 {name: 'cellspacing', optional: true, defaultValue: '0', type: T.cssDimension},
                 {name: 'selectable', optional: true, type: T.bool}];
     },
@@ -78,24 +81,30 @@ Appcelerator.Widget.Iterator =
 		var compiled = parameterMap['compiled'];
 		var propertyName = parameterMap['property'];
 		var items = parameterMap['items'];
-		
+
 		var table = parameterMap['table'];
 		var width = parameterMap['width'];
 		var headers = parameterMap['headers'];
+		var headerids = parameterMap['headerids'];
+		if (headerids && headerids!='')
+			headerids = headerids.split(',');
+		var headerstyles = parameterMap['headerstyles'];
+		if (headerstyles && headerstyles!='')
+			headerstyles = headerstyles.split(',');
 		var selectable = parameterMap['selectable'];
 		var array = null;
-		
+
 		if (!compiled)
 		{
 			compiled = eval(parameterMap['template'] + '; init_'+id);
 			parameterMap['compiled'] = compiled;
 		}
-		
+
 		if (items) 
 		{
 			data = items.evalJSON() || [];
 		}
-		
+
 		if (propertyName)
 		{
 			array = Object.getNestedProperty(data,propertyName) || [];
@@ -104,9 +113,9 @@ Appcelerator.Widget.Iterator =
 		{
 			array = data;
 		}
-		
+
 		var html = '';
-		
+
 		if (!array)
 		{
 			html = compiled(data);
@@ -115,10 +124,18 @@ Appcelerator.Widget.Iterator =
 		{
 			if (table)
 			{				
+				var i=0;
 				html+='<table width="'+width+'" cellspacing="'+parameterMap['cellspacing']+'"><tr>';
 				headers.each(function(h)
 				{
-					html+='<th>'+h+'</th>';
+					var id='';
+					var style=''
+					if (headerids)
+						id=' id="'+headerids[i]+'"';
+					if (headerstyles)
+						style=' style="'+headerstyles[i]+'"';
+					html+='<th'+style+id+'>'+h+'</th>';
+					i++;
 				});
 				html+='</tr>';
 			}
@@ -142,9 +159,9 @@ Appcelerator.Widget.Iterator =
 				if (table)
 				{
 					if (o['iterator_odd_even'] == 'odd')
-						html+='<tr class="'+parameterMap['rowOddClassName']+'">';
+						o['iterator_row_class'] = parameterMap['rowOddClassName'];
 					else
-						html+='<tr class="'+parameterMap['rowEvenClassName']+'">';
+						o['iterator_row_class'] = parameterMap['rowEvenClassName'];
 				}
 				/* escape out the "'" so that works in IE */
 				for (var idx in o)
@@ -155,10 +172,6 @@ Appcelerator.Widget.Iterator =
 					}
 				}
 				html += compiled(o);
-				if (table)
-				{
-					html+='</tr>';
-				}
 			}
 			if (table)
 			{
@@ -183,15 +196,23 @@ Appcelerator.Widget.Iterator =
 	},
 	buildWidget: function(element, parameters)
 	{
-		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);
 		parameters['table'] = parameters['table'] == 'true';
 		if (parameters['table'])
 		{
 			parameters['headers'] = parameters['headers'].split(',');
 		}
-		
+
+		var html = Appcelerator.Compiler.getHtml(element);
+		if (parameters['rowOn'] !='')
+			parameters['rowOn'] = 'on="'+parameters['rowOn']+'"';
+		if (parameters['table'])
+		{
+			html = '<tr '+parameters['rowOn']+' class="#{iterator_row_class}">'+html+'</tr>';
+		}
+		parameters['template'] = Appcelerator.Compiler.compileTemplate(html,true,'init_'+element.id);
+
 		var compile = !!(!parameters['on'] && parameters['items']);
-		
+
 		return {
 			'presentation' : '',
 			'position' : Appcelerator.Compiler.POSITION_REPLACE,
