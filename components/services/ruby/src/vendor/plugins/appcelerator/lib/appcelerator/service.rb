@@ -39,14 +39,20 @@ module Appcelerator
     end
 
     # registration point for service handler filters for authentication, etc 
-    def Service.before_filter(filter)
-      self.instance.before_filters << filter
+    def Service.before_filter(filter, options={})
+      if options.length > 1
+          # some error reporting, maybe?
+          options = {}
+      end
+      self.instance.before_filters << {:filter => filter, :args => options}
     end
-    
+
     # registration point for post-service-handling filters
-    def Service.after_filter(filter)
-      self.instance.after_filters << filter
+    def Service.after_filter(filter, options={})
+      self.instance.after_filters << {:filter => filter, :args => options}
     end
+
+
 
     # for use by message handlers    
     attr_accessor :request,:params,:session,:message_type,:response,:response_type,:controller,:logger
@@ -78,17 +84,29 @@ module Appcelerator
       num_cleared
     end
     
-    def do_before_filters      
+    def do_before_filters(method_name)      
       @before_filters.each do |filter|
-        method(filter).call()
+        args = filter[:args]
+
+        if (execute_filter?(method_name,args))
+            method(filter[:filter]).call()
+        end
         break if @response
       end
     end
-   
-    def do_after_filters
+
+    def do_after_filters(method_name)
       @after_filters.each do |filter|
-          method(filter).call()
+          args = filter[:args]
+          if (execute_filter?(method_name, args))
+              method(filter[:filter]).call()
+          end
       end
+    end
+
+    def execute_filter?(method_name, args)
+        return ((args[:only] != nil and args[:only].include?(method_name)) or 
+                (args[:only] == nil and (args[:except] == nil or not args[:except].include?(method_name))))
     end
     
     # handle a message
@@ -102,15 +120,15 @@ module Appcelerator
       @response = nil # this is the handler's response, not the request/response pair
       @response_type = response_type
       
-      do_before_filters()
-      
+      do_before_filters(method_name)
+
       # any response added by the before_filters prevents the handler from running
       if not @response
-        @response = method(method_name).call()
-        
-        do_after_filters()
+          @response = method(method_name).call()
+
+          do_after_filters(method_name)
       end
-      
+
       if @response_type
         msg.response_type = @response_type
         msg.response = @response || {}
@@ -146,7 +164,7 @@ module Appcelerator
 	      methstr = meth.to_s
 	      next unless methstr =~ re
 	      name = "#{cn}.#{m.underscore.gsub('_','.')}"
-	      self.register "#{name}.request", m, "#{name}.response"
+	      self.register "#{name}.request", m.intern, "#{name}.response"
       end
       
 	    @registrations = nil

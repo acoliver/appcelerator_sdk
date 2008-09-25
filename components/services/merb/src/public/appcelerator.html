@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
+    <title>Appcelerator&trade; Service Tester</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" href="images/favicon.ico"/>
+    <script src="javascripts/appcelerator.js" type="text/javascript"></script>
+	<!--[if IE 6]>
+	       <style>
+	           img,div
+	           {
+	               behavior: url(images/iepngfix.htc);
+	           }
+	       </style>
+	<![endif]-->
+    <style>
+        * 
+        { 
+            margin:0; padding:0;
+        }
+        body
+        {
+            background-color: #717171;
+            color: #fff;
+            font-family: tahoma,arial,helvetica;
+        }
+        img 
+        { 
+            border: none; 
+        }
+        #header
+        {
+            background-image: url(images/appcelerator_gray_header.png);
+            background-repeat: repeat-x;
+            background-color: #717171;
+            height: 55px;
+            position:relative;
+            margin:0;
+            padding:0;
+        }
+        #logo
+        {
+            height: 53px;
+            position:absolute;
+            right:15px;
+            top:0px;
+        }
+        #title
+        {
+            position:absolute;
+            left:20px;
+            top:15px;
+            font-size:24px;
+            color:#770000;
+        }
+        #form
+        {
+            margin:20px;
+            padding:10px;
+            font-size:14px;
+        }
+        #footer
+        {
+            position:absolute;
+            bottom:5px;
+            left:20px;
+            color:#aaa;
+            font-size:11px;
+        }
+        #intro
+        {
+            font-size:18px;
+            margin-bottom:25px;
+            color:#111;
+        }
+        #messagetype
+        {
+            width:400px;
+            font-family:courier;
+            font-size:14px;
+        }
+        #version
+        {
+            width:30px;
+            font-family:courier;
+            font-size:14px;
+        }
+        #scopename
+        {
+            width:150px;
+            font-family:courier;
+            font-size:14px;
+        }
+        #messageargs
+        {
+            width:100%;
+            height:80px;
+            font-family:courier;
+            font-size:14px;
+            margin-top:10px;
+        }
+        #trace
+        {
+            margin-top:10px;
+            width:100%;
+            font-family:courier;
+            font-size:12px;
+            height: 80px;
+        }
+        div
+        {
+            margin-top:5px;
+            margin-bottom:5px;
+        }
+        #trace div
+        {
+            margin:0;
+            padding:0;
+            margin-bottom:5px;
+        }
+        .noteBox 
+        { 
+           margin:0px auto; 
+           padding: 5px; 
+           border-style: solid; 
+           border-width: 1px; 
+           border-color: #F0C000; 
+           background-color: #FFFFCE; 
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        tr {
+            background: white;
+            color: black;
+        }
+        th {
+            background: #ddd;
+            padding: 5px;
+            text-align: left;
+        }
+        td {
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body style="visibility:hidden" on="l:app.compiled then visible">
+
+   <div id="header">
+      <div id="logo"><a href="http://www.appcelerator.org" title="Appcelerator"><img src="images/appcelerator_gray_logo_small.png"/></a></div>
+      <div id="title">Appcelerator Service List</div>
+   </div>
+   <div style="display: none" kind="message" name="r:appcelerator.services.request"></div>
+    <div id="form" on="l:show.test then hide or l:hide.test then effect[appear]">
+        <app:iterator on="r:appcelerator.services.response[success=true] then execute" 
+                property="services" table='true' headers="Request Message, Before Filter, Class, Method, After Filter, Response Message, Test">
+            <html:td>#{request}</html:td>
+            <html:td>#{before_filter}</html:td>
+            <html:td>#{class}</html:td>
+            <html:td>#{method}</html:td>
+            <html:td>#{after_filter}</html:td>
+            <html:td>#{response}</html:td>
+            <html:td><html:button on="click then l:show.test[request=#{request},response=#{response}]">Test</html:button>
+        </app:iterator>
+    </div>
+    <div style="display: none; padding: 10px" on="l:show.test then effect[appear] or l:hide.test then hide">
+        <div><span style="font-weight: bold" on="l:show.test then value[request]"></span> Send Parameters (enter as json):<br />
+            <textarea name="message" id="messageargs" on="l:show.test then clear"></textarea>
+        </div>
+        <div>
+            <button id="send_button">Send</button>
+        </div>
+        <div><span style="font-weight: bold" on="l:show.test then value[response]"></span> returned:<br />
+            <textarea id="trace" readonly="true"
+               on="r:~.*response then value[expr(Object.toJSON(this.data))] or l:show.test then clear"></textarea>
+        </div>
+        <div><button on="click then l:hide.test">Back to list</button></div>
+    </div>
+    <script type="text/javascript" charset="utf-8">
+        $MQL('l:show.test', function(msg, data) {
+           $('send_button').on('click then r:' + data.request); 
+        });
+    </script>
+</body>
+</html>

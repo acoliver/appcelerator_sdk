@@ -24,6 +24,8 @@ module Appcelerator
   class InmemoryServiceBroker
     include Singleton
     
+    attr_accessor :listeners
+    
     def initialize 
       @listeners={}
     end	  	
