@@ -46,12 +46,12 @@ class ServicebrokerController extends Zend_Controller_Action {
         $auth = $req->getParam("auth");
         $instanceid = $req->getParam("instanceid");
         if (is_null($auth)) {
-            $this->badRequest("no instanceid");
+            $this->badRequest("no auth token");
             return;
         }
 
         if (is_null($instanceid)) {
-            $this->badRequest("no auth token");
+            $this->badRequest("no instanceid");
             return;
         }
 
