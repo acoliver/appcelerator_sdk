@@ -43,31 +43,33 @@ class ServicebrokerController {
             return
         }
 
-        render(request.contentType)
-
-    }
-
-    def getIncommingMessages = {
-        def messages = []
-        def timestamp = Long.parseLong(request.JSON.timestamp)
-
-        request.JSON.messages.each { json_message ->
-
-            def version = json_message["version"]
-            if (version == null || version = "")
-                version = "1.0"
-
-            messages << Message.new(
-                type: json_message['type']
-                version: version
-                scope: json_message['scope']
-                data: json_message['data']
-                serveletRequest: request,
-                timestamp: timestamp,
-            )
+        // Only GET and POST are allowed
+        if (request.getMethod() != "POST" && request.getMethod != "GET") {
+            response.setHeader('HTTP/1.0', '405 Bad Request');
+            response.setHeader('Allow', 'GET POST');
+            render("Invalid method\n")
         }
 
-        return messages
+        // GET requests do nothing currently
+        if (request.getMethod == "GET")
+            render("")
+            return
+        }
+
+        incommingMessages = Message.messagesFromRequest(request)
+
+        incommingMessages.each { req_message ->
+            AppceleratorGrailsPlugin.getAdapters(in_message).each { adapter ->
+                def resp_message = in_message.makeResponse(adapter)
+                adapter.process(req_message, resp_message)
+                if (resp_message != null)
+                    outgoingMessages << resp_message
+            }
+        }
+
+        out = Message.responseFromMessages(outgoingMessages, request.contentType)
+        render out as JSON
+
     }
 
 }
