@@ -29,7 +29,7 @@ require 'find'
 require 'pathname'
 
 NAME = 'black'
-ZIPFILE = File.expand_path "slidetree_black.zip"
+ZIPFILE = File.expand_path "black.zip"
 
 desc 'default build which makes the theme'
 task :default => [:zip] do
