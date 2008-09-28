@@ -67,17 +67,16 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 		f.impl = impl;
 		f.loaded = true;
 
-		if (impl.setPath)
-		{
-			impl.setPath.call(impl,f.dir);
-		}
-
 		if (f.elements)
 		{
 			for (var c=0;c<f.elements.length;c++)
 			{
 				var obj = f.elements[c];
-				Appcelerator.UI.activateUIComponent(f.impl,f.dir,obj.type,obj.name,obj.element,obj.options,obj.callback);
+				var instance = f.impl.create();
+				if (obj.element)
+				{
+					Appcelerator.UI.activateUIComponent(instance,f.dir,obj.type,obj.name,obj.element,obj.options,obj.callback);
+				}
 			}
 
 			f.elements = null;
@@ -89,15 +88,70 @@ Appcelerator.UI.registerUIComponent = function(type,name,impl)
 	}
 };
 
+/**
+ * called to create a UI component
+ *
+ * @param {string} type of UI component
+ * @param {string} name of the UI component
+ * @param {function} callback to be invoked once created. passes the instance of the component.
+ */
+Appcelerator.UI.create = function(type,name,callback)
+{
+	Appcelerator.UI.loadUIComponent(type,name,null,null,function(record)
+	{
+		callback(record.impl.create());
+	});
+};
+
 Appcelerator.UI.activateUIComponent = function(impl,setdir,type,name,element,options,callback)
 {
+	if (impl.setPath)
+	{
+		impl.setPath(setdir);
+	}
 	var formattedOptions = Appcelerator.UI.UIManager.parseAttributes(element,impl,options);
 	if (formattedOptions!=false)
 	{
 		try
 		{
-			impl.build(element,formattedOptions);
-
+			var attrs = impl.getAttributes();
+			if (attrs)
+			{
+				//FIXME: do error checking here
+				for (var c=0;c<attrs.length;c++)
+				{
+					var entry = attrs[c];
+					var value = formattedOptions[entry.name];
+					if (!value)
+					{
+						if (entry.required)
+						{
+							throw "required parameter: '"+entry.name+"' not found"
+						}
+						impl[entry.name] = entry.defaultValue;
+					}
+					else
+					{
+						impl[entry.name] = value;
+					}
+				}
+			}
+			
+			// register a render handler which will initially 
+			// set the visibility back to the original
+			impl.onEvent('render',function()
+			{
+				if (element.style._visibility)
+				{
+					element.style.visibility = element.style._visibility;
+					// once we do this we can remove it safely since this only needs to be done once
+					try { delete element.style._visibility; } catch (e) { element.style._visibility = null; }
+				}
+			});
+			
+			// attempt to render the component onto the element
+			impl.render(element);
+			
 			// keep track of elements and their UI attributes
 			Appcelerator.UI.addElementUI(element,type,name);
 		}
@@ -166,7 +220,14 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 	{
 		if (f.loaded)
 		{
-			Appcelerator.UI.activateUIComponent(f.impl,f.dir,type,name,element,options,callback);
+			if (element)
+			{
+				Appcelerator.UI.activateUIComponent(f.impl.create(),f.dir,type,name,element,options,callback);
+			}
+			else 
+			{
+				if (callback) callback(f);
+			}
 		}
 		else
 		{
@@ -175,23 +236,31 @@ Appcelerator.UI.loadUIComponent = function(type,name,element,options,callback)
 	}
 	else
 	{
-		// added for API calls
-		if (!element.state)element.state = {pending:0};
+		if (element)
+		{
+			if (!element.state)element.state = {pending:0};
+			element.state.pending+=1;
+		}
 		
-		element.state.pending+=1;
-		var dir = Appcelerator.DocumentPath + 'components/'+type+'s/'+name;
+		var dir = Appcelerator.ComponentPath + type + 's/' + name;
 		var path = dir+'/'+name+'.js';
 		Appcelerator.UI.UIComponents[type+':'+name] = {dir:dir,loaded:false,elements:[{type:type,name:name,element:element,options:options,callback:callback}]};
 
 		Appcelerator.Core.remoteLoadScript(path,function()
 		{
-			element.state.pending-=1;
-			Appcelerator.Compiler.checkLoadState(element);
+			if (element)
+			{
+				element.state.pending-=1;
+				Appcelerator.Compiler.checkLoadState(element);
+			}
 		},function()
 		{
 			Appcelerator.UI.UIManager.handleLoadError(element,type,name,null,path);
-			element.state.pending-=1;
-			Appcelerator.Compiler.checkLoadState(element);
+			if (element)
+			{
+				element.state.pending-=1;
+				Appcelerator.Compiler.checkLoadState(element);
+			}
 		});
 	}
 };
@@ -255,6 +324,9 @@ Appcelerator.UI.addElementUIDependency = function(element,ui,type,dependencyUI, 
 // 
 Appcelerator.UI.addElementUI = function(element, ui, type)
 {
+	//FIXME: JGH - do we need this anymore?
+	
+	
 	// is UI attribute combo part of an existing dependency
 	var map = Appcelerator.UI.dependencyMap;
 	for (var i=0;i<map.length;i++)
@@ -323,6 +395,17 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 	queue:[],
 	handle: function(element,attribute,value)
 	{
+		var visibility = (element.style.visibility || 'visible');
+		var show = false;
+		
+		
+		if (visibility == 'visible')
+		{
+			element.style.visibility = 'hidden';
+			element.style._visibility = 'visible';
+			show = true;
+		}
+		
 		Element.addClassName(element,'container');
 
 		// parse value
@@ -338,24 +421,28 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 		};
 		for (var i=0;i<expressions.length;i++)
 		{
-			// turn into comma-delimited string
-			var delimitedString = expressions[i].replace("[",",").replace("]","");
-			var a = delimitedString.split(",");
-			
-			// syntax: attribute[attributeType,arg1=val1,arg2=val2]
-			var ui;
-			var type;
-			var args = {};
-
-			for (var j=0;j<a.length;j++)
+			var idx = expressions[i].indexOf('[');
+			if (idx < 0)
 			{
-				if (j==0)ui = a[0].trim();
-				else if (j==1)type = a[1].trim();
-				else
+				throw new "invalid set expression. must be in the form: control[type]";
+			}
+			var lastIdx = expressions[i].lastIndexOf(']');
+			var ui = expressions[i].substring(0,idx);
+			var params = expressions[i].substring(idx+1,lastIdx);
+			var comma = params.indexOf(',');
+			var type = null, args = {};
+			if (comma < 0)
+			{
+				type = params;
+			}
+			else
+			{
+				type = params.substring(0,comma);
+				args = Appcelerator.Compiler.getParameters(params.substring(comma+1),true);
+				for (var p in args)
 				{
-					var pair = a[j].split("=");
-					args[pair[0].trim()] = pair[1].trim();
-				} 
+					args[p] = Appcelerator.Compiler.getEvaluatedValue(args[p]);
+				}
 			}
 			if (i == 0) element.stopCompile=true;
 			Appcelerator.loadUIManager(ui,type,element,args,false,compiler);
@@ -463,7 +550,7 @@ Appcelerator.Core.loadTheme = function(pkg,container,theme,element,options)
 	var key = Appcelerator.Core.getThemeKey(pkg,container,theme);
 	var themeImpl = Appcelerator.UI.themes[key];
 	var fetch = false;
-	var path = Appcelerator.DocumentPath + '/components/' + pkg + 's/' + container + '/themes/' +theme;
+	var path = Appcelerator.ComponentPath + pkg + 's/' + container + '/themes/' +theme;
 
 	if (!themeImpl)
 	{

@@ -111,12 +111,14 @@
     Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
     Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
     Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
+	Appcelerator.ComponentPath = Appcelerator.DocumentPath + 'components/';
 
 	if (Appcelerator.jsFileLocation.indexOf('code.appcelerator.org') != -1)
 	{
 		var codepath = (('https:' == document.location.protocol) ? 'https://s3.amazonaws.com/code.appcelerator.org' : 'http://code.appcelerator.org' );
 		Appcelerator.ModulePath = codepath + Appcelerator.Version + '/widgets/';
 		Appcelerator.WidgetPath = Appcelerator.ModulePath;
+		Appcelerator.ComponentPath = codepath + Appcelerator.Version + '/components/';
 	}
 
     Appcelerator.Parameters = Appcelerator.Parameters.merge(window.location.href.toQueryParams());

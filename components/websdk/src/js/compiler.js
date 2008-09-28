@@ -2935,7 +2935,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			}
 			else
 			{
-				return expressions[k];
+				return eval(expressions[k]);
 			}
 		}
 		if (v && v.startsWith('__E__'))
@@ -2946,7 +2946,7 @@ Appcelerator.Compiler.getParameters = function(str,asjson)
 			}
 			else
 			{
-				return expressions[v];
+				return eval(expressions[v]);
 			}
 		}
 		var s = Appcelerator.Compiler.decodeParameterValue(v,tick);
@@ -3256,17 +3256,21 @@ Appcelerator.Compiler.executeAfter = function(action,delay,scope)
 Appcelerator.Compiler.handleElementException = function(element,e,context)
 {
 	var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
-	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] with ID: '+(element.id||element)+' has an error: <div>'+Object.getExceptionDetail(e,true)+'</div>' + (context ? '<div>in <pre>'+context+'</pre></div>' : '') + '</div>';
+	var id = element ? element.id : '<unknown>';
+	var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] with ID: '+ id +' has an error: <div>'+Object.getExceptionDetail(e,true)+'</div>' + (context ? '<div>in <pre>'+context+'</pre></div>' : '') + '</div>';
 	$E(msg);
-	if (tag == 'IMG')
+	if (element)
 	{
-		new Insertion.Before(element,msg);
+		if (tag == 'IMG')
+		{
+			new Insertion.Before(element,msg);
+		}
+		else
+		{
+			element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
+		}
+		Element.show(element);
 	}
-	else
-	{
-		element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
-	}
-	Element.show(element);
 };
 
 Appcelerator.Compiler.fieldSets = {};
@@ -3645,6 +3649,20 @@ var AppceleratorCompilerMethods =
         Appcelerator.Compiler.compileExpression(re,webexpr,false);
         return re;
     },
+	set: function(re,value,action)
+	{
+		var a = Appcelerator.Compiler.attributeProcessors['*'];
+		for (var c=0;c<a.length;c++)
+		{
+			var entry = a[c];
+			if (entry[0] == 'set')
+			{
+	            entry[1].handle(re,'set',value);
+				break;
+			}
+		}
+		return re;
+	},
     get: function(e)
     {
         return $el(e);
@@ -3668,7 +3686,15 @@ Object.extend(Array.prototype,
         }
         return this;
     },
-
+    set:function(webexpr)
+    {
+        for (var c=0;c<this.length;c++)
+        {
+           var e = this[c];
+           if (e && Object.isElement(e)) e.set(webexpr);
+        }
+        return this;
+    },
 	withoutAll:function(vals)
 	{
 		return this.without.apply(this, vals);
