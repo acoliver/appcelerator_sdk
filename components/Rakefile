@@ -21,6 +21,12 @@ require File.expand_path("#{BUILD_DIR}/build.rb")
 task :default => [:all] do
 end
 
+task :cleanup do
+	Dir["**/*.zip"].each do |zip|
+		FileUtils.rm_rf zip
+   end
+end
+
 task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all installer:all plugin:all) do
 end
 
