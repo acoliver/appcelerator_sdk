@@ -56,12 +56,12 @@ class ServicebrokerController {
             return
         }
 
-        incommingMessages = Message.messagesFromRequest(request)
+        Message.messagesFromRequest(request).each { req_message ->
 
-        incommingMessages.each { req_message ->
             AppceleratorGrailsPlugin.getAdapters(in_message).each { adapter ->
                 def resp_message = in_message.makeResponse(adapter)
                 adapter.process(req_message, resp_message)
+
                 if (resp_message != null)
                     outgoingMessages << resp_message
             }
