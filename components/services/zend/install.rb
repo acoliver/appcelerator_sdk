@@ -36,11 +36,16 @@ module Appcelerator
       Installer.copy(tx, "#{@service_dir}/pieces/views", get_path(:views))
 
       tx.after_tx {
-          file_dir = File.join(get_path(:lib), "Appcelerator")
-          file = File.join(file_dir, "Service.php")
+          file = File.join(get_path(:lib), "Appcelerator", "Service.php")
+          rel_path = get_relative_path(File.dirname(file), @config[:paths][:services])
+          search_and_replace_in_file(file ,'@@services-path@@', rel_path)
 
-          rel_path = get_relative_path(file_dir, @config[:paths][:services])
-          search_and_replace_in_file(file ,"@@path@@", rel_path)
+          file = File.join(get_path(:web), "index.php")
+          rel_path = get_relative_path(File.dirname(file), @config[:paths][:controllers])
+          search_and_replace_in_file(file, '@@controller-path@@', rel_path)
+
+          rel_path = get_relative_path(File.dirname(file), @config[:paths][:lib])
+          search_and_replace_in_file(file , '@@lib-path@@', rel_path)
 
           search_and_replace_in_file(
                 File.join(@path, ".project"), "MYAPP", @config[:name])
