@@ -55,15 +55,7 @@ Object.extend(String.prototype,
             return func;
         }
         throw Error('code was not a function: ' + this);
-    },
-
-	toFunctionString: function (functionId)
-	{
-		var str = this.trim();
-        var code = 'var functionString_'+functionId+' = function(){ var args = $A(arguments); ' + str + '}; functionString_'+functionId+'();';
-		return code;
-	}
-
+    }
 });
 
 
@@ -167,16 +159,4 @@ String.unescapeXML = function(value)
 	   return output;
 	};
 })();
-
-String.stringValue = function(str) 
-{
-	if (str)
-	{
-		return '"'+str.replace(/"/g, '\\"')+'"';
-	}
-	else
-	{
-		return null;
-	}
-};
 

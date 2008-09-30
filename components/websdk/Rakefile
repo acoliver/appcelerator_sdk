@@ -35,7 +35,7 @@ task :default do
 
   puts 'Compiling appcelerator-lite.js...' if VERBOSE
   # files that need to be included before the others in the directory
-  jslite_prefiles = %w(debug.js string.js uri.js core.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js)
+  jslite_prefiles = %w(debug.js string.js uri.js core.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js observable.js)
   jslite = js_dir+'/appcelerator-lite.js'
   
   LICENSE_HEADER=<<END_LICENSE

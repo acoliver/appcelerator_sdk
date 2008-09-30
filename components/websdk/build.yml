@@ -1,11 +1,11 @@
 --- 
 :type: websdk
 :name: websdk
-:version: 2.2.2
+:version: 2.3.0
 :dependencies: 
 - :type: runtime
   :name: runtime
-  :version: ">=1.2"
+  :version: ">=2.0"
 - :type: widget
   :name: app:calendar
   :version: ">=1.0"

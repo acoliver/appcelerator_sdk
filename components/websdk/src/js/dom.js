@@ -62,24 +62,6 @@ Appcelerator.Util.Dom =
         return false;
     },
 
-    getTagAttribute: function (element, tagname, key, def)
-    {
-        try
-        {
-            var attribute = element.getElementsByTagName(tagname)[0].getAttribute(key);
-            if (null != attribute)
-            {
-                return attribute;
-            }
-        }
-        catch (e)
-        {
-            //squash...
-        }
-
-        return def;
-    },
-
     each: function(nodelist, nodeType, func)
     {
         if (typeof(nodelist) == "array")
@@ -175,36 +157,6 @@ Appcelerator.Util.Dom =
         return text.join('');
     },
 
-/**
- * IE doesn't have an hasAttribute when you dynamically
- * create an element it appears
- */
-    hasAttribute: function (e, n, cs)
-    {
-        if (!e.hasAttribute)
-        {
-            if (e.attributes)
-            {
-                for (var c = 0, len = e.attributes.length; c < len; c++)
-                {
-                    var item = e.attributes[c];
-                    if (item && item.specified)
-                    {
-                        if (cs && item.name == n || !cs && item.name.toLowerCase() == n.toLowerCase())
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        else
-        {
-            return e.hasAttribute(n);
-        }
-    },
-
     getAttribute: function (e, n, cs)
     {
         if (cs)
@@ -292,16 +244,6 @@ Appcelerator.Util.Dom =
 		xml.push("</" + nodeName + ">" + (addbreaks?"\n":""));
 		
         return xml.join('');
-    },
-
-    getAndRemoveAttribute: function (node, name)
-    {
-        var value = node.getAttribute(name);
-        if (value)
-        {
-            node.removeAttribute(name);
-        }
-        return value;
     },
 
     getAttributesString: function (element, excludes)

@@ -59,6 +59,14 @@ Appcelerator.Types.time            = {name: 'Time value'};
 Appcelerator.Types.elementId       = {name: 'Element Id'};
 Appcelerator.Types.commaSeparated  = {name: "Comma Separated Values"};
 Appcelerator.Types.languageId      = {name: "Localization String Id"};
+Appcelerator.Types.string          = {name: "Javascript String"};
+Appcelerator.Types.object          = {name: "Javascript Object"};
+
+/**
+ * these are specific types used by UI controls to indicate special properties
+ */
+Appcelerator.Types.condition       = {name:'Component Condition'};
+Appcelerator.Types.action          = {name:'Component Action'};
 
 /**
  * Checks if a value conforms to some type specification.

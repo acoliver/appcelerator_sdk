@@ -198,3 +198,15 @@ Appcelerator.Util.makeSet = function(array) {
     }
     return set;
 };
+
+Object.getFirstProp = function(obj)
+{
+	if (obj)
+	{
+		for (var p in obj)
+		{
+			return obj[p];
+		}
+	}
+	return null;
+};

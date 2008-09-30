@@ -1,161 +1,207 @@
-Appcelerator.UI.registerUIComponent('control','iterator',
+/*
+ * Copyright 2006-2008 Appcelerator, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
+
+Appcelerator.Control.Iterator = Class.create(Appcelerator.Control.Base,
 {
-	/**
-	 * The attributes supported by the controls. This metadata is 
-	 * important so that your control can automatically be type checked, documented, 
-	 * so the IDE can auto-sense the widgets metadata for autocomplete, etc.
-	 */
-	getAttributes: function()
+	getAttributes:function()
 	{
 		var T = Appcelerator.Types;
-        return [{name: 'on', optional: true, type: T.onExpr,
-		         description: "Used to execute the iterator"},
-                {name: 'items', optional: true, type: T.json,
-				 description: "Literal (or template-replaced) JSON array to iterate over"},
-                {name: 'property', optional: true, type: T.identifier},         
-                {name: 'rowEvenClassName', optional: true, type: T.cssClass},
-                {name: 'rowOddClassName', optional: true, type: T.cssClass},
-                {name: 'table', optional: true, defaultValue: 'false', type: T.bool},
-                {name: 'width', optional: true, defaultValue: '100%', type: T.cssDimension},
-                {name: 'headers', optional: true, defaultValue: ',', type: T.commaSeparated},
-                {name: 'cellspacing', optional: true, defaultValue: '0', type: T.cssDimension},
-                {name: 'selectable', optional: true, type: T.bool}];
+		
+		//
+		// two special attributes you never have to define here: render (action), render (condition)
+		//
+		// if it's a condition, you can register here as T.condition and then call
+		//    this.fireEvent(condition,data)
+		//
+		// if it's an action, you can define a function with the same name that will be invoked
+		//
+		// if it's anything else, you'll need to define a setter method using Javabeans notation
+		//
+		// for all setters, the framework will automatically define a getter which will return
+		// the value of this.<name> of the property as a convenience (unless already defined by you).
+		//
+		//
+		
+		return [
+					{name: 'model', optional: true, type: T.object, description: "Set model for iterator"},
+					{name: 'template', optional: true, type: T.string, description: "Set the template for each row"},
+					{name: 'items', optional: true, type: T.json, description: "reference to array within row"},
+					{name: 'property', optional: true, type: T.string, description: "Property for implicit model"},
+					{name: 'modelChange', type: T.condition, description: "Model change condition event"}
+				];
 	},
-	/**
-	 * The version of the control. This will automatically be corrected when you
-	 * publish the component.
-	 */
-	getVersion: function()
+	setTemplate:function(data)
 	{
-		// leave this as-is and only configure from the build.yml file 
-		// and this will automatically get replaced on build of your distro
-		return '__VERSION__';
-	},
-	/**
-	 * The control spec version.  This is used to maintain backwards compatability as the
-	 * Widget API needs to change.
-	 */
-	getSpecVersion: function()
-	{
-		return 1.0;
-	},
-	getActions: function()
-	{
-		return ['execute'];
-	},	
-	execute: function(id,parameterMap,data,scope)
-	{
-		var compiled = parameterMap['compiled'];
-		var propertyName = parameterMap['property'];
-		var items = parameterMap['items'];
-		
-		var table = parameterMap['table'];
-		var width = parameterMap['width'];
-		var headers = parameterMap['headers'];
-		var selectable = parameterMap['selectable'];
-		var array = null;
-		
-		if (!compiled)
+		if (Object.isString(data))
 		{
-			compiled = eval(parameterMap['template'] + '; init_'+id);
-			parameterMap['compiled'] = compiled;
-		}
-		
-		if (items) 
-		{
-			data = items.evalJSON() || [];
-		}
-		
-		if (propertyName)
-		{
-			array = Object.getNestedProperty(data,propertyName) || [];
+			this.template = data;
 		}
 		else
 		{
-			array = data;
+			this.template = Object.getFirstProp(data);
 		}
-		
-		var html = '';
-		
-		if (!array)
+	},
+	setItems:function(data)
+	{
+		this.setModel(data);
+	},
+	setProperty:function(data)
+	{
+		if (Object.isString(data))
 		{
-			html = compiled(data);
+			this.property = data;
 		}
 		else
 		{
-			if (table)
-			{				
-				html+='<table width="'+width+'" cellspacing="'+parameterMap['cellspacing']+'"><tr>';
-				headers.each(function(h)
-				{
-					html+='<th>'+h+'</th>';
-				});
-				html+='</tr>';
-			}
-         	// this is in the case we pass in an object instead of 
-			// an array, make it an array of length one so we can iterate
-			// !Object.isArray(array) fails in some cases so we don't use it (it's poorly implemented)
-			if (array.length != 0 && array[0] == undefined)
-			{
-				array = [array];
-			}
-			for (var c = 0, len = array.length; c < len; c++)
-			{
-				var o = array[c];
-				if(typeof o != "object")
-				{
-					o = {'iterator_value': o};
-				}
-				o['iterator_index']=c;
-				o['iterator_length']=len;
-				o['iterator_odd_even']=(c%2==0)?'even':'odd';
-				if (table)
-				{
-					if (o['iterator_odd_even'] == 'odd')
-						html+='<tr class="'+parameterMap['rowOddClassName']+'">';
-					else
-						html+='<tr class="'+parameterMap['rowEvenClassName']+'">';
-				}
-				/* escape out the "'" so that works in IE */
-				for (var idx in o)
-				{
-					if (typeof o[idx] == 'string')
-					{
-						o[idx] = o[idx].replace(/'/,'\u2019');
-					}
-				}
-				html += compiled(o);
-				if (table)
-				{
-					html+='</tr>';
-				}
-			}
-			if (table)
-			{
-				html+='</table>';
-			}
+			this.property = Object.getFirstProp(data);
 		}
-		var element = $(id);
-		if (selectable)
+	},
+	setModel:function(data)
+	{
+		if (data && !Appcelerator.Model.isModel(data))
 		{
-			element.setAttribute('selectable',selectable);
+			data = new Appcelerator.Model.TableModel(this.property ? Object.getNestedProperty(data,this.property) : data);
+		}
+		
+		if (this.model)
+		{
+			// unregister listener
+			this.model.unEvent('modelChange',this.modelChanged);
 		}
 
-        Appcelerator.Compiler.destroyContent(element);
-		element.innerHTML = Appcelerator.Compiler.addIENameSpace(html);
-		Appcelerator.Compiler.dynamicCompile(element);
+		this.model = data;
+		
+		// fire event
+		this.model.onEvent('modelChange',this.modelChanged);
+		
+		// fire a model change event for our iterator
+		this.fireEvent('modelChange',this.model);
+		
+		// attempt to render
+		this.render(this.element);
 	},
-	/**
-	 * This is called when the control is loaded and applied for a specific element that 
-	 * references (or uses implicitly) the control.
-	 */
-	build: function(element, parameters)
+	// this is a callback from the registered model
+	modelChanged:function(evt)
 	{
-		parameters['template'] = Appcelerator.Compiler.compileTemplate(Appcelerator.Compiler.getHtml(element),true,'init_'+element.id);
-		parameters['table'] = parameters['table'] == 'true';
-		if (parameters['table'])
+		this.render(this.element);
+	},
+	//
+	// render is a special method that *must* be defined always but 
+	// it need not be registered in getAttributes
+	//
+	render: function(element)
+	{
+		this.element = $(element);
+		
+		if (!this.template)
 		{
-			parameters['headers'] = parameters['headers'].split(',');
+			this.template = Appcelerator.Compiler.getHtml(this.element);
 		}
+		
+		if (this.template)
+		{
+			//return true to indicate it was rendered, false to indicate it wasn't
+			return this.renderControl();
+		}
+		
+		return false;
+	},
+	renderControl: function()
+	{
+		var rowNum = 0;
+		var rowCount = this.model ? this.model.getRowCount() : 0;
+		
+		if (this.element)
+		{
+			var children = Appcelerator.Compiler.getElementChildren(this.element);
+			for (var c=0;c<children.length;c++)
+			{
+				Appcelerator.Compiler.destroy(children[c],true);
+			}
+		}
+		
+		// innerHTML is READ-ONLY for tables in IE
+		if (this.element.nodeName == 'TABLE' && Appcelerator.Browser.isIE)
+		{
+			var nodes = this.element.childNodes;
+			for (var i=0;i<nodes.length;i++)
+			{
+				this.element.removeChild(nodes[i]);
+			}
+		}
+		else
+		{
+			this.element.innerHTML = '';
+		}
+		
+		//TODO: support tables?
+		//TODO: need to review old app:iterator and make sure we support everything
+		//TODO: need to test nested iterators
+		
+		var template = String.unescapeXML(this.template);
+		
+		// recompile in case template has been called
+		var compiledTemplate = Appcelerator.Compiler.compileTemplate(template);
+		
+		while ( rowNum < rowCount )
+		{
+			var row = this.model.getRow(rowNum);
+
+			if (typeof(row)!='object')
+			{
+				row = {'iterator_value': row};
+			}
+
+			row.iterator_row_index = rowNum;
+			row.iterator_row_length = rowCount;
+			row.iterator_odd_even = (rowNum%2==0) ? 'even' : 'odd';
+			
+			//row.iterator_row_class = parameterMap['rowEvenClassName'];
+
+			var html = compiledTemplate.call(this,row);
+			html = scriptlet(html,row);
+			
+			new Insertion.Bottom(this.element,html);
+			rowNum++;
+		}
+		
+		//TODO: compile here?
+		if (this.recompile)
+		{
+			/*
+			var children = Appcelerator.Compiler.getElementChildren(this.element);
+		    var state = element.state || Appcelerator.Compiler.createCompilerState();
+			for (var c=0;c<children.length;c++)
+			{
+			    Appcelerator.Compiler.compileElement(children[c],state,true);
+			}
+			element.state = state;
+		    state.scanned = true;
+		    Appcelerator.Compiler.checkLoadState(element);
+			*/
+		}
+		
+		this.recompile = true;
+		return true;
 	}
 });
+
+Appcelerator.UI.registerUIComponent('control','iterator',{
+	create:function()
+	{
+		return new Appcelerator.Control.Iterator();
+	}
+})

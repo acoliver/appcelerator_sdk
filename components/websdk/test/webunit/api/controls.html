@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body on="l:app.compiled then visible" style="visibility:hidden">
+
+<h3> Control API tests </h3> 
+<p>
+    These tests exercise control API tests.
+</p>
+
+<table width="90%">
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            JS API to create
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test1">
+			Running....
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Scriptlet as body of iterator
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test2">
+			<div set="control[iterator]" on="l:test then model[foo]">
+				<div><%= message %></div>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Interpolated string as body of iterator
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test2">
+			<div set="control[iterator]" on="l:test then model[foo]">
+				<div>#{message}</div>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Iterator shadow variables
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test3">
+			<div set="control[iterator]" on="l:test then items[expr([1,2,3])]">
+				<div>#{iterator_row_index + 1} = #{iterator_value} </div>
+			</div>
+			<div>If you see correct expressions above, it passed</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Iterator custom events being fired
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test4">
+			<div set="control[iterator]" on="l:test then items[expr([1,2,3])] or modelChange then script[$('test4a').innerHTML='Passed']">
+			</div>
+			<div id="test4a"></div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Iterator with array as row
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test5">
+			<div set="control[iterator]" on="l:test then model[rows]">
+				#{message}
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            Iterator with array as row with scriptlet as template
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test6">
+			<div set="control[iterator]" on="l:test then model[rows]">
+				<%= message %>
+			</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            JS Iterator with 1 row model with empty row and static scriptlet
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test7">
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            JS Iterator with on render callback
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test8">
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            JS Iterator with on render callback passed in as arg
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test9">
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
+            JS Iterator with auto setter for property
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test10">
+        </td>
+    </tr>
+</table>
+
+<script>
+
+	new AppControl('iterator',function(control)
+	{
+		control.setTemplate('Passed = #{iterator_value}');
+		control.setItems([true]);
+		control.render('test1');
+	});
+
+	new AppControl('iterator',function(control)
+	{
+		control.setTemplate('<%="Passed"%>');
+		control.setModel([{}]);
+		control.onEvent('render',function(evt)
+		{
+			$('test8').innerHTML = (evt.event == 'render' && evt.source.element.id == 'test7') ? 'Passed' : 'Failed';
+		});
+		control.render('test7');
+	});
+
+	new AppControl('iterator',
+	{
+		onRender:function(evt)
+		{
+			$('test9').innerHTML = (evt.event == 'render' && 
+									evt.source.element.id == 'test9' && 
+									evt.source.readyState == 'RENDERED') ? 'Passed' : 'Failed';
+		},
+		onCreate:function(evt)
+		{
+			var control = evt.data;
+			control.setTemplate('<%="Passed"%>');
+			control.setModel([{}]);
+			control.render('test9');
+		}
+	});
+
+	new AppControl('iterator',function(control)
+	{
+		control.setTemplate('abc');
+		try
+		{
+			$('test10').innerHTML = control.getTemplate() == 'abc' ? 'Passed' : 'Failed';
+		}
+		catch(e)
+		{
+			$('test10').innerHTML = 'Failed with error = '+e;
+		}
+	});
+	
+	$MQ('l:test',{foo:{'message':'Passed'},rows:[{'message':'Passed'}]});
+</script>
+
+</body>
+</html>
