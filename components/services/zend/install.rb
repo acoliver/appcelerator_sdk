@@ -16,22 +16,54 @@
 
 
 module Appcelerator
-  class Zend
-    def create_project(from_path,to_path,config,tx)
-      puts "Creating new zend framework project using #{from_path}" if OPTIONS[:debug]
+  class Zend < Project
+    @@paths.merge!({
+       :lib => ["lib", "library files"],
+       :controllers => ["application/controllers", "Zend Framework controllers includes"],
+       :views => ["application/views/scripts", "Zend Framework views"],
+       :services => ["application/services", "Appcelerator services"]
+    })
 
-      exclude = ["#{__FILE__}",'build.yml', '.project']
-      Appcelerator::Installer.copy(tx, "#{from_path}/src/.", "#{to_path}", exclude, true)
+    def create_project(tx)
+      puts "Creating new Zend Framework project using #{@service_dir}" if OPTIONS[:debug]
 
-      %w(log script).each do |name|
-        FileUtils.rm_rf("#{to_path}/#{name}")
-      end
+      excludes = []
+      Installer.copy(tx, "#{@service_dir}/pieces/root", @path, excludes)
+      Installer.copy(tx, "#{@service_dir}/pieces/controllers", get_path(:controllers))
+      Installer.copy(tx, "#{@service_dir}/pieces/lib", get_path(:lib))
+      Installer.copy(tx, "#{@service_dir}/pieces/public", get_path(:web))
+      Installer.copy(tx, "#{@service_dir}/pieces/services", get_path(:services))
+      Installer.copy(tx, "#{@service_dir}/pieces/views", get_path(:views))
 
-      FileUtils.cp("#{from_path}/src/.project", "#{to_path}")
-      search_and_replace_in_file("#{to_path}/.project",
-                                 "MYAPP",
-                                  File.basename(to_path))
+      tx.after_tx {
+          file_dir = File.join(get_path(:lib), "Appcelerator")
+          file = File.join(file_dir, "Service.php")
+
+          rel_path = get_relative_path(file_dir, @config[:paths][:services])
+          search_and_replace_in_file(file ,"@@path@@", rel_path)
+
+          search_and_replace_in_file(
+                File.join(@path, ".project"), "MYAPP", @config[:name])
+      }
+
       true
+    end
+
+    def get_relative_path(from_dir, to_path)
+        pp = File.expand_path(@path)
+        final = ""
+
+        while (pp != from_dir)
+            from_dir = File.expand_path(File.join(from_dir, ".."))
+            final = final + "../"
+        end
+
+        if not(final.nil?) and final.length > 0
+            File.join(final, to_path)
+        else
+            to_path
+        end
+
     end
 
     def search_and_replace_in_file(file, to_find, to_replace)

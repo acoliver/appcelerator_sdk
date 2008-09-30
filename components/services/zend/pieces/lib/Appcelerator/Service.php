@@ -68,7 +68,7 @@ final class Appcelerator_Service {
     }
 
     public static function crawlServices() {
-        $directory = dirname(__FILE__) . "/../../app/services";
+        $directory = dirname(__FILE__) . "@@path@@"
 
         if (!is_dir($directory)) {
             throw new Exception("no services directory found on server");
