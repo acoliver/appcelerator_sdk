@@ -38,7 +38,7 @@ task :default do
   FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
 
   copy_dir "#{BUILD_DIR}/pieces", File.join(java_dir,'dist/pieces')
-  FileUtils.cp("#{BUILD_DIR}/install.rb", stage_dir)
+  FileUtils.cp("#{BUILD_DIR}/install.rb", File.join(java_dir, 'dist'))
 
   compile_dir(java_source, java_classes, "#{BUILD_DIR}/pieces/lib")
   jar_file = File.expand_path(File.join(java_dir, "dist/pieces/lib/appcelerator-#{version}.jar"))
