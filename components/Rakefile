@@ -108,15 +108,15 @@ namespace :websdk do
   desc "Build the websdk"
   task :all do
     FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-      call_rake ""
+      call_rake "test" # test depends on default
     end
   end
   
-  # task :test do
-  #   FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-  #     call_rake " test"
-  #   end
-  # end
+  task :test do
+    FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
+     call_rake " test"
+    end
+  end
   
   desc "Run the default set of tests (requires JAVA)"
   task :test => 'test:default'
