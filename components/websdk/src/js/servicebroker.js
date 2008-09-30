@@ -434,7 +434,12 @@ Appcelerator.Util.ServiceBroker =
         $D(this.toString() + ' forwarding ' + type + ' to ' + listener + ', direction:' + from + ', datatype:' + datatype + ', data: ' + msg);
         try
         {
-            listener.onMessage.apply(listener, [type,msg,datatype,from,scope]);
+            var stop = listener.onMessage.apply(listener, [type,msg,datatype,from,scope]);
+			
+			if (stop===true)
+			{
+				return false;
+			}
         }
         catch (e)
         {
@@ -1494,4 +1499,244 @@ $MQL('l:reset.performance.request',function(type,msg,datatype,from)
     Appcelerator.Util.Performance.reset();
 });
 
+//
+// welcome, our friend, to RESTy
+//
+function $MQR()
+{
+	if (!Appcelerator.Util.ServiceBroker._mqi)
+	{
+		Appcelerator.Util.ServiceBroker._mqi = [];
+		// we add an interceptor that will stop messages that
+		// have been registered via the $MQR
+		Appcelerator.Util.ServiceBroker.addInterceptor(
+		{
+			interceptQueue: function(msg,callback,type,scope,version)
+			{
+				var found = false;
+				for (var c=0;c<Appcelerator.Util.ServiceBroker._mqi.length;c++)
+				{
+					var cb = Appcelerator.Util.ServiceBroker._mqi[c];
+					if (cb(msg,callback,type,scope,version))
+					{
+						found = true;
+					}
+				}
+				return !found;
+			}
+		});
+	}
 
+	var args = $A(arguments);
+	var regexp = null;
+	var type = null;
+	var router = null;
+	var uri = args.length > 1 && Object.isString(args[1]) ? args[1] : null;
+	var method = args.length > 2 && Object.isString(args[2]) ? args[2] : null;
+	var mapper = args.length > 1 && Object.isFunction(args[1]) ? args[1] : null;
+	var response = args.length > 3 ? args[3] : null;
+	var contentType = args.length > 4 && Object.isString(args[4]) ? args[4] : null;
+	var body = args.length > 5 && Object.isString(args[5]) ? args[5] : Object.isUndefined(args[5]) ? null : Object.toJSON(args[5]);
+	var headers = args.length > 6 ? args[6] : {};
+	
+	var uriTemplate = uri ? Appcelerator.Compiler.compileTemplate(uri) : null;
+	var methodTemplate = method ? Appcelerator.Compiler.compileTemplate(method) : null;
+	var responseTemplate = response ? Appcelerator.Compiler.compileTemplate(response) : null;
+	var bodyTemplate = body ? Appcelerator.Compiler.compileTemplate(body) : null;
+	
+	if (typeof(args[0]) == 'object' && Object.isFunction(args[0].test))
+	{
+		var r = String(args[0]);
+		// we need to convert since when the interceptor gets it, the type 
+		// is fully normalized
+		if (r.startsWith('/r:'))
+		{
+			regexp = new RegExp('remote:'+r.substring(4,r.length-1));
+		}
+		else if (r.startsWith('/remote:'))
+		{
+			regexp = new RegExp('remote:'+r.substring(9,r.length-1));
+		}
+		else if (r.startsWith('/l:'))
+		{
+			regexp = new RegExp('local:'+r.substring(4,r.length-1));
+		}
+		else if (r.startsWith('/local:'))
+		{
+			regexp = new RegExp('local:'+r.substring(7,r.length-1));
+		}
+	}
+	else
+	{
+		type = args[0];
+	}
+	
+	if (args.length > 1 && Object.isFunction(args[1]))
+	{
+		router = args[1];
+	}
+	
+	Appcelerator.Util.ServiceBroker._mqi.push(function(data,callback,msgtype,scope,version)
+	{
+		if (!regexp)
+		{
+			if (type != msgtype)
+			{
+				return false;
+			}
+		}
+		
+        try
+        {
+			var msg = data.data || {};
+			var match = null;
+			if (regexp)
+			{
+				match = regexp.exec(msgtype);
+				if (match)
+				{
+					for (var c=0;c<match.length;c++)
+					{
+						msg[String(c)]=match[c];
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+			if (uri)
+			{
+				uri = uriTemplate(msg);
+			}
+			if (method)
+			{
+				method = methodTemplate(msg);
+			}
+			if (response)
+			{
+				response = responseTemplate(msg);
+			}
+			if (body)
+			{
+				body = bodyTemplate(msg);
+			}
+			if (mapper)
+			{
+				var result = mapper({
+					'protocol' : 'http',
+					'pattern' : regexp,
+					'match' : match,
+					'uri' : uri,
+					'method' : method,
+					'direction' : from,
+					'response': response,
+					'contentType':contentType,
+					'body':body,
+					'headers':headers
+				});
+				
+				method = result.method;
+				uri = result.uri;
+				response = result.response;
+				body = result.body;
+				contentType = result.contentType;
+				headers = result.headers;
+			}
+			
+			// attempt to do cross-domain XHR through the backend proxy for the service
+			if (uri.startsWith('http://'))
+	        {
+	            var uriStrip = uri.match('http://[^/]*');
+	            var currentStrip = window.location.href.match('http://[^/]*');
+
+	            if (currentStrip && uriStrip && (uriStrip[0].toLowerCase() != currentStrip[0].toLowerCase()))
+	            {
+	                var proxy = Appcelerator.ServerConfig['proxy'];
+	                if (proxy)
+	                {
+	                    uri = proxy.value + '?url='+ encodeURIComponent(encodeURI(uri));
+	                }
+	            }
+	        }
+	
+			// if we have body content and we're a GET method, we need to just append the key/values of the 
+			// body into the query string since you can't have a body for GETs
+			if (body && method=='get')
+			{
+				body = $H(body.evalJSON()).toQueryString();
+				if (uri.indexOf('?') > 0)
+				{
+					uri = uri + '&' + body;
+				}
+				else
+				{
+					uri = uri + '?' + body;
+				}
+				body = '';
+			}
+	
+			function handleResponse (contentType,resp)
+			{
+				if (response)
+				{
+					if (Object.isString(response))
+					{
+						if (contentType.indexOf('/json') > 0 || contentType.indexOf('/plain') > 0 || contentType.indexOf('/javascript') > 0)
+						{
+							var json = resp.responseText.evalJSON();
+							$MQ(response,json);
+						}
+						else if (contentType.indexOf('/xml') > 0)
+	                    {
+							var json = {};
+	                        json_encode_xml(resp.responseXML.documentElement, json);
+							$MQ(response,json);
+	                    }
+	                    else
+						{
+							$E('received invalid or unknown mime type of response: '+contentType+' for url: '+uri);
+						}
+					}
+					else if (Object.isFunction(response))
+					{
+						// delegate to our response handler for handling
+						// the response handler much dispatch his own
+						// response message, throw error, whatever...
+						response(uri,contentType,response);
+					}
+				}
+			}
+
+			new Ajax.Request(uri,
+			{
+				method: method,
+				asynchronous: true,
+				evalJS:false,
+				evalJSON:false,
+				postBody: body || '',
+				contentType: contentType || 'application/x-www-form-urlencoded',
+				requestHeaders: headers,
+				onSuccess:function(resp)
+				{
+					var contentType = resp.getResponseHeader('content-type');
+					handleResponse(contentType,resp);
+				},
+	            onException: function (resp, ex)
+	            {
+	                var msg = new String(ex);
+	                $E('Exception doing ' + method + ' to ' + uri + ', exception was: '+msg);
+	            },
+	            onFailure: function (result, json)
+	            {
+	                $E('Failure doing ' + method + ' to ' + uri + ', status = ' + result.status + ', text = ' + result.statusText);
+	            }				
+			});
+        }
+        catch(e)
+        {
+            $E("Unhandled Exception dispatching:" + uri + ", error: " + Object.getExceptionDetail(e));
+        }
+	});
+}
