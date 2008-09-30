@@ -53,33 +53,6 @@ module Appcelerator
 
       true
     end
-
-    def get_relative_path(from_dir, to_path)
-        pp = File.expand_path(@path)
-        final = ""
-
-        while (pp != from_dir)
-            from_dir = File.expand_path(File.join(from_dir, ".."))
-            final = final + "../"
-        end
-
-        if not(final.nil?) and final.length > 0
-            File.join(final, to_path)
-        else
-            to_path
-        end
-
-    end
-
-    def search_and_replace_in_file(file, to_find, to_replace)
-      content = File.read(file).gsub!(to_find, to_replace)
-
-      f = File.open(file,'w+')
-      f.puts(content)
-      f.flush()
-      f.close()
-      true
-    end
     
   end
 end
