@@ -21,8 +21,8 @@
 # docroot
 use File::Spec;
 BEGIN {
-    push @INC, File::Spec->catfile("..", "app");
-    push @INC, File::Spec->catfile("..", "lib");
+    push @INC, "@@services-path@@";
+    push @INC, "@@lib-path@@";
 }
 
 use strict;
