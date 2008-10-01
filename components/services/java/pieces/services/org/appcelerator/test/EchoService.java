@@ -20,7 +20,6 @@ package org.appcelerator.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Service;
-import org.appcelerator.annotation.ServiceProperty;
 import org.appcelerator.messaging.Message;
 
 /**
@@ -42,16 +41,6 @@ public class EchoService
      */
     private static final String TEST_MESSAGE_RESPONSE = "app.test.message.response";
 
-	/**
-	 * incoming message type
-	 */
-	private static final String TEST_BEAN_MESSAGE_REQUEST = "app.test.bean.message.request";
-
-	/**
-	 * response message type
-	 */
-	private static final String TEST_BEAN_MESSAGE_RESPONSE = "app.test.bean.message.response";
-    
     /**
      * method will be invoked when the message
      * <tt>app.test.message.request</tt> is received and will return the message 
@@ -90,42 +79,4 @@ public class EchoService
         response.getData().put("message", "Message was: "+msg);
     }
 
-    /**
-     * method will be invoked when the message
-     * <tt>app.test.bean.message.request</tt> is received and will return the message 
-     * <tt>app.test.bean.message</tt>
-     * 
-     * @param message
-     * @param request
-     * @param response
-     * @throws Exception
-     */
-    @Service(request = TEST_BEAN_MESSAGE_REQUEST, response = TEST_BEAN_MESSAGE_RESPONSE, version = "1.0")
-    protected Bar processTest (Foo foo)
-        throws Exception
-    {
-		Bar bar = new Bar();
-		bar.setBar(foo.getFoo());
-		return bar;
-    }
-
-    /**
-     * method will be invoked when the message
-     * <tt>app.test.bean.message.request</tt> is received and will return the message 
-     * <tt>app.test.bean.message</tt>
-     * 
-     * @param message
-     * @param request
-     * @param response
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Service(request = TEST_BEAN_MESSAGE_REQUEST, response = TEST_BEAN_MESSAGE_RESPONSE, version = "2.0")
-    protected java.util.Map processTestVersion2 (@ServiceProperty(name="foo") Foo foo, @ServiceProperty(name="bar") Bar bar)
-        throws Exception
-    {
-		java.util.Map<String,String> map = new java.util.HashMap<String,String>();
-		map.put("hello","world");
-		return map;
-    }
 }
