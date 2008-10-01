@@ -50,6 +50,7 @@ task :default => [:stage] do
       puts entry[:filename]
       call_rake
       FileUtils.cp_r "#{entry[:name]}.zip", "#{theme_dir}/#{entry[:filename]}"
+      compress_js_in_zip "#{theme_dir}/#{entry[:filename]}"
     end
   end
   

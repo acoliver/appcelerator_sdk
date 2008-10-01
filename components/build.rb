@@ -26,12 +26,16 @@ COMPRESS = ENV['nomin'] ? false : true
 CWD = File.expand_path "#{File.dirname(__FILE__)}"
 STAGE_DIR = File.expand_path "#{CWD}/../stage"
 
+def md5(file)
+  Digest::MD5.hexdigest File.read(file)
+end
+
 def md5_file(file)
-   md5 = Digest::MD5.hexdigest File.read(file)
    f = File.open "#{file}.md5", 'w+'
-   f.puts md5
+   f.puts md5(file)
    f.close
 end
+
 
 def clean_dir(dir)
   FileUtils.rm_r dir if File.exists?(dir)
@@ -192,5 +196,89 @@ end
 desc 'default build will build all services'
 task :default => [:stage] do
   build_subdir "#{Dir.pwd}"
+end
+
+YUI_VERSION = '2.2.5'
+YUI_JAR = to_path "#{CWD}/websdk/lib/yuicompressor-#{YUI_VERSION}.jar"
+YUI_COMPRESSOR = "java -jar \"#{YUI_JAR}\""
+COMPRESS_RB = "ruby \"#{CWD}/websdk/lib/compress.rb\""
+
+
+def compress_fail(src,tf)
+  if not VERBOSE
+    $stderr.puts File.read(tf)
+    $stderr.puts
+    $stderr.puts "source of file was: \n\n#{src}"
+  end
+  fail("Syntax error in websdk source, unable to compress")
+end
+
+def compress_and_mangle(code,type=:js)
+  
+  if code.strip.length == 0
+    return ''
+  end
+  
+  path = File.expand_path(File.join(Dir.tmpdir,"#{rand($$)}"))
+
+  filein = "#{path}.in.#{type}"
+  
+  FileUtils.rm_rf filein if File.exists?(filein)
+  f = File.open(filein,'w')
+  f.puts code
+  f.close
+  
+  fileout = "#{path}.out.#{type}"
+
+  error_temp_file = "#{path}.err"
+
+  if VERBOSE or is_win32
+    suppress_output = ""
+  else
+    suppress_output = ">#{to_path error_temp_file} 2>&1"
+  end
+  
+  call_command("#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}") || compress_fail(filein,error_temp_file)
+  if type == :js
+    call_command("#{COMPRESS_RB} \"#{fileout}\" \"#{fileout}2\" #{suppress_output}") || compress_fail(fileout,error_temp_file)
+    File.read("#{fileout}2")
+  else
+    File.read("#{fileout}")
+  end
+end
+
+
+def compress_js_in_zip(zf)
+  
+  path = File.expand_path(File.join(Dir.tmpdir,"#{rand($$)}"))
+  
+  files = []
+  
+  Zip::ZipFile.foreach(zf) do |z|
+    if z.name =~ /\.(js|css)$/
+      files << z
+    end
+  end
+  
+  Zip::ZipFile.open(zf) do |z|
+    files.each do |f|
+      js = z.read(f)
+      type = (f.name =~ /\.js$/) ? :js : :css
+      puts "type:#{type} for #{f.name}"
+      jsout = compress_and_mangle(js,type)
+      FileUtils.rm_rf path if File.exists? path
+      jf = File.open(path,'w+')
+      jf.write jsout
+      jf.close
+      # ze = z.get_entry(f.path)
+      # z.replace(ze,path)
+      z.get_output_stream(f.name) {|zf| zf.write jsout }
+      if type == :js
+        z.get_output_stream(f.name.gsub('.js','_debug.js')) { |zf| zf.puts js }
+      else
+        z.get_output_stream(f.name.gsub('.css','_debug.css')) { |zf| zf.puts js }
+      end
+    end
+  end
 end
 

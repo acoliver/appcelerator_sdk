@@ -16,6 +16,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+require 'tempfile'
+require 'tmpdir'
 
 
 BUILD_DIR = File.dirname(__FILE__)
@@ -23,6 +25,7 @@ require File.expand_path("#{BUILD_DIR}/../build.rb")
 build_config = load_config(BUILD_DIR)
 JS_PATH = "javascripts"
 WEBSDK_STAGE_DIR = "#{STAGE_DIR}/websdk"
+
 
 desc 'build websdk files'
 task :default do
@@ -121,45 +124,31 @@ END_LICENSE
   jsdf.write jsd
   jsdf.close
   
-  # Make the compressors quiet, but if a fatal error occurs, display output
-  require 'tempfile'
-  require 'tmpdir'
-  ERROR_TEMP_FILE = Tempfile.new('websdk').path
-   
-  if VERBOSE or is_win32
-    SUPPRESS_OUTPUT = ""
-  else
-    SUPPRESS_OUTPUT = ">#{to_path ERROR_TEMP_FILE} 2>&1"
-  end
-  
-  def compress_fail
-    if not VERBOSE
-      puts File.read(ERROR_TEMP_FILE)
-    end
-    fail("Syntax error in websdk source, unable to compress")
-  end
 
-  jar = to_path "#{BUILD_DIR}/lib/yuicompressor-2.2.5.jar"
-  YUI_COMPRESSOR = "java -jar \"#{jar}\""
-  COMPRESS_RB = "ruby \"#{BUILD_DIR}/lib/compress.rb\""
-  
   if COMPRESS
     puts "Compressing appcelerator.js"
-    call_command("#{YUI_COMPRESSOR} \"#{jsdebug}\" -o \"#{jsout}\" #{SUPPRESS_OUTPUT}") || compress_fail
-    call_command("#{COMPRESS_RB} \"#{jsout}\" \"#{jstemp}\" #{SUPPRESS_OUTPUT}") || compress_fail
-    FileUtils.rm jsout
+
+    js = compress_and_mangle(File.read(jsdebug))
+    f = File.open(jstemp,'w')
+    f.write js
+    f.close
+
+    FileUtils.rm jsout if File.exists?(jsout)
     append_file(LICENSE_HEADER, jsout, true)
     append_file(jstemp, jsout)
-    FileUtils.rm jstemp
 
-    call_command("#{YUI_COMPRESSOR} \"#{jslite}\" -o \"#{jstemp}\" #{SUPPRESS_OUTPUT}") || compress_fail
-    call_command("#{COMPRESS_RB} \"#{jstemp}\" \"#{jslite}\" #{SUPPRESS_OUTPUT}") || compress_fail
-    FileUtils.rm jstemp
+    js = compress_and_mangle(File.read(jslite))
+    f = File.open(jslite,'w')
+    f.write js
+    f.close
+
+    FileUtils.rm jstemp if File.exists?(jstemp)
     append_file(LICENSE_HEADER, jstemp, true)
     append_file(jslite, jstemp)
     FileUtils.rm jslite
     append_file(jstemp, jslite)
     FileUtils.rm jstemp
+
   else
     FileUtils.cp jsdebug, jsout
   end
@@ -205,7 +194,7 @@ def copy_tests(test_src_path, test_dst_path)
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
   
-  FileUtils.rm_r(test_dst_path, :verbose => VERBOSE) if File.exists? test_dst_path
+  #FileUtils.rm_r(test_dst_path, :verbose => VERBOSE) if File.exists? test_dst_path
   cp_r(test_src_path, test_dst_path)
   FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_dst_path) # there's no svn garbage here
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
@@ -216,7 +205,24 @@ def copy_tests(test_src_path, test_dst_path)
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
     name = file[/widgets\/([^\/]+)\/src/,1]
+    tf = "#{widgets_dst_path}/#{name}"
+    sf = "#{file}#{name}.js"
+    utf = File.join(tf,"#{name}_debug.js")
+    if File.exists? utf
+      a = md5 utf
+      b = md5 sf
+      next if a==b
+    end
     cp_r(file,"#{widgets_dst_path}/#{name}")
+    js = File.read sf
+    puts "+ compressing #{sf}" if VERBOSE
+    jsout = compress_and_mangle(js,:js)
+    f = File.open(File.join(tf,"#{name}.js"),'w')
+    f.write jsout
+    f.close
+    f = File.open(utf,'w')
+    f.write js
+    f.close
   end  
   
   %w(controls layouts behaviors).each do |name|
@@ -224,7 +230,25 @@ def copy_tests(test_src_path, test_dst_path)
     Dir["#{BUILD_DIR}/../#{name}/*"].each do |file|
       next unless File.directory? file
       aname = File.basename(file)
-      cp_r("#{BUILD_DIR}/../#{name}/#{aname}/","#{test_dst_path}/components/#{name}/#{aname}")
+      sf = "#{file}/#{aname}.js"
+      td = "#{test_dst_path}/components/#{name}/#{aname}/"
+      utf = File.join(td,"#{aname}_debug.js")
+      if File.exists? utf
+        a = md5 utf
+        b = md5 sf
+        next if a==b
+      end
+      cp_r("#{BUILD_DIR}/../#{name}/#{aname}/",td)
+      js = File.read sf
+      t = File.join(td,"#{aname}.js")
+      puts "+ compressing #{t}" if VERBOSE
+      jsout = compress_and_mangle(js,:js)
+      f = File.open(t,'w')
+      f.write jsout
+      f.close
+      f = File.open(utf,'w')
+      f.write js
+      f.close
     end
   end
 
@@ -236,10 +260,28 @@ def copy_tests(test_src_path, test_dst_path)
       Dir["#{BUILD_DIR}/../themes/#{type}/#{control}/*"].each do |fn|
         next unless File.directory?(fn)
         theme = File.basename(fn)
+        tf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
+        utf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}_debug.js"
+        if File.exists? utf
+          md5a = md5(utf)
+          md5b = md5("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/#{theme}.js")
+          next if md5a == md5b
+        end
         cp_r("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/","#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}")
+        puts "+ compressing #{tf}" if VERBOSE
+        jsf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
+        js = File.read tf
+        jsout = compress_and_mangle(js,:js)
+        f = File.open(tf,'w')
+        f.write jsout
+        f.close
+        f = File.open(utf,'w')
+        f.write js
+        f.close
       end
     end
   end
+  FileUtils.cp_r("#{BUILD_DIR}/lib/jquery/jquery.js","#{test_dst_path}/javascripts")
   FileUtils.cp_r("#{BUILD_DIR}/src/web/component_notfound.html","#{test_dst_path}")
 end
 

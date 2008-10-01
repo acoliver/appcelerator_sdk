@@ -34,6 +34,7 @@ task :default => [:stage] do
     FileUtils.cd(dir) do |d|
       call_rake
       FileUtils.cp_r "#{name}.zip", "#{behavior_dir}/behavior_#{name}.zip"
+      compress_js_in_zip "#{behavior_dir}/behavior_#{name}.zip"
       behaviors << name
     end
   end

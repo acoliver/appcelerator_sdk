@@ -35,6 +35,7 @@ task :default => [:stage] do
     FileUtils.cd(dir) do |d|
       call_rake
       FileUtils.cp_r "#{name}.zip", "#{widget_dir}/#{name}.zip"
+      compress_js_in_zip "#{widget_dir}/#{name}.zip"
       widgets << name
     end
   end
