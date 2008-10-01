@@ -248,6 +248,9 @@ def compress_and_mangle(code,type=:js)
 end
 
 
+#
+# this method will compress any JS/CSS in the zip and replace it
+#
 def compress_js_in_zip(zf)
   
   path = File.expand_path(File.join(Dir.tmpdir,"#{rand($$)}"))
@@ -264,14 +267,11 @@ def compress_js_in_zip(zf)
     files.each do |f|
       js = z.read(f)
       type = (f.name =~ /\.js$/) ? :js : :css
-      puts "type:#{type} for #{f.name}"
       jsout = compress_and_mangle(js,type)
       FileUtils.rm_rf path if File.exists? path
       jf = File.open(path,'w+')
       jf.write jsout
       jf.close
-      # ze = z.get_entry(f.path)
-      # z.replace(ze,path)
       z.get_output_stream(f.name) {|zf| zf.write jsout }
       if type == :js
         z.get_output_stream(f.name.gsub('.js','_debug.js')) { |zf| zf.puts js }
@@ -280,5 +280,7 @@ def compress_js_in_zip(zf)
       end
     end
   end
+  
+  FileUtils.rm_rf path
 end
 

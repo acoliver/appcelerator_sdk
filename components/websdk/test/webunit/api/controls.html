@@ -44,6 +44,17 @@
     </tr>
     <tr>
         <td class="test" width="35%" valign="middle">
+            Items as property of control
+        </td>
+        <td class="result" width="65%" valign="top" align="left" id="test2">
+			<div set="control[iterator,items=expr([{message:1},{message:2},{message:3}])]">
+				<div><%= message %></div>
+			</div>
+			<div>If you see 1,2,3 in separate rows it passed</div>
+        </td>
+    </tr>
+    <tr>
+        <td class="test" width="35%" valign="middle">
             Iterator shadow variables
         </td>
         <td class="result" width="65%" valign="top" align="left" id="test3">

@@ -202,6 +202,8 @@ def copy_tests(test_src_path, test_dst_path)
   cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
   cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_dst_path}/swf/")
 
+  puts "copying components ... this make take a few minutes the first time through..."
+
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
     name = file[/widgets\/([^\/]+)\/src/,1]

@@ -498,7 +498,7 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 		// parse value
 		var expressions = Appcelerator.Compiler.smartSplit(value,' and ');
 		var count = 0;
-		var compiler = function(instance)
+		var compiler = function(instance,args)
 		{
 			count++;
 			element._component = instance;
@@ -510,6 +510,21 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 					show = false;
 				}
 			});
+			if (args)
+			{
+				for (var p in args)
+				{
+					var setter = instance[Appcelerator.UI.makeSetter(p)];
+					if (Object.isFunction(setter))
+					{
+						setter.call(instance,args[p]);
+					}
+					else
+					{
+						throw new "Invalid property '"+p+"' called for "+element.id;
+					}
+				}
+			}
 			instance.render(element);
 			if (count == expressions.length)
 			{
@@ -526,44 +541,52 @@ Appcelerator.Compiler.registerAttributeProcessor('*','set',
 			{
 				throw new "invalid set expression. must be in the form: control[type]";
 			}
-			var lastIdx = expressions[i].lastIndexOf(']');
-			var ui = expressions[i].substring(0,idx);
-			var params = expressions[i].substring(idx+1,lastIdx);
-			var comma = params.indexOf(',');
-			var type = null, args = {};
-			if (comma < 0)
+			(function()
 			{
-				type = params;
-			}
-			else
-			{
-				type = params.substring(0,comma);
-				args = Appcelerator.Compiler.getParameters(params.substring(comma+1),true);
-				for (var p in args)
+				var lastIdx = expressions[i].lastIndexOf(']');
+				var ui = expressions[i].substring(0,idx);
+				var params = expressions[i].substring(idx+1,lastIdx);
+				var comma = params.indexOf(',');
+				var type = null, args = {};
+				if (comma < 0)
 				{
-					args[p] = Appcelerator.Compiler.getEvaluatedValue(args[p]);
+					type = params;
 				}
-			}
-			if (i == 0) element.stopCompile=true;
+				else
+				{
+					type = params.substring(0,comma);
+					args = Appcelerator.Compiler.getParameters(params.substring(comma+1),true);
+					for (var p in args)
+					{
+						args[p] = Appcelerator.Compiler.getEvaluatedValue(args[p]);
+					}
+				}
+				if (i == 0) element.stopCompile=true;
 
-			element.state.pending+=1;
-			
-			switch (ui)
-			{
-				case 'control':
-					element._component = new AppControl(type,compiler,element);
-					break;
-				case 'theme':
-					element._component = new AppTheme(type,compiler,element);
-					break;
-				case 'layout':
-					element._component = new AppLayout(type,compiler,element);
-					break;
-				default:
+				element.state.pending+=1;
+
+				var callback = function(instance)
 				{
-					throw "unknown component type: "+ui;
+					compiler(instance,args);
+				};
+
+				switch (ui)
+				{
+					case 'control':
+						element._component = new AppControl(type,callback,element);
+						break;
+					case 'theme':
+						element._component = new AppTheme(type,callback,element);
+						break;
+					case 'layout':
+						element._component = new AppLayout(type,callback,element);
+						break;
+					default:
+					{
+						throw "unknown component type: "+ui;
+					}
 				}
-			}
+			})();
 		}
 	},
 	metadata:
@@ -596,6 +619,17 @@ Appcelerator.UI.UIManager.setDefaultThemes = function(type,theme)
 	Appcelerator.UI.UIManager.defaultThemes[type] = theme;
 };
 
+Appcelerator.UI.makeSetter = function(actionName)
+{
+	var mn =  actionName.charAt(0).toUpperCase() + actionName.substring(1);
+	return 'set' + mn;
+};
+
+Appcelerator.UI.makeGetter = function(actionName)
+{
+	var mn =  actionName.charAt(0).toUpperCase() + actionName.substring(1);
+	return 'get' + mn;
+};
 
 Appcelerator.UIProxy = Class.create(Appcelerator.Observer,
 {
@@ -788,14 +822,13 @@ Appcelerator.UIProxy = Class.create(Appcelerator.Observer,
 								(function()
 								{
 									var actionName = entry.name;
-									var mn =  actionName.charAt(0).toUpperCase() + actionName.substring(1);
-									var setter = 'set' + mn;
+									var setter = Appcelerator.UI.makeSetter(actionName);
 									var action = instance[setter];
 									if (action)
 									{
 										makeAction(instance,actionName,action);
 									}
-									var getter = 'get' + mn;
+									var getter = Appcelerator.UI.makeGetter(actionName);
 									if (!instance[getter])
 									{
 										instance[getter]=function()
