@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns:app="http://www.appcelerator.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<script type="text/javascript" src="../javascripts/jquery.js"></script>
+	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/test.css" />
+</head>
+<body on="l:app.compiled then visible" style="visibility:hidden">
+
+	<h3> jQuery + Appcelerator compatibility </h3> 
+	<p>
+		These tests exercise compatibility with jQuery
+	</p>
+
+	<table width="90%">
+		<tr>
+			<td class="test" valign="middle">
+				Widgets compatability with Appcelerator + Yahoo + jQuery all in one.
+				If the widget works, great!
+			</td>
+			<td class="result">
+				<app:calendar close="true" title="Pick a Date" inputid="mydate" on="l:show.calendar then execute"></app:calendar>
+				<input type="text" id="mydate" value="click me" on="focus then l:show.calendar" />
+				<button on="click then l:show.calendar">Set Date</button>
+			</td>
+		</tr>
+		<tr>
+			<td class="test" valign="middle">
+				Make sure we can invoke jQuery functions.
+			</td>
+			<td class="result">
+				<div id="test2">Failed</div>
+				<script>
+					jQuery("#test2").html("Passed");
+				</script>
+			</td>
+		</tr>
+	</table>
+	
+</body>
+</html>
