@@ -74,13 +74,7 @@ module Appcelerator
     def install(tx, update)
 
       from_path = @service_dir
-      config_dir = get_path(:config)
-
-      files_to_skip = [
-        "#{__FILE__}", 'war.rb','install.rb',
-        'build.yml','appcelerator.xml','build.xml',
-        'build.properties','lib\/appcelerator.jar',
-        'build-override.xml','app/services/org/appcelerator/test/EchoService.java']
+      config_dir = get_path("config")
 
       if update != false and not(update.nil?)
         excludes = ['build-override.xml', 'web.xml']
@@ -92,7 +86,7 @@ module Appcelerator
 
       Installer.copy(tx, "#{from_path}/pieces/root", @path, excludes)
       Installer.copy(tx, "#{from_path}/pieces/lib", get_path(:lib))
-      Installer.copy(tx, "#{from_path}/pieces/config", get_path(:config))
+      Installer.copy(tx, "#{from_path}/pieces/config", config_dir)
       Installer.copy(tx, "#{from_path}/pieces/plugins", get_path(:plugins))
       Installer.copy(tx, "#{from_path}/pieces/public", get_path(:web))
       Installer.copy(tx, "#{from_path}/pieces/services", get_path(:services))

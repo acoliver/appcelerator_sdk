@@ -72,9 +72,9 @@ class RunJavaPlugin < Appcelerator::Plugin
           exit 1
         end
 
-        webdir = project.config[:web]
-        servicesdir = project.config[:services]
-        libdir = project.config[:lib]
+        webdir = project.config[:paths][:web]
+        servicesdir = project.config[:paths][:services]
+        libdir = project.config[:paths][:lib]
 
         jars = Dir["#{libdir}/**/**"].inject([]) do |jars,file|
           jars << "#{file}".gsub(/\//,pathsep) if File.extname '.jar'
