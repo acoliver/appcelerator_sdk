@@ -3,17 +3,23 @@
 # Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
 include Appcelerator
 module Appcelerator
-  class Struts
+  class Struts < Project
+
+    @@paths.merge!({
+      :src_java => ["src/java", "Java source"],
+      :src_war => ["src/war", "war includes"],
+      :lib => ["lib", "necessary jars"]
+    })
 
     #
-    # this method is called when a project:update command is run on an existing
+    # this method is called whenkn a project:update command is run on an existing
     # project.  NOTE: from_version and to_version *might* be the same in the case
     # we're forcing and re-install.  they could be different if moving from one
     # version to the next
     #
-    def update_project(from_path,to_path,config,tx,from_version,to_version)
+    def update_project(from_version, to_version, tx)
       puts "Updating java from #{from_version} to #{to_version}" if OPTIONS[:verbose]
-      install(from_path,to_path,config,tx,true)
+      install(tx,true)
 
       classpath = IO.readlines("#{to_path}/.classpath")
       classpath.each do |line|
@@ -29,8 +35,8 @@ module Appcelerator
     # command *might* be called instead of update_project in the case the user
     # ran --force-update on an existing project using create:project
     #
-    def create_project(from_path,to_path,config,tx)
-      install(from_path,to_path,config,tx,false)
+    def create_project(tx)
+      install(tx,false)
     end
     
     def get_property(propertyfile,property)
@@ -58,13 +64,37 @@ module Appcelerator
     end
     
     private
-    def install(from_path,to_path,config,tx,update)
+    def install(tx, update)
 
       # remove old jars for upgrades
-      if (File.exists?("#{to_path}/public/WEB-INF/lib"))
-          remove_prev_jar(tx,"appcelerator","#{to_path}/public/WEB-INF/lib")
-          remove_prev_jar(tx,"appcelerator-struts","#{to_path}/public/WEB-INF/lib")
+      if (File.exists?("#{@path}/public/WEB-INF/lib"))
+          remove_prev_jar(tx,"appcelerator","#{@path}/public/WEB-INF/lib")
+          remove_prev_jar(tx,"appcelerator-struts","#{@path}/public/WEB-INF/lib")
       end
+
+      from_path = @service_dir
+
+      if update != false and not(update.nil?)
+        excludes = ['build-override.xml', 'web.xml']
+      else
+        excludes = []
+      end
+
+      Installer.copy(tx, "#{from_path}/pieces/root", @path, excludes)
+      Installer.copy(tx, "#{from_path}/pieces/lib", get_path(:lib))
+      Installer.copy(tx, "#{from_path}/pieces/config", get_path("config"))
+      Installer.copy(tx, "#{from_path}/pieces/plugins", get_path(:plugins))
+      Installer.copy(tx, "#{from_path}/pieces/public", get_path(:web))
+      Installer.copy(tx, "#{from_path}/pieces/services", get_path(:services))
+
+      tx.after_tx { 
+        file = File.join(@path, "build.xml")
+        search_and_replace_in_file(file, "@@web-dir@@", @config[:paths][:web])
+        search_and_replace_in_file(file, "@@services-dir@@", @config[:paths][:services])
+      }
+
+      true
+
     end
 
     def replace_app_name(name,file)

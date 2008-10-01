@@ -7,10 +7,10 @@
     <property name="run.port" value="4000"/>
     <property name="run.scanperiod" value="5000"/>
 
-    <property name="web.dir" value="public"/>
+    <property name="web.dir" value="@@web-dir@@"/>
     <property name="classes.dir" value="${web.dir}/WEB-INF/classes"/>
     <property name="lib.dir" value="${web.dir}/WEB-INF/lib"/>
-    <property name="services.dir" value="app/services"/>
+    <property name="services.dir" value="@@services-dir@@"/>
 
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
