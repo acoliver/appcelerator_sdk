@@ -63,6 +63,11 @@ task :default do
  **/
 END_LICENSE
 
+  compat_file = "#{js_dir}/appcelerator-compat.js"
+  
+  append_file(LICENSE_HEADER,compat_file,true)
+  append_file("#{js_source}/compat.js", compat_file)
+
   append_file(LICENSE_HEADER,jslite,true)
   append_file("#{js_source}/prolog.js", jslite)
   
@@ -147,6 +152,7 @@ END_LICENSE
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add("#{JS_PATH}/appcelerator-lite.js",jslite)
     zipfile.add("#{JS_PATH}/appcelerator-debug.js",jsdebug)
+    zipfile.add("#{JS_PATH}/appcelerator-compat.js",compat_file)
     zipfile.add("#{JS_PATH}/appcelerator.js",jsout)
     zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
     %w(control layout theme behavior).each do |type|
@@ -190,14 +196,15 @@ def copy_tests(test_src_path, test_dst_path)
   cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
   cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_dst_path}/swf/")
 
-###FIXME
   actions_src_path = "#{BUILD_DIR}/src/js/plugins"
   actions_dest_path = "#{test_dst_path}/components/plugins"
-  FileUtils.mkdir actions_dest_path unless File.exists? actions_dest_path
+  FileUtils.mkdir_p(actions_dest_path,:verbose=>VERBOSE) unless File.exists? actions_dest_path
   
   Dir["#{actions_src_path}/*_action.js"].each do |file|
     FileUtils.cp file, actions_dest_path
   end
+  
+  puts "Copying tests ... this will take a few moments the first time through..."
 
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
