@@ -1,0 +1,5 @@
+$.fn.activator = function(v)
+{
+
+};	
+

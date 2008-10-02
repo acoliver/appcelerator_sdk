@@ -1,0 +1,4 @@
+$.fn.decorator = function(value)
+{
+
+};	

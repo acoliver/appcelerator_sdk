@@ -1,74 +1,99 @@
-/**
- * Appcelerator bootstrap loader
- */
 
-/** THESE CHECKS ARE NEEDED IN CASE THE NON-BUNDLED VERSION OF PROTOTYPE/SCRIPTACULOUS IS USED **/
- 
-if (typeof Prototype=='undefined')
+/*- Appcelerator + jQuery - a match made in heaven */
+
+App = AppC = jQuery.prototype;
+
+AppC.Version = 
 {
-    var msg = 'Required javascript library "Prototype" not found';
-    alert(msg);
-    throw msg;
-}
-
-if (typeof Effect=='undefined')
-{
-    var msg = 'Required javascript library "Scriptaculous" not found';
-    alert(msg);
-    throw msg;
-}
-        
-
-if (Object.isUndefined(window['$sl']))
-{
-	/**
-	 * create a non-conflicting alias to $$
-	 */
-	window.$sl = function()
-	{
-	    return Selector.findChildElements(document, $A(arguments));
-	}
-}
-if (Object.isUndefined(window['$el']))
-{
-	/**
-	 * create a non-conflicting alias to $
-	 */
-	window.$el = eval('window["$"]');
-}
-
-var Appcelerator = {};
-Appcelerator.Util={};
-Appcelerator.Browser={};
-Appcelerator.Compiler={};
-Appcelerator.Config={};
-Appcelerator.Core={};
-Appcelerator.Localization={};
-Appcelerator.Validator={};
-Appcelerator.Decorator={};
-Appcelerator.Module={};
-Appcelerator.Widget={};
-Appcelerator.Shortcuts={}; // please do not touch this
-
-Appcelerator.started = new Date;
-Appcelerator.loadTime = -1;
-Appcelerator.compileTime = -1;
-
-Appcelerator.Version = 
-{
+	value: '${version.major}.${version.minor}.${version.rev}',
 	major: parseInt('${version.major}'),
 	minor: parseInt('${version.minor}'),
 	revision: parseInt('${version.rev}'),
+	date: '${build.date}',
 	toString:function()
 	{
-		return this.major + "." + this.minor + '.' + this.revision;
+		return this.value;
 	}
 };
 
-Appcelerator.LicenseType = 'Apache License Version 2.0 - see http://license.appcelerator.org';
-Appcelerator.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
-Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
-Appcelerator.Parameters = $H({});
+AppC.LicenseType = 'Apache License Version 2.0 - see http://license.appcelerator.org';
+AppC.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
+AppC.LicenseMessage = 'Appcelerator is licensed under ' + AppC.LicenseType;
+
+var started = new Date;
+
+var docRoot;
+var idx = top.window.document.location.href.lastIndexOf('/');
+   if (idx == top.window.document.location.href.length - 1)
+   {
+   	docRoot = top.window.document.location.href;
+   }
+   else
+   {
+       docRoot  = top.window.document.location.href.substr(0, idx);
+       if (docRoot.substring(docRoot.length - 1) != '/')
+       {
+           docRoot  = docRoot + '/';
+       }
+   }
+
+AppC.docRoot = docRoot;
+
+var absRe = /file:|http(s)?:/
+
+var jsLocation = $('script[@src~=appcelerator]').attr('src');
+
+if (!absRe.test(jsLocation))
+{
+	jsLocation = AppC.docRoot + (jsLocation.charAt(0)=='/' ? jsLocation.substring(1) : jsLocation);
+}
+
+AppC.compRoot = AppC.docRoot + 'components';
+AppC.pluginRoot = AppC.compRoot + '/plugins';
+
+var appid = 0;
+
+function ensureId (el)
+{
+	var id = $(el).attr('id');
+	if (!id)
+	{
+		id = 'app_' + (appid++);
+		$(el).attr('id',id);
+	}
+	return el;
+}
+
+$.fn.compile = function()
+{
+	var node = $(this).get(0);
+	var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
+	var selector = parent+' > '+App.selectors.join(', '+parent+' > ');
+	
+	console.debug(selector);
+	
+	$.each($.unique($(selector)),function()
+	{
+		var el = ensureId(this);
+		var e = $(el);
+		var myid = e.attr('id');
+		e.data('stopCompile',false);
+		console.debug(' + compiling '+myid);
+		App.executeActions(el);
+		var stop = e.data('stopCompile');
+		e.removeData('stopCompile');
+		if (!stop)
+		{
+			$('#'+myid).compile();
+		}
+	});
+}
+	
+$(document).ready(function()
+{
+	$('body').compile();
+	console.debug('loaded in ' + (new Date - started) + ' ms');
+});
 
 
 

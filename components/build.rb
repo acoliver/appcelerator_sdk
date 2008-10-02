@@ -205,7 +205,7 @@ COMPRESS_RB = "ruby \"#{CWD}/websdk/lib/compress.rb\""
 
 
 def compress_fail(src,tf)
-  if not VERBOSE
+  if VERBOSE
     $stderr.puts File.read(tf)
     $stderr.puts
     $stderr.puts "source of file was: \n\n#{src}"
@@ -240,8 +240,9 @@ def compress_and_mangle(code,type=:js)
   
   call_command("#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}") || compress_fail(filein,error_temp_file)
   if type == :js
-    call_command("#{COMPRESS_RB} \"#{fileout}\" \"#{fileout}2\" #{suppress_output}") || compress_fail(fileout,error_temp_file)
-    File.read("#{fileout}2")
+    #call_command("#{COMPRESS_RB} \"#{fileout}\" \"#{fileout}2\" #{suppress_output}") || compress_fail(fileout,error_temp_file)
+    #File.read("#{fileout}2")
+    File.read("#{fileout}")
   else
     File.read("#{fileout}")
   end

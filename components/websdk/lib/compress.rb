@@ -23,15 +23,15 @@ js = infile.read
 # is the $el and not $.  If you use $ outside of appcelerator you should use
 # $el for maximum compatability with other libraries.
 #
-js.gsub!(/function \$\(\)/,'function $el()')
-js.gsub!(/function \$\$\(\)/,'function $sl()')
- 
-js.gsub!(/[^\$]\$\((.*?)\)/) do |m|
-  m.gsub '$(', '$el('
-end
-js.gsub!(/\$\$\((.*?)\)/) do |m|
-  m.gsub '$$(', '$sl('
-end
+# js.gsub!(/function \$\(\)/,'function $el()')
+# js.gsub!(/function \$\$\(\)/,'function $sl()')
+#  
+# js.gsub!(/[^\$]\$\((.*?)\)/) do |m|
+#   m.gsub '$(', '$el('
+# end
+# js.gsub!(/\$\$\((.*?)\)/) do |m|
+#   m.gsub '$$(', '$sl('
+# end
 
 js.gsub!(/\$D\([^\)]/) do |m|
   "if (Logger.debugEnabled) #{m}"
@@ -81,11 +81,12 @@ if idx
 
   # define our $ if jQuery isn't defined
   # we want to be able to support both jQuery and Prototype being loaded at the same time w/o conflict
-  epilog=<<-END
-    ; if (typeof(jQuery)=='undefined'){$ = $el; $$w.$ = $el; $$ = $sl; $$w.$$ = $sl;}
-  END
 
-  outfile.print epilog
+  # epilog=<<-END
+  #   ; if (typeof(jQuery)=='undefined'){$ = $el; $$w.$ = $el; $$ = $sl; $$w.$$ = $sl;}
+  # END
+  # 
+  # outfile.print epilog
 else
   outfile.print js
 end

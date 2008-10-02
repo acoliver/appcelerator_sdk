@@ -32,13 +32,15 @@ task :default do
   js_dir = "#{WEBSDK_STAGE_DIR}/#{JS_PATH}" # staging location
   js_source = "#{BUILD_DIR}/src/js"
 
-  clean_dir(WEBSDK_STAGE_DIR)
+  #clean_dir(WEBSDK_STAGE_DIR)
+  
+  FileUtils.rm_rf js_dir
 
-  FileUtils.mkdir_p js_dir
+  FileUtils.mkdir_p js_dir unless File.exists?(js_dir)
 
   puts 'Compiling appcelerator-lite.js...' if VERBOSE
   # files that need to be included before the others in the directory
-  jslite_prefiles = %w(debug.js string.js uri.js core.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js observable.js)
+#  jslite_prefiles = %w(debug.js string.js uri.js core.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js observable.js)
   jslite = js_dir+'/appcelerator-lite.js'
   
   LICENSE_HEADER=<<END_LICENSE
@@ -62,6 +64,7 @@ task :default do
 END_LICENSE
 
   append_file(LICENSE_HEADER,jslite,true)
+  append_file("#{js_source}/prolog.js", jslite)
   
   rel = build_config[:version].to_s.split('.')
 
@@ -70,42 +73,35 @@ END_LICENSE
   bf.gsub!('${version.major}',rel[0])
   bf.gsub!('${version.minor}',rel[1])
   bf.gsub!('${version.rev}',rel[2]||'0')
+  bf.gsub!('${build.date}',Time.now.strftime('%m/%d/%Y'))
   append_file(bf,jslite,true)
+ 
+  PREINCLUDES = ["#{js_source}/plugins/jquery.js", "#{js_source}/plugins/action.js", "#{js_source}/plugins/on.js", "#{js_source}/plugins/event.js"]
+  jslite_prefiles = PREINCLUDES
+  Dir["#{js_source}/plugins/*.js"].each do |f|
+    jslite_prefiles << f unless jslite_prefiles.include? f
+  end
+  jslite_prefiles.delete_if {|f| f=~/_action\.js$/ }
+  
+  puts jslite_prefiles.join("\n")
 
   jslite_prefiles.each do |file|
-    append_file(js_source+'/'+file, jslite)
+    append_file(file, jslite)
   end
 
-  # other files to avoid automatically adding
-  EXCLUDED_FILES = jslite_prefiles + %w(bootstrap.js prolog.js epilog.js)
-  
-  def not_already_included(path)
-    not EXCLUDED_FILES.find{ |excluded_file| path.include? excluded_file }
-  end
-
-  js_files = Dir["#{js_source}/*.js"].select{|path| not_already_included path}
-  # don't filter out excluded files from subdirs,
-  # because we have some duplicate filenames
-  js_files += Dir["#{js_source}/*/*.js"]
-  
-  # must sort after including subdirs
-  js_files.sort.each {|path| append_file(path, jslite) unless path =~ /tracker\.js/}
-  append_file("#{js_source}/tracker.js", jslite)
   append_file("#{js_source}/epilog.js", jslite)
-
+  
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
   
   jsdebug = js_dir+'/appcelerator-debug.js'
+
+  FileUtils.rm_rf jsdebug
+  
   append_file(LICENSE_HEADER,jsdebug,true)
   append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
-  append_file(js_source+'/prolog.js', jsdebug)
   thirdparty = [
-    'prototype/prototype.js',
-    'scriptaculous/scriptaculous.js',
-    'scriptaculous/effects.js',
-    'scriptaculous/dragdrop.js',
-    'scriptaculous/resizable.js',
-    'jel/jel_datetime.js'
+    'jquery/jquery.js',
+   # 'jel/jel_datetime.js'
   ]
   thirdparty.each do |file|
     append_file(BUILD_DIR+'/lib/'+file, jsdebug)
@@ -117,14 +113,6 @@ END_LICENSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
   
-  # Strip out scriptaculous's load - since we include its files already
-  jsd = File.read(jsdebug)
-  jsd.gsub!('Scriptaculous.load();','')
-  jsdf = File.open(jsdebug,'w+')
-  jsdf.write jsd
-  jsdf.close
-  
-
   if COMPRESS
     puts "Compressing appcelerator.js"
 
@@ -202,7 +190,14 @@ def copy_tests(test_src_path, test_dst_path)
   cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
   cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_dst_path}/swf/")
 
-  puts "copying components ... this make take a few minutes the first time through..."
+###FIXME
+  actions_src_path = "#{BUILD_DIR}/src/js/plugins"
+  actions_dest_path = "#{test_dst_path}/components/plugins"
+  FileUtils.mkdir actions_dest_path unless File.exists? actions_dest_path
+  
+  Dir["#{actions_src_path}/*_action.js"].each do |file|
+    FileUtils.cp file, actions_dest_path
+  end
 
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
