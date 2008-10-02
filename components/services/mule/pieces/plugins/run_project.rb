@@ -1,3 +1,4 @@
+
 #
 # Copyright 2006-2008 Appcelerator, Inc.
 # 
@@ -58,6 +59,11 @@ class RunJavaPlugin < Appcelerator::Plugin
       sep = RUBY_PLATFORM=~/win32/ ? ';' : ':'
       pathsep = RUBY_PLATFORM=~/win32/ ? '\\' : '/'
 
+      project = Project.load(pwd)
+      webdir = project.config[:paths][:web]
+      servicesdir = project.config[:paths][:services]
+      libdir = project.get_web_path("WEB-INF/lib")
+
       FileUtils.cd Dir.pwd do |dir|
         
         # test to make sure we have java on our path
@@ -69,10 +75,7 @@ class RunJavaPlugin < Appcelerator::Plugin
           exit 1
         end
           
-        webdir = "public"
-        servicesdir = "app/services"
-
-        cp = Dir["public/WEB-INF/lib/**/*.jar"]
+        cp = Dir["#{libdir}/**/*.jar"]
         cp << "public/WEB-INF/classes" unless not(File.exists?("public/WEB-INF/classes"))
         cp << "output/classes" unless not(File.exists?("output/classes"))
         cp << servicesdir unless not(File.exists?(servicesdir))
