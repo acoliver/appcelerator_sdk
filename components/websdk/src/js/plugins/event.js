@@ -12,6 +12,7 @@ $.each(events,function()
 	});
 });
 
+//FIXME: support condition !
 
 App.regCond(new RegExp('^('+events.join('|')+')$'),function(cond,action,elseAction,delay,ifCond)
 {

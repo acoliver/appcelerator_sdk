@@ -52,7 +52,7 @@ function smartTokenSearch(searchString, value)
 
 var compoundCondRE = /^\((.*)?\) then$/;
 
-function parseExpression (value,element)
+App.parseExpression = function(value,element)
 {
 	if (!value)
 	{
@@ -180,7 +180,7 @@ var ONE_WEEK = 604800000;
 var ONE_MONTH = 18748800000; // this is rough an assumes 31 days
 var ONE_YEAR = 31536000000;
 
-function timeFormat (value)
+App.timeFormat = function(value)
 {
 	var str = '';
 	var time = 0;
@@ -289,7 +289,7 @@ App.addCond = function(el,cond,action,elseAction,delay,ifCond)
 $.fn.on = function(value)
 {
 	var el = $(this);
-	var expr = parseExpression(value);
+	var expr = App.parseExpression(value);
 	$.each(expr,function()
 	{
 		App.addCond(el,this[1],this[2],this[3],this[4],this[5]);

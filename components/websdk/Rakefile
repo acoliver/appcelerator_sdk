@@ -81,7 +81,7 @@ END_LICENSE
   bf.gsub!('${build.date}',Time.now.strftime('%m/%d/%Y'))
   append_file(bf,jslite,true)
  
-  PREINCLUDES = ["#{js_source}/plugins/jquery.js", "#{js_source}/plugins/action.js", "#{js_source}/plugins/on.js", "#{js_source}/plugins/event.js"]
+  PREINCLUDES = ["#{js_source}/plugins/jquery.js", "#{js_source}/plugins/types.js","#{js_source}/plugins/action.js", "#{js_source}/plugins/on.js", "#{js_source}/plugins/event.js"]
   jslite_prefiles = PREINCLUDES
   Dir["#{js_source}/plugins/*.js"].each do |f|
     jslite_prefiles << f unless jslite_prefiles.include? f

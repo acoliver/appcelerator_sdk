@@ -18,6 +18,32 @@
 {
 	var iterator = $.Class.create(
 	{
+		getAttributes:function()
+		{
+			var T = Appcelerator.Types;
+			//
+			// two special attributes you never have to define here: render (action), render (condition)
+			//
+			// if it's a condition, you can register here as T.condition and then call
+			//    this.fireEvent(condition,data)
+			//
+			// if it's an action, you can define a function with the same name that will be invoked
+			//
+			// if it's anything else, you'll need to define a setter method using Javabeans notation
+			//
+			// for all setters, the framework will automatically define a getter which will return
+			// the value of this.<name> of the property as a convenience (unless already defined by you).
+			//
+			//
+			
+			return [
+						{name: 'model', optional: true, type: T.object, description: "Set model for iterator"},
+						{name: 'template', optional: true, type: T.string, description: "Set the template for each row"},
+						{name: 'items', optional: true, type: T.json, description: "reference to array within row"},
+						{name: 'property', optional: true, type: T.string, description: "Property for implicit model"},
+						{name: 'modelChange', type: T.condition, description: "Model change condition event"}
+					];
+		},
 		render:function()
 		{
 			console.debug('render');
