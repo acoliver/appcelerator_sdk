@@ -10,20 +10,21 @@ $.fn.sub = function(name,fn)
 	var params = App.getParameters(e.params,false);
 	var type = e.name;
 	var regexp = null;
+	var m = re.exec(type);
+	type = m[2];
 	if (type.charAt(0)=='~')
 	{
 		regexp = true;
-		type = e.substring(1);
+		type = type.substring(1);
 	}
-	var m = re.exec(type);
 	
 	if (local.test(m[1]))
 	{
-		subs.local.push({scope:this,fn:fn,name:m[2],params:params,regexp:new RegExp(m[2])});
+		subs.local.push({scope:this,fn:fn,name:type,params:params,regexp:new RegExp(type)});
 	}
 	else
 	{
-		subs.remote.push({scope:this,fn:fn,name:m[2],params:params,regexp:new RegExp(m[2])});
+		subs.remote.push({scope:this,fn:fn,name:type,params:params,regexp:new RegExp(type)});
 	}
 	return this;
 };
