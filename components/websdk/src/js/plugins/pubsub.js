@@ -72,3 +72,5 @@ App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
 	$.debug('params = '+$.toJSON(params));
 	$(this).pub(action,params);
 });
+
+$.get('');

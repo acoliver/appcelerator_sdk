@@ -24,18 +24,30 @@ var started = new Date;
 
 var docRoot;
 var idx = top.window.document.location.href.lastIndexOf('/');
-   if (idx == top.window.document.location.href.length - 1)
-   {
-   	docRoot = top.window.document.location.href;
-   }
-   else
-   {
-       docRoot  = top.window.document.location.href.substr(0, idx);
-       if (docRoot.substring(docRoot.length - 1) != '/')
-       {
-           docRoot  = docRoot + '/';
-       }
-   }
+if (idx == top.window.document.location.href.length - 1)
+{
+	docRoot = top.window.document.location.href;
+}
+else
+{
+    docRoot  = top.window.document.location.href.substr(0, idx);
+    if (docRoot.substring(docRoot.length - 1) != '/')
+    {
+        docRoot  = docRoot + '/';
+    }
+}
+
+AppC.params = {};
+idx = top.window.document.location.href.indexOf('?');
+if (idx > 0)
+{
+	var qs = top.window.document.location.href.substring(idx+1);
+	$.each(qs.split('&'),function()
+	{
+		var e = $.string(this).split('=');
+		AppC.params[decodeURIComponent(e[0])]=decodeURIComponent(e[1]||'');
+	});
+}
 
 AppC.docRoot = docRoot;
 
