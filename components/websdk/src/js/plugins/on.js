@@ -267,7 +267,7 @@ App.regCond = function(re,fn)
 	conds.push({re:re,fn:fn});
 };
 
-App.addCond = function(el,cond,action,elseAction,delay,ifCond)
+App.addCond = function(el,cond,action,elseAction,delay,ifCond,state)
 {
 	var f = false;
 	$.each(conds,function()
@@ -275,7 +275,7 @@ App.addCond = function(el,cond,action,elseAction,delay,ifCond)
 		if (this.re.test(cond))
 		{
 			f = true;
-			this.fn.apply(el,[cond,action,elseAction,delay,ifCond]);
+			this.fn.apply(el,[cond,action,elseAction,delay,ifCond,state]);
 			return false;
 		}
 	});
@@ -286,18 +286,18 @@ App.addCond = function(el,cond,action,elseAction,delay,ifCond)
 	}
 };
 
-$.fn.on = function(value)
+$.fn.on = function(value,state)
 {
 	var el = $(this);
 	var expr = App.parseExpression(value);
 	$.each(expr,function()
 	{
-		App.addCond(el,this[1],this[2],this[3],this[4],this[5]);
+		App.addCond(el,this[1],this[2],this[3],this[4],this[5],state);
 	});
 };
 
-App.reg('on','*',function(value)
+App.reg('on','*',function(value,state)
 {
-	$(this).on(value);
+	$(this).on(value,state);
 });
 

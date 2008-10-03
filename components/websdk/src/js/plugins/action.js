@@ -14,7 +14,7 @@ function addAction(el,name,handler)
 	actions[name]=handler;
 }
 
-function iterateActions(f,el)
+function iterateActions(f,el,state)
 {
 	if (f)
 	{
@@ -24,16 +24,16 @@ function iterateActions(f,el)
 			var v = e.attr(this);
 			if (v)
 			{
-				actions[this].call(el,v);
+				actions[this].apply(el,[v,state]);
 			}
 		});
 	}
 }
 
-App.executeActions = function(el)
+App.executeActions = function(el,state)
 {
-	iterateActions(actions[el],el);
-	iterateActions(actions['*'],el);
+	iterateActions(actions[el],el,state);
+	iterateActions(actions['*'],el,state);
 };
 
 App.reg = function(name,el,handler)

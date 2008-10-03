@@ -58,31 +58,33 @@ function ensureId (el)
 	var id = $(el).attr('id');
 	if (!id)
 	{
-		id = 'app_' + (appid++);
+		id = el.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
 		$(el).attr('id',id);
 	}
 	return el;
 }
 
-$.fn.compile = function()
+$.fn.compile = function(state)
 {
 	var node = $(this).get(0);
-	var el = ensureId(this);
+	var el = ensureId(node);
 	var e = $(el);
+	App.incState(state);
 	var myid = e.attr('id');
 	e.data('stopCompile',false);
 	$.debug(' + compiling #'+myid+' ('+node.nodeName+')');
-	App.executeActions(el);
+	App.executeActions(el,state);
 	var stop = e.data('stopCompile');
 	e.removeData('stopCompile');
 	if (!stop)
 	{
-		$('#'+myid).compileChildren();
+		$('#'+myid).compileChildren(state);
 	}
+	App.checkState(state,el);
 	return this;
 };
 
-$.fn.compileChildren = function()
+$.fn.compileChildren = function(state)
 {
 	var node = $(this).get(0);
 	var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
@@ -90,17 +92,47 @@ $.fn.compileChildren = function()
 	
 	$.each($.unique($(selector)),function()
 	{
-		$(this).compile();
+		$(this).compile(state);
 	});
 	
 	return this;
 }
-	
+
+var state = function(el)
+{
+	this.count = 0;
+	this.el = el;
+};
+
+App.incState=function(state)
+{
+	if (state) ++state.count;
+};
+
+App.checkState=function(state,el)
+{
+	if (state)
+	{
+		$(el).trigger('compiled');
+		if (--state.count == 0)
+		{
+			console.debug('compiled complete for '+$(state.el).get(0));
+			state.el.trigger('compiled');
+		}
+	}
+};
+
+
 $(document).ready(function()
 {
-	$('body').compile();
+	var body = $('body');
+	body.bind('compiled',function()
+	{
+		body.pub('l:app.compiled');
+	});
+	var s = new state(body);
+	body.compile(s);
 	$.info('loaded in ' + (new Date - started) + ' ms');
 });
-
 
 

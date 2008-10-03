@@ -124,13 +124,14 @@ $.fn.layout = function(name,options)
 };
 
 
-$.fn.set = function(value)
+$.fn.set = function(value,state)
 {
 	var el = $(this);
 	el.data('stopCompile',true);
+	App.incState(state);
 
 	var visibility = el.css('visibility') || 'visible';
-	var show = false;
+	var show = false, initial = true;
 
 	if (visibility == 'visible')
 	{
@@ -176,7 +177,11 @@ $.fn.set = function(value)
 				$(this).css('visibility',visibility);
 				show=false;
 			}
-			
+			if (initial)
+			{
+				initial=false;
+				App.checkState(state,el);
+			}
 		});
 		el.bind('onCreated',function(instance,opts)
 		{
@@ -186,35 +191,11 @@ $.fn.set = function(value)
 		
 		el[ui](type,args);
 	});
-
-	/*
-	var count = 0;
-	var compiler = function(instance)
-	{
-		count++;
-		element._component = instance;
-		instance.onEvent('render',function(ev)
-		{
-			if (show)
-			{
-				element.style.visibility = element.style._visibility;
-				show = false;
-			}
-		});
-		instance.render(element);
-		if (count == expressions.length)
-		{
-			Appcelerator.Compiler.parseOnAttribute(element);
-			Appcelerator.Compiler.compileElementChildren(element);
-		}
-		element.state.pending-=1;
-	    Appcelerator.Compiler.checkLoadState(element);
-	};*/
 };
 
-App.reg('set','*',function(value)
+App.reg('set','*',function(value,state)
 {
-	$(this).set(value);
+	$(this).set(value,state);
 });
 
 

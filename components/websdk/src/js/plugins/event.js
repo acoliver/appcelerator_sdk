@@ -23,7 +23,19 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(cond,action,else
 	$(this)[cond](function(e)
 	{
 		var scope = $(this);
-		App.triggerAction(scope,{id:$(this).attr('id')},cond,action,elseAction,delay,ifCond);
+		var data = {id:$(this).attr('id'),x:e.pageX,y:e.pageY};
+		$.debug('sending '+cond+', data = '+$.toJSON(data));
+		App.triggerAction(scope,data,cond,action,elseAction,delay,ifCond);
 		if (stop) e.stopPropagation();
+	});
+});
+
+App.regCond(/^compiled$/,function(cond,action,elseAction,delay,ifCond)
+{
+	$(this).bind('compiled',function()
+	{
+		var scope = $(this);
+		var data = {id:$(this).attr('id')};
+		App.triggerAction(scope,data,cond,action,elseAction,delay,ifCond);
 	});
 });
