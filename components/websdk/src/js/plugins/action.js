@@ -102,11 +102,13 @@ function invoke (name,params)
 	}
 };
 
-App.triggerAction = function(scope,data,cond,action,elseAction,delay,ifCond)
+App.triggerAction = function(scope,params,meta)
 {
-	if (ifCond)
+	var data = meta.actionParams;
+	var action = meta.action;
+	if (meta.ifCond)
 	{
-		var r = eval(ifCond);
+		var r = eval(meta.ifCond);
 		if (r)
 		{
 			if (typeof(r)=='boolean')
@@ -114,14 +116,44 @@ App.triggerAction = function(scope,data,cond,action,elseAction,delay,ifCond)
 				r = (r===true);
 			}
 		}
-		if (!r) action = elseAction;
+		if (!r)
+		{	
+			action = meta.elseAction;
+			data = meta.elseActionParams;
+		}
 	}
 	if (action)
 	{
-		var e = App.extractParameters(action,scope);
-		action = e.name;
-		data = e.params;
-		$(scope).after(function(){ invoke.apply(scope,[action,data]) },delay);
+		var newparams = params || {};
+		if (data)
+		{
+			for (var x=0;x<data.length;x++)
+			{
+				var entry = data[x];
+				var key = entry.key, value = entry.value;
+				$.info('entry['+x+'] => '+$.toJSON(entry));
+				if (entry.keyExpression)
+				{
+					key = App.getEvaluatedValue(entry.key,null,params,entry.keyExpression);
+				}
+				else if (entry.valueExpression)
+				{
+					value = App.getEvaluatedValue(entry.value,null,params,entry.valueExpression);
+				}
+				else if (entry.empty)
+				{
+					value = App.getEvaluatedValue(entry.key,null,params);
+				}
+				else
+				{
+					key = App.getEvaluatedValue(entry.key);
+					value = App.getEvaluatedValue(entry.value,null,params);
+				}
+				newparams[key]=value;
+			}		
+		}
+		$.debug('invoking action: '+action+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
+		$(scope).after(function(){ invoke.apply(scope,[action,newparams]) },meta.delay);
 	}
 };
 

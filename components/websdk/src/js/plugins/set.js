@@ -63,14 +63,14 @@ function load(type,name,e)
 					case AppC.Types.condition:
 					{
 						var name = 'on' + $.proper(this.name);
-						App.regCond(new RegExp('^('+this.name+')$'),function(cond,action,elseAction,delay,ifCond)
+						App.regCond(new RegExp('^('+this.name+')$'),function(meta)
 						{
 							el.bind(name,function(args)
 							{
 								var scope = $(this);
 								args = args || {};
 								args.id = $(this).attr('id');
-								App.triggerAction(scope,args,cond,action,elseAction,delay,ifCond);
+								App.triggerAction(scope,args,meta);
 							});
 						});
 						break;

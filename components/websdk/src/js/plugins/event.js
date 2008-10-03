@@ -9,15 +9,16 @@ $.each(events,function()
 	App.regAction(new RegExp('^'+name+'(\\[(.*)?\\])?$'),function(params)
 	{
 		$.info('action id =>' + $.toJSON(params))
-		return (params['id'])?
-				$("#"+params['id'])[name].call(scope):
+		return (params.id)?
+				$("#"+params.id)[name].call(scope):
 				$(this)[name].call(scope);
 	});
 });
 
-App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(cond,action,elseAction,delay,ifCond)
+App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 {
 	var stop = false;
+	var cond = meta.cond;
 	if (cond.charAt(cond.length-1)=='!')
 	{
 		cond = cond.substring(0,cond.length-1);
@@ -26,19 +27,19 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(cond,action,else
 	$(this)[cond](function(e)
 	{
 		var scope = $(this);
-		var data = {id:$(this).attr('id'),x:e.pageX,y:e.pageY};
+		var data = {source:$(this).attr('id'),x:e.pageX,y:e.pageY};
 		$.debug('sending '+cond+', data = '+$.toJSON(data));
-		App.triggerAction(scope,data,cond,action,elseAction,delay,ifCond);
+		App.triggerAction(scope,data,meta);
 		if (stop) e.stopPropagation();
 	});
 });
 
-App.regCond(/^compiled$/,function(cond,action,elseAction,delay,ifCond)
+App.regCond(/^compiled$/,function(meta)
 {
 	$(this).bind('compiled',function()
 	{
 		var scope = $(this);
-		var data = {id:$(this).attr('id')};
-		App.triggerAction(scope,data,cond,action,elseAction,delay,ifCond);
+		var data = {source:$(this).attr('id')};
+		App.triggerAction(scope,data,meta);
 	});
 });

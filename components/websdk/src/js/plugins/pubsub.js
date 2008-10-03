@@ -1,35 +1,94 @@
 
 var subs = {local:[], remote:[]};
 var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
-var local = /^l|local|both|\*/;
-var pubdebug = AppC.params['debug']=='2';
+var localRe = /^l|local|both|\*/;
+var pubdebug = AppC.params['debug'];
 var queue = [];
 var remoteDisabled = true;
 
-$.fn.sub = function(name,fn)
+$.fn.sub = function(name,fn,params)
 {
-	var e = App.extractParameters(name);
-	var params = App.getParameters(e.params,false);
-	var type = e.name;
+	var type = name;
 	var regexp = null;
+	var idx = type.indexOf('[');
+	
+	if (idx > 0)
+	{
+		type = type.substring(0,idx);
+		$.info('trimmed to '+type);
+	}
+	
 	var m = re.exec(type);
 	type = m[2];
 	if (type.charAt(0)=='~')
 	{
-		regexp = true;
 		type = type.substring(1);
+		regexp = new RegExp(type);
 	}
 	
-	if (local.test(m[1]))
+	$.info('subscribing '+m[2]+', local='+m[1]+', type='+type+', regexp='+regexp);
+	
+	
+	if (localRe.test(m[1]))
 	{
-		subs.local.push({scope:this,fn:fn,name:type,params:params,regexp:new RegExp(type)});
+		subs.local.push({scope:this,fn:fn,name:type,params:params,regexp:regexp});
 	}
 	else
 	{
-		subs.remote.push({scope:this,fn:fn,name:type,params:params,regexp:new RegExp(type)});
+		subs.remote.push({scope:this,fn:fn,name:type,params:params,regexp:regexp});
 	}
 	return this;
 };
+
+$.fn.pub = function(name,data,scope,version)
+{
+	var m = re.exec(name);
+	var isLocal = localRe.test(m[1]);
+	
+	data = data || {};
+
+	if (isLocal && !data.source) data.source = $(this).attr('id');
+
+	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
+
+ 	queue.push({
+		data:data||{},
+		name:m[2],
+		local:isLocal,
+		scope:scope,
+		version:version
+	});
+
+	if (remoteDisabled)
+	{
+		processQueue();		
+	}
+
+	return this;
+};
+
+$.fn.after = function(fn,delay)
+{
+	var scope = this;
+	setTimeout(function(){ 
+		fn.call(scope);
+	},(delay||0.1));
+	return this;
+};
+
+App.regCond(re,function(meta)
+{
+	$(this).sub(meta.cond,function(data)
+	{
+		$.info('trigger action called with '+$(this).attr('id')+', data='+$.toJSON(data));
+		App.triggerAction(this,data,meta);
+	});
+});
+
+App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
+{
+	$(this).pub(action,params);
+});
 
 function deliverRemoteMessages(msgs)
 {
@@ -186,6 +245,7 @@ function processQueue()
 		var version = this.version;
 		$.each(a,function()
 		{
+			$.debug('name='+name+',regexp='+this.regexp+',this.name='+this.name);
 			if ((this.regexp && this.regexp.test(name)) || (!this.regexp && this.name == name))
 			{
 				if (App.parseConditionCondition(this.params,data))
@@ -265,77 +325,53 @@ function startDelivery(config)
 	}
 }
 
-$.fn.pub = function(name,data,scope,version)
-{
-	var m = re.exec(name);
-	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
- 	queue.push({
-		data:data||{},
-		name:m[2],
-		local:local.test(m[1]),
-		scope:scope,
-		version:version
-	});
-
-	if (remoteDisabled)
-	{
-		processQueue();		
-	}
-
-	return this;
-};
-
-$.fn.after = function(fn,delay)
-{
-	var scope = this;
-	setTimeout(function(){ 
-		fn.call(scope);
-	},(delay||0.1));
-	return this;
-};
-
-App.regCond(re,function(cond,action,elseAction,delay,ifCond)
-{
-	$(this).sub(cond,function(data)
-	{
-		App.triggerAction(this,data,cond,action,elseAction,delay,ifCond);
-	});
-});
-
-App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
-{
-	$(this).pub(action,params);
-});
-
 //
 // fetch our appcelerator.xml
 //
-$.get(AppC.docRoot+'appcelerator.xml',null,function(data)
+try
 {
-	var re = /@\{(.*?)\}/g;
-	var map = {rootPath:AppC.docRoot};
-	AppC.serverConfig = {};
-	var children = data.documentElement.childNodes;
-	for (var c=0;c<children.length;c++)
-	{
-		var child = children[c];
-		if (child.nodeType == 1)
+	$.ajax({
+		async:true,
+		cache:true,
+		dataType:'xml',
+		type:'GET',
+		url:AppC.docRoot+'appcelerator.xml',
+		success:function(data)
 		{
-			var service = child.nodeName.toLowerCase();
-			var config = {};
-			var path = $.domText(child);
-			var template = AppC.compileTemplate(path,false,null,re);
-			for (var x=0;x<child.attributes.length;x++)
+			var re = /@\{(.*?)\}/g;
+			var map = {rootPath:AppC.docRoot};
+			AppC.serverConfig = {};
+			var children = data.documentElement.childNodes;
+			for (var c=0;c<children.length;c++)
 			{
-				var attr = child.attributes[x];
-				config[attr.name]=attr.value;
+				var child = children[c];
+				if (child.nodeType == 1)
+				{
+					var service = child.nodeName.toLowerCase();
+					var config = {};
+					var path = $.domText(child);
+					var template = AppC.compileTemplate(path,false,null,re);
+					for (var x=0;x<child.attributes.length;x++)
+					{
+						var attr = child.attributes[x];
+						config[attr.name]=attr.value;
+					}
+					config.value = template(map);
+					AppC.serverConfig[service]=config;
+				}
 			}
-			config.value = template(map);
-			AppC.serverConfig[service]=config;
+			$(document).trigger('serverConfig',AppC.serverConfig);
+			startDelivery(AppC.serverConfig);
+		},
+		error:function(xhr,text,error)
+		{
+			$.error('error retrieving appcelerator.xml, remote services are disabled. error = '+text);
 		}
-	}
-	$(document).trigger('serverConfig',AppC.serverConfig);
-	startDelivery(AppC.serverConfig);
-},'xml');
+	});
 
-
+}
+catch(e)
+{
+	//
+	$.error('error loading appcelerator.xml, remote services are disabled. error = '+e);
+}

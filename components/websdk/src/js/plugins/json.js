@@ -67,6 +67,7 @@ $.extend(
 		}
 
 		if (object === null) return 'null';
+		if (typeof(object.jquery)=='string') return null;
 		if (object.toJSON) return object.toJSON();
 		if (object.nodeType == 1) return;
 

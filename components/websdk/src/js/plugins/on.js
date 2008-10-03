@@ -267,15 +267,15 @@ App.regCond = function(re,fn)
 	conds.push({re:re,fn:fn});
 };
 
-App.addCond = function(el,cond,action,elseAction,delay,ifCond,state)
+App.processCond = function(el,info)
 {
 	var f = false;
 	$.each(conds,function()
 	{
-		if (this.re.test(cond))
+		if (this.re.test(info.cond))
 		{
 			f = true;
-			this.fn.apply(el,[cond,action,elseAction,delay,ifCond,state]);
+			this.fn.call(el,info);
 			return false;
 		}
 	});
@@ -292,7 +292,22 @@ $.fn.on = function(value,state)
 	var expr = App.parseExpression(value);
 	$.each(expr,function()
 	{
-		App.addCond(el,this[1],this[2],this[3],this[4],this[5],state);
+		var p = App.extractParameters(this[2]);
+		var ep = this[3] ? App.extractParameters(this[3]) : null;
+		var param = 
+		{
+			cond: this[1],
+			action: p.name,
+			actionParams: p.params,
+			elseAction: ep ? ep.name : null,
+			elseActionParams: ep ? ep.params : null,
+			delay: this[4],
+			ifCond: this[5],
+			state: state,
+			target: el.attr('id')
+		};
+		$.debug('processCond='+$.toJSON(param));
+		App.processCond(el,param);
 	});
 };
 

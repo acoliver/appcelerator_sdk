@@ -27,6 +27,20 @@ $.extend(
 	    }
 		return result;
 	},
+	camel: function(value)
+	{
+	    var parts = value.split('-'), len = parts.length;
+	    if (len == 1) return parts[0];
+
+	    var camelized = value.charAt(0) == '-'
+	      ? parts[0].charAt(0).toUpperCase() + parts[0].substring(1)
+	      : parts[0];
+
+	    for (var i = 1; i < len; i++)
+	      camelized += parts[i].charAt(0).toUpperCase() + parts[i].substring(1);
+
+	    return camelized;
+	},
 	string: function(value)
 	{
 	    return value == null ? '' : String(value);

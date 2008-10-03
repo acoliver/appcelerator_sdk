@@ -291,8 +291,8 @@ App.extractParameters = function(value,scope)
 		var endidx = value.lastIndexOf(']');
 		var p = value.substring(idx+1,endidx);
 		var action = value.substring(0,idx);
-		var params = scope ? App.getParameters(p,false) : null;
-		if (params)
+		var params = App.getParameters(p,false);
+		if (params && scope)
 		{
 			var newparams = {};
 			for (var x=0;x<params.length;x++)
