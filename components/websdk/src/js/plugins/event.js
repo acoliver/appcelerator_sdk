@@ -12,13 +12,18 @@ $.each(events,function()
 	});
 });
 
-//FIXME: support condition !
-
-App.regCond(new RegExp('^('+events.join('|')+')$'),function(cond,action,elseAction,delay,ifCond)
+App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(cond,action,elseAction,delay,ifCond)
 {
-	$(this)[cond](function()
+	var stop = false;
+	if (cond.charAt(cond.length-1)=='!')
+	{
+		cond = cond.substring(0,cond.length-1);
+		stop = true;
+	}
+	$(this)[cond](function(e)
 	{
 		var scope = $(this);
 		App.triggerAction(scope,{id:$(this).attr('id')},cond,action,elseAction,delay,ifCond);
+		if (stop) e.stopPropagation();
 	});
 });
