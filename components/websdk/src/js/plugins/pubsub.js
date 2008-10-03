@@ -269,8 +269,7 @@ $.fn.pub = function(name,data,scope,version)
 {
 	var m = re.exec(name);
 	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
-	
-	queue.push({
+ 	queue.push({
 		data:data||{},
 		name:m[2],
 		local:local.test(m[1]),

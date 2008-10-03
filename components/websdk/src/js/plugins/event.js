@@ -8,6 +8,7 @@ $.each(events,function()
 	var scope = this;
 	App.regAction(name,function(params)
 	{
+		//TODO: add support for action on passed in ID
 		$(this)[name].call(scope);
 	});
 });

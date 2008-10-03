@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
+    <title>Congratulations. Appcelerator is installed.</title>
+    <script src="../javascripts/appcelerator-debug.js" type="text/javascript"></script>
+
+
+	<style>
+	body
+	{
+		font-family:Arial;
+		font-size:11px;
+	}
+
+	h2
+	{
+		color:#336699;
+	}
+	.box
+	{
+		width:150px;
+		margin:10px;
+		padding:5px;
+		border:1px solid #bbb;
+		background-color:#ccc;
+	}
+	.clickable
+	{
+		width:150px;
+		margin:10px;
+		padding:5px;
+		border:1px solid #blue;
+		background-color:#336699;
+		color:white;
+
+	}
+	</style>
+</head>
+
+<body>
+	<h2>
+		Hide Tests
+	</h2>
+	<div class="clickable" on="click then hide">click to hide</div>
+	<div class="clickable" on="click then hide[speed=slow]">click to hide (slow)</div>
+	<div class="clickable" on="click then hide[speed=2000]">click to hide (2000)</div>
+	<div class="clickable" on="click then hide[id=foo,speed=500]">click me to hide id=foo</div>
+	<div class="box" id="foo">I am foo</div>
+
+	<h2>
+		Show Tests
+	</h2>
+	<div class="box" on="l:show1 then show" style="display:none">show</div>
+	<div class="clickable" on="click then l:show1">click to show</div>
+	<div class="box" on="l:show2 then show[speed=slow]" style="display:none">show (slow)</div>
+	<div class="clickable" on="click then l:show2">click to show (slow)</div>
+	<div class="box" on="l:show3 then show[speed=2000]" style="display:none">show (2000)</div>
+	<div class="clickable" on="click then l:show3">click to show (2000)</div>
+	<div class="clickable" on="click then show[id=bar,speed=500]">click to show id=bar</div>
+	<div class="box" id="bar" style="display:none">I am bar</div>
+
+
+	<h2>
+		Slide Toggle Tests
+	</h2>
+	<div class="box" on="l:slidetoggle then slideToggle" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideToggle" on="click then l:slidetoggle"/>
+
+	<div class="box" on="l:slideToggle1 then slideToggle[speed=slow]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideToggle (slow)" on="click then l:slideToggle1"/>
+	
+	<div class="box" on="l:slideToggle2 then slideToggle[speed=2000]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideToggle (2000)" on="click then l:slideToggle2"/>
+
+	<div class="box" id="slideToggleTest" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideToggle (id test)" on="click then slideToggle[id=slideToggleTest,speed=slow]"/>
+	
+
+	<h2>
+		Slide Up Tests
+	</h2>
+	<div class="box" on="l:slideUp then slideUp">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideUp" on="click then l:slideUp"/>
+	<div class="box" on="l:slideUp2 then slideUp[speed=slow]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideUp (slow)" on="click then l:slideUp2"/>
+	<div class="box" on="l:slideUp3 then slideUp[speed=2000]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideUp (2000)" on="click then l:slideUp3"/>
+	<div class="box" id="slideUp1">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideUp (id)" on="click then slideUp[id=slideUp1,speed=fast]"/>
+
+
+	<h2>
+		Slide Down Tests
+	</h2>
+	<div class="box" on="l:slideDown then slideDown" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideDown" on="click then l:slideDown"/>
+	<div class="box" on="l:slideDown2 then slideDown[speed=slow]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideDown (slow)" on="click then l:slideDown2"/>
+	<div class="box" on="l:slideDown3 then slideDown[speed=2000]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideDown (2000)" on="click then l:slideDown3"/>
+	<div class="box" id="slideDown1" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="slideDown (id)" on="click then slideDown[id=slideDown1,speed=fast]"/>
+
+
+	<h2>
+		Fade In Tests
+	</h2>
+	<div class="box" on="l:fadeIn then fadeIn" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeIn" on="click then l:fadeIn"/>
+	<div class="box" on="l:fadeIn2 then fadeIn[speed=slow]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeIn (slow)" on="click then l:fadeIn2"/>
+	<div class="box" on="l:fadeIn3 then fadeIn[speed=2000]" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeIn (2000)" on="click then l:fadeIn3"/>
+	<div class="box" id="fadeIn1" style="display:none">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeIn (id)" on="click then fadeIn[id=fadeIn1,speed=fast]"/>
+	
+	
+	<h2>
+		Fade Out Tests
+	</h2>
+	<div class="box" on="l:fadeOut then fadeOut">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeOut" on="click then l:fadeOut"/>
+	<div class="box" on="l:fadeOut2 then fadeOut[speed=slow]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeOut (slow)" on="click then l:fadeOut2"/>
+	<div class="box" on="l:fadeOut3 then fadeOut[speed=2000]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeOut (2000)" on="click then l:fadeOut3"/>
+	<div class="box" id="fadeOut1">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeOut (id)" on="click then fadeOut[id=fadeOut1,speed=fast]"/>
+
+
+	<h2>
+		Fade To Tests
+	</h2>
+	<div class="box" on="l:fadeTo then fadeTo[speed=fast,opacity=0.33]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeTo (fast, opacity=0.33)" on="click then l:fadeTo"/>
+	<div class="box" on="l:fadeTo2 then fadeTo[speed=slow,opacity=0.50]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeTo (slow,opacity=0.50)" on="click then l:fadeTo2"/>
+	<div class="box" on="l:fadeTo3 then fadeTo[speed=2000,opacity=0.60]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeTo (2000,opacity=0.6)" on="click then l:fadeTo3"/>
+	<div class="box" id="fadeTo1">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="fadeTo (id, opacity=0.10)" on="click then fadeTo[id=fadeTo1,speed=fast,opacity=0.1]"/>
+
+	<h2>
+		Animate Tests
+	</h2>
+	<div class="box" id="animate_test" on="l:animate then animate[width=500px,duration=2000,easing=swing]">
+		I am a lot of text.  Please see all of my text it's actually so <br/>
+		much text that I can't believe it.  Can you believe it?  It's truly
+		hard to believe if you can believe it.
+	</div>
+	<input type="button" value="animate (background-color and duration)" on="click then l:animate"/>
+	
+	<script>
+
+
+//	$('#animate_test').animate( {"width": "500px",'color':'red'},2000,"swing");
+	
+	</script>
+	
+</body>
+</html>

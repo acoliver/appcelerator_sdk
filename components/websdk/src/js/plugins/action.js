@@ -82,21 +82,23 @@ App.regAction = function(name,fn)
 function invoke (name,params)
 {
 	var scope = this;
-	var fn = regp.actions[name] || $(this)[name];
-	if (fn)
+	var found = false;
+	$.each(regp.ractions,function()
 	{
-		fn.apply(scope,[params]);
-	}
-	else
-	{
-		$.each(regp.ractions,function()
+		if (this.re.test(name))
 		{
-			if (this.re.test(name))
-			{
-				this.fn.apply(scope,[params,name]);
-				return false;
-			}
-		});
+			found = true;
+			this.fn.apply(scope,[params,name]);
+			return false;
+		}
+	});
+	if (!found)
+	{
+		var fn = regp.actions[name] || $(this)[name];
+		if (fn)
+		{
+			fn.apply(scope,[params]);
+		}
 	}
 };
 

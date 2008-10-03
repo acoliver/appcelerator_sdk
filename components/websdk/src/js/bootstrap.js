@@ -128,7 +128,7 @@ $.fn.compile = function(state)
 	App.incState(state);
 	var myid = e.attr('id');
 	e.data('stopCompile',false);
-	$.debug(' + compiling #'+myid+' ('+node.nodeName+')');
+	$.info(' + compiling #'+myid+' ('+node.nodeName+')');
 	App.executeActions(el,state);
 	var stop = e.data('stopCompile');
 	e.removeData('stopCompile');
@@ -145,7 +145,6 @@ $.fn.compileChildren = function(state)
 	var node = $(this).get(0);
 	var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
 	var selector = parent+' > '+App.selectors.join(', '+parent+' > ');
-	
 	$.each($.unique($(selector)),function()
 	{
 		$(this).compile(state);

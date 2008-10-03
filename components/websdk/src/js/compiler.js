@@ -3618,8 +3618,9 @@ Appcelerator.Compiler.setHTML = function(element,html)
  */
 var AppceleratorCompilerMethods =
 {
-    on: function(re,webexpr,parameters,elseCond)
+    xon: function(re,webexpr,parameters,elseCond)
     {
+	alert('re =>' + re + ' webexpr=>' + webexpr + ' parms=>' + parameters);
         Appcelerator.Compiler.destroy(re);
         if (parameters)
         {
