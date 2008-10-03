@@ -41,7 +41,7 @@ String.prototype.toJSON = function() {
 Array.prototype.toJSON = function(){
     var results = [];
     $.each(this,function(object) {
-      var value = object.toJSON();
+      var value = $.toJSON(this);
       if (value !== undefined) results.push(value);
     });
     return '[' + results.join(', ') + ']';
@@ -87,7 +87,8 @@ $.extend(
 	JSONFilter: /^\/\*-secure-([\s\S]*)\*\/\s*$/,
 
 	unfilterJSON: function(str,filter) {
-    	return $.sub(str, filter || this.JSONFilter, '#{1}');
+		var m = (filter || this.JSONFilter).exec(str);
+		return m ? m[1] : str;
   	},
 
   	isJSON: function(s) {

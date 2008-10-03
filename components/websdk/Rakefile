@@ -70,6 +70,7 @@ END_LICENSE
 
   append_file(LICENSE_HEADER,jslite,true)
   append_file("#{js_source}/prolog.js", jslite)
+  append_file("#{js_source}/plugins/uri.js", jslite)
   
   rel = build_config[:version].to_s.split('.')
 

@@ -188,7 +188,6 @@ $.fn.set = function(value,state)
 			count++;
 			$.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
 		});
-		
 		el[ui](type,args);
 	});
 };

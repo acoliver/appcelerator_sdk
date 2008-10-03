@@ -905,16 +905,17 @@ function getJsonTemplateVar (namespace,var_expr,template_var)
 };
 
 var templateRE = /#\{(.*?)\}/g;
-AppC.compileTemplate = function(html,htmlonly,varname)
+AppC.compileTemplate = function(html,htmlonly,varname,re)
 {
 	varname = varname==null ? 'f' : varname;
+	re = re || templateRE;
 
 	var fn = function(m, name, format, args)
 	{
 		return "', jtv(values,'"+name+"','#{"+name+"}'),'";
 	};
 	var body = "var "+varname+" = function(values){ var jtv = getJsonTemplateVar; return ['" +
-            html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(templateRE, fn) +
+            html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(re, fn) +
             "'].join('');};" + (htmlonly?'':varname);
 
 	var result = htmlonly ? body : eval(body);

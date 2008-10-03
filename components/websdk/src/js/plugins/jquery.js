@@ -1,14 +1,17 @@
+
+var debug = AppC.params['debug']=='1';
+var hasConsole = typeof(console)!='undefined';
+
 $.extend(
 {
-	sub: function(pattern, replacement, count) 
+	domText:function(dom)
 	{
-	  replacement = this.gsub.prepareReplacement(replacement);
-	  count = count === undefined ? 1 : count;
-
-	  return this.gsub(pattern, function(match) {
-	    if (--count < 0) return match[0];
-	    return replacement(match);
-	  });
+		var str = '';
+		for (var c=0;c<dom.childNodes.length;c++)
+		{
+			str+=dom.childNodes[c].nodeValue||'';
+		}
+		return $.trim(str);
 	},
 	gsub:function(source,pattern,replacement)
 	{
@@ -198,10 +201,25 @@ $.extend(
         }
         return false;
     },
+	error:function()
+	{
+		var log = this.makeArray(arguments).join(' ');
+		if (hasConsole)
+		{
+			if ($.isFunction(console.error))
+			{
+				console.error(log);
+			}
+			else if ($.isFunction(console.log))
+			{
+				console.log(log);
+			}
+		}
+	},
 	info:function()
 	{
 		var log = this.makeArray(arguments).join(' ');
-		if (typeof(console)!='undefined')
+		if (hasConsole)
 		{
 			if ($.isFunction(console.info))
 			{
@@ -215,16 +233,19 @@ $.extend(
 	},
 	debug:function()
 	{
-		var log = this.makeArray(arguments).join(' ');
-		if (typeof(console)!='undefined')
+		if (debug)
 		{
-			if ($.isFunction(console.debug))
+			var log = this.makeArray(arguments).join(' ');
+			if (hasConsole)
 			{
-				console.debug(log);
-			}
-			else if ($.isFunction(console.log))
-			{
-				console.log(log);
+				if ($.isFunction(console.debug))
+				{
+					console.debug(log);
+				}
+				else if ($.isFunction(console.log))
+				{
+					console.log(log);
+				}
 			}
 		}
 	}
