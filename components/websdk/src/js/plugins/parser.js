@@ -283,6 +283,48 @@ App.getEvaluatedValue = function (v,data,scope,isExpression)
 	return v;
 }
 
+App.extractParameters = function(value,scope)
+{
+	var idx = value.indexOf('[');
+	if (idx != -1)
+	{
+		var endidx = value.lastIndexOf(']');
+		var p = value.substring(idx+1,endidx);
+		var action = value.substring(0,idx);
+		var params = scope ? App.getParameters(p,false) : null;
+		if (params)
+		{
+			var newparams = {};
+			for (var x=0;x<params.length;x++)
+			{
+				var entry = params[x];
+				var key = entry.key, value = entry.value;
+				if (entry.keyExpression)
+				{
+					key = App.getEvaluatedValue(entry.key,null,scope,entry.keyExpression);
+				}
+				else if (entry.valueExpression)
+				{
+					value = App.getEvaluatedValue(entry.value,null,scope,entry.valueExpression);
+				}
+				else if (entry.empty)
+				{
+					value = App.getEvaluatedValue(entry.key,null,scope);
+				}
+				else
+				{
+					key = App.getEvaluatedValue(entry.key);
+					value = App.getEvaluatedValue(entry.value,null,scope);
+				}
+				newparams[key]=value;
+			}
+			params = newparams;
+		}		
+		return {name:action,params:params||p};
+	}
+	return {name:value,params:null};	
+};
+
 /**
  * method will parse out a loosely typed json like structure
  * into either an array of json objects or a json object

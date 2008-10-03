@@ -6,16 +6,24 @@ var local = /^l|local|both|\*/;
 $.fn.sub = function(name,fn)
 {
 	//TODO: regular expressions
-	
-	var m = re.exec(name);
+	var e = App.extractParameters(name);
+	var params = App.getParameters(e.params,false);
+	var type = e.name;
+	var regexp = null;
+	if (type.charAt(0)=='~')
+	{
+		regexp = true;
+		type = e.substring(1);
+	}
+	var m = re.exec(type);
 	
 	if (local.test(m[1]))
 	{
-		subs.local.push({scope:this,fn:fn,name:m[2]});
+		subs.local.push({scope:this,fn:fn,name:m[2],params:params,regexp:new RegExp(m[2])});
 	}
 	else
 	{
-		subs.remote.push({scope:this,fn:fn,name:m[2]});
+		subs.remote.push({scope:this,fn:fn,name:m[2],params:params,regexp:new RegExp(m[2])});
 	}
 	return this;
 };
@@ -28,9 +36,12 @@ $.fn.pub = function(name,data)
 	var a = local.test(m[1]) ? subs.local : subs.remote;
 	$.each(a,function()
 	{
-		if (this.name == m[2])
+		if ((this.regexp && this.regexp.test(m[2])) || (!this.regexp && this.name == m[2]))
 		{
-			this.fn.call(this.scope,data);
+			if (App.parseConditionCondition(this.params,data))
+			{
+				this.fn.call(this.scope,data);
+			}
 		}
 	});
 	return this;
