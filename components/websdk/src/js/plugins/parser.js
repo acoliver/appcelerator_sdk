@@ -690,3 +690,151 @@ App.getParameters = function(str,asjson)
 	}
 	return data;
 };
+
+function isIDRef(value)
+{
+	if (value)
+	{
+		if (typeof(value) == 'string')
+		{
+			return value.charAt(0)=='$';
+		}
+	}
+	return false;
+}
+
+App.parseConditionCondition = function(actionParams,data) 
+{
+    var ok = true;
+
+    if (actionParams)
+    {
+    	for (var c=0,len=actionParams.length;c<len;c++)
+    	{
+    		var p = actionParams[c];
+			var negate = false, regex = false;
+			if (p.empty && p.value)
+			{
+				// swap these out
+				p.key = p.value;
+				p.keyExpression = p.valueExpression;
+				p.value = null;
+			}
+			var lhs = p.key, rhs = p.value, operator = p.operator||'';
+			if (p.key && p.key.charAt(0)=='!')
+			{
+				negate = true;
+				lhs = p.key.substring(1);
+			}
+			else if (p.key && p.key.charAt(p.key.length-1)=='!')
+			{
+				negate = true;
+				lhs = p.key.substring(0,p.key.length-1);
+			}
+			var preLHS = lhs;
+			if (p.keyExpression || isIDRef(lhs))
+			{
+				var out = App.getEvaluatedValue(lhs,data,data,p.keyExpression);
+				if (!p.keyExpression && isIDRef(lhs) && lhs == out)
+				{
+					lhs = null;
+				}
+				else
+				{
+					lhs = out;
+				}
+			}
+			else
+			{
+				lhs = App.getEvaluatedValue(lhs,data);
+			}
+			if (lhs == preLHS)
+			{
+				// left hand side must evaluate to a value -- if we get here and it's the same, that 
+				// means we didn't find it
+				lhs = null;
+			}
+			// mathematics
+			if ((operator == '<' || operator == '>') && (rhs && typeof(rhs)=='string' && rhs.charAt(0)=='='))
+			{
+				operator += '=';
+				rhs = rhs.substring(1);
+			}
+			if (rhs && typeof(rhs)=='string' && rhs.charAt(0)=='~')
+			{
+				regex = true;
+				rhs = rhs.substring(1);
+			}
+			if (p.empty)
+			{
+				rhs = lhs;
+			}
+			else if (p.keyExpression || isIDRef(rhs))
+			{
+				var out = App.getEvaluatedValue(rhs,data,data,p.valueExpression);
+				if (!p.valueExpression && isIDRef(rhs) && rhs == out)
+				{
+					rhs = null;
+				}
+				else
+				{
+					rhs = out;
+				}
+			}
+			else
+			{
+				rhs = App.getEvaluatedValue(rhs,data);
+			}
+			if (regex)
+			{
+				var r = new RegExp(rhs);
+				ok = r.test(lhs);
+			}
+			else if (!operator && p.empty && rhs == null)
+			{
+				ok = lhs;
+			}
+			else
+			{
+				switch(operator||'=')
+				{
+					case '<':
+					{
+						ok = parseInt(lhs) < parseInt(rhs);
+						break;
+					}
+					case '>':
+					{
+						ok = parseInt(lhs) > parseInt(rhs);
+						break;
+					}
+					case '<=':
+					{
+						ok = parseInt(lhs) <= parseInt(rhs);
+						break;
+					}
+					case '>=':
+					{
+						ok = parseInt(lhs) >= parseInt(rhs);
+						break;
+					}
+					default:
+					{
+						ok = String(lhs) == String(rhs);
+						break;
+					}
+				}
+			}
+			if (negate)
+			{
+				ok = !ok;
+			}
+			if (!ok)
+			{
+				break;
+			}
+		}
+	}
+	return ok;
+};
+

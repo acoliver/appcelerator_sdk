@@ -16,11 +16,11 @@
 
 (function($)
 {
-	var iterator = $.Class.create(
+	var iterator = AppC.create(
 	{
 		getAttributes:function()
 		{
-			var T = Appcelerator.Types;
+			var T = AppC.Types;
 			//
 			// two special attributes you never have to define here: render (action), render (condition)
 			//
@@ -44,9 +44,11 @@
 						{name: 'modelChange', type: T.condition, description: "Model change condition event"}
 					];
 		},
-		render:function()
+		render:function(el,options)
 		{
-			console.debug('render');
+			$(el).html('hello world with '+$.toJSON(options));
+			$(el).trigger('onRendered',this);
+			$(el).trigger('onModelChange','blah');
 		}
 	});
 
@@ -60,6 +62,8 @@
 	});
 	
 })(jQuery);
+
+
 
 // Appcelerator.Control.Iterator = Class.create(Appcelerator.Control.Base,
 // {

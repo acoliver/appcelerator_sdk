@@ -116,6 +116,39 @@ App.triggerAction = function(scope,data,cond,action,elseAction,delay,ifCond)
 	}
 	if (action)
 	{
+		var idx = action.indexOf('[');
+		if (idx != -1)
+		{
+			var endidx = action.lastIndexOf(']');
+			var p = action.substring(idx+1,endidx);
+			action = action.substring(0,idx);
+			var params = App.getParameters(p,false);
+			var newparams = data || {};
+			for (var x=0;x<params.length;x++)
+			{
+				var entry = params[x];
+				var key = entry.key, value = entry.value;
+				if (entry.keyExpression)
+				{
+					key = App.getEvaluatedValue(entry.key,null,scope,entry.keyExpression);
+				}
+				else if (entry.valueExpression)
+				{
+					value = App.getEvaluatedValue(entry.value,null,scope,entry.valueExpression);
+				}
+				else if (entry.empty)
+				{
+					value = App.getEvaluatedValue(entry.key,null,scope);
+				}
+				else
+				{
+					key = App.getEvaluatedValue(entry.key);
+					value = App.getEvaluatedValue(entry.value,null,scope);
+				}
+				newparams[key]=value;
+			}
+			data = newparams;
+		}
 		$(scope).after(function(){ invoke.apply(scope,[action,data]) },delay);
 	}
 };

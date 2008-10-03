@@ -28,6 +28,10 @@ $.extend(
 	{
 	    return value == null ? '' : String(value);
 	},
+	proper: function(value)
+	{
+		return value.charAt(0).toUpperCase() + value.substring(1);
+	},
 	smartSplit: function(value,splitter)
 	{
 		value = this.trim(value);
@@ -130,7 +134,7 @@ $.extend(
                 str = this.unescapeXML(str) + ' ();';
             }
         }
-        var code = 'var f = function(){ var args = $A(arguments); ' + str + '}; f;';
+        var code = 'var f = function(){ var args = $.makeArray(arguments); ' + str + '}; f;';
         var func = eval(code);
         if (this.isFunction(func))
         {
@@ -254,4 +258,8 @@ $.Class.extend = function(destination, source) {
     destination[property] = source[property];
   return destination;
 };
+
+// public API support
+AppC.create = $.Class.create;
+AppC.extend = $.Class.extend;
 

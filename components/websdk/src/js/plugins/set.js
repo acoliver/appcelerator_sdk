@@ -42,13 +42,69 @@ function load(type,name,e)
 		$.each(e.pend,function()
 		{
 			var instance = createControl(this.el,name,this.opts,this.fn);
-			instance.render();
+			var render = instance.render;
+			var el = this.el;
+			var opts = this.opts;
+			instance.render = function()
+			{
+				if (arguments.length == 1)
+				{
+					render.apply(instance,[el,arguments[0]]);
+				}
+				else
+				{
+					render.apply(instance,arguments);
+				}
+			};
+			this.el.trigger('onCreated',[instance,this.opts]);
+			$.each(instance.getAttributes(),function()
+			{
+				switch (this.type)
+				{
+					case AppC.Types.condition:
+					{
+						var name = 'on' + $.proper(this.name);
+						App.regCond(new RegExp('^('+this.name+')$'),function(cond,action,elseAction,delay,ifCond)
+						{
+							el.bind(name,function(args)
+							{
+								var scope = $(this);
+								args = args || {};
+								args.id = $(this).attr('id');
+								App.triggerAction(scope,args,cond,action,elseAction,delay,ifCond);
+							});
+						});
+						break;
+					}
+					case AppC.Types.action:
+					{
+						//FIXME
+						break;
+					}
+					default:
+					{
+						var v = opts[this.name] || this.defaultValue;
+						if (typeof(v)=='undefined' && !this.optional)
+						{
+							el.trigger('onError',"required property '"+this.name+"' not found or missing value");
+							//FIXME
+						}
+						opts[this.name]=v;
+					}
+				}
+			});
+			
+			instance.render.call(instance,this.el,opts);
 		});
 	});
 }
 
 $.fn.control = function(name,opts,fn)
 {
+	if (arguments.length == 0)
+	{
+		return $(this).data('control');
+	}
 	createControl($(this),name,opts,fn);
 };
 
@@ -84,6 +140,8 @@ $.fn.set = function(value)
 
 	el.addClass('container');
 
+	var count = 0;
+	
 	$.each($.smartSplit(value,' and '),function()
 	{
 		var idx = this.indexOf('[');
@@ -110,6 +168,21 @@ $.fn.set = function(value)
 			}
 		}
 		console.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
+
+		el.bind('onRendered',function()
+		{
+			if (show)
+			{
+				$(this).css('visibility',visibility);
+				show=false;
+			}
+		});
+		el.bind('onCreated',function(instance,opts)
+		{
+			count++;
+			console.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
+		});
+		
 		el[ui](type,args);
 	});
 

@@ -22,6 +22,7 @@ $.fn.sub = function(name,fn)
 
 $.fn.pub = function(name,data)
 {
+	console.debug('publish '+name+' with '+$.toJSON(data));
 	var el = this;
 	var m = re.exec(name);
 	var a = local.test(m[1]) ? subs.local : subs.remote;
