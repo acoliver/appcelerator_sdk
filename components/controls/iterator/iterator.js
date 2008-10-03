@@ -71,7 +71,7 @@
 				html+= compiledTemplate(row);
 			}
 			
-			$(el).html(html).trigger('onRendered',this);
+			$(el).html(html).trigger('rendered',this);
 		}
 	});
 

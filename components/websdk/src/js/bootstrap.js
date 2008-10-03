@@ -116,7 +116,7 @@ App.checkState=function(state,el)
 		$(el).trigger('compiled');
 		if (--state.count == 0)
 		{
-			console.debug('compiled complete for '+$(state.el).get(0));
+			$.debug('compiled complete for '+$(state.el).get(0));
 			state.el.trigger('compiled');
 		}
 	}

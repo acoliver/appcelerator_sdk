@@ -170,7 +170,7 @@ $.fn.set = function(value,state)
 		}
 		$.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
 
-		el.bind('onRendered',function()
+		el.bind('rendered',function()
 		{
 			if (show)
 			{
@@ -183,7 +183,7 @@ $.fn.set = function(value,state)
 				App.checkState(state,el);
 			}
 		});
-		el.bind('onCreated',function(instance,opts)
+		el.bind('created',function(instance,opts)
 		{
 			count++;
 			$.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
