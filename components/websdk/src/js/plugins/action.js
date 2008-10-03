@@ -145,7 +145,7 @@ App.dynregAction = function(actions)
 
 			dyn.actions[name]=[{scope:this,params:params}];
 
-			console.debug('remote loading action = '+path);
+			$.debug('remote loading action = '+path);
 			$.getScript(path);
 		});
 	});

@@ -31,7 +31,7 @@ $.fn.sub = function(name,fn)
 
 $.fn.pub = function(name,data)
 {
-	console.debug('publish '+name+' with '+$.toJSON(data));
+	$.debug('publish '+name+' with '+$.toJSON(data));
 	var el = this;
 	var m = re.exec(name);
 	var a = local.test(m[1]) ? subs.local : subs.remote;
@@ -69,6 +69,6 @@ App.regCond(re,function(cond,action,elseAction,delay,ifCond)
 
 App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
 {
-	console.debug('params = '+$.toJSON(params));
+	$.debug('params = '+$.toJSON(params));
 	$(this).pub(action,params);
 });

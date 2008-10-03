@@ -197,7 +197,37 @@ $.extend(
             return a.substring(0, b.length) == b;
         }
         return false;
-    }
+    },
+	info:function()
+	{
+		var log = this.makeArray(arguments).join(' ');
+		if (typeof(console)!='undefined')
+		{
+			if ($.isFunction(console.info))
+			{
+				console.info(log);
+			}
+			else if ($.isFunction(console.log))
+			{
+				console.log(log);
+			}
+		}
+	},
+	debug:function()
+	{
+		var log = this.makeArray(arguments).join(' ');
+		if (typeof(console)!='undefined')
+		{
+			if ($.isFunction(console.debug))
+			{
+				console.debug(log);
+			}
+			else if ($.isFunction(console.log))
+			{
+				console.log(log);
+			}
+		}
+	}
 });
 
 

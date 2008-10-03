@@ -8,7 +8,7 @@ var components =
 
 AppC.register = function(type,name,fn)
 {
-	console.debug('register ' +type+':' +name +', fn:'+fn);
+	$.debug('register ' +type+':' +name +', fn:'+fn);
 	var e = components[type+'s'][name];
 	if (!e)
 	{
@@ -17,7 +17,6 @@ AppC.register = function(type,name,fn)
 		components[type+'s'][name]=e;
 	}
 	e.factory = fn;
-	console.debug('set '+e.factory);
 };
 
 function createControl(el,name,opts,fn)
@@ -55,6 +54,7 @@ function load(type,name,e)
 				{
 					render.apply(instance,arguments);
 				}
+				$(el).compileChildren();
 			};
 			this.el.trigger('onCreated',[instance,this.opts]);
 			$.each(instance.getAttributes(),function()
@@ -167,7 +167,7 @@ $.fn.set = function(value)
 				args[p] = App.getEvaluatedValue(args[p]);
 			}
 		}
-		console.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
+		$.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
 
 		el.bind('onRendered',function()
 		{
@@ -176,11 +176,12 @@ $.fn.set = function(value)
 				$(this).css('visibility',visibility);
 				show=false;
 			}
+			
 		});
 		el.bind('onCreated',function(instance,opts)
 		{
 			count++;
-			console.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
+			$.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
 		});
 		
 		el[ui](type,args);

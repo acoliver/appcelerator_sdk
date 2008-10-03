@@ -67,32 +67,39 @@ function ensureId (el)
 $.fn.compile = function()
 {
 	var node = $(this).get(0);
+	var el = ensureId(this);
+	var e = $(el);
+	var myid = e.attr('id');
+	e.data('stopCompile',false);
+	$.debug(' + compiling #'+myid+' ('+node.nodeName+')');
+	App.executeActions(el);
+	var stop = e.data('stopCompile');
+	e.removeData('stopCompile');
+	if (!stop)
+	{
+		$('#'+myid).compileChildren();
+	}
+	return this;
+};
+
+$.fn.compileChildren = function()
+{
+	var node = $(this).get(0);
 	var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
 	var selector = parent+' > '+App.selectors.join(', '+parent+' > ');
 	
-	console.debug(selector);
-	
 	$.each($.unique($(selector)),function()
 	{
-		var el = ensureId(this);
-		var e = $(el);
-		var myid = e.attr('id');
-		e.data('stopCompile',false);
-		console.debug(' + compiling '+myid);
-		App.executeActions(el);
-		var stop = e.data('stopCompile');
-		e.removeData('stopCompile');
-		if (!stop)
-		{
-			$('#'+myid).compile();
-		}
+		$(this).compile();
 	});
+	
+	return this;
 }
 	
 $(document).ready(function()
 {
 	$('body').compile();
-	console.debug('loaded in ' + (new Date - started) + ' ms');
+	$.info('loaded in ' + (new Date - started) + ' ms');
 });
 
 

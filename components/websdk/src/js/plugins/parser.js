@@ -880,3 +880,44 @@ App.parseConditionCondition = function(actionParams,data)
 	return ok;
 };
 
+function getJsonTemplateVar (namespace,var_expr,template_var)
+{
+    var def = {};
+    var o = $.getNestedProperty(namespace,var_expr,def);
+
+    if (o == def) // wasn't found in template context
+    {
+        try
+        {
+            with(namespace) { o = eval(var_expr) };
+        }
+        catch (e) // couldn't be evaluated either
+        {
+            return template_var; // maybe a nested template replacement will catch it
+        }
+    }
+    
+    if (typeof(o) == 'object')
+    {
+        o = $.toJSON(o).replace(/"/g,'&quot;');
+    }
+    return o;
+};
+
+var templateRE = /#\{(.*?)\}/g;
+AppC.compileTemplate = function(html,htmlonly,varname)
+{
+	varname = varname==null ? 'f' : varname;
+
+	var fn = function(m, name, format, args)
+	{
+		return "', jtv(values,'"+name+"','#{"+name+"}'),'";
+	};
+	var body = "var "+varname+" = function(values){ var jtv = getJsonTemplateVar; return ['" +
+            html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(templateRE, fn) +
+            "'].join('');};" + (htmlonly?'':varname);
+
+	var result = htmlonly ? body : eval(body);
+
+	return result;
+};
