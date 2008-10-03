@@ -111,7 +111,7 @@ var appid = 0;
 
 function ensureId (el)
 {
-	var id = $(el).attr('id');
+	var id = el.id || $(el).attr('id');
 	if (!id)
 	{
 		id = el.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
@@ -120,42 +120,51 @@ function ensureId (el)
 	return el;
 }
 
-$.fn.compile = function(state)
+$.fn.compile = function()
 {
-	var node = $(this).get(0);
-	var el = ensureId(node);
-	var e = $(el);
-	App.incState(state);
-	var myid = e.attr('id');
-	e.data('stopCompile',false);
-	$.info(' + compiling #'+myid+' ('+node.nodeName+')');
-	App.executeActions(el,state);
-	var stop = e.data('stopCompile');
-	e.removeData('stopCompile');
-	if (!stop)
+	if (arguments.length == 2 && typeof(arguments[0])=='object')
 	{
-		$('#'+myid).compileChildren(state);
+		var state = arguments[1];
+		$.each(arguments[0],function()
+		{
+			$(this).compile(state);
+		});
 	}
-	App.checkState(state,el);
+	else if (arguments.length == 1 && typeof(arguments[0].count)=='number')
+	{
+		// compile a single element
+		var state = arguments[0];
+		var node = $(this).get(0);
+		var el = ensureId(node);
+		var e = $(el);
+		App.incState(state);
+		var myid = e.attr('id');
+		e.data('compiled',true);
+		$.debug(' + compiling #'+myid+' ('+node.nodeName+')');
+		App.executeActions(el,state);
+		var compiled = e.data('compiled');
+		// if false, means that the attribute processor will call
+		// checkState when he's done
+		$.debug('compiled = '+compiled+' for '+myid)
+		if (compiled)
+		{
+			App.checkState(state,el);
+		}
+	}
 	return this;
 };
 
-$.fn.compileChildren = function(state)
+$.fn.compileChildren = function(state,self)
 {
 	var node = $(this).get(0);
-	var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
-	var selector = parent+' > '+App.selectors.join(', '+parent+' > ');
-	$.each($.unique($(selector)),function()
-	{
-		$(this).compile(state);
-	});
-	
+	var set = getTargetCompileSet(node,self);
+	this.compile(set,state);
 	return this;
 }
 
 var state = function(el)
 {
-	this.count = 0;
+	this.count = 1;
 	this.el = el;
 	this.completed = [];
 };
@@ -173,7 +182,7 @@ App.checkState=function(state,el)
 {
 	if (state)
 	{
-		state.completed.push($(el).get(0));
+		if (el) state.completed.push($(el).get(0));
 		var count = --state.count;
 		if (count == 0)
 		{
@@ -185,22 +194,53 @@ App.checkState=function(state,el)
 	}
 };
 
+function getTargetCompileSet(node,self)
+{
+	var expr = null, filter = null;
+	
+	if (node!=null)
+	{
+		node = typeof(node.nodeType)=='undefined' ? node.get(0) : node;
+		var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
+		expr = (self ? (parent + ',') : '')  + parent + '>' + App.selectors.join(', ' + parent + '>');
+	}
+	else
+	{
+		expr = App.selectors.join(',');
+		filter = function()
+		{
+			//FIXME- don't hard code this attribute but it's special for now
+			//this filter prevents us from compiling an element has is child of
+			//any parent where it has set attribute
+			return !$(this).parents('*[@set]').length;
+		};
+	}
+
+	if (filter)
+	{
+		return $.unique($(expr).filter(filter));
+	}
+	
+	return $.unique($(expr));
+};
+
 $(document).ready(function()
 {
 	var body = $('body');
 	body.bind('compiled',function()
 	{
-		$.debug('compiled called '+$(this).get(0));
 		body.pub('l:app.compiled');
+		$(document).trigger('compiled');
 	});
-
+	
 	var s = new state(body);
-	body.compile(s);
-
-	$.info('Appcelerator is ready');
+	$(document).compile(getTargetCompileSet(),s);
+	App.checkState(s); // state starts at 1, call to dec
+	
 	$.info(AppC.Copyright);
-	$.info(AppC.LicenseMesage);
+	$.info(AppC.LicenseMessage);
 	$.info('loaded in ' + (new Date - started) + ' ms');
+	$.info('Appcelerator is ready!');
 });
 
 

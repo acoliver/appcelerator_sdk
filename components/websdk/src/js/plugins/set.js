@@ -54,9 +54,8 @@ function load(type,name,e)
 				{
 					render.apply(instance,arguments);
 				}
-				$(el).compileChildren();
 			};
-			this.el.trigger('onCreated',[instance,this.opts]);
+			this.el.trigger('created',[instance,this.opts]);
 			$.each(instance.getAttributes(),function()
 			{
 				switch (this.type)
@@ -127,8 +126,7 @@ $.fn.layout = function(name,options)
 $.fn.set = function(value,state)
 {
 	var el = $(this);
-	el.data('stopCompile',true);
-	App.incState(state);
+	el.data('compiled',false);
 
 	var visibility = el.css('visibility') || 'visible';
 	var show = false, initial = true;
@@ -141,7 +139,22 @@ $.fn.set = function(value,state)
 
 	el.addClass('container');
 
-	var count = 0;
+	el.bind('rendered',function()
+	{
+		el.compileChildren(state,false);
+		if (show)
+		{
+			$(this).css('visibility',visibility);
+			show=false;
+		}
+		if (initial)
+		{
+			initial=false;
+			el.removeData('compiled');
+			App.checkState(state,el);
+			$.info('called final compiled for '+el.get(0));
+		}
+	});
 	
 	$.each($.smartSplit(value,' and '),function()
 	{
@@ -169,25 +182,6 @@ $.fn.set = function(value,state)
 			}
 		}
 		$.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
-
-		el.bind('rendered',function()
-		{
-			if (show)
-			{
-				$(this).css('visibility',visibility);
-				show=false;
-			}
-			if (initial)
-			{
-				initial=false;
-				App.checkState(state,el);
-			}
-		});
-		el.bind('created',function(instance,opts)
-		{
-			count++;
-			$.debug('!!!!! created '+count+', instance='+instance+' opts='+opts);
-		});
 		el[ui](type,args);
 	});
 };
