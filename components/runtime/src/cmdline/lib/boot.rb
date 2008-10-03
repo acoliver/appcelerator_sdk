@@ -75,13 +75,8 @@ end
 #
 # set up temp directory and delete it on exit
 #
-tmp_dir = ENV['TMPDIR'] || ENV['TEMP'] || ENV['TMP']
-if (not(tmp_dir) and File.directory?('/tmp'))
-    tmp_dir = '/tmp'
-else
-    tmp_dir = '.'
-end
-APP_TEMP_DIR=FileUtils.mkdir_p(File.join(tmp_dir, "appcelerator.#{rand(10000)}.#{$$}"))
+require 'tmpdir'
+APP_TEMP_DIR=FileUtils.mkdir_p(File.join(Dir::tmpdir, "appcelerator.#{rand(10000)}.#{$$}"))
 
 APP_TEMP_FILES = Array.new
 
