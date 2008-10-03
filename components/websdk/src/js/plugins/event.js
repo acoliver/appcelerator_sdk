@@ -6,10 +6,12 @@ $.each(events,function()
 {
 	var name = $.string(this);
 	var scope = this;
-	App.regAction(name,function(params)
+	App.regAction(new RegExp('^'+name+'(\\[(.*)?\\])?$'),function(params)
 	{
-		//TODO: add support for action on passed in ID
-		$(this)[name].call(scope);
+		$.info('action id =>' + $.toJSON(params))
+		return (params['id'])?
+				$("#"+params['id'])[name].call(scope):
+				$(this)[name].call(scope);
 	});
 });
 

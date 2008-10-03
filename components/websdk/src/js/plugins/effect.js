@@ -1,4 +1,4 @@
-App.handleBasicEffect = function(obj, action, params,optionsFirst)
+App.handleBasicEffect = function(obj, action, params)
 {	
 	// valid string options (i.e., not name-value pairs)
 	var strOptions = ['speed','opacity','duration','easing'];
@@ -51,21 +51,17 @@ App.handleBasicEffect = function(obj, action, params,optionsFirst)
 	// format arguments
 	if (hasOptions == true)
 	{
-		args = (optionsFirst==true)?
-						[$.toJSON(options), strValues]:
-						[strValues,$.toJSON(options)];
+		args = []
+		args.push (options);
+		if (strValues.length>0) args.push (strValues);
 	}
 	else
 	{
 		args = strValues;
 	}	
-
-	$.info('action=>' + action + ' args ' + args)
-	$.info('comand =>' + target[action])
-
+	
 	// execute effect
-	target[action].apply($(target),args);
-
+	target[action].apply(target,args);
 };
 
 // basic effects list
@@ -79,8 +75,7 @@ $.each(effects,function()
 	var scope = this;
 	App.regAction(new RegExp('^'+name+'(\\[(.*)?\\])?$'),function(params)
 	{
-		var optionsFirst = (name=='animate');
-		App.handleBasicEffect($(this),name,params,optionsFirst)
+		App.handleBasicEffect($(this),name,params)
 	});
 });
 

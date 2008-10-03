@@ -242,12 +242,21 @@
 	<h2>
 		Animate Tests
 	</h2>
-	<div class="box" id="animate_test" on="l:animate then animate[width=500px,duration=2000,easing=swing]">
+	<div class="box" id="animate_test" on="l:animate then animate[width=500px,color=red,duration=2000,easing=swing]">
 		I am a lot of text.  Please see all of my text it's actually so <br/>
 		much text that I can't believe it.  Can you believe it?  It's truly
 		hard to believe if you can believe it.
 	</div>
 	<input type="button" value="animate (background-color and duration)" on="click then l:animate"/>
+
+
+	<h2>
+		Dom Tests
+	</h2>
+	<div class="box" on="click then click[id=my_button]">
+		mouseover me
+	</div>
+	<input type="button"  id="my_button" value="animate (background-color and duration)" on="click then animate[color=red]"/>
 	
 	<script>
 
