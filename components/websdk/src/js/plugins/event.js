@@ -26,7 +26,8 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 	$(this)[cond](function(e)
 	{
 		var scope = $(this);
-		var data = {source:$(this).attr('id'),x:e.pageX,y:e.pageY};
+		var data = {};
+		data['event'] = {id:$(this).attr('id'),x:e.pageX,y:e.pageY};
 		$.debug('sending '+cond+', data = '+$.toJSON(data));
 		App.triggerAction(scope,data,meta);
 		if (stop) e.stopPropagation();

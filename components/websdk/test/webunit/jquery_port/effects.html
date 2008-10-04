@@ -42,6 +42,49 @@
 
 <body>
 	<h2>
+		Pulsate Tests
+	</h2>
+	<div class="box" on="l:pulate then pulsate">hello</div>
+	<div class="clickable" on="click then l:pulate">click me</div>
+	<div class="box" id="pulsate_test" >hello</div>
+	<div class="clickable" on="click then pulsate[id=pulsate_test]">click me</div>
+
+	<h2>
+		Move Tests
+	</h2>
+	<div class="box" id="move_test1" on="l:move then move[x=100px,y=100px]">hello</div>
+	<div class="clickable" on="click then l:move">click me</div>
+	<div class="box" id="move_test" >hello</div>
+	<div class="clickable" on="click then move[id=move_test,x=500px]">click me</div>
+
+	<h2>
+		Highlight Tests
+	</h2>
+	<div class="box" on="l:highlight then highlight">hello</div>
+	<div class="clickable" on="click then l:highlight">click me</div>
+	<div class="box" on="l:highlight2 then highlight[background-color=orange]">hello</div>
+	<div class="clickable" on="click then l:highlight2">click me</div>
+
+	<div class="box" id="highlight_test">hello</div>
+	<div class="clickable" on="click then highlight[id=highlight_test]">click me</div>
+
+	<h2>
+		Visible Tests
+	</h2>
+	<div class="box" on="l:visible then visible" style="visibility:hidden">hello</div>
+	<div class="clickable" on="click then l:visible">click me</div>
+	<div class="box" id="visible_test" style="visibility:hidden">hello</div>
+	<div class="clickable" on="click then visible[id=visible_test]">click me</div>
+
+	<h2>
+		Hidden Tests
+	</h2>
+	<div class="box" on="l:hidden then hidden" style="visibility:visible">hello</div>
+	<div class="clickable" on="click then l:hidden">click me</div>
+	<div class="box" id="hidden_test" style="visibility:visible">hello</div>
+	<div class="clickable" on="click then hidden[id=hidden_test]">click me</div>
+
+	<h2>
 		Hide Tests
 	</h2>
 	<div class="clickable" on="click then hide">click to hide</div>

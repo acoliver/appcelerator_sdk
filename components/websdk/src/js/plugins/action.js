@@ -71,10 +71,13 @@ App.regAction = function(name,fn)
 {
 	if (typeof(name)=='string')
 	{
+		$.info('adding action ' + name)
+
 		regp.actions[name]=fn;
 	}
 	else
 	{
+		$.info('adding action ' + name)
 		regp.ractions.push({re:name,fn:fn});
 	}
 };

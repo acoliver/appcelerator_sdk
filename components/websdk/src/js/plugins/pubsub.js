@@ -45,7 +45,7 @@ $.fn.pub = function(name,data,scope,version)
 	
 	data = data || {};
 
-	if (isLocal && !data.source) data.source = $(this).attr('id');
+	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
 
 	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
 
