@@ -78,7 +78,6 @@ App.regCond(re,function(meta)
 {
 	$(this).sub(meta.cond,function(data)
 	{
-		$.info('trigger action called with '+$(this).attr('id')+', data='+$.toJSON(data));
 		App.triggerAction(this,data,meta);
 	});
 });
