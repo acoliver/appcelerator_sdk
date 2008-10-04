@@ -5,3 +5,13 @@
  *
  */
 
+Appcelerator = AppC;
+
+
+
+// localization
+// widgets
+// get parameters
+// browser
+// download
+// 

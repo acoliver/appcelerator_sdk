@@ -106,7 +106,7 @@ function deliverRemoteMessages(msgs)
 	});
 }
 
-var instanceid = new Date().getTime();
+var instanceid = AppC.params.instanceid || App.MD5.hex_md5(String(new Date().getTime()) + String(Math.round(9999*Math.random())));
 
 function getServiceURL()
 {
@@ -330,6 +330,8 @@ function startDelivery(config)
 //
 try
 {
+	AppC.serverConfig = {};
+	
 	$.ajax({
 		async:true,
 		cache:true,
@@ -340,7 +342,6 @@ try
 		{
 			var re = /@\{(.*?)\}/g;
 			var map = {rootPath:AppC.docRoot};
-			AppC.serverConfig = {};
 			var children = data.documentElement.childNodes;
 			for (var c=0;c<children.length;c++)
 			{
@@ -372,6 +373,5 @@ try
 }
 catch(e)
 {
-	//
 	$.error('error loading appcelerator.xml, remote services are disabled. error = '+e);
 }

@@ -17,6 +17,8 @@ AppC.Version =
 };
 
 var started = new Date;
+var compileTime;
+var loadTime;
 
 AppC.LicenseType = 'Apache License Version 2.0 - see http://license.appcelerator.org';
 AppC.Copyright = 'Copyright (c) 2006-'+(1900+started.getYear())+' by Appcelerator, Inc. All Rights Reserved.';
@@ -38,23 +40,48 @@ else
     }
 }
 
-AppC.params = {};
-idx = top.window.document.location.href.indexOf('?');
-if (idx > 0)
+//
+// these are parameters that can be set by the developer to customize appcelerator based on app needs
+//
+AppC.config = 
 {
-	var qs = top.window.document.location.href.substring(idx+1);
-	$.each(qs.split('&'),function()
+	track_stats:true,  /* true to turn on simple usage tracking to help us improve product */
+	report_stats:true, /* true to send a remote message with client stats to server on page load */
+	browser_check:true /* true to check for valid grade-A browser support when document is loaded */
+};
+
+//
+// these are parameters that can be used to customize appcelerator from a users perspective
+//
+AppC.params = 
+{
+	debug: 0   /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */
+};
+
+function queryString(uri,params)
+{
+	idx = uri.indexOf('?');
+	params = params || {};
+	if (idx > 0)
 	{
-		var e = this.split('=');
-		AppC.params[decodeURIComponent(e[0])]=decodeURIComponent(e[1]||'');
-	});
+		var qs = uri.substring(idx+1);
+		$.each(qs.split('&'),function()
+		{
+			var e = this.split('=');
+			params[decodeURIComponent(e[0])]=decodeURIComponent(e[1]||'');
+		});
+	}
+	return params;
 }
+
+// get config parameters for app from the URI of the page
+queryString(top.window.document.location.href,AppC.params);
 
 AppC.docRoot = docRoot;
 
 var absRe = /file:|http(s)?:/
 
-var jsLocation = $('script[@src~=appcelerator]').attr('src');
+var jsLocation = $('script[@src~=appcelerator]').get(0).src;
 var baseLocation = $('base[@href]').attr('href');
 
 if (baseLocation)
@@ -67,37 +94,37 @@ if (!absRe.test(jsLocation))
 	jsLocation = AppC.docRoot + (jsLocation.charAt(0)=='/' ? jsLocation.substring(1) : jsLocation);
 }
 
-if (jsLocation)
+// override the configuration for appcelerator from the appcelerator JS query string
+queryString(jsLocation,AppC.config);
+
+if (!baseLocation)
 {
-	if (!baseLocation)
+	// see if it's a full URI
+	var hostIdx = jsLocation.indexOf(':/');
+	if (hostIdx > 0)
 	{
-		// see if it's a full URI
-		var hostIdx = jsLocation.indexOf(':/');
-		if (hostIdx > 0)
+		var jsHostPath = jsLocation.substring(hostIdx + 3, jsLocation.indexOf('/',hostIdx + 4));
+		var docIdx = AppC.docRoot.indexOf(':/');
+		if (docIdx > 0)
 		{
-			var jsHostPath = jsLocation.substring(hostIdx + 3, jsLocation.indexOf('/',hostIdx + 4));
-			var docIdx = AppC.docRoot.indexOf(':/');
-			if (docIdx > 0)
+			var docHostPath = AppC.docRoot.substring(docIdx + 3, AppC.docRoot.indexOf('/',docIdx+4));
+			if (docHostPath == jsHostPath)
 			{
-				var docHostPath = AppC.docRoot.substring(docIdx + 3, AppC.docRoot.indexOf('/',docIdx+4));
-				if (docHostPath == jsHostPath)
-				{
-					// if on the same host then always prefer the JS location (one directory up) as the base href
-					// such that we can have multiple content directories that include the JS relatively from the top
-					AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,jsLocation.lastIndexOf('/')) + '/../',AppC.docRoot);
-				}
+				// if on the same host then always prefer the JS location (one directory up) as the base href
+				// such that we can have multiple content directories that include the JS relatively from the top
+				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,jsLocation.lastIndexOf('/')) + '/../',AppC.docRoot);
 			}
 		}
-		else
+	}
+	else
+	{
+		// relative URI we need to adjust the DocumentPath
+		if (jsLocation.charAt(0)=='/' || jsLocation.charAt(0)=='.')
 		{
-			// relative URI we need to adjust the DocumentPath
-			if (jsLocation.charAt(0)=='/' || jsLocation.charAt(0)=='.')
+			var idx = jsLocation.lastIndexOf('/');
+			if (idx!=-1)
 			{
-				var idx = jsLocation.lastIndexOf('/');
-				if (idx!=-1)
-				{
-					AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,idx+1) + '../',AppC.docRoot);
-				}
+				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,idx+1) + '../',AppC.docRoot);
 			}
 		}
 	}
@@ -224,23 +251,54 @@ function getTargetCompileSet(node,self)
 	return $.unique($(expr));
 };
 
+var beforeCompilers = [];
+
+AppC.beforeCompile = function(f)
+{
+	if (!beforeCompilers)
+	{
+		f();
+	}
+	else
+	{
+		beforeCompilers.push(f);
+	}
+	return AppC;
+};
+
 $(document).ready(function()
 {
+	var compileStarted = new Date;
+	
+	// call any pending guys waiting for us to get 
+	// started (means they're waiting for document.ready)
+	if (beforeCompilers)
+	{
+		$.each(beforeCompilers,function()
+		{
+			this();
+		});
+		beforeCompilers=null;
+	}
+	
 	var body = $('body');
 	body.bind('compiled',function()
 	{
 		body.pub('l:app.compiled');
 		$(document).trigger('compiled');
+		compileFinished = new Date;
+		loadTime = compileFinished - started;
+		compileTime = compileFinished - compileStarted;
+
+		$.info(AppC.Copyright);
+		$.info(AppC.LicenseMessage);
+		$.info('loaded in ' + (loadTime) + ' ms');
+		$.info('Appcelerator is ready!');
 	});
 	
 	var s = new state(body);
 	$(document).compile(getTargetCompileSet(),s);
 	App.checkState(s); // state starts at 1, call to dec
-	
-	$.info(AppC.Copyright);
-	$.info(AppC.LicenseMessage);
-	$.info('loaded in ' + (new Date - started) + ' ms');
-	$.info('Appcelerator is ready!');
 });
 
 

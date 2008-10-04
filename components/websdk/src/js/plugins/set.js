@@ -152,7 +152,6 @@ $.fn.set = function(value,state)
 			initial=false;
 			el.removeData('compiled');
 			App.checkState(state,el);
-			$.info('called final compiled for '+el.get(0));
 		}
 	});
 	
