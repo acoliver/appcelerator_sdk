@@ -2,7 +2,7 @@
 var subs = {local:[], remote:[]};
 var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
 var localRe = /^l|local|both|\*/;
-var pubdebug = AppC.params['debug'] || AppC.params['debug']=='2';
+var pubdebug = AppC.params.debug=='2';
 var queue = [];
 var remoteDisabled = true;
 
@@ -62,15 +62,6 @@ $.fn.pub = function(name,data,scope,version)
 		processQueue();		
 	}
 
-	return this;
-};
-
-$.fn.after = function(fn,delay)
-{
-	var scope = this;
-	setTimeout(function(){ 
-		fn.call(scope);
-	},(delay||0.1));
 	return this;
 };
 
@@ -242,7 +233,6 @@ function processQueue()
 		var version = this.version;
 		$.each(a,function()
 		{
-			$.debug('name='+name+',regexp='+this.regexp+',this.name='+this.name);
 			if ((this.regexp && this.regexp.test(name)) || (!this.regexp && this.name == name))
 			{
 				if (App.parseConditionCondition(this.params,data))

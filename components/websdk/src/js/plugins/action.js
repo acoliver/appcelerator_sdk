@@ -152,7 +152,7 @@ App.triggerAction = function(scope,params,meta)
 			}		
 		}
 		$.debug('invoking action: '+action+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
-		$(scope).after(function(){ invoke.apply(scope,[action,newparams]) },meta.delay);
+		$(scope).delay(function(){ invoke.apply(scope,[action,newparams]) },meta.delay/1000);
 	}
 };
 

@@ -265,7 +265,7 @@ var conds = [];
 App.regCond = function(re,fn)
 {
 	conds.push({re:re,fn:fn});
-};
+};  
 
 App.processCond = function(el,info)
 {
@@ -303,10 +303,8 @@ $.fn.on = function(value,state)
 			elseActionParams: ep ? ep.params : null,
 			delay: this[4],
 			ifCond: this[5],
-			state: state,
-			target: el.attr('id')
+			state: state
 		};
-		$.debug('processCond='+$.toJSON(param));
 		App.processCond(el,param);
 	});
 };

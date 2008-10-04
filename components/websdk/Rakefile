@@ -119,6 +119,9 @@ END_LICENSE
   puts 'Compiling appcelerator.js...' if VERBOSE
   jsout = js_dir+'/appcelerator.js'
   jstemp = js_dir+'/appcelerator-temp.js'
+
+  jscompat_debug = js_dir+'/appcelerator-compat-debug.js'
+  jscompat = js_dir+'/appcelerator-compat.js'
   
   if COMPRESS
     puts "Compressing appcelerator.js"
@@ -144,6 +147,20 @@ END_LICENSE
     append_file(jstemp, jslite)
     FileUtils.rm jstemp
 
+
+    FileUtils.cp_r jscompat,jscompat_debug
+
+    jscompt = jscompat+'.tmp'
+    js = compress_and_mangle(File.read(jscompat))
+    f = File.open(jscompt,'w+')
+    f.write js
+    f.close
+    
+    FileUtils.rm_rf jscompat
+    append_file(LICENSE_HEADER, jscompat, true)
+    append_file(jscompt, jscompat)
+    FileUtils.rm_rf jscompt
+
   else
     FileUtils.cp jsdebug, jsout
   end
@@ -154,7 +171,8 @@ END_LICENSE
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
     zipfile.add("#{JS_PATH}/appcelerator-lite.js",jslite)
     zipfile.add("#{JS_PATH}/appcelerator-debug.js",jsdebug)
-    zipfile.add("#{JS_PATH}/appcelerator-compat.js",compat_file)
+    zipfile.add("#{JS_PATH}/appcelerator-compat.js",jscompat)
+    zipfile.add("#{JS_PATH}/appcelerator-compat-debug.js",jscompat_debug) if COMPRESS
     zipfile.add("#{JS_PATH}/appcelerator.js",jsout)
     zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
     %w(control layout theme behavior).each do |type|

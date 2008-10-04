@@ -210,11 +210,7 @@ $.extend(
 	},
     startsWith: function(a,b)
     {
-        if (b.length <= a.length)
-        {
-            return a.substring(0, b.length) == b;
-        }
-        return false;
+    	return a.indexOf(b) === 0;
     },
 	error:function()
 	{
@@ -415,3 +411,16 @@ $.Class.extend = function(destination, source) {
 AppC.create = $.Class.create;
 AppC.extend = $.Class.extend;
 
+$.fn.defer = function(fn,delay)
+{
+	$(this).delay(fn,0.001);
+};
+
+$.fn.delay = function(fn,delay)
+{
+	var scope = this;
+	setTimeout(function(){ 
+		fn.call(scope);
+	},(delay||0.1)*1000);
+	return this;
+};

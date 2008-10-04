@@ -68,7 +68,24 @@ function queryString(uri,params)
 		$.each(qs.split('&'),function()
 		{
 			var e = this.split('=');
-			params[decodeURIComponent(e[0])]=decodeURIComponent(e[1]||'');
+			var v = decodeURIComponent(e[1]||'');
+			var k = decodeURIComponent(e[0]);
+			switch(v)
+			{
+				case '1':
+				case 'true':
+				{
+					v = true;
+					break;
+				}
+				case '0':
+				case 'false':
+				{
+					v = false;
+					break;
+				}
+			}
+			params[k]=v;
 		});
 	}
 	return params;
