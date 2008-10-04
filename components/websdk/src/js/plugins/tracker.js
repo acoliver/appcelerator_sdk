@@ -23,14 +23,20 @@ function TrackStat (evt,extra)
 		_sending = false;
 	}
 };
-
 window.onerror = function(msg,url,line)
 {
 	// refuse to track our own errors
 	if (_sending) return;
 	try
 	{
-	    $.error('generic uncaught error = '+msg+', url = '+url+', line = '+line);
+		// squash this event... an event object not an error and we can safely ignore
+		if (!url && !line && typeof(msg)=='object' && typeof(msg.stopPropagation)=='function')
+		{
+			_sending = false;
+			return;
+		}
+		
+	    $.error('generic uncaught error = '+String(msg)+', url = '+url+', line = '+line);
 		
 		// track app errors to improve common issues
 		var s = 'msg=' + encodeURIComponent($.encode64(String(msg))) + '&url='+encodeURIComponent($.encode64(String(url||''))) + '&line='+encodeURIComponent(line||-1);
@@ -45,6 +51,8 @@ window.onerror = function(msg,url,line)
 	}
 	catch(e)
 	{
+		$.error('caught error in window.onerror = '+e);
+		_sending = false;
 		return false;
 	}
 };
@@ -107,18 +115,18 @@ $(document).bind('compiled',function()
 		'tz' : tz,
 		'uid': appuid
 	};
-	if (sendRemote)
-	{
-	    //
-	    // if being loaded from an IFrame - don't do the report
-	    //
-	    if (window.parent == null || window.parent == window)
-	    {
-            $(document).pub('r:appcelerator.status.report',data);
-	    }
-	}
 	setTimeout(function()
 	{
+		if (sendRemote)
+		{
+		    //
+		    // if being loaded from an IFrame - don't do the report
+		    //
+		    if (window.parent == null || window.parent == window)
+		    {
+	            $(document).pub('r:appcelerator.status.report',data);
+		    }
+		}
 		var a = 0, s = 0, v = 1, c = null, l = null, svc = null;
 	
 		c = AppC.serverConfig['aid'];

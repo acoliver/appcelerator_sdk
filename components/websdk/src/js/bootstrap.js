@@ -292,7 +292,7 @@ $(document).ready(function()
 
 		$.info(AppC.Copyright);
 		$.info(AppC.LicenseMessage);
-		$.info('loaded in ' + (loadTime) + ' ms');
+		$.info('loaded in ' + (loadTime) + ' ms, compiler took ~'+(compileTime)+' ms');
 		$.info('Appcelerator is ready!');
 	});
 	
