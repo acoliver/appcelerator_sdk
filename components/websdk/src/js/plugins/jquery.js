@@ -411,16 +411,22 @@ $.Class.extend = function(destination, source) {
 AppC.create = $.Class.create;
 AppC.extend = $.Class.extend;
 
-$.fn.defer = function(fn,delay)
-{
-	$(this).delay(fn,0.001);
-};
-
 $.fn.delay = function(fn,delay)
 {
 	var scope = this;
+	// support either first argument is number and second is function -or-
+	// first argument is function and second is number ... sometimes more readable is number first
+	var f = typeof(fn)=='number' ? delay : fn;
+	var n = typeof(fn)=='function' ? delay : fn;
 	setTimeout(function(){ 
-		fn.call(scope);
-	},(delay||0.1)*1000);
+		f.call(scope);
+	},(n||0.1)*1000);
 	return this;
 };
+
+$.fn.defer = function(fn,delay)
+{
+	$(this).delay(fn,0.001);
+	return this;
+};
+

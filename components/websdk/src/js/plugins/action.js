@@ -1,7 +1,7 @@
 App.selectors = [];
 var actions = {};
 
-function addAction(el,name,handler)
+function addCond(el,name,handler)
 {
 	var found = actions[el];
 	if (!found)
@@ -65,7 +65,7 @@ App.reg = function(name,el,handler)
 
 	$.each(el,function()
 	{
-		addAction(this,name,handler);
+		addCond(this,name,handler);
 	});
 };
 
@@ -87,19 +87,31 @@ App.dynloadAction = function(name,fn)
 	try { delete dyn.actions[name] } catch (E) { dyn.actions[name]=null; }
 };
 
+var actionRE = /\^([\w]+)\(/;
+
 App.regAction = function(name,fn)
 {
-	if (typeof(name)=='string')
+	$.debug('adding action ' + name)
+	
+	var m = actionRE.exec(String(name));
+	if (m && m.length > 1 || typeof(name)=='string')
 	{
-		$.info('adding action ' + name)
-
-		regp.actions[name]=fn;
+		var fnName = m.length > 1 ? m[1] : name;
+		if (typeof($.fn[fnName])!='function' && /\w/.test(fnName))
+		{
+			$.debug('registering plugin '+fnName);
+			//
+			// attempt to create a plugin with the same name of the action
+			// so that you can programatically call the same action such
+			// as: $('#foo').highlight()
+			//
+			$.fn[fnName] = function(params)
+			{
+				return fn.call(this,params||{});
+			};
+		}
 	}
-	else
-	{
-		$.info('adding action ' + name)
-		regp.ractions.push({re:name,fn:fn});
-	}
+	regp.ractions.push({re:name,fn:fn});
 };
 
 function invoke (name,params)
@@ -117,10 +129,14 @@ function invoke (name,params)
 	});
 	if (!found)
 	{
-		var fn = regp.actions[name] || $(this)[name];
+		var fn = $(this)[name];
 		if (fn)
 		{
 			fn.apply(scope,[params]);
+		}
+		else
+		{
+			$.error("couldn't find an action named: "+name+" for target: "+$(this).attr('id'));
 		}
 	}
 };
@@ -190,16 +206,17 @@ App.dynregAction = function(actions)
 		{
 			return App.regAction(name,found);
 		}
-		App.regAction(name,function(params)
+		App.regAction(evtRegex(name),function(params)
 		{
 			var c = dyn.actions[name];
+			var scope = getTarget(params,this);
 			if (c)
 			{
 				// already pending
-				return c.push({scope:this,params:params});
+				return c.push({scope:scope,params:params});
 			}
 
-			dyn.actions[name]=[{scope:this,params:params}];
+			dyn.actions[name]=[{scope:scope,params:params}];
 
 			$.debug('remote loading action = '+path);
 			$.getScript(path);

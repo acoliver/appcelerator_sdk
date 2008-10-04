@@ -147,5 +147,5 @@ $.fn.localize = function(lang)
 //
 if (AppC.config.auto_locale)
 {
-	AppC.locale(locale);	
+	AppC.locale(AppC.currentLocale);	
 }

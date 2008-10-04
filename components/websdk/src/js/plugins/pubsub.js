@@ -318,7 +318,6 @@ function startDelivery(config)
 try
 {
 	AppC.serverConfig = {};
-	$.info('docRoot idx = '+AppC.docRoot.indexOf('file:/'));
 	// only fetch XML if you are not running from file URL
 	if (AppC.docRoot.indexOf('file:/')<0)
 	{

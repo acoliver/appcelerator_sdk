@@ -5,7 +5,7 @@
 // App is the private namespace that is used internally. This API is not stable and should not be used.
 // AppC is the semi-stable API that can be used externally.
 //
-App = AppC = jQuery.prototype;
+App = AppC = {};
 
 AppC.Version = 
 {
