@@ -15,7 +15,6 @@ $.fn.sub = function(name,fn,params)
 	if (idx > 0)
 	{
 		type = type.substring(0,idx);
-		$.info('trimmed to '+type);
 	}
 	
 	var m = re.exec(type);
@@ -26,8 +25,7 @@ $.fn.sub = function(name,fn,params)
 		regexp = new RegExp(type);
 	}
 	
-	$.info('subscribing '+m[2]+', local='+m[1]+', type='+type+', regexp='+regexp);
-	
+	$.debug('subscribing '+m[2]+', local='+m[1]+', type='+type+', regexp='+regexp);
 	
 	if (localRe.test(m[1]))
 	{
@@ -80,7 +78,6 @@ App.regCond(re,function(meta)
 {
 	$(this).sub(meta.cond,function(data)
 	{
-		$.info('trigger action called with '+$(this).attr('id')+', data='+$.toJSON(data));
 		App.triggerAction(this,data,meta);
 	});
 });
