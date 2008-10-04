@@ -318,13 +318,15 @@ function startDelivery(config)
 try
 {
 	AppC.serverConfig = {};
+	var url = AppC.docRoot+'appcelerator.xml';
+	$.debug('fetching url='+url);
 	
 	$.ajax({
 		async:true,
 		cache:true,
 		dataType:'xml',
 		type:'GET',
-		url:AppC.docRoot+'appcelerator.xml',
+		url:url,
 		success:function(data)
 		{
 			var re = /@\{(.*?)\}/g;
@@ -360,5 +362,5 @@ try
 }
 catch(e)
 {
-	$.error('error loading appcelerator.xml, remote services are disabled. error = '+e);
+	$.error('error loading '+docRoot+'appcelerator.xml, remote services are disabled. error = '+e);
 }

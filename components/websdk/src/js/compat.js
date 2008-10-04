@@ -515,6 +515,55 @@ if (typeof($$)=='undefined')
 		}
 	};
 
+	// Appcelerator.Localization mapping
+	Appcelerator.Localization = 
+	{
+		currentLanguage: AppC.locale,
+		addLanguageBundle: function(lang,displayName,map)
+		{
+			//FIXME
+		},
+		updateLanguageBundle:function(lang,displayName,map)
+		{
+			//FIXME
+		},
+		getWithFormat:function (key, defValue, lang, args)
+		{
+			//FIXME
+		}
+	};
+	
+	var supportedTags = 
+	[
+		'div',
+		'span',
+		'input',
+		'a',
+		'td',
+		'select',
+		'option',
+		'li',
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'ol',
+		'legend',
+	    'img'
+	];
+	
+	// register attribute listener
+	App.reg('langid',supportedTags,function(value,state)
+	{
+		//FIXME - implement
+	});
+	
+
+	// listen for localization events
+	$(document).bind('localized',function(lang)
+	{
+		Appcelerator.Localization.currentLanguage = lang;		
+	});
 	
 })(jQuery);
 

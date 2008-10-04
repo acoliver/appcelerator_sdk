@@ -72,3 +72,52 @@ $.each(effects,function()
 	});
 });
 
+$.fn.visible = function()
+{
+	if (arguments.length == 0)
+	{
+		$(this).css('visibility','visible');
+	}
+	else
+	{
+		var arg = arguments[0];
+		switch(typeof(arg))
+		{
+			case 'boolean':
+			{
+				arg = arg ? 'visibile':'hidden';
+				break;
+			}
+			case 'object':
+			{
+				arg = 'visible';
+				break;
+			}
+			case 'string':
+			{
+				switch(arg)
+				{
+					case 'true':
+					case 'visible':
+					{
+						arg = 'visibile';
+						break;
+					}
+					case 'false':
+					case 'hidden':
+					{
+						arg = 'hidden';
+						break;
+					}
+					case '':
+					{
+						arg = '';
+						break;
+					}
+				}
+			}
+		}
+		$(this).css('visibility',arg);
+	}
+	return this;
+};

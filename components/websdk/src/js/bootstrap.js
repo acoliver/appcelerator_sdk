@@ -1,6 +1,10 @@
 
 /*- Appcelerator + jQuery - a match made in heaven */
 
+//
+// App is the private namespace that is used internally. This API is not stable and should not be used.
+// AppC is the semi-stable API that can be used externally.
+//
 App = AppC = jQuery.prototype;
 
 AppC.Version = 
@@ -45,9 +49,10 @@ else
 //
 AppC.config = 
 {
-	track_stats:true,  /* true to turn on simple usage tracking to help us improve product */
-	report_stats:true, /* true to send a remote message with client stats to server on page load */
-	browser_check:true /* true to check for valid grade-A browser support when document is loaded */
+	track_stats:true,    /* true to turn on simple usage tracking to help us improve product */
+	report_stats:true,   /* true to send a remote message with client stats to server on page load */
+	browser_check:true,  /* true to check for valid grade-A browser support when document is loaded */
+	auto_locale:false    /* true to attempt to auto load localization bundle based on users locale when page is loaded */
 };
 
 //
@@ -146,7 +151,6 @@ if (!baseLocation)
 		}
 	}
 }
-
 
 AppC.compRoot = AppC.docRoot + 'components';
 AppC.pluginRoot = AppC.compRoot + '/plugins';

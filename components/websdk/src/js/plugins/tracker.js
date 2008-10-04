@@ -144,7 +144,7 @@ $(document).bind('compiled',function()
 	    var p = AppC.UA.platform || 'unknown';
 		var f = AppC.UA.flashVersion;
 		var sic = (AppC.serverConfig['sessionid']||{}).value;
-	    var si = $.cookie(sic);
+	    var si = sic ? $.cookie(sic) : null;
 
 		var qs = $.toQueryString({
 			'wv': String(AppC.Version),
