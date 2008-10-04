@@ -198,7 +198,7 @@ task :default => [:stage] do
   build_subdir "#{Dir.pwd}"
 end
 
-YUI_VERSION = '2.2.5'
+YUI_VERSION = '2.3.6'
 YUI_JAR = to_path "#{CWD}/websdk/lib/yuicompressor-#{YUI_VERSION}.jar"
 YUI_COMPRESSOR = "java -jar \"#{YUI_JAR}\""
 COMPRESS_RB = "ruby \"#{CWD}/websdk/lib/compress.rb\""

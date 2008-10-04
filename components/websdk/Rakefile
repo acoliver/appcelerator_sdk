@@ -40,26 +40,17 @@ task :default do
 
   puts 'Compiling appcelerator-lite.js...' if VERBOSE
   # files that need to be included before the others in the directory
-#  jslite_prefiles = %w(debug.js string.js uri.js core.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js observable.js)
+
   jslite = js_dir+'/appcelerator-lite.js'
+  FileUtils.rm_rf jslite if File.exists? jslite
+
+  rel = build_config[:version].to_s.split('.')
   
   LICENSE_HEADER=<<END_LICENSE
-/*!
- * This file is part of Appcelerator.
- *
- * Copyright 2006-2008 Appcelerator, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*!(c) 2006-#{Time.now.strftime('%Y')} Appcelerator, Inc. http://appcelerator.org
+ * Licensed under the Apache License, Version 2.0. Please visit
+ * http://license.appcelerator.com for full copy of the License.
+ * Version: #{build_config[:version]}, Released: #{Time.now.strftime('%m/%d/%Y')}
  **/
 END_LICENSE
 
@@ -72,9 +63,8 @@ END_LICENSE
   append_file("#{js_source}/prolog.js", jslite)
   append_file("#{js_source}/plugins/uri.js", jslite)
   
-  rel = build_config[:version].to_s.split('.')
-
   # fix the release information in the file
+  rel = build_config[:version].to_s.split('.')
   bf = File.read(js_source+'/bootstrap.js')
   bf.gsub!('${version.major}',rel[0])
   bf.gsub!('${version.minor}',rel[1])
@@ -104,7 +94,6 @@ END_LICENSE
 
   FileUtils.rm_rf jsdebug
   
-  append_file(LICENSE_HEADER,jsdebug,true)
   append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
   thirdparty = [
     'jquery/jquery.js',
