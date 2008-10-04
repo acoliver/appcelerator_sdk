@@ -131,7 +131,6 @@ App.triggerAction = function(scope,params,meta)
 			{
 				var entry = data[x];
 				var key = entry.key, value = entry.value;
-				$.info('entry['+x+'] => '+$.toJSON(entry));
 				if (entry.keyExpression)
 				{
 					key = App.getEvaluatedValue(entry.key,null,params,entry.keyExpression);

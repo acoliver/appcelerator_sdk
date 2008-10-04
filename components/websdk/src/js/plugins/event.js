@@ -8,7 +8,6 @@ $.each(events,function()
 	var scope = this;
 	App.regAction(new RegExp('^'+name+'(\\[(.*)?\\])?$'),function(params)
 	{
-		$.info('action id =>' + $.toJSON(params))
 		return (params.id)?
 				$("#"+params.id)[name].call(scope):
 				$(this)[name].call(scope);

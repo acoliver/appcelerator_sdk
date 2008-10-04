@@ -2,7 +2,7 @@
 var subs = {local:[], remote:[]};
 var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
 var localRe = /^l|local|both|\*/;
-var pubdebug = AppC.params['debug'];
+var pubdebug = AppC.params['debug'] && AppC.params['debug']==true || AppC.params['debug']=='1';
 var queue = [];
 var remoteDisabled = true;
 
