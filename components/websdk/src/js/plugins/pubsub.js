@@ -318,47 +318,49 @@ function startDelivery(config)
 try
 {
 	AppC.serverConfig = {};
-	var url = AppC.docRoot+'appcelerator.xml';
-	$.debug('fetching url='+url);
-	
-	$.ajax({
-		async:true,
-		cache:true,
-		dataType:'xml',
-		type:'GET',
-		url:url,
-		success:function(data)
-		{
-			var re = /@\{(.*?)\}/g;
-			var map = {rootPath:AppC.docRoot};
-			var children = data.documentElement.childNodes;
-			for (var c=0;c<children.length;c++)
+	$.info('docRoot idx = '+AppC.docRoot.indexOf('file:/'));
+	// only fetch XML if you are not running from file URL
+	if (AppC.docRoot.indexOf('file:/')<0)
+	{
+		var url = AppC.docRoot+'appcelerator.xml';
+		$.ajax({
+			async:true,
+			cache:true,
+			dataType:'xml',
+			type:'GET',
+			url:url,
+			success:function(data)
 			{
-				var child = children[c];
-				if (child.nodeType == 1)
+				var re = /@\{(.*?)\}/g;
+				var map = {rootPath:AppC.docRoot};
+				var children = data.documentElement.childNodes;
+				for (var c=0;c<children.length;c++)
 				{
-					var service = child.nodeName.toLowerCase();
-					var config = {};
-					var path = $.domText(child);
-					var template = AppC.compileTemplate(path,false,null,re);
-					for (var x=0;x<child.attributes.length;x++)
+					var child = children[c];
+					if (child.nodeType == 1)
 					{
-						var attr = child.attributes[x];
-						config[attr.name]=attr.value;
+						var service = child.nodeName.toLowerCase();
+						var config = {};
+						var path = $.domText(child);
+						var template = AppC.compileTemplate(path,false,null,re);
+						for (var x=0;x<child.attributes.length;x++)
+						{
+							var attr = child.attributes[x];
+							config[attr.name]=attr.value;
+						}
+						config.value = template(map);
+						AppC.serverConfig[service]=config;
 					}
-					config.value = template(map);
-					AppC.serverConfig[service]=config;
 				}
+				$(document).trigger('serverConfig',AppC.serverConfig);
+				startDelivery(AppC.serverConfig);
+			},
+			error:function(xhr,text,error)
+			{
+				$.error('error retrieving appcelerator.xml, remote services are disabled. error = '+text);
 			}
-			$(document).trigger('serverConfig',AppC.serverConfig);
-			startDelivery(AppC.serverConfig);
-		},
-		error:function(xhr,text,error)
-		{
-			$.error('error retrieving appcelerator.xml, remote services are disabled. error = '+text);
-		}
-	});
-
+		});
+	}
 }
 catch(e)
 {

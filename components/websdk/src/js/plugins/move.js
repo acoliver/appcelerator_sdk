@@ -1,12 +1,11 @@
-App.regAction(new RegExp('^move(\\[(.*)?\\])?$'),function(params)
+regCSSAction('move',function(params)
 {
-	var target =  (params['id'])?$("#" + params['id']):this;
-	var x = params['x'] || '0px';
-	var y = params['y'] || '0px';
-	var duration = params['duration'] || 1000;
-	target.css({'position':'relative'});
-	target.animate({left:x,top:y},duration);
-	
+	this.css('position','relative').animate({
+		left:params.x||0,
+		top:params.y||0
+	},params.duration||1000);
 });
+	
+
 	
 

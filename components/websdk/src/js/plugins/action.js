@@ -30,6 +30,26 @@ function iterateActions(f,el,state)
 	}
 }
 
+function getTarget(params,t)
+{
+	return (params.id)?$("#" + params.id):t;
+}
+
+function regCSSAction(name,key,value)
+{
+	App.regAction(evtRegex(name),function(params)
+	{
+		if (typeof(key)=='function')
+		{
+			return key.call(getTarget(params,this),params);
+		}
+		else
+		{
+			return getTarget(params,this).css(key,value||name);
+		}
+	});
+}
+
 App.executeActions = function(el,state)
 {
 	iterateActions(actions[el],el,state);

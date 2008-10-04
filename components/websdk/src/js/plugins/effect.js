@@ -8,12 +8,10 @@ App.handleBasicEffect = function(obj, action, params)
 	{
 		switch(p)
 		{
-			case 'source':
-			case 'x':
-			case 'y':
+			case 'event':
 			{
-				// these come from built-in events like click
-				// and they don't seem to be appropriate to pass in
+				// from built-in events like click
+				// and they aren't appropriate to pass in
 				continue;
 			}
 			case 'id':
@@ -65,59 +63,8 @@ var effects = ['show','hide','slideToggle','slideUp','slideDown','fadeIn','fadeO
 $.each(effects,function()
 {
 	var name = $.string(this);
-	var scope = this;
-	App.regAction(new RegExp('^'+name+'(\\[(.*)?\\])?$'),function(params)
+	App.regAction(evtRegex(name),function(params)
 	{
 		App.handleBasicEffect(this,name,params)
 	});
 });
-
-$.fn.visible = function()
-{
-	if (arguments.length == 0)
-	{
-		$(this).css('visibility','visible');
-	}
-	else
-	{
-		var arg = arguments[0];
-		switch(typeof(arg))
-		{
-			case 'boolean':
-			{
-				arg = arg ? 'visibile':'hidden';
-				break;
-			}
-			case 'object':
-			{
-				arg = 'visible';
-				break;
-			}
-			case 'string':
-			{
-				switch(arg)
-				{
-					case 'true':
-					case 'visible':
-					{
-						arg = 'visibile';
-						break;
-					}
-					case 'false':
-					case 'hidden':
-					{
-						arg = 'hidden';
-						break;
-					}
-					case '':
-					{
-						arg = '';
-						break;
-					}
-				}
-			}
-		}
-		$(this).css('visibility',arg);
-	}
-	return this;
-};
