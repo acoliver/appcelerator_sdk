@@ -107,7 +107,9 @@ App.regAction = function(name,fn)
 			//
 			$.fn[fnName] = function(params)
 			{
-				return fn.call(this,params||{});
+				var r = fn.call(this,params||{});
+				if (typeof(r)!='undefined') return r;
+				return this;
 			};
 		}
 	}

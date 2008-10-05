@@ -283,9 +283,7 @@ if (typeof($$)=='undefined')
 			},
 			setOpacity: function(id,value)
 			{
-			    var e = el(id);
-				e.css('opacity',(value==1||value=='') ? '' : (value < 0.00001) ? 0 : value);
-				return e.get(0);
+			    return el(id).opacity(value);
 			},
 			getDimensions: function(id) 
 			{
@@ -438,6 +436,74 @@ if (typeof($$)=='undefined')
 			  	el(element).insertAfter(content);
 			}
 		};
+
+	}
+
+	if (typeof(Scriptaculous)=='undefined')
+	{
+		Scriptaculous = 
+		{
+			Version: '1.8.1'
+		};
+		
+		var effectNames = 
+		{
+			'blindDown': {},
+			'blindUp': {},
+			'slideUp': {},
+			'slideDown': {},
+			'appear': {},
+			'fade': {},
+			'move': null,	   /* no conversion */
+			'opacity': null,   /* no conversion */
+			'scale': {},
+			'highlight': 
+			{
+				'params':
+				{
+					'startcolor':{ name:'backgroundColor', defaultValue:'#ffff99' }
+				}
+			},
+			'scrollTo': {},
+			'puff': {},
+			'switchOff': {},
+			'dropOut': {},
+			'shake': {},
+			'squish': {},
+			'shrink': {},
+			'pulsate': {},
+			'fold': {},
+			'morph': {}
+		};
+
+		// Scriptaculous Effect mapping
+		Effect = {};
+		for (var name in effectNames)
+		{
+			// map new Effect.BlindUp(id,params) => $('#id').blindDown()
+			var details = effectNames[name];
+			if (typeof(details)!='object') continue;
+			(function(name,details)
+			{
+				var fnName = $.proper(name);
+				Effect[fnName] = function(id,params)
+				{
+					//TODO: how to deal with parameter mapping?
+					//TODO: how to deal with afterFinish type events
+					//TODO: deal with transitions
+					var args = params || {};
+					if (details.params)
+					{
+						for (var k in details.params)
+						{
+							var i = details.params[k];
+							args[i.name] = (params && params[k]) || i.defaultValue; 
+						}
+					}
+					el(id)[name](args);
+				};
+			})(name,details);
+		}
 	}
 	
 	// Appcelerator.Browser mapping
