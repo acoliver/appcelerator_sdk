@@ -227,7 +227,7 @@ if (typeof($$)=='undefined')
 				return this.delay(0.01);
 			}
 		});
-
+		
 		// Element mapping
 		Element = 
 		{
@@ -587,9 +587,115 @@ if (typeof($$)=='undefined')
 		}
 	}
 	
+	// expose externally
+	window.getJsonTemplateVar = App.getJsonTemplateVar;
+	
+	Object.getNestedProperty = function(obj,prop,def)
+	{
+		return $.getNestedProperty(obj,prop,def);
+	};
+	
 	// Appcelerator.Compiler mapping
-	Appcelerator.Compiler = {};
-	Appcelerator.Compiler.compileTemplate = AppC.compileTemplate;
+	Appcelerator.Compiler = 
+	{
+		compileTemplate: AppC.compileTemplate,
+		
+		getHtml: function(id,convertHtmlPrefix)
+		{
+			convertHtmlPrefix = (convertHtmlPrefix==null) ? true : convertHtmlPrefix;
+			var html = this.convertHtml(el(id).html(),convertHtmlPrefix);
+			return html;
+		},
+		addIENameSpace: function(html)
+		{
+			return '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+		},
+		destroyContent:function()
+		{
+		},
+		dynamicCompile:function()
+		{
+			//TODO
+		},
+		convertHtml: function (html, convertHtmlPrefix)
+		{
+			// convert funky url-encoded parameters escaped
+			if (html.indexOf('#%7B')!=-1)
+			{
+			   html = html.gsub('#%7B','#{').gsub('%7D','}');
+		    }
+
+			// IE/Opera unescape XML in innerHTML, need to escape it back
+			html = html.gsub(/\\\"/,'&quot;');
+
+			if (convertHtmlPrefix)
+			{
+				return (html!=null) ? this.specialMagicParseHtml(html) : '';
+			}
+			else
+			{
+				return html;
+			}
+		},
+		removeHtmlPrefix: function(html)
+		{
+		    if (Appcelerator.Browser.isIE)
+		    {
+		        html = html.gsub(/<\?xml:namespace(.*?)\/>/i,'');
+		    }
+		    return html.gsub(/html:/i,'').gsub(/><\/img>/i,'/>');
+		},
+		specialMagicParseHtml: function(html,prefix)
+		{
+		    var beginTag = '<APP:';
+		    var endTag = '</APP:';
+
+		    var idx = html.indexOf(beginTag);
+		    if (idx < 0)
+		    {
+		        return this.removeHtmlPrefix(html);
+		    }
+
+		    var myhtml = this.removeHtmlPrefix(html.substring(0,idx));
+
+		    var startIdx = idx + beginTag.length;
+
+		    var tagEnd = html.indexOf('>',startIdx);
+
+		    var tagSpace = html.indexOf(' ',startIdx);
+		    if (tagSpace<0 || tagEnd<tagSpace)
+		    {
+		        tagSpace=tagEnd;
+		    }
+		    var tagName = html.substring(startIdx,tagSpace);
+		    var endTagName = endTag+tagName+'>';
+
+		    while ( true )
+		    {
+		        var lastIdx = html.indexOf(endTagName,startIdx);
+		        var endTagIdx = html.indexOf('>',startIdx);
+		        var lastTagIdx = html.indexOf('>',lastIdx);
+		        var content = html.substring(endTagIdx+1,lastIdx);
+		        // check to see if we're within a nested element of the same name
+		        var dupidx = content.indexOf(beginTag+tagName);
+		        if (dupidx!=-1)
+		        {
+		            startIdx=lastIdx+endTagName.length;
+		            continue;
+		        }
+		        var specialHtml = html.substring(idx,lastIdx+endTagName.length);
+		        if (Appcelerator.Browser.isIE)
+		        {
+		            specialHtml = this.removeHtmlPrefix(specialHtml);
+		        }
+		        myhtml+=specialHtml;
+		        break;
+		    }
+
+		    myhtml+=this.specialMagicParseHtml(html.substring(lastTagIdx+1),prefix);
+		    return myhtml;
+		}
+	};
 	
 	// Appcelerator.Parameters
 	Appcelerator.Parameters = 
@@ -688,5 +794,169 @@ if (typeof($$)=='undefined')
 		Appcelerator.Localization.currentLanguage = lang;		
 	});
 	
+	//
+	// widgets support
+	//
+
+	var widgets = {};
+
+	Appcelerator.Widget = 
+	{
+		register: function(name,factory)
+		{
+			widgets[name]=factory;
+		}
+	};
+	
+	//
+	// remap our action invocation to hook into the action to
+	// handle components that have special actions
+	//
+	App._invokeAction = App.invokeAction;
+	App.invokeAction = function(name,params)
+	{
+		//
+		// this will only be executed if we are in compat mode
+		//
+		var id = this.attr('id');
+		var idx = id.indexOf('_widget');
+		if (idx > 0)
+		{
+			var widgetid = id.substring(0,idx);
+			var widgetEl = $('#'+widgetid);
+			var widget = widgetEl.data('widget');
+			if (widget)
+			{
+				var parameters = widgetEl.data('widget.parameters');
+				var fn = widget[name];
+				if (typeof(fn)=='function')
+				{
+					fn.apply(widget,[widgetid,parameters,params,this]);
+					return;
+				}
+			}
+		}
+		return App._invokeAction.apply(this,[name,params]);
+	};
+	
+	function loadWidget(name,state,el)
+	{
+		var factory = widgets[name];
+		if (!factory)
+		{
+			var widgetName = $.gsub(name,':','_');
+			var js = widgetName + (AppC.params.debug ? '_debug' : '') + '.js';
+			var url  = AppC.docRoot + 'widgets/' + widgetName + '/' + js;
+			$.getScript(url,function()
+			{
+				loadWidget(name,state,el);
+			});
+		}
+		else
+		{
+			var opts = {};
+			var errors = false, msg = null;
+			$.each(factory.getAttributes(),function()
+			{
+				var value = el.attr(this.name) || this.defaultValue;
+				if ((typeof(value)=='undefined'||value=='') && !this.optional)
+				{
+					msg = "Missing required attribute: '"+this.name+"' for widget: "+name+", id: "+el.attr('id');
+					errors = true;
+					return false;
+				}
+				opts[this.name]=value;
+			});
+			if (errors)
+			{
+				$.error(msg);
+				el.replaceWith("<div class='widget-error'>"+msg+"</div>");
+				App.checkState(state,el);
+				return;
+			}
+			var ins = factory.buildWidget(el.get(0),opts);
+			var id = el.attr('id');
+			var html = ins.presentation;
+			opts = ins.parameters;
+			// rename the real ID
+			el.attr('id',id+'_widget');
+			// widgets can define the tag in which they should be wrapped
+			if(ins.parent_tag != 'none' && ins.parent_tag != '')
+			{
+			   var parent_tag = ins.parent_tag || 'div';
+			   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;visibility:hidden">'+html+'</'+parent_tag+'>';
+			}
+
+			// add the XML namespace IE thing but only if you have what looks to
+			// be a widget that requires namespace - otherwise, it will causes issues like when
+			// you include a single <img>
+			if (AppC.UA.IE && html.indexOf('<app:') != -1)
+			{
+				html = Appcelerator.Compiler.addIENameSpace(html);
+			}
+			
+			el.replaceWith(html)
+			new Insertion.Before(el,html);
+			Element.remove(el);
+
+			var newEl = $('#'+id+'_temp');
+			newEl.attr('id',id);
+			newEl.data('widget',factory);
+			newEl.data('widget.parameters',opts);
+			newEl.data('widget.element',el); // keep a reference to old guy so we can still use it and it doesn't get gc
+
+			if (ins.compile)
+			{
+				//FIXME
+				factory.compileWidget(opts,newEl.get(0));
+			}
+
+			newEl.visible();
+			App.checkState(state,newEl);
+		}
+	}
+	
+	App.reg('nodeName~=APP','*',function(tag,state)
+	{
+		// we have to double-check the tag again given that
+		// we're using a wildcard and an expression we're going to 
+		// get each element visited here
+		if ($.startsWith(tag,'app'))
+		{
+			this.hidden();
+			var widget = tag.split(':')[1];
+			$.debug('found widget: '+tag+', name: '+widget);
+			loadWidget(tag,state,this);
+			return true;
+		}
+		return false;
+	},true);
+	
+	// Message Broker mapping
+	window.$MQ = function (name,opts,scope,version)
+	{
+		$(document).pub(name,opts,scope,version);
+	}
+	
+	window.$MQL = function(type,f,myscope,element)
+	{
+		$(element || document).sub(type,function(data,scope,version,name,direction)
+		{
+			if (myscope && myscope!='*' && scope != myscope)
+			{
+				return;
+			}
+			f.apply(f,[name,data,'JSON',direction,scope,version]);
+		});
+	}
+
 })(jQuery);
 
+//
+// TODO:
+//
+// - Logging
+// - WEM
+// - interceptors for ServiceBroker (perfStats stuff)
+//
+//

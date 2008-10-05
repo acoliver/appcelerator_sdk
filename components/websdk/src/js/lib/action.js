@@ -2,35 +2,67 @@ App.selectors = [];
 App.delegateCompilers = [];
 var actions = {};
 
-function addCond(el,name,handler,delegate)
+function addCond(tag,attr,handler,delegate)
 {
-	var found = actions[el];
+	var wildcard = tag=='*';
+	tag = wildcard ? tag.toLowerCase() : tag;
+	var found = actions[tag];
 	if (!found)
 	{
 		found = [];
-		actions[el] = found;
+		actions[tag]=found;
 	}
-	found.push(name);
-	var expr = el + '[@' + name + ']';
+	var isExpr = attr.indexOf('=') > 0;
+	found.push({tag:tag,wildcard:wildcard,attr:attr,expr:isExpr,fn:handler,delegate:delegate});
+	var expr = tag + '[' + (!isExpr ? '@' : '') + attr + ']';
 	App.selectors.push(expr);
 	if (delegate) App.delegateCompilers.push(expr);
-	actions[name]=handler;
 }
 
-function iterateActions(f,el,state)
+function getTagName(el)
+{
+	var element = $(el).get(0);
+	if (AppC.UA.IE)
+	{
+		if (element.scopeName && element.tagUrn)
+		{
+			return (element.scopeName + ':' + element.nodeName).toLowerCase();
+		}
+	}
+	return element.nodeName.toLowerCase();
+}
+
+function iterateActions(f,el,tag,state)
 {
 	if (f)
 	{
 		var e = $(el);
+		var delegateCompile = false;
 		$.each(f,function()
 		{
-			var v = e.attr(this);
-			if (v)
+			if (this.wildcard || tag == this.tag)
 			{
-				actions[this].apply(el,[v,state]);
+				if (!this.expr)
+				{
+					var v = e.attr(this.attr);
+					if (v)
+					{
+						var r = this.fn.apply(e,[v,state,tag]);
+						if (typeof(r)=='undefined') r=true;
+						if (r && this.delegate) delegateCompile = true;
+					}
+				}
+				else
+				{
+					var r = this.fn.apply(e,[tag,state]);
+					if (typeof(r)=='undefined') r=true;
+					if (r && this.delegate) delegateCompile = true;
+				}
 			}
 		});
+		return delegateCompile; 
 	}
+	return false;
 }
 
 function getTarget(params,t)
@@ -55,8 +87,10 @@ function regCSSAction(name,key,value)
 
 App.executeActions = function(el,state)
 {
-	iterateActions(actions[el],el,state);
-	iterateActions(actions['*'],el,state);
+	var tag = getTagName(el);
+	var r1 = iterateActions(actions[tag],el,tag,state);
+	var r2 = iterateActions(actions['*'],el,tag,state);
+	return !(r1 || r2);
 };
 
 App.reg = function(name,el,handler,delegateCompile)
@@ -119,7 +153,7 @@ App.regAction = function(name,fn)
 	regp.ractions.push({re:name,fn:fn});
 };
 
-function invoke (name,params)
+App.invokeAction=function(name,params)
 {
 	var scope = this;
 	var found = false;
@@ -196,7 +230,7 @@ App.triggerAction = function(scope,params,meta)
 			}		
 		}
 		$.debug('invoking action: '+action+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
-		$(scope).delay(function(){ invoke.apply(scope,[action,newparams]) },meta.delay/1000);
+		$(scope).delay(function(){ App.invokeAction.apply(scope,[action,newparams]) },meta.delay/1000);
 	}
 };
 

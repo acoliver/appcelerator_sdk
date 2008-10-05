@@ -5,6 +5,7 @@ var localRe = /^l|local|both|\*/;
 var pubdebug = AppC.params.debug=='2';
 var queue = [];
 var remoteDisabled = true;
+var queueInit = false;
 
 $.fn.sub = function(name,fn,params)
 {
@@ -57,13 +58,24 @@ $.fn.pub = function(name,data,scope,version)
 		version:version
 	});
 
-	if (remoteDisabled)
+	if (remoteDisabled && queueInit)
 	{
 		processQueue();		
 	}
 
 	return this;
 };
+
+
+//
+// wait until we've initially compiled before we 
+// start delivering events -- will queue until then
+//
+$(document).bind('compiled',function()
+{
+	queueInit=true;
+	processQueue();
+});
 
 App.regCond(re,function(meta)
 {
@@ -88,7 +100,7 @@ function deliverRemoteMessages(msgs)
 		{
 			if ((this.regexp && this.regexp.test(msg.name)) || (!this.regexp && this.name == msg.name))
 			{
-				this.fn.apply(this.scope,[msg.data,msg.scope,msg.version]);
+				this.fn.apply(this.scope,[msg.data,msg.scope,msg.version,msg.name,'remote']);
 			}
 		});
 	});
@@ -237,7 +249,7 @@ function processQueue()
 			{
 				if (App.parseConditionCondition(this.params,data))
 				{
-					this.fn.apply(this.scope,[data,scope,version]);
+					this.fn.apply(this.scope,[data,scope,version,name,a?'local':'remote']);
 				}
 			}
 		});

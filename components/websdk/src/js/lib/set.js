@@ -126,7 +126,6 @@ $.fn.layout = function(name,options)
 $.fn.set = function(value,state)
 {
 	var el = $(this);
-	el.data('compiled',false);
 
 	var visibility = el.css('visibility') || 'visible';
 	var show = false, initial = true;
@@ -150,7 +149,6 @@ $.fn.set = function(value,state)
 		if (initial)
 		{
 			initial=false;
-			el.removeData('compiled');
 			App.checkState(state,el);
 		}
 	});

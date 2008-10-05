@@ -16,6 +16,14 @@ $.extend(
 	},
 	gsub:function(source,pattern,replacement)
 	{
+		if (typeof(replacement)=='string')
+		{
+			var r = String(replacement);
+			replacement = function()
+			{
+				return r;
+			}
+		}
 	 	var result = '', match;
 	    while (source.length > 0) {
 	      if (match = source.match(pattern)) {

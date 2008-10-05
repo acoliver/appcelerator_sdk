@@ -880,7 +880,7 @@ App.parseConditionCondition = function(actionParams,data)
 	return ok;
 };
 
-function getJsonTemplateVar (namespace,var_expr,template_var)
+App.getJsonTemplateVar=function(namespace,var_expr,template_var)
 {
     var def = {};
     var o = $.getNestedProperty(namespace,var_expr,def);
@@ -914,7 +914,7 @@ AppC.compileTemplate = function(html,htmlonly,varname,re)
 	{
 		return "', jtv(values,'"+name+"','#{"+name+"}'),'";
 	};
-	var body = "var "+varname+" = function(values){ var jtv = getJsonTemplateVar; return ['" +
+	var body = "var "+varname+" = function(values){ var jtv = App.getJsonTemplateVar; return ['" +
             html.replace(/(\r\n|\n)/g, '').replace(/\t/g,' ').replace(/'/g, "\\'").replace(re, fn) +
             "'].join('');};" + (htmlonly?'':varname);
 
