@@ -5,6 +5,13 @@
  *
  */
 
+//
+// we instruct our jQuery selector patch to turn on and this
+// will allow $('id') which Prototype supported in addition to the 
+// newer css syntax: $('#id')
+//
+window.AppceleratorjQueryPatch = true;
+
 Appcelerator = AppC;
 
 //
@@ -55,7 +62,17 @@ if (typeof($$)=='undefined')
 				return $(document);
 			}
 		}
-		return $('#'+id);
+		var e = $(id);
+		// a DOM Element is returned from the 
+		// jQuery selector patch in which case we need to
+		// call $ again to get the jQuery wrapped version
+		if (e && e.nodeType)
+		{
+			// now it will take the DOMElement and give it back
+			// to use wrapped which we expect from this function
+			return $(e);
+		}
+		return e;
 	}
 	function collect(el)
 	{

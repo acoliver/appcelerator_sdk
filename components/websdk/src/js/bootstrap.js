@@ -257,13 +257,13 @@ function getTargetCompileSet(node,self)
 		expr = App.selectors.join(',');
 		filter = function()
 		{
-			//FIXME- don't hard code this attribute but it's special for now
-			//this filter prevents us from compiling an element has is child of
-			//any parent where it has set attribute
-			return !$(this).parents('*[@set]').length;
+			// this filter prevents us from compiling an element has is child of
+			// any parent where it has set attribute
+			var exclude = App.delegateCompilers.join(',');
+			return !$(this).parents(exclude).length;
 		};
 	}
-
+	
 	if (filter)
 	{
 		return $.unique($(expr).filter(filter));
@@ -321,5 +321,4 @@ $(document).ready(function()
 	$(document).compile(getTargetCompileSet(),s);
 	App.checkState(s); // state starts at 1, call to dec
 });
-
 

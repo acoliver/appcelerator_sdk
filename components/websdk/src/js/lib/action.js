@@ -1,7 +1,8 @@
 App.selectors = [];
+App.delegateCompilers = [];
 var actions = {};
 
-function addCond(el,name,handler)
+function addCond(el,name,handler,delegate)
 {
 	var found = actions[el];
 	if (!found)
@@ -10,7 +11,9 @@ function addCond(el,name,handler)
 		actions[el] = found;
 	}
 	found.push(name);
-	App.selectors.push(el + '[@' + name + ']');
+	var expr = el + '[@' + name + ']';
+	App.selectors.push(expr);
+	if (delegate) App.delegateCompilers.push(expr);
 	actions[name]=handler;
 }
 
@@ -56,7 +59,7 @@ App.executeActions = function(el,state)
 	iterateActions(actions['*'],el,state);
 };
 
-App.reg = function(name,el,handler)
+App.reg = function(name,el,handler,delegateCompile)
 {
 	if (typeof(el)=='string')
 	{
@@ -65,7 +68,7 @@ App.reg = function(name,el,handler)
 
 	$.each(el,function()
 	{
-		addCond(this,name,handler);
+		addCond(this,name,handler,delegateCompile);
 	});
 };
 

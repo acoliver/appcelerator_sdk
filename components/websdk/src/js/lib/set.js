@@ -188,6 +188,6 @@ $.fn.set = function(value,state)
 App.reg('set','*',function(value,state)
 {
 	$(this).set(value,state);
-});
+},true);
 
 

@@ -59,20 +59,12 @@ END_LICENSE
   append_file(LICENSE_HEADER,compat_file,true)
   append_file("#{js_source}/compat.js", compat_file)
 
-  append_file(LICENSE_HEADER,jslite,true)
-  append_file("#{js_source}/prolog.js", jslite)
-  append_file("#{js_source}/lib/uri.js", jslite)
   
   # fix the release information in the file
   rel = build_config[:version].to_s.split('.')
-  bf = File.read(js_source+'/bootstrap.js')
-  bf.gsub!('${version.major}',rel[0])
-  bf.gsub!('${version.minor}',rel[1])
-  bf.gsub!('${version.rev}',rel[2]||'0')
-  bf.gsub!('${build.date}',Time.now.strftime('%m/%d/%Y'))
-  append_file(bf,jslite,true)
  
-  PREINCLUDES = ["#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/on.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js"]
+  PREINCLUDES = ["#{js_source}/prolog.js","#{js_source}/lib/uri.js","#{js_source}/bootstrap.js","#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/on.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js"]
+ 
   jslite_prefiles = PREINCLUDES
   Dir["#{js_source}/lib/*.js"].each do |f|
     jslite_prefiles << f unless jslite_prefiles.include? f
@@ -80,7 +72,7 @@ END_LICENSE
   Dir["#{js_source}/plugins/*.js"].each do |f|
     jslite_prefiles << f unless jslite_prefiles.include? f
   end
-  jslite_prefiles.delete_if {|f| f=~/_action\.js$/ or File.basename(f)=='tracker.js' or File.basename(f)=='uri.js'}
+  jslite_prefiles.delete_if {|f| f=~/_action\.js$/ or f=~/-patch\.js$/ or File.basename(f)=='tracker.js'}
   
   jslite_prefiles << "#{js_source}/lib/tracker.js"
   jslite_prefiles << "#{js_source}/epilog.js"
@@ -88,9 +80,19 @@ END_LICENSE
   puts jslite_prefiles.join("\n")
 
   jslite_prefiles.each do |file|
+    append_file("\n/* #{File.basename(file)} */\n\n",jslite,true)
     append_file(file, jslite)
+    append_file("\n//" + ("-"*80) + "\n",jslite,true)
   end
 
+  bf = File.read(jslite)
+  bf.gsub!('${version.major}',rel[0])
+  bf.gsub!('${version.minor}',rel[1])
+  bf.gsub!('${version.rev}',rel[2]||'0')
+  bf.gsub!('${build.date}',Time.now.strftime('%m/%d/%Y'))
+  f = File.open(jslite,'w')
+  f.write bf
+  f.close
   
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
   
@@ -98,14 +100,26 @@ END_LICENSE
 
   FileUtils.rm_rf jsdebug
   
-  append_file("\n/* The following files are subject to license agreements by their respective license owners */\n", jsdebug, true)
-  thirdparty = [
-    'jquery/jquery.js',
-   # 'jel/jel_datetime.js'
-  ]
+  append_file(LICENSE_HEADER, jsdebug, true)
+
+  append_file("\n/*- The following file(s) are subject to license agreements by their respective license owners. Ends at text: END THIRD PARTY SOURCE */\n", jsdebug, true)
+  thirdparty = ['jquery/jquery.js']
   thirdparty.each do |file|
     append_file(BUILD_DIR+'/lib/'+file, jsdebug)
   end
+  
+  # patch jQuery
+  puts "+ patching jQuery ... "
+  j = File.read(jsdebug)
+  patch = File.read(BUILD_DIR+'/src/js/jquery-patch.js')
+  idx = j.index "// Handle HTML strings"  # this is the marker that we insert before (from jQuery)
+  c = j[0,idx]
+  c << patch
+  c << j[idx..-1]
+  jq = File.open(jsdebug,'w')
+  jq.write c
+  jq.close
+  
   append_file("\n/* END THIRD PARTY SOURCE */\n", jsdebug, true)
   append_file(jslite, jsdebug)
   
