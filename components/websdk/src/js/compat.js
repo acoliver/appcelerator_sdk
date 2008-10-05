@@ -506,6 +506,46 @@ if (typeof($$)=='undefined')
 		}
 	}
 	
+	$.fn.effect = function(params)
+	{
+		var target = el(params.id || $(this).attr('id'));
+		var effectName = null;
+		var opts = {};
+		for (var p in params)
+		{
+			switch(p)
+			{
+				case 'source':
+				case 'id':
+				{
+					break;
+				}
+				default:
+				{
+					var f = effectNames[p];
+					if (!f)
+					{
+						f = effectNames[p.toLowerCase()];
+						if (!f)
+						{
+							f = effectNames[$.proper(p)];
+						}
+					}
+					if (f)
+					{
+						effectName = p;
+						break;
+					}
+					opts[p]=params[p];
+				}
+			}
+		}
+		if (!effectName) throw "Couldn't find effect in parameters";
+		// must go through scriptaculous adapter to get backwards-compat parameter mapping
+		new Effect[$.proper(effectName)](target,opts);
+		return target;
+	};
+	
 	// Appcelerator.Browser mapping
 	Appcelerator.Browser = {};
 	
