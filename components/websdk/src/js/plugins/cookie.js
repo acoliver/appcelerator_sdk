@@ -1,4 +1,4 @@
-/**
+/*!
  * Cookie plugin
  *
  * Copyright (c) 2006 Klaus Hartl (stilbuero.de)
@@ -7,6 +7,8 @@
  * http://www.gnu.org/licenses/gpl.html
  *
  */
+
+/* Slide modification by Jeff Haynie to make it compatible as an action */
 
 /**
  * Create a cookie with the given name and value and other optional parameters.
@@ -53,7 +55,9 @@
  * @cat Plugins/Cookie
  * @author Klaus Hartl/klaus.hartl@stilbuero.de
  */
-jQuery.cookie = function(name, value, options) {
+
+$.cookie = function(name, value, options) {
+	
     if (typeof value != 'undefined') { // name and value given, set cookie
         options = options || {};
         if (value === null) {
@@ -94,3 +98,12 @@ jQuery.cookie = function(name, value, options) {
         return cookieValue;
     }
 };
+
+//
+// create a plugin/action
+//
+App.regAction(evtRegex('cookie'),function(params)
+{
+	$.cookie(params.name,params.value,params);
+});
+

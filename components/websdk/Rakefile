@@ -61,7 +61,7 @@ END_LICENSE
 
   append_file(LICENSE_HEADER,jslite,true)
   append_file("#{js_source}/prolog.js", jslite)
-  append_file("#{js_source}/plugins/uri.js", jslite)
+  append_file("#{js_source}/lib/uri.js", jslite)
   
   # fix the release information in the file
   rel = build_config[:version].to_s.split('.')
@@ -72,12 +72,18 @@ END_LICENSE
   bf.gsub!('${build.date}',Time.now.strftime('%m/%d/%Y'))
   append_file(bf,jslite,true)
  
-  PREINCLUDES = ["#{js_source}/plugins/jquery.js", "#{js_source}/plugins/types.js","#{js_source}/plugins/action.js", "#{js_source}/plugins/on.js", "#{js_source}/plugins/event.js"]
+  PREINCLUDES = ["#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/on.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js"]
   jslite_prefiles = PREINCLUDES
-  Dir["#{js_source}/plugins/*.js"].each do |f|
-    jslite_prefiles << f unless (jslite_prefiles.include? f or File.basename(f)=='tracker.js')
+  Dir["#{js_source}/lib/*.js"].each do |f|
+    jslite_prefiles << f unless jslite_prefiles.include? f
   end
-  jslite_prefiles.delete_if {|f| f=~/_action\.js$/ }
+  Dir["#{js_source}/plugins/*.js"].each do |f|
+    jslite_prefiles << f unless jslite_prefiles.include? f
+  end
+  jslite_prefiles.delete_if {|f| f=~/_action\.js$/ or File.basename(f)=='tracker.js' or File.basename(f)=='uri.js'}
+  
+  jslite_prefiles << "#{js_source}/lib/tracker.js"
+  jslite_prefiles << "#{js_source}/epilog.js"
   
   puts jslite_prefiles.join("\n")
 
@@ -85,8 +91,6 @@ END_LICENSE
     append_file(file, jslite)
   end
 
-  append_file("#{js_source}/plugins/tracker.js", jslite)
-  append_file("#{js_source}/epilog.js", jslite)
   
   puts 'Compiling appcelerator-debug.js...' if VERBOSE
   
