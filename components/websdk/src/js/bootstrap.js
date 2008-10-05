@@ -287,6 +287,7 @@ AppC.beforeCompile = function(f)
 $(document).ready(function()
 {
 	var compileStarted = new Date;
+	var body = $(document.body);
 	
 	// call any pending guys waiting for us to get 
 	// started (means they're waiting for document.ready)
@@ -294,12 +295,11 @@ $(document).ready(function()
 	{
 		$.each(beforeCompilers,function()
 		{
-			this();
+			this(body);
 		});
 		beforeCompilers=null;
 	}
 	
-	var body = $('body');
 	body.bind('compiled',function()
 	{
 		body.pub('l:app.compiled');

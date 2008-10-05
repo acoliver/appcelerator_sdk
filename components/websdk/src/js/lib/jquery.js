@@ -60,6 +60,11 @@ $.extend(
 	},
 	smartSplit: function(value,splitter)
 	{
+		if (typeof(value)!='string')
+		{
+			//throw "Invalid parameter passed to smartSplit: "+typeof(value)+", value: "+value;
+			$.error("Invalid parameter passed to smartSplit: "+typeof(value)+", value: "+value);
+		}
 		value = this.trim(value);
 		var tokens = value.split(splitter);
 		if(tokens.length == 1) return tokens;
@@ -353,6 +358,15 @@ $.extend(
 			}
 		}
 		return qs.join('&');
+	},
+	loadCSS: function(url)
+	{
+		var head = document.getElementsByTagName("head")[0];
+		var link = document.createElement("link");
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = url;
+		head.appendChild(link);
 	}
 });
 

@@ -180,10 +180,9 @@ $.each('firefox IE6 IE7 IE8 safari chromium webkit opera camino seamonkey prism 
 	{
 		AppC.UA.supported = true;
 		var name = this.toLowerCase();
-		AppC.beforeCompile(function()
+		AppC.beforeCompile(function(body)
 		{
 			checkForSilverlight();
-			var body = $('body');
 			if (AppC.UA.platform) body.addClass(AppC.platform);
 			body.addClass(name);
 			for (var p in AppC.UA)

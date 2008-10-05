@@ -47,7 +47,7 @@ if (typeof($$)=='undefined')
 		}
 		switch(id)
 		{
-			case 'body':
+			case document.body:
 			{
 				return $('body');
 			}
@@ -694,6 +694,21 @@ if (typeof($$)=='undefined')
 
 		    myhtml+=this.specialMagicParseHtml(html.substring(lastTagIdx+1),prefix);
 		    return myhtml;
+		},
+		makeAction: function (id,value,additionalParams)
+		{
+			var target = el(id);
+			var meta = App.makeCustomAction(target,value);
+			return function()
+			{
+				App.triggerAction(target,null,meta);
+			};
+		},
+		handleCondition: function(clause)
+		{
+			$.info('handleCondition called with '+clause)
+			//FIXME
+			//Appcelerator.Compiler.handleCondition(child, open, 'function['+scriptcode+']', null, 0, null);
 		}
 	};
 	
@@ -794,6 +809,44 @@ if (typeof($$)=='undefined')
 		Appcelerator.Localization.currentLanguage = lang;		
 	});
 	
+	//$A($(parentid+'_children').childNodes).findAll(function(n){return n.nodeType==1;}).each(function(n){if (n.id!=childid) $(n.id)._onclosed();});
+	//each
+	
+	Object.extend(Array.prototype,{
+		each:function(iterator)
+		{
+			$.each(this,function(idx)
+			{
+				iterator(this,idx);
+			});
+		},
+		findAll:function(f)
+		{
+			var r = [];
+			$.each(this,function(idx)
+			{
+				if (f(this,idx))
+				{
+					r.push(this);
+				}
+			});
+			return r;
+		}
+	});
+
+	//
+	// core support for older widgets not ported to widget API
+	//
+	Appcelerator.Core = 
+	{
+		loadModuleCSS: function(name,file)
+		{
+			var widgetName = $.gsub(name,':','_');
+			var url  = AppC.docRoot + 'widgets/' + widgetName + '/css/' + file;
+			$.loadCSS(url);
+		}
+	};
+	
 	//
 	// widgets support
 	//
@@ -839,21 +892,26 @@ if (typeof($$)=='undefined')
 		return App._invokeAction.apply(this,[name,params]);
 	};
 	
-	function loadWidget(name,state,el)
+	function loadWidget(name,state,el,path)
 	{
 		var factory = widgets[name];
 		if (!factory)
 		{
 			var widgetName = $.gsub(name,':','_');
 			var js = widgetName + (AppC.params.debug ? '_debug' : '') + '.js';
-			var url  = AppC.docRoot + 'widgets/' + widgetName + '/' + js;
+			path = AppC.docRoot + 'widgets/' + widgetName + '/';
+			var url  = path + js;
 			$.getScript(url,function()
 			{
-				loadWidget(name,state,el);
+				loadWidget(name,state,el,path);
 			});
 		}
 		else
 		{
+			if (factory.setPath)
+			{
+				factory.setPath(path);
+			}
 			var opts = {};
 			var errors = false, msg = null;
 			$.each(factory.getAttributes(),function()
@@ -877,7 +935,7 @@ if (typeof($$)=='undefined')
 			var ins = factory.buildWidget(el.get(0),opts);
 			var id = el.attr('id');
 			var html = ins.presentation;
-			opts = ins.parameters;
+			if (ins.parameters) opts = ins.parameters;
 			// rename the real ID
 			el.attr('id',id+'_widget');
 			// widgets can define the tag in which they should be wrapped
@@ -949,6 +1007,24 @@ if (typeof($$)=='undefined')
 			f.apply(f,[name,data,'JSON',direction,scope,version]);
 		});
 	}
+	
+	// Event mapping
+	Object.extend(Event,
+	{
+		getEvent:function(e)
+		{
+	    	return e || window.event;
+		}
+	});
+	
+	Object.extend(Event.prototype,
+	{
+		stop:function()
+		{
+			this.stopPropagation();
+			return false;
+		}
+	});
 
 })(jQuery);
 
@@ -958,5 +1034,4 @@ if (typeof($$)=='undefined')
 // - Logging
 // - WEM
 // - interceptors for ServiceBroker (perfStats stuff)
-//
 //

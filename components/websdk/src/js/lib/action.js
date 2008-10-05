@@ -153,8 +153,36 @@ App.regAction = function(name,fn)
 	regp.ractions.push({re:name,fn:fn});
 };
 
+App.makeCustomAction=function(el,value)
+{
+	var p = App.extractParameters(value);
+	var meta = 
+	{
+		action: p.name,
+		actionParams: p.params,
+		delay:0,
+		ifCond:null
+	};
+	actions[meta.action]=meta;
+	return meta;
+};
+
 App.invokeAction=function(name,params)
 {
+	// see if we have custom actions
+	// for a particular element and if so,
+	// trigger them if they match our incoming action name
+	var custom = this.data('actions');
+	if (custom)
+	{
+		var meta = custom[name];
+		if (meta)
+		{
+			//App.triggerAction(this,params,meta);
+			return;
+		}
+	}
+	
 	var scope = this;
 	var found = false;
 	$.each(regp.ractions,function()
