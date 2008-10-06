@@ -165,6 +165,10 @@ if (typeof($$)=='undefined')
 			{
 				return $.trim(this);
 			},
+			trim: function()
+			{
+				return $.trim(this);
+			},
 			startsWith: function(pattern)
 			{
 				return $.startsWith(this,pattern);
@@ -185,8 +189,25 @@ if (typeof($$)=='undefined')
 			interpolate: function(object, pattern) 
 			{
 				return new Template(this,pattern).evaluate(object);
+			},
+			toFunction:function()
+			{
+				return $.toFunction(this);
 			}
 		});
+		
+		Object.extend(String,
+		{
+			unescapeXML: function(s)
+			{
+				return $.unescapeXML(s);
+			},
+			escapeXML: function(s)
+			{
+				return $.escapeXML(s);
+			}
+		});
+		
 		
 		// Template mapping
 		Template = function(template,pattern)
@@ -799,7 +820,7 @@ if (typeof($$)=='undefined')
 	// register attribute listener
 	App.reg('langid',supportedTags,function(value,state)
 	{
-		//FIXME - implement
+		//FIXME
 	});
 	
 
@@ -809,10 +830,9 @@ if (typeof($$)=='undefined')
 		Appcelerator.Localization.currentLanguage = lang;		
 	});
 	
-	//$A($(parentid+'_children').childNodes).findAll(function(n){return n.nodeType==1;}).each(function(n){if (n.id!=childid) $(n.id)._onclosed();});
-	//each
-	
-	Object.extend(Array.prototype,{
+	// Array mapping
+	Object.extend(Array.prototype,
+	{
 		each:function(iterator)
 		{
 			$.each(this,function(idx)
@@ -996,6 +1016,7 @@ if (typeof($$)=='undefined')
 		$(document).pub(name,opts,scope,version);
 	}
 	
+	// Mesage Queue Listener mapping
 	window.$MQL = function(type,f,myscope,element)
 	{
 		$(element || document).sub(type,function(data,scope,version,name,direction)
@@ -1006,6 +1027,12 @@ if (typeof($$)=='undefined')
 			}
 			f.apply(f,[name,data,'JSON',direction,scope,version]);
 		});
+	}
+	
+	// web expression macros mapping
+	window.$WEM = function()
+	{
+		//FIXME
 	}
 	
 	// Event mapping
