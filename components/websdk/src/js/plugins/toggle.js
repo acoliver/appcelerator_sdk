@@ -15,14 +15,7 @@ App.regAction(evtRegex('toggle'),function(params)
 			case 'className':
 			case 'class':
 			{
-				if (target.hasClass(params[p]) == true)
-				{
-					target.removeClass(params[p])
-				}
-				else
-				{
-					target.addClass(params[p])
-				}
+				target.toggleClass(params[p])
 				break;				
 			}
 			default:
@@ -63,6 +56,7 @@ App.regAction(evtRegex('toggle'),function(params)
 			}
 		}
 	}
+	return this;
 });
 
 

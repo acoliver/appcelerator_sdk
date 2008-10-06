@@ -46,9 +46,17 @@
 
 <body>
 	<h2>
-		Add Tests
+		ScrollTo Tests
+	</h2>
+	<div class="clickable" on="click then scrollTo[id=scrollTest]">click me</div>
+
+
+	
+	<h2>
+		Target Tests
 	</h2>
 	<div class="clickable" on="click then add[class=test,target=div>p]">click me</div>
+
 	<div>
 		<p >I am paragraph</p>
 	</div>
@@ -59,6 +67,9 @@
 	<div class="clickable" on="click then l:add">click me</div>
 	<div class="box" on="l:add2 then add[foo=bar]">hello</div>
 	<div class="clickable" on="click then l:add2">click me</div>
+
+	<h2>Scroll Test</h2>
+	<div id="scrollTest" style="position:absolute;right:10px;top:500px">hello</div>
 
 	<h2>
 		Remove Tests
