@@ -176,15 +176,17 @@ Appcelerator.Widget.Datacache =
 	},
 	
 	equals: function(left, right) {
-      if(left == right) return true;
+      if(left === right) return true;
       if(typeof left == "object" && typeof right == "object") {
         for(var field in left) {
+		  if (field=='event') continue; // ignore special field
           if(!Appcelerator.Widget.Datacache.equals(left[field], right[field])) {
             return false;
           }
         }
         // somewhat redundant and inefficient...
         for(var field in right) {
+		  if (field=='event') continue; // ignore special field
           if(!Appcelerator.Widget.Datacache.equals(left[field], right[field])) {
             return false;
           }

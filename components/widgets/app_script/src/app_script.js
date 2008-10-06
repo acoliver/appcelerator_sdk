@@ -83,6 +83,8 @@ Appcelerator.Widget.Script =
 		if (code && code.trim().length > 0)
 		{
 			parameters['code'] = String.unescapeXML(code);
+			
+			$.info(parameters.code);
 
 			if (parameters['on'])
 			{

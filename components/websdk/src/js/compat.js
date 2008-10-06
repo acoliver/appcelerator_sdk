@@ -626,9 +626,9 @@ if (typeof($$)=='undefined')
 	    	var d = this.length - pattern.length;
 	    	return d >= 0 && this.lastIndexOf(pattern) === d;
 	  	},
-		toFunction:function()
+		toFunction:function(dontPreProcess)
 		{
-			return $.toFunction(this);
+			return $.toFunction(this,dontPreProcess);
 		},
 		encode64: function()
 		{
@@ -2019,6 +2019,73 @@ if (typeof($$)=='undefined')
 		}
 	};
 	
+	var interceptors = [];
+	
+	Appcelerator.Util.ServiceBroker=
+	{
+		convertType: function(t)
+		{
+	        if (t.startsWith('l:')) return 'local:'+t.substring(2);
+	        if (t.startsWith('r:')) return 'remote:'+t.substring(2);
+	        if (t.startsWith('*:')) return 'both:'+t.substring(2);
+	        return t;
+		},
+		addInterceptor: function(interceptor)
+		{
+			interceptors.push(interceptor);
+		},
+		queue: function (msg, callback)
+		{
+			var type = msg.type;
+			var scope = msg.scope;
+			var version = msg.version;
+			var data = msg.data;
+			$MQ(type,data,scope,version);
+		}
+	};
+
+	// setup interceptor like functionality -- consider pushing this into core
+	var oldPub = $.fn.pub;
+	$.fn.pub = function(name,data,scope,version)
+	{
+		data = data || {};
+		scope = scope || 'appcelerator';
+		version = version || '1.0';
+		
+		if (interceptors.length > 0)
+		{
+			var event = data.event;
+			// we need to remove the event source object since 
+			// the string comparsion fails inside data cache since it's always different
+			// in the case of a click event from example - we'll re-attach below
+			if (event && event.id)
+			{
+				data.event = null;
+			}
+			var msg = {type:name,data:data};
+			var mt = Appcelerator.Util.ServiceBroker.convertType(name);
+			for (var c=0;c<interceptors.length;c++)
+			{
+				var cb = interceptors[c];
+				if (cb.interceptQueue)
+				{
+					var result = cb.interceptQueue(msg,null,mt,scope);
+					data = msg.data; // can be remapped here, pull it back out
+					if (false === result)
+                    {
+						// this means, squash it ...
+						return this;
+					}
+				}
+			}
+			// re-attach if found
+			if (event) data.event = event;
+		}
+		
+		return oldPub.apply(this,[name,data,scope,version]);
+	};
+	
+	
 })(jQuery);
 
 //
@@ -2026,6 +2093,6 @@ if (typeof($$)=='undefined')
 //
 // - WEM
 // - interceptors for ServiceBroker (perfStats stuff)
-// - image srcexpr
+// -
 
 
