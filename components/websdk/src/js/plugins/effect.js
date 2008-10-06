@@ -2,7 +2,7 @@ App.handleBasicEffect = function(obj, action, params)
 {	
 	// target element
 	var target = obj;
-	var opts = {}, speed = 'normal', easing=null;
+	var opts = {}, speed = 0, easing=null;
 	
 	for (var p in params)
 	{

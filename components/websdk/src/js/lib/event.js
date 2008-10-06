@@ -1,4 +1,4 @@
-var events = ['blur','click','change','dblclick','focus','keydown','keyup','keypress','mousedown','mousemove','mouseout', 'moveover', 'mouseup', 'resize', 'scroll','select','submit'];
+var events = ['blur','click','change','dblclick','focus','keydown','keyup','keypress','mousedown','mousemove','mouseout', 'mouseover', 'mouseup', 'resize', 'scroll','select','submit'];
 
 function evtRegex(name)
 {

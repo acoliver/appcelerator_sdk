@@ -45,6 +45,17 @@
 </head>
 
 <body>
+
+	<h2>
+		Disable/Enable Tests
+	</h2>
+	<div class="clickable" on="click then enable[id=button10] and l:enable">enable</div>
+	<div class="clickable" on="click then disable[id=button10] and l:disable">disable</div>
+	<input type="button" id="button10" value="button" disabled on="mouseover then disable" />
+	<div class="clickable" on="click then l:enable">enable</div>
+	<div class="clickable" on="click then l:disable">disable</div>
+
+	<input type="button" on="l:disable then disable or l:enable then enable" value="button2"/>
 	<h2>
 		ScrollTo Tests
 	</h2>
@@ -60,6 +71,7 @@
 	<div>
 		<p >I am paragraph</p>
 	</div>
+
 	<h2>
 		Add Tests
 	</h2>
