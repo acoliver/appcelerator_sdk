@@ -1322,11 +1322,6 @@ if (typeof($$)=='undefined')
 				$.getScript(AppC.docRoot + 'widgets/common/js/' + this,fn);
 			});
 		},
-		queueRemoteLoadScriptWithDependencies: function(path, onload) 
-		{
-			var uri = URI.absolutizeURI(path,AppC.docRoot);
-			$.getScript(uri,onload);
-		},
 		loadWidgetCSS: function(name,css)
 		{
 			var path = getWidgetPath(name);
@@ -1338,6 +1333,63 @@ if (typeof($$)=='undefined')
 			$.error('fireWidgetCondition id = '+id+', name = '+name);
 		}
 	};
+
+	Appcelerator.Core.scriptWithDependenciesQueue = [];
+
+	Appcelerator.Core.queueRemoteLoadScriptWithDependencies = function(path, onload) 
+	{
+		var uri = URI.absolutizeURI(path,AppC.docRoot);
+	    Appcelerator.Core.scriptWithDependenciesQueue.push({'path': uri, 'onload': onload});
+	    Appcelerator.Core.remoteLoadScriptWithDependencies();
+	};
+
+	Appcelerator.Core.remoteLoadScriptWithDependencies = function() 
+	{
+	    if(0 < Appcelerator.Core.scriptWithDependenciesQueue.length) 
+	    {
+	        var script = Appcelerator.Core.scriptWithDependenciesQueue[0];
+	        Appcelerator.Core.scriptWithDependenciesCallback = function() 
+	        {
+	            script.onload();
+	            Appcelerator.Core.scriptWithDependenciesQueue.shift();
+	            Appcelerator.Core.remoteLoadScriptWithDependencies();
+	        };
+			$.getScript(script.path);
+	    }
+	};
+	
+	// map this since core is the older reference still used by some older widgets
+	Appcelerator.Widget.queueRemoteLoadScriptWithDependencies = Appcelerator.Core.queueRemoteLoadScriptWithDependencies;
+
+
+    //Override document.write
+	Appcelerator.Core.script_count=0;
+    Appcelerator.Core.old_document_write = document.write;
+    document.write = function(src) {
+        var re = /src=('([^']*)'|"([^"]*)")/gm;
+        re.lastIndex = 0;
+        var match = re.exec(src);
+        if(match) {
+            match = match[2] || match[3];
+            //This is for some thing that prototype does.  Without it, 
+            //IE6 will crash
+            if (match == "//:") 
+            {
+                Appcelerator.Core.old_document_write(src);
+            }
+            else 
+            {
+                Appcelerator.Core.script_count++;
+				$.getScript(match,function()
+				{
+                    Appcelerator.Core.script_count--;
+                    if (0 == Appcelerator.Core.script_count) {
+                        Appcelerator.Core.scriptWithDependenciesCallback();
+                    }
+				});
+            }
+        }
+    };
 	
 	//
 	// remap our action invocation to hook into the action to
