@@ -22,7 +22,7 @@ var absoluteUriRefRegex = /^[A-Z][0-9A-Z+\-\.]*:/i;
 var splitUriRefRegex = /^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/;
 var reMissingGroupSupport = (typeof "".match(/(a)?/)[1] != "string");
 
-var URI = {};
+URI = {};
 
 /**
  * This function determines whether the given URI reference is absolute

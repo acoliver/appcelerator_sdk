@@ -94,7 +94,8 @@ if (typeof($$)=='undefined')
 		{
 			Version:'1.6.0',
 			K:function(x){return x},
-			emptyFunction:function(){}
+			emptyFunction:function(){},
+			ScriptFragment: '<script[^>]*>([\\S\\s]*?)<\/script>'
 		};
 		
 		// Class mapping
@@ -468,6 +469,38 @@ if (typeof($$)=='undefined')
 			}
 		};
 
+		// AJAX mapping
+		Ajax = {};
+		Ajax.Request = function(uri,options)
+		{
+			$.info('AJAX = '+uri+', options='+$.toJSON(options));
+			
+			$.ajax({
+				url: uri,
+				contentType: options.contentType,
+				data: options.postBody || options.parameters,
+				type: (options.method || 'get').toUpperCase(),
+				dataType: (options.evalJS) ? 'script' : (options.evalJSON) ? 'json' : null,
+				async: typeof(options.asynchronous)=='undefined' ? true : options.asynchronous,
+				success:function(r)
+				{
+					var resp = 
+					{
+						responseText: r,
+						responseXML: r
+					};
+					(options.onSuccess||Prototype.K).apply(this,resp);
+				},
+				complete:function()
+				{
+					(options.onComplete||Prototype.K).apply(this,arguments);
+				},
+				error:function()
+				{
+					(options.onError||Prototype.K).apply(this,arguments);
+				}
+			});
+		};
 	}
 
 	if (typeof(Scriptaculous)=='undefined')
@@ -604,6 +637,21 @@ if (typeof($$)=='undefined')
 		decode64: function()
 		{
 			return $.decode64(this);
+		},
+		stripScripts: function() 
+		{
+	    	return this.replace(new RegExp(Prototype.ScriptFragment, 'img'), '');
+	  	},
+		extractScripts: function() {
+		  var matchAll = new RegExp(Prototype.ScriptFragment, 'img');
+		  var matchOne = new RegExp(Prototype.ScriptFragment, 'im');
+		  return (this.match(matchAll) || []).map(function(scriptTag) {
+		    return (scriptTag.match(matchOne) || ['', ''])[1];
+		  });
+		},
+
+		evalScripts: function() {
+		  return this.extractScripts().map(function(script) { return eval(script) });
 		}
 	});
 
@@ -657,6 +705,42 @@ if (typeof($$)=='undefined')
 	{
 		compileTemplate: AppC.compileTemplate,
 		
+		createCompilerState:function()
+		{
+			return {pending:0,scanned:false};
+		},
+		removeState:function(element)
+		{
+			element.state = null;
+		},
+		checkLoadState:function(element)
+		{
+			var state = element.state;
+			if (state && state.pending==0 && state.scanned)
+			{
+				if (typeof(state.onfinish)=='function')
+				{
+					state.onfinish();
+				}
+
+				if (typeof(state.onafterfinish)=='function')
+				{
+					state.onafterfinish();
+				}
+				Appcelerator.Compiler.removeState(element);
+				return true;
+			}
+			return false;
+		},
+		setElementId: function(id,newid)
+		{
+			el(id).attr(newid);
+		},
+		getAndEnsureId:function(el)
+		{
+			var el = App.ensureId(el);
+			return $(el).attr('id');
+		},
 		getTagname: function(name)
 		{
 			return App.getTagname(name);
@@ -688,6 +772,11 @@ if (typeof($$)=='undefined')
 		{
 			//FIXME
 			$.info('executeFunction called '+name);
+		},
+		compileElement:function(element,state,recursive)
+		{
+			//FIXME: recursive?
+			this.dynamicCompile(element);
 		},
 		dynamicCompile:function(element)
 		{
@@ -802,8 +891,10 @@ if (typeof($$)=='undefined')
 	
 	// AppceleratorConfig mapping
 	// hook into the compiler to set before we compile
-	AppC.beforeCompile(function()
+	AppC.beforeCompile(function(body)
 	{
+		Appcelerator.Core.HeadElement = $('head').get(0);
+		
 		if (typeof(AppceleratorConfig)=='object')
 		{
 			for (var p in AppceleratorConfig)
@@ -853,6 +944,16 @@ if (typeof($$)=='undefined')
 		getWithFormat:function (key, defValue, lang, args)
 		{
 			//FIXME
+		},
+		set: function(key,value,lang)
+		{
+			//FIXME
+		},
+		get: function(key,defValue,lang)
+		{
+			//FIXME
+			$.error('localization called with get: '+key);
+			return defValue;
 		}
 	};
 	
@@ -888,9 +989,19 @@ if (typeof($$)=='undefined')
 		Appcelerator.Localization.currentLanguage = lang;		
 	});
 	
+	
 	// Array mapping
 	Object.extend(Array.prototype,
 	{
+		collect: function(iterator, context) 
+		{
+		  iterator = iterator ? iterator.bind(context) : Prototype.K;
+		  var results = [];
+		  this.each(function(value, index) {
+		    results.push(iterator(value, index));
+		  });
+		  return results;
+		},
 		each:function(iterator)
 		{
 			$.each(this,function(idx)
@@ -924,6 +1035,7 @@ if (typeof($$)=='undefined')
 			$.loadCSS(url);
 		}
 	};
+	
 	
 	// DOM
 	Appcelerator.Util = {};
@@ -1073,6 +1185,7 @@ if (typeof($$)=='undefined')
     Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
     Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
 	Appcelerator.ComponentPath = Appcelerator.DocumentPath + 'components/';
+
 
 	Appcelerator.Widget = 
 	{
@@ -1597,8 +1710,13 @@ if (typeof($$)=='undefined')
 	{
 		$.error.apply(this,arguments);
 	};
+	
+	// Appcelerator.URI mapping
+	Appcelerator.URI = {};
+	Object.extend(Appcelerator.URI,URI);
 
-	Object.extend(
+	// Object mapping
+	Object.extend(Object,
 	{
 		/**
 		 * do an eval with code in the scope putting scope as the 
@@ -1655,7 +1773,165 @@ if (typeof($$)=='undefined')
 		    return typeof(object)=='boolean';
 		}
 	});
+	
+	// Date Time mapping
+	Appcelerator.Util.DateTime = 
+	{
+		timeFormat:function(f)
+		{
+			return App.timeFormat(f);
+		}
+	};
+	
+	// IFrame mapping
+	Appcelerator.Util.IFrame = 
+	{
+		fetch: function(src,onload,removeOnLoad,copyContent)
+		{
+			src = Appcelerator.URI.absolutizeURI(src,Appcelerator.DocumentPath);
 
+		    setTimeout(function()
+		    {
+		        copyContent = (copyContent==null) ? false : copyContent;
+		        var frameid = 'frame_'+new Date().getTime()+'_'+Math.round(Math.random() * 99);
+		        var frame = document.createElement('iframe');
+		        Appcelerator.Compiler.setElementId(frame, frameid);
+		        //This prevents Firefox 1.5 from getting stuck while trying to get the contents of the new iframe
+		        if(!Appcelerator.Browser.isFirefox)
+		        {
+		            frame.setAttribute('name', frameid);
+		        }
+	            frame.setAttribute('src', src);
+		        frame.style.position = 'absolute';
+		        frame.style.width = frame.style.height = frame.borderWidth = '1px';
+		        // in Opera and Safari you'll need to actually show it or the frame won't load
+		        // so we just put it off screen
+		        frame.style.left = "-50px";
+		        frame.style.top = "-50px";
+		        var iframe = document.body.appendChild(frame);
+		        // this is a IE speciality
+		        if (window.frames && window.frames[frameid]) iframe = window.frames[frameid];
+		        iframe.name = frameid;
+		        var scope = {iframe:iframe,frameid:frameid,onload:onload,removeOnLoad:(removeOnLoad==null)?true:removeOnLoad,src:src,copyContent:copyContent};
+		        if (!Appcelerator.Browser.isFirefox)
+		        {
+		            setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
+		        }
+		        else
+		        {
+		            iframe.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
+		        }
+		    },0);
+		},
+		monitor: function(frame,onload)
+		{
+	        var scope = {iframe:frame,frameid:frame.id,onload:onload,removeOnLoad:false};
+	        if (!Appcelerator.Browser.isFirefox)
+	        {
+	            setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(scope),10);
+	        }
+	        else
+	        {
+	            frame.onload = Appcelerator.Util.IFrame.doIFrameLoad.bind(scope);
+	        }
+		},
+		doIFrameLoad: function()
+		{
+			var doc = this.iframe.contentDocument || this.iframe.document;
+			var body = doc.documentElement.getElementsByTagName('body')[0];
+			
+
+			if (Appcelerator.Browser.isSafari && Appcelerator.Browser.isWindows && body.childNodes.length == 0)
+			{
+				Appcelerator.Util.IFrame.fetch(this.src, this.onload, this.removeOnLoad);
+				return;
+			}
+
+			if (this.copyContent)
+			{
+		        var div = document.createElement('div');
+
+		        Appcelerator.Util.IFrame.loadStyles(doc.documentElement);
+
+		        var bodydiv = document.createElement('div');
+		        bodydiv.innerHTML = body.innerHTML;
+		        div.appendChild(bodydiv);
+
+		        this.onload(div);
+			}
+			else
+			{
+	            this.onload(body);
+			}
+			if (this.removeOnLoad)
+			{
+				var f = this.frameid;
+				if (Appcelerator.Browser.isFirefox)
+				{
+					// firefox won't stop spinning with Loading... message
+					// if you remove right away
+					setTimeout(function(){Element.remove(f)},50);
+				}
+				else
+				{
+					Element.remove(f);
+				}
+			}
+		},
+		checkIFrame:function()
+		{
+			var doc = this.iframe.contentDocument || this.iframe.document;
+			var dr = doc.readyState;
+			if (dr == 'complete' || (!document.getElementById && dr == 'interactive'))
+		 	{
+		 		Appcelerator.Util.IFrame.doIFrameLoad.call(this);
+		 	}
+		 	else
+		 	{
+		  		setTimeout(Appcelerator.Util.IFrame.checkIFrame.bind(this),10);
+		 	}
+		},
+		loadStyles:function(element)
+		{
+			for (var i = 0; i < element.childNodes.length; i++)
+			{
+				var node = element.childNodes[i];
+
+				if (node.nodeName == 'STYLE')
+				{
+					if (Appcelerator.Browser.isIE)
+					{
+						var style = document.createStyleSheet();
+						style.cssText = node.styleSheet.cssText;
+					}
+					else
+					{
+						var style = document.createElement('style');
+						style.setAttribute('type', 'text/css');
+						try
+						{
+							style.appendChild(document.createTextNode(node.innerHTML));
+						}
+						catch (e)
+						{
+							style.cssText = node.innerHTML;
+						}				
+						Appcelerator.Core.HeadElement.appendChild(style);
+					}
+				}
+				else if (node.nodeName == 'LINK')
+				{
+					var link = document.createElement('link');
+					link.setAttribute('type', node.type);
+					link.setAttribute('rel', node.rel);
+					link.setAttribute('href', node.getAttribute('href'));
+					Appcelerator.Core.HeadElement.appendChild(link);
+				}
+
+				Appcelerator.Util.IFrame.loadStyles(node);
+			}
+		}
+	};
 	
 })(jQuery);
 
@@ -1664,4 +1940,6 @@ if (typeof($$)=='undefined')
 //
 // - WEM
 // - interceptors for ServiceBroker (perfStats stuff)
-//
+// - image srcexpr
+
+

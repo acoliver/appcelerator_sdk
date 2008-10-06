@@ -227,7 +227,7 @@ $.extend(
     },
 	error:function()
 	{
-		var log = this.makeArray(arguments).join(' ');
+		var log = $.makeArray(arguments).join(' ');
 		if (hasConsole)
 		{
 			if ($.isFunction(console.error))
@@ -242,7 +242,7 @@ $.extend(
 	},
 	info:function()
 	{
-		var log = this.makeArray(arguments).join(' ');
+		var log = $.makeArray(arguments).join(' ');
 		if (hasConsole)
 		{
 			if ($.isFunction(console.info))
@@ -259,7 +259,7 @@ $.extend(
 	{
 		if (debug)
 		{
-			var log = this.makeArray(arguments).join(' ');
+			var log = $.makeArray(arguments).join(' ');
 			if (hasConsole)
 			{
 				if ($.isFunction(console.debug))

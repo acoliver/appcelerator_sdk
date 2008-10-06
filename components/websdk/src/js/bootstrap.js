@@ -157,7 +157,7 @@ AppC.pluginRoot = AppC.compRoot + '/plugins';
 
 var appid = 0;
 
-function ensureId (el)
+App.ensureId=function(el)
 {
 	var rootEl = el.nodeType ? el : $(el).get(0);
 	var id = rootEl.id;
@@ -166,7 +166,7 @@ function ensureId (el)
 		rootEl.id = rootEl.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
 	}
 	return el;
-}
+};
 
 $.fn.compile = function()
 {
@@ -183,7 +183,7 @@ $.fn.compile = function()
 		// compile a single element
 		var state = arguments[0];
 		var node = $(this).get(0);
-		var el = ensureId(node);
+		var el = App.ensureId(node);
 		var e = $(el);
 		App.incState(state);
 		var myid = e.attr('id');
@@ -202,6 +202,7 @@ $.fn.compile = function()
 $.fn.compileChildren = function(state,self)
 {
 	var node = $(this).get(0);
+	App.ensureId(node);
 	var set = getTargetCompileSet(node,self);
 	this.compile(set,state);
 	return this;
