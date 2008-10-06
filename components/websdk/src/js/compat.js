@@ -642,16 +642,23 @@ if (typeof($$)=='undefined')
 		{
 	    	return this.replace(new RegExp(Prototype.ScriptFragment, 'img'), '');
 	  	},
-		extractScripts: function() {
+		extractScripts: function() 
+		{
 		  var matchAll = new RegExp(Prototype.ScriptFragment, 'img');
 		  var matchOne = new RegExp(Prototype.ScriptFragment, 'im');
 		  return (this.match(matchAll) || []).map(function(scriptTag) {
 		    return (scriptTag.match(matchOne) || ['', ''])[1];
 		  });
 		},
-
-		evalScripts: function() {
+		evalScripts: function() 
+		{
 		  return this.extractScripts().map(function(script) { return eval(script) });
+		},
+		escapeHTML: function()
+		{
+			var div = document.createElement('div');
+			div.innerHTML = String(this);
+		    return div.innerHTML;
 		}
 	});
 
@@ -705,6 +712,11 @@ if (typeof($$)=='undefined')
 	{
 		compileTemplate: AppC.compileTemplate,
 		
+		compileExpression: function()
+		{
+			//FIXME
+			return '';
+		},
 		handleElementException: function(id,e,context)
 		{
 			var element = id ? el(id).get(0) : null;
@@ -764,6 +776,10 @@ if (typeof($$)=='undefined')
 		getTagname: function(name)
 		{
 			return App.getTagname(name);
+		},
+		setHTML: function(id,html)
+		{
+			el(id).html(html);
 		},
 		getHtml: function(id,convertHtmlPrefix)
 		{
@@ -889,7 +905,15 @@ if (typeof($$)=='undefined')
 			var meta = App.makeCustomAction(target,value);
 			return function()
 			{
-				App.triggerAction(target,null,meta);
+				try
+				{
+					App.triggerAction(target,null,meta);
+				}
+				catch (E)
+				{
+					$.error("Exception caught calling action - Error:"+E);
+					throw E;
+				}
 			};
 		},
 		handleCondition: function(clause)

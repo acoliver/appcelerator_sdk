@@ -89,6 +89,7 @@ function decodeParameterValue (token,wasquoted)
 App.getTagname = function (element)
 {
 	if (!element) throw "element cannot be null";
+	if (element.jquery) element=$(element).get(0);
 	if (element.nodeType!=1) throw "node: "+element.nodeName+" is not an element, was nodeType: "+element.nodeType+", type="+(typeof element);
 
 	//FIXME: review this
@@ -163,7 +164,7 @@ function getInputFieldValue (elem,dequote,local)
 
 function getElementValue (elem, dequote, local)
 {
-    elem = typeof(elem) ? '#'+elem : $(elem);
+    elem = typeof(elem)=='string' ? $('#'+elem) : $(elem);
     dequote = (dequote==null) ? true : dequote;
 
 	//FIXME: review widget

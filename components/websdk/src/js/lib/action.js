@@ -2,7 +2,7 @@ App.selectors = [];
 App.delegateCompilers = [];
 var actions = {};
 
-function addCond(tag,attr,handler,delegate)
+function addProcessor(tag,attr,handler,delegate)
 {
 	var wildcard = tag=='*';
 	tag = wildcard ? tag.toLowerCase() : tag;
@@ -106,7 +106,7 @@ App.reg = function(name,el,handler,delegateCompile)
 
 	$.each(el,function()
 	{
-		addCond(this,name,handler,delegateCompile);
+		addProcessor(this,name,handler,delegateCompile);
 	});
 };
 
