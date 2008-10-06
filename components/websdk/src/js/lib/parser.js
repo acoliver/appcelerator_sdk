@@ -291,35 +291,40 @@ App.extractParameters = function(value,scope)
 		var endidx = value.lastIndexOf(']');
 		var p = value.substring(idx+1,endidx);
 		var action = value.substring(0,idx);
-		var params = App.getParameters(p,false);
-		if (params && scope)
+		var canParse = App.parseParams(action); 
+		var params = null;
+		if (canParse)
 		{
-			var newparams = {};
-			for (var x=0;x<params.length;x++)
+			params = App.getParameters(p,false);
+			if (params && scope)
 			{
-				var entry = params[x];
-				var key = entry.key, value = entry.value;
-				if (entry.keyExpression)
+				var newparams = {};
+				for (var x=0;x<params.length;x++)
 				{
-					key = App.getEvaluatedValue(entry.key,null,scope,entry.keyExpression);
+					var entry = params[x];
+					var key = entry.key, value = entry.value;
+					if (entry.keyExpression)
+					{
+						key = App.getEvaluatedValue(entry.key,null,scope,entry.keyExpression);
+					}
+					else if (entry.valueExpression)
+					{
+						value = App.getEvaluatedValue(entry.value,null,scope,entry.valueExpression);
+					}
+					else if (entry.empty)
+					{
+						value = App.getEvaluatedValue(entry.key,null,scope);
+					}
+					else
+					{
+						key = App.getEvaluatedValue(entry.key);
+						value = App.getEvaluatedValue(entry.value,null,scope);
+					}
+					newparams[key]=value;
 				}
-				else if (entry.valueExpression)
-				{
-					value = App.getEvaluatedValue(entry.value,null,scope,entry.valueExpression);
-				}
-				else if (entry.empty)
-				{
-					value = App.getEvaluatedValue(entry.key,null,scope);
-				}
-				else
-				{
-					key = App.getEvaluatedValue(entry.key);
-					value = App.getEvaluatedValue(entry.value,null,scope);
-				}
-				newparams[key]=value;
-			}
-			params = newparams;
-		}		
+				params = newparams;
+			}		
+		}
 		return {name:action,params:params||p};
 	}
 	return {name:value,params:null};	
@@ -921,4 +926,33 @@ AppC.compileTemplate = function(html,htmlonly,varname,re)
 	var result = htmlonly ? body : eval(body);
 
 	return result;
+};
+
+App.componentData = {};
+
+App.getData = function(id,key)
+{
+	var d = App.componentData[id];
+	if (!d) return null;
+	if (!key)
+	{
+		return d;
+	}
+	return d[key];
+};
+
+App.setData = function(id,data)
+{
+	var d = App.componentData[id];
+	if (!d)
+	{
+		App.componentData[id]=data;
+	}
+	else
+	{
+		for (var p in data)
+		{
+			d[p]=data[p];
+		}
+	}
 };

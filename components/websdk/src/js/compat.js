@@ -665,14 +665,32 @@ if (typeof($$)=='undefined')
 		},
 		addIENameSpace: function(html)
 		{
-			return '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+			if (AppC.UA.IE)
+			{
+				// IE requires this to parse the app: widgets correctly...
+				return '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+			}
+			return html;
+		},
+		addTrash: function(fn)
+		{
+			//FIXME
 		},
 		destroyContent:function()
 		{
+			//FIXME
 		},
-		dynamicCompile:function()
+		executeFunction: function(element,name,args,required)
 		{
-			//TODO
+			//FIXME
+			$.info('executeFunction called '+name);
+		},
+		dynamicCompile:function(element)
+		{
+			var e = el(element);
+			var state = App.createState(e);
+			e.compileChildren(state,true);
+			App.checkState(state,e);
 		},
 		convertHtml: function (html, convertHtmlPrefix)
 		{
@@ -922,7 +940,7 @@ if (typeof($$)=='undefined')
 	// handle components that have special actions
 	//
 	App._invokeAction = App.invokeAction;
-	App.invokeAction = function(name,params)
+	App.invokeAction = function(name,data,params)
 	{
 		//
 		// this will only be executed if we are in compat mode
@@ -931,22 +949,39 @@ if (typeof($$)=='undefined')
 		var idx = id.indexOf('_widget');
 		if (idx > 0)
 		{
-			var widgetid = id.substring(0,idx);
-			var widgetEl = $('#'+widgetid);
-			var widget = widgetEl.data('widget');
+			// widgets that are replaced initially have _widget appended,
+			// but the action has the pre id, remove it
+			id = id.substring(0,idx);
+		}
+		var entry = App.getData(id);
+		if (entry)
+		{
+			var widget = entry.widget;
 			if (widget)
 			{
-				var parameters = widgetEl.data('widget.parameters');
+				var parameters = entry.parameters;
 				var fn = widget[name];
 				if (typeof(fn)=='function')
 				{
-					fn.apply(widget,[widgetid,parameters,params,this]);
+					fn.apply(widget,[id,parameters,params,this]);
 					return;
 				}
 			}
 		}
-		return App._invokeAction.apply(this,[name,params]);
+		return App._invokeAction.apply(this,[name,data,params]);
 	};
+	
+	Appcelerator.Compiler.POSITION_REMOVE = -1;
+	Appcelerator.Compiler.POSITION_REPLACE = 0;
+	Appcelerator.Compiler.POSITION_TOP = 1;
+	Appcelerator.Compiler.POSITION_BOTTOM = 2;
+	Appcelerator.Compiler.POSITION_BEFORE = 3;
+	Appcelerator.Compiler.POSITION_AFTER = 4;
+	Appcelerator.Compiler.POSITION_BODY_TOP = 5;
+	Appcelerator.Compiler.POSITION_BODY_BOTTOM = 6;
+	Appcelerator.Compiler.POSITION_HEAD_TOP = 7;
+	Appcelerator.Compiler.POSITION_HEAD_BOTTOM = 8;
+	
 	
 	function loadWidget(name,state,el,path)
 	{
@@ -968,7 +1003,8 @@ if (typeof($$)=='undefined')
 			{
 				factory.setPath(path);
 			}
-			var opts = {};
+			var id = el.attr('id');
+			var opts = {id:id};
 			var errors = false, msg = null;
 			$.each(factory.getAttributes(),function()
 			{
@@ -988,44 +1024,65 @@ if (typeof($$)=='undefined')
 				App.checkState(state,el);
 				return;
 			}
+			
 			var ins = factory.buildWidget(el.get(0),opts);
-			var id = el.attr('id');
 			var html = ins.presentation;
 			if (ins.parameters) opts = ins.parameters;
-			// rename the real ID
-			el.attr('id',id+'_widget');
-			// widgets can define the tag in which they should be wrapped
-			if(ins.parent_tag != 'none' && ins.parent_tag != '')
+			var remove = (ins.position == Appcelerator.Compiler.POSITION_REMOVE);
+			if (!remove)
 			{
-			   var parent_tag = ins.parent_tag || 'div';
-			   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;visibility:hidden">'+html+'</'+parent_tag+'>';
-			}
+				// rename the real ID
+				el.attr('id',id+'_widget');
+				// widgets can define the tag in which they should be wrapped
+				if(ins.parent_tag != 'none' && ins.parent_tag != '')
+				{
+				   var parent_tag = ins.parent_tag || 'div';
+				   html = '<'+parent_tag+' id="'+id+'_temp" style="margin:0;padding:0;visibility:hidden">'+html+'</'+parent_tag+'>';
+				}
 
-			// add the XML namespace IE thing but only if you have what looks to
-			// be a widget that requires namespace - otherwise, it will causes issues like when
-			// you include a single <img>
-			if (AppC.UA.IE && html.indexOf('<app:') != -1)
-			{
-				html = Appcelerator.Compiler.addIENameSpace(html);
+				// add the XML namespace IE thing but only if you have what looks to
+				// be a widget that requires namespace - otherwise, it will causes issues like when
+				// you include a single <img>
+				if (AppC.UA.IE && html.indexOf('<app:') != -1)
+				{
+					html = Appcelerator.Compiler.addIENameSpace(html);
+				}
+
+				el.replaceWith(html);
+				new Insertion.Before(el,html);
 			}
 			
-			el.replaceWith(html)
-			new Insertion.Before(el,html);
+			App.setData(id,{
+				'type':'widget',
+				'widget':factory,
+				'parameters':opts,
+				'element': el
+			});
+			
 			Element.remove(el);
 
-			var newEl = $('#'+id+'_temp');
-			newEl.attr('id',id);
-			newEl.data('widget',factory);
-			newEl.data('widget.parameters',opts);
-			newEl.data('widget.element',el); // keep a reference to old guy so we can still use it and it doesn't get gc
-
+			var newEl = el;
+			
+			if (!remove)
+			{
+				newEl = $('#'+id+'_temp');
+				newEl.attr('id',id);
+			}
+			
+			//FIXME - do custom conditions...
+			//FIXME - do fieldset
+			
 			if (ins.compile)
 			{
-				//FIXME
-				factory.compileWidget(opts,newEl.get(0));
+				factory.compileWidget(opts,newEl);
 			}
 
-			newEl.visible();
+            if (!remove && ins.wire)
+            {
+				$(newEl).compileChildren(state,false);
+            }
+
+			if (!remove) newEl.visible();
 			App.checkState(state,newEl);
 		}
 	}
@@ -1077,6 +1134,92 @@ if (typeof($$)=='undefined')
 		getEvent:function(e)
 		{
 	    	return e || window.event;
+		},
+		stopObserving: function(id,name,fn)
+		{
+			//FIXME
+		},
+	    getKeyCode: function (event)
+	    {
+	        var pK;
+	        if (event)
+	        {
+	            if (typeof(event.keyCode) != "undefined")
+	            {
+	                pK = event.keyCode;
+	            }
+	            else if (typeof(event.which) != "undefined")
+	            {
+	                pK = event.which;
+	            }
+	        }
+	        else
+	        {
+	            pK = window.event.keyCode;
+	        }
+	        return pK;
+	    },
+	    isKey: function (event, code)
+	    {
+	        return Event.getKeyCode(event) == code;
+	    },
+	    isEscapeKey: function(event)
+	    {
+	        return Event.isKey(event, Event.KEY_ESC) || Event.isKey(event, event.DOM_VK_ESCAPE);
+	    },
+	    isEnterKey: function(event)
+	    {
+	        return Event.isKey(event, Event.KEY_RETURN) || Event.isKey(event, event.DOM_VK_ENTER);
+	    },
+	    isSpaceBarKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_SPACEBAR) || Event.isKey(event, event.DOM_VK_SPACE);
+	    },
+	    isPageUpKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_PAGEUP) || Event.isKey(event, event.DOM_VK_PAGE_UP);
+	    },
+	    isPageDownKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_PAGEDOWN) || Event.isKey(event, event.DOM_VK_PAGE_DOWN);
+	    },
+	    isHomeKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_HOME) || Event.isKey(event, event.DOM_VK_HOME);
+	    },
+	    isEndKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_END) || Event.isKey(event, event.DOM_VK_END);
+	    },
+	    isDeleteKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_DELETE) || Event.isKey(event, event.DOM_VK_DELETE);
+	    },
+	    isLeftKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_LEFT) || Event.isKey(event, event.DOM_VK_LEFT);
+	    },
+	    isRightKey: function (event)
+	    {
+	        return Event.isKey(event, Event.KEY_RIGHT) || Event.isKey(event, event.DOM_VK_RIGHT);
+	    },
+	    KEY_SPACEBAR: 0,
+	    KEY_PAGEUP: 33,
+	    KEY_PAGEDOWN: 34,
+	    KEY_END: 35,
+	    KEY_HOME: 36,
+	    KEY_DELETE: 46,
+		observe:function(id,name,fn)
+		{
+			el(id).bind(name,function(e)
+			{
+				var f = fn.call(fn,e);
+				if (f===false)
+				{
+					e.stopPropagation();
+					return false;
+				}
+			});
 		}
 	});
 	

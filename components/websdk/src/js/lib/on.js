@@ -281,8 +281,7 @@ App.processCond = function(el,info)
 	});
 	if (!f)
 	{
-		//TODO: not found
-		console.error('not match for cond = '+cond);
+		$.error('not match for cond = '+info.cond+' for element with id: '+$(el).attr('id'));
 	}
 };
 

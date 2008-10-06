@@ -125,15 +125,24 @@ App.dynloadAction = function(name,fn)
 };
 
 var actionRE = /\^([\w]+)\(/;
-
-App.regAction = function(name,fn)
+var actionUnparsers = {};
+App.parseParams = function(name)
 {
-	$.debug('adding action ' + name)
+	var f = actionUnparsers[name];
+	return typeof(f)=='undefined';
+};
+
+App.regAction = function(name,fn,dontparse)
+{
+	dontparse = typeof(dontparse)=='undefined' ? false : (dontparse===true);
+
+	$.debug('adding action ' + name+', dontparse = '+dontparse)
 	
 	var m = actionRE.exec(String(name));
 	if (m && m.length > 1 || typeof(name)=='string')
 	{
 		var fnName = m.length > 1 ? m[1] : name;
+		if (dontparse) actionUnparsers[fnName]=1;
 		if (typeof($.fn[fnName])!='function' && /\w/.test(fnName))
 		{
 			$.debug('registering plugin '+fnName);
@@ -150,7 +159,7 @@ App.regAction = function(name,fn)
 			};
 		}
 	}
-	regp.ractions.push({re:name,fn:fn});
+	regp.ractions.push({re:name,fn:fn,dontparse:dontparse});
 };
 
 App.makeCustomAction=function(el,value)
@@ -167,22 +176,8 @@ App.makeCustomAction=function(el,value)
 	return meta;
 };
 
-App.invokeAction=function(name,params)
+App.invokeAction=function(name,data,params)
 {
-	// see if we have custom actions
-	// for a particular element and if so,
-	// trigger them if they match our incoming action name
-	var custom = this.data('actions');
-	if (custom)
-	{
-		var meta = custom[name];
-		if (meta)
-		{
-			//App.triggerAction(this,params,meta);
-			return;
-		}
-	}
-	
 	var scope = this;
 	var found = false;
 	$.each(regp.ractions,function()
@@ -190,7 +185,40 @@ App.invokeAction=function(name,params)
 		if (this.re.test(name))
 		{
 			found = true;
-			this.fn.apply(scope,[params,name]);
+
+			var newparams = params || {};
+			if (data && !this.dontparse)
+			{
+				for (var x=0;x<data.length;x++)
+				{
+					var entry = data[x];
+					var key = entry.key, value = entry.value;
+					if (entry.keyExpression)
+					{
+						key = App.getEvaluatedValue(entry.key,null,params,entry.keyExpression);
+					}
+					else if (entry.valueExpression)
+					{
+						value = App.getEvaluatedValue(entry.value,null,params,entry.valueExpression);
+					}
+					else if (entry.empty)
+					{
+						value = App.getEvaluatedValue(entry.key,null,params);
+					}
+					else
+					{
+						key = App.getEvaluatedValue(entry.key);
+						value = App.getEvaluatedValue(entry.value,null,params);
+					}
+					newparams[key]=value;
+				}		
+			}
+			else if (data && this.donparse)
+			{
+				newparams = params;
+			}
+			$.debug('invoking action: '+name+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
+			this.fn.apply(scope,[newparams,name,data]);
 			return false;
 		}
 	});
@@ -199,7 +227,35 @@ App.invokeAction=function(name,params)
 		var fn = $(this)[name];
 		if (fn)
 		{
-			fn.apply(scope,[params]);
+			var newparams = params || {};
+			if (data)
+			{
+				for (var x=0;x<data.length;x++)
+				{
+					var entry = data[x];
+					var key = entry.key, value = entry.value;
+					if (entry.keyExpression)
+					{
+						key = App.getEvaluatedValue(entry.key,null,params,entry.keyExpression);
+					}
+					else if (entry.valueExpression)
+					{
+						value = App.getEvaluatedValue(entry.value,null,params,entry.valueExpression);
+					}
+					else if (entry.empty)
+					{
+						value = App.getEvaluatedValue(entry.key,null,params);
+					}
+					else
+					{
+						key = App.getEvaluatedValue(entry.key);
+						value = App.getEvaluatedValue(entry.value,null,params);
+					}
+					newparams[key]=value;
+				}		
+			}
+			$.debug('invoking action: '+name+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
+			fn.apply(scope,[newparams,name,params]);
 		}
 		else
 		{
@@ -230,35 +286,7 @@ App.triggerAction = function(scope,params,meta)
 	}
 	if (action)
 	{
-		var newparams = params || {};
-		if (data)
-		{
-			for (var x=0;x<data.length;x++)
-			{
-				var entry = data[x];
-				var key = entry.key, value = entry.value;
-				if (entry.keyExpression)
-				{
-					key = App.getEvaluatedValue(entry.key,null,params,entry.keyExpression);
-				}
-				else if (entry.valueExpression)
-				{
-					value = App.getEvaluatedValue(entry.value,null,params,entry.valueExpression);
-				}
-				else if (entry.empty)
-				{
-					value = App.getEvaluatedValue(entry.key,null,params);
-				}
-				else
-				{
-					key = App.getEvaluatedValue(entry.key);
-					value = App.getEvaluatedValue(entry.value,null,params);
-				}
-				newparams[key]=value;
-			}		
-		}
-		$.debug('invoking action: '+action+' with: '+$.toJSON(newparams)+", scope="+$(scope).attr('id'));
-		$(scope).delay(function(){ App.invokeAction.apply(scope,[action,newparams]) },meta.delay/1000);
+		$(scope).delay(function(){ App.invokeAction.apply(scope,[action,data,params]) },meta.delay/1000);
 	}
 };
 

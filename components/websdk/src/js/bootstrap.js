@@ -159,11 +159,11 @@ var appid = 0;
 
 function ensureId (el)
 {
-	var id = el.id || $(el).attr('id');
+	var rootEl = el.nodeType ? el : $(el).get(0);
+	var id = rootEl.id;
 	if (!id)
 	{
-		id = el.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
-		$(el).attr('id',id);
+		rootEl.id = rootEl.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
 	}
 	return el;
 }
@@ -214,6 +214,11 @@ var state = function(el)
 	this.completed = [];
 };
 
+App.createState = function(el)
+{
+	return new state(el)
+};
+
 App.incState=function(state)
 {
 	if (state)
@@ -222,6 +227,8 @@ App.incState=function(state)
 		return count;
 	}
 };
+
+var bodyCompiled = false;
 
 App.checkState=function(state,el)
 {
@@ -239,7 +246,12 @@ App.checkState=function(state,el)
 				}
 			});
 			// we must always fire compiled on body and do it last
-			$(document.body).trigger('compiled');
+			// but we only ever fire it once for a document load
+			if (!bodyCompiled)
+			{
+				bodyCompiled=true;
+				$(document.body).trigger('compiled');
+			}
 		}
 	}
 };
@@ -252,7 +264,7 @@ function getTargetCompileSet(node,self)
 	{
 		node = typeof(node.nodeType)=='undefined' ? node.get(0) : node;
 		var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
-		expr = (self ? (parent + ',') : '')  + parent + '>' + App.selectors.join(', ' + parent + '>');
+		expr = (self ? (parent + ',') : '')  + parent + ' ' + App.selectors.join(', ' + parent + ' ');
 	}
 	else
 	{
