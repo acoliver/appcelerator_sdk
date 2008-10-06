@@ -187,8 +187,8 @@ $.fn.compile = function()
 		var e = $(el);
 		App.incState(state);
 		var myid = e.attr('id');
-		$.debug(' + compiling #'+myid+' ('+getTagName(node)+')');
 		var compiled = App.executeActions(el,state);
+		$.debug(' + compiled #'+myid+' ('+getTagName(node)+') => '+compiled);
 		// if false, means that the attribute processor will call
 		// checkState when he's done
 		if (compiled)
@@ -233,8 +233,13 @@ App.checkState=function(state,el)
 		{
 			$.each($.unique(state.completed),function()
 			{
-				$(this).trigger('compiled');
+				if (this != document.body)
+				{
+					$(this).trigger('compiled');
+				}
 			});
+			// we must always fire compiled on body and do it last
+			$(document.body).trigger('compiled');
 		}
 	}
 };
@@ -302,7 +307,9 @@ $(document).ready(function()
 	
 	body.bind('compiled',function()
 	{
-		body.pub('l:app.compiled');
+		body.pub('l:app.compiled',{
+			event:{id:document.body.id||'body'}
+		});
 		$(document).trigger('compiled');
 		compileFinished = new Date;
 		loadTime = compileFinished - started;

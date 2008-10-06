@@ -99,7 +99,7 @@ if (typeof($$)=='undefined')
 		
 		// Class mapping
 		Class = $.Class;
-		
+
 		// Object mapping
 		Object.extend = $.Class.extend;
 		Object.toJSON = function(obj)
@@ -153,6 +153,16 @@ if (typeof($$)=='undefined')
 		{
 			return obj;
 		};
+
+		// Event mapping
+		Object.extend(Event.prototype,
+		{
+			stop:function()
+			{
+				this.stopPropagation();
+				return false;
+			}
+		});
 		
 		// String mapping
 		Object.extend(String.prototype, 
@@ -189,25 +199,8 @@ if (typeof($$)=='undefined')
 			interpolate: function(object, pattern) 
 			{
 				return new Template(this,pattern).evaluate(object);
-			},
-			toFunction:function()
-			{
-				return $.toFunction(this);
 			}
 		});
-		
-		Object.extend(String,
-		{
-			unescapeXML: function(s)
-			{
-				return $.unescapeXML(s);
-			},
-			escapeXML: function(s)
-			{
-				return $.escapeXML(s);
-			}
-		});
-		
 		
 		// Template mapping
 		Template = function(template,pattern)
@@ -583,6 +576,49 @@ if (typeof($$)=='undefined')
 		new Effect[$.proper(effectName)](target,opts);
 		return target;
 	};
+
+	// String mapping defined in older Appcelerator (not Prototype)
+	Object.extend(String.prototype, 
+	{
+		trim: function()
+		{
+			return $.trim(this);
+		},
+		startsWith: function(pattern)
+		{
+			return $.startsWith(this,pattern);
+		},
+	  	endsWith: function(pattern) 
+		{
+	    	var d = this.length - pattern.length;
+	    	return d >= 0 && this.lastIndexOf(pattern) === d;
+	  	},
+		toFunction:function()
+		{
+			return $.toFunction(this);
+		},
+		encode64: function()
+		{
+			return $.encode64(this);
+		},
+		decode64: function()
+		{
+			return $.decode64(this);
+		}
+	});
+
+	// these are defined in old String classes (not in Prototype)
+	Object.extend(String,
+	{
+		unescapeXML: function(s)
+		{
+			return $.unescapeXML(s);
+		},
+		escapeXML: function(s)
+		{
+			return $.escapeXML(s);
+		}
+	});
 	
 	// Appcelerator.Browser mapping
 	Appcelerator.Browser = {};
@@ -1044,21 +1080,177 @@ if (typeof($$)=='undefined')
 		}
 	});
 	
-	Object.extend(Event.prototype,
+	// Logger mapping
+	Logger = 
 	{
-		stop:function()
+		logEnabled: typeof(console)!='undefined',
+		debugEnabled: this.logEnabled && AppC.params.debug == 1 && console.debug,
+		infoEnabled: this.logEnabled && console.info,
+		warnEnabled: this.logEnabled && console.warn,
+		errorEnabled: this.logEnabled && console.error,
+		fatalEnabled: this.logEnabled && console.error,
+		traceEnabled: this.debugEnabled,
+		debug: function()
 		{
-			this.stopPropagation();
-			return false;
+			if (this.debugEnabled) $.debug.apply(this,arguments);
+		},
+		info: function()
+		{
+			if (Logger.infoEnabled) $.info.apply(this,arguments);
+		},
+		error: function()
+		{
+			if (Logger.errorEnabled) $.error.apply(this,arguments);
+		},
+		fata: function()
+		{
+			if (Logger.fatalEnabled) $.error.apply(this,arguments);
+		},
+		warn: function()
+		{
+			if (Logger.warnEnabled) $.warn.apply(this,arguments);
+		},
+		trace: function()
+		{
+			if (Logger.traceEnabled) $.debug.apply(this,arguments);
+		}
+	};
+
+	if (typeof(log4javascript)!='undefined')
+	{
+		Logger.toLevel = function(value, logger)
+		{
+			if (!value)
+				return log4javascript.Level.INFO;
+			value = value.toUpperCase();
+			if (value==log4javascript.Level.INFO.toString())
+				return log4javascript.Level.INFO;
+			else if (value==log4javascript.Level.WARN.toString())
+				return log4javascript.Level.WARN;
+			else if (value==log4javascript.Level.ERROR.toString())
+				return log4javascript.Level.ERROR;
+			else if (value==log4javascript.Level.FATAL.toString())
+				return log4javascript.Level.FATAL;
+			else if (value==log4javascript.Level.TRACE.toString())
+				return log4javascript.Level.TRACE;
+			else if (value==log4javascript.Level.DEBUG.toString())
+				return log4javascript.Level.DEBUG;
+
+			return logger.getLevel();
+		}
+		
+		var log4javascript_threshold = Appcelerator.Parameters.get('log4javascript');
+		var _log = log4javascript.getDefaultLogger();
+		var Level = Logger.toLevel(log4javascript_threshold, _log);
+		Logger.infoEnabled = log4javascript.Level.INFO.isGreaterOrEqual(Level);
+		Logger.warnEnabled = log4javascript.Level.WARN.isGreaterOrEqual(Level);
+		Logger.errorEnabled = log4javascript.Level.ERROR.isGreaterOrEqual(Level);
+		Logger.fatalEnabled = log4javascript.Level.FATAL.isGreaterOrEqual(Level);
+		Logger.traceEnabled = log4javascript.Level.TRACE.isGreaterOrEqual(Level);
+		Logger.debugEnabled = log4javascript.Level.DEBUG.isGreaterOrEqual(Level);
+		
+		Logger.debug = function(msg)
+		{
+			 if (Logger.debugEnabled) _log.debug(msg);
+		};
+		Logger.warn = function(msg)
+		{
+			 if (Logger.warnEnabled) _log.warn(msg);
+		};
+		Logger.info = function(msg)
+		{
+			 if (Logger.infoEnabled) _log.info(msg);
+		};
+		Logger.error = function(msg)
+		{
+			 if (Logger.errorEnabled) _log.error(msg);
+		};
+		Logger.fatal = function(msg)
+		{
+			 if (Logger.fatalEnabled) _log.fatal(msg);
+		};
+		Logger.trace = function(msg)
+		{
+			 if (Logger.traceEnabled) _log.trace(msg);
+		};
+	}
+	
+	// DEBUG macro
+	window.$D = function()
+	{
+		$.debug.apply(this,arguments);
+	};
+	
+	// ERROR macro
+	window.$E = function()
+	{
+		$.error.apply(this,arguments);
+	};
+
+	Object.extend(
+	{
+		/**
+		 * do an eval with code in the scope putting scope as the 
+		 * this reference
+		 */
+		evalWithinScope: function (code, scope)
+		{
+		    if (code == '{}') return {};
+
+			// make sure we escape any quotes given we're building a string with quotes
+			var expr = code.gsub('"',"\\\"");
+
+		    // create the function
+		    var func = eval('var f = function(){return eval("(' + expr + ')")}; f;');
+
+		    // now invoke our scoped eval with scope as the this reference
+		    return func.call(scope);
+		},
+		/**
+		 * return a formatted message detail for an exception object
+		 */
+		getExceptionDetail: function (e,format)
+		{
+		    if (!e) return 'No Exception Object';
+
+			if (typeof(e) == 'string')
+			{
+				return 'message: ' + e;
+			}
+
+		    if (Appcelerator.Browser.isIE)
+		    {
+		        return 'message: ' + e.message + ', location: ' + e.location || e.number || 0;
+		    }
+		    else
+		    {
+				var line = 0;
+				try
+				{
+					line = e.lineNumber || 0;
+				}
+				catch(x)
+				{
+					// sometimes you'll get a PermissionDenied on certain errors
+				}
+		        return 'message: ' + (e.message || e) + ', location: ' + line + ', stack: ' + (format?'<pre>':'') +(e.stack || 'not specified') + (format?'</pre>':'');
+		    }
+		},
+		/**
+		 * returns true if object passed in as a boolean
+		 */
+		isBoolean: function(object)
+		{
+		    return typeof(object)=='boolean';
 		}
 	});
 
+	
 })(jQuery);
 
 //
 // TODO:
 //
-// - Logging
 // - WEM
 // - interceptors for ServiceBroker (perfStats stuff)
 //
