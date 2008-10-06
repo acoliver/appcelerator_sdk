@@ -705,6 +705,26 @@ if (typeof($$)=='undefined')
 	{
 		compileTemplate: AppC.compileTemplate,
 		
+		handleElementException: function(id,e,context)
+		{
+			var element = id ? el(id).get(0) : null;
+			var tag = element ? Appcelerator.Compiler.getTagname(element) : document.body;
+			var id = element ? element.id : '<unknown>';
+			var msg = '<strong>Appcelerator Processing Error:</strong><div>Element ['+tag+'] with ID: '+ id +' has an error: <div>'+Object.getExceptionDetail(e,true)+'</div>' + (context ? '<div>in <pre>'+context+'</pre></div>' : '') + '</div>';
+			$E(msg);
+			if (element)
+			{
+				if (tag == 'IMG')
+				{
+					new Insertion.Before(element,msg);
+				}
+				else
+				{
+					element.innerHTML = '<div style="border:4px solid #777;padding:30px;background-color:#fff;color:#e00;font-family:sans-serif;font-size:18px;margin-left:20px;margin-right:20px;margin-top:100px;text-align:center;">' + msg + '</div>'
+				}
+				Element.show(element);
+			}
+		},
 		createCompilerState:function()
 		{
 			return {pending:0,scanned:false};
@@ -1187,6 +1207,14 @@ if (typeof($$)=='undefined')
 	Appcelerator.ComponentPath = Appcelerator.DocumentPath + 'components/';
 
 
+	Appcelerator.Module = 
+	{
+		getModuleCommonDirectory: function()
+		{
+			return Appcelerator.ModulePath + 'common/';
+		}
+	};
+	
 	Appcelerator.Widget = 
 	{
 		register: function(name,factory)
