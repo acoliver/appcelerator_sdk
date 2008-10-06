@@ -67,6 +67,10 @@ function iterateActions(f,el,tag,state)
 
 function getTarget(params,t)
 {
+	if (params.target)
+	{
+		return $(params.target)
+	}
 	return (params.id)?$("#" + params.id):t;
 }
 

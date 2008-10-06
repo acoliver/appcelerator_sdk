@@ -46,6 +46,29 @@
 
 <body>
 	<h2>
+		Add Tests
+	</h2>
+	<div class="clickable" on="click then add[class=test,target=div>p]">click me</div>
+	<div>
+		<p >I am paragraph</p>
+	</div>
+	<h2>
+		Add Tests
+	</h2>
+	<div class="box"  on="l:add then add[class=test]">hello</div>
+	<div class="clickable" on="click then l:add">click me</div>
+	<div class="box" on="l:add2 then add[foo=bar]">hello</div>
+	<div class="clickable" on="click then l:add2">click me</div>
+
+	<h2>
+		Remove Tests
+	</h2>
+	<div class="box test"  on="l:remove then remove[class=test]">hello</div>
+	<div class="clickable" on="click then l:remove">click me</div>
+	<div class="box" foo="bar" on="l:remove2 then remove[foo]">hello</div>
+	<div class="clickable" on="click then l:remove2">click me</div>
+
+	<h2>
 		Set Tests
 	</h2>
 	<div class="box"  on="l:set then set[class=test]">hello</div>
