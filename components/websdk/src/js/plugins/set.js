@@ -1,17 +1,15 @@
 
-var cssProperties = $.makeArray(
-	'border padding margin color cursor font fontFamily visibility position overflow filter display ' + 
-	'backgroundColor backgroundPosition backgroundAttachment borderBottomColor borderBottomStyle ' + 
-	'borderBottomWidth borderLeftColor borderLeftStyle borderLeftWidth ' +
-	'borderRightColor borderRightStyle borderRightWidth borderSpacing ' +
-	'borderTopColor borderTopStyle borderTopWidth bottom clip color ' +
-	'fontSize fontWeight height left letterSpacing lineHeight ' +
-	'marginBottom marginLeft marginRight marginTop markerOffset maxHeight '+
-	'maxWidth minHeight minWidth opacity outlineColor outlineOffset ' +
-	'outlineWidth paddingBottom paddingLeft paddingRight paddingTop ' +
-	'right textIndent top width wordSpacing zIndex'.split(' ')
-);
-
+var cssProperties = [
+	'border', 'padding', 'margin', 'color', 'cursor', 'font', 'fontFamily', 'visibility', 'position', 'overflow', 'filter', 'display', 
+	'backgroundColor', 'backgroundPosition', 'backgroundAttachment', 'borderBottomColor', 'borderBottomStyle', 
+	'borderBottomWidth', 'borderLeftColor', 'borderLeftStyle', 'borderLeftWidth',
+	'borderRightColor', 'borderRightStyle', 'borderRightWidth', 'borderSpacing',
+	'borderTopColor', 'borderTopStyle', 'borderTopWidth', 'bottom', 'clip', 'color',
+	'fontSize', 'fontWeight', 'height', 'left', 'letterSpacing', 'lineHeight',
+	'marginBottom', 'marginLeft', 'marginRight', 'marginTop', 'markerOffset', 'maxHeight',
+	'maxWidth', 'minHeight', 'minWidth', 'opacity', 'outlineColor', 'outlineOffset',
+	'outlineWidth', 'paddingBottom', 'paddingLeft', 'paddingRight', 'paddingTop',
+	'right', 'textIndent', 'top', 'width', 'wordSpacing', 'zIndex'];
 
 //
 // create a plugin/action for set
@@ -31,111 +29,90 @@ App.regAction(evtRegex('set'),function(params)
 			{
 				break;
 			}
-			default:
+			case 'class':
+			case 'className':
 			{
-				var value = params[p];
-				switch(p)
+				target.attr('class',params[p]);
+				break;
+			}
+			case 'style':
+			{
+				//ex: set[style=foo:bar;]
+				$.each(params[p].split(';'),function()
 				{
-					case 'class':
-					case 'className':
+					var t = this.split(':');
+					if (t && t.length > 1)
 					{
-						el.attr('class',value);
+						target.css(t[0],t[1]);
+						return;
+					}
+				});
+				break;
+			}
+			case 'href':
+			{
+				switch(tag)
+				{
+					case 'a':
+					case 'link':
+					{
+						target.attr('href',URI.absolutizeURI(params[p],AppC.docRoot));
 						break;
 					}
-					case 'style':
+				}
+			}
+			case 'src':
+			{
+				switch(tag)
+				{
+					case 'iframe':
+					case 'script':
+					case 'image':
 					{
-						//ex: set[style=foo:bar;]
-						$.each(value.split(';'),function()
-						{
-							var t = this.split(':');
-							if (t && t.length > 1)
+						var onload = target.attr('onloaded');
+					    if (onload)
+					    {
+							var done = false;
+							el.onload = el.onreadystatechange = function()
 							{
-								el.css(t[0],t[1]);
-								return;
+								if ( !done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete"))
+								{
+									done = true;
+									target.pub(onload,{source:{id:el.id}},target.attr('scope'));
+									el.onload = null;
+								}
 							}
-						});
-						break;
-					}
-					case 'href':
-					{
-						switch(tag)
+				        }
+						if (AppC.UA.opera)
 						{
-							case 'a':
-							case 'link':
-							{
-								el.href = URI.absolutizeURI(value,AppC.docRoot);
-								break;
-							}
-						}
-					}
-					case 'checked':
-    				case 'selected':
-    				case 'disabled':
-					case 'defaultChecked':
-    				{
-						if (value)
-						{
-							target.attr(p,value);
+    				        el.location.href = URI.absolutizeURI(params[p],AppC.docRoot);
 						}
 						else
 						{
-							el.removeAttribute(p);
-						}
-    					break;
-					}
-					case 'src':
-					{
-						switch(tag)
-						{
-							case 'iframe':
-							case 'script':
-							case 'image':
-							{
-								var onload = target.attr('onloaded');
-							    if (onload)
-							    {
-									var done = false;
-									el.onload = el.onreadystatechange = function()
-									{
-										if ( !done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete"))
-										{
-											done = true;
-											target.pub(onload,{source:{id:el.id}},target.attr('scope'));
-											el.onload = null;
-										}
-									}
-						        }
-								if (AppC.UA.opera)
-								{
-		    				        el.location.href = URI.absolutizeURI(value,AppC.docRoot);
-								}
-								else
-								{
-									el.src = URI.absolutizeURI(value,AppC.docRoot);
-								}
-								break;
-							}
-							default:
-							{
-								el.attr(p,value);
-								break;
-							}
+							el.src = URI.absolutizeURI(params[p],AppC.docRoot);
 						}
 						break;
 					}
 					default:
 					{
-						// check to see if a css property
-						if (cssProperties.indexOf(p)!=-1 || cssProperties.indexOf($.camel(p))!=-1)
-						{
-							el.css(p,value);
-						}
-						// set it as an attribute
-						else
-						{
-							el.attr(p,value);
-						}
+						target.attr(p,params[p]);
+						break;
 					}
+				}
+				break;
+			}
+
+			default:
+			{
+				// check to see if a css property
+				if (cssProperties.indexOf(p)!=-1 || cssProperties.indexOf($.camel(p))!=-1)
+				{
+					target.css(p,params[p]);
+				}
+				// set it as an attribute
+				else
+				{
+					target.attr(p,params[p]);
 				}
 			}
 		}

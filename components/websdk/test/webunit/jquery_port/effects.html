@@ -27,6 +27,10 @@
 		border:1px solid #bbb;
 		background-color:#ccc;
 	}
+	.test
+	{
+		border:5px solid red;
+	}
 	.clickable
 	{
 		width:150px;
@@ -42,10 +46,47 @@
 
 <body>
 	<h2>
+		Set Tests
+	</h2>
+	<div class="box"  on="l:set then set[class=test]">hello</div>
+	<div class="clickable" on="click then l:set">click me</div>
+	<div class="box"  on="l:set2 then set[border=1px solid red]">hello</div>
+	<div class="clickable" on="click then l:set2">click me</div>
+	<div class="box"  on="l:set3 then set[style=color:white;font-size:15px;border:1px solid orange]">hello</div>
+	<div class="clickable" on="click then l:set3">click me</div>
+	<a  on="l:set4 then set[href=http://google.com]">hello</a>
+	<div class="clickable" on="click then l:set4">click me</div>
+	<img  on="l:set5 then set[src=../images/confirm.png]" src="../images/deny.png"/>
+	<div class="clickable" on="click then l:set5">click me</div>
+	<input type="button"   on="l:set6 then set[disabled=true]" value="button"/>
+	<div class="clickable" on="click then l:set6">click me</div>
+	<input type="checkbox"   on="l:set7 then set[checked=true]" value="button"/>
+	<div class="clickable" on="click then l:set7">click me</div>
+
+	<h2>
+		Toggle Tests
+	</h2>
+	<div class="box" id="toggle1" on="l:toggle then toggle[border=1px solid red]">hello</div>
+	<div class="clickable" on="click then l:toggle">click me</div>
+	<div class="box"  on="l:toggle2 then toggle[display=block]" style="display:none">hello</div>
+	<div class="clickable" on="click then l:toggle2">click me</div>
+	<div class="box"  on="l:toggle3 then toggle[visibility=visible]" style="visibility:hidden">hello</div>
+	<div class="clickable" on="click then l:toggle3">click me</div>
+	<div class="box"  on="l:toggle4 then toggle[display=inline]" style="display:none">hello</div>
+	<div class="clickable" on="click then l:toggle4">click me</div>
+	<div class="box" id="class_test"  on="l:toggle5 then toggle[class=test]" >hello</div>
+	<div class="clickable" on="click then l:toggle5">click me</div>
+	<div class="box"   on="l:toggle6 then toggle[foo=test]" >hello</div>
+	<div class="clickable" on="click then l:toggle6">click me</div>
+
+	<h2>
 		Pulsate Tests
 	</h2>
-	<div class="box" on="l:pulate then pulsate">hello</div>
-	<div class="clickable" on="click then l:pulate">click me</div>
+	<div class="box" on="l:pulsate then pulsate">hello</div>
+	<div class="clickable" on="click then l:pulsate">click me</div>
+	<div class="box" on="l:pulsate2 then pulsate[count=10]">hello</div>
+	<div class="clickable" on="click then l:pulsate2">click me</div>
+
 	<div class="box" id="pulsate_test" >hello</div>
 	<div class="clickable" on="click then pulsate[id=pulsate_test]">click me</div>
 
