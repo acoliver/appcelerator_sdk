@@ -1,4 +1,4 @@
-class UrlMappings {
+class AppceleratorUrlMappings {
     static mappings = {
       "/appcelerator/servicebroker"{
           controller = "servicebroker"

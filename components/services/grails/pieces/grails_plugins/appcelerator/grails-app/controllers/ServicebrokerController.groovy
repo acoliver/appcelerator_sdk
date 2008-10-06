@@ -1,4 +1,5 @@
 import org.appcelerator.util.Util
+import grails.converters.*
 
 class ServicebrokerController {
 
@@ -51,24 +52,24 @@ class ServicebrokerController {
         }
 
         // GET requests do nothing currently
-        if (request.getMethod == "GET")
+        if (request.getMethod == "GET") {
             render("")
             return
         }
 
+        def outgoingMessages = []
         Message.messagesFromRequest(request).each { req_message ->
 
-            AppceleratorGrailsPlugin.getAdapters(in_message).each { adapter ->
-                def resp_message = in_message.makeResponse(adapter)
-                adapter.process(req_message, resp_message)
+            AppceleratorGrailsPlugin.getAdapters(req_message).each { adapter ->
+                def resp_message = req_message.makeResponse(adapter)
+                adapter.call_service(req_message, resp_message)
 
                 if (resp_message != null)
                     outgoingMessages << resp_message
             }
         }
 
-        out = Message.responseFromMessages(outgoingMessages, request.contentType)
-        render out as JSON
+        render Message.responseFromMessages(outgoingMessages, request.contentType) as JSON
 
     }
 
