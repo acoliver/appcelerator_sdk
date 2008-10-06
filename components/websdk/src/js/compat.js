@@ -1424,6 +1424,12 @@ if (typeof($$)=='undefined')
 					errors = true;
 					return false;
 				}
+				// jQuery does this weird thing where it will return a function for attributes that are
+				// normal associated with event callbacks like onload
+				if (typeof(value)=='function')
+				{
+					value = el.get(0).getAttribute(this.name);
+				}
 				opts[this.name]=value;
 			});
 			if (errors)
