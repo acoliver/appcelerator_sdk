@@ -18,7 +18,7 @@ App.regAction(evtRegex('set'),function(params)
 {
 	var target = getTarget(params,this);
 	var el = target.get(0);
-	var tag = getTagname(el);
+	var tag = App.getTagname(el);
 	
 	for (var p in params)
 	{

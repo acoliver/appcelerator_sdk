@@ -153,7 +153,7 @@ App.parseExpression = function(value,element)
 		if (afterIdx!=-1)
 		{
 			var afterStr = nextstr.substring(afterIdx+6);
-			delay = timeFormat(afterStr);
+			delay = App.timeFormat(afterStr);
 			if (!ifCond)
 			{
 				if (elseAction)

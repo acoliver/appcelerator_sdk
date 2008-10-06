@@ -86,7 +86,7 @@ function decodeParameterValue (token,wasquoted)
 	return value == null ? token : value;
 }
 
-function getTagname (element)
+App.getTagname = function (element)
 {
 	if (!element) throw "element cannot be null";
 	if (element.nodeType!=1) throw "node: "+element.nodeName+" is not an element, was nodeType: "+element.nodeType+", type="+(typeof element);
@@ -141,7 +141,7 @@ function getInputFieldValue (elem,dequote,local)
 {
 	elem = $(elem);
 	
-	var tagname = getTagname(elem);
+	var tagname = App.getTagname(elem);
 	if (tagname != 'input' && tagname != 'textarea' && tagname != 'select')
 	{
 		return null;
@@ -177,7 +177,7 @@ function getElementValue (elem, dequote, local)
     }
     else
     {
-        switch (getTagname(elem))
+        switch (App.getTagname(elem))
         {
             case 'input':
             {

@@ -657,6 +657,10 @@ if (typeof($$)=='undefined')
 	{
 		compileTemplate: AppC.compileTemplate,
 		
+		getTagname: function(name)
+		{
+			return App.getTagname(name);
+		},
 		getHtml: function(id,convertHtmlPrefix)
 		{
 			convertHtmlPrefix = (convertHtmlPrefix==null) ? true : convertHtmlPrefix;
@@ -921,17 +925,276 @@ if (typeof($$)=='undefined')
 		}
 	};
 	
+	// DOM
+	Appcelerator.Util = {};
+	
+	Appcelerator.Util.Dom = 
+	{
+	    ELEMENT_NODE: 1,
+	    ATTRIBUTE_NODE: 2,
+	    TEXT_NODE: 3,
+	    CDATA_SECTION_NODE: 4,
+	    ENTITY_REFERENCE_NODE: 5,
+	    ENTITY_NODE: 6,
+	    PROCESSING_INSTRUCTION_NODE: 7,
+	    COMMENT_NODE: 8,
+	    DOCUMENT_NODE: 9,
+	    DOCUMENT_TYPE_NODE: 10,
+	    DOCUMENT_FRAGMENT_NODE: 11,
+	    NOTATION_NODE: 12,
+	
+	    toXML: function(e, embed, nodeName, id, skipHTMLStyles, addbreaks, skipcomments)
+		{
+	    	nodeName = (nodeName || e.nodeName.toLowerCase());
+	        var xml = [];
+
+			xml.push("<" + nodeName);
+
+	        if (id)
+	        {
+	            xml.push(" id='" + id + "' ");
+	        }
+	        if (e.attributes)
+	        {
+		        var x = 0;
+	            var map = e.attributes;
+	            for (var c = 0, len = map.length; c < len; c++)
+	            {
+	                var item = map[c];
+	                if (item && item.value != null && item.specified)
+	                {
+	                    var type = typeof(item);
+	                    if (item.value && item.value.startsWith('function()'))
+	                    {
+	                       continue;
+	                    }
+	                    if (type == 'function' || type == 'native' || item.name.match(/_moz\-/)) continue;
+	                    if (id != null && item.name == 'id')
+	                    {
+	                        continue;
+	                    }
+
+	                    // special handling for IE styles
+	                    if (Appcelerator.Browser.isIE && !skipHTMLStyles && item.name == 'style' && e.style && e.style.cssText)
+	                    {
+	                       var str = e.style.cssText;
+	                       xml.push(" style=\"" + str+"\"");
+	                       x++;
+	                       continue;
+	                    }
+
+	                    var attr = String.escapeXML(item.value);
+						if (Object.isUndefined(attr) || (!attr && nodeName=='input' && item.name == 'value'))
+						{
+							attr = '';
+						}
+	                    xml.push(" " + item.name + "=\"" + attr + "\"");
+	                    x++;
+	                }
+	            }
+	        }
+	        xml.push(">");
+
+	        if (embed && e.childNodes && e.childNodes.length > 0)
+	        {
+	        	xml.push("\n");
+	            xml.push(this.getText(e,skipHTMLStyles,null,addbreaks,skipcomments));
+	        }
+			xml.push("</" + nodeName + ">" + (addbreaks?"\n":""));
+
+	        return xml.join('');
+		},
+	    getText: function (n,skipHTMLStyles,visitor,addbreaks,skipcomments)
+	    {
+			var text = [];
+	        var children = n.childNodes;
+	        var len = children ? children.length : 0;
+	        for (var c = 0; c < len; c++)
+	        {
+	            var child = children[c];
+	            if (visitor)
+	            {
+	            	child = visitor(child);
+	            }
+	            if (child.nodeType == this.COMMENT_NODE)
+	            {
+	            	if (!skipcomments)
+	            	{
+	                	text.push("<!-- " + child.nodeValue + " -->");
+	            	}
+	                continue;
+	            }
+	            if (child.nodeType == this.ELEMENT_NODE)
+	            {
+	                text.push(this.toXML(child, true, null, null, skipHTMLStyles, addbreaks,skipcomments));
+	            }
+	            else
+	            {
+	                if (child.nodeType == this.TEXT_NODE)
+	                {
+	                	var v = child.nodeValue;
+	                	if (v)
+	                	{
+	                    	text.push(v);
+	                    	if (addbreaks) text.push("\n");
+	                	}
+	                }
+	                else if (child.nodeValue == null)
+	                {
+	                    text.push(this.toXML(child, true, null, null, skipHTMLStyles, addbreaks,skipcomments));
+	                }
+	                else
+	                {
+	                    text.push(child.nodeValue || '');
+	                }
+	            }
+	        }
+	        return text.join('');
+	    }
+	};
+	
 	//
 	// widgets support
 	//
 
 	var widgets = {};
+	
+	function getWidgetPath(name)
+	{
+		var widgetName = $.gsub(name,':','_');
+		return Appcelerator.WidgetPath + widgetName + '/';
+	}
+
+	Appcelerator.DocumentPath = AppC.docRoot;
+    Appcelerator.ScriptPath = Appcelerator.DocumentPath + 'javascripts/';
+    Appcelerator.ImagePath = Appcelerator.DocumentPath + 'images/';
+    Appcelerator.StylePath = Appcelerator.DocumentPath + 'stylesheets/';
+    Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
+    Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
+    Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
+	Appcelerator.ComponentPath = Appcelerator.DocumentPath + 'components/';
 
 	Appcelerator.Widget = 
 	{
 		register: function(name,factory)
 		{
-			widgets[name]=factory;
+			var record = widgets[name];
+			record.factory = factory;
+			record.loaded = true;
+			$.each(record.pending,function()
+			{
+				loadWidget(this.name,this.state,this.el,record.path);
+			});
+			record.pending = null;
+		},
+		registerWithJS: function (name,factory,js,jspath)
+		{
+			var path = getWidgetPath(name);
+			var found = js.length;
+			var count = 0;
+			
+			var fn = function()
+			{
+				count++;
+				if (found == count)
+				{
+					Appcelerator.Widget.register(name,factory);
+				}
+			};
+
+			$.each(js,function()
+			{
+				$.getScript(path+'js/'+this,fn);
+			});
+		},
+		registerModuleWithCommonJS: function(moduleName,module,js)
+		{
+			var found = js.length;
+			var count = 0;
+			
+			var fn = function()
+			{
+				count++;
+				if (found == count)
+				{
+					Appcelerator.Widget.register(name,factory);
+				}
+			};
+
+			$.each(js,function()
+			{
+				$.getScript(AppC.docRoot + 'widgets/common/js/' + this,fn);
+			});
+		},
+		registerWidgetWithCommonJS: function(moduleName,module,js)
+		{
+			this.registerModuleWithCommonJS(moduleName,module,js);
+		},
+		registerModuleWithJS: function (moduleName,module,js,jspath)
+		{
+			this.registerWithJS(moduleName,module,js,jspath);
+		},
+		registerWidgetWithJS: function (moduleName,module,js,jspath)
+		{
+			this.registerWithJS(moduleName,module,js,jspath);
+		},
+		loadWidgetCommonCSS: function(moduleName,css)
+		{
+			if (typeof(css)=='string') css = [css];
+			var found = css.length;
+			var count = 0;
+			
+			var fn = function()
+			{
+				count++;
+				if (found == count)
+				{
+					Appcelerator.Widget.register(name,factory);
+				}
+			};
+
+			$.each(js,function()
+			{
+				$.getScript(AppC.docRoot + 'widgets/common/css/' + this,fn);
+			});
+		},
+		requireCommonCSS: function(name,onload)
+		{
+			$.error('requireCommonCSS');
+		},
+		requireCommonJS: function(name,onload)
+		{
+			var found = name.length;
+			var count = 0;
+			
+			var fn = function()
+			{
+				count++;
+				if (found == count)
+				{
+					onload();
+				}
+			};
+
+			$.each(name,function()
+			{
+				$.getScript(AppC.docRoot + 'widgets/common/js/' + this,fn);
+			});
+		},
+		queueRemoteLoadScriptWithDependencies: function(path, onload) 
+		{
+			var uri = URI.absolutizeURI(path,AppC.docRoot);
+			$.getScript(uri,onload);
+		},
+		loadWidgetCSS: function(name,css)
+		{
+			var path = getWidgetPath(name);
+			var uri = path + 'css/'+css;
+			$.getScript(css,uri);
+		},
+		fireWidgetCondition: function(id, name, data)
+		{
+			$.error('fireWidgetCondition id = '+id+', name = '+name);
 		}
 	};
 	
@@ -985,20 +1248,25 @@ if (typeof($$)=='undefined')
 	
 	function loadWidget(name,state,el,path)
 	{
-		var factory = widgets[name];
-		if (!factory)
+		var record = widgets[name];
+		if (!record)
 		{
 			var widgetName = $.gsub(name,':','_');
+			var path = getWidgetPath(name);
 			var js = widgetName + (AppC.params.debug ? '_debug' : '') + '.js';
-			path = AppC.docRoot + 'widgets/' + widgetName + '/';
 			var url  = path + js;
-			$.getScript(url,function()
-			{
-				loadWidget(name,state,el,path);
-			});
+			record = {pending:[{name:name,state:state,el:el}],loaded:false,path:path};
+			widgets[name]=record;
+			$.getScript(url);
 		}
 		else
 		{
+			if (!record.loaded)
+			{
+				record.pending.push({name:name,state:state,el:el});
+				return;
+			}
+			var factory = record.factory;
 			if (factory.setPath)
 			{
 				factory.setPath(path);
