@@ -40,7 +40,7 @@ class ServicebrokerController {
         }
 
         if (auth != shared_secret && Util.calcMD5(sessionid + instanceid) != auth) {
-            badRequest("invalid auth token")
+            badRequest("invalid auth token" + sessionid + "    " + instanceid)
             return
         }
 
