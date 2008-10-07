@@ -45,7 +45,41 @@
 </head>
 
 <body>
-
+	<h2>
+		Clearform Tests
+	</h2>
+	
+	<form on="l:clearform then clearform">
+		<div>
+			<input type="text" on="click then clearform"/>
+		</div>
+		<div>
+			<input type="checkbox" on="click then clearform"/>
+		</div>
+		<div>
+			<select on="click then clearform"><option val="1">one</select>
+		</div>
+		<div>	
+			<textarea on="click then clearform"></textarea>
+		</div>
+	</form>
+	<form on="l:clearform then clearform">
+		<div>
+			<input type="text" />
+		</div>
+		<div>
+			<input type="checkbox" />
+		</div>
+		<div>
+			<select ><option val="1">one</select>
+		</div>
+		<div>	
+			<textarea></textarea>
+		</div>
+	</form>
+	<div>
+		<input type="button" value="clearform" on="click then l:clearform"/>
+	</div>
 	<h2>
 		Disable/Enable Tests
 	</h2>
