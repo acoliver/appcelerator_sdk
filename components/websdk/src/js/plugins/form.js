@@ -1,4 +1,4 @@
-var validators = {}, decorators = {};
+var validators = {}, decorators = {}, fieldsets = {};
 var validatorMonitor = null;
 var validatorMonitors = null;
 var validatorMonitorRate = 250;
@@ -194,10 +194,20 @@ $.fn.validator = function(v)
 {
 	makeFormEntry(this,'validator',v,function(el)
 	{
-		el.bind('focus',function()
+		if (el.is(':text,textarea'))
 		{
-			startFieldMonitor(el);
-		});
+			el.bind('focus',function()
+			{
+				startFieldMonitor(el);
+			});
+		}
+		else if (el.is('select,:radio,:checkbox'))
+		{
+			el.bind('click',function()
+			{
+				el.revalidate();
+			});
+		}
 	});
 	return this;
 };
@@ -214,7 +224,7 @@ $.fn.activators = function(a)
 	this.data('activators',array);
 	$.each(array,function(idx)
 	{
-		var el = $('#'+this);
+		var el = $('#'+$.trim(this));
 		if (!el)
 		{
 			$.error('Error adding activator field with id: '+this+', not found');
@@ -226,8 +236,63 @@ $.fn.activators = function(a)
 	return this;
 };
 
-$.fn.fieldset = function()
+
+$.fn.fieldset = function(fs)
 {
+	var array = typeof(fs)=='string' ? fs.split(/[ ,]/) : $.makeArray(fs);
+	$.each(this,function(idx)
+	{
+		var el = $(this);
+		if (!el)
+		{
+			$.error('Error adding fieldset field with id: '+$(this).attr('id')+', not found');
+			return;
+		}
+		el.data('fieldsets',array);
+		$.each(array,function()
+		{
+			App.addToFieldset(el,$.trim(this));
+		});
+	});
+};
+
+App.addToFieldset = function(el,fs)
+{
+	var elements = fieldsets[fs];
+	if (!elements)
+	{
+		elements = [];
+		fieldsets[fs]=elements;
+	}
+	elements.push(el);
+}
+
+App.getFieldsetData = function(fs,obj)
+{
+	obj = obj || {};
+	var array = typeof(fs)=='string' ? [fs] : fs.data('fieldsets');
+	if (array && array.length > 0)
+	{
+		$.each(array,function()
+		{
+			var elements = fieldsets[this];
+			if (elements)
+			{
+				$.each(elements,function()
+				{
+					var el = this;
+					// we include if not a button
+					if (!el.is(':button'))
+					{
+						var value = getElementValue(el);
+						var key = el.is('form') ? el.attr('name') || el.attr('fieldset') || el.attr('id') : el.attr('name') || el.attr('id');
+						obj[key]=value;
+					}
+				});
+			}
+		});
+	}
+	return obj;
 };
 
 
@@ -242,5 +307,12 @@ App.reg('activators',['input','button'],function(value,state)
 	$(this).activators(value);
 });
 
+App.reg('fieldset',['form','input','button','select','textarea'],function(value,state)
+{
+	$(this).fieldset(value);
+});
+
+
+//FIXME: figure out how to revalidate hidden fields when val is set ... ?
 
 

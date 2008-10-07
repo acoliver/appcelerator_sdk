@@ -162,65 +162,50 @@ function getInputFieldValue (elem,dequote,local)
 	return formatValue(v,!dequote);
 }
 
-function getElementValue (elem, dequote, local)
+function getElementValue (element, dequote, local)
 {
-    elem = typeof(elem)=='string' ? $('#'+elem) : $(elem);
+    var el = typeof(element)=='string' ? $('#'+element) : $(element);
     dequote = (dequote==null) ? true : dequote;
+	var elem = el.get(0);
 
-	//FIXME: review widget
-    var widget = elem.widget
-    if (widget)
+	if (el.is(':input'))
+	{
+		return el.val();
+	}
+	else if (el.is('form'))
+	{
+		var obj = {};
+		$.each(el.find(":input").filter(function(){
+			return !this.disabled &&
+				(this.checked || /select|textarea/i.test(this.nodeName) ||
+					/text|hidden|password/i.test(this.type));
+		})
+		.map(function(i, elem){
+			var val = $(this).val();
+			return val == null ? null :
+				val.constructor == Array ?
+					$.map( val, function(val, i){
+						return {name: elem.name || elem.id, value: val};
+					}) :
+					{name: elem.name || elem.id, value: val};
+		}).get(),function()
+		{
+			obj[this.name]=this.value;
+		});
+		return obj;
+	}
+	else if (el.is('img,iframe'))
+	{
+		return elem.src;
+	}
+
+    // allow the element to set the value otherwise use the
+    // innerHTML of the component
+    if (elem.value != undefined)
     {
-        if(elem.widget.getValue)
-        {
-            return elem.widget.getValue(elem.id, elem.widgetParameters);
-        }
+        return elem.value;
     }
-    else
-    {
-        switch (App.getTagname(elem))
-        {
-            case 'input':
-            {
-                return getInputFieldValue(elem,true,local);
-            }
-            case 'select':
-            {
-                if(elem.attr('multiple'))
-                {
-                    var selected = [];
-                    var options = elem.options;
-                    var optionsLen = elem.options.length;
-                    for(var i = 0; i < optionsLen; i++)
-                    {
-                        if(options[i].selected)
-                        {
-                            selected.push(options[i].value);
-                        }
-                    }
-                    return selected;
-                }
-                break; // if not multi-select, we use 
-            }
-            case 'img':
-            case 'iframe':
-            {
-                return elem.src;
-            }
-            case 'form':
-            {
-                //FIXME: serialize the form into JSON
-                return '';
-            }
-        }
-        // allow the element to set the value otherwise use the
-        // innerHTML of the component
-        if (elem.value != undefined)
-        {
-            return elem.value;
-        }
-        return elem.html();
-    }
+    return elem.html();
 }
 
 App.getEvaluatedValue = function (v,data,scope,isExpression)

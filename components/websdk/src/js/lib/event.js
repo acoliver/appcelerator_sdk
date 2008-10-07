@@ -31,11 +31,15 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 	$(this)[cond](function(e)
 	{
 		var scope = $(this);
-		var data = {};
+		var data = App.getFieldsetData(scope);
 		data.event = {id:$(this).attr('id'),x:e.pageX,y:e.pageY};
 		$.debug('sending '+cond+', data = '+$.toJSON(data));
 		App.triggerAction(scope,data,meta);
-		if (stop) e.stopPropagation();
+		if (stop)
+		{
+			e.stopPropagation();
+			return false;
+		}
 	});
 });
 

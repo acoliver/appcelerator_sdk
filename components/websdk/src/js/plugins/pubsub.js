@@ -45,8 +45,11 @@ $.fn.pub = function(name,data,scope,version)
 	var isLocal = localRe.test(m[1]);
 	
 	data = data || {};
+	
+	App.getFieldsetData(this,data);
 
 	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
+	if (!isLocal && data.event) delete data.event;
 
 	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
 
