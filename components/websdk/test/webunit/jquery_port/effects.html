@@ -46,6 +46,35 @@
 
 <body>
 	<h2>
+		Clear/Reset Tests
+	</h2>
+	<form on="l:form.reset then clear">
+	<div>
+		<input type="text" validator="required" decorator="required" on="l:input.reset then reset"/>
+	</div>
+	<div>
+		<input type="text" validator="required" decorator="required" on="l:input.reset then clear"/>
+	</div>
+	<div>
+		<select validator="required" decorator="required" on="l:select.reset then clear" >
+				<option val="1">one</option><option val="2">two</option>
+		</select>
+	</div>
+	<span on="l:all.reset then reset">I am a span</span>
+	<a on="l:all.reset then clear" href="http://google.com">I am a anchor</a>
+	<img on="l:all.reset then reset" src="../images/confirm.png" on="l:all.reset then reset"/>
+	
+	
+	<div>
+		<input type="button" value="clear input" on="click then l:input.reset"/>
+		<input type="button" value="clear select" on="click then l:select.reset"/>
+		<input type="button" value="clear form" on="click then l:form.reset"/>
+		<input type="button" value="clear others" on="click then l:all.reset"/>
+
+	</div>
+	</form>
+	
+	<h2>
 		Clearform Tests
 	</h2>
 	

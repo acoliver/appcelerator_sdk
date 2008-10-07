@@ -4,7 +4,7 @@ $.each(['clear','reset'],function()
 	{
 		var target = getTarget(params,this);
 		var element = target.get(0);
-		var tag = getTagname(el).toLowerCase();
+		var tag = App.getTagname(element).toLowerCase();
 		var revalidate = false;
 
 		switch (tag)
@@ -34,24 +34,23 @@ $.each(['clear','reset'],function()
 			}
 			case 'form':
 			{
-			//	Form.reset(target);
-			//	Form.Methods.getInputs(target).each(function(i)
-			//	{
-			//	    Appcelerator.Compiler.executeFunction(i,'revalidate');
-			//	});
-	            break;;
+				element.reset();
+				$.each(target.find(":input"),function()
+				{
+					$(this).revalidate();
+				});
+	            break;
 			}
 			default:
 			{
-				target.text(value);
+				target.text('');
 				break;
 			}
 		}
 
 		if (revalidate)
 		{
-			// TODO: REVALIDATE FUNCTION
-		    //Appcelerator.Compiler.executeFunction(element,revalidate);
+		    target.revalidate();
 		}
 		
 		return this;		

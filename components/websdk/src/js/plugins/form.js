@@ -300,6 +300,10 @@ App.reg('validator',['input','button','select','textarea'],function(value,state)
 {
 	$(this).validator(value);
 });
+App.reg('decorator',['input','button','select','textarea'],function(value,state)
+{
+	$(this).decorator(value);
+});
 
 
 App.reg('activators',['input','button'],function(value,state)
