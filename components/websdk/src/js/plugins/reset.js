@@ -4,7 +4,7 @@ $.each(['clear','reset'],function()
 	{
 		var target = getTarget(params,this);
 		var element = target.get(0);
-		var tag = App.getTagname(element).toLowerCase();
+		var tag = App.getTagname(element);
 		var revalidate = false;
 
 		switch (tag)
@@ -13,7 +13,6 @@ $.each(['clear','reset'],function()
 			case 'textarea':
 			{
 			    target.val('');
-				revalidate=true;
 				break;
 			}
 			case 'select':
@@ -35,15 +34,13 @@ $.each(['clear','reset'],function()
 			case 'form':
 			{
 				element.reset();
-				$.each(target.find(":input"),function()
-				{
-					$(this).revalidate();
-				});
+				target.find(":input").revalidate();
 	            break;
 			}
 			default:
 			{
 				target.text('');
+				revalidate = true;
 				break;
 			}
 		}

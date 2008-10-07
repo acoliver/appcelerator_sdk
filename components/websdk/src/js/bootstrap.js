@@ -152,8 +152,8 @@ if (!baseLocation)
 	}
 }
 
-AppC.compRoot = AppC.docRoot + 'components';
-AppC.pluginRoot = AppC.compRoot + '/plugins';
+AppC.compRoot = AppC.docRoot + 'components/';
+AppC.pluginRoot = AppC.compRoot + 'plugins/';
 
 var appid = 0;
 

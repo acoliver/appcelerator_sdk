@@ -84,7 +84,7 @@ END_LICENSE
     append_file(file, jslite)
     append_file("\n//" + ("-"*80) + "\n",jslite,true)
   end
-
+  
   bf = File.read(jslite)
   bf.gsub!('${version.major}',rel[0])
   bf.gsub!('${version.minor}',rel[1])
@@ -228,6 +228,10 @@ def copy_tests(test_src_path, test_dst_path)
   FileUtils.mkdir_p(actions_dest_path,:verbose=>VERBOSE) unless File.exists? actions_dest_path
   
   Dir["#{actions_src_path}/*_action.js"].each do |file|
+    FileUtils.cp file, actions_dest_path
+  end
+
+  Dir["#{actions_src_path}/dynamic/*.js"].each do |file|
     FileUtils.cp file, actions_dest_path
   end
   

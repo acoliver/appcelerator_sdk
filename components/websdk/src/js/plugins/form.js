@@ -44,9 +44,34 @@ AppC.addValidator('required',function(el,value)
 	return (typeof(value)!='undefined' && value);
 });
 
-AppC.addDecorator('required',function(el,valid,value)
+function installDecorator(el,target)
 {
-	el.css('border',valid ? '' : '1px solid red');
+	if (!target)
+	{
+		var img = AppC.docRoot + 'images/exclamation.png';
+		var id = el.attr('id') + '_decorator';
+		var html = '<span id="'+id+'" class="decorator"><img src="' + img + '"/></span>';
+		el.after(html);
+		target = $('#'+id);
+		el.data('decoratorTarget',target);
+	}
+	return target;
+}
+
+AppC.addDecorator('required',function(el,valid,value,target)
+{
+	target = installDecorator(el,target);
+	
+	if (valid)
+	{
+		el.css('background-color','');
+		target.css('visibility','hidden');
+	}
+	else
+	{
+		el.css('background-color','#FFEEEE');
+		target.css('visibility','visible');
+	}
 });
 
 function fieldMonitor()
@@ -107,10 +132,26 @@ function makeFormEntry(array,name,e,fn)
 
 function fieldDecorate(el,valid,value)
 {
-	el.removeClass('valid').removeClass('invalid').addClass(valid?'valid':'invalid');
+	if (!value)
+	{
+		el.addClass('validator_empty').removeClass('validator_value');
+	}
+	else
+	{
+		el.removeClass('validator_empty').addClass('validator_value');
+	}
+	if (valid)
+	{
+		el.removeClass('validator_invalid').addClass('validator_valid');
+	}
+	else
+	{
+		el.addClass('validator_invalid').removeClass('validator_valid');
+	}
 	var dec = el.data('decorator');
+	var target = el.data('decoratorTarget');
 	var fn = typeof(dec)=='function' ? dec : App.getDecorator(dec);
-	return fn ? fn(el,valid,value) : null;
+	return fn ? fn(el,valid,value,target) : null;
 }
 
 function fieldActivate(el,activator,activators)
@@ -212,15 +253,17 @@ $.fn.validator = function(v)
 	return this;
 };
 
-$.fn.decorator = function(d)
+$.fn.decorator = function(d,decId)
 {
-	return makeFormEntry(this,'decorator',d);
+	var dec = decId ? (typeof(decId)=='string' ? $('#'+decId) : $(decId)) : null;
+	var fn = dec ? function(el) { el.data('decoratorTarget', dec) } : null;
+	return makeFormEntry(this,'decorator',d,fn);
 };
 
 $.fn.activators = function(a) 
 {
 	var self = this;
-	var array = typeof(a)=='string' ? a.split(/[ ,]/) : $.makeArray(a);
+	var array = (typeof(a)=='string' ? a.split(/[ ,]/) : $.makeArray(a)).map(function(e){return $.trim(e)});
 	this.data('activators',array);
 	$.each(array,function(idx)
 	{
@@ -239,7 +282,7 @@ $.fn.activators = function(a)
 
 $.fn.fieldset = function(fs)
 {
-	var array = typeof(fs)=='string' ? fs.split(/[ ,]/) : $.makeArray(fs);
+	var array = (typeof(fs)=='string' ? fs.split(/[ ,]/) : $.makeArray(fs)).map(function(e){return $.trim(e)});
 	$.each(this,function(idx)
 	{
 		var el = $(this);
@@ -300,13 +343,13 @@ App.reg('validator',['input','button','select','textarea'],function(value,state)
 {
 	$(this).validator(value);
 });
+
 App.reg('decorator',['input','button','select','textarea'],function(value,state)
 {
-	$(this).decorator(value);
+	$(this).decorator(value,$(this).attr('decoratorId'));
 });
 
-
-App.reg('activators',['input','button'],function(value,state)
+App.reg('activators',['div','input','button'],function(value,state)
 {
 	$(this).activators(value);
 });
@@ -317,6 +360,30 @@ App.reg('fieldset',['form','input','button','select','textarea'],function(value,
 });
 
 
-//FIXME: figure out how to revalidate hidden fields when val is set ... ?
-
-
+//
+// remap val function such that when it's called, it will always revalidate
+// the field
+//
+var oldVal = $.fn.val;
+$.fn.val = function()
+{
+	// we need to make sure that we don't 
+	// call revalidate from an existing revalidate
+	// in the call stack - which case we'll get into
+	// an infinite loop... this just puts a guard in
+	// to let us know that we're in this state
+	var inr = this.data('revalidating');
+	var rev = false;
+	if (!inr)
+	{
+		rev=true;
+		this.data('revalidating',true);
+	}
+	var r = oldVal.apply(this,arguments);
+	if (rev)
+	{
+		this.revalidate();
+		this.removeData('revalidating');
+	}
+	return r;
+};
