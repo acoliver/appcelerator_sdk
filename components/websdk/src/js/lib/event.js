@@ -10,13 +10,12 @@ function evtRegex(name)
 $.each(events,function()
 {
 	var name = $.string(this);
-	var scope = this;
 	App.regAction(evtRegex(name),function(params)
 	{
-		return (params.id)?
-				$("#"+params.id)[name].call(scope):
-				$(this)[name].call(scope);
+		var target = getTarget(params,this);
+		return target[name].call(target);
 	});
+
 });
 
 App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
