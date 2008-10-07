@@ -43,6 +43,12 @@ task :appengine do
   end
 end
 
+task :django do
+  FileUtils.cd("#{BUILD_DIR}/django") do |d|
+    system "rake"
+  end
+end
+
 task :dotnet do
   FileUtils.cd("#{BUILD_DIR}/dotnet") do |d|
     system "rake"
@@ -87,6 +93,12 @@ end
 
 task :struts do
   FileUtils.cd("#{BUILD_DIR}/struts") do |d|
+    system "rake"
+  end
+end
+
+task :mochiweb do
+  FileUtils.cd("#{BUILD_DIR}/mochiweb") do |d|
     system "rake"
   end
 end

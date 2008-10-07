@@ -162,7 +162,7 @@ module Appcelerator
     def get_widgets_path()
         get_web_path("widgets")
     end
-
+    
     def create_project_on_disk(tx)
 
       # creates project directories
@@ -180,7 +180,9 @@ module Appcelerator
       # write out project config here, just in case any commands
       # misbehave and don't try to read the project we pass in
       save_config()
-      Installer.install_websdk(self, tx)
+      if not install_websdk_late?
+        Installer.install_websdk(self, tx)
+      end
 
       # now execute the service-specific script (no longer necessary)
       if self.respond_to?(:create_project)
@@ -188,10 +190,18 @@ module Appcelerator
       else
         success = service_installer.create_project(@service_dir, @path, @config, tx)
       end
-
+      
+      if install_websdk_late?
+        Installer.install_websdk(self, tx)
+      end
+      
       save_config()
 
       success
+    end
+    
+    def install_websdk_late?
+      false
     end
 
     def Project.is_project_dir?(path=Dir.pwd())

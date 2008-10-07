@@ -43,10 +43,11 @@ module Appcelerator
 
       puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
       if OPTIONS[:verbose]
+        path = project.get_web_path('.')
         if update
           puts "Updating to websdk version #{sdk[:version]} at #{path}"
         else
-          puts "Installing websdk version  #{sdk[:version]} at #{path}"
+          puts "Installing websdk version #{sdk[:version]} at #{path}"
         end
       end
 

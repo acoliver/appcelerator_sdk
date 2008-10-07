@@ -111,6 +111,16 @@ def dofiles(dir)
   end
 end
 
+def dofiles_and_dirs(dir)
+  Find.find(dir) do |path|
+    pathname = Pathname.new(path)
+    if not path.include? '.svn'
+      filename = pathname.relative_path_from(Pathname.new(dir))
+      yield filename
+    end
+  end
+end
+
 def build_subdir(dir)
   Dir["#{dir}/*"].each do |subdir|
     next unless File.directory? subdir

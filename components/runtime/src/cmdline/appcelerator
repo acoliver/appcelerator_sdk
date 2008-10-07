@@ -98,6 +98,13 @@ def check_for_initial
   f.close
   
   FileUtils.cp File.join(SYSTEMDIR,'build.yml'), home_path('build.yml')
+  
+  if not WIN32
+    # otherwise all files are owned by root on the mac
+    %x[sudo id -p] =~ /login\W([^\W]+)/
+    real_user = $1
+    system("sudo chown -R #{real_user} #{TARGET_DIR}")
+  end
 end
 
 def check_for_migration

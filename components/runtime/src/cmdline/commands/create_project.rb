@@ -55,7 +55,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 
   to = File.expand_path(File.join(path.path,project_name))
   puts "Using service #{service_type} #{service_version}" unless OPTIONS[:quiet]
-  puts "Creating #{service_type}-#{service_version} project from: #{from}, to: #{to}" if OPTIONS[:verbose]
+  puts "Creating #{service_type}-#{service_version} project from: #{@service_dir}, to: #{to}" if OPTIONS[:verbose]
 
   success = true
   project = Project.create(to, project_name, service_type, service_version)
