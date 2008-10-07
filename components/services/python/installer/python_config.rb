@@ -55,6 +55,14 @@ module Appcelerator
       end
     end
     
+    def django_admin
+        if on_windows
+          find_latest_script('django_admin.py')
+        else
+          'django_admin.py'
+        end
+    end
+    
     def quiet_system(cmd)
       if OPTIONS[:verbose]
         puts cmd

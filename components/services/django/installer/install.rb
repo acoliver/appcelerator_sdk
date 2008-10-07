@@ -28,7 +28,7 @@ module Appcelerator
         die 'Django projects must have names that match this regex: /^[a-zA-Z\d\_]{1,100}$/'
       end
       
-      quiet_system("python django_admin.py startproject #{project_name}")     
+      quiet_system("#{@pyconfig.django_admin} startproject #{project_name}")     
        
       FileUtils.cd to_path do
         tx.rm "app" # app create:project makes this
@@ -67,9 +67,8 @@ module Appcelerator
     end
         
     def check_dependencies(component)
-      
       @pyconfig.install_easy_install_if_needed(self)
-      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], component[:version])
+      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], '1.0.8')
     end
     
     def initialize

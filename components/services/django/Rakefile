@@ -19,7 +19,9 @@
 
 BUILD_DIR = "#{File.dirname(__FILE__)}" 
 require File.expand_path("#{BUILD_DIR}/../../build.rb")
+python_dir = File.expand_path("#{BUILD_DIR}/../python")
 build_config = load_config(BUILD_DIR)
+python_config = load_config(python_dir)
 
 desc 'default python-django build'
 task :default do
@@ -28,23 +30,31 @@ task :default do
   zipfile = "#{STAGE_DIR}/service_django_#{build_config[:version]}.zip"
   FileUtils.rm_rf zipfile
   
-  src_dir = "#{BUILD_DIR}/src"
-  py_dir  = "#{BUILD_DIR}/../python/src/module/appcelerator"
+  stage_src = "#{STAGE_DIR}/python_src"
+  FileUtils.cp_r "#{python_dir}/src", stage_src  
+  setup_path = "#{stage_src}/module/setup.py"
+  setup_content = File.read(setup_path)
+  setup_content.sub!('0.0.0', python_config[:version])
+  f = File.open setup_path,'w+'
+  f.write setup_content
+  f.close
+  
   
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+
+    dofiles("#{stage_src}/module") do |f|
+      filename = f.to_s
+      next if File.basename(filename[0,1]) == '.'
+      zipfile.add("module/#{filename}","#{stage_src}/#{filename}")
+    end
     
+    src_dir = "#{BUILD_DIR}/src"  
     dofiles(src_dir) do |f|
       filename = f.to_s
       next if File.basename(filename[0,1]) == '.'
       zipfile.add("project/#{filename}","#{src_dir}/#{filename}")
     end
         
-    dofiles(py_dir) do |f|
-      filename = f.to_s
-      next if File.basename(filename[0,1]) == '.'
-      zipfile.add("project/appcelerator/#{filename}","#{py_dir}/#{filename}")
-    end
-    
     Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
       filename = File.basename(fpath)
       next if filename[0,1] == '.'

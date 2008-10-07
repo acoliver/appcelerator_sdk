@@ -167,6 +167,12 @@ class AppEngineCrossDomainProxy(CrossDomainProxy):
                    if header[0].lower() not in self.SUPPRESSED_HEADERS]
         return headers, proxied_request.content
 
+def django_servicebroker(request):
+    return call_wsgi_app_from_django(get_cached_app(ServiceDispatcher), request)
+
+def django_cross_domain_proxy(request):
+    return call_wsgi_app_from_django(get_cached_app(CrossDomainProxy), request)
+
 
 def service_broker_factory(global_config, **local_conf):
     " factory for building a new service broker that implements the Appcelerator protocol"
@@ -184,6 +190,28 @@ def get_input(environ):
         return environ['wsgi.input'].read(content_len)
     except:
         return environ['wsgi.input'].read()
+
+# compatibility layer, looks like this might be commitable upstream
+# http://code.djangoproject.com/ticket/8928
+def call_wsgi_app_from_django(app, request):
+    response = HttpResponse()
+    def start_response(status, headers):
+        response.status = int(status[:3])
+        response._headers.update(headers)
+        return response # is this a-file-like-object enough?
+    
+    data = app(start_response, environ)
+    for chunk in data:
+        response.write(chunk)
+    
+    return response
+    
+
+def get_cached_app(app_constructor):
+    if not has_attr(app_constructor, '_cached_app'):
+        app_constructor._cached_app = app_constructor()
+    
+    return app_constructor._cached_app
 
 
 class InMemoryServiceBroker(object):
@@ -300,6 +328,10 @@ def _pylons_load_services():
         logging.info(import_stmt)
         exec import_stmt in {}
 
+def _django_load_services():
+    " if we are running in a django app, load files in the 'services' directory"
+    pass
+    
 def _appengine_load_services():
     " if we are running on appengine, load files in 'app/services' directory"
     import os
@@ -367,6 +399,12 @@ try:
     CrossDomainProxy = AppEngineCrossDomainProxy
 except ImportError:
     # no appengine, using the standard stuff
-    _JsonEncoder = json.JSONEncoder
     _decoder_hook = None
-    _load_services = _pylons_load_services
+    _JsonEncoder = json.JSONEncoder # we'll customize this for the django ORM too
+    try:
+        from django.http import HttpResponse
+        _load_services = _django_load_services
+    except:
+        # oops, not running django either
+        _load_services = _pylons_load_services
+
