@@ -315,7 +315,7 @@ Appcelerator.Widget.Field =
 					data = Object.evalWithinScope(parameters, window);
 				}
 				
-				data['id'] = id;
+				data['event'] = {id:id};
 				data['value'] = field.value;
 				$MQ(Appcelerator.Compiler.convertMessageType(autocomplete), data, elementScope);
 				return true;

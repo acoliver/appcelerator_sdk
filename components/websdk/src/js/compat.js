@@ -712,10 +712,17 @@ if (typeof($$)=='undefined')
 	{
 		compileTemplate: AppC.compileTemplate,
 		
-		compileExpression: function()
+		convertMessageType: function(t)
 		{
-			//FIXME
-			return '';
+	        if (t.startsWith('l:')) return 'local:'+t.substring(2);
+	        if (t.startsWith('r:')) return 'remote:'+t.substring(2);
+	        if (t.startsWith('*:')) return 'both:'+t.substring(2);
+	        return t;
+		},
+		compileExpression: function(id,expr)
+		{
+			$(id).on(expr);
+			return 'true';
 		},
 		handleElementException: function(id,e,context)
 		{
@@ -799,15 +806,22 @@ if (typeof($$)=='undefined')
 		addTrash: function(fn)
 		{
 			//FIXME
+			//$.error('addTrash not implemented');
 		},
 		destroyContent:function()
 		{
 			//FIXME
+			$.error('destroyContent not implemented');
+		},
+		attachFunction: function(element,name,f)
+		{
+			$(element).bind(name,f);
 		},
 		executeFunction: function(element,name,args,required)
 		{
 			//FIXME
 			$.info('executeFunction called '+name);
+			$(element)[name](args);
 		},
 		compileElement:function(element,state,recursive)
 		{
@@ -1516,14 +1530,19 @@ if (typeof($$)=='undefined')
 				return;
 			}
 			
+			$.info('parameters = '+$.toJSON(opts));
+			
+			var onexpr = el.attr('on');
+			var fieldset = el.attr('fieldset');
 			var ins = factory.buildWidget(el.get(0),opts);
 			var html = ins.presentation;
-			if (ins.parameters) opts = ins.parameters;
+			if (typeof(ins.parameters)!='undefined') opts = ins.parameters;
 			var remove = (ins.position == Appcelerator.Compiler.POSITION_REMOVE);
+			var resetId = true;
 			if (!remove)
 			{
 				// rename the real ID
-				el.attr('id',id+'_widget');
+				//el.attr('id',id+'_widget');
 				// widgets can define the tag in which they should be wrapped
 				if(ins.parent_tag != 'none' && ins.parent_tag != '')
 				{
@@ -1537,6 +1556,13 @@ if (typeof($$)=='undefined')
 				if (AppC.UA.IE && html.indexOf('<app:') != -1)
 				{
 					html = Appcelerator.Compiler.addIENameSpace(html);
+				}
+				
+				var r = new RegExp(" id=['\"]"+id+"['\"]");
+				if (r.test(html))
+				{
+					// if they are using the id, we certainly don't want to re-use it below
+					resetId=false;
 				}
 
 				el.replaceWith(html);
@@ -1557,11 +1583,14 @@ if (typeof($$)=='undefined')
 			if (!remove)
 			{
 				newEl = $('#'+id+'_temp');
-				newEl.attr('id',id);
+				if (resetId) newEl.attr('id',id);
 			}
 			
-			//FIXME - do custom conditions...
-			//FIXME - do fieldset
+			// move special attributes to the right widget if there is one
+			var e = $("#"+id);
+			if (onexpr) e.attr('on',onexpr);
+			if (fieldset && !e.attr('fieldset')) e.attr('fieldset',fieldset);
+
 			
 			if (ins.compile)
 			{
@@ -2043,16 +2072,34 @@ if (typeof($$)=='undefined')
 		}
 	};
 	
+	Appcelerator.Decorator = {};
+	
+	AppC.decorators(function()
+	{
+		Appcelerator.Decorator[this.name] = function()
+		{
+			$.error('decorator called - not implemented');
+		};
+	});
+	
+	Appcelerator.Validator = {};
+
+	AppC.validators(function()
+	{
+		Appcelerator.Validator[this.name] = function()
+		{
+			$.error('validator called - not implemented');
+		};
+	});
+	
+	
 	var interceptors = [];
 	
 	Appcelerator.Util.ServiceBroker=
 	{
 		convertType: function(t)
 		{
-	        if (t.startsWith('l:')) return 'local:'+t.substring(2);
-	        if (t.startsWith('r:')) return 'remote:'+t.substring(2);
-	        if (t.startsWith('*:')) return 'both:'+t.substring(2);
-	        return t;
+	        return Appcelerator.Compiler.convertMessageType(t);
 		},
 		addInterceptor: function(interceptor)
 		{

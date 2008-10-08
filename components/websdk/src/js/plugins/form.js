@@ -26,6 +26,14 @@ AppC.getValidator = function(name)
 	}
 }
 
+AppC.validators = function(iter)
+{
+	for (var p in validators)
+	{
+		iter.call({name:p,fn:validators[p]});
+	}
+};
+
 AppC.addDecorator = function(name,fn)
 {
 	decorators[name]=fn;
@@ -38,6 +46,14 @@ App.getDecorator = function(name)
 		return decorators[name];
 	}
 }
+
+AppC.decorators = function(iter)
+{
+	for (var p in decorators)
+	{
+		iter.call({name:p,fn:decorators[p]});
+	}
+};
 
 AppC.addValidator('required',function(el,value)
 {
@@ -72,6 +88,11 @@ AppC.addDecorator('required',function(el,valid,value,target)
 		el.css('background-color','#FFEEEE');
 		target.css('visibility','visible');
 	}
+});
+
+AppC.addDecorator('custom',function(el,valid,value,target)
+{
+	target.css('visibility',valid ? 'hidden' : 'visible');
 });
 
 function fieldMonitor()

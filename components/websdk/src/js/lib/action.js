@@ -158,6 +158,8 @@ App.regAction = function(name,fn,dontparse)
 			$.fn[fnName] = function(params)
 			{
 				var r = fn.call(this,params||{});
+				$.info('triggering '+fnName+' for '+this.attr('id'));
+				this.trigger(fnName); // trigger an event when action is invoked
 				if (typeof(r)!='undefined') return r;
 				return this;
 			};
