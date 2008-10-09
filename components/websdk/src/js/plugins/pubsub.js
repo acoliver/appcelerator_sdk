@@ -260,7 +260,7 @@ function processQueue()
 			{
 				if (App.parseConditionCondition(a[j].params,data))
 				{
-					a[j].fn.apply(scope,[data,scope,version,name,a?'local':'remote']);
+					a[j].fn.apply(a[j].scope,[data,scope,version,name,a?'local':'remote']);
 				}
 			}
 		}
