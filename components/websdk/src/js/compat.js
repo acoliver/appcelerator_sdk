@@ -150,10 +150,6 @@ if (typeof($$)=='undefined')
 		{
 			return $.makeArray(obj);
 		}
-		$H = function(obj)
-		{
-			return obj;
-		};
 
 		// Event mapping
 		Object.extend(Event.prototype,
@@ -244,7 +240,7 @@ if (typeof($$)=='undefined')
 		});
 		
 		// Element mapping
-		Element = 
+		Object.extend(Element, 
 		{
 			hasAttribute:function(a)
 			{
@@ -379,6 +375,10 @@ if (typeof($$)=='undefined')
 			{
 				return el(id).replaceWith(html);
 			},
+			firstDescendant:function(id)
+			{
+				return el(id).find("[nodeType=1]").get(0);
+			},
 			up:function(id)
 			{
 				if (arguments.length == 1)
@@ -415,7 +415,8 @@ if (typeof($$)=='undefined')
 			{
 				return el(id).width();
 			}
-		};
+		});
+		
 		Element.ClassNames = function(el,value)
 		{
 			this.el = el;
@@ -445,6 +446,22 @@ if (typeof($$)=='undefined')
 			}
 		};
 		
+		Object.extend(Element.prototype,
+		{
+			firstDescendant: function()
+			{
+				return Element.firstDescendant(this);
+			},
+			addClassName:function()
+			{
+				return Element.addClassName(this);
+			},
+			removeClassName:function()
+			{
+				return Element.removeClassName(this);
+			}
+		});
+		
 		// Insertion mapping
 		Insertion = 
 		{
@@ -468,7 +485,64 @@ if (typeof($$)=='undefined')
 			  	el(element).insertAfter(content);
 			}
 		};
-
+		
+		// Hash mapping
+		Hash = function(obj)
+		{
+			this.object = obj;
+			var self = this;
+			
+			this.toJSON = function()
+			{
+				return $.toJSON(self.object);
+			};
+			
+			this.get = function(key)
+			{
+				return self.object[key];
+			}
+			
+			this.unset = function(key)
+			{
+				var value = self.object[key];
+				if (value) delete self.object[key];
+				return value;
+			};
+			
+			this.set = function(key,value)
+			{
+				self.object[key]=value;
+			};
+			
+			this.toQueryString = function()
+			{
+				var qs = [];
+				for (var key in this.object)
+				{
+					qs[encodeURIComponent(key)] = encodeURIComponent(this.object[key]);
+				}
+				return qs.join('&');
+			};
+			
+			this.each = function(iterator)
+			{
+				for (var key in this.object)
+				{
+ 					var value = this.object[key];
+					var pair = [key, value];
+					pair.key = key;
+					pair.value = value;
+					iterator(pair);
+				}
+			}
+		};
+		
+		// Hash Mapping
+		$H = function (value)
+		{
+			return new Hash(value);
+		}
+		
 		// AJAX mapping
 		Ajax = {};
 		Ajax.Request = function(uri,options)
@@ -935,6 +1009,11 @@ if (typeof($$)=='undefined')
 			$.info('handleCondition called with '+clause)
 			//FIXME
 			//Appcelerator.Compiler.handleCondition(child, open, 'function['+scriptcode+']', null, 0, null);
+		},
+		fireCustomCondition: function(id,name,params)
+		{
+			$.error("fire custom condition called with "+id+", name="+name);
+            //Appcelerator.Compiler.fireCustomCondition(id, 'shade', {'id': id});
 		}
 	};
 	
@@ -1582,8 +1661,15 @@ if (typeof($$)=='undefined')
 			
 			if (!remove)
 			{
-				newEl = $('#'+id+'_temp');
-				if (resetId) newEl.attr('id',id);
+				if (resetId)
+				{
+					newEl = $('#'+id+'_temp');
+					newEl.attr('id',id);
+				}
+				else
+				{
+					newEl = $('#'+id);
+				}
 			}
 			
 			// move special attributes to the right widget if there is one

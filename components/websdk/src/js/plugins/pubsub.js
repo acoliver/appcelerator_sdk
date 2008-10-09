@@ -19,6 +19,11 @@ $.fn.sub = function(name,fn,params)
 	}
 	
 	var m = re.exec(type);
+	if (!m)
+	{
+		// this is for the case of foo.bar which is equivalent to both:foo.bar (or *:foo.bar)
+		m = re.exec('both:'+type);
+	}
 	type = m[2];
 	if (type.charAt(0)=='~')
 	{
@@ -26,7 +31,7 @@ $.fn.sub = function(name,fn,params)
 		regexp = new RegExp(type);
 	}
 	
-	$.debug('subscribing '+m[2]+', local='+m[1]+', type='+type+', regexp='+regexp);
+	$.debug('subscribing type='+type+', regexp='+regexp);
 	
 	if (localRe.test(m[1]))
 	{
