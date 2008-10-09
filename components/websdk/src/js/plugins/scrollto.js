@@ -200,12 +200,15 @@ App.regAction(evtRegex('scrollTo'),function(params)
 {
 	var scrollTo = 0;
 	var duration = 1000;
+	var scrollToObj = {};
+	var useObj = false;
+	var options = {};
+	var target = null;
 	
 	for (var p in params)
 	{
 		switch(p)
 		{
-			case 'target':
 			case 'event':
 			{
 				break;
@@ -220,13 +223,48 @@ App.regAction(evtRegex('scrollTo'),function(params)
 				duration = parseInt(params[p]);
 				break;
 			}
+			case 'axis':
+			{
+				options.axis = params[p];
+				break;
+			}
+			case 'queue':
+			{
+				options.queue = params[p];
+				break;
+			}
+
+			case 'top':
+			{
+				scrollToObj.top = params[p];
+				useObj = true;
+				break;
+			}
+			case 'left':
+			{
+				scrollToObj.left = params[p];
+				useObj = true;
+				break;
+			}
+			case 'target':
+			{
+				target = params[p];
+				break;
+			}
 			default:
 			{
 				break;
 			}
 		}
 	}
-	$.scrollTo(scrollTo,duration);		
+	if (target != null)
+	{
+		$('#'+target).scrollTo((useObj==true)?scrollToObj:scrollTo,duration,options);
+	}
+	else
+	{
+		$.scrollTo((useObj==true)?scrollToObj:scrollTo,duration,options);				
+	}
 
 });
 

@@ -6,6 +6,7 @@ var pubdebug = AppC.params.debug=='2';
 var queue = [];
 var remoteDisabled = true;
 var queueInit = false;
+var processingQueue = false;
 
 $.fn.sub = function(name,fn,params)
 {
@@ -48,16 +49,13 @@ $.fn.pub = function(name,data,scope,version)
 {
 	var m = re.exec(name);
 	var isLocal = localRe.test(m[1]);
-	
 	data = data || {};
-	
 	App.getFieldsetData(this,data);
 
 	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
 	if (!isLocal && data.event) delete data.event;
 
 	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
-
  	queue.push({
 		data:data||{},
 		name:m[2],
@@ -66,7 +64,7 @@ $.fn.pub = function(name,data,scope,version)
 		version:version
 	});
 
-	if (remoteDisabled && queueInit)
+	if (remoteDisabled && queueInit && !processingQueue)
 	{
 		processQueue();		
 	}
@@ -244,30 +242,35 @@ function processQueue()
 	if (queue.length < 1) return;
 	
 	var rq = remoteDisabled ? null : [];
-	$.each(queue,function()
+	processingQueue = true;
+	
+	// process message queue
+	for (var i=0;i<queue.length;i++)
 	{
-		var a = this.local ? subs.local : subs.remote;
-		var name = this.name;
-		var data = this.data;
-		var scope = this.scope;
-		var version = this.version;
-		$.each(a,function()
+		var a = queue[i].local ? subs.local : subs.remote;
+		var name = queue[i].name;
+		var data = queue[i].data;
+		var scope = queue[i].scope;
+		var version = queue[i].version;
+		
+		// process subs
+		for (var j=0;j<a.length;j++)
 		{
-			if ((this.regexp && this.regexp.test(name)) || (!this.regexp && this.name == name))
+			if ((a[j].regexp && a[j].regexp.test(name)) || (!a[j].regexp && a[j].name == name))
 			{
-				if (App.parseConditionCondition(this.params,data))
+				if (App.parseConditionCondition(a[j].params,data))
 				{
-					this.fn.apply(this.scope,[data,scope,version,name,a?'local':'remote']);
+					a[j].fn.apply(scope,[data,scope,version,name,a?'local':'remote']);
 				}
 			}
-		});
-		if (!this.local && !remoteDisabled) rq.push({name:name,data:data,scope:scope,version:version});
-	});
+		}
+	}
 
 	if (rq && rq.length > 0) remoteDelivery(rq);
 	
 	// clear the queue
 	queue = [];
+	processingQueue = false;
 }
 
 var queueTimer;
