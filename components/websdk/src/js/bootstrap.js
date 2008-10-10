@@ -187,7 +187,7 @@ $.fn.compile = function()
 		var e = $(el);
 		App.incState(state);
 		var myid = e.attr('id');
-		var compiled = App.executeActions(el,state);
+		var compiled = App.runProcessors(el,state);
 		$.debug(' + compiled #'+myid+' ('+getTagName(node)+') => '+compiled);
 		// if false, means that the attribute processor will call
 		// checkState when he's done

@@ -2,7 +2,7 @@ App.selectors = [];
 App.delegateCompilers = [];
 var actions = {};
 
-function addProcessor(tag,attr,handler,delegate)
+function addProcessor(tag,attr,handler,delegate,priority)
 {
 	var wildcard = tag=='*';
 	tag = wildcard ? tag.toLowerCase() : tag;
@@ -13,10 +13,10 @@ function addProcessor(tag,attr,handler,delegate)
 		actions[tag]=found;
 	}
 	var isExpr = attr.indexOf('=') > 0;
-	found.push({tag:tag,wildcard:wildcard,attr:attr,expr:isExpr,fn:handler,delegate:delegate});
+	found[priority?'unshift':'push']({tag:tag,wildcard:wildcard,attr:attr,expr:isExpr,fn:handler,delegate:delegate});
 	var expr = tag + '[' + (!isExpr ? '@' : '') + attr + ']';
-	App.selectors.push(expr);
-	if (delegate) App.delegateCompilers.push(expr);
+	App.selectors[priority?'unshift':'push'](expr);
+	if (delegate) App.delegateCompilers[priority?'unshift':'push'](expr);
 }
 
 function getTagName(el)
@@ -32,7 +32,7 @@ function getTagName(el)
 	return element.nodeName.toLowerCase();
 }
 
-function iterateActions(f,el,tag,state)
+function iterateProcessors(f,el,tag,state)
 {
 	if (f)
 	{
@@ -59,6 +59,7 @@ function iterateActions(f,el,tag,state)
 					if (r && this.delegate) delegateCompile = true;
 				}
 			}
+			if (delegateCompile) return false;
 		});
 		return delegateCompile; 
 	}
@@ -89,15 +90,15 @@ function regCSSAction(name,key,value)
 	});
 }
 
-App.executeActions = function(el,state)
+App.runProcessors = function(el,state)
 {
 	var tag = getTagName(el);
-	var r1 = iterateActions(actions[tag],el,tag,state);
-	var r2 = iterateActions(actions['*'],el,tag,state);
+	var r1 = iterateProcessors(actions[tag],el,tag,state);
+	var r2 = iterateProcessors(actions['*'],el,tag,state);
 	return !(r1 || r2);
 };
 
-App.reg = function(name,el,handler,delegateCompile)
+App.reg = function(name,el,handler,delegateCompile,priority)
 {
 	if (typeof(el)=='string')
 	{
@@ -106,7 +107,7 @@ App.reg = function(name,el,handler,delegateCompile)
 
 	$.each(el,function()
 	{
-		addProcessor(this,name,handler,delegateCompile);
+		addProcessor(this,name,handler,delegateCompile,priority);
 	});
 };
 
@@ -158,7 +159,6 @@ App.regAction = function(name,fn,dontparse)
 			$.fn[fnName] = function(params)
 			{
 				var r = fn.call(this,params||{});
-				$.info('triggering '+fnName+' for '+this.attr('id'));
 				this.trigger(fnName); // trigger an event when action is invoked
 				if (typeof(r)!='undefined') return r;
 				return this;

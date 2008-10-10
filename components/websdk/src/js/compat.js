@@ -880,7 +880,6 @@ if (typeof($$)=='undefined')
 		addTrash: function(fn)
 		{
 			//FIXME
-			//$.error('addTrash not implemented');
 		},
 		destroyContent:function()
 		{
@@ -1004,16 +1003,27 @@ if (typeof($$)=='undefined')
 				}
 			};
 		},
-		handleCondition: function(clause)
+		handleCondition: function(id,cond,action,elseaction,delay,ifCond)
 		{
-			$.info('handleCondition called with '+clause)
-			//FIXME
-			//Appcelerator.Compiler.handleCondition(child, open, 'function['+scriptcode+']', null, 0, null);
+			$.info('handleCondition for '+id+', cond='+cond+',action='+action);
+			var p = App.extractParameters(action);
+			var ep = elseaction ? App.extractParameters(elseaction) : null;
+			var param = 
+			{
+				cond: cond,
+				action: p.name,
+				actionParams: p.params,
+				elseAction: ep ? ep.name : null,
+				elseActionParams: ep ? ep.params : null,
+				delay: delay,
+				ifCond: ifCond,
+				state: null
+			};
+			App.processCond(el(id),param);
 		},
 		fireCustomCondition: function(id,name,params)
 		{
-			$.error("fire custom condition called with "+id+", name="+name);
-            //Appcelerator.Compiler.fireCustomCondition(id, 'shade', {'id': id});
+			executeConditionHandler(id,name,params);
 		}
 	};
 	
@@ -1448,6 +1458,7 @@ if (typeof($$)=='undefined')
 		fireWidgetCondition: function(id, name, data)
 		{
 			$.error('fireWidgetCondition id = '+id+', name = '+name);
+			executeConditionHandler(id,name,data);
 		}
 	};
 
@@ -1609,8 +1620,6 @@ if (typeof($$)=='undefined')
 				return;
 			}
 			
-			$.info('parameters = '+$.toJSON(opts));
-			
 			var onexpr = el.attr('on');
 			var fieldset = el.attr('fieldset');
 			var ins = factory.buildWidget(el.get(0),opts);
@@ -1648,13 +1657,6 @@ if (typeof($$)=='undefined')
 				new Insertion.Before(el,html);
 			}
 			
-			App.setData(id,{
-				'type':'widget',
-				'widget':factory,
-				'parameters':opts,
-				'element': el
-			});
-			
 			Element.remove(el);
 
 			var newEl = el;
@@ -1677,6 +1679,13 @@ if (typeof($$)=='undefined')
 			if (onexpr) e.attr('on',onexpr);
 			if (fieldset && !e.attr('fieldset')) e.attr('fieldset',fieldset);
 
+			// set private data for the widget so we can later use it
+			App.setData(id,{
+				'type':'widget',
+				'widget':factory,
+				'parameters':opts,
+				'element': e
+			});
 			
 			if (ins.compile)
 			{
@@ -1688,10 +1697,68 @@ if (typeof($$)=='undefined')
 				$(newEl).compileChildren(state,false);
             }
 
+			if (!remove)
+			{
+				// run processors since we initially don't run any processors for a widget
+				App.runProcessors(newEl,state);
+			}
+			
 			if (!remove) newEl.visible();
 			App.checkState(state,newEl);
 		}
 	}
+	
+	var widgetConditionHandlers = {};
+	
+	function registerConditionHandler (id,meta)
+	{
+		var key = id + '_' + meta.cond;
+		var handlers = widgetConditionHandlers[key];
+		if (!handlers)
+		{
+			handlers = [];
+			widgetConditionHandlers[key] = handlers;
+		}
+		handlers.push(meta);
+	}
+	
+	function executeConditionHandler(id,cond,params)
+	{
+		var key = id + '_' + cond;
+		var handlers = widgetConditionHandlers[key];
+		if (handlers)
+		{
+			var scope = $('#'+id);
+			params = params || {};
+			if (!params.event) params.event = {id:id};
+			for (var c=0;c<handlers.length;c++)
+			{
+				var meta = handlers[c];
+				App.triggerAction(scope,params,meta);
+			}
+		}
+	}
+	
+	App._processCond = App.processCond;
+	App.processCond = function(el,info)
+	{
+		var id = el.attr('id');
+		var entry = App.getData(id);
+		if (entry)
+		{
+			var conds = entry.widget.getConditions();
+			if (conds)
+			{
+				if (conds.indexOf(info.cond)!=-1)
+				{
+					// cool, it's a widget condition - just let 'er through
+					registerConditionHandler(id,info);
+					return;
+				}
+			}
+		}
+		return App._processCond(el,info);
+	};
 	
 	App.reg('nodeName~=APP','*',function(tag,state)
 	{
@@ -1707,7 +1774,7 @@ if (typeof($$)=='undefined')
 			return true;
 		}
 		return false;
-	},true);
+	},true,true);
 	
 	// Message Broker mapping
 	window.$MQ = function (name,opts,scope,version)
@@ -2250,6 +2317,6 @@ if (typeof($$)=='undefined')
 //
 // - WEM
 // - interceptors for ServiceBroker (perfStats stuff)
-// -
-
+// - Appcelerator.Compiler.registerCustomAction
+// 
 

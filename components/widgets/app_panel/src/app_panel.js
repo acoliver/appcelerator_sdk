@@ -170,7 +170,6 @@ Appcelerator.Widget.Panel =
     },
     shade: function(id,parameters,data,scope,version)
     {
-	$.error("shade called with "+arguments.length+", first="+id)
         var shadeButton = $(id + "_shade");
         if(shadeButton)
         {
