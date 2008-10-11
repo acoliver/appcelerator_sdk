@@ -28,5 +28,6 @@ $.fn.on = function(value,state)
 		};
 		App.processCond(el,param);
 	});
+	return this;
 };
 

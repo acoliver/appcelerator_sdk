@@ -23,12 +23,24 @@ function TrackStat (evt,extra)
 		_sending = false;
 	}
 };
+var errorCount = 0;
+var errorMax = 5;
 window.onerror = function(msg,url,line)
 {
 	// refuse to track our own errors
 	if (_sending) return;
 	try
 	{
+		if (url && url.indexOf(staturi)!=-1)
+		{
+			// don't let tracker errors be a problem either
+			return;
+		}
+		if (errorCount++ > errorMax)
+		{
+			// refuse to send more than errorMax
+			return;
+		}
 		// squash this event... an event object not an error and we can safely ignore
 		if (!url && !line && typeof(msg)=='object' && typeof(msg.stopPropagation)=='function')
 		{

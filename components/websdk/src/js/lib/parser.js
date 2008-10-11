@@ -1153,6 +1153,7 @@ var ONE_YEAR = 31536000000;
 
 App.timeFormat = function(value)
 {
+	if (typeof(value)=='number') return value;
 	var str = '';
 	var time = 0;
 

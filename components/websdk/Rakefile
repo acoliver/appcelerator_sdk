@@ -212,7 +212,7 @@ END_LICENSE
 end
 
 task :test => [:default] do
-  #copy_tests("#{BUILD_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
+  copy_tests("#{BUILD_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
   copy_tests("#{BUILD_DIR}/test/appunit", "#{STAGE_DIR}/appunit")
   #copy_tests("#{BUILD_DIR}/test/performance", "#{STAGE_DIR}/performance")
 end

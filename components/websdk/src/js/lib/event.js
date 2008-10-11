@@ -7,16 +7,15 @@ function evtRegex(name)
 
 
 // register event handlers
-$.each(events,function()
-{
-	var name = $.string(this);
-	App.regAction(evtRegex(name),function(params)
-	{
-		var target = getTarget(params,this);
-		return target[name].call(target);
-	});
-
-});
+// $.each(events,function()
+// {
+// 	var name = $.string(this);
+// 	App.regAction(evtRegex(name),function(params)
+// 	{
+// 		var target = getTarget(params,this);
+// 		return target[name].call(target);
+// 	});
+// });
 
 App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 {
@@ -27,7 +26,8 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 		cond = cond.substring(0,cond.length-1);
 		stop = true;
 	}
-	$(this).bind(cond,function(e)
+	$.info('binding '+cond+' to '+this.attr('id'));
+	this.bind(cond,function(e)
 	{
 		var scope = $(this);
 		var data = App.getFieldsetData(scope);
@@ -44,7 +44,7 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 
 App.regCond(/^compiled$/,function(meta)
 {
-	$(this).bind('compiled',function()
+	this.bind('compiled',function()
 	{
 		var scope = $(this);
 		var data = {event:{id:$(this).attr('id')}};
