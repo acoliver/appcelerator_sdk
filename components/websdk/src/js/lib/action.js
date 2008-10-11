@@ -68,6 +68,7 @@ function iterateProcessors(f,el,tag,state)
 
 function getTarget(params,t)
 {
+	if (!params) return t;
 	if (params.target)
 	{
 		return $(params.target)
@@ -79,13 +80,16 @@ function regCSSAction(name,key,value)
 {
 	App.regAction(evtRegex(name),function(params)
 	{
-		if (typeof(key)=='function')
+		$.fn[name] = function(o)
 		{
-			return key.call(getTarget(params,this),params);
-		}
-		else
-		{
-			return getTarget(params,this).css(key,value||name);
+			if (typeof(key)=='function')
+			{
+				return key.call(getTarget(o,this),o);
+			}
+			else
+			{
+				return getTarget(o,this).css(key,value||name);
+			}
 		}
 	});
 }
@@ -141,13 +145,34 @@ App.regAction = function(name,fn,dontparse)
 {
 	dontparse = typeof(dontparse)=='undefined' ? false : (dontparse===true);
 
-	$.debug('adding action ' + name+', dontparse = '+dontparse)
+	$.debug('adding action ' + name+', dontparse = '+dontparse);
 	
 	var m = actionRE.exec(String(name));
 	if (m && m.length > 1 || typeof(name)=='string')
 	{
 		var fnName = m.length > 1 ? m[1] : name;
 		if (dontparse) actionUnparsers[fnName]=1;
+		var f = $.fn[fnName];
+		if (typeof(f)!='function')
+		{
+			//FIXME
+			//throw "attempt to register action which doesn't have a registered plugin with same name: "+fnName;
+		}
+		if (f)
+		{
+			// remap it
+			var mapFnName = '_'+fnName;
+			$.fn[mapFnName] = f;
+			$.fn[fnName] = function()
+			{
+				if (!f) return; //FIXME
+				var r = f.apply(this,arguments);
+				this.trigger(fnName); // trigger an event when action is invoked
+				return r || this;
+			};
+		}
+		
+		/*
 		if (typeof($.fn[fnName])!='function' && /\w/.test(fnName))
 		{
 			$.debug('registering plugin '+fnName);
@@ -163,7 +188,7 @@ App.regAction = function(name,fn,dontparse)
 				if (typeof(r)!='undefined') return r;
 				return this;
 			};
-		}
+		}*/
 	}
 	regp.ractions.push({re:name,fn:fn,dontparse:dontparse});
 };
@@ -184,6 +209,7 @@ App.makeCustomAction=function(el,value)
 
 App.invokeAction=function(name,data,params)
 {
+	$.debug("invokeAction called with "+name);
 	var scope = this;
 	var found = false;
 	$.each(regp.ractions,function()
@@ -230,7 +256,7 @@ App.invokeAction=function(name,data,params)
 	});
 	if (!found)
 	{
-		var fn = $(this)[name];
+		var fn = typeof(name)=='function' ? name : $(this)[name];
 		if (fn)
 		{
 			var newparams = params || {};
@@ -324,3 +350,18 @@ App.dynregAction = function(actions)
 		});
 	});
 };
+
+
+function convertParams(params)
+{
+	if (arguments.length == 2 && typeof(params)=='string')
+	{
+		// allow $('div').set('background-color','blue');
+		var key = arguments[0];
+		var value = arguments[1];
+		params = {
+			key: value
+		};
+	}
+	return params;
+}

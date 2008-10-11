@@ -1,6 +1,7 @@
-App.regAction(evtRegex('disable'),function(params)
+$.fn.disable = function()
 {
-	var target = getTarget(params,this);
-	target.attr('disabled',true);
-	return this;
-});
+	$.each(this,function(idx)
+	{
+		$(this).attr('disabled',true);
+	});
+};

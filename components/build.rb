@@ -215,15 +215,15 @@ COMPRESS_RB = "ruby \"#{CWD}/websdk/lib/compress.rb\""
 
 
 def compress_fail(src,tf)
-  if VERBOSE
+  if tf
     $stderr.puts File.read(tf)
     $stderr.puts
-    $stderr.puts "source of file was: \n\n#{src}"
   end
+  $stderr.puts "source of file was: \n\n#{src}"
   fail("Syntax error in websdk source, unable to compress")
 end
 
-def compress_and_mangle(code,type=:js)
+def compress_and_mangle(file,code,type=:js)
   
   if code.strip.length == 0
     return ''
@@ -242,20 +242,15 @@ def compress_and_mangle(code,type=:js)
 
   error_temp_file = "#{path}.err"
 
-  if VERBOSE or is_win32
+#  if VERBOSE or is_win32
+  if is_win32
     suppress_output = ""
   else
     suppress_output = ">#{to_path error_temp_file} 2>&1"
   end
   
-  call_command("#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}") || compress_fail(filein,error_temp_file)
-  if type == :js
-    #call_command("#{COMPRESS_RB} \"#{fileout}\" \"#{fileout}2\" #{suppress_output}") || compress_fail(fileout,error_temp_file)
-    #File.read("#{fileout}2")
-    File.read("#{fileout}")
-  else
-    File.read("#{fileout}")
-  end
+  call_command("#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}") || compress_fail(file,error_temp_file)
+  File.read("#{fileout}")
 end
 
 
@@ -278,7 +273,7 @@ def compress_js_in_zip(zf)
     files.each do |f|
       js = z.read(f)
       type = (f.name =~ /\.js$/) ? :js : :css
-      jsout = compress_and_mangle(js,type)
+      jsout = compress_and_mangle(f.name,js,type)
       FileUtils.rm_rf path if File.exists? path
       jf = File.open(path,'w+')
       jf.write jsout

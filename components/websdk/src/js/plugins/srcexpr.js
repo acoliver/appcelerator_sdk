@@ -1,20 +1,15 @@
-App.reg('srcexpr','img',function(value,state)
+
+$.fn.srcexpr = function(value)
 {
-	var img = $(this).get(0);
-	try
+	var srcvalue = eval($.unescapeXML(value));
+	if (AppC.UA.IE6)
 	{
-		var srcvalue = eval(String.unescapeXML(value));
-		if (Appcelerator.Browser.isIE6)
-		{
-			img.onload = function()
-			{
-				img.addBehavior(Appcelerator.Core.getModuleCommonDirectory() + '/images/appcelerator/iepngfix.htc');
-			};
-		}
-		img.src = srcvalue;
+		//FIXME
+		// img.onload = function()
+		// {
+		// 	img.addBehavior(AppC.compRoot + '/images/appcelerator/iepngfix.htc');
+		// };
 	}
-	catch(e)
-	{
-		Appcelerator.Compiler.handleElementException(img, e, 'setting img srcexpr using expression = ' + value);
-	}
-});
+	$(this).get(0).src = srcvalue;
+	return this;
+};

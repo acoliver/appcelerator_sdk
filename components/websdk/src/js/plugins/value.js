@@ -1,15 +1,16 @@
-App.regAction(evtRegex('value'),function(params,name,data)
+$.fn.value = function(object,property,defValue)
 {
-	var target = getTarget(params,this);
-	var value = $.getNestedProperty(params,data,data);
+	var value = $.getNestedProperty(object,property,defValue);
 	
-	if (target.is(':input'))
+	if (this.is(':input'))
 	{
-		target.val(value);
+		this.val(value);
 	}
 	else
 	{
-		target.html(value);
+		this.html(value);
 	}
-},true);
+	
+	return this;
+};
 

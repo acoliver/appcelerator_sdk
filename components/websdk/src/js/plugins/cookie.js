@@ -99,11 +99,5 @@ $.cookie = function(name, value, options) {
     }
 };
 
-//
-// create a plugin/action
-//
-App.regAction(evtRegex('cookie'),function(params)
-{
-	$.cookie(params.name,params.value,params);
-});
-
+// alias it
+$.fn.cookie = $.cookie;

@@ -1,4 +1,3 @@
-
 var cssProperties = [
 	'border', 'padding', 'margin', 'color', 'cursor', 'font', 'fontFamily', 'visibility', 'position', 'overflow', 'filter', 'display', 
 	'backgroundColor', 'backgroundPosition', 'backgroundAttachment', 'borderBottomColor', 'borderBottomStyle', 
@@ -11,112 +10,114 @@ var cssProperties = [
 	'outlineWidth', 'paddingBottom', 'paddingLeft', 'paddingRight', 'paddingTop',
 	'right', 'textIndent', 'top', 'width', 'wordSpacing', 'zIndex'];
 
-//
-// create a plugin/action for set
-//
-App.regAction(evtRegex('set'),function(params)
+
+$.fn.set = function(params)
 {
-	var target = getTarget(params,this);
-	var el = target.get(0);
-	var tag = App.getTagname(el);
+	params = convertParams(params);
 	
-	for (var p in params)
+	$.each(this,function()
 	{
-		switch(p)
+		var target = $(this);
+		var tag = App.getTagname(this);
+		
+		for (var p in params)
 		{
-			case 'id':
-			case 'event':
+			switch(p)
 			{
-				break;
-			}
-			case 'class':
-			case 'className':
-			{
-				target.attr('class',params[p]);
-				break;
-			}
-			case 'style':
-			{
-				//ex: set[style=foo:bar;]
-				$.each(params[p].split(';'),function()
+				case 'id':
+				case 'event':
 				{
-					var t = this.split(':');
-					if (t && t.length > 1)
-					{
-						target.css(t[0],t[1]);
-						return;
-					}
-				});
-				break;
-			}
-			case 'href':
-			{
-				switch(tag)
+					break;
+				}
+				case 'class':
+				case 'className':
 				{
-					case 'a':
-					case 'link':
+					target.attr('class',params[p]);
+					break;
+				}
+				case 'style':
+				{
+					//ex: set[style=foo:bar;]
+					$.each(params[p].split(';'),function()
 					{
-						target.attr('href',URI.absolutizeURI(params[p],AppC.docRoot));
-						break;
+						var t = this.split(':');
+						if (t && t.length > 1)
+						{
+							target.css(t[0],t[1]);
+							return;
+						}
+					});
+					break;
+				}
+				case 'href':
+				{
+					switch(tag)
+					{
+						case 'a':
+						case 'link':
+						{
+							target.attr('href',URI.absolutizeURI(params[p],AppC.docRoot));
+							break;
+						}
 					}
 				}
-			}
-			case 'src':
-			{
-				switch(tag)
+				case 'src':
 				{
-					case 'iframe':
-					case 'script':
-					case 'image':
+					switch(tag)
 					{
-						var onload = target.attr('onloaded');
-					    if (onload)
-					    {
-							var done = false;
-							el.onload = el.onreadystatechange = function()
-							{
-								if ( !done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete"))
+						case 'iframe':
+						case 'script':
+						case 'image':
+						{
+							var onload = target.attr('onloaded');
+						    if (onload)
+						    {
+								var done = false;
+								el.onload = el.onreadystatechange = function()
 								{
-									done = true;
-									target.pub(onload,{source:{id:el.id}},target.attr('scope'));
-									el.onload = null;
+									if ( !done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete"))
+									{
+										done = true;
+										target.pub(onload,{source:{id:el.id}},target.attr('scope'));
+										el.onload = null;
+									}
 								}
+					        }
+							if (AppC.UA.opera)
+							{
+	    				        el.location.href = URI.absolutizeURI(params[p],AppC.docRoot);
 							}
-				        }
-						if (AppC.UA.opera)
-						{
-    				        el.location.href = URI.absolutizeURI(params[p],AppC.docRoot);
+							else
+							{
+								el.src = URI.absolutizeURI(params[p],AppC.docRoot);
+							}
+							break;
 						}
-						else
+						default:
 						{
-							el.src = URI.absolutizeURI(params[p],AppC.docRoot);
+							target.attr(p,params[p]);
+							break;
 						}
-						break;
 					}
-					default:
+					break;
+				}
+
+				default:
+				{
+					// check to see if a css property
+					if (cssProperties.indexOf(p)!=-1 || cssProperties.indexOf($.camel(p))!=-1)
+					{
+						target.css(p,params[p]);
+					}
+					// set it as an attribute
+					else
 					{
 						target.attr(p,params[p]);
-						break;
 					}
-				}
-				break;
-			}
-
-			default:
-			{
-				// check to see if a css property
-				if (cssProperties.indexOf(p)!=-1 || cssProperties.indexOf($.camel(p))!=-1)
-				{
-					target.css(p,params[p]);
-				}
-				// set it as an attribute
-				else
-				{
-					target.attr(p,params[p]);
 				}
 			}
 		}
-	}
-	return this;
-});
+	});
+};
+
 

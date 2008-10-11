@@ -327,7 +327,7 @@ $(document).ready(function()
 		compileFinished = new Date;
 		loadTime = compileFinished - started;
 		compileTime = compileFinished - compileStarted;
-
+	
 		$.info(AppC.Copyright);
 		$.info(AppC.LicenseMessage);
 		$.info('loaded in ' + (loadTime) + ' ms, compiler took ~'+(compileTime)+' ms');

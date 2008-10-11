@@ -1,21 +1,34 @@
-App.regAction(evtRegex('binded'),function(params)
+
+var oldBind = $.fn.bind;
+
+$.fn.bind = function()
 {
-	var target = getTarget(params,this);
-	var fieldset = $(target).attr('fieldset');
-	if (!fieldset)
+	if (arguments.length > 1)
 	{
-		$.error('bind action requires fieldset attribute');
-		return this;
+		// jQuery bind
+		return oldBind.apply(this,arguments);
 	}
-	
-	var fields = this.find('[fieldset='+fieldset+']');
-	$.each(fields, function()
+	else
 	{
-		var fieldId = this.getAttribute('name') || this.getAttribute('id');
-		var fieldData = $.getNestedProperty(params,name,null)
-		$(this).value(params,fieldId,fieldData)
-	});
-	
+		var obj = arguments[0];
+		$.each(this,function(idx)
+		{
+			var t = $(this).get(idx);
+			$.each($(t).children(),function()
+			{
+				var child = $(this);
+				var name = child.attr('name');
+				var value = name ? obj[name] : obj[child.attr('id')];
+				if (value)
+				{
+					//REVIEW: value?
+					child.val(value);
+				}
+			});
+		});
+	}
 	return this;
-});
+};
+
+
 

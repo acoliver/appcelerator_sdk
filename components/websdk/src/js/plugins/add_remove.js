@@ -1,47 +1,50 @@
-$.each(['add','remove'],function()
-{
-	App.regAction(evtRegex(this),function(params,name)
-	{
-		var target = getTarget(params,this);
+var currentAddFn = $.fn.add;
 
-		for (var p in params)
+$.fn.add = function(prop,value)
+{
+	if (arguments.length == 2 && typeof(prop)=='string')
+	{
+		$.each(this,function()
 		{
-			switch(p)
+			switch(prop)
 			{
-				case 'id':
-				case 'event':
-				{
-					break;
-				}
 				case 'class':
 				case 'className':
 				{
-					if (name == 'add')
-					{
-						target.addClass(params[p]);						
-					}
-					else
-					{
-						target.removeClass(params[p]);					
-					}
+					$(this).addClass(prop,value);
 					break;
 				}
 				default:
 				{
-					if (name == 'add')
-					{						
-						target.attr(p,params[p]);
-					}
-					else
-					{
-						target.removeAttr(p);
-					}
-					break;
+					$(this).attr(prop,value);
 				}
 			}
-		}
+		});
 		return this;
+	}
+	else
+	{
+		return currentAddFn.apply(this,arguments);
+	}
+};
+
+$.fn.remove = function(prop)
+{
+	$.each(this,function()
+	{
+		switch(prop)
+		{
+			case 'class':
+			case 'className':
+			{
+				$(this).removeClass(prop);
+				break;
+			}
+			default:
+			{
+				$(this).removeAttr(prop);
+			}
+		}
 	});
-
-});
-
+	return this;
+};

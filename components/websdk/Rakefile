@@ -69,11 +69,14 @@ END_LICENSE
   Dir["#{js_source}/lib/*.js"].each do |f|
     jslite_prefiles << f unless jslite_prefiles.include? f
   end
+  jslite_prefiles.delete_if {|f| File.basename(f)=='action_adapters.js' }
+
   Dir["#{js_source}/plugins/*.js"].each do |f|
     jslite_prefiles << f unless jslite_prefiles.include? f
   end
   jslite_prefiles.delete_if {|f| f=~/_action\.js$/ or f=~/-patch\.js$/ or File.basename(f)=='tracker.js'}
   
+  jslite_prefiles << "#{js_source}/lib/action_adapters.js"
   jslite_prefiles << "#{js_source}/lib/tracker.js"
   jslite_prefiles << "#{js_source}/epilog.js"
   
@@ -105,7 +108,9 @@ END_LICENSE
   append_file("\n/*- The following file(s) are subject to license agreements by their respective license owners. Ends at text: END THIRD PARTY SOURCE */\n", jsdebug, true)
   thirdparty = ['jquery/jquery.js']
   thirdparty.each do |file|
+    append_file("\nif (typeof(jQuery)=='undefined'){\n", jsdebug, true)
     append_file(BUILD_DIR+'/lib/'+file, jsdebug)
+    append_file("\n}\n", jsdebug, true)
   end
   
   # patch jQuery
@@ -133,7 +138,7 @@ END_LICENSE
   if COMPRESS
     puts "Compressing appcelerator.js"
 
-    js = compress_and_mangle(File.read(jsdebug))
+    js = compress_and_mangle(jsdebug,File.read(jsdebug))
     f = File.open(jstemp,'w')
     f.write js
     f.close
@@ -142,7 +147,7 @@ END_LICENSE
     append_file(LICENSE_HEADER, jsout, true)
     append_file(jstemp, jsout)
 
-    js = compress_and_mangle(File.read(jslite))
+    js = compress_and_mangle(jslite,File.read(jslite))
     f = File.open(jslite,'w')
     f.write js
     f.close
@@ -158,7 +163,7 @@ END_LICENSE
     FileUtils.cp_r jscompat,jscompat_debug
 
     jscompt = jscompat+'.tmp'
-    js = compress_and_mangle(File.read(jscompat))
+    js = compress_and_mangle(jscompat,File.read(jscompat))
     f = File.open(jscompt,'w+')
     f.write js
     f.close
@@ -207,15 +212,17 @@ END_LICENSE
 end
 
 task :test => [:default] do
-  copy_tests("#{BUILD_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
-  copy_tests("#{BUILD_DIR}/test/performance", "#{STAGE_DIR}/performance")
+  #copy_tests("#{BUILD_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
+  copy_tests("#{BUILD_DIR}/test/appunit", "#{STAGE_DIR}/appunit")
+  #copy_tests("#{BUILD_DIR}/test/performance", "#{STAGE_DIR}/performance")
 end
 
 def copy_tests(test_src_path, test_dst_path)
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
   
-  #FileUtils.rm_r(test_dst_path, :verbose => VERBOSE) if File.exists? test_dst_path
+  puts File.expand_path(test_src_path)
+  
   cp_r(test_src_path, test_dst_path)
   FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_dst_path) # there's no svn garbage here
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
@@ -251,7 +258,7 @@ def copy_tests(test_src_path, test_dst_path)
     cp_r(file,"#{widgets_dst_path}/#{name}")
     js = File.read sf
     puts "+ compressing #{sf}" if VERBOSE
-    jsout = compress_and_mangle(js,:js)
+    jsout = compress_and_mangle(sf,js,:js)
     f = File.open(File.join(tf,"#{name}.js"),'w')
     f.write jsout
     f.close
@@ -277,7 +284,7 @@ def copy_tests(test_src_path, test_dst_path)
       js = File.read sf
       t = File.join(td,"#{aname}.js")
       puts "+ compressing #{t}" if VERBOSE
-      jsout = compress_and_mangle(js,:js)
+      jsout = compress_and_mangle(sf,js,:js)
       f = File.open(t,'w')
       f.write jsout
       f.close
@@ -306,7 +313,7 @@ def copy_tests(test_src_path, test_dst_path)
         puts "+ compressing #{tf}" if VERBOSE
         jsf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
         js = File.read tf
-        jsout = compress_and_mangle(js,:js)
+        jsout = compress_and_mangle(tf,js,:js)
         f = File.open(tf,'w')
         f.write jsout
         f.close
@@ -316,7 +323,6 @@ def copy_tests(test_src_path, test_dst_path)
       end
     end
   end
-  FileUtils.cp_r("#{BUILD_DIR}/lib/jquery/jquery.js","#{test_dst_path}/javascripts")
   FileUtils.cp_r("#{BUILD_DIR}/src/web/component_notfound.html","#{test_dst_path}")
 end
 

@@ -1,9 +1,27 @@
 
 $.each(['script','function','javascript'],function()
 {
-	App.regAction(evtRegex(this),function(params,name,data)
+	$.fn[this]=function(code,scope)
 	{
-		var fn = data.toFunction();
-		fn.call(params);
-	},true);
+		var js = code;
+		if (typeof(js)=='string')
+		{
+			js = $.toFunction(js);
+		}
+		else if (code.nodeType==1)
+		{
+			js = $.toFunction($(code).html());
+		}
+		else if (typeof(code.jquery)=='string')
+		{
+			js = $.toFunction(code.get(0).html());
+		}
+		else
+		{
+			throw "I don't know what this object is: "+(typeof(code))+" for "+$(this).attr('id');
+		}
+		js.call(scope||window);
+		return this;
+	};
 });
+

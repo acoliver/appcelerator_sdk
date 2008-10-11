@@ -1,31 +1,34 @@
 $.each(['clear','reset','clearform'],function()
 {
-	App.regAction(evtRegex(this),function(params,name,data)
+	$.fn[this] = function()
 	{
-		var target = getTarget(params,this);
-		var element = target.get(0);
-		var tag = App.getTagname(element);
-
-		switch (tag)
+		$.each(this,function()
 		{
-			case 'a':
+			var target = $(this);
+			var tag = App.getTagname(this);
+
+			switch (tag)
 			{
-			    target.attr('href','#');
-				break;
-			}
-			case 'form':
-			{
-				element.reset();
-				target.find(":input").revalidate();
-	            break;
-			}
-			default:
-			{
-				target.value('');
-				break;
-			}
-		}		
-		return this;		
-	});
+				case 'a':
+				{
+				    target.attr('href','#');
+					break;
+				}
+				case 'form':
+				{
+					this.reset();
+					target.find(":input").revalidate();
+		            break;
+				}
+				default:
+				{
+					target.val('');
+					break;
+				}
+			}		
+		});
+		return this;
+	}
 });
+
 

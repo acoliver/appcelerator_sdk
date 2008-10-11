@@ -27,7 +27,7 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 		cond = cond.substring(0,cond.length-1);
 		stop = true;
 	}
-	$(this)[cond](function(e)
+	$(this).bind(cond,function(e)
 	{
 		var scope = $(this);
 		var data = App.getFieldsetData(scope);
