@@ -45,6 +45,44 @@ $.fn.sub = function(name,fn,params)
 	return this;
 };
 
+App.normalizePub = function(name)
+{
+	var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
+	var m = re.exec(name);
+	if (!m)
+	{
+		return 'both:'+name;
+	}
+	switch(m[1])
+	{
+		case 'l':
+		case 'local':
+			return 'local:'+m[2];
+		case 'r':
+		case 'remote':
+			return 'remote:'+m[2];
+	}
+	return 'both:'+m[2];
+};
+
+App.pubQueue = function(name,data,local,scope,version)
+{
+	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
+
+ 	queue.push({
+		data:data||{},
+		name:name,
+		local:local,
+		scope:scope,
+		version:version
+	});
+
+	if (remoteDisabled && queueInit && !processingQueue)
+	{
+		processQueue();		
+	}
+};
+
 $.fn.pub = function(name,data,scope,version)
 {
 	var m = re.exec(name);
@@ -54,20 +92,8 @@ $.fn.pub = function(name,data,scope,version)
 
 	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
 	if (!isLocal && data.event) delete data.event;
-
-	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
- 	queue.push({
-		data:data||{},
-		name:m[2],
-		local:isLocal,
-		scope:scope,
-		version:version
-	});
-
-	if (remoteDisabled && queueInit && !processingQueue)
-	{
-		processQueue();		
-	}
+	
+	App.pubQueue(m[2],data,isLocal,scope,version);
 
 	return this;
 };

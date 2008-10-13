@@ -7,7 +7,6 @@ var testListener = null;
 
 $.fn.assert = function(expr)
 {
-	$.info("assert = "+expr);
 	var passed = true, error = null, stop = false;
 	if (typeof(expr)=='boolean')
 	{
@@ -52,6 +51,119 @@ $.fn.assert = function(expr)
 	return this;
 };
 
+$.fn.assertEnabled = function()
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		var v = $(this).attr('disabled');
+		if (v)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed);
+};
+
+$.fn.assertDisabled = function()
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		var v = $(this).attr('disabled');
+		if (!v)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed);
+};
+
+$.fn.assertCSS = function(key,val)
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		var v = $(this).css(key);
+		if (v!=val)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed);
+};
+
+$.fn.assertValid = function()
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		var v = $(this).data('validatorResult');
+		if (!v)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed);
+};
+
+$.fn.assertInvalid = function()
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		var v = $(this).data('validatorResult');
+		if (v)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed);
+};
+
+var oldPub = App.pubQueue;
+var lastPubType = null, lastPubData = null;
+
+// re-define to allow us to remember the last message and data payload
+// for a publish so we can assert against it
+App.pubQueue = function(name,data,local,scope,version)
+{
+	lastPubType = (local ? 'local' : 'remote') + ':' + name;
+	lastPubData = data;
+	return oldPub.apply(this,arguments);
+};
+
+$.fn.assertPub = function(name,data)
+{
+	name = App.normalizePub(name);
+	if (typeof(data)=='undefined')
+	{
+		return this.assert(lastPubType === name);
+	}
+	if (name!==lastPubType)
+	{
+		return this.assert(name===lastPubType);
+	}
+	if (!lastPubData)
+	{
+		return this.assert(false);
+	}
+	for (var key in data)
+	{
+		var v1 = lastPubData[key];
+		var v2 = data[key];
+		if (v1!==v2)
+		{
+			return this.assert(false);
+		}
+	}
+	return this.assert(true);
+};
 
 var TestGuard = function(fn,cb)
 {
