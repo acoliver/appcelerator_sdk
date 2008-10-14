@@ -13,7 +13,7 @@
 		{
 			position:relative;
 			height:50px;
-			border-bottom:1px solid #222;
+			border-bottom:1px solid #777;
 			background-color:#999;
 			color:white;
 			line-height:50px;
@@ -44,6 +44,78 @@
 			font-family:Arial;
 			margin:0;
 			padding:0;
+			color:#555;
+			font-weight:bold;
+			font-size:14px;
+		}
+		#passed
+		{
+			border:1px solid #ccc;
+			padding:2px;
+			height:14px;
+		}
+		.passed_bar
+		{
+			background-color:green;
+			float:left;
+			width:5px;
+			height:14px;
+		}
+		#failed
+		{
+			border:1px solid #ccc;
+			padding:2px;
+			height:14px;
+		}
+		.failed_bar
+		{
+			background-color:red;
+			float:left;
+			width:5px;
+			height:14px;
+		}
+		#errors
+		{
+			border:1px solid #ccc;
+			padding:2px;
+			height:14px;
+		}
+		.error_bar
+		{
+			background-color:orange;
+			float:left;
+			width:5px;
+			height:14px;
+		}
+
+		.suite_error
+		{
+			background-color:#CD9B9B !important;
+		}
+		.suite_success
+		{
+			background-color:#ddd;
+		}
+		#results_table thead td
+		{
+			padding:5px;
+			background-color:#eee;
+			border-bottom:1px solid #ccc;
+			border-top:1px solid #ccc;
+			color:#336699;
+			font-size:12px;
+			font-weight:normal;
+			padding-left:10px;
+			padding-right:10px;
+		}
+		#results_table tbody td
+		{
+			background-color:white;
+			padding:5px;
+			padding-left:10px;
+			padding-right:10px;
+			border-bottom:1px solid #ccc;
+			font-weight:normal;
 		}
 	</style>
 </head>
@@ -55,12 +127,36 @@
 
 			<select id="suites"></select>
 			<button on="click then l:run[tests=$suites]">Run Test</button>
-			<button on="click then l:run[all=true]">Run All</button>
+			<button on="click then l:run[all]">Run All</button>
 		</div>
 	</div>
 	<div id="content">
 		<div id="test_html"></div>
-		<div id="results"></div>
+		<table id="summary_table">
+			<caption style="border-top:1px solid #ccc;border-bottom:1px solid #ccc;padding:5px;width:320px">Test Results Graph</caption>
+			<tr>
+				<td valign="top">Passed:</td>
+				<td valign="middle"><div style="visibility:hidden" id="passed"></div></td>
+				<td><div id="passed_count">0</div></td>
+			</tr>
+			<tr>
+				<td>Failed:</td>
+				<td><div id="failed" style="visibility:hidden" ></div></td>
+				<td><div id="failed_count">0</div></td>
+
+			</tr>
+			<tr>
+				<td>Errors: </td>
+				<td><div id="errors" style="visibility:hidden" ></div></td>
+				<td><div id="error_count">0</div></td>
+			</tr>
+		</table>
+
+		<div id="failure_detail"></div>
+		<div id="results" style="margin-top:20px">
+			<table id="results_table" cellspacing="0" cellpadding="0">
+			</table>
+		</div>
 	</div>
 </body>
 </html>
