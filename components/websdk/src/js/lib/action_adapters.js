@@ -245,6 +245,12 @@ App.regAction(evtRegex('toggle'),function(params)
 	return getTarget(params,this).toggle(params);
 });
 
+regCSSAction('highlight',function(params)
+{
+	var bgColor = params['background-color'] || params['backgroundColor'] || '#ffffcc';
+	return getTarget(params,this).highlight(bgColor);
+});
+	
 
 App.reg('on','*',function(value,state)
 {

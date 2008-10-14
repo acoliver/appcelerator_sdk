@@ -80,16 +80,13 @@ function regCSSAction(name,key,value)
 {
 	App.regAction(evtRegex(name),function(params)
 	{
-		$.fn[name] = function(o)
+		if (typeof(key)=='function')
 		{
-			if (typeof(key)=='function')
-			{
-				return key.call(getTarget(o,this),o);
-			}
-			else
-			{
-				return getTarget(o,this).css(key,value||name);
-			}
+			key.call(getTarget(params,this),params);
+		}
+		else
+		{
+			return getTarget(params,this).css(key,value||name);
 		}
 	});
 }

@@ -10,26 +10,24 @@ var processingQueue = false;
 
 $.fn.sub = function(name,fn,params)
 {
-	var type = name;
+	name = App.normalizePub(name);
 	var regexp = null;
-	var idx = type.indexOf('[');
-	
-	if (idx > 0)
-	{
-		type = type.substring(0,idx);
-	}
-	
-	var m = re.exec(type);
-	if (!m)
-	{
-		// this is for the case of foo.bar which is equivalent to both:foo.bar (or *:foo.bar)
-		m = re.exec('both:'+type);
-	}
-	type = m[2];
+	var m = re.exec(name);
+	var type = m[2];
+
 	if (type.charAt(0)=='~')
 	{
 		type = type.substring(1);
 		regexp = new RegExp(type);
+	}
+
+	// unsub, but only if not for document
+	if (this.get(0)!=document)
+	{
+		$(this).trash(function()
+		{
+			$(this).unsub(name,fn);
+		});
 	}
 	
 	$.debug('subscribing type='+type+', regexp='+regexp);
@@ -71,6 +69,12 @@ $.fn.unsub = function(name,fn)
 
 App.normalizePub = function(name)
 {
+	var idx = name.indexOf('[');
+	if (idx > 0)
+	{
+		name = name.substring(0,idx);
+	}
+
 	var m = re.exec(name);
 	if (!m)
 	{

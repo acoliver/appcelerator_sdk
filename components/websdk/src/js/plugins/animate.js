@@ -3,11 +3,11 @@
 	// We override the animation for all of these color styles
 	jQuery.each(['backgroundColor', 'borderBottomColor', 'borderLeftColor', 'borderRightColor', 'borderTopColor', 'color', 'outlineColor'], function(i,attr){
 		jQuery.fx.step[attr] = function(fx){
-			if ( fx.state == 0 ) {
+			if (fx.state == 0 ) {
 				fx.start = getColor( fx.elem, attr );
 				fx.end = getRGB( fx.end );
 			}
-
+			
 			fx.elem.style[attr] = "rgb(" + [
 				Math.max(Math.min( parseInt((fx.pos * (fx.end[0] - fx.start[0])) + fx.start[0]), 255), 0),
 				Math.max(Math.min( parseInt((fx.pos * (fx.end[1] - fx.start[1])) + fx.start[1]), 255), 0),
@@ -23,10 +23,13 @@
 	// Parse strings looking for color tuples [255,255,255]
 	function getRGB(color) {
 		var result;
-
+		
 		// Check if we're already dealing with an array of colors
 		if ( color && color.constructor == Array && color.length == 3 )
 			return color;
+			
+		// transparent -- assume white....
+		if (color == 'transparent') return [255,255,255];
 
 		// Look for rgb(num,num,num)
 		if (result = /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/.exec(color))
@@ -53,7 +56,7 @@
 
 		do {
 			color = jQuery.curCSS(elem, attr);
-
+			
 			// Keep going until we find an element that has color, or we hit the body
 			if ( color != '' && color != 'transparent' || jQuery.nodeName(elem, "body") )
 				break; 

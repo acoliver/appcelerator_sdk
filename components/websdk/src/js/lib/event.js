@@ -5,18 +5,6 @@ function evtRegex(name)
 	return new RegExp('^'+name+'(\\[(.*)?\\])?$');
 }
 
-
-// register event handlers
-// $.each(events,function()
-// {
-// 	var name = $.string(this);
-// 	App.regAction(evtRegex(name),function(params)
-// 	{
-// 		var target = getTarget(params,this);
-// 		return target[name].call(target);
-// 	});
-// });
-
 App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 {
 	var stop = false;
@@ -26,8 +14,7 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 		cond = cond.substring(0,cond.length-1);
 		stop = true;
 	}
-	$.info('binding '+cond+' to '+this.attr('id'));
-	this.bind(cond,function(e)
+	var fn = function(e)
 	{
 		var scope = $(this);
 		var data = App.getFieldsetData(scope);
@@ -39,15 +26,25 @@ App.regCond(new RegExp('^('+events.join('|')+')[!]?$'),function(meta)
 			e.stopPropagation();
 			return false;
 		}
+	};
+	this.bind(cond,fn);
+	this.trash(function()
+	{
+		this.unbind(cond,fn);
 	});
 });
 
 App.regCond(/^compiled$/,function(meta)
 {
-	this.bind('compiled',function()
+	var fn = function()
 	{
 		var scope = $(this);
 		var data = {event:{id:$(this).attr('id')}};
 		App.triggerAction(scope,data,meta);
+	};
+	this.bind('compiled',fn);
+	this.trash(function()
+	{
+		this.unbind('compiled',fn);
 	});
 });

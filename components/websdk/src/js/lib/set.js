@@ -35,7 +35,9 @@ function createControl(el,name,opts,fn)
 
 function load(type,name,e)
 {
-	$.getScript(AppC.docRoot + 'components/'+type+'s/'+name+'/'+name+'.js',function()
+	var uri = AppC.docRoot + 'components/'+type+'s/'+name+'/'+name+'.js';
+	$.info('fetching '+uri);
+	$.getScript(uri,function()
 	{
 		var e = components.controls[name];
 		$.each(e.pend,function()
@@ -123,10 +125,9 @@ $.fn.layout = function(name,options)
 };
 
 
-$.fn.set = function(value,state)
+App.reg('set','*',function(value,state)
 {
 	var el = $(this);
-
 	var visibility = el.css('visibility') || 'visible';
 	var show = false, initial = true;
 
@@ -178,14 +179,10 @@ $.fn.set = function(value,state)
 				args[p] = App.getEvaluatedValue(args[p]);
 			}
 		}
-		$.debug('type='+type+',ui='+ui+',args='+$.toJSON(args));
+		$.info('creating component of type='+type+',ui='+ui+',args='+$.toJSON(args));
 		el[ui](type,args);
 	});
-};
 
-App.reg('set','*',function(value,state)
-{
-	$(this).set(value,state);
 },true);
 
 

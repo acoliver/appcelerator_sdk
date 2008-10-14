@@ -1,8 +1,11 @@
-regCSSAction('highlight',function(params)
+$.fn.highlight = function(bgColor)
 {
-	var bgColor = params['background-color'] || params['backgroundColor'] || '#ffffcc';
-	var curBgColor = this.css('backgroundColor');
-	this.animate({'backgroundColor':bgColor},50).animate({'backgroundColor':curBgColor},1000);
-});
-	
+	bgColor = bgColor || '#ffffcc';
+	$.each(this,function()
+	{
+		var curBgColor = $(this).css('backgroundColor');
+		$(this).animate({'backgroundColor':bgColor},50).animate({'backgroundColor':curBgColor},1000);
+	});
+	return this;
+};
 
