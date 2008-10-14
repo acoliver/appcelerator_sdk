@@ -17,12 +17,14 @@ var suites;
 
 	$(document).sub('l:run',function(data)
 	{
-		$.info('data ' + $.toJSON(data))
+		if (typeof(data.tests) != Array)
+		{
+			data.tests = [data.tests]
+		}
 		$.each(data.tests,function()
 		{
 			var currentScript = this;
 			var html = null;
-			alert(this)
 			$.get(AppC.docRoot+this,function(js)
 			{
 				$.each(suites,function()
