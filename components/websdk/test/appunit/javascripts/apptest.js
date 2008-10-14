@@ -32,7 +32,7 @@ var suites;
 					if (this.script == currentScript)
 					{
 						html = this.html;
-						return;
+						return false;
 					}
 				})
 				var loaded = false;
@@ -41,16 +41,17 @@ var suites;
 				{
 					AppC.runTests(function(test)
 					{
+						$("#results").append("<div>Starting test...</div>");
 						eval(js)
 					},
 					function(result)
 					{
 						$.info('finished '+result.passed)
+						$("#results").append("<div>Finished! "+result.passed+" passed, "+result.failed+" failed, "+result.errored+" errored</div>");
 					},
 					{
 						result: function(result)
 						{
-							$.info('result = '+result.passed);
 							var cls = result.passed ? 'passed' : result.errored ? 'errored' : 'failed';
 							var msg = !result.passed ? result.message : '';
 							$("#results").append("<div>passed: <span class='"+cls+"'>"+result.passed+"</span><div>"+msg+"</div></div>")
@@ -59,6 +60,7 @@ var suites;
 					
 				}
 				
+				$("#results").empty();
 				$('#test_html').empty();
 
 				if (html != null)
