@@ -101,6 +101,32 @@ $.fn.assertCSS = function(key,val)
 	});
 	return this.assert(passed);
 };
+$.fn.assertClass = function(className)
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		if ($(this).hasClass(className)==false)
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed)
+};
+$.fn.assertAttr = function(attr)
+{
+	var passed = true;
+	$.each(this,function()
+	{
+		if (!$(this).attr(attr))
+		{
+			passed=false;
+			return false;
+		}
+	});
+	return this.assert(passed)
+};
 
 $.fn.assertValid = function()
 {

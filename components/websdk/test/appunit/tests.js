@@ -1,8 +1,8 @@
 {
 	"suites":
 	[
-		"plugins/scripts.js",
-		"plugins/pubsub.js",
-		"plugins/after.js"
+		{script:"plugins/add_remove.js",html:"plugins/add_remove.html"},
+		{script:"plugins/pubsub.js"},
+		{script:"plugins/after.js"}
 	]
 }

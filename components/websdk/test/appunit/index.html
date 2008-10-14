@@ -9,14 +9,47 @@
 		span.passed { color: #090; }
 		span.failed { color: #900; }
 		span.errored { color: #900; font-weight: bold; }
+		#header
+		{
+			position:relative;
+			height:50px;
+			border-bottom:1px solid #222;
+			background-color:#999;
+			color:white;
+			line-height:50px;
+		}
+		#test_select
+		{
+			position:absolute;
+			top:0px;
+			left:70px;
+		}
+		#logo
+		{
+			position:absolute;
+			top:8px;
+			left:20px;
+		}
+		body
+		{
+			font-family:Arial;
+			margin:0;
+			padding:0;
+		}
 	</style>
 </head>
 <body>
-	<h1>Test Runner</h1>
-	<div>
-		<div><select multiple="true" id="suites" style="width:400px;height:50px"></select></div>
-		<div><button on="click then l:run[tests=$suites]">Run Test</button></div>
+	<div id="header">
+		<img id ="logo" src="images/appcelerator.png" st/>
+		<div id="test_select">
+			<span>Select a test:</span>
+
+			<select id="suites"></select>
+			<button on="click then l:run[tests=$suites]">Run Test</button>
+			<button on="click then l:run[all=true]">Run All</button>
+		</div>
 	</div>
+	<div id="test_html"></div>
 	<div id="results"></div>
 </body>
 </html>

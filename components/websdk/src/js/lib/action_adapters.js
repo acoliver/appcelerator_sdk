@@ -16,7 +16,7 @@ $.each(['add','remove'],function()
 				}
 				default:
 				{
-					$.fn[action](p,params[p]);
+					target[action](p,params[p]);
 					break;
 				}
 			}

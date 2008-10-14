@@ -50,7 +50,7 @@
 		Bind Tests
 	</h2>
 	<div>
-		<form on="l:bind2 then binded" fieldset="bind">
+		<form on="l:bind2 then bind" fieldset="bind">
 			<div>
 				<input type="checkbox" name="checkbox" fieldset="bind"/>checkbox
 			</div>
@@ -96,7 +96,7 @@
 		<script>
 		$(document).sub('l:fred',function()
 		{
-			$(document).pub('l:bind2',{'checkbox':true,'radio':'one','text':'text value','textarea':'textarea value','div':'div value','select':'1','multiselect':['1','3']});
+			$(document).pub('l:bind2',{'checkbox':true,'radio':'one','text':'text value','textarea':'textarea value','div':'div value','select':'1','multiselect':['1','3'],'image':'../images/deny.png'});
 		});
 
 
