@@ -2,11 +2,6 @@
 	"suites":
 	[
 		"plugins/scripts.js",
-		"plugins/scripts.js",
-		"plugins/scripts.js",
-		"plugins/scripts.js",
-		"plugins/scripts.js",
-		"plugins/scripts.js",
-		"plugins/scripts.js"
+		"plugins/pubsub.js"
 	]
 }

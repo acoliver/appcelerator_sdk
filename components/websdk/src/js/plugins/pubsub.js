@@ -45,9 +45,32 @@ $.fn.sub = function(name,fn,params)
 	return this;
 };
 
+$.fn.unsub = function(name,fn)
+{
+	name = App.normalizePub(name);
+	var match = re.exec(name);
+	if (match)
+	{
+		var array = match[1]=='remote' ? subs.remote : subs.local;
+		var type = match[2];
+		var found = [];
+		for (var c=0;c<array.length;c++)
+		{
+			var entry = array[c];
+			if (entry.name == type && entry.fn == fn)
+			{
+				found.push(c);
+			}
+		}
+		for (var c=0;c<found.length;c++)
+		{
+			array.splice(found[c],1);
+		}
+	}
+};
+
 App.normalizePub = function(name)
 {
-	var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
 	var m = re.exec(name);
 	if (!m)
 	{
@@ -278,6 +301,7 @@ function processQueue()
 		var data = queue[i].data;
 		var scope = queue[i].scope;
 		var version = queue[i].version;
+		var direction = queue[i].local ? 'local' : 'remote';
 		
 		// process subs
 		for (var j=0;j<a.length;j++)
@@ -286,7 +310,7 @@ function processQueue()
 			{
 				if (App.parseConditionCondition(a[j].params,data))
 				{
-					a[j].fn.apply(a[j].scope,[data,scope,version,name,a?'local':'remote']);
+					a[j].fn.apply(a[j].scope,[data,scope,version,name,direction]);
 				}
 			}
 		}

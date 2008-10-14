@@ -5,9 +5,14 @@ var testFailed = 0;
 var testErrored = 0;
 var testListener = null;
 
-$.fn.assert = function(expr)
+$.fn.assert = function()
 {
-	var passed = true, error = null, stop = false;
+	var passed = true, error = null, stop = false, message = String(arguments[0]), expr = arguments[0];
+	if (typeof(arguments[0])=='string' && arguments.length==2 && typeof(arguments[1])!='undefined')
+	{
+		// first is a message explanation of test failure and 2nd is the assertion
+		expr = arguments[1];
+	}
 	if (typeof(expr)=='boolean')
 	{
 		passed = expr;
@@ -41,6 +46,7 @@ $.fn.assert = function(expr)
 	var result = {
 		passed: passed,
 		expr: String(expr),
+		message: message,
 		error: error
 	};
 	testCases.push(result);
@@ -143,15 +149,15 @@ $.fn.assertPub = function(name,data)
 	name = App.normalizePub(name);
 	if (typeof(data)=='undefined')
 	{
-		return this.assert(lastPubType === name);
+		return this.assert(name+" was not correct. expected: "+name+", was: "+lastPubType,lastPubType === name);
 	}
 	if (name!==lastPubType)
 	{
-		return this.assert(name===lastPubType);
+		return this.assert(name+" was not correct. expected: "+name+", was: "+lastPubType,name===lastPubType);
 	}
 	if (!lastPubData)
 	{
-		return this.assert(false);
+		return this.assert(name+" missing data payload: "+$.toJSON(data),false);
 	}
 	for (var key in data)
 	{
@@ -159,10 +165,10 @@ $.fn.assertPub = function(name,data)
 		var v2 = data[key];
 		if (v1!==v2)
 		{
-			return this.assert(false);
+			return this.assert(name+" has incorrect data payload entry for key: "+key+", expected: "+v2+", was: "+v1,false);
 		}
 	}
-	return this.assert(true);
+	return this.assert(name,true);
 };
 
 var TestGuard = function(fn,cb)
@@ -181,9 +187,13 @@ var TestGuard = function(fn,cb)
 			fn();
 		}
 	}
-	this.assert = function(expr)
+	this.assert = function(a,b)
 	{
-		return $(document).assert(expr);
+		return $(document).assert(a,b);
+	}
+	this.assertPub = function(name,data)
+	{
+		return $(document).assertPub(name,data);
 	}
 };
 
@@ -231,11 +241,11 @@ AppC.runTests = function(begin,end,cb)
 				{
 					if (this.error)
 					{
-						$.error("ERROR: "+this.error+", test: "+this.expr);
+						$.error("ERROR: "+this.error+", message: "+this.message);
 					}
 					else
 					{
-						$.error("FAILED: "+this.expr);
+						$.error("FAILED: "+this.expr+", message: "+this.message);
 					}
 				});
 			}

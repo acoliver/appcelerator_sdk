@@ -318,7 +318,14 @@ App.triggerAction = function(scope,params,meta)
 	}
 	if (action)
 	{
-		$(scope).delay(function(){ App.invokeAction.apply(scope,[action,data,params]) },meta.delay/1000);
+		if (meta.delay > 0)
+		{
+			$(scope).delay(function(){ App.invokeAction.apply(scope,[action,data,params]) },meta.delay/1000);
+		}
+		else
+		{
+			App.invokeAction.apply(scope,[action,data,params]);
+		}
 	}
 };
 

@@ -31,7 +31,7 @@
 					{
 						$.info('result = '+result.passed);
 						var cls = result.passed ? 'passed' : result.errored ? 'errored' : 'failed';
-						var msg = !result.passed ? result.expr : '';
+						var msg = !result.passed ? result.message : '';
 						$("#results").append("<div>passed: <span class='"+cls+"'>"+result.passed+"</span><div>"+msg+"</div></div>")
 					}
 				});
