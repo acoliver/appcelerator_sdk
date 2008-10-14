@@ -8,19 +8,25 @@ var testListener = null;
 $.fn.assert = function()
 {
 	var passed = true, error = null, stop = false, message = String(arguments[0]), expr = arguments[0];
-	if (typeof(arguments[0])=='string' && arguments.length==2 && typeof(arguments[1])!='undefined')
+	if (typeof(arguments[0])=='string' && arguments.length==2)
 	{
 		// first is a message explanation of test failure and 2nd is the assertion
 		expr = arguments[1];
 	}
-	if (typeof(expr)=='boolean')
+	var type = typeof(expr);
+	if (type=='boolean')
 	{
 		passed = expr;
 		stop = true;
 	}
-	else if (typeof(expr)=='string')
+	else if (type=='string')
 	{
 		expr = $.toFunction(expr);
+	}
+	else
+	{
+		passed = typeof(expr)!='undefined' ? true : false;
+		stop = true;
 	}
 	if (!stop)
 	{
@@ -197,34 +203,58 @@ $.fn.assertPub = function(name,data)
 	return this.assert(name,true);
 };
 
-var TestGuard = function(fn,cb)
+var TestGuard = function(timeout,fn,cb)
 {
-	this.count = 0;
+	var count = 0;
+	var done = false;
+	var timer = setTimeout(function()
+	{
+		if (count!=0)
+		{
+			done=true;
+			$(document).assert('test failed because it timed out',false);
+			if (cb.timeout) cb.timeout();
+			$.error("test timed out");
+			fn();
+		}
+	},timeout);
 	this.begin = function()
 	{
-		if (cb && cb.begin) cb.begin(this.count);
-		return this.count++;
+		if (done) return;
+		count++;
+		if (cb && cb.begin) cb.begin(count);
 	}
 	this.end = function()
 	{
-		if (cb && cb.end) cb.end(this.count-1);
-		if (--this.count == 0)
+		if (done) return;
+		count--;
+		if (cb && cb.end) cb.end(count);
+		if (count == 0)
 		{
+			clearTimeout(timer);
+			done = true;
+			timer = null;
 			fn();
 		}
 	}
 	this.assert = function(a,b)
 	{
+		if (done) return;
 		return $(document).assert(a,b);
 	}
 	this.assertPub = function(name,data)
 	{
+		if (done) return;
 		return $(document).assertPub(name,data);
 	}
 };
 
-AppC.runTests = function(begin,end,cb)
+AppC.runTests = function(timeout,begin,end,cb)
 {
+	var timeout = typeof(timeout)!='number' ? 10000 : timeout;
+	begin = typeof(timeout)!='number' ? timeout : begin;
+	end = typeof(timeout)!='number' ? begin : end;
+	cb = typeof(timeout)!='number' ? end : cb;
 	testCases = [];
 	testPassed = 0;
 	testFailed = 0;
@@ -277,7 +307,7 @@ AppC.runTests = function(begin,end,cb)
 			}
 		}
 	};
-	var guard = new TestGuard(complete,cb);
+	var guard = new TestGuard(timeout,complete,cb);
 	guard.begin();
 	begin(guard);
 	guard.end();

@@ -8,7 +8,6 @@ var components =
 
 AppC.register = function(type,name,fn)
 {
-	$.debug('register ' +type+':' +name +', fn:'+fn);
 	var e = components[type+'s'][name];
 	if (!e)
 	{
@@ -17,15 +16,88 @@ AppC.register = function(type,name,fn)
 		components[type+'s'][name]=e;
 	}
 	e.factory = fn;
+	$.each(e.pend,function()
+	{
+		var instance = createControl(this.el,name,this.opts,this.fn);
+		if (!instance) $.error("framework error - instance not returned from factory for: "+name);
+		var render = instance.render;
+		var el = this.el;
+		var opts = this.opts;
+		instance.render = function()
+		{
+			if (arguments.length == 1)
+			{
+				render.apply(instance,[el,arguments[0]]);
+			}
+			else
+			{
+				render.apply(instance,arguments);
+			}
+			el.trigger('rendered',instance);
+		};
+		el.data('control',instance);
+		el.trigger('created',[instance,this.opts]);
+		$.each(instance.getAttributes(),function()
+		{
+			switch (this.type)
+			{
+				case AppC.Types.condition:
+				{
+					var name = 'on' + $.proper(this.name);
+					App.regCond(new RegExp('^('+this.name+')$'),function(meta)
+					{
+						var bindFn = function(args)
+						{
+							var scope = $(this);
+							args = args || {};
+							args.id = $(this).attr('id');
+							App.triggerAction(scope,args,meta);
+						};
+						el.bind(name,bindFn);
+						el.trash(function()
+						{
+							el.unbind(name,bindFn);
+						});
+					});
+					break;
+				}
+				case AppC.Types.action:
+				{
+					//FIXME
+					break;
+				}
+				default:
+				{
+					var v = opts[this.name] || this.defaultValue;
+					if (typeof(v)=='undefined' && !this.optional)
+					{
+						el.trigger('onError',"required property '"+this.name+"' not found or missing value");
+						//FIXME
+					}
+					opts[this.name]=v;
+				}
+			}
+		});
+		
+		// call the function callback if passed in
+		if (this.fn) this.fn.call(instance,opts);
+
+		instance.render.apply(instance,[this.el,opts]);
+	});
 };
 
 function createControl(el,name,opts,fn)
 {
 	var e = components.controls[name];
+	opts = opts || {};
 	if (e)
 	{
+		if (!e.factory)
+		{
+			e.pend.push({el:el,fn:fn,opts:opts});
+			return;
+		}
 		var instance = e.factory.create();
-		el.data('control',instance);
 		return instance;
 	}
 	e = {pend:[{el:el,fn:fn,opts:opts}],factory:null}
@@ -36,92 +108,39 @@ function createControl(el,name,opts,fn)
 function load(type,name,e)
 {
 	var uri = AppC.docRoot + 'components/'+type+'s/'+name+'/'+name+'.js';
-	$.info('fetching '+uri);
-	$.getScript(uri,function()
-	{
-		var e = components.controls[name];
-		$.each(e.pend,function()
-		{
-			var instance = createControl(this.el,name,this.opts,this.fn);
-			var render = instance.render;
-			var el = this.el;
-			var opts = this.opts;
-			instance.render = function()
-			{
-				if (arguments.length == 1)
-				{
-					render.apply(instance,[el,arguments[0]]);
-				}
-				else
-				{
-					render.apply(instance,arguments);
-				}
-			};
-			this.el.trigger('created',[instance,this.opts]);
-			$.each(instance.getAttributes(),function()
-			{
-				switch (this.type)
-				{
-					case AppC.Types.condition:
-					{
-						var name = 'on' + $.proper(this.name);
-						App.regCond(new RegExp('^('+this.name+')$'),function(meta)
-						{
-							el.bind(name,function(args)
-							{
-								var scope = $(this);
-								args = args || {};
-								args.id = $(this).attr('id');
-								App.triggerAction(scope,args,meta);
-							});
-						});
-						break;
-					}
-					case AppC.Types.action:
-					{
-						//FIXME
-						break;
-					}
-					default:
-					{
-						var v = opts[this.name] || this.defaultValue;
-						if (typeof(v)=='undefined' && !this.optional)
-						{
-							el.trigger('onError',"required property '"+this.name+"' not found or missing value");
-							//FIXME
-						}
-						opts[this.name]=v;
-					}
-				}
-			});
-			
-			instance.render.call(instance,this.el,opts);
-		});
-	});
+	$.getScript(uri);
 }
 
 $.fn.control = function(name,opts,fn)
 {
 	if (arguments.length == 0)
 	{
-		return $(this).data('control');
+		return this.data('control');
+	}
+	// 2nd argument can be the callback function, in which case
+	// we're not passing in parameters
+	if (typeof(opts)=='function')
+	{
+		fn = opts;
+		opts = {};
 	}
 	createControl($(this),name,opts,fn);
+	return this;
 };
 
 $.fn.theme = function(name,options)
 {
-
+	return this;
 };
 
 $.fn.behavior = function(name,options)
 {
-
+	return this;
 };
 
 $.fn.layout = function(name,options)
 {
-
+	return this;
 };
 
 
@@ -139,7 +158,7 @@ App.reg('set','*',function(value,state)
 
 	el.addClass('container');
 
-	el.bind('rendered',function()
+	var bindFn = function()
 	{
 		el.compileChildren(state,false);
 		if (show)
@@ -152,6 +171,11 @@ App.reg('set','*',function(value,state)
 			initial=false;
 			App.checkState(state,el);
 		}
+	};
+	el.bind('rendered',bindFn);
+	el.trash(function()
+	{
+		el.unbind('rendered',bindFn);
 	});
 	
 	$.each($.smartSplit(value,' and '),function()

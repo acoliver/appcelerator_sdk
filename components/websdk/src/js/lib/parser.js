@@ -898,6 +898,7 @@ App.getJsonTemplateVar=function(namespace,var_expr,template_var)
 var templateRE = /#\{(.*?)\}/g;
 AppC.compileTemplate = function(html,htmlonly,varname,re)
 {
+	html = html || '';
 	varname = varname==null ? 'f' : varname;
 	re = re || templateRE;
 

@@ -17,17 +17,21 @@ $.fn.trash = function(fn)
 $.fn.destroy = function()
 {
 	var scope = $(this);
+	if (!scope.attr('id')) return this; // we always add id, ignore if we don't have one
+	$.info('destroyed called = '+scope.attr('id'));
 	$.each(this,function()
 	{
-		var trash = $(this).trash();
+		var el = $(this);
+		var trash = el.trash();
 		if (trash && trash.length > 0)
 		{
 			$.each(trash,function()
 			{
 				try { this.call(scope) } catch (E) { } 
 			});
+			el.trigger('destroyed');
 		}
-		$(this).removeData('trash');
+		el.removeData('trash');
 	});
 	return this;
 };

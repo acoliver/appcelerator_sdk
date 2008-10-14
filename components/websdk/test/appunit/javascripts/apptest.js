@@ -17,37 +17,61 @@ var suites;
 
 	$(document).sub('l:run',function(data)
 	{
-		if (typeof(data.tests) != Array)
+		if (data.all)
 		{
-			data.tests = [data.tests]
+			data.tests = [];
+			$.each($("#suites").children(),function()
+			{
+				data.tests.push(this.value);
+			});
 		}
-		$.each(data.tests,function()
+		else
 		{
-			var currentScript = this;
+			data.tests = [data.tests];
+		}
+
+		$("#results").empty();
+		$('#test_html').empty();
+		
+		var currentTest = 0;
+		
+		function runNextTest()
+		{
+			if (currentTest >= data.tests.length)
+			{
+				return;
+			}
+			var currentScript = data.tests[currentTest];
 			var html = null;
-			$.get(AppC.docRoot+this,function(js)
+			var timeout = null;
+			currentTest++;
+			$.get(AppC.docRoot+currentScript,function(js)
 			{
 				$.each(suites,function()
 				{
 					if (this.script == currentScript)
 					{
 						html = this.html;
+						timeout = this.timeout;
 						return false;
 					}
 				})
+				
+				timeout = App.timeFormat(timeout||'10s');
 				var loaded = false;
 				
 				function processTests()
 				{
-					AppC.runTests(function(test)
+					AppC.runTests(timeout,function(test)
 					{
-						$("#results").append("<div>Starting test...</div>");
+						$("#results").append("<div>Starting test... "+currentScript+"</div>");
 						eval(js)
 					},
 					function(result)
 					{
-						$.info('finished '+result.passed)
 						$("#results").append("<div>Finished! "+result.passed+" passed, "+result.failed+" failed, "+result.errored+" errored</div>");
+						if (data.tests.length > 1) $("#results").append("<hr/>");
+						runNextTest();
 					},
 					{
 						result: function(result)
@@ -57,10 +81,9 @@ var suites;
 							$("#results").append("<div>passed: <span class='"+cls+"'>"+result.passed+"</span><div>"+msg+"</div></div>")
 						}
 					});
-					
 				}
 				
-				$("#results").empty();
+				if (data.tests.length==1) $("#results").empty();
 				$('#test_html').empty();
 
 				if (html != null)
@@ -78,9 +101,10 @@ var suites;
 					processTests()
 				}
 				
-				
 			},'text');
-		});
+		}
+		
+		runNextTest();
 	});
 
 })(jQuery);

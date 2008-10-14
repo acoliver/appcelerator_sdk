@@ -3,7 +3,7 @@
 
 <html>
 <head>
-	<script type="text/javascript" charset="utf-8" src="javascripts/appcelerator.js"></script>
+	<script type="text/javascript" charset="utf-8" src="javascripts/appcelerator-debug.js"></script>
 	<script type="text/javascript" charset="utf-8" src="javascripts/apptest.js"></script>
 	<style type="text/css" media="screen">
 		span.passed { color: #090; }
@@ -30,6 +30,15 @@
 			top:8px;
 			left:20px;
 		}
+		#content
+		{
+			margin:15px;
+		}
+		hr
+		{
+			margin-top:10px;
+			margin-bottom:10px;
+		}
 		body
 		{
 			font-family:Arial;
@@ -49,7 +58,9 @@
 			<button on="click then l:run[all=true]">Run All</button>
 		</div>
 	</div>
-	<div id="test_html"></div>
-	<div id="results"></div>
+	<div id="content">
+		<div id="test_html"></div>
+		<div id="results"></div>
+	</div>
 </body>
 </html>
