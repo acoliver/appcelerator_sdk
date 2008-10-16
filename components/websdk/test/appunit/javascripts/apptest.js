@@ -104,6 +104,7 @@ var suites;
 						{
 							var cls = result.passed ? 'passed' : result.errored ? 'errored' : 'failed';
 							var msg = !result.passed ? result.message : '';
+							if (msg) $("#failure_detail").append("<div class='error'>"+result.message+"</div>");
 							if (cls=='passed')
 							{
 								if ($('#passed').css('visibility') == 'hidden')$('#passed').css('visibility','visible');

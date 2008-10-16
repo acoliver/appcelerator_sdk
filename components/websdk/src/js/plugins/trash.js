@@ -41,11 +41,15 @@ var oldEmpty = $.fn.empty;
 // remap to make sure we destroy
 $.fn.empty = function()
 {
-	var set = getTargetCompileSet(this,true);
-	$.each(set,function()
+	var el = $(this).get(0);
+	if (el)
 	{
-		$(this).destroy();
-	});
+		var set = getTargetCompileSet(el,true);
+		$.each(set,function()
+		{
+			$(this).destroy();
+		});
+	}
 	return oldEmpty.apply(this,arguments);
 };
 
