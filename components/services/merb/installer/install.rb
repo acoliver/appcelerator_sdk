@@ -37,7 +37,7 @@ module Appcelerator
       unless missing_gems.empty?
         puts "Missing some required gems.  Run: "
         missing_gems.each do |required_gem,required_version|
-          puts "   gem install #{required_gem} --version #{required_version}"
+          $stderr.puts "   gem install #{required_gem} --version #{required_version}"
         end
         die "Unable to create project!"
       end
