@@ -123,12 +123,4 @@ public class AnnotationHelper
         return clz.toArray(new Class[clz.size()]);
     }
 
-    public static void main (String args[]) throws Exception
-    {
-        Class<? extends Object>[] cls=AnnotationHelper.findAnnotation(ServiceMarshaller.class);
-        for (Class<? extends Object> c : cls)
-        {
-            System.err.println(c);
-        }
-    }
 }

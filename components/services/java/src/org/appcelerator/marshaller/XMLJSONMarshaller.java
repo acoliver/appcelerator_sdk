@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.appcelerator.annotation.ServiceMarshaller;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
 import org.appcelerator.util.Util;
@@ -35,9 +34,8 @@ import org.w3c.dom.NodeList;
  * XML-JSON service marshaller for communicating with Appcelerator client.
  */
 @SuppressWarnings("unused")
-public class XMLJSONMarshaller
+public class XMLJSONMarshaller extends ServiceMarshaller
 {
-    @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.DECODE)
     public void decode (InputStream input, List<Message> messages) throws Exception
     {
         // parse the incoming XML
@@ -60,7 +58,6 @@ public class XMLJSONMarshaller
         }
     }
     
-    @ServiceMarshaller(contentTypes="text/xml",direction=ServiceMarshaller.Direction.ENCODE)
     public String encode (List<Message> messages, String sessionid, OutputStream out) throws Exception
     {
         // use the first message as a reference for the instanceid and sessiondid
