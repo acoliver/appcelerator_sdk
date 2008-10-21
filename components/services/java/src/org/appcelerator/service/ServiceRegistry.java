@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Downloadable;
-import org.appcelerator.annotation.Service;
 import org.appcelerator.locator.AnnotationBasedLocator;
 import org.appcelerator.locator.ServiceLocator;
 import org.appcelerator.locator.visitor.DispatchVisitor;
@@ -120,34 +119,6 @@ public class ServiceRegistry
             }
         }
         adapter=null;
-    }
-
-    public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance, String dispatcher) throws Exception
-    {
-        for (Method method : serviceClass.getDeclaredMethods())
-        {
-            Service serviceAnnotation = method.getAnnotation(Service.class);
-
-            if (serviceAnnotation == null)
-            {
-                continue;
-            }
-
-            if (LOG.isDebugEnabled()) LOG.debug("register service for "+serviceAnnotation.request()+" -> "+serviceClass.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
-
-            if (instance == null)
-            {
-                instance = serviceClass.newInstance();
-            }
-
-            MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
-            ServiceRegistry.registerService(adapter, unregisterIfFound);
-
-            if (registrations != null)
-            {
-                registrations.add(adapter);
-            }
-        }
     }
 
     public static void registerDownloadableMethods (Class<? extends Object> serviceClass, Object instance, boolean unregisterIfFound) throws Exception
