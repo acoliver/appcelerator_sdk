@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.AnnotationHelper;
 import org.appcelerator.annotation.Downloadable;
 import org.appcelerator.annotation.Service;
-import org.appcelerator.annotation.ServiceLocator;
 import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
 
@@ -39,29 +38,18 @@ import org.appcelerator.service.ServiceRegistry;
  * JVM classpath. It will also associate annotated methods with their corresponding
  * Spring beans.
  */
-@ServiceLocator
-public class AnnotationBasedLocator implements Locator
+public class AnnotationBasedLocator implements ServiceLocator
 {
     private static final Log LOG = LogFactory.getLog(AnnotationBasedLocator.class);
     protected List <Class<? extends Object>> candidateServices;
     protected ServletContext servletContext = null;
 
-    /**
-     * called by dispatcher manager to create an instance of this dispatcher
-     * 
-     * @return
-     */
-    public static Object createLocator() {
-        return new AnnotationBasedLocator();
+    public void setServletContext(ServletContext sc) {
+        this.servletContext = sc;        
     }
-
-    /* (non-Javadoc)
-     * @see org.appcelerator.dispatcher.Locator#initialize(javax.servlet.ServletContext)
-     */
-    public void initialize(ServletContext sc) {
+    
+    public void findServices() {
         this.candidateServices = Arrays.asList(AnnotationHelper.findAnnotation(Service.class));
-        
-        this.servletContext = sc;
         
         /* 
          * initialize Spring services first, so that they can be associated with their respective beans.
@@ -73,7 +61,7 @@ public class AnnotationBasedLocator implements Locator
          */
         initializeServices();
     }
-
+    
 
     private void initializeServices() {
         for (Class<?> service : this.candidateServices) {
@@ -193,4 +181,6 @@ public class AnnotationBasedLocator implements Locator
 
         return instance;
     }
+
+ 
 }
