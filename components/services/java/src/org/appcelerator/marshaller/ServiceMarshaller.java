@@ -31,41 +31,33 @@ import org.appcelerator.messaging.Message;
 public class ServiceMarshaller
 {
     
+
+    
     public void decode (String contentType, InputStream input, List<Message> messages) throws Exception
     {
-        ServiceMarshaller marshaller;
-        if (contentType == "text/json" || contentType == "application/json")
-        {
-           marshaller = new JSONMarshaller();
-        }
-        else if (contentType == "text/xml")
-        {
-            marshaller = new XMLJSONMarshaller();
-        }
-        else
-        {
-            throw new Exception("no deserializer for "+contentType);
-        }
-        
+        ServiceMarshaller marshaller = getMarshaller(contentType);
         marshaller.decode(contentType, input, messages);
     }
     
     public String encode (String contentType, List<Message> messages, String sessionid, OutputStream output) throws Exception
     {
-        ServiceMarshaller marshaller;
-        if (contentType == "text/json" || contentType == "application/json")
+       ServiceMarshaller marshaller = getMarshaller(contentType);
+       return marshaller.encode(contentType, messages, sessionid, output);
+    }
+    
+    public ServiceMarshaller getMarshaller(String contentType) throws Exception {
+        
+        if (contentType.equals("text/json") || contentType.equals("application/json"))
         {
-           marshaller = new JSONMarshaller();
+           return new JSONMarshaller();
         }
-        else if (contentType == "text/xml")
+        else if (contentType.equals("text/xml"))
         {
-            marshaller = new XMLJSONMarshaller();
+            return new XMLJSONMarshaller();
         }
         else
         {
-            throw new Exception("no serialized for "+contentType);
+            throw new Exception("No deserializer for " + contentType);
         }
-        
-       return marshaller.encode(contentType, messages, sessionid, output);
     }
 }
