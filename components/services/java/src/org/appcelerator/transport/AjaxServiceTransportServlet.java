@@ -168,8 +168,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             ArrayList<Message> requests=new ArrayList<Message>(1);
             ArrayList<Message> responses=new ArrayList<Message>(1);
             
-            ServiceMarshaller marshaller = new ServiceMarshaller();
-            marshaller.decode(type, req.getInputStream(), requests);
+            ServiceMarshaller.getMarshaller(type).decode(req.getInputStream(), requests);
 
             if (requests.isEmpty())
             {
@@ -224,7 +223,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             // encode the responses
             ServletOutputStream output = resp.getOutputStream();
             ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-            String responseType = marshaller.encode(type, responses, req.getSession().getId(), bout);
+            String responseType = ServiceMarshaller.getMarshaller(type).encode(responses, req.getSession().getId(), bout);
             byte buf [] = bout.toByteArray();
             ByteArrayInputStream bin = new ByteArrayInputStream(buf);
             

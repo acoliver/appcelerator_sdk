@@ -28,24 +28,12 @@ import org.appcelerator.messaging.Message;
  * encoding and decoding of service data
  */
 
-public class ServiceMarshaller
+public abstract class ServiceMarshaller
 {
+    public abstract void decode (InputStream input, List<Message> messages) throws Exception;
+    public abstract String encode (List<Message> messages, String sessionid, OutputStream in) throws Exception;
     
-
-    
-    public void decode (String contentType, InputStream input, List<Message> messages) throws Exception
-    {
-        ServiceMarshaller marshaller = getMarshaller(contentType);
-        marshaller.decode(contentType, input, messages);
-    }
-    
-    public String encode (String contentType, List<Message> messages, String sessionid, OutputStream output) throws Exception
-    {
-       ServiceMarshaller marshaller = getMarshaller(contentType);
-       return marshaller.encode(contentType, messages, sessionid, output);
-    }
-    
-    public ServiceMarshaller getMarshaller(String contentType) throws Exception {
+    public static ServiceMarshaller getMarshaller(String contentType) throws Exception {
         
         if (contentType.equals("text/json") || contentType.equals("application/json"))
         {
@@ -60,4 +48,5 @@ public class ServiceMarshaller
             throw new Exception("No deserializer for " + contentType);
         }
     }
+    
 }
