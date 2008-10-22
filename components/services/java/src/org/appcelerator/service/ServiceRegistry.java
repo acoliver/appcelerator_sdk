@@ -63,7 +63,7 @@ public class ServiceRegistry
 
     public static final void intialize(ServletContext servletContext)
     {
-        if (firstInitialized) // register the default locator
+        if (!firstInitialized) // register the default locator
         {
             ServiceRegistry.registerLocator(new AnnotationBasedLocator());
         }
@@ -73,7 +73,9 @@ public class ServiceRegistry
             locator.findServices();
         }
         
+        
         ServiceRegistry.locators.clear();
+        firstInitialized = true;
     }
     
     public static void registerLocator(ServiceLocator locator) {
