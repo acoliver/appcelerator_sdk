@@ -25,12 +25,22 @@ module Appcelerator
       puts "Creating new merb project using #{from_path}" if OPTIONS[:debug]
       
       
-      merb_gem_array = Gem.cache.search('merb-core')
-      if merb_gem_array.empty?
-        die "Unable to create project! Run 'gem install merb' first."
+      missing_gems = []
+      [["merb-core","0.9.9"],
+       ["merb-gen","0.9.9"]].each do |required_gem, required_version|
+        if Gem.cache.search(required_gem,"=#{required_version}").empty?
+          missing_gems << [required_gem,required_version]
+		  end
       end
-      
-      merb_gem_array = merb_gem_array.last
+
+      unless missing_gems.empty?
+        puts "Missing some required gems.  Run: "
+        missing_gems.each do |required_gem,required_version|
+          $stderr.puts "   gem install #{required_gem} --version #{required_version}"
+        end
+        die "Unable to create project!"
+      end
+
 
       win32 = (RUBY_PLATFORM=~/(:?mswin|mingw|win32)/)  #TODO: move this into core
       cmd =  win32 ? 'merb-gen.cmd' : 'merb-gen'
@@ -43,8 +53,8 @@ module Appcelerator
       projectname = File.basename(to_path)
       
       FileUtils.cd(File.dirname(to_path)) do
-        puts "Running: #{cmd} app #{projectname} #{cmdargs} in directory: #{File.dirname(to_path)}" if OPTIONS[:verbose]
-        system "#{cmd} app #{projectname} #{cmdargs}"
+        puts "Running: #{cmd} core #{projectname} #{cmdargs} in directory: #{File.dirname(to_path)}" if OPTIONS[:verbose]
+        system "#{cmd} core #{projectname} #{cmdargs}"
       end
 
       Installer.copy tx, "#{from_path}/merb/.", "#{to_path}", nil, true
@@ -52,9 +62,10 @@ module Appcelerator
       init = File.read "#{to_path}/config/init.rb"
       init.gsub!('# c[:session_id_key] = \'_session_id\'',"c[:session_id_key] = '_#{projectname}_session_id'")
       if not init =~ /appcelerator/
-        init.gsub!('Merb::BootLoader.after_app_loads do',"dependencies 'appcelerator'\n\nMerb::BootLoader.after_app_loads do")
+        init.sub!('Merb::BootLoader.after_app_loads do',
+                   "Merb::BootLoader.after_app_loads do\n\nrequire 'appcelerator'")
       end
-      tx.put "#{to_path}/config/init.rb", init
+ 		tx.put "#{to_path}/config/init.rb", init
       
       xml = File.read("#{from_path}/merb/public/appcelerator.xml")
       xml.gsub!(/SESSIONID/,"_#{projectname}_session_id")
