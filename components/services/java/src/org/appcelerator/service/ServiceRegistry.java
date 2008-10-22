@@ -55,6 +55,7 @@ public class ServiceRegistry
     
     /* for starting up locators which can discover services in various ways */
     private static final ArrayList<ServiceLocator> locators = new ArrayList<ServiceLocator>();
+    private static boolean firstInitialized = false;
     
     /* for storing services which the locators have discovered */
     private static final HashMap<String,Set<ServiceAdapter>> services = new HashMap<String,Set<ServiceAdapter>>();
@@ -62,18 +63,19 @@ public class ServiceRegistry
 
     public static final void intialize(ServletContext servletContext)
     {
-
-        /* clear old services -- allows initialization to occur again */
-        services.clear();
-        
-        /* register the default locator */
-        ServiceRegistry.registerLocator(new AnnotationBasedLocator());
+        if (firstInitialized) // register the default locator
+        {
+            ServiceRegistry.registerLocator(new AnnotationBasedLocator());
+        }
         
         for (ServiceLocator locator : ServiceRegistry.locators) {
             locator.setServletContext(servletContext);
             locator.findServices();
         }
+        
+        ServiceRegistry.locators.clear();
     }
+    
     public static void registerLocator(ServiceLocator locator) {
         ServiceRegistry.locators.add(locator);
     }
