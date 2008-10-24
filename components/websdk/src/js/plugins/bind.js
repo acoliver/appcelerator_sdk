@@ -10,6 +10,7 @@ $.fn.bind = function()
 	}
 	else
 	{
+		alert('foo')
 		var obj = arguments[0];
 		$.each(this,function(idx)
 		{

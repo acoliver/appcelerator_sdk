@@ -6545,6 +6545,79 @@ $.fn.cookie = $.cookie;
 
 //--------------------------------------------------------------------------------
 
+/* trash.js */
+
+$.fn.trash = function(fn)
+{
+	var trash = this.data('trash');
+	if (!trash)
+	{
+		trash = [];
+		this.data('trash',trash);
+	}
+	if (arguments.length == 0 || typeof(fn)=='undefined')
+	{
+		return trash;
+	}
+	trash.push(fn);
+	return this;
+};
+
+$.fn.destroy = function()
+{
+	var scope = $(this);
+	if (!scope.attr('id')) return this; // we always add id, ignore if we don't have one
+	$.each(this,function()
+	{
+		var el = $(this);
+		var trash = el.trash();
+		if (trash && trash.length > 0)
+		{
+			$.each(trash,function()
+			{
+				try { this.call(scope) } catch (E) { } 
+			});
+			el.trigger('destroyed');
+		}
+		el.removeData('trash');
+	});
+	return this;
+};
+
+var oldEmpty = $.fn.empty;
+
+// remap to make sure we destroy
+$.fn.empty = function()
+{
+	var el = $(this).get(0);
+	if (el)
+	{
+		var set = getTargetCompileSet(el,true);
+		$.each(set,function()
+		{
+			$(this).destroy();
+		});
+	}
+	return oldEmpty.apply(this,arguments);
+};
+
+var oldRemove = $.fn.remove;
+
+// remap to make sure we destroy
+$.fn.remove = function()
+{
+	$.each(this,function()
+	{
+		var scope = $(this);
+		scope.destroy();
+		oldRemove.call(scope);
+	});
+	return this;
+};
+
+
+//--------------------------------------------------------------------------------
+
 /* img.js */
 
 App.reg('srcexpr','img',function(params)
@@ -9880,79 +9953,6 @@ $.fn.toggle = function(params)
 
 //--------------------------------------------------------------------------------
 
-/* trash.js */
-
-$.fn.trash = function(fn)
-{
-	var trash = this.data('trash');
-	if (!trash)
-	{
-		trash = [];
-		this.data('trash',trash);
-	}
-	if (arguments.length == 0 || typeof(fn)=='undefined')
-	{
-		return trash;
-	}
-	trash.push(fn);
-	return this;
-};
-
-$.fn.destroy = function()
-{
-	var scope = $(this);
-	if (!scope.attr('id')) return this; // we always add id, ignore if we don't have one
-	$.each(this,function()
-	{
-		var el = $(this);
-		var trash = el.trash();
-		if (trash && trash.length > 0)
-		{
-			$.each(trash,function()
-			{
-				try { this.call(scope) } catch (E) { } 
-			});
-			el.trigger('destroyed');
-		}
-		el.removeData('trash');
-	});
-	return this;
-};
-
-var oldEmpty = $.fn.empty;
-
-// remap to make sure we destroy
-$.fn.empty = function()
-{
-	var el = $(this).get(0);
-	if (el)
-	{
-		var set = getTargetCompileSet(el,true);
-		$.each(set,function()
-		{
-			$(this).destroy();
-		});
-	}
-	return oldEmpty.apply(this,arguments);
-};
-// 
-// var oldRemove = $.fn.remove;
-// 
-// // remap to make sure we destroy
-// $.fn.remove = function()
-// {
-// 	$.each(this,function()
-// 	{
-// 		var scope = $(this);
-// 		scope.destroy();
-// 		oldRemove.call(scope);
-// 	});
-// 	return this;
-// };
-
-
-//--------------------------------------------------------------------------------
-
 /* value.js */
 
 $.fn.value = function(object,property,defValue)
@@ -10014,7 +10014,6 @@ App.regAction(evtRegex('cookie'),function(params)
 {
 	$.cookie(params.name,params.value,params);
 });
-
 
 App.regAction(evtRegex('disable'),function(params)
 {
@@ -10150,13 +10149,15 @@ App.regAction(evtRegex('value'),function(params,name,data)
 App.regAction(evtRegex('bind'),function(params)
 {
 	var target = getTarget(params,this);
-	var fieldset = target.attr('fieldset');
-	if (!fieldset)
-	{
-		$.error('bind action requires fieldset attribute');
-		return this;
-	}
-	this.find('[fieldset='+fieldset+']').bind(params);
+//	var fieldset = target.attr('fieldset');
+//	if (!fieldset)
+//	{
+//		$.error('bind action requires fieldset attribute');
+//		return this;
+//	}
+//	this.find('[fieldset='+fieldset+']').bind(params);
+	this.bind(params);
+
 	return this;
 });
 

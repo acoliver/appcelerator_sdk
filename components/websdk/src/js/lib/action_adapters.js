@@ -31,7 +31,6 @@ App.regAction(evtRegex('cookie'),function(params)
 	$.cookie(params.name,params.value,params);
 });
 
-
 App.regAction(evtRegex('disable'),function(params)
 {
 	return getTarget(params,this).disable();
@@ -166,13 +165,15 @@ App.regAction(evtRegex('value'),function(params,name,data)
 App.regAction(evtRegex('bind'),function(params)
 {
 	var target = getTarget(params,this);
-	var fieldset = target.attr('fieldset');
-	if (!fieldset)
-	{
-		$.error('bind action requires fieldset attribute');
-		return this;
-	}
-	this.find('[fieldset='+fieldset+']').bind(params);
+//	var fieldset = target.attr('fieldset');
+//	if (!fieldset)
+//	{
+//		$.error('bind action requires fieldset attribute');
+//		return this;
+//	}
+//	this.find('[fieldset='+fieldset+']').bind(params);
+	this.bind(params);
+
 	return this;
 });
 
