@@ -29,9 +29,12 @@ module Appcelerator
       die "Couldn't find a version of the websdk to install" unless sdk
 
       # make web folder directories
-      paths = ["javascripts", "images", "stylesheets", "swf", "widgets"]
+      sdk_path = project.get_websdk_path()
+      FileUtils.mkdir_p sdk_path unless File.exists? sdk_path
+
+      paths = ["images", "stylesheets", "swf", "widgets"]
       paths.each do |path|
-        path = project.get_web_path(path)
+        path = project.get_websdk_path(path)
         FileUtils.mkdir_p path unless File.exists? path
       end
 
@@ -59,9 +62,9 @@ module Appcelerator
       PluginManager.dispatchEvents('copy_web',event) do
 
         # TODO: make web directories configurable
-        Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_web_path("javascripts"))
-        Installer.copy(tx, "#{source_dir}/swf/.", project.get_web_path("swf"))
-        Installer.copy(tx, "#{source_dir}/common/.", project.get_web_path("widgets/common"))
+        Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_websdk_path())
+        Installer.copy(tx, "#{source_dir}/swf/.", project.get_websdk_path("swf"))
+        Installer.copy(tx, "#{source_dir}/common/.", project.get_websdk_path("widgets/common"))
 
         add_thing_options = {
           :quiet=>true,
@@ -103,8 +106,10 @@ module Appcelerator
         end
 
         if not update
-          Installer.copy(tx, "#{source_dir}/images/.", project.get_web_path("images"))
-          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_path(:web))
+          Installer.copy(tx, "#{source_dir}/images/.", project.get_websdk_path("images"))
+          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_websdk_path())
+
+
 
           widgets = Installer.find_dependencies_for(sdk) || []
 

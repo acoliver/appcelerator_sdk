@@ -142,25 +142,25 @@ module Appcelerator
         @config[:service]
     end
     def get_behavior_path(behavior)
-        get_web_path("components/behaviors/#{behavior}")
+        get_websdk_path("components/behaviors/#{behavior}")
     end
     def get_control_path(control)
-        get_web_path("components/controls/#{control}")
+        get_websdk_path("components/controls/#{control}")
     end
     def get_layout_path(layout)
-        get_web_path("components/layout/#{layout}")
+        get_websdk_path("components/layout/#{layout}")
     end
     def get_plugin_path(plugin)
         File.join(get_path(:plugins), plugin)
     end
     def get_theme_path(control_type, control, theme)
-        get_web_path("components/#{control_type}s/#{control}/themes/#{theme}")
+        get_websdk_path("components/#{control_type}s/#{control}/themes/#{theme}")
     end
     def get_widget_path(widget)
-        get_web_path("widgets/#{widget}")
+        get_websdk_path("widgets/#{widget}")
     end
     def get_widgets_path()
-        get_web_path("widgets")
+        get_websdk_path("widgets")
     end
     
     def create_project_on_disk(tx)
@@ -231,6 +231,10 @@ module Appcelerator
 
     def get_web_path(rel_path)
       File.join(@path, @config[:paths][:web], rel_path)
+    end
+
+    def get_websdk_path(rel_path="")
+      File.join(get_web_path(), "appcelerator", rel_path)
     end
 
     def save_config()
