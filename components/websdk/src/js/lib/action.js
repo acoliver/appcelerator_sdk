@@ -73,7 +73,8 @@ function getTarget(params,t)
 	{
 		return $(params.target)
 	}
-	return (params.id)?$("#" + params.id):t;
+	var nt = params.id ? $('#'+params.id) : null;
+	return nt && nt.length > 0 ? nt : t;
 }
 
 function regCSSAction(name,key,value)
@@ -293,6 +294,15 @@ App.invokeAction=function(name,data,params)
 	}
 };
 
+App.triggerElseAction = function(scope,params,meta)
+{
+	App.triggerAction(scope,params,
+	{
+		action: meta.elseAction,
+		actionParams: meta.elseActionParams,
+		delay:0
+	});
+};
 App.triggerAction = function(scope,params,meta)
 {
 	var data = meta.actionParams;
