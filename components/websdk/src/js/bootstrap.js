@@ -82,7 +82,6 @@ function queryString(uri,params)
 	return params;
 }
 
-alert("hey!");
 
 // get config parameters for app from the URI of the page
 queryString(top.window.document.location.href,AppC.params);
@@ -104,8 +103,8 @@ var documentRoot = removeLastElement(top.window.document.location.href);
 // and ensure these uris are absolute
 var jsLocation = $('script[@src~=appcelerator]').get(0).src;
 var baseLocation = $('base[@href]').attr('href');
-baseLocation = baseLocation ? URI.absolutizeURI(baseLocation, documentRoot) : undefined;
-jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : undefined;
+baseLocation = baseLocation ? URI.absolutizeURI(baseLocation, documentRoot) : "";
+jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : "";
 
 if (jsLocation)
 {
@@ -118,9 +117,9 @@ if (jsLocation)
     {
         AppC.docRoot = URI.absolutizeURI(".", AppC.sdkRoot + "..");
     }
-    else if (docHost != jsHost && baseHref) // remote js -- use base location
+    else if (docHost != jsHost && baseLocation) // remote js -- use base location
     {
-        AppC.docRoot = baseHref;
+        AppC.docRoot = baseLocation;
     }
     else
     {
