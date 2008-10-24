@@ -1,0 +1,233 @@
+body
+{
+	padding:10px;
+	padding-left:25px;
+	padding-right:25px;
+	font-family:"Bitstream Vera Sans Mono","Monaco","Lucida Sans Typewriter Regular","Courier New", Courier, monospace;
+}
+h1
+{
+	font-size:24px;
+	font-weight:bold;
+	color:#555;
+	padding-bottom:10px;
+	margin-bottom:30px;
+	margin-top:15px;
+}
+h1 span
+{
+	background-color:#ffffcc;
+	padding:10px;
+	padding-left:15px;
+	padding-right:15px;
+}
+.failed
+{
+	background-color:#CD9B9B; 
+	color:#900;
+	font-weight:bold;
+	margin-right:12px;
+}
+.passed
+{
+	background-color:#20D040;
+	color:#000;
+	font-weight:bold;
+}
+span.error
+{
+	padding-left:20px;
+	color:#900;
+	font-weight:bold;
+	background-image:url(../images/warning.png);
+	background-repeat:no-repeat;
+}
+span.count
+{
+	font-size:10px;
+}
+div.testdetail div
+{
+	float:left;
+	margin-bottom:10px;
+
+}
+div.clear 
+{
+	clear:both;
+}
+div.testresult
+{
+	width:100px;
+	padding:3px;
+	padding-left:6px;
+	margin-right:10px;
+}
+div.testdetail
+{
+	cursor:pointer;
+	clear:both;
+	
+}
+div.error_msg
+{
+	padding-left:20px;
+	color:#900;
+	font-weight:bold;
+	background-image:url(images/warning.png);
+	position:relative;
+	top:3px;
+	background-repeat:no-repeat;
+}
+div.result 
+{
+	margin:8px;
+	padding:10px;
+	background-color:#eee;
+	margin-top:0px;
+	margin-left:20px;
+	margin-bottom:20px;
+}
+div.error span.fn
+{
+	background-color:#CD9B9B !important;
+	color:#900;
+	font-weight:bold;
+}
+div.testsuite
+{
+	font-size:14px;
+	font-weight:normal;
+	min-height:20px;
+	clear:both;
+}
+div.testsuite_name
+{
+	float:left;
+	padding-top:5px;
+	
+}
+div.end_testsuite
+{
+}
+#results
+{
+	white-space: pre;
+}
+#selector
+{
+	position:absolute;
+	top:38px;
+	right:100px;
+	font-size:18px;
+}
+#selector select
+{
+	font-size:18px;
+	margin-right:20px;
+}
+#selector button
+{
+	font-size:18px;
+	width:110px;
+}
+
+div.intro
+{
+	margin-top:50px;
+	font-size:30px;
+	color:#999;
+	text-align:center;
+}
+.testcounts
+{
+	padding:5px;
+	background-color:#ccc;
+	padding-left:10px;
+	padding-right:10px;
+}
+.status_bar
+{
+	border:1px solid #ccc;
+	height:15px;
+	padding:2px;
+}
+.passed_bar
+{
+	background-color:green;
+	height:15px;
+	width:10px;
+	float:left;
+	margin-right:3px;
+	cursor:pointer;
+}
+.failed_bar
+{
+	background-color:orange;
+	height:15px;
+	width:10px;
+	float:left;
+	margin-right:3px;
+	cursor:pointer;
+
+}
+.error_bar
+{
+	background-color:red;
+	height:15px;
+	width:10px;
+	float:left;
+	margin-right:3px;
+	cursor:pointer;
+	
+}
+.test_count
+{
+	background-color:#ccc;
+	padding:5px;
+	text-align:center;
+	margin-right:5px;
+	float:left;
+	height:20px;
+	width:20px;
+	line-height:20px;
+	cursor:pointer;
+	
+}
+.passed_count
+{
+	background-color:green;
+	color:white;
+
+}
+.failed_count
+{
+	background-color:orange;
+	color:white;
+}
+.error_count
+{
+	background-color:red;
+	color:white;
+}
+
+div.logs
+{
+	margin-top:20px;
+	white-space: pre;
+	font-size:10px;
+	color:#777;
+}
+div.logs h1
+{
+	font-size:14px;
+	font-weight:bold;
+	margin-bottom:5px;
+	padding-bottom:0;
+}
+#results_table thead
+{
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	color:#336699;
+}

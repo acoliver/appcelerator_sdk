@@ -1,0 +1,10 @@
+<html>
+<head>
+	<script type="text/javascript" charset="utf-8" src="../../javascripts/appcelerator-debug.js"></script>
+</head>
+<body id="foo">
+	<button id="test1" on="click then l:foo.click">Click me</button>
+	<div on="l:foo.click then l:bar[foo=bar]"></div>
+	<div on="l:bar then value[foo]" id="bar"></div>
+</body>
+</html>
