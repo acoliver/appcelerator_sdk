@@ -96,6 +96,9 @@ App.pubQueue = function(name,data,local,scope,version)
 {
 	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
 
+	// optimize if no listeners at all
+	if (subs.local.length == 0 && subs.remote.length == 0) return;
+
  	queue.push({
 		data:data||{},
 		name:name,

@@ -101,8 +101,26 @@ App.handleBasicEffect = function(obj, action, params)
 	}
 };
 
+$.fn.appear = function()
+{
+	$.each(this,function()
+	{
+		$(this).fadeIn();
+	});
+	return this;
+};
 
-$.each(['show','hide','slideToggle','slideUp','slideDown','fadeIn','fadeOut','fadeTo','animate'],function()
+$.fn.fade = function()
+{
+	$.each(this,function()
+	{
+		$(this).fadeOut();
+	});
+	return this;
+};
+
+
+$.each(['show','hide','slideToggle','slideUp','slideDown','fadeIn','fadeOut','fadeTo','animate','appear','fade'],function()
 {
 	var name = $.string(this);
 	App.regAction(evtRegex(name),function(params)
@@ -110,7 +128,6 @@ $.each(['show','hide','slideToggle','slideUp','slideDown','fadeIn','fadeOut','fa
 		return App.handleBasicEffect(getTarget(params,this),name,params);
 	});
 });
-
 
 App.regAction(evtRegex('enable'),function(params)
 {

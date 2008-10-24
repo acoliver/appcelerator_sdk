@@ -23,9 +23,19 @@ String.specialChar = {
   '\\': '\\\\'
 };
 
+$.times = function(ch,len)
+{
+	var str = '';
+	for (var c=0;c<len;c++)
+	{
+		str+=ch;
+	}
+	return str;
+};
+
 Number.prototype.toPaddedString= function(length, radix) {
   var string = this.toString(radix || 10);
-  return '0'.times(length - string.length) + string;
+  return $.times('0',length - string.length) + string;
 };
 
 String.prototype.toJSON = function() {

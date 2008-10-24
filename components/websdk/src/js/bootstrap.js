@@ -60,7 +60,8 @@ AppC.config =
 //
 AppC.params = 
 {
-	debug: 0   /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */
+	debug: 0   /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */,
+	delayCompile: false, /* generally don't touch this unless you really know why */
 };
 
 function queryString(uri,params)
@@ -302,7 +303,7 @@ AppC.beforeCompile = function(f)
 	return AppC;
 };
 
-$(document).ready(function()
+AppC.compileDocument = function()
 {
 	var compileStarted = new Date;
 	var body = $(document.body);
@@ -337,5 +338,7 @@ $(document).ready(function()
 	var s = new state(body);
 	$(document).compile(getTargetCompileSet(),s);
 	App.checkState(s); // state starts at 1, call to dec
-});
+};
+
+if (!AppC.params.delayCompile) $(document).ready(AppC.compileDocument);
 
