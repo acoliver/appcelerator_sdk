@@ -17,9 +17,7 @@
 
 package org.appcelerator.transport;
 
-import org.appcelerator.annotation.ServiceTransport;
 
-@ServiceTransport
 public class RESTServiceTransportServlet
 {
 

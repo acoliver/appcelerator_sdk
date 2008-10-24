@@ -36,10 +36,10 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.locator.ServiceLocatorManager;
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
+import org.appcelerator.service.ServiceRegistry;
 import org.appcelerator.util.TimeUtil;
 
 
@@ -76,7 +76,7 @@ public class UploadTransportServlet extends HttpServlet
         {
             AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
         }
-        ServiceLocatorManager.intialize(config.getServletContext());
+        ServiceRegistry.intialize(config.getServletContext());
     }
 
     /**
@@ -226,7 +226,7 @@ public class UploadTransportServlet extends HttpServlet
             ArrayList<Message> responses=new ArrayList<Message>();
 			try
 			{
-	            ServiceLocatorManager.dispatch(msg,responses);
+	            ServiceRegistry.dispatch(msg,responses);
 			}
 			catch (Exception ex)
 			{

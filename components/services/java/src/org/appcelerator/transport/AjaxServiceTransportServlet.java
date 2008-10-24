@@ -35,19 +35,17 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.annotation.ServiceTransport;
-import org.appcelerator.locator.ServiceLocatorManager;
-import org.appcelerator.marshaller.ServiceMarshallerManager;
+import org.appcelerator.marshaller.ServiceMarshaller;
 import org.appcelerator.messaging.IMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageType;
+import org.appcelerator.service.ServiceRegistry;
 import org.appcelerator.util.Util;
 
 /**
  * {@link ServiceTransport} for handling incoming AJAX requests from the 
  * Appcelerator client.
  */
-@ServiceTransport
 public class AjaxServiceTransportServlet extends HttpServlet
 {
     private static final Log LOG = LogFactory.getLog(AjaxServiceTransportServlet.class);
@@ -78,7 +76,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
         }
         
-        ServiceLocatorManager.intialize(config.getServletContext());
+        ServiceRegistry.intialize(config.getServletContext());
     }
 	/**
 	 * called to indicate that the class path must be used when loading annotations instead
@@ -170,7 +168,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             ArrayList<Message> requests=new ArrayList<Message>(1);
             ArrayList<Message> responses=new ArrayList<Message>(1);
             
-            ServiceMarshallerManager.decode(type, req.getInputStream(), requests);
+            ServiceMarshaller.getMarshaller(type).decode(req.getInputStream(), requests);
 
             if (requests.isEmpty())
             {
@@ -202,7 +200,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
                     data.put("remoteuser", req.getRemoteUser());
                 }
 
-                ServiceLocatorManager.dispatch(request,responses);
+                ServiceRegistry.dispatch(request,responses);
             }
             
             if (responses.isEmpty())
@@ -225,7 +223,7 @@ public class AjaxServiceTransportServlet extends HttpServlet
             // encode the responses
             ServletOutputStream output = resp.getOutputStream();
             ByteArrayOutputStream bout = new ByteArrayOutputStream(1000);
-            String responseType = ServiceMarshallerManager.encode(type, responses, req.getSession().getId(), bout);
+            String responseType = ServiceMarshaller.getMarshaller(type).encode(responses, req.getSession().getId(), bout);
             byte buf [] = bout.toByteArray();
             ByteArrayInputStream bin = new ByteArrayInputStream(buf);
             

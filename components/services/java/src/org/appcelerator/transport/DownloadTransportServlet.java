@@ -27,9 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.locator.ServiceLocatorManager;
 import org.appcelerator.service.ServiceRegistry;
 
 /**
@@ -61,7 +59,7 @@ public class DownloadTransportServlet extends HttpServlet
         {
             AnnotationHelper.initializeAnnotationDBFromServlet(config.getServletContext());
         }
-        ServiceLocatorManager.intialize(config.getServletContext());
+        ServiceRegistry.intialize(config.getServletContext());
     }
 
     /**

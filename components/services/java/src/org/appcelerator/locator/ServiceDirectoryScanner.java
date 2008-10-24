@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +35,8 @@ import javassist.CtClass;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.appcelerator.annotation.Service;
+import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
 
@@ -275,14 +278,19 @@ public class ServiceDirectoryScanner implements Runnable
             ct.detach();
             ct=null;
 
-            try
+ 
+            Object instance = clz.newInstance();
+            for (Method method : clz.getDeclaredMethods())
             {
-                ServiceRegistry.registerServiceMethods(clz,true,registrations,null,"directoryScanner");
+                Service serviceAnnotation = method.getAnnotation(Service.class);
+                if (serviceAnnotation == null)
+                    continue;
+
+                MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
+                ServiceRegistry.registerService(adapter, true);
+                registrations.add(adapter);
             }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+
         }
     }
 

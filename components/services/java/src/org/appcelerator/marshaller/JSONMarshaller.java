@@ -29,7 +29,6 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.annotation.ServiceMarshaller;
 import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageDataObjectException;
@@ -37,13 +36,12 @@ import org.appcelerator.messaging.MessageDataObjectException;
 /**
  * Marshaller for encoding and decoding incoming/outgoing JSON messages.
  */
-public class JSONMarshaller
+public class JSONMarshaller extends ServiceMarshaller
 {
     
     private static final Log LOG = LogFactory.getLog(JSONMarshaller.class);
     
     @SuppressWarnings("unused")
-    @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.DECODE)
     public void decode (InputStream input, List<Message> messages) throws Exception
     {
         String buffer = readBuffer(input);
@@ -108,7 +106,6 @@ public class JSONMarshaller
         return message;
     }
 
-    @ServiceMarshaller(contentTypes={"text/json","application/json"},direction=ServiceMarshaller.Direction.ENCODE)
     public String encode (List<Message> messages, String sessionid, OutputStream in) throws Exception
     {
 

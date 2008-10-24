@@ -19,18 +19,21 @@
 package org.appcelerator.service;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Downloadable;
-import org.appcelerator.annotation.Service;
+import org.appcelerator.locator.AnnotationBasedLocator;
+import org.appcelerator.locator.ServiceLocator;
 import org.appcelerator.locator.visitor.DispatchVisitor;
 import org.appcelerator.locator.visitor.NullDispatchVisitor;
 import org.appcelerator.messaging.Message;
@@ -43,12 +46,42 @@ import org.appcelerator.messaging.MessageUtils;
 public class ServiceRegistry
 {
     private static final Log LOG = LogFactory.getLog(ServiceRegistry.class);
-    private static final HashMap<String,Set<ServiceAdapter>> services = new HashMap<String,Set<ServiceAdapter>>();
-    private static final HashMap<String,DownloadableAdapter> downloadables = new HashMap<String,DownloadableAdapter>();
+
     private static ServiceRegistry instance = new ServiceRegistry();
     private ServiceRegistry() {}
     public static ServiceRegistry getInstance() {return instance;}
+    
     private DispatchVisitor dispatchVisitor = new NullDispatchVisitor();
+    
+    /* for starting up locators which can discover services in various ways */
+    private static final ArrayList<ServiceLocator> locators = new ArrayList<ServiceLocator>();
+    private static boolean firstInitialized = false;
+    
+    /* for storing services which the locators have discovered */
+    private static final HashMap<String,Set<ServiceAdapter>> services = new HashMap<String,Set<ServiceAdapter>>();
+    private static final HashMap<String,DownloadableAdapter> downloadables = new HashMap<String,DownloadableAdapter>();
+
+    public static final void intialize(ServletContext servletContext)
+    {
+        if (!firstInitialized) // register the default locator
+        {
+            ServiceRegistry.registerLocator(new AnnotationBasedLocator());
+        }
+        
+        for (ServiceLocator locator : ServiceRegistry.locators) {
+            locator.setServletContext(servletContext);
+            locator.findServices();
+        }
+        
+        
+        ServiceRegistry.locators.clear();
+        firstInitialized = true;
+    }
+    
+    public static void registerLocator(ServiceLocator locator) {
+        ServiceRegistry.locators.add(locator);
+    }
+    
     /**
      * given a service type, return the services
      * 
@@ -90,34 +123,6 @@ public class ServiceRegistry
             }
         }
         adapter=null;
-    }
-
-    public static void registerServiceMethods (Class<? extends Object> serviceClass, boolean unregisterIfFound, List<ServiceAdapter> registrations, Object instance, String dispatcher) throws Exception
-    {
-        for (Method method : serviceClass.getDeclaredMethods())
-        {
-            Service serviceAnnotation = method.getAnnotation(Service.class);
-
-            if (serviceAnnotation == null)
-            {
-                continue;
-            }
-
-            if (LOG.isDebugEnabled()) LOG.debug("register service for "+serviceAnnotation.request()+" -> "+serviceClass.getName()+"."+method.getName()+" with dispatcher "+dispatcher);
-
-            if (instance == null)
-            {
-                instance = serviceClass.newInstance();
-            }
-
-            MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
-            ServiceRegistry.registerService(adapter, unregisterIfFound);
-
-            if (registrations != null)
-            {
-                registrations.add(adapter);
-            }
-        }
     }
 
     public static void registerDownloadableMethods (Class<? extends Object> serviceClass, Object instance, boolean unregisterIfFound) throws Exception
