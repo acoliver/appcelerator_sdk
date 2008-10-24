@@ -82,6 +82,8 @@ function queryString(uri,params)
 	return params;
 }
 
+alert("hey!");
+
 // get config parameters for app from the URI of the page
 queryString(top.window.document.location.href,AppC.params);
 
@@ -102,27 +104,27 @@ var documentRoot = removeLastElement(top.window.document.location.href);
 // and ensure these uris are absolute
 var jsLocation = $('script[@src~=appcelerator]').get(0).src;
 var baseLocation = $('base[@href]').attr('href');
-baseLocation = URI.absolutizeURI(baseLocation, documentRoot);
-jsLocation = URI.absolutizeURI(jsLocation, documentRoot);
+baseLocation = baseLocation ? URI.absolutizeURI(baseLocation, documentRoot) : undefined;
+jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : undefined;
 
-if (Appcelerator.jsFileLocation)
+if (jsLocation)
 {
     AppC.sdkRoot = removeLastElement(jsLocation); // parent directory of js
-    var docHost = URI.splitUriRef(documentRoot)[1]; 
+    var docHost = URI.splitUriRef(documentRoot)[1];
     var jsHost = URI.splitUriRef(jsLocation)[1];
 
     // we need to know where appcelerator.xml is located
     if (docHost == jsHost) // locally hosted
     {
-        Appcelerator.docRoot = URI.absolutizeURI(".", jsDir + "..");
+        AppC.docRoot = URI.absolutizeURI(".", AppC.sdkRoot + "..");
     }
     else if (docHost != jsHost && baseHref) // remote js -- use base location
     {
-        Appcelerator.docRoot = baseHref;
+        AppC.docRoot = baseHref;
     }
     else
     {
-        Appcelerator.docRoot = URI.absolutizeURI(".", documentRoot);
+        AppC.docRoot = URI.absolutizeURI(".", documentRoot);
     }
 }
 else
@@ -131,16 +133,14 @@ else
 }
 
 // add a slash if the path is missing one
-if (!Appcelerator.sdkPath.endsWith('/'))
+if (!AppC.sdkRoot.charAt(AppC.sdkRoot.length - 1) == '/')
 {
-    Appcelerator.sdkPath += '/';
+    AppC.sdkRoot += '/'; 
 }
-// add a slash if the path is missing one
-if (!Appcelerator.docRoot.endsWith('/'))
+if (!AppC.docRoot.charAt(AppC.docRoot.length - 1) == '/')
 {
-    Appcelerator.docRoot += '/';
+    AppC.docRoot += '/'; 
 }
-
 
 AppC.compRoot = AppC.sdkRoot + 'components/';
 AppC.pluginRoot = AppC.sdkRoot + 'plugins/';

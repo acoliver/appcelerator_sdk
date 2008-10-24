@@ -218,20 +218,21 @@ task :test => [:default] do
 end
 
 def copy_tests(test_src_path, test_dst_path)
+  test_sdk_path = "#{test_dst_path}/appcelerator"
   widgets_src_path = "#{BUILD_DIR}/../widgets"
   widgets_dst_path = "#{test_dst_path}/widgets"
   
   puts File.expand_path(test_src_path)
   
   cp_r(test_src_path, test_dst_path)
-  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_dst_path) # there's no svn garbage here
+  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_sdk_path) # there's no svn garbage here
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
-  cp_r("#{BUILD_DIR}/src/common",       "#{test_dst_path}/widgets/common")
-  cp_r("#{BUILD_DIR}/src/web/images/", "#{test_dst_path}/images/")
-  cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_dst_path}/swf/")
+  cp_r("#{BUILD_DIR}/src/common",       "#{test_sdk_path}/widgets/common")
+  cp_r("#{BUILD_DIR}/src/web/images/", "#{test_sdk_path}/images/")
+  cp_r("#{BUILD_DIR}/src/web/swf/", "#{test_sdk_path}/swf/")
 
   actions_src_path = "#{BUILD_DIR}/src/js/plugins"
-  actions_dest_path = "#{test_dst_path}/components/plugins"
+  actions_dest_path = "#{test_sdk_path}/components/plugins"
   FileUtils.mkdir_p(actions_dest_path,:verbose=>VERBOSE) unless File.exists? actions_dest_path
   
   Dir["#{actions_src_path}/*_action.js"].each do |file|
@@ -268,12 +269,12 @@ def copy_tests(test_src_path, test_dst_path)
   end  
   
   %w(controls layouts behaviors).each do |name|
-    FileUtils.mkdir_p "#{test_dst_path}/components/#{name}"
+    FileUtils.mkdir_p "#{test_sdk_path}/components/#{name}"
     Dir["#{BUILD_DIR}/../#{name}/*"].each do |file|
       next unless File.directory? file
       aname = File.basename(file)
       sf = "#{file}/#{aname}.js"
-      td = "#{test_dst_path}/components/#{name}/#{aname}/"
+      td = "#{test_sdk_path}/components/#{name}/#{aname}/"
       utf = File.join(td,"#{aname}_debug.js")
       if File.exists? utf
         a = md5 utf
@@ -302,16 +303,16 @@ def copy_tests(test_src_path, test_dst_path)
       Dir["#{BUILD_DIR}/../themes/#{type}/#{control}/*"].each do |fn|
         next unless File.directory?(fn)
         theme = File.basename(fn)
-        tf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
-        utf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}_debug.js"
+        tf = "#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
+        utf = "#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}_debug.js"
         if File.exists? utf
           md5a = md5(utf)
           md5b = md5("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/#{theme}.js")
           next if md5a == md5b
         end
-        cp_r("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/","#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}")
+        cp_r("#{BUILD_DIR}/../themes/#{type}/#{control}/#{theme}/","#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}")
         puts "+ compressing #{tf}" if VERBOSE
-        jsf = "#{test_dst_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
+        jsf = "#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
         js = File.read tf
         jsout = compress_and_mangle(tf,js,:js)
         f = File.open(tf,'w')
@@ -323,7 +324,7 @@ def copy_tests(test_src_path, test_dst_path)
       end
     end
   end
-  FileUtils.cp_r("#{BUILD_DIR}/src/web/component_notfound.html","#{test_dst_path}")
+  FileUtils.cp_r("#{BUILD_DIR}/src/web/component_notfound.html","#{test_sdk_path}")
 end
 
 namespace :selenium do 
