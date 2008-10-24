@@ -25,8 +25,15 @@ $.fn.add = function(prop,value)
 	}
 };
 
-$.fn.remove = function(prop)
+var currentRemoveFn = $.fn.remove;
+
+$.fn.remove = function(prop,value)
 {
+	if (!prop)
+	{
+		return currentRemoveFn.apply(this,arguments);
+	}
+	
 	$.each(this,function()
 	{
 		switch(prop)
@@ -34,12 +41,19 @@ $.fn.remove = function(prop)
 			case 'class':
 			case 'className':
 			{
-				$(this).removeClass(prop);
+				$(this).removeClass(value);
 				break;
 			}
 			default:
 			{
-				$(this).removeAttr(prop);
+				if ($(prop).length == 0)
+				{
+					$(this).removeAttr(prop);			
+				}
+				else
+				{
+					currentRemoveFn.apply(this, arguments);
+				}
 			}
 		}
 	});

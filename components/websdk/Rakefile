@@ -63,7 +63,7 @@ END_LICENSE
   # fix the release information in the file
   rel = build_config[:version].to_s.split('.')
  
-  PREINCLUDES = ["#{js_source}/prolog.js","#{js_source}/lib/uri.js","#{js_source}/bootstrap.js","#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/parser.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js"]
+  PREINCLUDES = ["#{js_source}/prolog.js","#{js_source}/lib/uri.js","#{js_source}/bootstrap.js","#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/parser.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js","#{js_source}/plugins]
  
   jslite_prefiles = PREINCLUDES
   Dir["#{js_source}/lib/*.js"].each do |f|

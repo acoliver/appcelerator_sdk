@@ -3859,21 +3859,6 @@ AppC.Copyright = 'Copyright (c) 2006-'+(1900+started.getYear())+' by Appcelerato
 AppC.LicenseMessage = 'Appcelerator is licensed under ' + AppC.LicenseType;
 
 
-var docRoot;
-var idx = top.window.document.location.href.lastIndexOf('/');
-if (idx == top.window.document.location.href.length - 1)
-{
-	docRoot = top.window.document.location.href;
-}
-else
-{
-    docRoot  = top.window.document.location.href.substr(0, idx);
-    if (docRoot.substring(docRoot.length - 1) != '/')
-    {
-        docRoot  = docRoot + '/';
-    }
-}
-
 //
 // these are parameters that can be set by the developer to customize appcelerator based on app needs
 //
@@ -3927,64 +3912,71 @@ function queryString(uri,params)
 	return params;
 }
 
+
 // get config parameters for app from the URI of the page
 queryString(top.window.document.location.href,AppC.params);
 
-AppC.docRoot = docRoot;
+var removeLastElement = function(uri) {
+    var idx = uri.lastIndexOf('/');
+    if (idx != 1)
+    {
+        uri = uri.substring(0, idx) + "/";
+    }
+    return uri;
+}
 
-var absRe = /file:|http(s)?:/
+// top is important such that if the JS file is in a different location (hosted)
+// than the primary document, we use the primary document's path (cross site scripting)
+var documentRoot = removeLastElement(top.window.document.location.href);
 
+// get appcelerator.js and base paths
+// and ensure these uris are absolute
 var jsLocation = $('script[@src~=appcelerator]').get(0).src;
 var baseLocation = $('base[@href]').attr('href');
+baseLocation = baseLocation ? URI.absolutizeURI(baseLocation, documentRoot) : "";
+jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : "";
 
-if (baseLocation)
+if (jsLocation)
 {
-	AppC.docRoot = baseLocation;
+    AppC.sdkRoot = removeLastElement(jsLocation); // parent directory of js
+    var docHost = URI.splitUriRef(documentRoot)[1];
+    var jsHost = URI.splitUriRef(jsLocation)[1];
+
+    // we need to know where appcelerator.xml is located
+    if (docHost == jsHost) // locally hosted
+    {
+        AppC.docRoot = URI.absolutizeURI(".", AppC.sdkRoot + "..");
+    }
+    else if (docHost != jsHost && baseLocation) // remote js -- use base location
+    {
+        AppC.docRoot = baseLocation;
+    }
+    else
+    {
+        AppC.docRoot = URI.absolutizeURI(".", documentRoot);
+    }
+}
+else
+{
+    console.error("Can't find appcelerator.js or appcelerator-debug.js");
 }
 
-if (!absRe.test(jsLocation))
+// add a slash if the path is missing one
+if (!AppC.sdkRoot.charAt(AppC.sdkRoot.length - 1) == '/')
 {
-	jsLocation = AppC.docRoot + (jsLocation.charAt(0)=='/' ? jsLocation.substring(1) : jsLocation);
+    AppC.sdkRoot += '/'; 
 }
+if (!AppC.docRoot.charAt(AppC.docRoot.length - 1) == '/')
+{
+    AppC.docRoot += '/'; 
+}
+
+AppC.compRoot = AppC.sdkRoot + 'components/';
+AppC.pluginRoot = AppC.sdkRoot + 'plugins/';
 
 // override the configuration for appcelerator from the appcelerator JS query string
-queryString(jsLocation,AppC.config);
+queryString(jsLocation, AppC.config);
 
-if (!baseLocation)
-{
-	// see if it's a full URI
-	var hostIdx = jsLocation.indexOf(':/');
-	if (hostIdx > 0)
-	{
-		var jsHostPath = jsLocation.substring(hostIdx + 3, jsLocation.indexOf('/',hostIdx + 4));
-		var docIdx = AppC.docRoot.indexOf(':/');
-		if (docIdx > 0)
-		{
-			var docHostPath = AppC.docRoot.substring(docIdx + 3, AppC.docRoot.indexOf('/',docIdx+4));
-			if (docHostPath == jsHostPath)
-			{
-				// if on the same host then always prefer the JS location (one directory up) as the base href
-				// such that we can have multiple content directories that include the JS relatively from the top
-				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,jsLocation.lastIndexOf('/')) + '/../',AppC.docRoot);
-			}
-		}
-	}
-	else
-	{
-		// relative URI we need to adjust the DocumentPath
-		if (jsLocation.charAt(0)=='/' || jsLocation.charAt(0)=='.')
-		{
-			var idx = jsLocation.lastIndexOf('/');
-			if (idx!=-1)
-			{
-				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,idx+1) + '../',AppC.docRoot);
-			}
-		}
-	}
-}
-
-AppC.compRoot = AppC.docRoot + 'components/';
-AppC.pluginRoot = AppC.compRoot + 'plugins/';
 
 var appid = 0;
 
@@ -7204,7 +7196,7 @@ function createControl(el,name,opts,fn)
 
 function load(type,name,e)
 {
-	var uri = AppC.docRoot + 'components/'+type+'s/'+name+'/'+name+'.js';
+	var uri = AppC.sdkPath + 'components/'+type+'s/'+name+'/'+name+'.js';
 	$.getScript(uri);
 }
 
@@ -7660,8 +7652,15 @@ $.fn.add = function(prop,value)
 	}
 };
 
-$.fn.remove = function(prop)
+var currentRemoveFn = $.fn.remove;
+
+$.fn.remove = function(prop,value)
 {
+	if (!prop)
+	{
+		return currentRemoveFn.apply(this,arguments);
+	}
+	
 	$.each(this,function()
 	{
 		switch(prop)
@@ -7669,12 +7668,19 @@ $.fn.remove = function(prop)
 			case 'class':
 			case 'className':
 			{
-				$(this).removeClass(prop);
+				$(this).removeClass(value);
 				break;
 			}
 			default:
 			{
-				$(this).removeAttr(prop);
+				if ($(prop).length == 0)
+				{
+					$(this).removeAttr(prop);			
+				}
+				else
+				{
+					currentRemoveFn.apply(this, arguments);
+				}
 			}
 		}
 	});
@@ -7956,7 +7962,7 @@ function installDecorator(el,target)
 {
 	if (!target)
 	{
-		var img = AppC.docRoot + 'images/exclamation.png';
+		var img = AppC.sdkRoot + 'images/exclamation.png';
 		var id = el.attr('id') + '_decorator';
 		var html = '<span id="'+id+'" class="decorator"><img src="' + img + '"/></span>';
 		el.after(html);
@@ -8330,252 +8336,6 @@ App.dynregAction('history');
 
 //--------------------------------------------------------------------------------
 
-/* hotkeys.js */
-
-/*!
-(c) Copyrights 2007 - 2008
-
-Original idea by by Binny V A, http://www.openjs.com/scripts/events/keyboard_shortcuts/
- 
-jQuery Plugin by Tzury Bar Yochay 
-tzury.by@gmail.com
-http://evalinux.wordpress.com
-http://facebook.com/profile.php?id=513676303
-
-Project's sites: 
-http://code.google.com/p/js-hotkeys/
-http://github.com/tzuryby/hotkeys/tree/master
-
-License: same as jQuery license. 
-
-USAGE:
-    // simple usage
-    $(document).bind('keydown', 'Ctrl+c', function(){ alert('copy anyone?');});
-    
-    // special options such as disableInIput
-    $(document).bind('keydown', {combi:'Ctrl+x', disableInInput: true} , function() {});
-    
-Note:
-    This plugin wraps the following jQuery methods: $.fn.find, $.fn.bind and $.fn.unbind
-    
-*/
-
-
-// keep reference to the original $.fn.bind and $.fn.unbind
-jQuery.fn.__bind__ = jQuery.fn.bind;
-jQuery.fn.__unbind__ = jQuery.fn.unbind;
-jQuery.fn.__find__ = jQuery.fn.find;
-
-var hotkeys = {
-    version: '0.7.8',
-    override: /keydown|keypress|keyup/g,
-    triggersMap: {},
-    
-    specialKeys: { 27: 'esc', 9: 'tab', 32:'space', 13: 'return', 8:'backspace', 145: 'scroll', 
-        20: 'capslock', 144: 'numlock', 19:'pause', 45:'insert', 36:'home', 46:'del',
-        35:'end', 33: 'pageup', 34:'pagedown', 37:'left', 38:'up', 39:'right',40:'down', 
-        112:'f1',113:'f2', 114:'f3', 115:'f4', 116:'f5', 117:'f6', 118:'f7', 119:'f8', 
-        120:'f9', 121:'f10', 122:'f11', 123:'f12' },
-    
-    shiftNums: { "`":"~", "1":"!", "2":"@", "3":"#", "4":"$", "5":"%", "6":"^", "7":"&", 
-        "8":"*", "9":"(", "0":")", "-":"_", "=":"+", ";":":", "'":"\"", ",":"<", 
-        ".":">",  "/":"?",  "\\":"|" },
-    
-    newTrigger: function (type, combi, callback) { 
-        // i.e. {'keyup': {'ctrl': {cb: callback, disableInInput: false}}}
-        var result = {};
-        result[type] = {};
-        result[type][combi] = {cb: callback, disableInInput: false};
-        return result;
-    }
-};
-// add firefox num pad char codes
-if (jQuery.browser.mozilla){
-    hotkeys.specialKeys = jQuery.extend(hotkeys.specialKeys, { 96: '0', 97:'1', 98: '2', 99: 
-        '3', 100: '4', 101: '5', 102: '6', 103: '7', 104: '8', 105: '9' });
-}
-
-// a wrapper around of $.fn.find 
-// see more at: http://groups.google.com/group/jquery-en/browse_thread/thread/18f9825e8d22f18d
-jQuery.fn.find = function( selector ) {
-    this.query=selector;
-    return jQuery.fn.__find__.apply(this, arguments);
-};
-
-jQuery.fn.unbind = function (type, combi, fn){
-    if (jQuery.isFunction(combi)){
-        fn = combi;
-        combi = null;
-    }
-    if (combi && typeof combi === 'string'){
-        var selectorId = ((this.prevObject && this.prevObject.query) || (this[0].id && this[0].id) || this[0]).toString();
-        var hkTypes = type.split(' ');
-        for (var x=0; x<hkTypes.length; x++){
-            delete hotkeys.triggersMap[selectorId][hkTypes[x]][combi];
-        }
-    }
-    // call jQuery original unbind
-    return  this.__unbind__(type, fn);
-};
-
-jQuery.fn.bind = function(type, data, fn){
-    // grab keyup,keydown,keypress
-    var handle = type.match(hotkeys.override);
-    
-    if (jQuery.isFunction(data) || !handle){
-        // call jQuery.bind only
-        return this.__bind__(type, data, fn);
-    }
-    else{
-        // split the job
-        var result = null,            
-        // pass the rest to the original $.fn.bind
-        pass2jq = jQuery.trim(type.replace(hotkeys.override, ''));
-        
-        // see if there are other types, pass them to the original $.fn.bind
-        if (pass2jq){
-            // call original jQuery.bind()
-            result = this.__bind__(pass2jq, data, fn);
-        }            
-        
-        if (typeof data === "string"){
-            data = {'combi': data};
-        }
-        if(data.combi){
-            for (var x=0; x < handle.length; x++){
-                var eventType = handle[x];
-                var combi = data.combi.toLowerCase(),
-                    trigger = hotkeys.newTrigger(eventType, combi, fn),
-                    selectorId = ((this.prevObject && this.prevObject.query) || (this[0].id && this[0].id) || this[0]).toString();
-                    
-                //trigger[eventType][combi].propagate = data.propagate;
-                trigger[eventType][combi].disableInInput = data.disableInInput;
-                
-                // first time selector is bounded
-                if (!hotkeys.triggersMap[selectorId]) {
-                    hotkeys.triggersMap[selectorId] = trigger;
-                }
-                // first time selector is bounded with this type
-                else if (!hotkeys.triggersMap[selectorId][eventType]) {
-                    hotkeys.triggersMap[selectorId][eventType] = trigger[eventType];
-                }
-                // make trigger point as array so more than one handler can be bound
-                var mapPoint = hotkeys.triggersMap[selectorId][eventType][combi];
-                if (!mapPoint){
-                    hotkeys.triggersMap[selectorId][eventType][combi] = [trigger[eventType][combi]];
-                }
-                else if (mapPoint.constructor !== Array){
-                    hotkeys.triggersMap[selectorId][eventType][combi] = [mapPoint];
-                }
-                else {
-                    hotkeys.triggersMap[selectorId][eventType][combi][mapPoint.length] = trigger[eventType][combi];
-                }
-                
-                // add attribute and call $.event.add per matched element
-                this.each(function(){
-                    // jQuery wrapper for the current element
-                    var jqElem = jQuery(this);
-                    
-                    // element already associated with another collection
-                    if (jqElem.attr('hkId') && jqElem.attr('hkId') !== selectorId){
-                        selectorId = jqElem.attr('hkId') + ";" + selectorId;
-                    }
-                    jqElem.attr('hkId', selectorId);
-                });
-                result = this.__bind__(handle.join(' '), data, hotkeys.handler)
-            }
-        }
-        return result;
-    }
-};
-// work-around for opera and safari where (sometimes) the target is the element which was last 
-// clicked with the mouse and not the document event it would make sense to get the document
-hotkeys.findElement = function (elem){
-    if (!jQuery(elem).attr('hkId')){
-        if (jQuery.browser.opera || jQuery.browser.safari){
-            while (!jQuery(elem).attr('hkId') && elem.parentNode){
-                elem = elem.parentNode;
-            }
-        }
-    }
-    return elem;
-};
-// the event handler
-hotkeys.handler = function(event) {
-    var target = hotkeys.findElement(event.currentTarget), 
-        jTarget = jQuery(target),
-        ids = jTarget.attr('hkId');
-    
-    if(ids){
-        ids = ids.split(';');
-        var code = event.which,
-            type = event.type,
-            special = hotkeys.specialKeys[code],
-            // prevent f5 overlapping with 't' (or f4 with 's', etc.)
-            character = !special && String.fromCharCode(code).toLowerCase(),
-            shift = event.shiftKey,
-            ctrl = event.ctrlKey,            
-            // patch for jquery 1.2.5 && 1.2.6 see more at:  
-            // http://groups.google.com/group/jquery-en/browse_thread/thread/83e10b3bb1f1c32b
-            alt = event.altKey || event.originalEvent.altKey,
-            mapPoint = null;
-
-        for (var x=0; x < ids.length; x++){
-            if (hotkeys.triggersMap[ids[x]][type]){
-                mapPoint = hotkeys.triggersMap[ids[x]][type];
-                break;
-            }
-        }
-        
-        //find by: id.type.combi.options            
-        if (mapPoint){ 
-            var trigger;
-            // event type is associated with the hkId
-            if(!shift && !ctrl && !alt) { // No Modifiers
-                trigger = mapPoint[special] ||  (character && mapPoint[character]);
-            }
-            else{
-                // check combinations (alt|ctrl|shift+anything)
-                var modif = '';
-                if(alt) modif +='alt+';
-                if(ctrl) modif+= 'ctrl+';
-                if(shift) modif += 'shift+';
-                
-                // modifiers + special keys or modifiers + character or modifiers + shift character or just shift character
-                trigger = mapPoint[modif+special];
-                if (!trigger){
-                    if (character){
-                        trigger = mapPoint[modif+character] 
-                            || mapPoint[modif+hotkeys.shiftNums[character]]
-                            // '$' can be triggered as 'Shift+4' or 'Shift+$' or just '$'
-                            || (modif === 'shift+' && mapPoint[hotkeys.shiftNums[character]]);
-                    }
-                }
-            }
-            if (trigger){
-                var result = false;
-                for (var x=0; x < trigger.length; x++){
-                    if(trigger[x].disableInInput){
-                        // double check event.currentTarget and event.target
-                        var elem = jQuery(event.target);
-                        if (jTarget.is("input") || jTarget.is("textarea") 
-                            || elem.is("input") || elem.is("textarea")) {
-                            return true;
-                        }
-                    }
-                    // call the registered callback function
-                    result = result || trigger[x].cb.apply(this, [event]);
-                }
-                return result;
-            }
-        }
-    }
-};
-// place it under window so it can be extended and overridden by others
-window.hotkeys = hotkeys;
-
-//--------------------------------------------------------------------------------
-
 /* locale.js */
 
 
@@ -8587,7 +8347,7 @@ var bundles = {};
 //
 // the path of the bundle is:
 //
-// AppC.docRoot + 'localization/' + locale.properties
+// AppC.sdkPath + 'localization/' + locale.properties
 //
 // will attempt to load specific locale is fully specified (such as en-UK)
 // and will attempt to fall back to short version (such as en) if not found
@@ -8603,7 +8363,7 @@ AppC.locale = function(lang)
 	{
 		try
 		{
-			var url = AppC.docRoot + 'localization/' + lang.toLowerCase() + '.properties';
+			var url = AppC.sdkPath + 'localization/' + lang.toLowerCase() + '.properties';
 			$.debug('attempting to fetch '+url);
 
 			$.ajax({
@@ -10175,20 +9935,20 @@ $.fn.empty = function()
 	}
 	return oldEmpty.apply(this,arguments);
 };
-
-var oldRemove = $.fn.remove;
-
-// remap to make sure we destroy
-$.fn.remove = function()
-{
-	$.each(this,function()
-	{
-		var scope = $(this);
-		scope.destroy();
-		oldRemove.call(scope);
-	});
-	return this;
-};
+// 
+// var oldRemove = $.fn.remove;
+// 
+// // remap to make sure we destroy
+// $.fn.remove = function()
+// {
+// 	$.each(this,function()
+// 	{
+// 		var scope = $(this);
+// 		scope.destroy();
+// 		oldRemove.call(scope);
+// 	});
+// 	return this;
+// };
 
 
 //--------------------------------------------------------------------------------

@@ -1,9 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
 <html>
 <head>
-	<script type="text/javascript" src="../../javascripts/appcelerator-debug.js"></script>
+	<title>TestMonkey Driver</title>
+	<script type="text/javascript" charset="utf-8" src="../../javascripts/appcelerator-debug.js"></script>
 </head>
+
 <body>
-	<div id="test"></div>
+	<div id="test1" on="click then add[class=test]"></div>
+	<div id="test2" on="click then add[foo=test]"></div>
+	<div id="test3" on="click then remove[class=test]"></div>
+	<div id="test4" on="click then remove[foo]"></div>
+
 </body>
 </html>
