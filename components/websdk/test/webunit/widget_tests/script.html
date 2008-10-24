@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<script type="text/javascript" src="../javascripts/appcelerator-debug.js"></script>
-	<script type="text/javascript" src="../javascripts/appcelerator-compat-debug.js"></script>
+	<script type="text/javascript" src="../appcelerator/appcelerator-debug.js"></script>
+	<script type="text/javascript" src="../appcelerator/appcelerator-compat-debug.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 </head>
 <body>
@@ -70,7 +70,7 @@
 				Data will be here
 			</span>
 			<app:script on="l:load.script4 then execute">
-				$MQ('l:script4',{'name':'This test passed','src':'../images/confirm.png'});
+				$MQ('l:script4',{'name':'This test passed','src':'../appcelerator/images/confirm.png'});
 			</app:script>
 			<app:script on="l:script4 then execute">
 				$('script_test4_status').innerHTML = this.data.name;

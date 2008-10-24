@@ -5,13 +5,13 @@
     <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
     <title>Appcelerator&trade; Service Tester</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="shortcut icon" href="images/favicon.ico"/>
-    <script src="javascripts/appcelerator.js" type="text/javascript"></script>
+    <link rel="shortcut icon" href="appcelerator/images/favicon.ico"/>
+    <script src="appcelerator/appcelerator.js" type="text/javascript"></script>
 	<!--[if IE 6]>
 	       <style>
 	           img,div
 	           {
-	               behavior: url(images/iepngfix.htc);
+	               behavior: url(appcelerator/images/iepngfix.htc);
 	           }
 	       </style>
 	<![endif]-->
@@ -32,7 +32,7 @@
         }
         #header
         {
-            background-image: url(images/appcelerator_gray_header.png);
+            background-image: url(appcelerator/images/appcelerator_gray_header.png);
             background-repeat: repeat-x;
             background-color: #717171;
             height: 55px;
@@ -136,7 +136,7 @@
 <body style="visibility:hidden" on="l:app.compiled then visible">
 
    <div id="header">
-      <div id="logo"><a href="http://www.appcelerator.org" title="Appcelerator"><img src="images/appcelerator_gray_logo_small.png"/></a></div>
+      <div id="logo"><a href="http://www.appcelerator.org" title="Appcelerator"><img src="appcelerator/images/appcelerator_gray_logo_small.png"/></a></div>
       <div id="title">Appcelerator Service Tester</div>
    </div>
    
@@ -167,7 +167,7 @@
                 <div style="display:none;color:#222;" class="noteBox" id="messagebox"
                     on="r:app.test.message.response then effect[appear] or 
                     r:app.test.message.response then effect[fade] after 5s" scope="*">
-                      <img src="images/confirm.png" alt="*"/><span>&nbsp;&nbsp;</span><span
+                      <img src="appcelerator/images/confirm.png" alt="*"/><span>&nbsp;&nbsp;</span><span
                         on="remote:app.test.message.response then value[message]"></span>
                 </div>
             </div>  

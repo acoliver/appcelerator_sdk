@@ -3,12 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<script type="text/javascript" src="../javascripts/appcelerator.js"></script>
+	<script type="text/javascript" src="../appcelerator/appcelerator.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/test.css" />
 	<style>
 		#background
 		{
-			background-image:url(../images/appcelerator_gray_logo_small.png);
+			background-image:url(../appcelerator/images/appcelerator_gray_logo_small.png);
 			background-repeat:no-repeat;
 			background-color:#000;
 			height:53px;
@@ -18,7 +18,7 @@
 	    <style>
 	        img,div
 	        {
-	            behavior: url(../images/iepngfix.htc);
+	            behavior: url(../appcelerator/images/iepngfix.htc);
 	        }
 	    </style>
 	<![endif]-->
@@ -38,7 +38,7 @@
 		<td class="result" width="65%" valign="top" align="left">
 			<div>The image below should be transparent on black background</div>
 			<div style="background-color:#000;">
-				<img src="../images/appcelerator_gray_logo_small.png"/>
+				<img src="../appcelerator/images/appcelerator_gray_logo_small.png"/>
 			</div>
 		</td>
 	</tr>
@@ -59,7 +59,7 @@
 		</td>
 		<td class="result" width="65%" valign="top" align="left">
 			<div>The image below should be transparent on black background</div>
-			<div style="background-color:#000;background-image:url(../images/appcelerator_gray_logo_small.png);background-repeat:no-repeat;height:53px;"></div>
+			<div style="background-color:#000;background-image:url(../appcelerator/images/appcelerator_gray_logo_small.png);background-repeat:no-repeat;height:53px;"></div>
 		</td>
 	</tr>
 	<tr>
@@ -79,7 +79,7 @@
             <app:iterator on="l:test.image then execute" property="rows">
                 <html:div style="background-color:#000;"><html:img src="#{name}"></html:img></html:div>
             </app:iterator>
-            <app:message name="l:test.image" args="{rows:[{'name':'../images/appcelerator_gray_logo_small.png'}]}"></app:message>
+            <app:message name="l:test.image" args="{rows:[{'name':'../appcelerator/images/appcelerator_gray_logo_small.png'}]}"></app:message>
         </td>
     </tr>
 </table>
