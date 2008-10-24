@@ -64,7 +64,7 @@ function installDecorator(el,target)
 {
 	if (!target)
 	{
-		var img = AppC.docRoot + 'images/exclamation.png';
+		var img = AppC.sdkRoot + 'images/exclamation.png';
 		var id = el.attr('id') + '_decorator';
 		var html = '<span id="'+id+'" class="decorator"><img src="' + img + '"/></span>';
 		el.after(html);

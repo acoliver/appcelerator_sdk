@@ -1178,7 +1178,7 @@ if (typeof($$)=='undefined')
 		loadModuleCSS: function(name,file)
 		{
 			var widgetName = $.gsub(name,':','_');
-			var url  = AppC.docRoot + 'widgets/' + widgetName + '/css/' + file;
+			var url  = AppC.sdkRoot + 'widgets/' + widgetName + '/css/' + file;
 			$.loadCSS(url);
 		}
 	};
@@ -1325,13 +1325,13 @@ if (typeof($$)=='undefined')
 	}
 
 	Appcelerator.DocumentPath = AppC.docRoot;
-    Appcelerator.ScriptPath = Appcelerator.DocumentPath + 'javascripts/';
-    Appcelerator.ImagePath = Appcelerator.DocumentPath + 'images/';
-    Appcelerator.StylePath = Appcelerator.DocumentPath + 'stylesheets/';
-    Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
-    Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
-    Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
-	Appcelerator.ComponentPath = Appcelerator.DocumentPath + 'components/';
+    Appcelerator.ScriptPath = Appcelerator.sdkRoot;
+    Appcelerator.ImagePath = Appcelerator.sdkRoot + 'images/';
+    Appcelerator.StylePath = Appcelerator.sdkRoot + 'stylesheets/';
+    Appcelerator.ContentPath = Appcelerator.sdkRoot + 'content/';
+    Appcelerator.ModulePath = Appcelerator.sdkRoot + 'widgets/';
+    Appcelerator.WidgetPath = Appcelerator.sdkRoot + 'widgets/';
+	Appcelerator.ComponentPath = Appcelerator.sdkRoot + 'components/';
 
 
 	Appcelerator.Module = 
@@ -1391,7 +1391,7 @@ if (typeof($$)=='undefined')
 
 			$.each(js,function()
 			{
-				$.getScript(AppC.docRoot + 'widgets/common/js/' + this,fn);
+				$.getScript(AppC.sdkPath + 'widgets/common/js/' + this,fn);
 			});
 		},
 		registerWidgetWithCommonJS: function(moduleName,module,js)
@@ -1423,7 +1423,7 @@ if (typeof($$)=='undefined')
 
 			$.each(js,function()
 			{
-				$.getScript(AppC.docRoot + 'widgets/common/css/' + this,fn);
+				$.getScript(AppC.sdkPath + 'widgets/common/css/' + this,fn);
 			});
 		},
 		requireCommonCSS: function(name,onload)
@@ -1446,7 +1446,7 @@ if (typeof($$)=='undefined')
 
 			$.each(name,function()
 			{
-				$.getScript(AppC.docRoot + 'widgets/common/js/' + this,fn);
+				$.getScript(AppC.sdkPath + 'widgets/common/js/' + this,fn);
 			});
 		},
 		loadWidgetCSS: function(name,css)
@@ -1466,7 +1466,7 @@ if (typeof($$)=='undefined')
 
 	Appcelerator.Core.queueRemoteLoadScriptWithDependencies = function(path, onload) 
 	{
-		var uri = URI.absolutizeURI(path,AppC.docRoot);
+		var uri = URI.absolutizeURI(path,AppC.sdkPath);
 	    Appcelerator.Core.scriptWithDependenciesQueue.push({'path': uri, 'onload': onload});
 	    Appcelerator.Core.remoteLoadScriptWithDependencies();
 	};

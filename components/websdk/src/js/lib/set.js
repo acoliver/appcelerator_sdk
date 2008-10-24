@@ -107,7 +107,7 @@ function createControl(el,name,opts,fn)
 
 function load(type,name,e)
 {
-	var uri = AppC.docRoot + 'components/'+type+'s/'+name+'/'+name+'.js';
+	var uri = AppC.sdkPath + 'components/'+type+'s/'+name+'/'+name+'.js';
 	$.getScript(uri);
 }
 

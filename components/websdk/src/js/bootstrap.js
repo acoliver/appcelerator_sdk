@@ -29,21 +29,6 @@ AppC.Copyright = 'Copyright (c) 2006-'+(1900+started.getYear())+' by Appcelerato
 AppC.LicenseMessage = 'Appcelerator is licensed under ' + AppC.LicenseType;
 
 
-var docRoot;
-var idx = top.window.document.location.href.lastIndexOf('/');
-if (idx == top.window.document.location.href.length - 1)
-{
-	docRoot = top.window.document.location.href;
-}
-else
-{
-    docRoot  = top.window.document.location.href.substr(0, idx);
-    if (docRoot.substring(docRoot.length - 1) != '/')
-    {
-        docRoot  = docRoot + '/';
-    }
-}
-
 //
 // these are parameters that can be set by the developer to customize appcelerator based on app needs
 //
@@ -100,61 +85,69 @@ function queryString(uri,params)
 // get config parameters for app from the URI of the page
 queryString(top.window.document.location.href,AppC.params);
 
-AppC.docRoot = docRoot;
+var removeLastElement = function(uri) {
+    var idx = uri.lastIndexOf('/');
+    if (idx != 1)
+    {
+        uri = uri.substring(0, idx) + "/";
+    }
+    return uri;
+}
 
-var absRe = /file:|http(s)?:/
+// top is important such that if the JS file is in a different location (hosted)
+// than the primary document, we use the primary document's path (cross site scripting)
+var documentRoot = removeLastElement(top.window.document.location.href);
 
+// get appcelerator.js and base paths
+// and ensure these uris are absolute
 var jsLocation = $('script[@src~=appcelerator]').get(0).src;
 var baseLocation = $('base[@href]').attr('href');
+baseLocation = URI.absolutizeURI(baseLocation, documentRoot);
+jsLocation = URI.absolutizeURI(jsLocation, documentRoot);
 
-if (baseLocation)
+if (Appcelerator.jsFileLocation)
 {
-	AppC.docRoot = baseLocation;
+    AppC.sdkRoot = removeLastElement(jsLocation); // parent directory of js
+    var docHost = URI.splitUriRef(documentRoot)[1]; 
+    var jsHost = URI.splitUriRef(jsLocation)[1];
+
+    // we need to know where appcelerator.xml is located
+    if (docHost == jsHost) // locally hosted
+    {
+        Appcelerator.docRoot = URI.absolutizeURI(".", jsDir + "..");
+    }
+    else if (docHost != jsHost && baseHref) // remote js -- use base location
+    {
+        Appcelerator.docRoot = baseHref;
+    }
+    else
+    {
+        Appcelerator.docRoot = URI.absolutizeURI(".", documentRoot);
+    }
+}
+else
+{
+    console.error("Can't find appcelerator.js or appcelerator-debug.js");
 }
 
-if (!absRe.test(jsLocation))
+// add a slash if the path is missing one
+if (!Appcelerator.sdkPath.endsWith('/'))
 {
-	jsLocation = AppC.docRoot + (jsLocation.charAt(0)=='/' ? jsLocation.substring(1) : jsLocation);
+    Appcelerator.sdkPath += '/';
 }
+// add a slash if the path is missing one
+if (!Appcelerator.docRoot.endsWith('/'))
+{
+    Appcelerator.docRoot += '/';
+}
+
+
+AppC.compRoot = AppC.sdkRoot + 'components/';
+AppC.pluginRoot = AppC.sdkRoot + 'plugins/';
 
 // override the configuration for appcelerator from the appcelerator JS query string
-queryString(jsLocation,AppC.config);
+queryString(jsLocation, AppC.config);
 
-if (!baseLocation)
-{
-	// see if it's a full URI
-	var hostIdx = jsLocation.indexOf(':/');
-	if (hostIdx > 0)
-	{
-		var jsHostPath = jsLocation.substring(hostIdx + 3, jsLocation.indexOf('/',hostIdx + 4));
-		var docIdx = AppC.docRoot.indexOf(':/');
-		if (docIdx > 0)
-		{
-			var docHostPath = AppC.docRoot.substring(docIdx + 3, AppC.docRoot.indexOf('/',docIdx+4));
-			if (docHostPath == jsHostPath)
-			{
-				// if on the same host then always prefer the JS location (one directory up) as the base href
-				// such that we can have multiple content directories that include the JS relatively from the top
-				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,jsLocation.lastIndexOf('/')) + '/../',AppC.docRoot);
-			}
-		}
-	}
-	else
-	{
-		// relative URI we need to adjust the DocumentPath
-		if (jsLocation.charAt(0)=='/' || jsLocation.charAt(0)=='.')
-		{
-			var idx = jsLocation.lastIndexOf('/');
-			if (idx!=-1)
-			{
-				AppC.docRoot = URI.absolutizeURI(jsLocation.substring(0,idx+1) + '../',AppC.docRoot);
-			}
-		}
-	}
-}
-
-AppC.compRoot = AppC.docRoot + 'components/';
-AppC.pluginRoot = AppC.compRoot + 'plugins/';
 
 var appid = 0;
 

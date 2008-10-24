@@ -7,7 +7,7 @@ var bundles = {};
 //
 // the path of the bundle is:
 //
-// AppC.docRoot + 'localization/' + locale.properties
+// AppC.sdkPath + 'localization/' + locale.properties
 //
 // will attempt to load specific locale is fully specified (such as en-UK)
 // and will attempt to fall back to short version (such as en) if not found
@@ -23,7 +23,7 @@ AppC.locale = function(lang)
 	{
 		try
 		{
-			var url = AppC.docRoot + 'localization/' + lang.toLowerCase() + '.properties';
+			var url = AppC.sdkPath + 'localization/' + lang.toLowerCase() + '.properties';
 			$.debug('attempting to fetch '+url);
 
 			$.ajax({
