@@ -1,4 +1,5 @@
 {
 	"suites":[
+		"webexpr/parser.js"
 	]
 } 

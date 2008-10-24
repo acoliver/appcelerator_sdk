@@ -1,7 +1,7 @@
 /*!(c) 2006-2008 Appcelerator, Inc. http://appcelerator.org
  * Licensed under the Apache License, Version 2.0. Please visit
  * http://license.appcelerator.com for full copy of the License.
- * Version: 3.0.0, Released: 10/22/2008
+ * Version: 3.0.0, Released: 10/24/2008
  **/
 
 /*- The following file(s) are subject to license agreements by their respective license owners. Ends at text: END THIRD PARTY SOURCE */
@@ -3843,7 +3843,7 @@ AppC.Version =
 	major: parseInt('3'),
 	minor: parseInt('0'),
 	revision: parseInt('0'),
-	date: '10/22/2008',
+	date: '10/24/2008',
 	toString:function()
 	{
 		return this.value;
@@ -4158,11 +4158,14 @@ AppC.compileDocument = function()
 		compileFinished = new Date;
 		loadTime = compileFinished - started;
 		compileTime = compileFinished - compileStarted;
-	
-		$.info(AppC.Copyright);
-		$.info(AppC.LicenseMessage);
-		$.info('loaded in ' + (loadTime) + ' ms, compiler took ~'+(compileTime)+' ms');
-		$.info('Appcelerator is ready!');
+		
+		if (top.window === window)
+		{
+			$.info(AppC.Copyright);
+			$.info(AppC.LicenseMessage);
+			$.info('loaded in ' + (loadTime) + ' ms, compiler took ~'+(compileTime)+' ms');
+			$.info('Appcelerator is ready!');
+		}
 	});
 	
 	var s = new state(body);
@@ -4839,7 +4842,8 @@ function getTarget(params,t)
 	{
 		return $(params.target)
 	}
-	return (params.id)?$("#" + params.id):t;
+	var nt = params.id ? $('#'+params.id) : null;
+	return nt && nt.length > 0 ? nt : t;
 }
 
 function regCSSAction(name,key,value)
@@ -5059,6 +5063,15 @@ App.invokeAction=function(name,data,params)
 	}
 };
 
+App.triggerElseAction = function(scope,params,meta)
+{
+	App.triggerAction(scope,params,
+	{
+		action: meta.elseAction,
+		actionParams: meta.elseActionParams,
+		delay:0
+	});
+};
 App.triggerAction = function(scope,params,meta)
 {
 	var data = meta.actionParams;
@@ -8815,11 +8828,14 @@ var processingQueue = false;
 
 $.fn.sub = function(name,fn,params)
 {
-	name = App.normalizePub(name);
+	var p = App.extractParameters(name);
+	params = params || p.params;
+	name = App.normalizePub(p.name);
+
 	var regexp = null;
 	var m = re.exec(name);
 	var type = m[2];
-
+	
 	if (type.charAt(0)=='~')
 	{
 		type = type.substring(1);
@@ -8946,14 +8962,22 @@ $(document).bind('compiled',function()
 
 App.regCond(re,function(meta)
 {
-	$(this).sub(meta.cond,function(data)
+	$(this).sub(meta.cond,function(data,scope,version,name,direction,params)
 	{
-		App.triggerAction(this,data,meta);
+		if (App.parseConditionCondition(params,data))
+		{
+			App.triggerAction(this,data,meta);
+		}
+		else
+		{
+			App.triggerElseAction(this,data,meta);
+		}
 	});
 });
 
 App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
 {
+	// TODO: parse our params from action
 	$(this).pub(action,params);
 });
 
@@ -9111,8 +9135,8 @@ function processQueue()
 		var a = queue[i].local ? subs.local : subs.remote;
 		var name = queue[i].name;
 		var data = queue[i].data;
-		var scope = queue[i].scope;
-		var version = queue[i].version;
+		var scope = queue[i].scope || 'appcelerator';
+		var version = queue[i].version || '1.0';
 		var direction = queue[i].local ? 'local' : 'remote';
 		
 		// process subs
@@ -9120,10 +9144,7 @@ function processQueue()
 		{
 			if ((a[j].regexp && a[j].regexp.test(name)) || (!a[j].regexp && a[j].name == name))
 			{
-				if (App.parseConditionCondition(a[j].params,data))
-				{
-					a[j].fn.apply(a[j].scope,[data,scope,version,name,direction]);
-				}
+				a[j].fn.apply(a[j].scope,[data,scope,version,name,direction,a[j].params]);
 			}
 		}
 	}
@@ -10121,7 +10142,6 @@ $.fn.destroy = function()
 {
 	var scope = $(this);
 	if (!scope.attr('id')) return this; // we always add id, ignore if we don't have one
-	$.info('destroyed called = '+scope.attr('id'));
 	$.each(this,function()
 	{
 		var el = $(this);
@@ -10177,7 +10197,7 @@ $.fn.remove = function()
 
 $.fn.value = function(object,property,defValue)
 {
-	var value = $.getNestedProperty(object,property,defValue);
+	var value = $.getNestedProperty(object,property,defValue||property);
 	
 	if (this.is(':input'))
 	{

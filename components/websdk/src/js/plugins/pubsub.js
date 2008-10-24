@@ -10,11 +10,14 @@ var processingQueue = false;
 
 $.fn.sub = function(name,fn,params)
 {
-	name = App.normalizePub(name);
+	var p = App.extractParameters(name);
+	params = params || p.params;
+	name = App.normalizePub(p.name);
+
 	var regexp = null;
 	var m = re.exec(name);
 	var type = m[2];
-
+	
 	if (type.charAt(0)=='~')
 	{
 		type = type.substring(1);
@@ -141,14 +144,22 @@ $(document).bind('compiled',function()
 
 App.regCond(re,function(meta)
 {
-	$(this).sub(meta.cond,function(data)
+	$(this).sub(meta.cond,function(data,scope,version,name,direction,params)
 	{
-		App.triggerAction(this,data,meta);
+		if (App.parseConditionCondition(params,data))
+		{
+			App.triggerAction(this,data,meta);
+		}
+		else
+		{
+			App.triggerElseAction(this,data,meta);
+		}
 	});
 });
 
 App.regAction(/^(l|local|both|\*|r|remote)\:/,function(params,action)
 {
+	// TODO: parse our params from action
 	$(this).pub(action,params);
 });
 
@@ -306,8 +317,8 @@ function processQueue()
 		var a = queue[i].local ? subs.local : subs.remote;
 		var name = queue[i].name;
 		var data = queue[i].data;
-		var scope = queue[i].scope;
-		var version = queue[i].version;
+		var scope = queue[i].scope || 'appcelerator';
+		var version = queue[i].version || '1.0';
 		var direction = queue[i].local ? 'local' : 'remote';
 		
 		// process subs
@@ -315,10 +326,7 @@ function processQueue()
 		{
 			if ((a[j].regexp && a[j].regexp.test(name)) || (!a[j].regexp && a[j].name == name))
 			{
-				if (App.parseConditionCondition(a[j].params,data))
-				{
-					a[j].fn.apply(a[j].scope,[data,scope,version,name,direction]);
-				}
+				a[j].fn.apply(a[j].scope,[data,scope,version,name,direction,a[j].params]);
 			}
 		}
 	}

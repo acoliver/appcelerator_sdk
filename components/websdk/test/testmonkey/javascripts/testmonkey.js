@@ -305,6 +305,7 @@ window.TestMonkey = {};
 		{
 			var self = this;
 			this.descriptor = descriptor;
+			this.internalAssert = internalAssert;
 			this.$ = function(selector)
 			{
 				return jQuery("#"+descriptor.htmlID).contents().find(selector);				
@@ -391,6 +392,11 @@ window.TestMonkey = {};
 			
 			var code="var scope = parent ? new parent.window.testScope : window.testScope;\n";
 			code+="var jq = typeof(jQuery)=='undefined' ? scope.$ : jQuery;\n";
+			code+="jq.fn.assertTestCase = function()\n";
+			code+="{\n";
+			code+="	scope.internalAssert.apply(this,arguments);\n";
+			code+="	return this;\n";
+			code+="};\n";
 			code+="try {\n";
 			code+= "(function($){\n";
 			code+="function log() { return scope.log.apply(this,arguments) }\n";
