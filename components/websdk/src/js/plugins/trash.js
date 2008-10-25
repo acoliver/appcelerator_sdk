@@ -54,15 +54,15 @@ $.fn.empty = function()
 
 var oldRemove = $.fn.remove;
 
-// remap to make sure we destroy
-$.fn.remove = function()
-{
-	$.each(this,function()
-	{
-		var scope = $(this);
-		scope.destroy();
-		oldRemove.call(scope);
-	});
-	return this;
-};
+// // remap to make sure we destroy
+// $.fn.remove = function()
+// {
+// 	$.each(this,function()
+// 	{
+// 		var scope = $(this);
+// 		scope.destroy();
+// 		oldRemove.call(scope);
+// 	});
+// 	return this;
+// };
 

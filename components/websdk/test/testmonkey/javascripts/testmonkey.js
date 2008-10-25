@@ -1,3 +1,7 @@
+/*!(c) 2006-2008 Appcelerator, Inc. http://appcelerator.org
+ * Licensed under the Apache License, Version 2.0. Please visit
+ * http://license.appcelerator.com for full copy of the License.
+ **/
 window.TestMonkey = {};
 
 (function(scope,$){
@@ -116,6 +120,10 @@ window.TestMonkey = {};
 						executeNextTestCase();
 					}
 				});
+			}
+			else
+			{
+				descriptor.htmlID = String(Math.round( Math.random() * 10000 ));
 			}
 		});
 
@@ -301,13 +309,25 @@ window.TestMonkey = {};
 		testcase.running = true;
 		currentTestCase = testcase;
 		var timer = null;
+		var frame_doc = null;
 		window.testScope = function()
 		{
 			var self = this;
+			this.jQuery = window.jQuery;
 			this.descriptor = descriptor;
+			this.internalAssert = internalAssert;
 			this.$ = function(selector)
 			{
-				return jQuery("#"+descriptor.htmlID).contents().find(selector);				
+				var result = jQuery("#"+descriptor.htmlID).contents().find(selector);
+				result.assertTestCase = function()
+				{
+					if (testcase.running)
+					{
+						return internalAssert.apply(this,arguments);
+					}
+					return false;
+				};
+				return result;				
 			}
 			this.setup = function()
 			{
@@ -321,8 +341,9 @@ window.TestMonkey = {};
 			{
 				if (testcase.running)
 				{
-					internalAssert.apply(window,arguments);
+					return internalAssert.apply(this,arguments);
 				}
+				return false;
 			}
 			this.log=function(msg)
 			{
@@ -349,6 +370,8 @@ window.TestMonkey = {};
 			}
 			this.end=function(failed,timeout)
 			{
+				this.$('#'+descriptor.htmlID+'__testmonkey_magic').remove();
+				testcase.after_dom = '<html>\n'+frame_doc.html()+'\n</html>';
 				if (!testcase.running) return;
 				if (timer)
 				{
@@ -406,27 +429,31 @@ window.TestMonkey = {};
 			code+="}\n";
 			code+="scope.teardown.call(scope.descriptor);\n";
 			
-			var head = jQuery("#"+descriptor.htmlID).contents().find("body").get(0);
+			var body = jQuery("#"+descriptor.htmlID).contents().find("body").get(0);
 
-			if (!head)
+			if (!body)
 			{
 				// in this case, they didn't load up any iframe - we need to dynamically create one (for test cases that don't specify html)
 				jQuery("<iframe style='position:absolute;left:-10px;top:-10px;height:1px;width:1px;' id='" + descriptor.htmlID+"'></iframe>").appendTo("body");
-				head = jQuery("#"+descriptor.htmlID).contents().find("body").get(0);
+				body = jQuery("#"+descriptor.htmlID).contents().find("body").get(0);
 			}
-
-			var script = head.ownerDocument.createElement('script');
+			
+			frame_doc = jQuery(body.parentNode);
+			testcase.before_dom = '<html>\n'+frame_doc.html()+'\n</html>';
+			
+			var script = body.ownerDocument.createElement('script');
 			script.type = "text/javascript";
+			script.id = descriptor.htmlID+'__testmonkey_magic';
 			if ( jQuery.browser.msie )
 			{
 				script.text = code;
 			}
 			else
 			{
-				script.appendChild( document.createTextNode( code ) );
+				script.appendChild( body.ownerDocument.createTextNode( code ) );
 			}
 
-			head.appendChild(script);
+			body.appendChild(script);
 			
 			if (typeof(testcase.timeout)=='undefined')
 			{
@@ -498,14 +525,14 @@ window.TestMonkey = {};
 	{
 		// for this frame, we need to drop back to DOM instead of just .remove it seems
 		var el = $("#"+id);
-		if (el.length > 0)
-		{
-			var node = el.get(0);
-			setTimeout(function()
-			{
-				node.parentNode.removeChild(node);
-			},10);
-		}
+		// if (el.length > 0)
+		// {
+		// 	var node = el.get(0);
+		// 	setTimeout(function()
+		// 	{
+		// 		node.parentNode.removeChild(node);
+		// 	},10);
+		// }
 	}
 	
 	function escapeString(str)
@@ -536,7 +563,7 @@ window.TestMonkey = {};
 
 	scope.testAsync = function()
 	{
-		var name = arguments[0], timeout = 10000, fn = null;
+		var name = arguments[0], timeout = 1000, fn = null;
 		if (arguments.length == 2) 
 		{
 			fn = arguments[1];

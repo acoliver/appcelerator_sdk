@@ -211,19 +211,28 @@ div.intro
 	color:white;
 }
 
-div.logs
+div.logs, div.html
 {
 	margin-top:20px;
 	white-space: pre;
 	font-size:10px;
 	color:#777;
 }
-div.logs h1
+div.html
+{
+	clear:both;
+	margin-top:20px;
+}
+div.logs h1, div.html h1
 {
 	font-size:14px;
 	font-weight:bold;
 	margin-bottom:5px;
 	padding-bottom:0;
+}
+div.html code
+{
+	font-size:11px;
 }
 #results_table thead
 {

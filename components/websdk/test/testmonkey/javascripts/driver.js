@@ -1,3 +1,9 @@
+/*!(c) 2006-2008 Appcelerator, Inc. http://appcelerator.org
+ * Licensed under the Apache License, Version 2.0. Please visit
+ * http://license.appcelerator.com for full copy of the License.
+ **/
+
+
 $(document).ready(function()
 {
 	var testCount = 0;
@@ -23,8 +29,43 @@ $(document).ready(function()
 		
 		$('#status_bar').empty();
 		$("#results").empty();
-		
 	}
+	
+	// keyboard shortcuts
+	$(document).bind('keydown',function(e)
+	{
+		if (e.keyCode == 37 || e.keyCode==39)
+		{
+			// left
+			var select = $("#selector select").get(0);
+			var idx = select.selectedIndex;
+			switch(e.keyCode)
+			{
+				case 37:
+				{
+					idx-=1;
+					break;
+				}
+				case 39:
+				{
+					idx+=1;
+					break;
+				}
+			}
+			if (idx < 0) idx = select.options.length-1;
+			if (idx > select.options.length-1) idx = 0;
+			select.selectedIndex = idx;
+			return false;
+		}
+		else if (e.keyCode == 82)
+		{
+			// run is 'r' or runall is 'shift+r'
+			var id = "#run" + (e.shiftKey ? "all":"");
+			$(id).click();
+			return false;
+		}
+	});
+	
 	$.getJSON(AppC.docRoot+'tests/manifest.js',function(json)
 	{
 		$.each(json.suites,function()
@@ -33,13 +74,13 @@ $(document).ready(function()
 		});
 	});
 	
-	
 	$("#run").on("click",function()
 	{
 		resetStats();
 		$('#test_summary_title').show();
-		testRunner($("#selector select").val());
-		
+		var test = $("#selector select").val();
+		$.cookie('testmonkey.test',test); // remember the last test we ran
+		testRunner(test);
 	});
 
 	$("#runall").on("click",function()
@@ -80,7 +121,10 @@ $(document).ready(function()
 			{
 				case 'addTestSuite':
 				{
-					$("#selector select").append("<option>"+result+"</option>");
+					var lastTest = $.cookie('testmonkey.test');
+					var sel = '';
+					if (lastTest == result) sel = 'selected';
+					$("#selector select").append("<option "+sel+">"+result+"</option>");
 					break;
 				}
 				case 'beforeTestSuite':
@@ -321,6 +365,7 @@ $(document).ready(function()
 						{
 							html+="<div class='logs'><h1>Test log results:</h1>" + result.logs.join("\n") + "</div>";
 						}
+						html+='<div class="html"><h1>HTML page (after test):</h1><pre><code>'+$.escapeHTML(result.after_dom)+'</code></pre></div>';
 						html+="</div></div>";
 
 						$('#testsuite_detail_all_'+currentSuite).append(html)
