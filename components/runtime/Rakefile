@@ -170,7 +170,8 @@ task :osx=> [:setup] do
     FileUtils.mkdir_p osx_dir 
     FileUtils.mkdir_p "#{osx_dir}/installer/build/osx"
 
-    copy_dir "#{BUILD_DIR}/src/cmdline", "#{osx_dir}/installer" 
+    copy_dir "#{BUILD_DIR}/src/cmdline", "#{osx_dir}/installer"
+		copy_dir "#{BUILD_DIR}/src/titanium", "#{osx_dir}/installer"
     copy_dir "#{BUILD_DIR}/src/installer/osx", "#{osx_dir}/installer/build/osx"
     FileUtils.cp "#{BUILD_DIR}/../services/common/ruby/agent/uuid.rb", "#{osx_dir}/installer/lib/uuid.rb"
 
@@ -271,7 +272,13 @@ def make_pkg_file(file,dir)
    f = File.open file,'w+'
    f.puts "<?xml version=\"1.0\"?>"
    f.puts "<pkg-contents spec=\"1.12\">"
-   f.puts build_pkg_contents(dir) 
+   if dir.kind_of? Array
+		dir.each do |dir|
+			f.puts build_pkg_contents(dir)
+   	end
+   elsif dir.kind_of? String
+   	f.puts build_pkg_contents(dir) 
+   end
    f.puts "</pkg-contents>"
    f.close
 end
