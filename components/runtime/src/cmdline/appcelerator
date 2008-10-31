@@ -71,7 +71,9 @@ def check_for_initial
     gems.each do |gem|
       cmd = "#{GEM_CMD} install #{gem} -y"
       if not WIN32
-        cmd = 'sudo ' + cmd
+        # run in a sub-shell so we don't 
+        # create root-owned files later
+        cmd = "sudo sh -c '#{cmd}'"
         puts "__MAGIC__|ask|Please enter your password to install required Ruby Gems|true|__MAGIC__" if subprocess
       end
       puts "Executing: #{cmd}"
@@ -99,12 +101,6 @@ def check_for_initial
   
   FileUtils.cp File.join(SYSTEMDIR,'build.yml'), home_path('build.yml')
   
-  if not WIN32
-    # otherwise all files are owned by root on the mac
-    %x[sudo id -p] =~ /login\W([^\W]+)/
-    real_user = $1
-    system("sudo chown -R #{real_user} #{TARGET_DIR}")
-  end
 end
 
 def check_for_migration
