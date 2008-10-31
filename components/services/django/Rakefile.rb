@@ -1,0 +1,69 @@
+#
+#
+# This file is part of Appcelerator.
+#
+# Copyright 2006-2008 Appcelerator, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#
+
+BUILD_DIR = "#{File.dirname(__FILE__)}" 
+require File.expand_path("#{BUILD_DIR}/../../build.rb")
+python_dir = File.expand_path("#{BUILD_DIR}/../python")
+build_config = load_config(BUILD_DIR)
+python_config = load_config(python_dir)
+
+desc 'default python-django build'
+task :service_python do
+
+  FileUtils.mkdir_p "#{STAGE_DIR}"
+  zipfile = "#{STAGE_DIR}/service_django_#{build_config[:version]}.zip"
+  FileUtils.rm_rf zipfile
+  
+  stage_src = "#{STAGE_DIR}/python_src"
+  FileUtils.cp_r "#{python_dir}/src", stage_src  
+  setup_path = "#{stage_src}/module/setup.py"
+  setup_content = File.read(setup_path)
+  setup_content.sub!('0.0.0', python_config[:version])
+  f = File.open setup_path,'w+'
+  f.write setup_content
+  f.close
+  
+  
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+
+    dofiles("#{stage_src}/module") do |f|
+      filename = f.to_s
+      next if File.basename(filename[0,1]) == '.'
+      zipfile.add("module/#{filename}","#{stage_src}/#{filename}")
+    end
+    
+    src_dir = "#{BUILD_DIR}/src"  
+    dofiles(src_dir) do |f|
+      filename = f.to_s
+      next if File.basename(filename[0,1]) == '.'
+      zipfile.add("project/#{filename}","#{src_dir}/#{filename}")
+    end
+        
+    Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
+      filename = File.basename(fpath)
+      next if filename[0,1] == '.'
+      zipfile.add("plugins/#{filename}",fpath)
+    end
+    
+    zipfile.add('plugins/python_config.rb', "#{BUILD_DIR}/../python/installer/python_config.rb")
+    zipfile.add('install.rb', "#{BUILD_DIR}/installer/install.rb")
+    zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
+  end
+end
+

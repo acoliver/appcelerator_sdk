@@ -16,10 +16,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+
+def blah()
+    "HEHEHE"
+end
+
 BUILD_DIR = "#{File.dirname(__FILE__)}"
 
 require File.expand_path("#{BUILD_DIR}/../build.rb")
-
+task :default do
+    Dir["*/Rakefile.rb"].each { | rakefile |
+        puts rakefile
+        require rakefile 
+    }
+    puts Rake::Task.tasks()
+end
 
 task :all do
   build_subdir BUILD_DIR
