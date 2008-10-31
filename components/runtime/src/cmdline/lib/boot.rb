@@ -109,7 +109,6 @@ module Appcelerator
       
       username=nil
       password=nil
-      save=false
       
       if not OPTIONS[:server]
         OPTIONS[:server] = config[:server] || ENV['UPDATESITE'] || ET_PHONE_HOME
@@ -123,95 +122,28 @@ module Appcelerator
         
       elsif ACTION != 'login'  
 
-        # first time user - we need to either allow them to signup or allow them to login
-        
         puts 
         puts '*' * 80
         puts ' ' * 20 + 'Welcome to the Appcelerator RIA Platform'
         puts '*' * 80
         puts
-        puts 'Before we can continue, you will need your Appcelerator Developer Network login'
-        puts 'credentials.  If you have not yet created a (free) developer account, you can '
-        puts 'either visit http://www.appcelerator.org to create one and return.  Or, you can'
-        puts 'create an account now.'
-        puts 
-        puts 
         
-        yn = ask 'Do you have an account? (Y)es or (N)o [Y]'
+        yn = ask 'Do you have an account? (Y)es or (N)o [N]'
 
-        if ['y','Y',''].index(yn)
-    			Installer.login(username,password)
+        if ['y','Y'].index(yn)
+          Installer.login(username,password)
           puts "Welcome back ...."
           puts
                     
-        else
-          #
-          # don't have an account - we need to collect information for signup
-          #
-          puts 
-          puts "OK, let's sign you up to the Appcelerator Developer Network.  We'll need "
-          puts "a little bit of information to get you signed up.  Here we go:"
-          puts
-          username = Installer.prompt_username 'Email'
+        else 
+          username = password = 'anonymous'
           Installer.prompt_proxy(true)
-          firstname = ask 'Firstname:'
-          lastname = ask 'Lastname:'
-          password = Installer.prompt_password
-          Installer.prompt_password password
-          
-          puts 
-          puts "Signing you up .... one moment please."
-          puts
-          
-          result = Installer.signup(username,firstname,lastname,password)
-          
-          if not result['success']
-            die "Signup failed. #{result['msg']}"
-          end
-          
-          puts "Signup almost complete.  You will now need to check your email address"
-          puts "at #{username} for a validation email.  In this email, you will find a "
-          puts "four-character verification code.  Please enter that code below or press"
-          puts "return if you have already verified your account by clicking on the URL"
-          puts "in the email."
-          puts
-          
-          attempt_login = true
-          
-          while true
-            verification = ask 'Verification code:'
-            if verification.nil? or verification == ''
-              if Installer.network_login(username,password)
-                attempt_login = false
-                break
-              else
-                puts "Couldn't not validate your account. Please try again."
-              end
-            else
-              result = Installer.validate_signup(username,password,verification)
-              if result and result['success']
-                break
-              else
-                puts "Error validating your verification code. #{result['msg']}"
-              end
-            end
-          end
-          
-          puts
-          puts "Congratulations! You're now signed up and verified."
-          puts
-          puts '*' * 80
-          puts
-    			
-          Installer.network_login(username,password) if attempt_login
-          
+          Installer.login(username, password)
         end
 
-        save = true
+        Installer.save_config(username,password)
+
       end
-      
-      # save the config
-      Installer.save_config(username,password) if save
       
     end
     

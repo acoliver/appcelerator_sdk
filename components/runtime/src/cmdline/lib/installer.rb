@@ -87,20 +87,6 @@ module Appcelerator
       end
     end
 
-    def Installer.signup(email,firstname,lastname,password)
-      client = get_client
-      result = client.send 'account.signup.request', {'offline'=>true,'email'=>email,'password'=>password,'firstname'=>firstname,'lastname'=>lastname}
-      puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
-      result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
-    end
-
-    def Installer.validate_signup(email,password,verification)
-      client = get_client
-      result = client.send 'account.confirmation.request', {'offline'=>true,'confirmation'=>verification}
-      puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
-      result ? result[:data] : {'success'=>false,'msg'=>'invalid response from server'}
-    end
-
     def Installer.network_login(email,password,silent=false)
       if OPTIONS[:no_remote]
         # special exit value for external tools (like the ide)
