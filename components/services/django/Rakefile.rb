@@ -17,53 +17,53 @@
 #   limitations under the License.
 #
 
-BUILD_DIR = "#{File.dirname(__FILE__)}" 
-require File.expand_path("#{BUILD_DIR}/../../build.rb")
-python_dir = File.expand_path("#{BUILD_DIR}/../python")
-build_config = load_config(BUILD_DIR)
-python_config = load_config(python_dir)
 
-desc 'default python-django build'
-task :service_python do
-
-  FileUtils.mkdir_p "#{STAGE_DIR}"
-  zipfile = "#{STAGE_DIR}/service_django_#{build_config[:version]}.zip"
-  FileUtils.rm_rf zipfile
+  desc 'default python-django build'
+  task :django do
   
-  stage_src = "#{STAGE_DIR}/python_src"
-  FileUtils.cp_r "#{python_dir}/src", stage_src  
-  setup_path = "#{stage_src}/module/setup.py"
-  setup_content = File.read(setup_path)
-  setup_content.sub!('0.0.0', python_config[:version])
-  f = File.open setup_path,'w+'
-  f.write setup_content
-  f.close
+    build_dir = File.expand_path(File.dirname(__FILE__))
+    python_dir = File.join(build_dir, '..', 'python')
+    build_config = get_config(:service, :django)
+    python_config = get_config(:service, :python)
   
-  
-  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-
-    dofiles("#{stage_src}/module") do |f|
-      filename = f.to_s
-      next if File.basename(filename[0,1]) == '.'
-      zipfile.add("module/#{filename}","#{stage_src}/#{filename}")
-    end
+    FileUtils.mkdir_p "#{STAGE_DIR}"
+    zipfile = "#{STAGE_DIR}/service_django_#{build_config[:version]}.zip"
+    FileUtils.rm_rf zipfile
     
-    src_dir = "#{BUILD_DIR}/src"  
-    dofiles(src_dir) do |f|
-      filename = f.to_s
-      next if File.basename(filename[0,1]) == '.'
-      zipfile.add("project/#{filename}","#{src_dir}/#{filename}")
-    end
-        
-    Dir["#{BUILD_DIR}/installer/plugins/*.rb"].each do |fpath|
-      filename = File.basename(fpath)
-      next if filename[0,1] == '.'
-      zipfile.add("plugins/#{filename}",fpath)
-    end
+    stage_src = "#{STAGE_DIR}/python_src"
+    FileUtils.cp_r "#{python_dir}/src", stage_src  
+    setup_path = "#{stage_src}/module/setup.py"
+    setup_content = File.read(setup_path)
+    setup_content.sub!('0.0.0', python_config[:version])
+    f = File.open setup_path,'w+'
+    f.write setup_content
+    f.close
     
-    zipfile.add('plugins/python_config.rb', "#{BUILD_DIR}/../python/installer/python_config.rb")
-    zipfile.add('install.rb', "#{BUILD_DIR}/installer/install.rb")
-    zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
+    
+    Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+  
+      dofiles("#{stage_src}/module") do |f|
+        filename = f.to_s
+        next if File.basename(filename[0,1]) == '.'
+        zipfile.add("module/#{filename}","#{stage_src}/module/#{filename}")
+      end
+      
+      src_dir = "#{build_dir}/src"  
+      dofiles(src_dir) do |f|
+        filename = f.to_s
+        next if File.basename(filename[0,1]) == '.'
+        zipfile.add("project/#{filename}","#{src_dir}/#{filename}")
+      end
+          
+      Dir["#{build_dir}/installer/plugins/*.rb"].each do |fpath|
+        filename = File.basename(fpath)
+        next if filename[0,1] == '.'
+        zipfile.add("plugins/#{filename}",fpath)
+      end
+      
+      zipfile.add('plugins/python_config.rb', "#{build_dir}/../python/installer/python_config.rb")
+      zipfile.add('install.rb', "#{build_dir}/installer/install.rb")
+      zipfile.add('build.yml',"#{build_dir}/build.yml")
+    end
   end
-end
 

@@ -17,31 +17,30 @@
 #   limitations under the License.
 #
 
-BUILD_DIR = "#{File.dirname(__FILE__)}" 
-require File.expand_path("#{BUILD_DIR}/../../build.rb")
-build_config = load_config(BUILD_DIR)
-
-desc 'default zend build'
-task :service_zend do
-
-  FileUtils.mkdir_p "#{STAGE_DIR}"
-  zipfile = "#{STAGE_DIR}/service_zend_#{build_config[:version]}.zip"
-  FileUtils.rm_rf zipfile
-
-  stage_dir = File.expand_path "#{STAGE_DIR}/zend"
-  copy_dir "#{BUILD_DIR}/pieces", File.join(stage_dir,'pieces')
-
-  FileUtils.cp("#{BUILD_DIR}/install.rb", stage_dir)
-  FileUtils.cp("#{BUILD_DIR}/build.yml", stage_dir)
-
-  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    dofiles(stage_dir) do |f|
-      filename = f.to_s
-      if not(filename == '.') 
-        zipfile.add(filename, "#{stage_dir}/#{filename}")
+  desc 'default zend build'
+  task :zend do
+  
+    build_dir = File.expand_path(File.dirname(__FILE__))
+    build_config = get_config(:service, :zend)
+  
+    FileUtils.mkdir_p(STAGE_DIR)
+    zipfile = "#{STAGE_DIR}/service_zend_#{build_config[:version]}.zip"
+    FileUtils.rm_rf zipfile
+  
+    stage_dir = File.expand_path "#{STAGE_DIR}/zend"
+    copy_dir "#{build_dir}/pieces", File.join(stage_dir,'pieces')
+  
+    FileUtils.cp("#{build_dir}/install.rb", stage_dir)
+    FileUtils.cp("#{build_dir}/build.yml", stage_dir)
+  
+    Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+      dofiles(stage_dir) do |f|
+        filename = f.to_s
+        if not(filename == '.') 
+          zipfile.add(filename, "#{stage_dir}/#{filename}")
+        end
       end
     end
+  
+    FileUtils.rm_rf stage_dir
   end
-
-  FileUtils.rm_rf stage_dir
-end

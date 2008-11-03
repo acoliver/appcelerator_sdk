@@ -4,6 +4,7 @@ require 'zip/zip'
 require 'digest/md5'
 require 'aws/s3'
 require 'yaml'
+require 'open-uri'
 
 DISTRO_BUCKET = 'distro.appcelerator.org'
 
@@ -247,22 +248,34 @@ class Manifest
         latest
     end
 
+    def get_next_version_for(type, name)
+        prev_rel = get_latest_release(type, name)
+
+        if prev_rel
+            parts = prev_rel.version.split('.')
+            parts = parts[0..-2] + ['%03d' % parts.last + 1]
+            return parts.join('.')
+        else
+            return @config['version'] + '.00'
+        end
+    end
+
+    def get_current_version(type, name)
+        latest = get_latest_release(type, name)
+        if latest
+            return latest.version
+        else
+            return get_next_version_for(type, name)
+        end
+    end
+
     def release_zipfile(zipfile)
         new_rel = Release.from_zipfile(zipfile)
         
         if not new_rel.version # get the next applicable version
-            prev_rel = get_latest_release(new_rel.type, new_rel.name)
-
-            if prev_rel
-                parts = prev_rel.version.split('.')
-                parts = parts[0..-2] + ['%03d' % parts.last + 1]
-                new_ver = parts.join('.')
-            else
-                @config[:version] + '.001'
-            end
-
+            new_ver = get_next_version_for(new_rel.type, new_rel.name)
             puts "No version defined so bumping [#{prev_rel.version} -> #{new_ver}]"
-            new_rel.version = version
+            new_rel.version = new_rel
             new_rel.update_buildyml()
 
         end
@@ -277,8 +290,8 @@ class FileTransport
 
     def initialize(dir, config)
 
-        release_name = config[:name].to_s
-        release_version = config[:version].to_s
+        release_name = config['name'].to_s
+        release_version = config['version'].to_s
     
         @release_dir = File.join(dir, release_name + '-' + release_version)
         @manifest_file = File.join(@release_dir, "manifest.js")
@@ -332,8 +345,8 @@ class S3Transport
 
     def initialize(bucket_name, config)
 
-        release_name = config[:name].to_s
-        release_version = config[:version].to_s
+        release_name = config['name'].to_s
+        release_version = config['version'].to_s
 
         @release_path = File.join(release_name + '-' + release_version)
         @manifest_path = File.join(@release_path, "manifest.js")
@@ -366,9 +379,25 @@ class S3Transport
         @bucket_name = bucket_name
         @url_prefix = "http://#{@bucket_name}"
 
-        man_text = fetch(@manifest_path, true) || "{}"
+        man_text = fetch(@manifest_path, true) 
+
+        # failed to connect to S3 -- try to load it via
+        # HTTP from distro site, otherwise start with a
+        # blank manifest
+        if not man_text
+            man_text = load_manifest_via_web() || '{}'
+        end
+
         @manifest = Manifest.new(man_text, config)
 
+    end
+
+    def load_manifest_via_web()
+        begin   
+           open("http://s3.amazonaws.com/#{DISTRO_BUCKET}/#{@manifest_path}").read()
+        rescue
+            nil
+        end
     end
 
     def get_home
@@ -434,16 +463,17 @@ class S3Transport
 end
 
 
-config_text = File.open('config.yml').read()
-config = YAML::load(config_text)
-t = S3Transport.new(DISTRO_BUCKET, config)
+#config_text = File.open('config.yml').read()
+#config = YAML::load(config_text)
+#t = S3Transport.new(DISTRO_BUCKET, config)
+#
 #t = FileTransport.new("dist", config)
 
-Dir["appcelerator2/*.zip"].each {|file|
-    puts "Releasing #{file}..."
-    r = Release.from_zip(file)
-    t.add_release(r)
-}
-
-puts "pushing releases..."
-t.push()
+#Dir["appcelerator2/*.zip"].each {|file|
+#    puts "Releasing #{file}..."
+#    r = Release.from_zip(file)
+#    t.add_release(r)
+#}
+#
+#puts "pushing releases..."
+#t.push()

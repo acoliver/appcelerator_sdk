@@ -17,29 +17,29 @@
 #   limitations under the License.
 #
 
-BUILD_DIR = "#{File.dirname(__FILE__)}" 
-require File.expand_path("#{BUILD_DIR}/../../build.rb")
-build_config = load_config(BUILD_DIR)
+  desc 'default build'
+  task :dotnet do
 
-desc 'default build'
-task :service_dotnet do
-   dotnet_dir = "#{BUILD_DIR}/src"
-   zipfile = "#{STAGE_DIR}/service_dotnet_#{build_config[:version]}.zip"
+    build_dir = "#{File.dirname(__FILE__)}" 
+    build_config = get_config(:service, :dotnet)
 
-   FileUtils.mkdir_p STAGE_DIR
-   FileUtils.rm_rf zipfile
-
-   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    dofiles("#{dotnet_dir}") do |f|
-      filename = f.to_s
-      if not filename == '.'
-        zipfile.add(filename,"#{dotnet_dir}/#{filename}")
+     dotnet_dir = "#{build_dir}/src"
+     zipfile = "#{STAGE_DIR}/service_dotnet_#{build_config[:version]}.zip"
+  
+     FileUtils.mkdir_p STAGE_DIR
+     FileUtils.rm_rf zipfile
+  
+     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+      dofiles("#{dotnet_dir}") do |f|
+        filename = f.to_s
+        if not filename == '.'
+          zipfile.add(filename,"#{dotnet_dir}/#{filename}")
+        end
       end
+      
+      zipfile.add 'install.rb', "#{build_dir}/installer/install.rb"
+      zipfile.add 'appcelerator.xml', "#{build_dir}/installer/appcelerator.xml"
+      zipfile.add 'TestService.dll', "#{build_dir}/installer/TestService.dll"
+      zipfile.add 'build.yml', "#{build_dir}/build.yml"
     end
-    
-    zipfile.add 'install.rb', "#{BUILD_DIR}/installer/install.rb"
-    zipfile.add 'appcelerator.xml', "#{BUILD_DIR}/installer/appcelerator.xml"
-    zipfile.add 'TestService.dll', "#{BUILD_DIR}/installer/TestService.dll"
-    zipfile.add 'build.yml', "#{BUILD_DIR}/build.yml"
   end
-end

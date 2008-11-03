@@ -17,31 +17,29 @@
 #   limitations under the License.
 #
 
-BUILD_DIR = "#{File.dirname(__FILE__)}" 
-require File.expand_path("#{BUILD_DIR}/../../build.rb")
-build_config = load_config(BUILD_DIR)
+  desc 'default merb build'
+  task :merb do
+  
+    build_dir = File.expand_path(File.dirname(__FILE__))
+    build_config = get_config(:service, :merb)
 
-desc 'default merb build'
-task :service_merb do
-
-  FileUtils.mkdir_p "#{STAGE_DIR}"
-  zipfile = "#{STAGE_DIR}/service_merb_#{build_config[:version]}.zip"
-  FileUtils.rm_rf zipfile
-
-  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    dofiles("#{BUILD_DIR}/src") do |f|
-      filename = f.to_s
-      if not filename == '.'
-        zipfile.add("merb/#{filename}","#{BUILD_DIR}/src/#{filename}")
+    FileUtils.mkdir_p "#{STAGE_DIR}"
+    zipfile = "#{STAGE_DIR}/service_merb_#{build_config[:version]}.zip"
+    FileUtils.rm_rf zipfile
+  
+    Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+      dofiles("#{build_dir}/src") do |f|
+        filename = f.to_s
+        if not filename == '.'
+          zipfile.add("merb/#{filename}","#{build_dir}/src/#{filename}")
+        end
+      end
+      zipfile.add('install.rb',"#{build_dir}/installer/install.rb")
+      zipfile.add('build.yml',"#{build_dir}/build.yml")
+      Dir["#{build_dir}/../common/ruby/agent/**/*.rb"].each do |fpath|
+        i = fpath.index('agent/')
+        fname = fpath[i..-1]
+        zipfile.add("merb/lib/appcelerator/#{fname}",fpath)
       end
     end
-    zipfile.add('install.rb',"#{BUILD_DIR}/installer/install.rb")
-    zipfile.add('build.yml',"#{BUILD_DIR}/build.yml")
-    Dir["#{BUILD_DIR}/../common/ruby/agent/**/*.rb"].each do |fpath|
-      i = fpath.index('agent/')
-      fname = fpath[i..-1]
-      zipfile.add("merb/lib/appcelerator/#{fname}",fpath)
-    end
   end
-end
-

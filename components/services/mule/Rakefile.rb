@@ -18,70 +18,67 @@
 #   limitations under the License.
 #
 
-def path(*args) File.expand_path(*args) end
-mule_service_dir = File.dirname(__FILE__)
-java_service_dir = path("../java", mule_service_dir)
 
-require path("#{mule_service_dir}/../../build.rb")
-require path("common.rb", java_service_dir)
-
-config = load_config(mule_service_dir)
-java_config = load_config(java_service_dir)
-
-desc 'default mule build'
-
-task :service_mule do
-  mule_stage_dir = File.join(STAGE_DIR, "mule")
-  java_build_dir = File.join(mule_stage_dir, "classes")
-  app_source = File.join(java_service_dir, "src")
-  app_mule_source = File.join(mule_service_dir, "src")
-
-  dist_dir = File.join(mule_stage_dir, 'dist')
-  copy_dir "#{mule_service_dir}/pieces", File.join(dist_dir, "pieces")
-  FileUtils.cp("#{mule_service_dir}/install.rb", dist_dir)
-  FileUtils.cp("#{mule_service_dir}/build.yml", dist_dir)
-
-  lib_dir = File.join(mule_service_dir, "pieces/lib") # necessary to build -mule.jar
-  dest_lib_dir = File.join(dist_dir, "pieces/lib")
- 
-  clean_dir(java_build_dir)
-  FileUtils.mkdir_p to_path(java_build_dir) 
-
-  # build the latest appcelerator.jar for this release
-  java_cp_dir = File.join(java_service_dir, "pieces/lib")
-  compile_dir(app_source, java_build_dir, java_cp_dir)
-  app_jar_file = File.join(dest_lib_dir, "appcelerator-#{java_config[:version]}.jar")
-  create_jar(app_jar_file, java_build_dir)
-
-  # clean
-  clean_dir(java_build_dir)
-  FileUtils.mkdir_p to_path(java_build_dir) 
-
-  # now create an appcelerator-mule.jar file
-  compile_dir(app_mule_source, java_build_dir, [java_cp_dir, lib_dir, dest_lib_dir])
-  mule_jar_file = File.join(dest_lib_dir, "appcelerator-mule-#{config[:version]}.jar")
-  create_jar(mule_jar_file, java_build_dir)
-
-  # copy necessary libs
-  Dir["#{java_cp_dir}/**/*.jar"].each { |f| FileUtils.cp(f, dest_lib_dir) }
-  Dir["#{lib_dir}/*.jar"].each { |f| FileUtils.cp(f, dest_lib_dir) }
-
-  public_jar_path = File.join(dist_dir, "pieces/public/WEB-INF/lib")
-  FileUtils.mkdir_p public_jar_path
-  Dir["#{dest_lib_dir}/*.jar"].each { |f| FileUtils.cp(f, public_jar_path) }
-
-  zipfile = path("service_mule_#{config[:version]}.zip", STAGE_DIR)
-  FileUtils.rm_rf zipfile
-
-  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-
-    dofiles(dist_dir) do |f|
-      if not f == '.'
-        zipfile.add("#{f}", "#{dist_dir}/#{f}")
+  desc 'default mule build'
+  task :mule do
+    mule_service_dir = File.expand_path(File.dirname(__FILE__))
+    java_service_dir = File.join(mule_service_dir, '..', 'java')
+  
+    require File.join(java_service_dir, 'common.rb')
+  
+    config = get_config(:service, :mule)
+    java_config = get_config(:service, :java)
+  
+    mule_stage_dir = File.join(STAGE_DIR, "mule")
+    java_build_dir = File.join(mule_stage_dir, "classes")
+    app_source = File.join(java_service_dir, "src")
+    app_mule_source = File.join(mule_service_dir, "src")
+  
+    dist_dir = File.join(mule_stage_dir, 'dist')
+    copy_dir "#{mule_service_dir}/pieces", File.join(dist_dir, "pieces")
+    FileUtils.cp("#{mule_service_dir}/install.rb", dist_dir)
+    FileUtils.cp("#{mule_service_dir}/build.yml", dist_dir)
+  
+    lib_dir = File.join(mule_service_dir, "pieces/lib") # necessary to build -mule.jar
+    dest_lib_dir = File.join(dist_dir, "pieces/lib")
+   
+    clean_dir(java_build_dir)
+    FileUtils.mkdir_p to_path(java_build_dir) 
+  
+    # build the latest appcelerator.jar for this release
+    java_cp_dir = File.join(java_service_dir, "pieces/lib")
+    compile_dir(app_source, java_build_dir, java_cp_dir)
+    app_jar_file = File.join(dest_lib_dir, "appcelerator-#{java_config[:version]}.jar")
+    create_jar(app_jar_file, java_build_dir)
+  
+    # clean
+    clean_dir(java_build_dir)
+    FileUtils.mkdir_p to_path(java_build_dir) 
+  
+    # now create an appcelerator-mule.jar file
+    compile_dir(app_mule_source, java_build_dir, [java_cp_dir, lib_dir, dest_lib_dir])
+    mule_jar_file = File.join(dest_lib_dir, "appcelerator-mule-#{config[:version]}.jar")
+    create_jar(mule_jar_file, java_build_dir)
+  
+    # copy necessary libs
+    Dir["#{java_cp_dir}/**/*.jar"].each { |f| FileUtils.cp(f, dest_lib_dir) }
+    Dir["#{lib_dir}/*.jar"].each { |f| FileUtils.cp(f, dest_lib_dir) }
+  
+    public_jar_path = File.join(dist_dir, "pieces/public/WEB-INF/lib")
+    FileUtils.mkdir_p public_jar_path
+    Dir["#{dest_lib_dir}/*.jar"].each { |f| FileUtils.cp(f, public_jar_path) }
+  
+    zipfile = File.join(STAGE_DIR, "service_mule_#{config[:version]}.zip")
+    FileUtils.rm_rf zipfile
+  
+    Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+  
+      dofiles(dist_dir) do |f|
+        if not f == '.'
+          zipfile.add("#{f}", "#{dist_dir}/#{f}")
+        end
       end
     end
+  
+    #FileUtils.rm_rf(mule_stage_dir)
   end
-
-  #FileUtils.rm_rf(mule_stage_dir)
-end
-
