@@ -1,0 +1,35 @@
+---
+version: "3.0"
+name: appcelerator
+components:
+  service:
+      appengine:
+        dependencies: [{type: websdk, name: websdk}]
+      django:
+        dependencies: [{type: websdk, name: websdk}]
+      dotnet:
+        dependencies: [{type: websdk, name: websdk}]
+      grails:
+        dependencies: [{type: websdk, name: websdk}]
+      java:
+        dependencies: [{type: websdk, name: websdk}]
+      merb:
+        dependencies: [{type: websdk, name: websdk}]
+      mochiweb:
+        dependencies: [{type: websdk, name: websdk}]
+      mule:
+        dependencies: [{type: websdk, name: websdk}]
+      perl:
+        dependencies: [{type: websdk, name: websdk}]
+      php:
+        dependencies: [{type: websdk, name: websdk}]
+      python:
+        dependencies: [{type: websdk, name: websdk}]
+      ruby:
+        dependencies: [{type: websdk, name: websdk}]
+      struts:
+        dependencies: [{type: websdk, name: websdk}]
+      websdk:
+        dependencies: [{type: websdk, name: websdk}]
+      zend:
+        dependencies: [{type: websdk, name: websdk}]
