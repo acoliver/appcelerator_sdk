@@ -20,12 +20,10 @@
  */
 package org.appcelerator.locator;
 
-import java.util.List;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appcelerator.annotation.ServiceLocator;
-import org.appcelerator.messaging.Message;
 import org.appcelerator.service.ServiceRegistry;
 import org.mule.config.builders.MuleXmlConfigurationBuilder;
 
@@ -33,37 +31,24 @@ import org.mule.config.builders.MuleXmlConfigurationBuilder;
  * Utility class which will auto-register all @Service method implementations in the 
  * JVM classpath. This class implements the @ServiceDispatcher annotation.
  */
-@ServiceLocator
-public class MuleLocator
+public class MuleLocator implements ServiceLocator
 {
     @SuppressWarnings("unused")
     private static final Log LOG = LogFactory.getLog(MuleLocator.class);
 
-    /**
-     * called by dispatcher manager to create an instance of this dispatcher
-     * 
-     * @return
-     */
-    public static Object createDispatcher()
-    {
-        return new MuleLocator();
+    static {
+        ServiceRegistry.registerLocator(new MuleLocator());
     }
-    /**
-     * called when the dispatcher is loaded
-     */
-    public void initialize()
-    {
+    
+    public void findServices() {
         try {
             MuleXmlConfigurationBuilder builder = new MuleXmlConfigurationBuilder();
             builder.configure("mule-config.xml");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }        
     }
-
     
-    public boolean dispatch (Message request, List<Message> responses)
-    {
-        return ServiceRegistry.dispatch(request, responses);
+    public void setServletContext(ServletContext sc) {        
     }
 }

@@ -2,7 +2,6 @@ package org.mule.providers.appcelerator.transformers;
 
 import java.io.UnsupportedEncodingException;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.mule.transformers.AbstractTransformer;
@@ -31,7 +30,7 @@ public class XMLToJSON extends AbstractTransformer
             JSONObject o = XML.toJSONObject((String) src);
             return encode(o.toString(), encoding);
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             return encode("", encoding);
         }
 

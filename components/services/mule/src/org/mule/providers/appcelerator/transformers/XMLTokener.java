@@ -23,7 +23,6 @@ SOFTWARE.
  */
 package org.mule.providers.appcelerator.transformers;
 
-import net.sf.json.JSONException;
 
 /**
  * The XMLTokener extends the JSONTokener to provide additional methods for the
@@ -71,7 +70,7 @@ public class XMLTokener extends JSONTokener
      * @throws Exception
      *             If the <code>]]&gt;</code> is not found.
      */
-    public String nextCDATA() throws JSONException
+    public String nextCDATA() throws Exception
     {
         char c;
         int i;
@@ -81,7 +80,7 @@ public class XMLTokener extends JSONTokener
             c = next();
             if (c == 0)
             {
-                throw syntaxError("Unclosed CDATA.");
+                throw new Exception("Unclosed CDATA.");
             }
             sb.append(c);
             i = sb.length() - 3;
@@ -103,7 +102,7 @@ public class XMLTokener extends JSONTokener
      * @throws Exception
      *             upon parsing error
      */
-    public Object nextContent() throws JSONException
+    public Object nextContent() throws Exception
     {
         char c;
         StringBuffer sb;
@@ -148,7 +147,7 @@ public class XMLTokener extends JSONTokener
      * @throws Exception
      *             If missing ';' in XML entity.
      */
-    public Object nextEntity(char a) throws JSONException
+    public Object nextEntity(char a) throws Exception
     {
         StringBuffer sb = new StringBuffer();
         for (;;)
@@ -162,7 +161,7 @@ public class XMLTokener extends JSONTokener
                 break;
             } else
             {
-                throw syntaxError("Missing ';' in XML entity: &" + sb);
+                throw new Exception("Missing ';' in XML entity: &" + sb);
             }
         }
         String s = sb.toString();
@@ -181,7 +180,7 @@ public class XMLTokener extends JSONTokener
      *             If a string is not properly closed or if the XML is badly
      *             structured.
      */
-    public Object nextMeta() throws JSONException
+    public Object nextMeta() throws Exception
     {
         char c;
         char q;
@@ -192,7 +191,7 @@ public class XMLTokener extends JSONTokener
         switch (c)
         {
         case 0:
-            throw syntaxError("Misshaped meta tag.");
+            throw new Exception("Misshaped meta tag.");
         case '<':
             return XML.LT;
         case '>':
@@ -213,7 +212,7 @@ public class XMLTokener extends JSONTokener
                 c = next();
                 if (c == 0)
                 {
-                    throw syntaxError("Unterminated string.");
+                    throw new Exception("Unterminated string.");
                 }
                 if (c == q)
                 {
@@ -255,7 +254,7 @@ public class XMLTokener extends JSONTokener
      * @throws Exception
      *             If the XML is not well formed.
      */
-    public Object nextToken() throws JSONException
+    public Object nextToken() throws Exception
     {
         char c;
         char q;
@@ -267,9 +266,9 @@ public class XMLTokener extends JSONTokener
         switch (c)
         {
         case 0:
-            throw syntaxError("Misshaped element.");
+            throw new Exception("Misshaped element.");
         case '<':
-            throw syntaxError("Misplaced '<'.");
+            throw new Exception("Misplaced '<'.");
         case '>':
             return XML.GT;
         case '/':
@@ -292,7 +291,7 @@ public class XMLTokener extends JSONTokener
                 c = next();
                 if (c == 0)
                 {
-                    throw syntaxError("Unterminated string.");
+                    throw new Exception("Unterminated string.");
                 }
                 if (c == q)
                 {
@@ -334,7 +333,7 @@ public class XMLTokener extends JSONTokener
                 case '<':
                 case '"':
                 case '\'':
-                    throw syntaxError("Bad character in a name.");
+                    throw new Exception("Bad character in a name.");
                 }
             }
         }
