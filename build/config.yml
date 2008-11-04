@@ -67,3 +67,21 @@
         :licenses: [6]
       :textarea:
         :licenses: [6]
+  :layout:
+      :border:
+        :licenses: [6]
+      :elastic:
+        :licenses: [6]
+      :fixedCenter:
+        :licenses: [6]
+      :grid:
+        :licenses: [6]
+      :horizontal:
+        :licenses: [6]
+      :split:
+        :licenses: [6]
+      :vertical:
+        :licenses: [6]
+      :xy:
+        :licenses: [6]
+      

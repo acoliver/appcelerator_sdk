@@ -21,6 +21,7 @@ require File.join(BUILD_DIR, '..', 'build', 'build.rb')
 SERVICES_DIR = File.join(BUILD_DIR, 'services')
 BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
 CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
+LAYOUTS_DIR = File.join(BUILD_DIR, 'layouts')
 
 
 task :default => [:all] do
@@ -47,16 +48,10 @@ namespace :control do
   discover_rakefiles(:control, CONTROLS_DIR)
 end
 
-
 namespace :layout do
-  
-  task :all do 
-    FileUtils.cd(File.expand_path("#{BUILD_DIR}/layouts")) do |d|
-      call_rake " all"
-    end
-  end
-
+  discover_rakefiles(:layout, LAYOUTS_DIR)
 end
+
 
 namespace :theme do
   
