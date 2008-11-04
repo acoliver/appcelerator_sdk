@@ -84,4 +84,185 @@
         :licenses: [6]
       :xy:
         :licenses: [6]
-      
+  :widget:
+      :app_accordion:
+        :licenses: [6]
+        :description: >  app:accordion widget provides horizontal 
+                         or vertical accordions by implementing
+                         http://www.stickmanlabs.com/accordion
+      :app_as_flexflow:
+        :licenses: [6]
+        :description: > app:as_flexflow widget provides a 
+                        coverflow-like graphic functionality
+      :app_box:
+        :licenses: [6]
+        :description: > app:box makes it easier to layout content
+                        in either a horizontal or vertical fashion
+      :app_button:
+        :licenses: [6]
+        :description: > app:button is a fancier looking button that
+                        can be used in place of a normal HTML button
+      :app_calendar:
+        :licenses: [6]
+        :description: > app:calendar is a simple pop-up calendar control
+                        that uses the YUI calendar component from Yahoo!
+      :app_chart:
+        :licenses: [6]
+        :description: > app:chart is a flash-based charting component that
+                        allows you do to either static or dynamic bar charts,
+                        line charts and pie charts
+      :app_combobox:
+        :licenses: [6]
+        :description: > app:combobox is a nicer looking control for
+                        doing combo boxes as an alternative to HTML selects
+      :app_content:
+        :licenses: [6]
+        :description: > app:content allows you to load external HTML content.
+                        this content can be parameterized and can be loaded
+                        on-demand or when the page is first loaded"
+      :app_datacache:
+        :licenses: [6]
+        :description: > app:datacache is a component which can be used  
+                        to cache remote message responses and allow the
+                        results to be re-used within a specified time
+                        period instead of going back to the server
+      :app_datatable:
+        :licenses: [6]
+        :description: > app:datatable is a dynamic table UI control which
+                        allows you to dynamically display table-oriented
+                        data in columns and rows and supports sorting
+                        either on the client or server-side
+      :app_download:
+        :licenses: [6]
+        :description: > app:download is a simple utility for doing dynamic
+                        downloads using a remote service
+      :app_editinplace:
+        :licenses: [6]
+        :description: > app:editinplace is a ui control for displaying
+                        text and then supporting edit-in-place on the
+                        value when clicked
+      :app_ext_grid:
+        :licenses: [1, 6] 
+        :description: > ExtJS Grid Panel  
+      :app_ext_tree:
+        :licenses: [6]
+      :app_field:
+        :licenses: [6]
+        :description: > app:field is a ui control that supports laying
+                        out different types of fields for collecting
+                        or displaying values
+      :app_folder:
+        :licenses: [6]
+        :description: > app:folder is a simple tree-like ui control
+                        for displaying items in a set of folders
+      :app_graphical_music_player:
+        :licenses: [6]
+      :app_http:
+        :licenses: [6]
+        :description: > app:http is a non-visual control for executing
+                        REST-style services
+      :app_if:
+        :licenses: [6]
+        :description: > app:if is a non-visual control for conditional
+                        execution of content based on a Javascript expression
+      :app_image_cropper:
+        :licenses: [6]
+      :app_imagetransition:
+        :licenses: [6]
+        :description: > app:imagetransition is a control for transition
+                        from one image to another
+      :app_iterator:
+        :licenses: [6]
+        :description: > app:iterator is a UI control for iterating
+                        over a set of array values from a message
+      :app_message:
+        :licenses: [6]
+        :description: > app:message is a non-visual widget for sending
+                        a message either locally or remotely
+      :app_modalbox:
+        :licenses: [6]
+        :description: > app:modalbox is a UI control for displaying
+                        a modal dialog box
+      :app_modaldialog:
+        :licenses: [6]
+        :description: > app:modalbox is a UI control for displaying
+                        a modal dialog box
+      :app_mp3player:
+        :licenses: [6]
+        :description: > app:mp3player is a flash based mp3 player
+      :app_music_player:
+        :licenses: [6]
+        :description: > app:music_player widget that supports streaming
+                        music and dynamically controlling the streaming
+                        like volume, pan, starting and stopping
+      :app_pagination:
+        :licenses: [6]
+        :description: > app:pagination is a control for assisting
+                        in pagination capabilities using messages
+      :app_panel:
+        :licenses: [6]
+        :description: > app:panel is a UI control for displaying content
+                        in a nice looking panel with capabilities like
+                        dragging, resizing, etc.
+      :app_progressbar:
+        :licenses: [6]
+        :description: > app:progressbar is a UI control for displaying
+                        a progress bar and driving the progress values
+                        based on a message
+      :app_script:
+        :licenses: [6]
+        :description: > app:script is a non-visual control for executing
+                        javascript based on a message or when the page loads
+      :app_search:
+        :licenses: [6]
+        :description: > app:search is a UI control for performing dynamic
+                        searches based on key entry (without having to click a button)
+      :app_security:
+        :licenses: [6]
+        :description: > app:security is a simple widget which will attempt
+                        to hide content based on a security policy
+      :app_shadowbox:
+        :licenses: [6]
+        :description: > app:shadowbox wraps the Shadowbox library useful
+                        for viewing media in a modal dialog
+      :app_simple_panel:
+        :licenses: [6]
+      :app_split_box:
+        :licenses: [6]
+        :description: > app:split_box widget supports either horizontal 
+                        or vertical split box views
+      :app_statemachine:
+        :licenses: [6]
+        :description: > app:statemachine is a non-visual widget for
+                        controlling states based on messages
+      :app_stopwatch:
+        :licenses: [6]
+        :description: > app:stopwatch is a simple UI control for
+                        displaying and controlling a stop watch
+      :app_tabpanel:
+        :licenses: [6]
+        :description: > app:tabpanel is a UI control for displaying content in tabs
+      :app_template:
+        :licenses: [6]
+        :description: > app:template is a layout component for loading
+                        content based on a template
+      :app_tooltip:
+        :licenses: [6]
+        :description: > app:tooltip is a UI control for displaying nice
+                        looking tooltips based on a message
+      :app_upload:
+        :licenses: [6]
+        :description: > app:upload is a component which makes dynamic
+                        upload of multipart attachments simple.
+      :app_validation:
+        :licenses: [6]
+        :description: > app:validation is a logic component for controlling
+                         multi-state validation across different elements
+      :app_widget:
+        :licenses: [6]
+        :description: > app:widget is a meta-widget which allows you
+                        to dynamically create a widget inline in your code
+      :app_yui_map:
+        :licenses: [6]
+        :description: > app:yui_map is a Yahoo! based map UI control
+                        which supports dynamic mapping from messages

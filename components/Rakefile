@@ -22,6 +22,7 @@ SERVICES_DIR = File.join(BUILD_DIR, 'services')
 BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
 CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
 LAYOUTS_DIR = File.join(BUILD_DIR, 'layouts')
+WIDGETS_DIR = File.join(BUILD_DIR, 'widgets')
 
 
 task :default => [:all] do
@@ -50,6 +51,10 @@ end
 
 namespace :layout do
   discover_rakefiles(:layout, LAYOUTS_DIR)
+end
+
+namespace :widget do
+  discover_rakefiles(:widget, WIDGETS_DIR)
 end
 
 
@@ -178,16 +183,6 @@ namespace :websdk do
       end
     end
   end
-end
-
-namespace :widget do
-  
-  task :all do
-    FileUtils.cd("#{BUILD_DIR}/widgets") do |d|
-      call_rake ""
-    end
-  end
-
 end
 
 #
