@@ -1,8 +1,0 @@
---- 
-:type: service
-:dependencies: 
-- :type: websdk
-  :name: websdk
-  :version: ">=2.1.2"
-:name: merb 
-:version: 1.0.2

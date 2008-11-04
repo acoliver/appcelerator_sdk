@@ -39,6 +39,8 @@ manifest = t.manifest
 # reasonable defaults for version and output_filename
 CONFIG[:releases].each_pair {|type, rels|
   rels.each_pair { |name, config|
+    config[:name] = name.to_s
+    config[:type] = type.to_s
     # the default version when building something is the current version
     version = manifest.get_current_version(type, name)
     config[:version] = version
@@ -66,6 +68,90 @@ def run_all_in_namespace(ns)
        Rake::Task["#{t.name}"].invoke
      end
   }
+end
+
+def discover_rakefiles(type, dir)
+  dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
+
+  dirs.each { |subdir|
+    subdir = File.expand_path(subdir)
+    rfile = File.join(subdir, 'Rakefile.rb')
+    name = File.basename(subdir).to_sym
+
+    if File.exists?(rfile)
+        require rfile
+    else
+        task name do
+            build_simple_component(type, name, subdir)
+        end
+    end
+
+    # after the task, add the zip file
+    Rake::Task["#{type.to_s}:#{name}"].enhance do
+        add_config_to_zip(type, name)
+    end
+
+  }
+
+  task :all do
+    run_all_in_namespace(:behavior)
+  end
+    
+end
+
+def add_config_to_zip(type, name)
+
+  config = get_config(type, name.to_sym)
+  zipfile = config[:output_filename]
+
+  Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
+    config = config.reject { |k,v| k == :output_filename }
+    zipfile.get_output_stream('build.yml') do |f|
+      f.puts(YAML::dump(config))
+    end
+  end
+
+end
+
+def build_simple_component(type, name, dir)
+  config = get_config(type, name.to_sym)
+  
+  if config[:licenses].nil? or config[:licenses].empty?
+    STDERR.puts "Before you can build the control, you need to set the licensing type."
+    STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"
+    STDERR.puts "for more information."
+    exit 1
+  end
+
+  output_file = config[:output_filename]
+  FileUtils.rm_f(output_file)
+
+  Zip::ZipFile.open(output_file, Zip::ZipFile::CREATE) do |zipfile|
+    src_path = Pathname.new(dir)
+
+    Find.find(dir) do |path|
+      pathname = Pathname.new(path)
+
+      next if path.include? '.svn'
+      next if path.include? 'Rakefile'
+      next if path.include? 'LICENSING.readme'
+      next if not pathname.file?
+
+      filename = pathname.relative_path_from(src_path)
+      if path.include? "#{name}.js"
+        zipfile.get_output_stream(filename) do |f|
+          c = File.read(path)
+          f.puts(c.gsub('__VERSION__', config[:version]))
+        end
+      else
+        zipfile.add(filename, path)
+      end
+    end
+  end
+
+  # TODO: inline this at some point
+  compress_js_in_zip(output_file)
+
 end
 
 def md5(file)
@@ -239,7 +325,7 @@ task :default => [:stage] do
 end
 
 YUI_VERSION = '2.3.6'
-YUI_JAR = to_path "#{CWD}/websdk/lib/yuicompressor-#{YUI_VERSION}.jar"
+YUI_JAR = to_path "#{CWD}/../components/websdk/lib/yuicompressor-#{YUI_VERSION}.jar"
 YUI_COMPRESSOR = "java -jar \"#{YUI_JAR}\""
 COMPRESS_RB = "ruby \"#{CWD}/websdk/lib/compress.rb\""
 

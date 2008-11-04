@@ -33,3 +33,18 @@
         :dependencies: [{type: websdk, name: websdk}]
       :zend:
         :dependencies: [{type: websdk, name: websdk}]
+  :behavior:
+      :draggable:
+        :licenses: [6]
+      :modal:
+        :licenses: [6]
+      :reflection:
+        :licenses: [6]
+      :resizable:
+        :licenses: [6]
+      :rounded:
+        :licenses: [6]
+      :shadow:
+        :licenses: [6]
+      :tooltip:
+        :licenses: [6]

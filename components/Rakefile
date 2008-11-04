@@ -16,18 +16,11 @@
 #   limitations under the License.
 #
 BUILD_DIR = File.expand_path(File.dirname(__FILE__))
-SERVICES_DIR = File.join(BUILD_DIR, 'services')
 require File.join(BUILD_DIR, '..', 'build', 'build.rb')
 
-## SERVICE TASKS
-namespace :service do
-  Dir["#{SERVICES_DIR}/*/Rakefile.rb"].each { | rakefile |
-      require rakefile 
-  }
-  task :all do
-    run_all_in_namespace(:service)
-  end
-end
+SERVICES_DIR = File.join(BUILD_DIR, 'services')
+BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
+
 
 task :default => [:all] do
 end
@@ -55,16 +48,6 @@ namespace :control do
   
   task :all do 
     FileUtils.cd(File.expand_path("#{BILD_DIR}/controls")) do |d|
-      call_rake " all"
-    end
-  end
-
-end
-
-namespace :behavior do
-  
-  task :all do 
-    FileUtils.cd(File.expand_path("#{BUILD_DIR}/behaviors")) do |d|
       call_rake " all"
     end
   end
@@ -249,4 +232,12 @@ namespace :release do
       end
     end
   end
+end
+
+namespace :service do
+  discover_rakefiles(:service, SERVICES_DIR)
+end
+
+namespace :behavior do
+  discover_rakefiles(:behavior, BEHAVIORS_DIR)
 end
