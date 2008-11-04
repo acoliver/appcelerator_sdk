@@ -20,6 +20,7 @@ require File.join(BUILD_DIR, '..', 'build', 'build.rb')
 
 SERVICES_DIR = File.join(BUILD_DIR, 'services')
 BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
+CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
 
 
 task :default => [:all] do
@@ -34,20 +35,23 @@ end
 task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all installer:all plugin:all) do
 end
 
+namespace :service do
+  discover_rakefiles(:service, SERVICES_DIR)
+end
+
+namespace :behavior do
+  discover_rakefiles(:behavior, BEHAVIORS_DIR)
+end
+
+namespace :control do
+  discover_rakefiles(:control, CONTROLS_DIR)
+end
+
+
 namespace :layout do
   
   task :all do 
     FileUtils.cd(File.expand_path("#{BUILD_DIR}/layouts")) do |d|
-      call_rake " all"
-    end
-  end
-
-end
-
-namespace :control do
-  
-  task :all do 
-    FileUtils.cd(File.expand_path("#{BILD_DIR}/controls")) do |d|
       call_rake " all"
     end
   end
@@ -234,10 +238,3 @@ namespace :release do
   end
 end
 
-namespace :service do
-  discover_rakefiles(:service, SERVICES_DIR)
-end
-
-namespace :behavior do
-  discover_rakefiles(:behavior, BEHAVIORS_DIR)
-end

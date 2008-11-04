@@ -48,3 +48,22 @@
         :licenses: [6]
       :tooltip:
         :licenses: [6]
+  :control:
+      :accordion:
+        :licenses: [6]
+      :button:
+        :licenses: [6]
+      :input:
+        :licenses: [6]
+      :iterator:
+        :licenses: [6]
+      :panel:
+        :licenses: [6]
+      :select:
+        :licenses: [6]
+      :slidetree:
+        :licenses: [6]
+      :tabpanel:
+        :licenses: [6]
+      :textarea:
+        :licenses: [6]
