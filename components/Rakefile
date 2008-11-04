@@ -190,27 +190,6 @@ namespace :widget do
 
 end
 
-namespace :plugin do
-  task :all do
-    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      call_rake ""
-    end
-  end
-
-  task :java do
-    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      call_rake " java:all"
-    end
-  end
-
-  task :java_spring do
-    FileUtils.cd("#{BUILD_DIR}/plugins") do |d|
-      call_rake " java:spring"
-    end
-  end
-end
-
-
 #
 # this is a nolan special
 #
