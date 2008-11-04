@@ -94,7 +94,7 @@ def discover_rakefiles(type, dir)
   }
 
   task :all do
-    run_all_in_namespace(:behavior)
+    run_all_in_namespace(type)
   end
     
 end
