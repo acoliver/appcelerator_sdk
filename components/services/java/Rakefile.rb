@@ -49,7 +49,7 @@
   
     FileUtils.cd(java_classes) do
   
-       zipfile = File.join(STAGE_DIR, "service_java_#{build_config[:version]}.zip")
+       zipfile = build_config[:output_filename]
        FileUtils.rm_rf zipfile
        
        excludes = %w(pieces/lib/optional/spring-2.5.1.jar pieces/lib/optional/ant-1.7.0.jar pieces/lib/optional/cglib-2.1.3.jar pieces/lib/optional/junit.jar)

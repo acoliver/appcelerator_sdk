@@ -35,20 +35,23 @@ require File.join(CWD, 'release.rb')
 t = S3Transport.new(DISTRO_BUCKET, CONFIG)
 manifest = t.manifest
 
-# Load the build configuration and try to
-# create some reasonable default for versions, etc
-CONFIG['components'].each_pair {|type, rels|
-  type = type.to_sym()
+# Load the build configuration and try to  create some
+# reasonable defaults for version and output_filename
+CONFIG[:releases].each_pair {|type, rels|
   rels.each_pair { |name, config|
-    name = name.to_sym()
+    # the default version when building something is the current version
     version = manifest.get_current_version(type, name)
     config[:version] = version
+    
+    # standardized output filenames 
+    output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}")
+    config[:output_filename] = output_file 
   }
 }
 
 def get_config(type, name)
     begin
-      config = CONFIG['components'][type.to_s][name.to_s]
+      config = CONFIG[:releases][type][name]
     rescue
       config = nil
     end
@@ -59,6 +62,7 @@ end
 def run_all_in_namespace(ns)
   tasks = Rake.application.tasks.select { |t|
      if t.name =~ /^#{ns}:/ and not t.name =~ /^#{ns}:all/
+       puts "\nBuilding #{t.name}"
        Rake::Task["#{t.name}"].invoke
      end
   }
@@ -215,18 +219,6 @@ def save_config(dir,config)
   f = File.open(fn,'w+')
   f.puts config.to_yaml
   f.close
-end
-
-def load_config(dir)
-  fn = File.join(dir,'build.yml')
-  config = Hash.new
-  config = YAML::load_file(fn) if File.exists?(fn)
-  config[:version] = 1.0 unless File.exists?(fn)
-  # we are going to store a snapshot of the original
-  # so we can later compare if we have any changes
-  config[:backup_glob] = config
-  at_exit { save_config(dir,config) }
-  config 
 end
 
 desc 'prepare stage dir'

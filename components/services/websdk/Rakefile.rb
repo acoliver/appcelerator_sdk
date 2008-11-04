@@ -27,7 +27,7 @@
     dist_dir = File.expand_path("#{STAGE_DIR}/websdk_service")
     FileUtils.mkdir_p(dist_dir)
   
-    zipfile = "#{STAGE_DIR}/service_websdk_#{build_config[:version]}.zip"
+    zipfile = build_config[:output_filename]
     FileUtils.rm_rf(zipfile)
   
     FileUtils.cp("#{build_dir}/install.rb", dist_dir)

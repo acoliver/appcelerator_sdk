@@ -24,7 +24,7 @@
     build_config = get_config(:service, :dotnet)
 
      dotnet_dir = "#{build_dir}/src"
-     zipfile = "#{STAGE_DIR}/service_dotnet_#{build_config[:version]}.zip"
+     zipfile = build_config[:output_filename]
   
      FileUtils.mkdir_p STAGE_DIR
      FileUtils.rm_rf zipfile

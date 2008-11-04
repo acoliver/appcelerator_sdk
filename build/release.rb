@@ -256,7 +256,7 @@ class Manifest
             parts = parts[0..-2] + ['%03d' % parts.last + 1]
             return parts.join('.')
         else
-            return @config['version'] + '.00'
+            return @config[:version] + '.00'
         end
     end
 
@@ -290,8 +290,8 @@ class FileTransport
 
     def initialize(dir, config)
 
-        release_name = config['name'].to_s
-        release_version = config['version'].to_s
+        release_name = config[:name].to_s
+        release_version = config[:version].to_s
     
         @release_dir = File.join(dir, release_name + '-' + release_version)
         @manifest_file = File.join(@release_dir, "manifest.js")
@@ -345,8 +345,8 @@ class S3Transport
 
     def initialize(bucket_name, config)
 
-        release_name = config['name'].to_s
-        release_version = config['version'].to_s
+        release_name = config[:name].to_s
+        release_version = config[:version].to_s
 
         @release_path = File.join(release_name + '-' + release_version)
         @manifest_path = File.join(@release_path, "manifest.js")
@@ -463,17 +463,17 @@ class S3Transport
 end
 
 
+# example of how to use the different transports
 #config_text = File.open('config.yml').read()
 #config = YAML::load(config_text)
 #t = S3Transport.new(DISTRO_BUCKET, config)
-#
 #t = FileTransport.new("dist", config)
 
+# how to release a zip file
 #Dir["appcelerator2/*.zip"].each {|file|
 #    puts "Releasing #{file}..."
 #    r = Release.from_zip(file)
 #    t.add_release(r)
 #}
-#
 #puts "pushing releases..."
 #t.push()

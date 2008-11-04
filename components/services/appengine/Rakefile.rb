@@ -22,9 +22,9 @@
   
     build_dir = "#{File.dirname(__FILE__)}" 
     build_config = get_config(:service, :appengine)
+    zipfile = build_config[:output_filename]
   
     FileUtils.mkdir_p "#{STAGE_DIR}"
-    zipfile = "#{STAGE_DIR}/service_appengine_#{build_config[:version]}.zip"
     FileUtils.rm_rf zipfile
     
     src_dir = "#{build_dir}/src"

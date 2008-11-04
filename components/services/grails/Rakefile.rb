@@ -51,7 +51,7 @@
     # clean
     clean_dir(java_build_dir)
   
-    zipfile = File.join(STAGE_DIR, "service_grails_#{config[:version]}.zip")
+    zipfile = config[:output_filename]
     FileUtils.rm_rf zipfile
   
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|

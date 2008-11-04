@@ -24,7 +24,7 @@
     build_config = get_config(:service, :php)
   
     FileUtils.mkdir_p "#{STAGE_DIR}"
-    zipfile = "#{STAGE_DIR}/service_php_#{build_config[:version]}.zip"
+    zipfile = build_config[:output_filename]
     FileUtils.rm_rf(zipfile)
   
     stage_dir = File.expand_path("#{STAGE_DIR}/php")

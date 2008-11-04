@@ -24,7 +24,7 @@
     build_config = get_config(:service, :ruby)
   
     FileUtils.mkdir_p "#{STAGE_DIR}"
-    zipfile = "#{STAGE_DIR}/service_ruby_#{build_config[:version]}.zip"
+    zipfile = build_config[:output_filename]
     FileUtils.rm_rf zipfile
   
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|

@@ -25,9 +25,9 @@
     python_dir = File.join(build_dir, '..', 'python')
     build_config = get_config(:service, :django)
     python_config = get_config(:service, :python)
+    zipfile = build_config[:output_filename]
   
     FileUtils.mkdir_p "#{STAGE_DIR}"
-    zipfile = "#{STAGE_DIR}/service_django_#{build_config[:version]}.zip"
     FileUtils.rm_rf zipfile
     
     stage_src = "#{STAGE_DIR}/python_src"

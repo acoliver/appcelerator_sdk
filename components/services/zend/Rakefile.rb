@@ -24,7 +24,7 @@ task :zend do
   build_config = get_config(:service, :zend)
 
   FileUtils.mkdir_p(STAGE_DIR)
-  zipfile = "#{STAGE_DIR}/service_zend_#{build_config[:version]}.zip"
+  zipfile = build_config[:output_filename]
   FileUtils.rm_rf zipfile
 
   stage_dir = File.expand_path "#{STAGE_DIR}/zend"

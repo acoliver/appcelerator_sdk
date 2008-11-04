@@ -68,7 +68,7 @@
     FileUtils.mkdir_p public_jar_path
     Dir["#{dest_lib_dir}/*.jar"].each { |f| FileUtils.cp(f, public_jar_path) }
   
-    zipfile = File.join(STAGE_DIR, "service_mule_#{config[:version]}.zip")
+    zipfile = config[:output_filename]
     FileUtils.rm_rf zipfile
   
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
