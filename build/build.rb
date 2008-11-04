@@ -44,7 +44,7 @@ CONFIG[:releases].each_pair {|type, rels|
     config[:version] = version
     
     # standardized output filenames 
-    output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}")
+    output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}.zip")
     config[:output_filename] = output_file 
   }
 }
