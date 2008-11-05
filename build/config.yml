@@ -6,7 +6,6 @@
       :win32:
       :osx:
       :unix:
-  :update:
       :update:
   :service:
       :appengine:

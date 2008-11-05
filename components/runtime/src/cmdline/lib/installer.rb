@@ -1120,7 +1120,7 @@ HELP
     def Installer.selfupdate(version=nil,options={})
     
       build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
-      cm = {:type=>:update, :name=>'update', :version=>version}
+      cm = {:type=>:runtime, :name=>'update', :version=>version}
       update = Installer.get_component(:remote, cm)
 
       if update

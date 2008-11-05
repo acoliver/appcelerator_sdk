@@ -26,7 +26,7 @@ namespace :runtime do
   task :update do
     puts "==> Building Runtime Update Patch"
 
-    config = get_config(:update, :update)
+    config = get_config(:runtime, :update)
     update_dir = "#{STAGE_DIR}/installer-update"
     clean_dir(update_dir)
   
