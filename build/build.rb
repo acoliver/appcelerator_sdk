@@ -30,6 +30,7 @@ STAGE_DIR = File.expand_path "#{CWD}/../stage"
 
 # Load the main build config
 CONFIG = YAML::load_file(File.join(CWD, 'config.yml'))
+puts CONFIG[:releases][:theme_control].inspect
 
 # Load the release system and try to initialize
 # it using the S3 Transport
@@ -44,9 +45,9 @@ CONFIG[:releases].each_pair {|type, rels|
     config[:name] = name.to_s
 
     typename = type.to_s
-    if (typename =~ /^theme-/)
+    if (typename =~ /^theme_/)
         config[:type] = "theme"
-        config[:control] = typename.sub("theme-", "")
+        config[:control] = typename.sub("theme_", "")
     config[:type] = type.to_s
         config[:type] = typename
     end
