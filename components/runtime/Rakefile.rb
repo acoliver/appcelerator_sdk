@@ -36,7 +36,7 @@ namespace :runtime do
     FileUtils.mkdir_p("#{update_dir}/lib")
     FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{update_dir}/lib/uuid.rb"
   
-    zipfile = "#{STAGE_DIR}/installer_update_#{config[:version]}.zip"
+    zipfile = config[:output_filename]
     FileUtils.rm_rf zipfile
   
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
@@ -46,6 +46,8 @@ namespace :runtime do
       end
       zipfile.add 'pre_flight.rb',"#{RUNTIME_DIR}/pre_flight.rb"
     end
+
+    add_config_to_zip(config)
   end
   
   desc 'build win32 installer'
