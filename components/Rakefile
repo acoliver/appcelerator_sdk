@@ -16,7 +16,9 @@
 #   limitations under the License.
 #
 BUILD_DIR = File.expand_path(File.dirname(__FILE__))
-require File.join(BUILD_DIR, '..', 'build', 'build.rb')
+ROOT_DIR = File.join(BUILD_DIR, '..')
+
+require File.join(ROOT_DIR, 'build', 'build.rb')
 
 SERVICES_DIR = File.join(BUILD_DIR, 'services')
 BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
@@ -24,6 +26,10 @@ CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
 LAYOUTS_DIR = File.join(BUILD_DIR, 'layouts')
 WIDGETS_DIR = File.join(BUILD_DIR, 'widgets')
 THEMES_DIR = File.join(BUILD_DIR, 'themes')
+WEBSDK_DIR = File.join(BUILD_DIR, 'websdk')
+RUNTIME_DIR = File.join(BUILD_DIR, 'runtime')
+
+require File.join('runtime', 'Rakefile.rb')
 
 task :default => [:all] do
 end
@@ -34,51 +40,7 @@ task :cleanup do
    end
 end
 
-task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all installer:all plugin:all) do
-end
-
-namespace :theme do
-  
-  task :all do 
-    FileUtils.cd(File.expand_path("#{BUILD_DIR}/themes")) do |d|
-      call_rake " all"
-    end
-  end
-
-end
-
-namespace :installer do
-  
-  task :all do 
-    FileUtils.cd(File.expand_path("#{BUILD_DIR}/runtime")) do |d|
-      call_rake " all"
-    end
-  end
-
-  task :win32 do
-    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      call_rake " win32"
-    end
-  end
-
-  task :unix do
-    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      call_rake " unix"
-    end
-  end
-
-  task :osx do
-    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      call_rake " osx"
-    end
-  end
-
-  task :update do
-    FileUtils.cd("#{BUILD_DIR}/runtime") do |d|
-      call_rake " update"
-    end
-  end
-    
+task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all runtime:all plugin:all) do
 end
 
 namespace :websdk do

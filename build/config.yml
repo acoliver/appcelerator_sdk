@@ -2,6 +2,12 @@
 :version: "3.0"
 :name: appcelerator
 :releases:
+  :runtime:
+      :win32:
+      :osx:
+      :unix:
+  :update:
+      :update:
   :service:
       :appengine:
         :dependencies: [{type: websdk, name: websdk}]
