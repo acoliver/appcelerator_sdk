@@ -61,7 +61,7 @@ CONFIG[:releases].each_pair {|type, rels|
     if (typename =~ /^theme_/)
         config[:type] = "theme"
         config[:control] = typename.sub("theme_", "")
-    config[:type] = type.to_s
+    else
         config[:type] = typename
     end
 
