@@ -30,7 +30,6 @@ STAGE_DIR = File.expand_path "#{CWD}/../stage"
 
 # Load the main build config
 CONFIG = YAML::load_file(File.join(CWD, 'config.yml'))
-puts CONFIG[:releases][:theme_control].inspect
 
 # Load the release system and try to initialize
 # it using the S3 Transport
@@ -40,9 +39,23 @@ manifest = t.manifest
 
 # inject defaults for build configurations
 CONFIG[:releases].each_pair {|type, rels|
+  to_add = {}
   rels.each_pair { |name, config|
+    
+    # if no config is found, create a default config
+    if config.nil?
+        config = to_add[name] = {}
+    end
+
     # inject name and type into config
-    config[:name] = name.to_s
+    str_name = name.to_s
+    config[:name] = str_name
+
+    # duplicate config replacing : with _ if we are trying
+    # to look for it that way
+    if str_name.include?(':')
+        to_add[str_name.sub(':', '_').to_sym] = config
+    end
 
     typename = type.to_s
     if (typename =~ /^theme_/)
@@ -63,22 +76,19 @@ CONFIG[:releases].each_pair {|type, rels|
     output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}.zip")
     config[:output_filename] = output_file 
   }
+
+  rels.merge!(to_add)
 }
 
-def get_config(type, name, subtype)
-    if not parent.nil?
-        type = "#{type.to_s}-#{subtype.to_s}".to_sym
-    end
+def get_config(type, name)
+    type = type.join('_').to_sym if type.class == Array
     config = CONFIG[:releases][type][name] rescue nil
-
     puts "No configuration for #{type} named #{name}" unless config
     config
 end
 
 
-def add_config_to_zip(type, name)
-
-  config = get_config(type, name.to_sym)
+def add_config_to_zip(config)
   zipfile = config[:output_filename]
 
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|

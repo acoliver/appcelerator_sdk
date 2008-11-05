@@ -23,6 +23,7 @@ BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
 CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
 LAYOUTS_DIR = File.join(BUILD_DIR, 'layouts')
 WIDGETS_DIR = File.join(BUILD_DIR, 'widgets')
+THEMES_DIR = File.join(BUILD_DIR, 'themes')
 
 task :default => [:all] do
 end
@@ -163,51 +164,52 @@ namespace :websdk do
   end
 end
 
-def directory_to_namespace(type, dir)
+def all_task(nspace)
+    task :all do
+        tasks = Rake.application.tasks.each { |t|
+           if t.name.include?(nspace) and not t.name.include?(':all')
+             puts "\nBuilding #{t.name}"
+             Rake::Task["#{t.name}"].invoke
+           end
+        }
+    end
+end
 
-  if type.class == Array
-    subtype = type[1]
-    type = type[0]
+def directory_to_namespace(types, dir, i=0, nspace="")
+  return directory_to_namespace([types], dir) if types.class != Array
+
+  if i < types.length
+      namespace types[i] do
+          nspace = "#{nspace}#{types[i].to_s}:"
+          directory_to_namespace(types, dir, i + 1, nspace)
+          all_task(nspace)
+      end
+      return
   end
 
-  namespace type do
-    dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
-    dirs.each { |subdir|
-      subdir = File.expand_path(subdir)
-      rfile = File.join(subdir, 'Rakefile.rb')
-      name = File.basename(subdir).to_sym
+  dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
+  dirs.each { |subdir|
+    subdir = File.expand_path(subdir)
+    rfile = File.join(subdir, 'Rakefile.rb')
+    name = File.basename(subdir).to_sym
 
-      # if there is a Rakefile.rb in this subdirectory
-      # then just require that
-      if File.exists?(rfile)
-          require rfile
+    if File.exists?(rfile) # first try Rakefile.rb in directory
+        require rfile
 
-      # else assume this is meant to be build like
-      # a simple Javascript/CSS component
-      else
-          task name do
-              config = get_config(type, name, subtype)
-              build_simple_component(config, subdir)
-          end
-      end
-
-      # after the task, add build.yml to zip file
-      Rake::Task["#{type.to_s}:#{name}"].enhance do
-          add_config_to_zip(type, name)
-      end
-
-    }
-
-    task :all do
-      tasks = Rake.application.tasks.select { |t|
-         if t.name =~ /^#{type}:/ and not t.name =~ /:all/
-           puts "\nBuilding #{t.name}"
-           Rake::Task["#{t.name}"].invoke
-         end
-      }
+    else # otherwise try a simple build
+        task name do
+            config = get_config(types, name)
+            build_simple_component(config, subdir)
+        end
     end
 
-  end
+    # inject config afterward
+    Rake::Task["#{nspace}#{name}"].enhance do
+        config = get_config(types, name)
+        add_config_to_zip(config)
+    end
+
+  }
 end
 
 directory_to_namespace(:service, SERVICES_DIR)
@@ -216,12 +218,14 @@ directory_to_namespace(:control, CONTROLS_DIR)
 directory_to_namespace(:layout, LAYOUTS_DIR)
 directory_to_namespace(:widget, WIDGETS_DIR)
 
+directory_to_namespace([:theme, :layout], File.join(THEMES_DIR, "layouts"))
+directory_to_namespace([:theme, :behavior], File.join(THEMES_DIR, "behaviors"))
 directory_to_namespace([:theme, :control], File.join(THEMES_DIR, "controls"))
-directory_to_namespace([:theme, :layout], File.join(THEMES_DIR, "layout"))
-directory_to_namespace([:theme, :behavior], File.join(THEMES_DIR, "behavior"))
 
 
 def build_simple_component(config, dir)
+  name = config[:name]
+
   if config[:licenses].nil? or config[:licenses].empty?
     STDERR.puts "Before you can build the control, you need to set the licensing type."
     STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"

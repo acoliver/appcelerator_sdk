@@ -34,211 +34,212 @@
       :zend:
         :dependencies: [{type: websdk, name: websdk}]
   :behavior:
-      :draggable:
-      :modal:
-      :reflection:
-      :resizable:
-      :rounded:
-      :shadow:
-      :tooltip:
+      :draggable: 
+      :modal: 
+      :reflection: 
+      :resizable: 
+      :rounded: 
+      :shadow: 
+      :tooltip: 
   :control:
-      :accordion:
-      :button:
-      :input:
-      :iterator:
-      :panel:
-      :select:
-      :slidetree:
-      :tabpanel:
-      :textarea:
+      :accordion: 
+      :button: 
+      :input: 
+      :iterator: 
+      :panel: 
+      :select: 
+      :slidetree: 
+      :tabpanel: 
+      :textarea: 
   :layout:
-      :border:
-      :elastic:
-      :fixedCenter:
-      :grid:
-      :split:
-      :vertical:
-      :xy:
+      :border: 
+      :elastic: 
+      :fixedCenter: 
+      :grid: 
+      :split: 
+      :vertical: 
+      :xy: 
   :theme_behavior:
-    :shadow-basic:
-    :shadow-curved:
+    :shadow:basic: 
+    :shadow:curved: 
   :theme_control:
-    :accordion-aqua_grey:
-    :accordion-basic:
-    :accordion-bluegrey_gradient:
-    :accordion-fixed_gradient:
-    :button-aqua_blue:
-    :button-aqua_grey:
-    :button-iphone_green:
-    :button-iphone_grey:
-    :button-iphone_red:
-    :button-lightblue_gradient:
-    :button-thinblue:
-    :button-white_gradient:
-    :input-rounded_search:
-    :input-thinblue:
-    :input-thinline:
-    :input-white_gradient:
-    :panel-aqua:
-    :panel-basic:
-    :panel-dark:
-    :panel-lightblue:
-    :panel-lightgrey:
-    :panel-white:
-    :panel-xp:
-    :select-thinblue:
-    :select-thinline:
-    :select-white_gradient:
-    :slidetree-basic:
-    :slidetree-black:
-    :tabpanel-basic:
-    :tabpanel-box:
-    :tabpanel-gradient_stacked:
-    :tabpanel-green:
-    :tabpanel-green_arrow:
-    :tabpanel-minimal:
-    :tabpanel-simple_stacked:
-    :tabpanel-white:
-    :textarea-thinblue:
-    :textarea-thinline:
-    :textarea-white_gradient:
+    :accordion:aqua_grey: 
+    :accordion:basic: 
+    :accordion:bluegrey_gradient: 
+    :accordion:fixed_gradient: 
+    :button:aqua_blue: 
+    :button:aqua_grey: 
+    :button:iphone_green: 
+    :button:iphone_grey: 
+    :button:iphone_red: 
+    :button:lightblue_gradient: 
+    :button:thinblue: 
+    :button:white_gradient: 
+    :input:rounded_search: 
+    :input:thinblue: 
+    :input:thinline: 
+    :input:white_gradient: 
+    :panel:aqua: 
+    :panel:basic: 
+    :panel:dark: 
+    :panel:lightblue: 
+    :panel:lightgrey: 
+    :panel:white: 
+    :panel:xp: 
+    :select:thinblue: 
+    :select:thinline: 
+    :select:white_gradient: 
+    :slidetree:basic: 
+    :slidetree:black: 
+    :tabpanel:basic: 
+    :tabpanel:box: 
+    :tabpanel:gradient_stacked: 
+    :tabpanel:green: 
+    :tabpanel:green_arrow: 
+    :tabpanel:minimal: 
+    :tabpanel:simple_stacked: 
+    :tabpanel:white: 
+    :textarea:thinblue: 
+    :textarea:thinline: 
+    :textarea:white_gradient: 
   :theme_layout:
-    :horizontal-form:
-    :vertical-form:
+    :horizontal:form: 
+    :vertical:form: 
   :widget:
-      :app_accordion:
+      :app:accordion:
         :description: >  app:accordion widget provides horizontal 
                          or vertical accordions by implementing
                          http://www.stickmanlabs.com/accordion
-      :app_as_flexflow:
+      :app:as_flexflow:
         :description: > app:as_flexflow widget provides a 
                         coverflow-like graphic functionality
-      :app_box:
+      :app:box:
         :description: > app:box makes it easier to layout content
                         in either a horizontal or vertical fashion
-      :app_button:
+      :app:button:
         :description: > app:button is a fancier looking button that
                         can be used in place of a normal HTML button
-      :app_calendar:
+      :app:calendar:
         :description: > app:calendar is a simple pop-up calendar control
                         that uses the YUI calendar component from Yahoo!
-      :app_chart:
+      :app:chart:
         :description: > app:chart is a flash-based charting component that
                         allows you do to either static or dynamic bar charts,
                         line charts and pie charts
-      :app_combobox:
+      :app:combobox:
         :description: > app:combobox is a nicer looking control for
                         doing combo boxes as an alternative to HTML selects
-      :app_content:
+      :app:content:
         :description: > app:content allows you to load external HTML content.
                         this content can be parameterized and can be loaded
                         on-demand or when the page is first loaded"
-      :app_datacache:
+      :app:datacache:
         :description: > app:datacache is a component which can be used  
                         to cache remote message responses and allow the
                         results to be re-used within a specified time
                         period instead of going back to the server
-      :app_datatable:
+      :app:datatable:
         :description: > app:datatable is a dynamic table UI control which
                         allows you to dynamically display table-oriented
                         data in columns and rows and supports sorting
                         either on the client or server-side
-      :app_download:
+      :app:download:
         :description: > app:download is a simple utility for doing dynamic
                         downloads using a remote service
-      :app_editinplace:
+      :app:editinplace:
         :description: > app:editinplace is a ui control for displaying
                         text and then supporting edit-in-place on the
                         value when clicked
-      :app_ext_grid:
+      :app:ext_grid:
         :description: > ExtJS Grid Panel  
         :licenses: [1, 6] 
-      :app_ext_tree:
-      :app_field:
+      :app:ext_tree:
+      :app:field:
         :description: > app:field is a ui control that supports laying
                         out different types of fields for collecting
                         or displaying values
-      :app_folder:
+      :app:folder:
         :description: > app:folder is a simple tree-like ui control
                         for displaying items in a set of folders
-      :app_graphical_music_player:
-      :app_http:
+      :app:graphical_music_player:
+      :app:http:
         :description: > app:http is a non-visual control for executing
                         REST-style services
-      :app_if:
+      :app:if:
         :description: > app:if is a non-visual control for conditional
                         execution of content based on a Javascript expression
-      :app_image_cropper:
-      :app_imagetransition:
+      :app:image_cropper:
+      :app:imagetransition:
         :description: > app:imagetransition is a control for transition
                         from one image to another
-      :app_iterator:
+      :app:iterator:
         :description: > app:iterator is a UI control for iterating
                         over a set of array values from a message
-      :app_message:
+      :app:message:
         :description: > app:message is a non-visual widget for sending
                         a message either locally or remotely
-      :app_modalbox:
+      :app:modalbox:
         :description: > app:modalbox is a UI control for displaying
                         a modal dialog box
-      :app_modaldialog:
+      :app:modaldialog:
         :description: > app:modalbox is a UI control for displaying
                         a modal dialog box
-      :app_mp3player:
+      :app:mp3player:
         :description: > app:mp3player is a flash based mp3 player
-      :app_music_player:
+      :app:music_player:
         :description: > app:music_player widget that supports streaming
                         music and dynamically controlling the streaming
                         like volume, pan, starting and stopping
-      :app_pagination:
+      :app:pagination:
         :description: > app:pagination is a control for assisting
                         in pagination capabilities using messages
-      :app_panel:
+      :app:panel:
         :description: > app:panel is a UI control for displaying content
                         in a nice looking panel with capabilities like
                         dragging, resizing, etc.
-      :app_progressbar:
+      :app:progressbar:
         :description: > app:progressbar is a UI control for displaying
                         a progress bar and driving the progress values
                         based on a message
-      :app_script:
+      :app:script:
         :description: > app:script is a non-visual control for executing
                         javascript based on a message or when the page loads
-      :app_search:
+      :app:search:
         :description: > app:search is a UI control for performing dynamic
                         searches based on key entry (without having to click a button)
-      :app_security:
+      :app:security:
         :description: > app:security is a simple widget which will attempt
                         to hide content based on a security policy
-      :app_shadowbox:
+      :app:shadowbox:
         :description: > app:shadowbox wraps the Shadowbox library useful
                         for viewing media in a modal dialog
-      :app_split_box:
+      :app:simple_panel:
+      :app:split_box:
         :description: > app:split_box widget supports either horizontal 
                         or vertical split box views
-      :app_statemachine:
+      :app:statemachine:
         :description: > app:statemachine is a non-visual widget for
                         controlling states based on messages
-      :app_stopwatch:
+      :app:stopwatch:
         :description: > app:stopwatch is a simple UI control for
                         displaying and controlling a stop watch
-      :app_tabpanel:
+      :app:tabpanel:
         :description: > app:tabpanel is a UI control for displaying content in tabs
-      :app_template:
+      :app:template:
         :description: > app:template is a layout component for loading
                         content based on a template
-      :app_tooltip:
+      :app:tooltip:
         :description: > app:tooltip is a UI control for displaying nice
                         looking tooltips based on a message
-      :app_upload:
+      :app:upload:
         :description: > app:upload is a component which makes dynamic
                         upload of multipart attachments simple.
-      :app_validation:
+      :app:validation:
         :description: > app:validation is a logic component for controlling
                          multi-state validation across different elements
-      :app_widget:
+      :app:widget:
         :description: > app:widget is a meta-widget which allows you
                         to dynamically create a widget inline in your code
-      :app_yui_map:
+      :app:yui_map:
         :description: > app:yui_map is a Yahoo! based map UI control
                         which supports dynamic mapping from messages
