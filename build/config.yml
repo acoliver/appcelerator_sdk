@@ -1,6 +1,7 @@
 ---
 :version: "3.0"
 :name: appcelerator
+:licenses: [6]
 :releases:
   :runtime:
       :win32:

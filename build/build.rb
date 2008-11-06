@@ -22,7 +22,6 @@ require 'yaml'
 require 'digest/md5'
 
 
-DEFAULT_LICENSE = 6 # Apache 2
 CWD = File.expand_path(File.dirname(__FILE__))
 VERBOSE = ENV['v'] || ENV['verbose'] || ENV['VERBOSE']
 COMPRESS = ENV['nomin'] ? false : true 
@@ -30,10 +29,12 @@ STAGE_DIR = File.expand_path "#{CWD}/../stage"
 
 # Load the main build config
 CONFIG = YAML::load_file(File.join(CWD, 'config.yml'))
+default_licenses = CONFIG[:licenses]
 
 # Load the release system and try to initialize
 # it using the S3 Transport
 require File.join(CWD, 'release.rb')
+puts("Connecting to release server...")
 t = S3Transport.new(DISTRO_BUCKET, CONFIG)
 manifest = t.manifest
 
@@ -66,7 +67,7 @@ CONFIG[:releases].each_pair {|type, rels|
     end
 
     # inject the default license
-    config[:licenses] = (config[:licenses] || []) | [DEFAULT_LICENSE]
+    config[:licenses] = (config[:licenses] || []) | default_licenses
 
     # inject the current version as the version
     version = manifest.get_current_version(type, name)

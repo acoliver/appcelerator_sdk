@@ -363,19 +363,17 @@ class S3Transport
         end
 
         if @aws_access_key_id.nil?
-          $stderr.puts "Cannot find AWS_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
-          exit 1
+          puts "Read only mode: Cannot find AWS_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
+
+        elsif @aws_secret_access_key.nil?
+          puts "Read only mode: Cannot find AWS_SECRET_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
+        else
+          AWS::S3::Base.establish_connection!(
+              :access_key_id => @aws_access_key_id,
+              :secret_access_key => @aws_secret_access_key
+          )
         end
 
-        if @aws_secret_access_key.nil?
-          $stderr.puts "Cannot find AWS_SECRET_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
-          exit 1
-        end
-
-        AWS::S3::Base.establish_connection!(
-            :access_key_id => @aws_access_key_id,
-            :secret_access_key => @aws_secret_access_key
-        )
         @bucket_name = bucket_name
         @url_prefix = "http://#{@bucket_name}"
 
