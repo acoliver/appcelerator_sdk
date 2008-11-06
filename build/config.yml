@@ -111,6 +111,21 @@
   :theme_layout:
     :horizontal:form: 
     :vertical:form: 
+  :websdk:
+    :websdk:
+      :dependencies: 
+        - {type: widget, name: app:calendar}
+        - {type: widget, name: app:chart}
+        - {type: widget, name: app:content}
+        - {type: widget, name: app:datatable}
+        - {type: widget, name: app:folder}
+        - {type: widget, name: app:http}
+        - {type: widget, name: app:if}
+        - {type: widget, name: app:iterator}
+        - {type: widget, name: app:message}
+        - {type: widget, name: app:script}
+        - {type: widget, name: app:statemachine}
+        - {type: widget, name: app:upload}
   :widget:
       :app:accordion:
         :description: >  app:accordion widget provides horizontal 
@@ -138,7 +153,7 @@
       :app:content:
         :description: > app:content allows you to load external HTML content.
                         this content can be parameterized and can be loaded
-                        on-demand or when the page is first loaded"
+                        on-demand or when the page is first loaded
       :app:datacache:
         :description: > app:datacache is a component which can be used  
                         to cache remote message responses and allow the

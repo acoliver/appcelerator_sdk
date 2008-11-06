@@ -18,8 +18,6 @@
 BUILD_DIR = File.expand_path(File.dirname(__FILE__))
 ROOT_DIR = File.join(BUILD_DIR, '..')
 
-require File.join(ROOT_DIR, 'build', 'build.rb')
-
 SERVICES_DIR = File.join(BUILD_DIR, 'services')
 BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
 CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
@@ -29,7 +27,9 @@ THEMES_DIR = File.join(BUILD_DIR, 'themes')
 WEBSDK_DIR = File.join(BUILD_DIR, 'websdk')
 RUNTIME_DIR = File.join(BUILD_DIR, 'runtime')
 
-require File.join('runtime', 'Rakefile.rb')
+require File.join(ROOT_DIR, 'build', 'build.rb')
+require File.join(RUNTIME_DIR, 'Rakefile.rb')
+require File.join(WEBSDK_DIR, 'Rakefile.rb')
 
 task :default => [:all] do
 end
@@ -41,89 +41,6 @@ task :cleanup do
 end
 
 task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all runtime:all plugin:all) do
-end
-
-namespace :websdk do
-  desc "Build the websdk"
-  task :all do
-    FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-      call_rake "test" # test depends on default
-    end
-  end
-  
-  task :test do
-    FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-     call_rake " test"
-    end
-  end
-  
-  desc "Run the default set of tests (requires JAVA)"
-  task :test => 'test:default'
-  namespace :test do
-    task :default do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " test"
-        end
-    end
-      
-    task :webunit do 
-      FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-        call_rake " test"
-      end
-    end
-    
-    namespace :selenium do 
-      task :start do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:start"
-        end
-      end
-      
-      task :stop do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:stop"
-        end
-      end
-      
-      task :all do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:all"
-        end
-      end
-      
-      task :firefox do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:firefox"
-        end
-      end
-      
-      task :safari do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:safari"
-        end
-      end
-      
-      task :ie do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " selenium:ie"
-        end
-      end
-    end
-    
-    namespace :webrick do 
-      task :start do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " webrick:start"
-        end
-      end
-      
-      task :stop do 
-        FileUtils.cd("#{BUILD_DIR}/websdk") do |d|
-          call_rake " webrick:stop"
-        end
-      end
-    end
-  end
 end
 
 def all_task(nspace)
