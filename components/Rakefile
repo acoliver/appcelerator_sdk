@@ -137,13 +137,13 @@ def all_task(nspace)
     end
 end
 
-def directory_to_namespace(types, dir, i=0, nspace="")
-  return directory_to_namespace([types], dir) if types.class != Array
+def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
+  return directory_to_namespace([types], dir, excludes) if types.class != Array
 
   if i < types.length
       namespace types[i] do
           nspace = "#{nspace}#{types[i].to_s}:"
-          directory_to_namespace(types, dir, i + 1, nspace)
+          directory_to_namespace(types, dir, excludes, i + 1, nspace)
           all_task(nspace)
       end
       return
@@ -151,6 +151,8 @@ def directory_to_namespace(types, dir, i=0, nspace="")
 
   dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
   dirs.each { |subdir|
+    next if excludes.include?(File.basename(subdir))
+
     subdir = File.expand_path(subdir)
     rfile = File.join(subdir, 'Rakefile.rb')
     name = File.basename(subdir).to_sym
@@ -174,7 +176,7 @@ def directory_to_namespace(types, dir, i=0, nspace="")
   }
 end
 
-directory_to_namespace(:service, SERVICES_DIR)
+directory_to_namespace(:service, SERVICES_DIR, ["common"])
 directory_to_namespace(:behavior, BEHAVIORS_DIR)
 directory_to_namespace(:control, CONTROLS_DIR)
 directory_to_namespace(:layout, LAYOUTS_DIR)

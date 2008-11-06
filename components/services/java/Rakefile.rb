@@ -61,6 +61,7 @@
             zipfile.add(filename,"#{java_dir}/dist/#{filename}")
           end
         end
+        zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
       end
     end
     FileUtils.rm_rf java_dir

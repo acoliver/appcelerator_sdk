@@ -31,7 +31,6 @@ task :zend do
   copy_dir(File.join(build_dir, 'pieces'), File.join(stage_dir,'pieces'))
 
   FileUtils.cp("#{build_dir}/install.rb", stage_dir)
-  FileUtils.cp("#{build_dir}/build.yml", stage_dir)
 
   unzip_file(File.join(build_dir, 'lib', 'ZendFramework-1.6.2.zip'),
              File.join(stage_dir, 'pieces', 'lib'))
@@ -45,6 +44,7 @@ task :zend do
     end
   end
 
+  zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
   FileUtils.rm_rf(stage_dir)
 end
 

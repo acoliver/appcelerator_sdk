@@ -35,7 +35,6 @@
     dist_dir = File.join(grails_stage_dir, 'dist')
     copy_dir "#{grails_service_dir}/pieces", File.join(dist_dir, "pieces")
     FileUtils.cp("#{grails_service_dir}/install.rb", dist_dir)
-    FileUtils.cp("#{grails_service_dir}/build.yml", dist_dir)
   
     java_build_dir = File.join(grails_stage_dir, "classes")
     clean_dir(java_build_dir)
@@ -61,6 +60,8 @@
           zipfile.add("#{f}", "#{dist_dir}/#{f}")
         end
       end
+
+      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(config)) }
     end
   
     FileUtils.rm_rf(grails_stage_dir)

@@ -35,7 +35,6 @@
         end
       end
       zipfile.add('install.rb',"#{build_dir}/installer/install.rb")
-      zipfile.add('build.yml',"#{build_dir}/build.yml")
       Dir["#{build_dir}/installer/plugins/*.rb"].each do |fpath|
         fname = File.basename(fpath)
         zipfile.add("plugins/#{fname}",fpath)
@@ -46,4 +45,5 @@
         zipfile.add("rails/vendor/plugins/appcelerator/lib/appcelerator/#{fname}",fpath)
       end
     end
+    zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
   end

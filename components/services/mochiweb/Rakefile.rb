@@ -66,6 +66,6 @@
     #  end
     #  
     #  zipfile.add('install.rb',"#{build_dir}/install.rb")
-    #  zipfile.add('build.yml',"#{build_dir}/build.yml")
+    #  zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
     #end
   end

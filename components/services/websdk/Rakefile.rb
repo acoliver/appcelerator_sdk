@@ -31,7 +31,6 @@
     FileUtils.rm_rf(zipfile)
   
     FileUtils.cp("#{build_dir}/install.rb", dist_dir)
-    FileUtils.cp("#{build_dir}/build.yml", dist_dir)
     copy_dir "#{build_dir}/pieces", File.join(dist_dir,'pieces')
   
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
@@ -41,6 +40,7 @@
           zipfile.add(filename, "#{dist_dir}/#{filename}")
         end
       end
+      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
     end
   
     FileUtils.rm_rf(dist_dir)

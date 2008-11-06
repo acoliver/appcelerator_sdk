@@ -35,11 +35,11 @@
         end
       end
       zipfile.add('install.rb',"#{build_dir}/installer/install.rb")
-      zipfile.add('build.yml',"#{build_dir}/build.yml")
       Dir["#{build_dir}/../common/ruby/agent/**/*.rb"].each do |fpath|
         i = fpath.index('agent/')
         fname = fpath[i..-1]
         zipfile.add("merb/lib/appcelerator/#{fname}",fpath)
       end
+      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
     end
   end

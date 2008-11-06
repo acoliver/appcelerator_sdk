@@ -36,7 +36,6 @@ task :struts do
     dist_dir = File.join(struts_stage_dir, 'dist')
     copy_dir "#{struts_service_dir}/pieces", File.join(dist_dir, "pieces")
     FileUtils.cp("#{struts_service_dir}/install.rb", dist_dir)
-    FileUtils.cp("#{struts_service_dir}/build.yml", dist_dir)
   
     lib_dir = File.join(struts_service_dir, "pieces/lib") # necessary to build -struts.jar
     dest_lib_dir = File.join(dist_dir, "pieces/lib")
@@ -77,6 +76,8 @@ task :struts do
           zipfile.add("#{f}", "#{dist_dir}/#{f}")
         end
       end
+
+      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(config)) }
     end
   
     FileUtils.rm_rf(struts_stage_dir)

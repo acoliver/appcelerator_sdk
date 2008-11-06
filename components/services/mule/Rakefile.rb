@@ -37,7 +37,6 @@
     dist_dir = File.join(mule_stage_dir, 'dist')
     copy_dir "#{mule_service_dir}/pieces", File.join(dist_dir, "pieces")
     FileUtils.cp("#{mule_service_dir}/install.rb", dist_dir)
-    FileUtils.cp("#{mule_service_dir}/build.yml", dist_dir)
   
     lib_dir = File.join(mule_service_dir, "pieces/lib") # necessary to build -mule.jar
     dest_lib_dir = File.join(dist_dir, "pieces/lib")
@@ -78,6 +77,8 @@
           zipfile.add("#{f}", "#{dist_dir}/#{f}")
         end
       end
+
+     zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(config)) }
     end
   
     #FileUtils.rm_rf(mule_stage_dir)
