@@ -14,17 +14,19 @@
 
 def compile_dir(source_dir, output_dir, cp_dirs)
   puts "Compiling Java files..." if VERBOSE
-  output_dir = to_path(output_dir)
+  output_dir = File.expand_path(output_dir)
 
   if (cp_dirs.class != Array)
     cp_dirs = [cp_dirs]
   end
 
+  java_path_separator = RUBY_PLATFORM=~/win32/ ? ';' : ':'
+
   cp = cp_dirs.collect{|d| Dir["#{d}/**/*.jar"]}.flatten()
-  cp = to_path(cp.join(java_path_separator))
+  cp = cp.join(java_path_separator)
   
   FileUtils.cd(source_dir) do
-    src_files = Dir["**/*.java"].collect{|file| to_path(file)}
+    src_files = Dir["**/*.java"].collect{|file| File.expand_path(file)}
     src_files.delete_if {|f| f =~ /EchoService.java$/ }
     src_files = src_files.join(' ')
 

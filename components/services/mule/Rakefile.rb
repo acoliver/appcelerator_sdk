@@ -42,7 +42,7 @@
     dest_lib_dir = File.join(dist_dir, "pieces/lib")
    
     clean_dir(java_build_dir)
-    FileUtils.mkdir_p to_path(java_build_dir) 
+    FileUtils.mkdir_p java_build_dir
   
     # build the latest appcelerator.jar for this release
     java_cp_dir = File.join(java_service_dir, "pieces/lib")
@@ -52,7 +52,7 @@
   
     # clean
     clean_dir(java_build_dir)
-    FileUtils.mkdir_p to_path(java_build_dir) 
+    FileUtils.mkdir_p java_build_dir
   
     # now create an appcelerator-mule.jar file
     compile_dir(app_mule_source, java_build_dir, [java_cp_dir, lib_dir, dest_lib_dir])

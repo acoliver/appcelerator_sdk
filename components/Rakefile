@@ -15,85 +15,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-BUILD_DIR = File.expand_path(File.dirname(__FILE__))
-ROOT_DIR = File.join(BUILD_DIR, '..')
-
-SERVICES_DIR = File.join(BUILD_DIR, 'services')
-BEHAVIORS_DIR = File.join(BUILD_DIR, 'behaviors')
-CONTROLS_DIR = File.join(BUILD_DIR, 'controls')
-LAYOUTS_DIR = File.join(BUILD_DIR, 'layouts')
-WIDGETS_DIR = File.join(BUILD_DIR, 'widgets')
-THEMES_DIR = File.join(BUILD_DIR, 'themes')
-WEBSDK_DIR = File.join(BUILD_DIR, 'websdk')
-RUNTIME_DIR = File.join(BUILD_DIR, 'runtime')
-
-require File.join(ROOT_DIR, 'build', 'build.rb')
+cwd = File.expand_path(File.dirname(__FILE__))
+require File.join(cwd, '..', 'build', 'build.rb')
 require File.join(RUNTIME_DIR, 'Rakefile.rb')
 require File.join(WEBSDK_DIR, 'Rakefile.rb')
 
-task :default => [:all] do
-end
-
-task :cleanup do
-	Dir["**/*.zip"].each do |zip|
-		FileUtils.rm_rf zip
-   end
-end
-
-task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all runtime:all plugin:all) do
-end
-
-def all_task(nspace)
-    task :all do
-        tasks = Rake.application.tasks.each { |t|
-           if t.name.include?(nspace) and not t.name.include?(':all')
-             puts "\nBuilding #{t.name}"
-             Rake::Task["#{t.name}"].invoke
-           end
-        }
-    end
-end
-
-def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
-  return directory_to_namespace([types], dir, excludes) if types.class != Array
-
-  if i < types.length
-      namespace types[i] do
-          nspace = "#{nspace}#{types[i].to_s}:"
-          directory_to_namespace(types, dir, excludes, i + 1, nspace)
-          all_task(nspace)
-      end
-      return
-  end
-
-  dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
-  dirs.each { |subdir|
-    next if excludes.include?(File.basename(subdir))
-
-    subdir = File.expand_path(subdir)
-    rfile = File.join(subdir, 'Rakefile.rb')
-    name = File.basename(subdir).to_sym
-
-    if File.exists?(rfile) # first try Rakefile.rb in directory
-        require rfile
-
-    else # otherwise try a simple build
-        task name do
-            config = get_config(types, name)
-            build_simple_component(config, subdir)
-        end
-    end
-
-    # inject config afterward
-    Rake::Task["#{nspace}#{name}"].enhance do
-        config = get_config(types, name)
-        add_config_to_zip(config)
-    end
-
-  }
-end
-
-directory_to_namespace(:service, SERVICES_DIR, ["common"])
+directory_to_namespace(:service, SERVICES_DIR, ['common'])
 directory_to_namespace(:behavior, BEHAVIORS_DIR)
 directory_to_namespace(:control, CONTROLS_DIR)
 directory_to_namespace(:layout, LAYOUTS_DIR)
@@ -103,44 +30,25 @@ directory_to_namespace([:theme, :layout], File.join(THEMES_DIR, "layouts"))
 directory_to_namespace([:theme, :behavior], File.join(THEMES_DIR, "behaviors"))
 directory_to_namespace([:theme, :control], File.join(THEMES_DIR, "controls"))
 
-
-def build_simple_component(config, dir)
-  name = config[:name]
-
-  if config[:licenses].nil? or config[:licenses].empty?
-    STDERR.puts "Before you can build the control, you need to set the licensing type."
-    STDERR.puts "Please see LICENSING.readme file for details or visit the documentation"
-    STDERR.puts "for more information."
-    exit 1
-  end
-
-  output_file = config[:output_filename]
-  FileUtils.rm_f(output_file)
-
-  Zip::ZipFile.open(output_file, Zip::ZipFile::CREATE) do |zipfile|
-    src_path = Pathname.new(dir)
-
-    Find.find(dir) do |path|
-      pathname = Pathname.new(path)
-
-      next if path.include? '.svn'
-      next if path.include? 'Rakefile'
-      next if path.include? 'LICENSING.readme'
-      next if not pathname.file?
-
-      filename = pathname.relative_path_from(src_path)
-      if path.include? "#{name}.js"
-        zipfile.get_output_stream(filename) do |f|
-          c = File.read(path)
-          f.puts(c.gsub('__VERSION__', config[:version]))
-        end
-      else
-        zipfile.add(filename, path)
-      end
-    end
-  end
-
-  # TODO: inline this at some point
-  compress_js_in_zip(output_file)
-
+task :default => [:all] do
 end
+
+task :cleanup do
+    # cleanup shouldn't be necessary any longer
+end
+
+task :all => %w(widget:all layout:all behavior:all control:all theme:all service:all websdk:all runtime:all) do
+end
+
+desc 'prepare stage dir'
+task :stage do
+  FileUtils.mkdir STAGE_DIR unless File.exists?(STAGE_DIR)
+end
+
+desc 'cleans stage dir'
+task :clean do
+  if Pathname.new(STAGE_DIR).exist?
+    FileUtils.rm_r STAGE_DIR
+  end
+end
+

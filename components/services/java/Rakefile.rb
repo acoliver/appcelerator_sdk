@@ -32,9 +32,9 @@
   
     clean_dir(java_dir)
   
-    FileUtils.mkdir_p to_path(java_classes)
-    FileUtils.mkdir_p File.join(java_dir,'dist') rescue nil
-    FileUtils.mkdir_p File.join(java_dir,'dist','lib') rescue nil
+    FileUtils.mkdir_p(java_classes)
+    FileUtils.mkdir_p(File.join(java_dir,'dist')) rescue nil
+    FileUtils.mkdir_p(File.join(java_dir,'dist','lib')) rescue nil
   
     copy_dir "#{build_dir}/pieces", File.join(java_dir,'dist/pieces')
     FileUtils.cp("#{build_dir}/install.rb", File.join(java_dir, 'dist'))

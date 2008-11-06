@@ -62,6 +62,7 @@
       :elastic: 
       :fixedCenter: 
       :grid: 
+      :horizontal: 
       :split: 
       :vertical: 
       :xy: 
