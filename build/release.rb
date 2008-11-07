@@ -17,10 +17,12 @@ class Release
     attr_accessor :checksum
     attr_accessor :filesize
     attr_accessor :dependencies
+    attr_accessor :subtype
 
     def initialize(o = {})
         @local = o[:local] unless not o[:local]
         @type = o[:type] unless not o[:type]
+        @type = o[:subtype] unless not o[:subtype]
         @name = o[:name] unless not o[:name]
         @version = o[:version] unless not o[:version]
         @checksum = o[:checksum] unless not o[:checksum]
@@ -33,6 +35,7 @@ class Release
          Release.new({
             :local => false,
             :type => type,
+            :subtype => h['subtype'],
             :name => h['name'],
             :version => h['version'],
             :checksum => h['checksum'],
@@ -52,6 +55,7 @@ class Release
 
         c = r.load_buildyml()
         r.type = c[:type]
+        r.subtype = c[:control]
         r.name = c[:name]
         r.version = c[:version]
         r.dependencies = c[:dependencies] || []
@@ -122,6 +126,11 @@ class Release
             return @type <=> other.type
         end
 
+        if other.subtype != @subtype and \
+            not other.subtype.nil? and not @subtype.nil?
+            return @type <=> other.type
+        end
+
         if other.name != @name
             return @name <=> other.name
         end
@@ -131,6 +140,7 @@ class Release
 
     def ==(other)
         return (other.class == self.class \
+            and other.subtype == @subtype \
             and other.type == @type \
             and other.version == @version \
             and other.name == @name)
@@ -201,12 +211,23 @@ class Manifest
         name = o[:name]
         version = o[:version]
 
+        if type.class == Array
+            subtype = type[1]
+            type = type[0]
+        else
+            subtype = nil
+        end
+
         releases = []
         @model.each_pair { |ctype, creleases|
             if not type or ctype == type
                 releases += creleases
             end
         }
+
+        if subtype
+            releases.reject! {|x| x.subtype.to_s != subtype.to_s}
+        end
 
         if name
             releases.reject! {|x| x.name.to_s != name.to_s}
@@ -253,10 +274,10 @@ class Manifest
 
         if prev_rel
             parts = prev_rel.version.split('.')
-            parts = parts[0..-2] + ['%03d' % parts.last + 1]
+            parts = parts[0..-2] + [parts.last + 1]
             return parts.join('.')
         else
-            return @config[:version] + '.00'
+            return @config[:version] + '.0'
         end
     end
 
@@ -363,10 +384,10 @@ class S3Transport
         end
 
         if @aws_access_key_id.nil?
-          puts "Read only mode: Cannot find AWS_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
+          puts "Read-only mode: AWS_ACCESS_KEY_ID not in ENV or in #{s3_conf_file}"
 
         elsif @aws_secret_access_key.nil?
-          puts "Read only mode: Cannot find AWS_SECRET_ACCESS_KEY_ID in ENV or in #{s3_conf_file}"
+          puts "Read-only mode: AWS_SECRET_ACCESS_KEY_ID not in ENV or in #{s3_conf_file}"
         else
           AWS::S3::Base.establish_connection!(
               :access_key_id => @aws_access_key_id,

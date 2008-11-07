@@ -47,7 +47,7 @@ CONFIG = YAML::load_file(File.join(BUILD_DIR, 'config.yml'))
 # it using the S3 Transport
 puts("Connecting to release server...")
 t = S3Transport.new(DISTRO_BUCKET, CONFIG)
-manifest = t.manifest
+MANIFEST = t.manifest
 
 # inject defaults for build configurations
 CONFIG[:releases].each_pair {|type, rels|
@@ -81,7 +81,7 @@ CONFIG[:releases].each_pair {|type, rels|
     rel_config[:licenses] = (rel_config[:licenses] || []) | CONFIG[:licenses]
 
     # inject the current version as the version
-    version = manifest.get_current_version(type, name)
+    version = MANIFEST.get_current_version(type, name)
     rel_config[:version] = version
 
     # inject the output file path
@@ -98,7 +98,6 @@ def get_config(type, name)
     puts "No configuration for #{type} named #{name}" unless config
     config
 end
-
 
 # Convert a directoyr of directories into a namespace of Rake tasks
 # If a Rakefile exists in one of those directories, don't add it as

@@ -52,3 +52,56 @@ task :clean do
   end
 end
 
+desc 'Release a component'
+task :release, :name, :version do |t, args|
+    fullname = args.name
+    version = args.version
+
+    if (File.exists?(fullname))
+        puts "Trying to release file: #{fullname}"
+        file = File.expand_path(fullname)
+
+    else
+
+        # try parsing release name
+        (type, name) = fullname.split(':', 2)
+        if name.to_s.include?(':')
+            (subtype, name) = name.split(':', 2)
+            type = [type.to_sym, subtype.to_sym]
+        else
+            type = type.to_sym
+            subtype = nil
+        end
+        name = name.to_sym
+
+        config = get_config(type, name)
+        task = Rake::Task[fullname]
+        if config.nil?
+            $stderr.puts "No configuration available for #{type.inspect} named #{name}"
+            exit
+        end
+
+        if task.nil?
+            $stderr.puts "No rake task named #{fullname}"
+            exit
+        end
+
+        if version.nil?
+           version = MANIFEST.get_next_version_for(type, name)
+        elsif not version.include?('.')
+           version = CONFIG[:version].to_s + ".#{version}"
+        end
+        config[:version] = version
+
+        type = type.join('_') if type.class == Array
+        output_file = File.join(STAGE_DIR, "#{type}-#{name}-#{version}.zip")
+        config[:output_filename] = output_file 
+
+        puts "Trying to build and release #{fullname} #{version}"
+
+        task.invoke()
+        file = config[:outpu_filename]
+
+    end
+
+end
