@@ -124,10 +124,10 @@ def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
     next if excludes.include?(File.basename(subdir))
 
     subdir = File.expand_path(subdir)
-    rfile = File.join(subdir, 'Rakefile.rb')
+    rfile = File.join(subdir, 'build.rb')
     name = File.basename(subdir).to_sym
 
-    if File.exists?(rfile) # first try Rakefile.rb in directory
+    if File.exists?(rfile) # first try build.rb in directory
         require rfile
 
     else # otherwise try a simple build
