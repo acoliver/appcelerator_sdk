@@ -137,7 +137,7 @@ public class XML
      * @throws JSONException upon parse error
      */
     private static boolean parse(XMLTokener x, JSONObject context,
-                                 String name) throws JSONException
+                                 String name) throws Exception
     {
         char c;
         int i;
@@ -355,9 +355,9 @@ public class XML
      *
      * @param string The source string.
      * @return A JSONObject containing the structured data from the XML string.
-     * @throws JSONException upon creational error
+     * @throws Exception 
      */
-    public static JSONObject toJSONObject(String string) throws JSONException
+    public static JSONObject toJSONObject(String string) throws Exception
     {
         JSONObject o = new JSONObject();
         XMLTokener x = new XMLTokener(string);

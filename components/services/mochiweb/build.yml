@@ -1,8 +1,0 @@
---- 
-:type: service
-:dependencies: 
-- :type: websdk
-  :name: websdk
-  :version: ">=2.1.2"
-:version: 0.1.0
-:name: mochiweb

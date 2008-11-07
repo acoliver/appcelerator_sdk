@@ -33,11 +33,11 @@ import org.apache.struts.action.InvalidCancelException;
 import org.apache.struts.action.RequestProcessor;
 import org.apache.struts.config.ModuleConfig;
 import org.appcelerator.annotation.AnnotationHelper;
-import org.appcelerator.locator.ServiceLocatorManager;
-import org.appcelerator.marshaller.ServiceMarshallerManager;
+import org.appcelerator.marshaller.ServiceMarshaller;
 import org.appcelerator.messaging.JSONMessageDataObject;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
+import org.appcelerator.service.ServiceRegistry;
 import org.appcelerator.util.Util;
 
 
@@ -98,7 +98,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
         ArrayList<Message> outgoingMessages = new ArrayList<Message>();
         
         try {
-            ServiceMarshallerManager.decode(contentType, servletRequest.getInputStream(), incommingMessages);
+            ServiceMarshaller.getMarshaller(contentType).decode(servletRequest.getInputStream(), incommingMessages);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +134,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
             
             // original appcelerator service dispatching
             try {
-                ServiceLocatorManager.dispatch(incommingMessage, outgoingMessages);
+                ServiceRegistry.dispatch(incommingMessage, outgoingMessages);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -217,7 +217,7 @@ public class AppceleratorRequestProcessor extends RequestProcessor {
         
         String responseType = null;
         try {
-            responseType = ServiceMarshallerManager.encode(contentType, outgoingMessages, session.getId(), bout);
+            responseType = ServiceMarshaller.getMarshaller(contentType).encode(outgoingMessages, session.getId(), bout);
         } catch (Exception e) {
             e.printStackTrace();
             return;

@@ -56,6 +56,7 @@ class ServiceDispatcher(object):
             self.services_loaded = True
         
         session = environ['beaker.session']
+        session.save() # make sure it's initialized
         
         mimetype = environ.get('CONTENT_TYPE','')
         if mimetype:
@@ -88,6 +89,8 @@ class ServiceDispatcher(object):
                     yield (
 "<message requestid='%s' direction='OUTGOING' datatype='JSON' type='%s'><![CDATA[%s]]></message>"%(rsp['incoming']['requestid'], rsp['type'], payload)
                     )
+
+            session.save() # save session
             yield "</messages>"
         
         #
@@ -113,6 +116,7 @@ class ServiceDispatcher(object):
             else:
                 responses = []
             
+            session.save() # save session
             yield json.dumps({'sessionid': session.id, 'messages': responses}, cls=_JsonEncoder)
     
     def extract_messages_from_xml(self, input):
