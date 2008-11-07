@@ -43,10 +43,6 @@
     jar_file = File.expand_path(File.join(java_dir, "dist/pieces/lib/appcelerator-#{version}.jar"))
     create_jar(jar_file, java_classes)
   
-    f = File.open "#{java_dir}/dist/build.yml", 'w+'
-    f.puts build_config.to_yaml
-    f.close
-  
     FileUtils.cd(java_classes) do
   
        zipfile = build_config[:output_filename]
@@ -61,7 +57,6 @@
             zipfile.add(filename,"#{java_dir}/dist/#{filename}")
           end
         end
-        zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
       end
     end
     FileUtils.rm_rf java_dir

@@ -40,6 +40,5 @@
         fname = fpath[i..-1]
         zipfile.add("merb/lib/appcelerator/#{fname}",fpath)
       end
-      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
     end
   end

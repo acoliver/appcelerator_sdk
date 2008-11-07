@@ -38,7 +38,6 @@
           zipfile.add(filename, "#{stage_dir}/#{filename}")
         end
       end
-      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
     end
   
     FileUtils.rm_rf stage_dir

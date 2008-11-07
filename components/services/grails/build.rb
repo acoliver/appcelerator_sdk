@@ -61,7 +61,6 @@
         end
       end
 
-      zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(config)) }
     end
   
     FileUtils.rm_rf(grails_stage_dir)

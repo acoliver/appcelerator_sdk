@@ -77,8 +77,6 @@
           zipfile.add("#{f}", "#{dist_dir}/#{f}")
         end
       end
-
-     zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(config)) }
     end
   
     #FileUtils.rm_rf(mule_stage_dir)

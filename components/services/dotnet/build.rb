@@ -40,6 +40,5 @@
       zipfile.add 'install.rb', "#{build_dir}/installer/install.rb"
       zipfile.add 'appcelerator.xml', "#{build_dir}/installer/appcelerator.xml"
       zipfile.add 'TestService.dll', "#{build_dir}/installer/TestService.dll"
-      zipfile.get_output_stream('build.yml') {|f| f.puts(YAML::dump(build_config)) }
     end
   end

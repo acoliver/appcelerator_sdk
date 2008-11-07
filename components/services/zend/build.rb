@@ -44,7 +44,6 @@ task :zend do
     end
   end
 
-  zipfile.get_output_stream("build.yml") {|f| f.puts(YAML::dump(build_config)) }
   FileUtils.rm_rf(stage_dir)
 end
 

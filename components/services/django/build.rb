@@ -63,7 +63,6 @@
       
       zipfile.add('plugins/python_config.rb', "#{build_dir}/../python/installer/python_config.rb")
       zipfile.add('install.rb', "#{build_dir}/installer/install.rb")
-      zipfile.get_output_stream('build.yml') {|f| f.puts(YAML::dump(build_config)) }
     end
   end
 
