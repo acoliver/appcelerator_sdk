@@ -77,7 +77,7 @@ CommandRegistry.registerCommand(%w(add:plugin add:plugins),'add plugin to a proj
         event = {:project=>project, :plugin=>plugin}
         PluginManager.dispatchEvents('add_plugin',event) do
           plugins.delete_if { |w| w[:name] == name } 
-          plugins << plugins.clone_keys(:name, :version, :checksum)
+          plugins << plugin.clone_keys(:name, :version, :checksum)
         end
         puts "Added Plugin: #{name}, #{plugin[:version]} to project: #{to_dir}" unless OPTIONS[:quiet]
       end
