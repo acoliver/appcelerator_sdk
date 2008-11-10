@@ -51,10 +51,8 @@ then
          echo "chmod +x /usr/bin/app" >> /tmp/appcelerator_installer.log
          chmod +x /usr/bin/app
 
-         echo "/usr/bin/app" >> /tmp/appcelerator_installer.log
-         echo "PATH=$PATH" >> /tmp/appcelerator_installer.log
          PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin
-         ruby /usr/bin/app --install >>/tmp/appcelerator_installer.log 2>&1
+         echo "PATH=$PATH" >> /tmp/appcelerator_installer.log
 
          echo "open http://www.appcelerator.org/gettingstarted" >> /tmp/appcelerator_installer.log
          open "http://www.appcelerator.org/gettingstarted"
