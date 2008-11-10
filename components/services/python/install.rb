@@ -14,17 +14,29 @@
 # limitations under the License. 
 
 
-require File.dirname(__FILE__) + '/python_config.rb'
+require File.dirname(__FILE__) + '/pieces/plugins/python_config.rb'
 
 module Appcelerator
   class Python
-        
+    @@paths.merge!({
+       :lib => ["lib", "library files"],
+       :controllers => ["application/controllers", "Zend Framework controllers includes"],
+       :views => ["application/views/scripts", "Zend Framework views"],
+       :services => ["application/services", "Appcelerator services"]
+    })
+
     def create_project(from_path,to_path,config,tx)
-                  
-      project_path = to_path
-      project_name = config[:name]
-      app_path = File.join to_path, project_name
-      project_location = File.dirname to_path
+    
+      @pyconfig = PythonConfig.new
+      @pyconfig.install_easy_install_if_needed(Installer)
+      install_pylons_if_needed
+      install_paster_if_needed
+      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], component[:version])
+    
+      project_name = @config[:name]
+      @config[:paths][:services] = File.join(project_name, 'services])
+
+      project_path = get_path()
       
       dependencies = %w(appcelerator simplejson beaker paste python)
       if dependencies.include?(project_name) or not project_name.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)
@@ -32,35 +44,36 @@ module Appcelerator
         return false
       end
       
-      FileUtils.cd project_location do
+      FileUtils.cd(get_path()) do
         if not quiet_system("#{paster} create --no-interactive -t pylons #{project_name}")
           puts 'Failure when running "paster", this command creates the pylons project and ought to have been downloaded by the installer'
           return false
         end
       end
       
-      Appcelerator::Installer.copy tx, "#{from_path}/services", "#{app_path}/services", nil, true
+      Installer.copy(tx, "#{@service_dir}/pieces/root", @path)
+      Installer.copy(tx, "#{@service_dir}/pieces/services", get_path(:services))
+      Installer.copy(tx, "#{@service_dir}/pieces/public", get_path(:web))
 
-      copy tx,"#{from_path}/pylons/appcelerator.xml", "#{project_path}/public/appcelerator.xml"
-      
-      copy tx,"#{from_path}/pylons/development.ini", "#{project_path}/development.ini" do |content|
-        content.gsub!(/\$\{(project|package_logger)\}/, project_name)
-        content.gsub(/egg:Appcelerator#/, "egg:Appcelerator==#{config[:service_version]}#")
-      end
-      
-      # shuffle into the new public dir
-      edit tx, "#{project_path}/MANIFEST.in" do |content|
-        content.gsub(/recursive-include .*?\/public/, 'recursive-include public')
-      end
-      
-      edit tx, "#{app_path}/config/middleware.py" do |content|
+      tx.rm "#{app_path}/public" # pylons makes this
+
+      tx.after_tx { 
+        f = get_path('development.ini')
+        search_and_replace_in_file(f, "__PROJECT_NAME__", @config[:name])
+        search_and_replace_in_file(f, "egg:Appcelerator", "egg:Appcelerator==#{service_version()}#")
+
+        f = get_path('MANIFEST.in')
+        search_and_replace_in_file(/recursive-include .*?\/public/, 'recursive-include public')
+
+        f = get_path("#{app_path}/config/middleware.py")
+        app_path = get_path(project_name)
+        public_rel_path = get_relative_path(app_path, @config[:paths][:web])
         static_cascade=<<END_CODE
-
     import os
     root = config['pylons.paths']['root']
     overroot = os.path.dirname(root)
     appcelerator_static = StaticURLParser(
-        os.path.join(overroot,'public'),
+        os.path.join(overroot,'#{public_rel_path}'),
         root_directory=overroot
     )
 
@@ -70,76 +83,37 @@ END_CODE
         else
           static_cascade += '    app = Cascade([appcelerator_static, static_app, app])'
         end
-        
-        # could write a do-block to check and use indentation level
-        content.sub(/\s+app = Cascade[^\n]+/, static_cascade)
-      end
-      
-      tx.rm "#{app_path}/public" # pylons makes this
-      tx.rm "#{project_path}/app" # appc create:project makes this
-      
-      Dir["#{from_path}/plugins/*.rb"].each do |fpath|
-        fname = File.basename(fpath)
-        Installer.copy tx, fpath,"#{to_path}/plugins/#{fname}"
-      end
-      
-      true
+
+        search_and_replace_in_file(f, /\s+app = Cascade[^\n]+/, static_cascade)
+
+      }
+
     end
+
     
     # UNTESTED!
-    def update_project(from_path,to_path,config,tx,from_version,to_version)
+    def update_project(from_version, to_version, tx)
       puts "Updating Python project from #{from_version} to #{to_version}" if OPTIONS[:verbose]
 
       @pyconfig = PythonConfig.new
-      @pyconfig.install_appcelerator_egg_if_needed(from_path, config[:service_version])
+      @pyconfig.install_appcelerator_egg_if_needed(@service_dir, config[:service_version])
       
       project_path = to_path
       project_name = config[:name]
       app_path = config[:project]
       project_location = File.dirname to_path
       
-      edit tx, "#{project_path}/development.ini" do |content|
-        content.gsub(/egg:Appcelerator==([^#]+)#/) do |match|
-          if $1 != from_version
-            puts "Upgrading from #{from_version} to #{to_version}, but project seemed to be version #{$1}, how odd."
-          end
-          "egg:Appcelerator==#{to_version}#"
-        end
-      end
-      
+      tx.after_tx { 
+        f = get_path('development.ini')
+        search_and_replace_in_file(f, /egg:Appcelerator==([^#]+)#/, "egg:Appcelerator==#{to_version}#")
+      }
+
       true
     end
     
     #
-    # Helpers
-    #
-    
-    def copy(tx,srcpath,dstpath)
-      content = File.read(srcpath)
-      content = yield(content) if block_given?
-      tx.put(dstpath, content)
-    end
-    
-    def edit(tx,filename)
-      content = File.read(filename)
-      content = yield(content)
-      tx.put(filename,content)
-    end
-        
-    
-    #
     # Dependencies
     #
-    
-    def check_dependencies(component)
-      @pyconfig = PythonConfig.new
-      
-      @pyconfig.install_easy_install_if_needed(self)
-      install_pylons_if_needed
-      install_paster_if_needed
-      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], component[:version])
-    end
-    
     def install_pylons_if_needed
       # this is taken care of by easy_install, but this gives the user a prompt
       if not quiet_system("#{python} -c \"import pylons\"")

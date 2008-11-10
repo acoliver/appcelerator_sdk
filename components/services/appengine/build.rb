@@ -29,7 +29,7 @@
     
     src_dir = "#{build_dir}/src"
     lib_dir = "#{build_dir}/lib"
-    py_dir  = "#{build_dir}/../python/src/module/appcelerator"
+    py_dir  = "#{build_dir}/../python/appcelerator-module"
     
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
       
@@ -57,7 +57,7 @@
         zipfile.add("plugins/#{filename}",fpath)
       end
       
-      zipfile.add('plugins/python_config.rb', "#{build_dir}/../python/installer/python_config.rb")
+      zipfile.add('plugins/python_config.rb', "#{build_dir}/../python/pieces/plugins/python_config.rb")
       zipfile.add('install.rb', "#{build_dir}/installer/install.rb")
 
     end

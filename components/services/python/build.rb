@@ -21,39 +21,35 @@ task :python do
 
   build_dir = File.expand_path(File.dirname(__FILE__))
   build_config = get_config(:service, :python)
+
+  version = build_config[:version]
   zipfile = build_config[:output_filename]
 
   FileUtils.mkdir_p "#{STAGE_DIR}"
   FileUtils.rm_rf zipfile
   
-  stage_src = "#{STAGE_DIR}/python_src"
-  FileUtils.cp_r "#{build_dir}/src", stage_src
-  
-  setup_path = "#{stage_src}/module/setup.py"
+  stage_dir = "#{STAGE_DIR}/python_build"
+
+  FileUtils.mkdir_p(File.join(stage_dir,'pieces'))
+  FileUtils.cp_r("#{build_dir}/pieces", File.join(stage_dir,'pieces'))
+  FileUtils.cp_r("#{build_dir}/appcelerator-module", stage_dir)
+  FileUtils.cp("#{build_dir}/install.rb", stage_dir)
+
+  setup_path = "#{stage_dir}/appcelerator-module/setup.py"
   setup_content = File.read(setup_path)
-  setup_content.sub!('0.0.0', build_config[:version])
+  setup_content.sub!('0.0.0', version)
   f = File.open setup_path,'w+'
   f.write setup_content
   f.close
 
   Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
-    dofiles("#{stage_src}") do |f|
+    dofiles(stage_dir) do |f|
       filename = f.to_s
-      if not filename == '.'
-        zipfile.add("#{filename}","#{stage_src}/#{filename}")
+      if not(filename == '.') and not(filename[0] == ?.)
+        zipfile.add(filename, "#{stage_dir}/#{filename}")
       end
     end
-    Dir["#{build_dir}/installer/plugins/*.rb"].each do |fpath|
-      fname = File.basename(fpath)
-      zipfile.add("plugins/#{fname}",fpath)
-    end
-    Dir["#{build_dir}/installer/*.rb"].each do |fpath|
-      fname = File.basename(fpath)
-      zipfile.add(fname,fpath)
-    end
-    # needs to be copied into the project's plugins directory
-    zipfile.add('plugins/python_config.rb',"#{build_dir}/installer/python_config.rb")
   end
-  FileUtils.rm_rf stage_src
+  FileUtils.rm_rf stage_dir
 end
 
