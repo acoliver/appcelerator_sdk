@@ -37,8 +37,8 @@ module Titanium
 
       FileUtils.mkdir_p [app_folder, contents_folder, macos_folder, resources_folder, titanium_folder]
       
-      FileUtils.cp Titanium.get_webkit_shell_executable(), macos_folder
-      FileUtils.chmod 0755, File.join(macos_folder, 'webkit_shell')
+      FileUtils.cp Titanium.get_executable(), File.join(macos_folder, @@executable_name)
+      FileUtils.chmod 0755, File.join(macos_folder, @@executable_name)
       FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
       FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
       
@@ -54,8 +54,11 @@ module Titanium
         File.join(Titanium.get_support_dir(), 'plugins.js.template'),
         File.join(titanium_folder, 'plugins.js'))
       
-      FileUtils.cp File.join(Titanium.get_component_dir(), 'titanium.js'), titanium_folder
-      FileUtils.cp_r File.join(Titanium.get_webkit_shell_path(), 'Contents', 'Resources', "English.lproj"), resources_folder
+      Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
+        FileUtils.cp jsfile, titanium_folder
+      end
+      
+      FileUtils.cp_r File.join(Titanium.get_app_path(), 'Contents', 'Resources', "English.lproj"), resources_folder
       
       Titanium.each_plugin do |plugin|
         plugin.install(@@project, @@dest, @@executable_name)
@@ -65,7 +68,7 @@ module Titanium
     end
     
     def Packager.launch_osx_app
-      system "open " + File.join(@@dest, @@executable_name) + ".app"
+      system File.join(File.join(@@dest, @@executable_name) + ".app", 'Contents', 'MacOS', @@executable_name)
     end
     
     def Packager.create_win_exe

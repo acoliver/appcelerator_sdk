@@ -55,15 +55,15 @@ module Titanium
       return File.join(Installer.get_component_directory(@@ti_component), 'support')
     end
     
-    def Titanium.get_webkit_shell_path
+    def Titanium.get_app_path
       if is_mac?
-        return File.join(Titanium.get_component_dir(), "webkit_shell.app")
+        return File.join(Titanium.get_component_dir(), "Titanium.app")
       end
     end
     
-    def Titanium.get_webkit_shell_executable
+    def Titanium.get_executable
       if is_mac?
-        return File.join(Titanium.get_webkit_shell_path(), 'Contents', 'MacOS', 'webkit_shell')
+        return File.join(Titanium.get_app_path(), 'Contents', 'MacOS', 'Titanium')
       end
     end
     
@@ -72,9 +72,12 @@ module Titanium
     end
     
     def Titanium.get_component
-      Installer.require_component(:titanium, 'titanium_' + platform_string, nil, {:force=>true, :skip_dependencies=>false})
-
       installed_ti = Installer.get_current_installed_component(TI_COMPONENT_INFO)
+      if installed_ti.nil?
+        Installer.require_component(:titanium, 'titanium_' + platform_string, nil)
+        installed_ti = Installer.get_current_installed_component(TI_COMPONENT_INFO)
+      end
+      
       installed_ti
     end
     

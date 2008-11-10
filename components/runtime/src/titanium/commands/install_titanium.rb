@@ -15,7 +15,7 @@
 
 
 include Appcelerator
-CommandRegistry.registerCommand('install:tiplugin','install a titanium plugin',[
+CommandRegistry.registerCommand('install:titanium','install the titanium runtime',[
   {
     :name=>'location',
     :help=>'path or URL to plugin file or name of a plugin from the network',
@@ -31,15 +31,14 @@ CommandRegistry.registerCommand('install:tiplugin','install a titanium plugin',[
     :value=>true
   }
 ],[
-    'install:tiplugin my:plugin',
-    'install:tiplugin my:plugin,your:plugin',
-    'install:tiplugin http://www.mydir.com/aplugin.zip',
-    'install:tiplugin foo_plugin.zip',
-    'install:tiplugin foo:bar --server=http://localhost:3000'
+    'install:titanium',
+    'install:titanium http://www.mydir.com/titanium_runtime.zip',
+    'install:titanium titanium_runtime.zip',
 ]) do |args,options|
 
     args[:location].split(',').uniq.each do |plugin|
-      component = Installer.require_component(:tiplugin,plugin.strip,options[:version])
+      
+      component = Installer.require_component(:titanium,plugin.strip,options[:version])
     end
 end
 
