@@ -162,7 +162,7 @@ module Appcelerator
       appc_version_check = "#{python} -c \"from pkg_resources import require;require('Appcelerator==#{version}')\""
       if not quiet_system(appc_version_check)
         puts "Installing new Appcelerator module" unless OPTIONS[:quiet]
-        quiet_system("#{easy_install} \"#{dir}/module/\"")
+        quiet_system("#{easy_install} \"#{dir}/appcelerator-module/\"")
         # attempt to avoid this http://groups.google.com/group/pylons-devel/browse_thread/thread/2c740abef6eb4b9e
         quiet_system("#{easy_install} -U simplejson")
       end

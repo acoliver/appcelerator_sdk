@@ -17,7 +17,7 @@
 require File.dirname(__FILE__) + '/pieces/plugins/python_config.rb'
 
 module Appcelerator
-  class Python
+  class Python < Project
     @@paths.merge!({
        :lib => ["lib", "library files"],
        :controllers => ["application/controllers", "Zend Framework controllers includes"],
@@ -25,48 +25,48 @@ module Appcelerator
        :services => ["application/services", "Appcelerator services"]
     })
 
-    def create_project(from_path,to_path,config,tx)
+    def create_project(tx)
     
       @pyconfig = PythonConfig.new
       @pyconfig.install_easy_install_if_needed(Installer)
       install_pylons_if_needed
       install_paster_if_needed
-      @pyconfig.install_appcelerator_egg_if_needed(component[:dir], component[:version])
+      @pyconfig.install_appcelerator_egg_if_needed(@service_dir, service_version())
     
       project_name = @config[:name]
-      @config[:paths][:services] = File.join(project_name, 'services])
+      @config[:paths][:services] = File.join(project_name, 'services')
 
-      project_path = get_path()
-      
+      project_path = @path
+      #
       dependencies = %w(appcelerator simplejson beaker paste python)
       if dependencies.include?(project_name) or not project_name.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)
-        puts "Invalid project name, must be a valid python identifier, and not one of: #{dependencies}"
+        puts "Invalid project name, must be a valid python identifier, and not one of: #{dependencies.join(', ')}"
         return false
       end
       
-      FileUtils.cd(get_path()) do
+      FileUtils.cd(File.join(@path, '..')) do
         if not quiet_system("#{paster} create --no-interactive -t pylons #{project_name}")
           puts 'Failure when running "paster", this command creates the pylons project and ought to have been downloaded by the installer'
           return false
         end
       end
       
-      Installer.copy(tx, "#{@service_dir}/pieces/root", @path)
-      Installer.copy(tx, "#{@service_dir}/pieces/services", get_path(:services))
-      Installer.copy(tx, "#{@service_dir}/pieces/public", get_path(:web))
+      Installer.copy(tx, "#{@service_dir}/pieces/root", @path, [], true)
+      Installer.copy(tx, "#{@service_dir}/pieces/services", get_path(:services), [], true)
+      Installer.copy(tx, "#{@service_dir}/pieces/public", get_path(:web), [], true)
+      Installer.copy(tx, "#{@service_dir}/pieces/plugins", get_path(:plugins), [], true)
 
-      tx.rm "#{app_path}/public" # pylons makes this
-
+      app_path = get_path(project_name)
       tx.after_tx { 
+
         f = get_path('development.ini')
         search_and_replace_in_file(f, "__PROJECT_NAME__", @config[:name])
         search_and_replace_in_file(f, "egg:Appcelerator", "egg:Appcelerator==#{service_version()}#")
 
         f = get_path('MANIFEST.in')
-        search_and_replace_in_file(/recursive-include .*?\/public/, 'recursive-include public')
+        search_and_replace_in_file(f, /recursive-include .*?\/public/, 'recursive-include public')
 
-        f = get_path("#{app_path}/config/middleware.py")
-        app_path = get_path(project_name)
+        f = File.join(app_path, 'config', 'middleware.py')
         public_rel_path = get_relative_path(app_path, @config[:paths][:web])
         static_cascade=<<END_CODE
     import os
@@ -78,6 +78,7 @@ module Appcelerator
     )
 
 END_CODE
+        content = File.read(f)
         if content.include?('javascripts_app')
           static_cascade += '    app = Cascade([appcelerator_static, static_app, javascripts_app, app])'
         else
@@ -87,6 +88,8 @@ END_CODE
         search_and_replace_in_file(f, /\s+app = Cascade[^\n]+/, static_cascade)
 
       }
+
+      FileUtils.rm_rf("#{app_path}/public") # pylons makes this
 
     end
 
