@@ -46,8 +46,9 @@ CONFIG = YAML::load_file(File.join(BUILD_DIR, 'config.yml'))
 # Load the release system and try to initialize
 # it using the S3 Transport
 puts("Connecting to release server...")
-t = S3Transport.new(DISTRO_BUCKET, CONFIG)
-MANIFEST = t.manifest
+TRANSPORT = S3Transport.new(DISTRO_BUCKET, CONFIG)
+#TRANSPORT = FileTransport.new("/Users/martin/test", CONFIG)
+MANIFEST = TRANSPORT.manifest
 
 # inject defaults for build configurations
 CONFIG[:releases].each_pair {|type, rels|

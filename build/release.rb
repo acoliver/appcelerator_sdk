@@ -181,13 +181,13 @@ class Manifest
             creleases.each { |rel|
                 to_remove = []
                 rel.dependencies.each { |dep|
-                   dep_rel = get_latest_release(dep[:type], dep[:name])
+                   dep_rel = get_latest_release(dep['type'], dep['name'])
 
                    if dep_rel
-                    dep[:version] = dep_rel.version.to_s
-                    dep[:filesize] = dep_rel.filesize
-                    dep[:checksum] = dep_rel.checksum
-                    dep[:url] = dep_rel.url
+                    dep['version'] = dep_rel.version.to_s
+                    dep['filesize'] = dep_rel.filesize
+                    dep['checksum'] = dep_rel.checksum
+                    dep['url'] = dep_rel.url
                    else
                     to_remove << dep
                    end
@@ -317,13 +317,17 @@ class FileTransport
         @release_dir = File.join(dir, release_name + '-' + release_version)
         @manifest_file = File.join(@release_dir, "manifest.js")
 
-        if (not(File.exists?(@release_dir)))
+        if not(File.exists?(@release_dir))
             FileUtils.mkdir_p(@release_dir)
         end
 
-        f = File.new(@manifest_file, 'r')
-        man = f.read()
-        f.close
+        if not(File.exists?(@manifest_file))
+            man = "{}"
+        else
+            f = File.new(@manifest_file, 'r')
+            man = f.read()
+            f.close
+        end
 
         if not man or man == ""
             man = "{}"
