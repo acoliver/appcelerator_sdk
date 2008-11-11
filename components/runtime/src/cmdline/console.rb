@@ -20,6 +20,7 @@ require 'open-uri'
 
 Signal.trap("INT") { puts; exit }
 
+APPCELERATOR_VERSION="__VERSION__"
 ET_PHONE_HOME = 'http://updatesite.appcelerator.org'
 OPTIONS = {}
 ARGS = []

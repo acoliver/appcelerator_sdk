@@ -1,5 +1,0 @@
---- 
-:type: installer
-:name: unix
-# pulled from the components/runtime/build.yml file
-:version: false

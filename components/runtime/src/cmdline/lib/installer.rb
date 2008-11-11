@@ -482,7 +482,7 @@ HELP
         client = get_client
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
         config = get_config
-        args = {'ping'=>ping,'sid'=>config[:sid],'os'=>RUBY_PLATFORM}
+        args = {'ping'=>ping,'sid'=>config[:sid],'os'=>RUBY_PLATFORM,'version'=>APPCELERATOR_VERSION}
         response = client.send('distribution.query.request',args)
         if config[:sid].nil? or config[:sid]!=response[:data]['sid']
           config[:sid] = response[:data]['sid']

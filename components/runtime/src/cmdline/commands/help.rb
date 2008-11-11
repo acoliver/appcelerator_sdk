@@ -28,11 +28,11 @@ CommandRegistry.makeGroup(:help) do |group|
   ]) do |args,options|
     
     puts 
-    puts 'Appcelerator RIA Platform'.center(80)
+    puts "Appcelerator RIA Platform #{APPCELERATOR_VERSION}".center(80)
     puts 
     puts "  This program comes with ABSOLUTELY NO WARRANTY; for details type "
     puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
-    puts "  redistribute it under certain conditions of the GNU GPL version 3 license."
+    puts "  redistribute it under certain conditions of the Apache 2.0 license."
     puts
     
     entry = CommandRegistry.find(args[:command])
