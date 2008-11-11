@@ -79,5 +79,5 @@
       end
     end
   
-    #FileUtils.rm_rf(mule_stage_dir)
+    FileUtils.rm_rf(mule_stage_dir)
   end
