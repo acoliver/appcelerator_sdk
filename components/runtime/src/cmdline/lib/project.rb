@@ -234,7 +234,7 @@ module Appcelerator
     end
 
     def get_websdk_path(rel_path="")
-      File.join(get_web_path(), "appcelerator", rel_path)
+      File.join(get_path(:web), "appcelerator", rel_path)
     end
 
     def save_config()
