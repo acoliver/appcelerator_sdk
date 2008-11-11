@@ -100,7 +100,7 @@ task :release, :name, :version do |t, args|
         puts "Trying to build and release #{fullname} #{version}"
 
         task.invoke()
-        file = config[:outpu_filename]
+        file = config[:output_filename]
 
     end
 
