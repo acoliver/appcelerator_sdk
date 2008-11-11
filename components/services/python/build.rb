@@ -31,7 +31,7 @@ task :python do
   stage_dir = "#{STAGE_DIR}/python_build"
 
   FileUtils.mkdir_p(File.join(stage_dir,'pieces'))
-  FileUtils.cp_r("#{build_dir}/pieces", File.join(stage_dir,'pieces'))
+  FileUtils.cp_r("#{build_dir}/pieces", stage_dir)
   FileUtils.cp_r("#{build_dir}/appcelerator-module", stage_dir)
   FileUtils.cp("#{build_dir}/install.rb", stage_dir)
 
