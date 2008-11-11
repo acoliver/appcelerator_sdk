@@ -1,7 +1,8 @@
 
 begin
     require 'rubygems'
-    json = Gem.cache.search('json')
+    dep = Gem::Dependency.new('json', Gem::Requirement.default)
+    json = Gem.cache.search(dep)
     if json and json.first
       require 'json'
       SBC_HAS_JSON = true

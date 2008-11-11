@@ -75,8 +75,9 @@ module Appcelerator
       get_rails_gem
     end
     
-    def missing_gem? gemname
-      Gem.cache.search(gemname).empty?
+    def missing_gem?(gemname)
+      dependency = Gem::Dependency.new(gemname, Gem::Requirement.default)
+      Gem.cache.search(dependency).empty?
     end
     
     def get_rails_gem
@@ -134,7 +135,8 @@ module Appcelerator
         end
       end
       
-      Gem.cache.search('rails').last
+      dep = Gem::Dependency.new('rails', Gem::Requirement.default)
+      Gem.cache.search(dep).last
     end
     
     def update_project(from_path,to_path,config,tx,from_version,to_version)

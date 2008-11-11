@@ -18,7 +18,8 @@ require 'fileutils'
 Signal.trap("INT") { puts; exit }
 
 def is_gem_installed(gem)
-  installed = Gem.cache.search gem
+  dep = Gem::Dependency.new(gem, Gem::Requirement.default)
+  installed = Gem.cache.search(dep)
   return !installed.empty?
 end
 

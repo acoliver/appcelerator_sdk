@@ -28,7 +28,8 @@ module Appcelerator
       missing_gems = []
       [["merb-core","0.9.9"],
        ["merb-gen","0.9.9"]].each do |required_gem, required_version|
-        if Gem.cache.search(required_gem,"=#{required_version}").empty?
+        dependency = Gem::Dependency.new(required_gem, [required_version])
+        if Gem.cache.search(dependency).empty?
           missing_gems << [required_gem,required_version]
 		  end
       end
