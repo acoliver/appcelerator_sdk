@@ -70,7 +70,7 @@ module Appcelerator
 
       info = {'hostname'=>'localhost','ipaddress'=>[],'systemid'=>@config[:systemid]}
       
-      if RUBY_PLATFORM =~ /(mswin32|windows)/
+      if RUBY_PLATFORM =~ /(mswin32|windows|cygwin)/
         out = %x[ipconfig]
         r = out.grep /IP Address/
         r.each do |line|
