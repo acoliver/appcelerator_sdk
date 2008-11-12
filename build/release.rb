@@ -175,28 +175,7 @@ class Manifest
         h = {}
 
         @model.each_pair { | ctype, creleases |
-
-            # fake dependency resolution
-            # this should eventually be replaced
-            creleases.each { |rel|
-                to_remove = []
-                rel.dependencies.each { |dep|
-                   dep_rel = get_latest_release(dep['type'], dep['name'])
-
-                   if dep_rel
-                    dep['version'] = dep_rel.version.to_s
-                    dep['filesize'] = dep_rel.filesize
-                    dep['checksum'] = dep_rel.checksum
-                    dep['url'] = dep_rel.url
-                   else
-                    to_remove << dep
-                   end
-                }
-                rel.dependencies = rel.dependencies - to_remove
-            }
-
             h[ctype] = creleases.collect {|release| release.to_hash() }
-
         }
         h.to_json()
     end

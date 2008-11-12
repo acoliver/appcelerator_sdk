@@ -538,54 +538,30 @@ HELP
       nil
     end
 
-    def Installer.dependency_specified?(component,dependencies)
-      dependencies.each do |d|
-        return true if d[:name]==component[:name] and d[:type]==component[:type]
-      end
-      false
-    end
 
-    def Installer.same?(a,b)
-      a[:name]==b[:name] or a[:type]==b[:type]
-    end
+    def Installer.get_dependencies(component)
+      return [] unless component and component[:dependencies]
+      dependencies = []
 
-    def Installer.get_dependencies(component,dependencies=[])
+      checked = [component]
+      horizon = [component]
+      while not horizon.empty?
+        deps = horizon.collect{|c| c[:dependencies]}.flatten
+        horizon = []
+        deps.each {|dep|
+          dep_comp = get_current_remote_component(dep)
+          next if not dep_comp
+          next if checked.include?(dep_comp) # checked by ancestor on the tree
+          next if horizon.include?(dep_comp) # checked by a sibling on the tree
+          next if installed_this_session?(dep_comp)
+          
+          dependencies << dep_comp
+          horizon << dep_comp
 
-      return [] unless component
-      depends = component[:dependencies]
-      return unless depends
-
-      checked = Array.new
-
-      depends.each do |d|
-        next if same?(component,d)
-        next if dependency_specified?(d,dependencies)
-        next if installed_this_session? d
-        dependencies << d
-        checked << d[:name]
+        }
       end
 
-      # recursively resolve dependencies
-      sweeps = 0
-      while sweeps < 10 # we can only sweep once per finger
-        count = 0
-        dependencies.each do |d|
-          sweeps += 1
-          depends = find_dependencies_for(d)
-          next unless depends
-          depends.each do |dd|
-            next if Installer.same?(dd,component)
-            next if checked.include?(dd[:name])
-            next if installed_this_session? dd
-            dependencies << dd
-            count += 1
-            checked << dd[:name]
-          end
-        end
-        break unless count > 0
-      end
-
-      dependencies
+      return dependencies
     end
 
     def Installer.number_to_human_size(size, precision=1)
