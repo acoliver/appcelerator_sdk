@@ -320,8 +320,14 @@ def dofiles_and_dirs(dir)
 end
 
 
+USE_CYGPATH = RUBY_PLATFORM.downcase.include?("cygwin")
+def cygpath(path)
+	return `cygpath --windows \"#{path}\"`.chomp
+end
+
 YUI_VERSION = '2.3.6'
-YUI_JAR = "#{WEBSDK_DIR}/lib/yuicompressor-#{YUI_VERSION}.jar"
+YUI_JAR = USE_CYGPATH ? cygpath("#{WEBSDK_DIR}/lib/yuicompressor-#{YUI_VERSION}.jar") : "#{WEBSDK_DIR}/lib/yuicompressor-#{YUI_VERSION}.jar"
+
 YUI_COMPRESSOR = "java -jar \"#{YUI_JAR}\""
 COMPRESS_RB = "ruby \"#{WEBSDK_DIR}/lib/compress.rb\""
 
@@ -359,8 +365,15 @@ def compress_and_mangle(file,code,type=:js)
   else
     suppress_output = ">#{error_temp_file} 2>&1"
   end
-  
-  call_command("#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}") || compress_fail(file,error_temp_file)
+ 
+	if USE_CYGPATH
+		filein = cygpath(filein)
+		fileout = cygpath(fileout)
+	end
+
+	command = "#{YUI_COMPRESSOR} \"#{filein}\" -o \"#{fileout}\" #{suppress_output}"
+
+	call_command(command) || compress_fail(file,error_temp_file)
   File.read("#{fileout}")
 end
 
