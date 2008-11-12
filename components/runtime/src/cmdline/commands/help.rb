@@ -28,7 +28,7 @@ CommandRegistry.makeGroup(:help) do |group|
   ]) do |args,options|
     
     puts 
-    puts "Appcelerator RIA Platform #{APPCELERATOR_VERSION}".center(80)
+    puts "Appcelerator Open Web Platform #{APPCELERATOR_VERSION}".center(80)
     puts 
     puts "  This program comes with ABSOLUTELY NO WARRANTY; for details type "
     puts "  `#{SCRIPTNAME} help:license`. This is free software, and you are welcome to "
