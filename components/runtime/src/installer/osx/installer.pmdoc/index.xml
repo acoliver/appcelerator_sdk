@@ -1,4 +1,4 @@
-<pkmkdoc spec="1.12"><properties><title>Appcelerator RIA Platform</title><build>/Users/jhaynie/Documents/workspace/appcelerator_sdk/stage/installer.mpkg</build><organization>org.appcelerator</organization><userSees ui="easy"/><min-target os="2"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><description>Welcome to the Appcelerator RIA Platform.
+<pkmkdoc spec="1.12"><properties><title>Appcelerator Open Web Platform</title><build>/Users/jhaynie/Documents/workspace/appcelerator_sdk/stage/installer.mpkg</build><organization>org.appcelerator</organization><userSees ui="easy"/><min-target os="2"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><description>Welcome to the Appcelerator Open Web Platform.
 
 This installer will install the necessary components to run the Appcelerator platform on your computer.  Once the installation is complete, any remaining files that are required will be automatically downloaded and installed for you.
 

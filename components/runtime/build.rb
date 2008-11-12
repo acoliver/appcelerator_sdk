@@ -35,6 +35,8 @@ namespace :runtime do
     copy_dir "#{RUNTIME_DIR}/src/cmdline", update_dir 
     FileUtils.mkdir_p("#{update_dir}/lib")
     FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{update_dir}/lib/uuid.rb"
+
+    search_and_replace_in_file("#{update_dir}/console.rb","__VERSION__", CONFIG[:version])
   
     zipfile = config[:output_filename]
     FileUtils.rm_rf zipfile
@@ -72,6 +74,8 @@ namespace :runtime do
   
       FileUtils.cp_r "#{ROOT_DIR}/LICENSE", win32_dir
   
+      search_and_replace_in_file("#{win32_dir}/console.rb","__VERSION__", CONFIG[:version])
+
       # NSIS requires 0.0.0.0
       win32_version = "#{version}.0"
 
@@ -113,7 +117,6 @@ namespace :runtime do
       FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{unix_dir}/lib/uuid.rb"
   
       FileUtils.rm_rf "#{unix_dir}/maker"
-      FileUtils.rm_rf "#{unix_dir}/appcelerator.lsm"
       FileUtils.rm_rf "#{unix_dir}/releases" if File.exists? "#{unix_dir}/releases"
       FileUtils.cp_r "#{ROOT_DIR}/LICENSE", unix_dir
 
@@ -122,13 +125,10 @@ namespace :runtime do
       
       FileUtils.chmod 0755, "#{unix_dir}/setup.sh"
       
-      lsm = File.read "#{RUNTIME_DIR}/src/installer/unix/appcelerator.lsm"
-      lsm.gsub! '0.0.0',version
-      lsmf = File.new "#{STAGE_DIR}/installer/appcelerator.lsm",'w+'
-      lsmf.write lsm
-      lsmf.close
+      search_and_replace_in_file("#{unix_dir}/console.rb","__VERSION__", CONFIG[:version])
+      search_and_replace_in_file("#{unix_dir}/appcelerator.lsm","__VERSION__", CONFIG[:version])
   
-      system "#{RUNTIME_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{STAGE_DIR}/installer/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator RIA Platform\" ./setup.sh"
+      system "#{RUNTIME_DIR}/src/installer/unix/maker/makeself.sh --copy --lsm \"#{unix_dir}/appcelerator.lsm\" #{unix_dir} installer.run \"Appcelerator Open Web Platform\" ./setup.sh"
       FileUtils.mv "installer.run","#{STAGE_DIR}/installer_unix_#{version}.run"
   
       FileUtils.rm_rf "#{STAGE_DIR}/installer_unix_#{version}.zip" 
@@ -137,7 +137,7 @@ namespace :runtime do
         zipfile.add("build.yml", build_yaml)
       end
   
-      FileUtils.rm_rf unix_dir
+      #FileUtils.rm_rf unix_dir
       puts "Unix Installer is now ready"
     end
   end
@@ -163,6 +163,8 @@ namespace :runtime do
       copy_dir "#{RUNTIME_DIR}/src/installer/osx", "#{osx_dir}/installer/build/osx"
       FileUtils.mkdir_p("#{osx_dir}/lib")
       FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{osx_dir}/lib/uuid.rb"
+
+      search_and_replace_in_file("#{osx_dir}/installer/console.rb","__VERSION__", CONFIG[:version])
   
       # dynamically make our list of files into the pmdoc before we build
       make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
@@ -273,6 +275,14 @@ def make_pkg_file(file,dir)
    f.close
 end
 
+def search_and_replace_in_file(file, to_find, to_replace)
+  content = File.read(file).gsub!(to_find, to_replace)
+  f = File.open(file,'w+')
+  f.puts(content)
+  f.flush()
+  f.close()
+  true
+end
 
 def fix_paths(dir,path)
   Dir["#{dir}/*-contents.xml"].each do |f|
