@@ -25,6 +25,10 @@ module Appcelerator
        :services => ["application/services", "Appcelerator services"]
     })
 
+    def install_websdk_late?
+        return true
+    end
+
     def create_project(tx)
     
       @pyconfig = PythonConfig.new
@@ -36,8 +40,11 @@ module Appcelerator
       project_name = @config[:name]
       @config[:paths][:services] = File.join(project_name, 'services')
 
+      # custom static files directory
+      FileUtils.rm_rf(get_path('public')) 
+      @config[:paths][:web] = File.join(project_name, 'public')
+
       project_path = @path
-      #
       dependencies = %w(appcelerator simplejson beaker paste python)
       if dependencies.include?(project_name) or not project_name.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)
         puts "Invalid project name, must be a valid python identifier, and not one of: #{dependencies.join(', ')}"
@@ -61,7 +68,7 @@ module Appcelerator
 
         f = get_path('development.ini')
         search_and_replace_in_file(f, "__PROJECT_NAME__", @config[:name])
-        search_and_replace_in_file(f, "egg:Appcelerator", "egg:Appcelerator==#{service_version()}#")
+        search_and_replace_in_file(f, "egg:Appcelerator", "egg:Appcelerator==#{service_version()}")
 
         f = get_path('MANIFEST.in')
         search_and_replace_in_file(f, /recursive-include .*?\/public/, 'recursive-include public')
@@ -69,6 +76,7 @@ module Appcelerator
         f = File.join(app_path, 'config', 'middleware.py')
         public_rel_path = get_relative_path(app_path, @config[:paths][:web])
         static_cascade=<<END_CODE
+
     import os
     root = config['pylons.paths']['root']
     overroot = os.path.dirname(root)
@@ -89,7 +97,6 @@ END_CODE
 
       }
 
-      FileUtils.rm_rf("#{app_path}/public") # pylons makes this
 
     end
 
