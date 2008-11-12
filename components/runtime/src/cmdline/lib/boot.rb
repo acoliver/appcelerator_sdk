@@ -124,7 +124,7 @@ module Appcelerator
 
         puts 
         puts '*' * 80
-        puts ' ' * 20 + 'Welcome to the Appcelerator RIA Platform'
+        puts ' ' * 20 + 'Welcome to the Appcelerator Open Web Platform'
         puts '*' * 80
         puts
         
