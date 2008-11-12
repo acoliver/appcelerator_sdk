@@ -88,7 +88,7 @@ module Appcelerator
 
           # include any bundled components automagically
           Dir["#{source_dir}/_install/*.zip"].each do |filename|
-            type = File.basename(filename).split('-')
+            type = File.basename(filename).split(/[-,_]/)
             next unless type.length > 0
             type = type.first
 
