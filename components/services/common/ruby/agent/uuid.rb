@@ -273,7 +273,7 @@ module Appcelerator
       
         #PATCHED BY JGH: check for platform
       
-        if RUBY_PLATFORM =~ /mswin/
+        if RUBY_PLATFORM =~ /(mswin|cygwin)/
           Kernel.open "|ipconfig /all" do |input|
             input.each_line { |line| config << line }
           end rescue nil
