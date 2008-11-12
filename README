@@ -1,5 +1,5 @@
 +=======================================================================================+
-+                          Appcelerator RIA Platform                                    +
++                        Appcelerator Open Web Platform                                 +
 +=======================================================================================+
 
 ---------------------
@@ -73,13 +73,13 @@ From a bash shell you can run:
 --------------------
 
 If you need more assistance, please go to the Appcelerator Developer Network 
-at <http://www.appcelerator.org>.
+at <http://community.appcelerator.org>.
 
 To report a bug or make a feature request, please visit our Issue Tracking portal
 at <http://jira.appcelerator.org>.
 
 If you are interested in becoming a community developer and contributing to
-Appcelerator, please contact us at <info@appcelerator.com>.
+Appcelerator, please contact us at <info@appcelerator.org>.
 
 
 -- The Appcelerator Team
