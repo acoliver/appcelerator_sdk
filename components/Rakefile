@@ -57,10 +57,9 @@ task :release, :name, :version do |t, args|
     fullname = args.name
     version = args.version
 
-    if (File.exists?(fullname))
-        puts "Trying to release file: #{fullname}"
-        file = File.expand_path(fullname)
-
+    if (not fullname)
+        release_file(ARGV.shift)
+        exit        
     else
 
         # try parsing release name
@@ -100,7 +99,7 @@ task :release, :name, :version do |t, args|
         puts "Trying to build and release #{fullname} #{version}"
 
         task.invoke()
-        file = config[:output_filename]
+        release_file([config[:output_filename]])
 
     end
 

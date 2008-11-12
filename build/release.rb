@@ -253,6 +253,8 @@ class Manifest
     end
 
     def get_latest_release(type, name)
+        type = type.to_s
+        name = name.to_s
         releases = get_releases(:type => type, :name => name)
 
         if releases.length < 1
@@ -274,7 +276,7 @@ class Manifest
 
         if prev_rel
             parts = prev_rel.version.split('.')
-            parts = parts[0..-2] + [parts.last + 1]
+            parts = parts[0..-2] + [parts.last.to_i + 1]
             return parts.join('.')
         else
             return @config[:version] + '.0'

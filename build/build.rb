@@ -213,6 +213,18 @@ def add_config_to_zip(config)
 end
 
 
+def release_file(files)
+  Dir.chdir(STAGE_DIR) {|dir|
+      files.each do |file|
+          puts "Releasing #{File.expand_path(file)}..."
+          r = Release.from_zip(file)
+          TRANSPORT.add_release(r)
+      end
+      puts "Pushing releases..."
+      TRANSPORT.push()
+  }
+end
+
 def md5(file)
   Digest::MD5.hexdigest File.read(file)
 end
