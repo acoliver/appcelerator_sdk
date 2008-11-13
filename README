@@ -61,7 +61,13 @@ All components have an `all` target.  For example:
 
   > rake widget:all
   > rake websdk:all
-  > rake installer:all
+  > rake runtime:all
+
+To build a specific installer, you could just specify the OS. For example:
+
+  > rake runtime:win32 
+  > rake runtime:unix
+  > rake runtime:osx
 
 To have rake print additional into, you need to set an environment variable.
 From a bash shell you can run:
