@@ -72,8 +72,38 @@ module Titanium
     end
     
     def Packager.create_win_exe
+		app_folder = File.join(@@dest, @@executable_name)
+
+		resources_folder = File.join(app_folder, 'Resources')
+		titanium_folder = File.join(resources_folder, 'public', 'titanium')
+		FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
+
+		FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
+
+		FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
+		Packager.copy_template(
+        	File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
+        	File.join(resources_folder, 'tiapp.xml'))
+      
+        Packager.copy_template(
+        File.join(Titanium.get_support_dir(), 'plugins.js.template'),
+        File.join(titanium_folder, 'plugins.js'))
+
+		Titanium.each_plugin do |plugin|
+			plugin.install(@@project, @@dest, @@executable_name)
+		end
+		
+		if is_cygwin?
+			FileUtils.chmod 0755, File.join(app_folder, @@executable_name+".exe")
+		end
+	
+		puts "#{@@executable_name}.exe created in #{app_folder}"
     end
     
+    def Packager.launch_win_exe
+      system File.join(File.join(@@dest, @@executable_name), @@executable_name+".exe")
+    end
+
     def Packager.create_linux_dist
     end
     
@@ -88,6 +118,7 @@ module Titanium
         Packager.launch_osx_app() if launch
       elsif is_win?
         Packager.create_win_exe()
+		Packager.launch_win_exe() if launch
       else
         Packager.create_linux_dist()
       end

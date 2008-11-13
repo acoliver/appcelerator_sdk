@@ -57,7 +57,9 @@ module Appcelerator
           return false
         end
       end
-      
+     
+      FileUtils.rm_rf(get_path(:web)) # pylons creates this
+
       Installer.copy(tx, "#{@service_dir}/pieces/root", @path, [], true)
       Installer.copy(tx, "#{@service_dir}/pieces/services", get_path(:services), [], true)
       Installer.copy(tx, "#{@service_dir}/pieces/public", get_path(:web), [], true)

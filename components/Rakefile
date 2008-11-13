@@ -58,7 +58,8 @@ task :release, :name, :version do |t, args|
     version = args.version
 
     if (not fullname)
-        release_file(ARGV.shift)
+        ARGV.shift
+        release_file(ARGV)
         exit        
     else
 

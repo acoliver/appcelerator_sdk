@@ -107,9 +107,7 @@ module Appcelerator
 
         if not update
           Installer.copy(tx, "#{source_dir}/images/.", project.get_websdk_path("images"))
-          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_websdk_path())
-
-
+          Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_path(:web))
 
           widgets = Installer.find_dependencies_for(sdk) || []
 

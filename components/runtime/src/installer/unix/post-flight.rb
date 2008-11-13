@@ -70,7 +70,7 @@ end
 
 puts
 puts '*' * 80
-puts 'Appcelerator RIA Platform Installer'.center(80)
+puts 'Appcelerator Open Web Platform Installer'.center(80)
 puts '*' * 80
 puts
 

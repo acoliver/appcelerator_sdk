@@ -25,8 +25,12 @@ def is_mac?
   RUBY_PLATFORM.downcase.include?("darwin")
 end
 
-def is_windows?
-  RUBY_PLATFORM.downcase.include?("mswin")
+def is_cygwin?
+	RUBY_PLATFORM.downcase.include?("cygwin")
+end
+
+def is_win?
+  RUBY_PLATFORM.downcase.include?("mswin") || is_cygwin?
   
 end
 
@@ -64,6 +68,8 @@ module Titanium
     def Titanium.get_executable
       if is_mac?
         return File.join(Titanium.get_app_path(), 'Contents', 'MacOS', 'Titanium')
+			elsif is_win?
+				return File.join(Titanium.get_component_dir(), 'ti_shell.exe')
       end
     end
     

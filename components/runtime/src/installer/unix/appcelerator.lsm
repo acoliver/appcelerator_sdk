@@ -1,6 +1,6 @@
 Begin3
 Title:          appcelerator
-Version:        0.0.0
+Version:        __VERSION__
 Description:    The Appcelerator RIA Platform is a set of software for building
                 rich Internet applications (RIA) on a service-oriented
                 architecture (SOA). 

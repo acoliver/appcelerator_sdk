@@ -17,7 +17,7 @@ module Titanium
 
   class Launcher
     def Launcher.launchProject()
-      command = WEBKIT_SHELL + ' -file ' + File.join(Dir.pwd, 'public', 'index.html')
+      command = WEBKIT_SHELL + ' -file ' + File.join(Dir.pwd, 'public', 'appcelerator', 'index.html')
       puts "launching #{command}"
       
       system command
