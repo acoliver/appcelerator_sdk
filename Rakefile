@@ -22,7 +22,7 @@ load 'components/Rakefile'
 
 
 puts "*" * 80
-puts "Building the Appcelerator RIA Platform".center(80)
+puts "Building the Appcelerator Platform".center(80)
 puts "*" * 80
 puts
 
