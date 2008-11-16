@@ -152,13 +152,26 @@ $.each(['script','function','javascript'],function()
 	var type = this;
 	App.regAction(evtRegex(this),function(params,name,data)
 	{
+		if (this.direction)
+		{
+			params.direction = this.direction;
+			params.version = this.version;
+			params.type = params.name = this.name;
+		}
 		return getTarget(params,this)[type](data,params);
 	},true);
 });
 
 App.regAction(evtRegex('value'),function(params,name,data)
 {
-	return getTarget(params,this).value(params,data);
+	if (this.direction)
+	{
+		params.direction = this.direction;
+		params.version = this.version;
+		params.type = params.name = this.name;
+	}
+	var p = App.extractParameters('['+data+']',params);
+	return getTarget(params,this).value(p.params,data);
 },true);
 
 

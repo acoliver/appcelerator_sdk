@@ -2,7 +2,7 @@
 var subs = {local:[], remote:[]};
 var re = /^(l|local|both|r|remote|\*)\:(.*)$/;
 var localRe = /^l|local|both|\*/;
-var pubdebug = AppC.params.debug=='2' || AppC.params.debug == '1';
+var pubdebug = AppC.params.debug=='2' || AppC.params.debug==true;
 var queue = [];
 var remoteDisabled = true;
 var queueInit = false;
@@ -33,7 +33,7 @@ $.fn.sub = function(name,fn,params)
 		});
 	}
 	
-	$.debug('subscribing type='+type+', regexp='+regexp);
+	$.info('subscribing type='+type+', regexp='+regexp+', params='+$.toJSON(params));
 	
 	if (localRe.test(m[1]))
 	{
@@ -97,8 +97,8 @@ App.normalizePub = function(name)
 
 App.pubQueue = function(name,data,local,scope,version)
 {
-	if (pubdebug) $.info('publish '+name+' with '+$.toJSON(data));
-
+	if (pubdebug) $.info('publish '+(local?'l:':'r:')+name+' with '+$.toJSON(data)+', local:'+subs.local.length+'/remote:'+subs.remote.length);
+	
 	// optimize if no listeners at all
 	if (subs.local.length == 0 && subs.remote.length == 0) return;
 
@@ -115,9 +115,12 @@ App.pubQueue = function(name,data,local,scope,version)
 		processQueue();		
 	}
 };
-
+ 
 $.fn.pub = function(name,data,scope,version)
 {
+	var p = App.extractParameters(name,data||{});
+	data = data || p.params;
+	name = p.name;
 	var m = re.exec(name);
 	var isLocal = localRe.test(m[1]);
 	data = data || {};
@@ -125,6 +128,8 @@ $.fn.pub = function(name,data,scope,version)
 
 	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
 	if (!isLocal && data.event) delete data.event;
+	
+	$.info('publishing '+name+' => '+$.toJSON(data));
 	
 	App.pubQueue(m[2],data,isLocal,scope,version);
 
@@ -326,6 +331,11 @@ function processQueue()
 		{
 			if ((a[j].regexp && a[j].regexp.test(name)) || (!a[j].regexp && a[j].name == name))
 			{
+				if (pubdebug) $.info('dispatching '+(queue[i].local?'l:':'r:')+name+' to '+a[j].scope.attr('id'));
+				a[j].scope.direction = direction;
+				a[j].scope.version = version;
+				a[j].scope.scope = scope;
+				a[j].scope.name = name;
 				a[j].fn.apply(a[j].scope,[data,scope,version,name,direction,a[j].params]);
 			}
 		}

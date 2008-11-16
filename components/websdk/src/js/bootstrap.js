@@ -45,8 +45,8 @@ AppC.config =
 //
 AppC.params = 
 {
-	debug: 0   /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */,
-	delayCompile: false, /* generally don't touch this unless you really know why */
+	debug: 0                 /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */,
+	delayCompile: false      /* generally don't touch this unless you really know why */
 };
 
 function queryString(uri,params)
@@ -65,12 +65,14 @@ function queryString(uri,params)
 			{
 				case '1':
 				case 'true':
+				case 'yes':
 				{
 					v = true;
 					break;
 				}
 				case '0':
 				case 'false':
+				case 'no':
 				{
 					v = false;
 					break;
@@ -84,7 +86,7 @@ function queryString(uri,params)
 
 
 // get config parameters for app from the URI of the page
-queryString(top.window.document.location.href,AppC.params);
+queryString(window.document.location.href,AppC.params);
 
 var removeLastElement = function(uri) {
     var idx = uri.lastIndexOf('/');
@@ -108,6 +110,7 @@ jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : "";
 
 if (jsLocation)
 {
+	AppC.sdkJS = URI.absolutizeURI(jsLocation,documentRoot);
     AppC.sdkRoot = removeLastElement(jsLocation); // parent directory of js
     var docHost = URI.splitUriRef(documentRoot)[1];
     var jsHost = URI.splitUriRef(jsLocation)[1];
@@ -128,7 +131,8 @@ if (jsLocation)
 }
 else
 {
-    console.error("Can't find appcelerator.js or appcelerator-debug.js");
+    $.error("Can't find appcelerator.js or appcelerator-debug.js");
+	return false;
 }
 
 // add a slash if the path is missing one

@@ -75,6 +75,8 @@ class RunJavaPlugin < Appcelerator::Plugin
         webdir = project.config[:paths][:web]
         servicesdir = project.config[:paths][:services]
         libdir = project.config[:paths][:lib]
+        confdir = project.config[:paths][:config] || 'config'
+        tmpdir = project.config[:paths][:tmp] || 'tmp'
 
         jars = Dir["#{libdir}/**/**"].inject([]) do |jars,file|
           jars << "#{file}".gsub(/\//,pathsep) if File.extname '.jar'
@@ -87,8 +89,15 @@ class RunJavaPlugin < Appcelerator::Plugin
         props = props.join(' ')
         cp = "#{servicesdir}"
         cp << sep
+        
+        # put the config directory files in WEB-INF on the classpath
+        webinf = FileUtils.mkdir_p File.join(tmpdir,'classes','WEB-INF')
+        FileUtils.cp_r File.expand_path(confdir)+'/.', webinf
 
-        if File.exists?("output/classes")
+        cp << File.join(tmpdir,'classes')
+        cp << sep
+
+        if File.exists?('output/classes')
           cp << "output#{pathsep}classes" 
           cp << sep
         end

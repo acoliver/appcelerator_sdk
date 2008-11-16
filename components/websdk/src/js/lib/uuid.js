@@ -45,7 +45,7 @@ App.UUID =
 		var t = this.base16(this.dateSeed - dg.getTime());
         var a = this.base16(Math.floor(999999999999 * Math.random()));
         var _b = App.MD5.hex_md5(window.location.pathname);
-		var b = (_b.length > 10 ? _b.substring(0,10) : _b).gsub(/[^a-zA-Z0-9]/,'0');
+		var b = $.gsub((_b.length > 10 ? _b.substring(0,10) : _b),/[^a-zA-Z0-9]/,'0');
         var c = this.base16(Math.round(this.dateSeed * Math.random()));
         return t + '-' + a + '-' + b + '-' + c;
     }

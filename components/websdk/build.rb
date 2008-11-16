@@ -214,22 +214,35 @@ END_LICENSE
   end
   
   task :test => [:default] do
-    copy_tests("#{WEBSDK_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
-    copy_tests("#{WEBSDK_DIR}/test/appunit", "#{STAGE_DIR}/appunit")
+    #copy_tests("#{WEBSDK_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
+    #copy_tests("#{WEBSDK_DIR}/test/appunit", "#{STAGE_DIR}/appunit")
     #copy_tests("#{WEBSDK_DIR}/test/performance", "#{STAGE_DIR}/performance")
+    
+	 copy_tests("#{WEBSDK_DIR}/test/testmonkey", "#{STAGE_DIR}/testmonkey")
+  end
+  task :testrun => [:test] do
+	 system "open #{STAGE_DIR}/testmonkey/index.html"
   end
 end
   
 def copy_tests(test_src_path, test_dst_path)
   test_sdk_path = "#{test_dst_path}/appcelerator"
   widgets_src_path = "#{WEBSDK_DIR}/../widgets"
-  widgets_dst_path = "#{test_dst_path}/widgets"
+  widgets_dst_path = "#{test_sdk_path}/widgets"
   
-  puts File.expand_path(test_src_path)
+#  FileUtils.rm_rf test_dst_path
+  FileUtils.mkdir_p test_sdk_path unless File.exists? test_sdk_path
   
   cp_r(test_src_path, test_dst_path)
-  FileUtils.cp_r("#{WEBSDK_STAGE_DIR}/#{JS_PATH}", test_sdk_path) # there's no svn garbage here
+  FileUtils.rm_rf "#{test_sdk_path}/appcelerator.js"
+  FileUtils.rm_rf "#{test_sdk_path}/appcelerator-debug.js"
+  Dir["#{WEBSDK_STAGE_DIR}/#{JS_PATH}/*.js"].each do |js|
+    dest =  "#{test_sdk_path}/#{File.basename(js)}"
+    FileUtils.rm_rf dest if File.exists? dest
+    FileUtils.cp_r(js,dest)
+  end
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
+
   cp_r("#{WEBSDK_DIR}/src/common",       "#{test_sdk_path}/widgets/common")
   cp_r("#{WEBSDK_DIR}/src/web/images/", "#{test_sdk_path}/images/")
   cp_r("#{WEBSDK_DIR}/src/web/swf/", "#{test_sdk_path}/swf/")
@@ -241,13 +254,13 @@ def copy_tests(test_src_path, test_dst_path)
   Dir["#{actions_src_path}/*_action.js"].each do |file|
     FileUtils.cp file, actions_dest_path
   end
-
+  
   Dir["#{actions_src_path}/dynamic/*.js"].each do |file|
     FileUtils.cp file, actions_dest_path
   end
   
   puts "Copying tests ... this will take a few moments the first time through..."
-
+  
   # copy all widgets (without building, because that is a pain)
   Dir["#{widgets_src_path}/*/src/"].each do |file|
     name = file[/widgets\/([^\/]+)\/src/,1]
@@ -301,11 +314,11 @@ def copy_tests(test_src_path, test_dst_path)
   Dir["#{THEMES_DIR}/*"].each do |file|
     next unless File.directory?(file)
     type = File.basename(file)
-
+  
     Dir["#{THEMES_DIR}/#{type}/*"].each do |f|
       next unless File.directory?(f)
       (control, theme) = File.basename(f).split('_', 2)
-
+  
       tf = "#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}.js"
       utf = "#{test_sdk_path}/components/#{type}/#{control}/themes/#{theme}/#{theme}_debug.js"
       if File.exists? utf
@@ -326,7 +339,7 @@ def copy_tests(test_src_path, test_dst_path)
       f.close
     end
   end
-  FileUtils.cp_r("#{WEBSDK_DIR}/src/web/component_notfound.html","#{test_sdk_path}")
+  #FileUtils.cp_r("#{WEBSDK_DIR}/src/web/component_notfound.html","#{test_sdk_path}")
 end
 
 namespace :websdk do

@@ -59,6 +59,7 @@ $(document).ready(function()
 		}
 		else if (e.keyCode == 82)
 		{
+			if (e.metaKey || e.ctrlKey) return; // command+r is reload, ignore these
 			// run is 'r' or runall is 'shift+r'
 			var id = "#run" + (e.shiftKey ? "all":"");
 			$(id).click();

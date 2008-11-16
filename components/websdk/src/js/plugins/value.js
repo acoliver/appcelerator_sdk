@@ -1,6 +1,16 @@
 $.fn.value = function(object,property,defValue)
 {
-	var value = $.getNestedProperty(object,property,defValue||property);
+	var value = $.getNestedProperty(object,property);
+
+	if (!value)
+	{
+		value = $.getNestedProperty(object,'value');
+	}
+
+	if (!value)
+	{
+		value = defValue||property;
+	}
 	
 	if (this.is(':input'))
 	{

@@ -1,7 +1,7 @@
 
 $.fn.on = function(value,state)
 {
-	var el = $(this);
+	var el = this;
 	var isFn = typeof(state)=='function';
 	if (isFn)
 	{

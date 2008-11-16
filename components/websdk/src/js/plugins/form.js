@@ -57,7 +57,15 @@ AppC.decorators = function(iter)
 
 AppC.addValidator('required',function(el,value)
 {
-	return (typeof(value)!='undefined' && value);
+	if (null == value)
+    {
+        return false;
+    }
+    if (typeof(value) == 'boolean')
+    {
+        return value;
+    }
+	return $.trim(String(value)).length > 0;
 });
 
 function installDecorator(el,target)

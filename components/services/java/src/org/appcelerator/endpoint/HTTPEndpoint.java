@@ -21,11 +21,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.EventListener;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,10 +53,6 @@ import org.mortbay.resource.Resource;
  */
 public class HTTPEndpoint
 {
-
-    @SuppressWarnings("unused")
-    private static final Log LOG = LogFactory.getLog(HTTPEndpoint.class);
-    
     private Server server;
     
     public HTTPEndpoint(int port, String webdir)
@@ -66,12 +65,24 @@ public class HTTPEndpoint
         SessionHandler sh = new SessionHandler();
         HashSessionManager sessionManager=new HashSessionManager();
         sessionManager.setUsingCookies(true);
-        sessionManager.setSessionCookie("JSESSIONID");
+        sessionManager.setSessionCookie("JSESSIONID");  //NOTE: we should probably read appcelerator.xml to determine this
         sh.setSessionManager(sessionManager);
         
         Context root = new Context(server,"/",Context.SESSIONS);
         root.setSessionHandler(sh);
-        root.addServlet(new ServletHolder(new DispatcherServlet(resourceHandler)),"/*");
+		ServletHolder servletHolder = new ServletHolder(new DispatcherServlet(resourceHandler));
+        root.addServlet(servletHolder,"/*");
+
+		// attempt to load spring if we have it on our classpath
+		try
+		{
+			ServletContextListener listener = (ServletContextListener)root.loadClass("org.springframework.web.context.ContextLoaderListener").newInstance();
+			root.addEventListener(listener);
+		}
+		catch (Exception ig)
+		{
+			// ignore, just means spring isn't available
+		}
 
         AjaxServiceTransportServlet servicebroker = new AjaxServiceTransportServlet();
 		servicebroker.setEmbeddedMode(true);
