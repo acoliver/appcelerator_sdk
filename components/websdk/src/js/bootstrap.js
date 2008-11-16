@@ -321,6 +321,7 @@ AppC.compileDocument = function()
 			event:{id:document.body.id||'body'}
 		});
 		$(document).trigger('compiled');
+		body.css('display','block');
 		compileFinished = new Date;
 		loadTime = compileFinished - started;
 		compileTime = compileFinished - compileStarted;
@@ -339,5 +340,9 @@ AppC.compileDocument = function()
 	App.checkState(s); // state starts at 1, call to dec
 };
 
-if (!AppC.params.delayCompile) $(document).ready(AppC.compileDocument);
+if (!AppC.params.delayCompile) $(AppC.compileDocument);
 
+// we do a little trickery here to hide the body while we're loading
+// and then we can display it once compiled - this prevents crazy
+// components to be displayed before they're finished compiling
+document.write('<style>body{display:none}</style>');
