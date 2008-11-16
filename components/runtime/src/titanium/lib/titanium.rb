@@ -66,11 +66,11 @@ module Titanium
     end
     
     def Titanium.get_executable
-      if is_mac?
-        return File.join(Titanium.get_app_path(), 'Contents', 'MacOS', 'Titanium')
-			elsif is_win?
-				return File.join(Titanium.get_component_dir(), 'ti_shell.exe')
-      end
+    	if is_mac?
+    		return File.join(Titanium.get_app_path(), 'Contents', 'MacOS', 'Titanium')
+      	elsif is_win?
+      		return File.join(Titanium.get_component_dir(), 'ti_shell.exe')
+  		end
     end
     
     def Titanium.get_plugin_dir(plugin)

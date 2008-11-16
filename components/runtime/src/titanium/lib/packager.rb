@@ -32,7 +32,7 @@ module Titanium
       contents_folder = File.join(app_folder, 'Contents')
       macos_folder = File.join(contents_folder, 'MacOS')
       resources_folder = File.join(contents_folder, 'Resources')
-      titanium_folder = File.join(resources_folder, 'public', 'titanium')
+      titanium_folder = File.join(resources_folder, 'titanium')
       osx_support_folder = File.join(Titanium.get_support_dir(), 'osx')
 
       FileUtils.mkdir_p [app_folder, contents_folder, macos_folder, resources_folder, titanium_folder]
@@ -75,7 +75,7 @@ module Titanium
 		app_folder = File.join(@@dest, @@executable_name)
 
 		resources_folder = File.join(app_folder, 'Resources')
-		titanium_folder = File.join(resources_folder, 'public', 'titanium')
+		titanium_folder = File.join(resources_folder, 'titanium')
 		FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
 
 		FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
@@ -88,7 +88,11 @@ module Titanium
         Packager.copy_template(
         File.join(Titanium.get_support_dir(), 'plugins.js.template'),
         File.join(titanium_folder, 'plugins.js'))
-
+		
+        Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
+			FileUtils.cp jsfile, titanium_folder
+		end
+      
 		Titanium.each_plugin do |plugin|
 			plugin.install(@@project, @@dest, @@executable_name)
 		end

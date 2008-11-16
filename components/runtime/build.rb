@@ -68,6 +68,7 @@ namespace :runtime do
       FileUtils.mkdir_p win32_dir
       
       copy_dir "#{RUNTIME_DIR}/src/cmdline", win32_dir
+      copy_dir "#{RUNTIME_DIR}/src/titanium", win32_dir
       copy_dir "#{RUNTIME_DIR}/src/installer/win32", win32_dir
       FileUtils.mkdir_p("#{win32_dir}/lib")
       FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{win32_dir}/lib/uuid.rb"
