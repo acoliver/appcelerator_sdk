@@ -21,8 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.EventListener;
-import java.util.HashMap;
+import java.lang.reflect.Constructor;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -76,8 +75,10 @@ public class HTTPEndpoint
 		// attempt to load spring if we have it on our classpath
 		try
 		{
-			ServletContextListener listener = (ServletContextListener)root.loadClass("org.springframework.web.context.ContextLoaderListener").newInstance();
-			root.addEventListener(listener);
+			Class clz = root.loadClass("org.springframework.context.support.ClassPathXmlApplicationContext");
+			System.out.println("Spring Framework detected");
+			Constructor ctor = clz.getConstructor(new Class[]{String.class});
+			Object instance = ctor.newInstance("applicationContext.xml","spring-beans.xml");
 		}
 		catch (Exception ig)
 		{

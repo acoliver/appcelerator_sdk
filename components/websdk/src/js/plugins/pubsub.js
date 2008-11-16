@@ -33,7 +33,7 @@ $.fn.sub = function(name,fn,params)
 		});
 	}
 	
-	$.info('subscribing type='+type+', regexp='+regexp+', params='+$.toJSON(params));
+	$.debug('subscribing type='+type+', regexp='+regexp+', params='+$.toJSON(params));
 	
 	if (localRe.test(m[1]))
 	{
@@ -129,7 +129,7 @@ $.fn.pub = function(name,data,scope,version)
 	if (isLocal && !data.event) data.event = {id:$(this).attr('id')};
 	if (!isLocal && data.event) delete data.event;
 	
-	$.info('publishing '+name+' => '+$.toJSON(data));
+	$.debug('publishing '+name+' => '+$.toJSON(data));
 	
 	App.pubQueue(m[2],data,isLocal,scope,version);
 

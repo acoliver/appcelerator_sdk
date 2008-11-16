@@ -1,14 +1,14 @@
 Begin3
 Title:          appcelerator
 Version:        __VERSION__
-Description:    The Appcelerator RIA Platform is a set of software for building
-                rich Internet applications (RIA) on a service-oriented
+Description:    The Appcelerator Open Web Platform is a set of software for building
+                rich Internet applications
                 architecture (SOA). 
-Keywords:       ajax ria soa ria+soa appcelerator 
+Keywords:       ajax ria soa ria+soa appcelerator openweb
 Author:         Appcelerator and friends (info@appcelerator.com)
 Maintained-by:  Appcelerator Community (info@appcelerator.com)
-Original-site:  http://www.appcelerator.org
-Home-Page:      http://www.appcelerator.org
-Platform:       Unix, Win32, MacOSX
+Original-site:  http://appcelerator.org
+Home-Page:      http://appcelerator.org
+Platform:       Unix, Win32, OSX
 Copying-policy: BSD
 End

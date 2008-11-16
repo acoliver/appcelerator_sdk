@@ -132,7 +132,7 @@ CommandRegistry.makeGroup(:help) do |group|
     puts
     puts "Appcelerator was created by Jeff Haynie and Nolan Wright in 2006 "
     puts "and released as an open source project in 2007. For more information,"
-    puts "please visit our developer community at http://www.appcelerator.org"
+    puts "please visit our developer community at http://appcelerator.org"
     puts
     puts "If you'd like to get additional assistance using Appcelerator or "
     puts "professional support, training or alternative licensing options - please"

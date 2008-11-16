@@ -110,7 +110,7 @@ CommandRegistry.registerCommand('update:project','update project components',[
       if Installer.logged_in
         puts 'Looks like everything is up-to-date. Cool!'
       else
-        puts 'Could not connect to Developer Network, you may be missing updates'
+        puts 'Could not connect to Developer Community, you may be missing updates'
         puts 'This project has up-to-date versions of everything you have installed locally'
       end
     end

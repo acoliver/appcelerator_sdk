@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 
+MODULE_TYPE_NAME='Java' # this is used by other services
 
 include Appcelerator
 module Appcelerator
@@ -31,7 +32,7 @@ module Appcelerator
     # version to the next
     #
     def update_project(from_version, to_version, tx)
-      puts "Updating java from #{from_version} to #{to_version}" if OPTIONS[:verbose]
+      puts "Updating #{MODULE_TYPE_NAME} from #{from_version} to #{to_version}" if OPTIONS[:verbose]
       install(tx, true)
       replace_jar_eclipse(to_version,@path,tx)
       true
@@ -93,7 +94,7 @@ module Appcelerator
 
       tx.after_tx { 
         build_properties = "#{config_dir}/build.properties"
-        save_property("app.name", @config[:paths][:name], build_properties)
+        save_property("app.name", @config[:name], build_properties)
         save_property("stage.dir", @config[:paths][:stage], build_properties)
         save_property("src.war.dir", @config[:paths][:src_war], build_properties)
         save_property("src.java.dir", @config[:paths][:src_java], build_properties)
@@ -120,7 +121,7 @@ module Appcelerator
         project=<<STR
 <projectDescription>
    <name>#{@config[:name]}</name>
-   <comment>Appcelerator Java Project</comment>
+   <comment>Appcelerator #{MODULE_TYPE_NAME} Project</comment>
    <projects>
    </projects>
    <buildSpec>
@@ -132,7 +133,6 @@ module Appcelerator
    </buildSpec>
    <natures>
       <nature>org.eclipse.jdt.core.javanature</nature>
-      <nature>org.appcelerator.ide.appceleratorNature</nature>      
    </natures>
 </projectDescription>
 STR

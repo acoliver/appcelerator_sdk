@@ -1,6 +1,6 @@
 ;-------------------------------------------------------------------;
 ;
-; Appcelerator RIA Platform Win32 Installer
+; Appcelerator Open Web Platform Win32 Installer
 ;
 ;-------------------------------------------------------------------;
 ;
@@ -37,7 +37,7 @@
 !include "AddToPath.nsh"
 !include "MUI.nsh"
 
-Name "Appcelerator RIA Platform"
+Name "Appcelerator Open Web Platform"
 OutFile "installer.exe"
 
 CRCCheck on
@@ -45,16 +45,16 @@ XPStyle on
 ShowInstDetails show
 
 VIProductVersion "${VERSION}"
-VIAddVersionKey ProductName "Appcelerator RIA Platform"
+VIAddVersionKey ProductName "Appcelerator Open Web Platform"
 VIAddVersionKey ProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "Appcelerator, Inc."
-VIAddVersionKey CompanyWebsite "http://www.appcelerator.org"
+VIAddVersionKey CompanyWebsite "http://appcelerator.org"
 VIAddVersionKey FileVersion ""
 VIAddVersionKey FileDescription ""
 VIAddVersionKey LegalCopyright ""
 
 !define RUBY_REGKEY "Software\RubyInstaller"
-!define REGKEY "Software\Appcelerator RIA Platform"
+!define REGKEY "Software\Appcelerator"
 InstallDirRegKey HKLM "${REGKEY}" "DefaultPath"
 InstallDir "$PROGRAMFILES\Appcelerator"
 
@@ -176,13 +176,13 @@ Section
   ;Store installation folder
   WriteRegStr HKCU "Software\Appcelerator" "" $INSTDIR
 
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "DisplayName" "Appcelerator RIA Platform"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "DisplayVersion" "${VERSION}"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "Publisher" "Appcelerator, Inc."
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "URLInfoAbout" "http://www.appcelerator.org"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "URLUpdateInfo" "http://www.appcelerator.org"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "HelpLink" "mailto:support@appcelerator.com"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform" "UninstallString" "$INSTDIR\Uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "DisplayName" "Appcelerator Open Web Platform"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "DisplayVersion" "${VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "Publisher" "Appcelerator, Inc."
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "URLInfoAbout" "http://appcelerator.org"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "URLUpdateInfo" "http://appcelerator.org"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "HelpLink" "mailto:support@appcelerator.com"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator" "UninstallString" "$INSTDIR\Uninstall.exe"
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -226,7 +226,7 @@ Function .onInstSuccess
 
   ; open our welcome page
   ;StrCpy $0 "http://127.0.0.1:9080"
-  StrCpy $0 "http://www.appcelerator.org/gettingstarted"
+  StrCpy $0 "http://appcelerator.org/gettingstarted"
   Call openLinkNewWindow
 
 FunctionEnd
@@ -250,8 +250,8 @@ Section "Uninstall"
   Push $INSTDIR
   Call un.RemoveFromPath
 
-  DeleteRegKey /ifempty HKCU "Software\Appcelerator RIA Platform"
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator RIA Platform"
+  DeleteRegKey /ifempty HKCU "Software\Appcelerator"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Appcelerator"
 
 SectionEnd
 

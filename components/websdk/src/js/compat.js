@@ -873,7 +873,7 @@ if (typeof($$)=='undefined')
 			if (AppC.UA.IE)
 			{
 				// IE requires this to parse the app: widgets correctly...
-				return '<?xml:namespace prefix = app ns = "http://www.appcelerator.org" /> ' + html;
+				return '<?xml:namespace prefix = app ns = "http://appcelerator.org" /> ' + html;
 			}
 			return html;
 		},

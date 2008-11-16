@@ -1,5 +1,5 @@
 The following is a table of the valid LICENSING options supported for components released
-to the Appcelerator Developer Network.
+to the Appcelerator Developer Community.
 
 You must choose one of the licenses valid OSI-approved licenses below.  Please use the ID value
 when setting the license in your build.yml file.  Note: in your build.yml, you can select one or

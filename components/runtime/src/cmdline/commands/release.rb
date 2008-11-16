@@ -47,7 +47,7 @@ CommandRegistry.registerCommand(%w(release release:widget release:plugin release
 
   if not apikey
     puts 
-    puts "To release components into the Appcelerator Developer Network"
+    puts "To release components into the Appcelerator Developer Community"
     puts "you must obtain a developer API key (free-of-charge). You can "
     puts "obtain a key by visiting your profile page. Once you obtain a"
     puts "key will need to enter it below:"

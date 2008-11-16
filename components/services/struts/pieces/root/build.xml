@@ -23,9 +23,9 @@
 	</path>
 
 	<target name="banner">
-		<echo>Appcelerator RIA Platform for Java</echo>
-		<echo>Licensed under the GNU GPL version 3 or later</echo>
-		<echo>Please see COPYING for more details on license requirements</echo>
+		<echo>Appcelerator Open Web Platform for Java</echo>
+		<echo>Licensed under the Apache Public License Version 2</echo>
+		<echo>Please see README for more details on license requirements</echo>
 	</target>
 
 	<target name="build" description="Compiles the Java code" depends="banner">

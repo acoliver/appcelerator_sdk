@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<appcelerator version="1.0" xmlns="http://www.appcelerator.org/config">
+<appcelerator version="1.0" xmlns="http://appcelerator.org/config">
 	<servicebroker poll="false" marshaller="application/json">@{rootPath}/servicebroker</servicebroker>
 	<upload>@{rootPath}upload.php</upload>
 	<download>@{rootPath}download.php</download>

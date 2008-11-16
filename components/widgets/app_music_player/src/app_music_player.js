@@ -2,7 +2,7 @@
  * This file is part of Appcelerator.
  *
  * Copyright (C) 2006-2008 by Appcelerator, Inc. All Rights Reserved.
- * For more information, please visit http://www.appcelerator.org 
+ * For more information, please visit http://appcelerator.org 
  *
  * Appcelerator is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ Appcelerator.Widget.AppMusicPlayer =
 	 */
 	getModuleURL: function ()
 	{
-		return 'http://www.appcelerator.org';
+		return 'http://appcelerator.org';
 	},
 	/**
 	 * This should always return true for widgets.

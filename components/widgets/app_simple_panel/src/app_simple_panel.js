@@ -45,7 +45,7 @@ Appcelerator.Widget.AppSimplePanel =
 	getModuleURL: function ()
 	{
 		//TODO
-		return 'http://www.appcelerator.org';
+		return 'http://appcelerator.org';
 	},
 	/**
 	 * This should always return true for widgets.

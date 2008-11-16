@@ -67,7 +67,7 @@ Appcelerator.Widget.AppSplitBox =
 	 */
 	getModuleURL: function ()
 	{
-		return 'http://www.appcelerator.org';
+		return 'http://appcelerator.org';
 	},
 	/**
 	 * This should always return true for widgets.

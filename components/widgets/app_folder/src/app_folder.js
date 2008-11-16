@@ -47,7 +47,7 @@ Appcelerator.Widget.Folder =
 	},
 	getModuleURL: function ()
 	{
-		return 'http://www.appcelerator.org';
+		return 'http://appcelerator.org';
 	},
 	isWidget: function ()
 	{

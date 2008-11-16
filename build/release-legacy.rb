@@ -423,7 +423,7 @@ if @websdk
   </head>
   <body>
   <div style="font-family:Tahoma,Arial,Helvetica;font-size:24px;color:#222;margin:10px;">
-          <a href="http://www.appcelerator.org" title="Visit the Appcelerator Developer Network">
+          <a href="http://appcelerator.org" title="Visit the Appcelerator Developer Community">
               <img src="logo.png" alt="Appcelerator Logo" align="left" border="0"/>
           </a>
           <div style="margin-top:35px;margin-left:100px;float:left;line-height:60px;">
@@ -440,7 +440,7 @@ if @websdk
                   <div>Some resources that will be helpful:</div>
                   <div>
                       <ul>
-                          <li><a style="color:#ae2917;" href="http://www.appcelerator.org">Appcelerator Developer Network</a></li>
+                          <li><a style="color:#ae2917;" href="http://appcelerator.org">Appcelerator Developer Community</a></li>
                           <li><a style="color:#ae2917;" href="http://doc.appcelerator.org">Appcelerator Reference Documentation</a></li>
                           <li><a style="color:#ae2917;" href="http://www.appcelerant.com">Appcelerant - the Appcelerator Developer Blog</a></li>
                           <li><a style="color:#ae2917;" href="http://www.appcelerator.com">Appcelerator Professional Support</a></li>
@@ -451,7 +451,7 @@ if @websdk
               <div style="margin-top:110px;font-size:12px;line-height:12px;color:#777;">
                   <div>
                       <a style="color:#777;" 
-                      href="http://www.appcelerator.org">Appcelerator</a> 
+                      href="http://appcelerator.org">Appcelerator</a> 
                       is Copyright &copy; 2007-2008 by <a href="http://www.appcelerator.com" style="color:#777;">Appcelerator, Inc.</a> 
                       and is licensed under the <a href="http://license.appcelerator.org" style="color:#777;">Apache License 2.0</a></a>.
                   </div>
@@ -478,7 +478,7 @@ if @websdk
 
   XML=<<-END
   <?xml version="1.0" encoding="UTF-8"?>
-  <appcelerator version="1.0" xmlns="http://www.appcelerator.org/config">
+  <appcelerator version="1.0" xmlns="http://appcelerator.org/config">
       <servicebroker disabled="true" poll="false" marshaller="application/json">@{rootPath}servicebroker</servicebroker>
       <upload></upload>
       <download></download>
@@ -570,7 +570,7 @@ end
 
 if not @files_changed.empty?
 
-  RELEASE_RSS_HEADER = rss_header "#{DISTRO_SITE}/feed","http://www.appcelerator.org",'Appcelerator Distribution Releases','Appcelerator Distribution Respository Release Feed'
+  RELEASE_RSS_HEADER = rss_header "#{DISTRO_SITE}/feed","http://appcelerator.org",'Appcelerator Distribution Releases','Appcelerator Distribution Respository Release Feed'
 
   value = open("#{DISTRO_SITE}/feed").read rescue nil
   if not value
@@ -591,7 +591,7 @@ if not @files_changed.empty?
   item = <<-END
     <item>
       <title>#{@files_changed.size} distribution component#{@files_changed.size>1?'s':''} #{@files_changed.size>1?'have':'has'} been released</title>
-      <link>http://www.appcelerator.org</link>
+      <link>http://appcelerator.org</link>
       <pubDate>#{rss_date(Time.now)}</pubDate>
       <description>#{description}</description>
     </item>

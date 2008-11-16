@@ -17,8 +17,8 @@
 #   limitations under the License.
 #
 
-  desc "Build the Java Service"
-  task :java do
+desc "Build the Java Service"
+task :java do
 
     build_dir = File.expand_path(File.dirname(__FILE__))
     build_config = get_config(:service, :java)
@@ -42,13 +42,15 @@
     compile_dir(java_source, java_classes, "#{build_dir}/pieces/lib")
     jar_file = File.expand_path(File.join(java_dir, "dist/pieces/lib/appcelerator-#{version}.jar"))
     create_jar(jar_file, java_classes)
+    
+    FileUtils.rm_rf File.join(java_dir,'dist/pieces','config/applicationContext.xml')
   
     FileUtils.cd(java_classes) do
   
        zipfile = build_config[:output_filename]
        FileUtils.rm_rf zipfile
        
-       excludes = %w(pieces/lib/optional/spring-2.5.1.jar pieces/lib/optional/ant-1.7.0.jar pieces/lib/optional/cglib-2.1.3.jar pieces/lib/optional/junit.jar)
+       excludes = %w(pieces/lib/optional/spring-2.5.6.jar pieces/lib/optional/ant-1.7.0.jar pieces/lib/optional/cglib-2.1.3.jar pieces/lib/optional/junit.jar)
        
        Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
         dofiles("#{java_dir}/dist") do |f|
@@ -61,4 +63,4 @@
     end
     FileUtils.rm_rf java_dir
 
-  end
+end

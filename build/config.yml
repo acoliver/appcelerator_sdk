@@ -19,6 +19,8 @@
         :dependencies: [{type: websdk, name: websdk}]
       :java:
         :dependencies: [{type: websdk, name: websdk}]
+      :spring:
+        :dependencies: [{type: websdk, name: websdk}]
       :merb:
         :dependencies: [{type: websdk, name: websdk}]
       :mochiweb:
