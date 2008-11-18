@@ -114,6 +114,7 @@ namespace :runtime do
       FileUtils.mkdir_p unix_dir 
   
       copy_dir "#{RUNTIME_DIR}/src/cmdline", unix_dir 
+      copy_dir "#{RUNTIME_DIR}/src/titanium", unix_dir
       copy_dir "#{RUNTIME_DIR}/src/installer/unix", unix_dir 
       FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{unix_dir}/lib/uuid.rb"
   

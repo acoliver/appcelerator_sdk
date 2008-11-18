@@ -59,6 +59,10 @@ GLOBAL_OPTS = {
   :no_remote => {
       :display => '--no-remote',
       :help    => 'avoid making network connections, may disable some commands',
+      :value   => false},
+  :help => {
+      :display => '--help',
+      :help    => 'display usage information',
       :value   => false}
 }
 
@@ -117,6 +121,12 @@ if RUBY_PLATFORM=~/(windows|win32)/ and not OPTIONS[:subprocess]
   parse_options_windows
 else
   parse_options_unix
+end
+
+# --help is the same as app help
+if OPTIONS[:help]
+	ARGS.clear
+	ARGS << 'help'
 end
 
 ACTION = ARGS.shift
