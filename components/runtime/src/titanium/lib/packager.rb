@@ -41,14 +41,21 @@ module Titanium
       FileUtils.chmod 0755, File.join(macos_folder, @@executable_name)
       FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
       FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
+      FileUtils.cp File.join(Titanium.get_support_dir, 'titanium_poweredby.png'), resources_folder
       
       Packager.copy_template(
         File.join(osx_support_folder, 'Info.plist.template'),
         File.join(contents_folder, 'Info.plist'))
-      
-      Packager.copy_template(
-        File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
-        File.join(resources_folder, 'tiapp.xml'))
+
+      # if the app has a tiapp.xml, use it
+      tixml = File.join(@@project.path, 'config', 'tiapp.xml')
+      if File.exists? File.expand_path(tixml)
+        FileUtils.cp tixml, File.join(resources_folder, 'tiapp.xml')
+      else
+        Packager.copy_template(
+          File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
+          File.join(resources_folder, 'tiapp.xml'))
+      end
       
       Packager.copy_template(
         File.join(Titanium.get_support_dir(), 'plugins.js.template'),
@@ -122,7 +129,7 @@ module Titanium
         Packager.launch_osx_app() if launch
       elsif is_win?
         Packager.create_win_exe()
-		Packager.launch_win_exe() if launch
+		    Packager.launch_win_exe() if launch
       else
         Packager.create_linux_dist()
       end
