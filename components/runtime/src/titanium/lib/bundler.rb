@@ -52,6 +52,29 @@ module Titanium
       end
     end
     
+    def Bundler.copy_resource_files(exclude_folder, dest)
+      if not @@project.nil?
+        FileUtils.cp_r File.join(@@project.path, 'public'), dest
+      else
+        glob = []
+        Dir.open(Dir.pwd) do |dir|
+          dir.each do |filename|
+            if File.directory?(File.join(Dir.pwd, filename)) and filename != "." and filename != ".."
+              if filename != exclude_folder
+                glob << File.join(Dir.pwd, filename)
+              end
+            elsif File.file?(File.join(Dir.pwd, filename))
+              glob << File.join(Dir.pwd, filename)
+            end
+          end
+        end
+
+        puts "cp -r #{glob} #{dest}"
+        FileUtils.cp_r glob, dest
+      end
+    end
+    
+    
     def Bundler.create_osx_app
       # store these as class variables for now so we can access them in other functions
       app_folder = File.join(@@dest, @@executable_name + ".app")
@@ -65,7 +88,8 @@ module Titanium
       
       FileUtils.cp Titanium.get_executable(), File.join(macos_folder, @@executable_name)
       FileUtils.chmod 0755, File.join(macos_folder, @@executable_name)
-      FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
+      Bundler.copy_resource_files(@@executable_name + ".app", resources_folder)
+          
       FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
       FileUtils.cp File.join(Titanium.get_support_dir, 'titanium_poweredby.png'), resources_folder
       
@@ -104,9 +128,7 @@ module Titanium
 		  FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
 
 		  FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
-
-		  FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
-		  
+      Bundler.copy_resource_files(app_folder, resources_folder)
 		  Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
       Bundler.copy_template(
@@ -137,6 +159,8 @@ module Titanium
     
     def Bundler.bundle_app(path, executable_name, dest, endpoint, launch, xml)
       @@path = path
+      @@project = nil
+      
       if Project.is_project_dir?(path)
         @@project = Project.load(path)
       end
