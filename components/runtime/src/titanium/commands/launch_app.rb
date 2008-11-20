@@ -16,10 +16,10 @@
 include Appcelerator
 include Titanium
 
-CommandRegistry.registerCommand('launch:project', 'launch a project using Titanium', [
+CommandRegistry.registerCommand('launch:app', 'launch a Titanium app', [
   {
     :name=>'path',
-    :help=>'path of the project to add the plugin to',
+    :help=>'path to start in (starts in current directory by default)',
     :required=>false,
     :default=>nil,
     :type=>[
@@ -28,16 +28,28 @@ CommandRegistry.registerCommand('launch:project', 'launch a project using Titani
       Types::AlphanumericType
     ],
     :conversion=>Types::DirectoryType
-  }    
-], nil, [
-  'launch:project',
-  'launch:project ~/myproject'
+  }
+],
+[
+  {
+    :name=>'xml',
+    :display=>'--xml=custom_tiapp.xml',
+    :help=>'point to a specific tiapp.xml rather than looking for it in the current directory',
+    :value=>nil
+  }
+],
+[
+  'launch:app',
+  'launch:app ~/myapp',
+  'launch:app ~/myapp --xml=custom_tiapp.xml'
 ]) do |args,options|
+    Titanium::Titanium.init
     
     pwd = File.expand_path(args[:path] || Dir.pwd)
+    tiapp_xml = File.expand_path(options[:xml] || File.join(pwd,'tiapp.xml'))
     
     if pwd
       FileUtils.cd(pwd)
-      Launcher.launchProject()
+      Launcher.launchApp(tiapp_xml)
     end
 end

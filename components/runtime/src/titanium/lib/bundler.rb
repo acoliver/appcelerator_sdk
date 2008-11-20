@@ -16,8 +16,10 @@
 require 'erb'
 
 module Titanium
-  class Packager
-    def Packager.copy_template(template_file, dest)
+  class Bundler
+    def Bundler.copy_template(template_file, dest)
+      config = Titanium.create_config_from_dir(@@path)
+      
       contents = ''
       File.open(template_file, "r") { |f| contents = f.read }
 
@@ -26,7 +28,31 @@ module Titanium
       File.open(dest, 'w') { |f| f.write(template.result(f_binding)) }
     end
     
-    def Packager.create_osx_app
+    def Bundler.copy_tiapp_xml(dest)
+      # if the app has a tiapp.xml, use it
+      custom_tiappxml = false
+      if Project.is_project_dir?(@path)
+        tixml = File.join(@@project.path, 'config', 'tiapp.xml')
+        if File.exists? File.expand_path(tixml)
+          FileUtils.cp tixml, dest
+          custom_tiappxml = true
+        end
+      end
+      
+      if not custom_tiappxml and not @@xml.nil?
+        FileUtils.cp @@xml, dest
+        custom_tiappxml = true
+      end
+      
+      if !custom_tiappxml
+        # at this point create a default tiapp.xml
+        Bundler.copy_template(
+          File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
+          dest)
+      end
+    end
+    
+    def Bundler.create_osx_app
       # store these as class variables for now so we can access them in other functions
       app_folder = File.join(@@dest, @@executable_name + ".app")
       contents_folder = File.join(app_folder, 'Contents')
@@ -43,21 +69,13 @@ module Titanium
       FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
       FileUtils.cp File.join(Titanium.get_support_dir, 'titanium_poweredby.png'), resources_folder
       
-      Packager.copy_template(
+      Bundler.copy_template(
         File.join(osx_support_folder, 'Info.plist.template'),
         File.join(contents_folder, 'Info.plist'))
 
-      # if the app has a tiapp.xml, use it
-      tixml = File.join(@@project.path, 'config', 'tiapp.xml')
-      if File.exists? File.expand_path(tixml)
-        FileUtils.cp tixml, File.join(resources_folder, 'tiapp.xml')
-      else
-        Packager.copy_template(
-          File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
-          File.join(resources_folder, 'tiapp.xml'))
-      end
+      Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
-      Packager.copy_template(
+      Bundler.copy_template(
         File.join(Titanium.get_support_dir(), 'plugins.js.template'),
         File.join(titanium_folder, 'plugins.js'))
       
@@ -74,64 +92,68 @@ module Titanium
       puts "#{@@executable_name}.app created in #{@@dest}"
     end
     
-    def Packager.launch_osx_app
+    def Bundler.launch_osx_app
       system File.join(File.join(@@dest, @@executable_name) + ".app", 'Contents', 'MacOS', @@executable_name)
     end
     
-    def Packager.create_win_exe
-		app_folder = File.join(@@dest, @@executable_name)
+    def Bundler.create_win_exe
+		  app_folder = File.join(@@dest, @@executable_name)
 
-		resources_folder = File.join(app_folder, 'Resources')
-		titanium_folder = File.join(resources_folder, 'titanium')
-		FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
+		  resources_folder = File.join(app_folder, 'Resources')
+		  titanium_folder = File.join(resources_folder, 'titanium')
+		  FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
 
-		FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
+		  FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
 
-		FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
-		Packager.copy_template(
-        	File.join(Titanium.get_support_dir(), 'default_tiapp.xml.template'),
-        	File.join(resources_folder, 'tiapp.xml'))
+		  FileUtils.cp_r File.join(@@project.path, 'public'), resources_folder
+		  
+		  Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
-        Packager.copy_template(
+      Bundler.copy_template(
         File.join(Titanium.get_support_dir(), 'plugins.js.template'),
         File.join(titanium_folder, 'plugins.js'))
 		
-        Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
-			FileUtils.cp jsfile, titanium_folder
-		end
+      Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
+			  FileUtils.cp jsfile, titanium_folder
+		  end
       
-		Titanium.each_plugin do |plugin|
-			plugin.install(@@project, @@dest, @@executable_name)
-		end
+		  Titanium.each_plugin do |plugin|
+			  plugin.install(@@project, @@dest, @@executable_name)
+		  end
 		
-		if is_cygwin?
-			FileUtils.chmod 0755, File.join(app_folder, @@executable_name+".exe")
-		end
+		  if is_cygwin?
+			  FileUtils.chmod 0755, File.join(app_folder, @@executable_name+".exe")
+		  end
 	
-		puts "#{@@executable_name}.exe created in #{app_folder}"
+		  puts "#{@@executable_name}.exe created in #{app_folder}"
     end
     
-    def Packager.launch_win_exe
+    def Bundler.launch_win_exe
       system File.join(File.join(@@dest, @@executable_name), @@executable_name+".exe")
     end
 
-    def Packager.create_linux_dist
+    def Bundler.create_linux_dist
     end
     
-    def Packager.package_project(project, executable_name, dest, endpoint, launch)
-      @@project = project
+    def Bundler.bundle_app(path, executable_name, dest, endpoint, launch, xml)
+      @@path = path
+      if Project.is_project_dir?(path)
+        @@project = Project.load(path)
+      end
+      
       @@executable_name = executable_name
       @@dest = dest
       @@endpoint = endpoint
+      @@xml = xml
       
       if is_mac?
-        Packager.create_osx_app()
-        Packager.launch_osx_app() if launch
+        Bundler.create_osx_app()
+        Bundler.launch_osx_app() if launch
       elsif is_win?
-        Packager.create_win_exe()
-		    Packager.launch_win_exe() if launch
+        Bundler.create_win_exe()
+		    Bundler.launch_win_exe() if launch
       else
-        Packager.create_linux_dist()
+        Bundler.create_linux_dist()
       end
     end
   end

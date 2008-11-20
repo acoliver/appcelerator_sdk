@@ -16,10 +16,10 @@
 include Appcelerator
 include Titanium
 
-CommandRegistry.registerCommand('package:project', 'package an Appcelerator project into a native executable', [
+CommandRegistry.registerCommand('bundle:app', 'bundle a Titanium app as a native executable', [
   {
     :name=>'path',
-    :help=>'path of the project to add the plugin to',
+    :help=>'path to bundle',
     :required=>false,
     :default=>nil,
     :type=>[
@@ -55,29 +55,37 @@ CommandRegistry.registerCommand('package:project', 'package an Appcelerator proj
   {
     :name=>'endpoint',
     :display=>'--endpoint=http://www.yourserver.com',
-    :help=>'set the remote service endpoint for your application (allows remote services)',
+    :help=>'set the remote service endpoint for an Appcelerator app (allows remote services)',
     :value=>nil
   },
   {
     :name=>'launch',
     :display=>"--launch",
-    :help=>"launch the project after packaging",
+    :help=>"launch the project after bundling",
     :value=>true
+  },
+  {
+    :name=>'xml',
+    :display=>'--xml',
+    :help=>'specify the path to your tiapp.xml',
+    :value=>nil
   }
 ], [
-  'package:project',
-  'package:project ~/myproject',
-  'package:project ~/myproject MyProject',
-  'package:project ~/myproject MyProject ~/bin'
+  'bundle:app',
+  'bundle:app ~/myapp',
+  'bundle:app ~/myapp MyApp',
+  'bundle:app ~/myapp MyApp --xml=mytiapp.xml',
+  'bundle:app ~/myapp MyApp ~/bin'
 ]) do |args,options|
     Titanium::Titanium.init
     
     path = File.expand_path(args[:path] || Dir.pwd)
+    project = nil
     if Project.is_project_dir?(path)
       project = options[:project] || Project.load(path)
-      executable_name = args[:executable_name] || project.config[:name]
-      dest = args[:destination] || project.path
-      
-      Packager.package_project(project, executable_name, dest, options[:endpoint], options[:launch])
     end
+    executable_name = args[:executable_name] || project.nil? ? File.basename(path) : project.config[:name]
+    dest = args[:destination] || project.nil? ? path : project.path
+    
+    Bundler.bundle_app(path, executable_name, dest, options[:endpoint], options[:launch], options[:xml])
 end

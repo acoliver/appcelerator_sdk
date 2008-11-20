@@ -51,6 +51,27 @@ TI_COMPONENT_INFO = {
 
 module Titanium
   class Titanium
+    
+    def Titanium.create_config_from_dir(dir)
+      if Project.is_project_dir?(dir)
+        return Titanium.create_config_from_project(Project.load(dir))
+      else
+        config = {}
+        config[:appname] = File.basename(dir)
+        config[:title] = File.basename(dir)
+        config[:start] = "index.html"
+        return config
+      end
+    end
+    
+    def Titanium.create_config_from_project(project)
+      config = {}
+      config[:appname] = project.config[:name]
+      config[:title] = project.config[:name]
+      config[:start] = "public/index.html"
+      return config
+    end
+    
     def Titanium.get_component_dir
       return Installer.get_component_directory(@@ti_component)
     end
@@ -73,8 +94,8 @@ module Titanium
   		end
     end
     
-    def Titanium.get_plugin_dir(plugin)
-      return Installer.get_component_directory(plugin)
+    def Titanium.get_plugin_dir(plugin_component)
+      return Installer.get_component_directory(plugin_component)
     end
     
     def Titanium.get_component
