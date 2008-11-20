@@ -264,7 +264,7 @@ $.fn.validator = function(v)
 {
 	makeFormEntry(this,'validator',v,function(el)
 	{
-		if (el.is(':text,textarea'))
+		if (el.is(':text,textarea,:password'))
 		{
 			el.bind('focus',function()
 			{
