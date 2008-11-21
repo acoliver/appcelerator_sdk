@@ -56,21 +56,21 @@ module Titanium
       if not @@project.nil?
         FileUtils.cp_r File.join(@@project.path, 'public'), dest
       else
-        glob = []
+        copy_files = []
         Dir.open(Dir.pwd) do |dir|
           dir.each do |filename|
             if File.directory?(File.join(Dir.pwd, filename)) and filename != "." and filename != ".."
               if filename != exclude_folder
-                glob << File.join(Dir.pwd, filename)
+                copy_files << File.join(Dir.pwd, filename)
               end
             elsif File.file?(File.join(Dir.pwd, filename))
-              glob << File.join(Dir.pwd, filename)
+              copy_files << File.join(Dir.pwd, filename)
             end
           end
         end
 
-        puts "cp -r #{glob} #{dest}"
-        FileUtils.cp_r glob, dest
+        puts "cp -r #{copy_files} #{dest}"
+        FileUtils.cp_r copy_files, dest
       end
     end
     
@@ -128,7 +128,7 @@ module Titanium
 		  FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
 
 		  FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
-      Bundler.copy_resource_files(app_folder, resources_folder)
+      Bundler.copy_resource_files(@@executable_name, resources_folder)
 		  Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
       Bundler.copy_template(
