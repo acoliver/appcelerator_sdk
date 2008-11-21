@@ -90,7 +90,7 @@ module Titanium
       FileUtils.chmod 0755, File.join(macos_folder, @@executable_name)
       Bundler.copy_resource_files(@@executable_name + ".app", resources_folder)
           
-      FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
+      FileUtils.cp File.join(osx_support_folder, 'titanium.icns'), resources_folder
       FileUtils.cp File.join(Titanium.get_support_dir, 'titanium_poweredby.png'), resources_folder
       
       Bundler.copy_template(
