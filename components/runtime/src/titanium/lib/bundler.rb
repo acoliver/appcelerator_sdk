@@ -31,7 +31,7 @@ module Titanium
     def Bundler.copy_tiapp_xml(dest)
       # if the app has a tiapp.xml, use it
       custom_tiappxml = false
-      if Project.is_project_dir?(@path)
+      if Project.is_project_dir?(@@path)
         tixml = File.join(@@project.path, 'config', 'tiapp.xml')
         if File.exists? File.expand_path(tixml)
           FileUtils.cp tixml, dest

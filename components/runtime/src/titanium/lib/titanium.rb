@@ -59,7 +59,7 @@ module Titanium
         config = {}
         config[:appname] = File.basename(dir)
         config[:title] = File.basename(dir)
-        config[:start] = "index.html"
+        config[:url] = "index.html"
         return config
       end
     end
@@ -68,7 +68,7 @@ module Titanium
       config = {}
       config[:appname] = project.config[:name]
       config[:title] = project.config[:name]
-      config[:start] = "public/index.html"
+      config[:url] = "public/index.html"
       return config
     end
     
