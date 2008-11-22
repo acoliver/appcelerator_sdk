@@ -142,6 +142,7 @@ module Titanium
 		  FileUtils.mkdir_p [app_folder, resources_folder, titanium_folder]
 
 		  FileUtils.cp Titanium.get_executable(), File.join(app_folder, @@executable_name+".exe")
+		  FileUtils.cp File.join(Titanium.get_support_dir(), 'win32', 'icudt38.dll'), app_folder
       Bundler.copy_resource_files(@@executable_name, resources_folder)
 		  Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
