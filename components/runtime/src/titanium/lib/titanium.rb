@@ -118,7 +118,7 @@ module Titanium
       Object::constants.each do |c|
         cl = Object.const_get(c)
         if cl.class == Class and cl.superclass == Titanium::Plugin
-          p << cl.new(@platform)
+          p << cl.new(@@platform)
         end
       end
       return p
