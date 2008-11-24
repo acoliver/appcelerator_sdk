@@ -156,9 +156,10 @@ module Titanium
     end
 
     def Bundler.create_linux_dist
+      STDERR.puts "Linux is currently unsupported, but we plan on adding support soon!"
     end
     
-    def Bundler.bundle_app(path, executable_name, dest, endpoint, launch, xml)
+    def Bundler.bundle_app(path, executable_name, dest, platform=nil, endpoint=nil, launch=false, xml=nil)
       @@path = path
       @@project = nil
       
@@ -171,14 +172,22 @@ module Titanium
       @@endpoint = endpoint
       @@xml = xml
       
-      if is_mac?
+      if platform.nil?
+        platform = platform_string()
+      else
+        Titanium.init_with_platform(platform)
+      end
+      
+      if platform == "osx"
         Bundler.create_osx_app()
         Bundler.launch_osx_app() if launch
-      elsif is_win?
+      elsif platform == "win32"
         Bundler.create_win_exe()
 		    Bundler.launch_win_exe() if launch
-      else
+      elsif platform == "linux"
         Bundler.create_linux_dist()
+      else
+        STDERR.puts "Unsupported platform: #{platform}"
       end
     end
   end

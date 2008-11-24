@@ -69,16 +69,24 @@ CommandRegistry.registerCommand('bundle:app', 'bundle a Titanium app as a native
     :display=>'--xml',
     :help=>'specify the path to your tiapp.xml',
     :value=>nil
+  },
+  {
+    :name=>'platform',
+    :display=>'--platform',
+    :help=>'bundle app for the specified platform (default: bundle for the current platform)',
+    :value=>nil
   }
 ], [
   'bundle:app',
   'bundle:app ~/myapp',
   'bundle:app ~/myapp MyApp',
   'bundle:app ~/myapp MyApp --xml=mytiapp.xml',
+  'bundle:app ~/myapp MyApp --platform=win32',
   'bundle:app ~/myapp MyApp ~/bin'
 ]) do |args,options|
     Titanium::Titanium.init
     
+    platform = options[:platform] || platform_string()
     path = File.expand_path(args[:path] || Dir.pwd)
     project = nil
     if Project.is_project_dir?(path)
@@ -87,5 +95,5 @@ CommandRegistry.registerCommand('bundle:app', 'bundle a Titanium app as a native
     executable_name = args[:executable_name] || project.nil? ? File.basename(path) : project.config[:name]
     dest = args[:destination] || project.nil? ? path : project.path
     
-    Bundler.bundle_app(path, executable_name, dest, options[:endpoint], options[:launch], options[:xml])
+    Bundler.bundle_app(path, executable_name, dest, platform, options[:endpoint], options[:launch], options[:xml])
 end

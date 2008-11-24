@@ -44,14 +44,9 @@ def platform_string
   return "linux" if is_linux?
 end
 
-TI_COMPONENT_INFO = {
-  :name => "titanium_" + platform_string,
-  :type => 'titanium'
-}
 
 module Titanium
   class Titanium
-    
     def Titanium.create_config_from_dir(dir)
       if Project.is_project_dir?(dir)
         return Titanium.create_config_from_project(Project.load(dir))
@@ -99,10 +94,13 @@ module Titanium
     end
     
     def Titanium.get_component
-      installed_ti = Installer.get_current_installed_component(TI_COMPONENT_INFO)
+      puts "Looking for #{@@ti_component_info[:name]}, platform=#{@@platform}.."
+      installed_ti = Installer.get_current_installed_component(@@ti_component_info)
+      puts "installed_ti=#{installed_ti}"
       if installed_ti.nil?
-        Installer.require_component(:titanium, 'titanium_' + platform_string, nil)
-        installed_ti = Installer.get_current_installed_component(TI_COMPONENT_INFO)
+        puts "why am i here?"
+        Installer.require_component(:titanium, 'titanium_' + @@platform, nil)
+        installed_ti = Installer.get_current_installed_component(@@ti_component_info)
       end
       
       installed_ti
@@ -138,6 +136,16 @@ module Titanium
     
     def Titanium.init
       Boot.boot
+      Titanium.init_with_platform(platform_string())
+    end
+    
+    def Titanium.init_with_platform(platform)
+      @@platform = platform
+      
+      @@ti_component_info = {
+        :name => 'titanium_' + @@platform,
+        :type => 'titanium'
+      }
       @@ti_component = Titanium.get_component
       @@ti_plugins = Titanium.load_plugins
     end
