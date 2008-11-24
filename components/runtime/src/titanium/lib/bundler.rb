@@ -19,10 +19,7 @@ module Titanium
   class Bundler
     def Bundler.copy_template(template_file, dest)
       config = Titanium.create_config_from_dir(@@path)
-      
-      contents = ''
-      File.open(template_file, "r") { |f| contents = f.read }
-
+      contents = File.read(template_file)
       f_binding = binding
       template = ERB.new contents
       File.open(dest, 'w') { |f| f.write(template.result(f_binding)) }
@@ -31,7 +28,7 @@ module Titanium
     def Bundler.copy_tiapp_xml(dest)
       # if the app has a tiapp.xml, use it
       custom_tiappxml = false
-      if Project.is_project_dir?(@path)
+      if Project.is_project_dir?(@@path)
         tixml = File.join(@@project.path, 'config', 'tiapp.xml')
         if File.exists? File.expand_path(tixml)
           FileUtils.cp tixml, dest
@@ -89,19 +86,36 @@ module Titanium
       FileUtils.cp Titanium.get_executable(), File.join(macos_folder, @@executable_name)
       FileUtils.chmod 0755, File.join(macos_folder, @@executable_name)
       Bundler.copy_resource_files(@@executable_name + ".app", resources_folder)
+
+      patch_plist = false
+      
+      if File.exists? File.join(@@project.path,'config',"#{@@executable_name}.icns")
+        FileUtils.cp File.join(@@project.path,'config',"#{@@executable_name}.icns"), resources_folder
+        patch_plist = true
+      else
+        FileUtils.cp File.join(osx_support_folder, 'titanium.icns'), resources_folder
+      end  
           
-      FileUtils.cp File.join(osx_support_folder, 'appcelerator.icns'), resources_folder
       FileUtils.cp File.join(Titanium.get_support_dir, 'titanium_poweredby.png'), resources_folder
       
       Bundler.copy_template(
         File.join(osx_support_folder, 'Info.plist.template'),
         File.join(contents_folder, 'Info.plist'))
+        
+      if patch_plist
+        pl = File.join(contents_folder, 'Info.plist')
+        plist = File.read(pl)
+        plist.gsub! 'titanium.icns',"#{@@executable_name}.icns"
+        f = File.open pl, 'w'
+        f.puts plist
+        f.close
+      end
 
       Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
-      Bundler.copy_template(
-        File.join(Titanium.get_support_dir(), 'plugins.js.template'),
-        File.join(titanium_folder, 'plugins.js'))
+      # Bundler.copy_template(
+      #   File.join(Titanium.get_support_dir(), 'plugins.js.template'),
+      #   File.join(titanium_folder, 'plugins.js'))
       
       Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
         FileUtils.cp jsfile, titanium_folder
@@ -132,17 +146,17 @@ module Titanium
       Bundler.copy_resource_files(@@executable_name, resources_folder)
 		  Bundler.copy_tiapp_xml(File.join(resources_folder, 'tiapp.xml'))
       
-      Bundler.copy_template(
-        File.join(Titanium.get_support_dir(), 'plugins.js.template'),
-        File.join(titanium_folder, 'plugins.js'))
+      # Bundler.copy_template(
+      #   File.join(Titanium.get_support_dir(), 'plugins.js.template'),
+      #   File.join(titanium_folder, 'plugins.js'))
 		
       Dir[File.join(Titanium.get_component_dir(), "**", "*.js")].each do |jsfile|
 			  FileUtils.cp jsfile, titanium_folder
 		  end
       
-		  Titanium.each_plugin do |plugin|
-			  plugin.install(@@project, @@dest, @@executable_name)
-		  end
+      Titanium.each_plugin do |plugin|
+        plugin.install(@@project, @@dest, @@executable_name)
+      end
 		
 		  if is_cygwin?
 			  FileUtils.chmod 0755, File.join(app_folder, @@executable_name+".exe")
