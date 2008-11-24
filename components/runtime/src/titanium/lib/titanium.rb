@@ -82,10 +82,10 @@ module Titanium
     end
     
     def Titanium.get_executable
-    	if is_mac?
+    	if @@platform == "osx"
     		return File.join(Titanium.get_app_path(), 'Contents', 'MacOS', 'Titanium')
-      	elsif is_win?
-      		return File.join(Titanium.get_component_dir(), 'ti_shell.exe')
+    	elsif @@platform == "win32"
+      	return File.join(Titanium.get_component_dir(), 'ti_shell.exe')
   		end
     end
     
@@ -94,11 +94,8 @@ module Titanium
     end
     
     def Titanium.get_component
-      puts "Looking for #{@@ti_component_info[:name]}, platform=#{@@platform}.."
       installed_ti = Installer.get_current_installed_component(@@ti_component_info)
-      puts "installed_ti=#{installed_ti}"
       if installed_ti.nil?
-        puts "why am i here?"
         Installer.require_component(:titanium, 'titanium_' + @@platform, nil)
         installed_ti = Installer.get_current_installed_component(@@ti_component_info)
       end
@@ -113,7 +110,6 @@ module Titanium
       tiplugins.each do |tiplugin|
         latest_plugin = Installer.get_current_installed_component(tiplugin)
         plugin_dir = Installer.get_component_directory(latest_plugin)
-        
         plugin_rb = File.join(plugin_dir, 'plugin.rb')
         require File.expand_path(plugin_rb)
       end
@@ -122,7 +118,7 @@ module Titanium
       Object::constants.each do |c|
         cl = Object.const_get(c)
         if cl.class == Class and cl.superclass == Titanium::Plugin
-          p << cl.new
+          p << cl.new(@platform)
         end
       end
       return p
