@@ -1,0 +1,58 @@
+=========================================
+Welcome to the Appcelerator Titanium SDK
+=========================================
+
+Appcelerator Titanium is an open source toolkit for building 
+rich desktop applications using standard web technologies like
+HTML, Javascript and CSS. Applications built on Titanium can
+run on Win32, Mac OSX and Linux based operating systems.
+
+You should also check out the Appcelerator SDK. The Appcelerator SDK
+is an open source platform for building rich Internet applications.
+You can find out more information about Appcelerator at <http://appcelerator.org>.
+
+If you need more assistance, please go to the Appcelerator Developer Community
+at <http://community.appcelerator.org>.
+
+To report a bug or make a feature request, please visit our Issue Tracking portal
+at <http://jira.appcelerator.org>.
+
+If you are interested in becoming a community developer and contributing to
+Appcelerator, please contact us at <info@appcelerator.com>.
+
+If you need support, training or consulting assistance with Appcelerator, please
+contact <sales@appcelerator.com> or visit the Appcelerator website at 
+<http://appcelerator.org>.  
+
+
+We hope you enjoy using Titanium, we sure do!
+
+-- The Appcelerator Team
+
+
+-------------
+ Legal Stuff
+-------------
+
+For more information on licensing, please visit <http://license.appcelerator.org>.
+
+Copyright 2008 Appcelerator, Inc.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+Appcelerator, Titanium and the respective logos and marks are trademark
+Appcelerator, Inc.
+
+Titanium includes wonderfully produced software from other open source
+projects such as WebKit and Gears. Please see the LICENSE file for information
+on third-party software included or used by Titanium.

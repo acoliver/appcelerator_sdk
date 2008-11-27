@@ -54,8 +54,8 @@ then
          PATH=$PATH:/usr/local/bin:/opt/local/bin:/usr/bin:/bin
          echo "PATH=$PATH" >> /tmp/appcelerator_installer.log
 
-         echo "sudo -u $USER open http://appcelerator.org/gettingstarted" >> /tmp/appcelerator_installer.log
-         sudo -u $USER open "http://appcelerator.org/gettingstarted"
+         echo "sudo -u $USER open $2" >> /tmp/appcelerator_installer.log
+         sudo -u $USER open "$2"
 
          echo "exiting successfully!" >> /tmp/appcelerator_installer.log
          exit 0

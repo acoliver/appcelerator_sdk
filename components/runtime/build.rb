@@ -149,93 +149,101 @@ namespace :runtime do
     if not RUBY_PLATFORM =~ /darwin/
       STDERR.puts "Cannot compile Mac OSX installer on non-darwin based systems .... Will skip."
     else
-      puts "==> Building Mac OSX Installer"
-      config = get_config(:runtime, :win32)
+      puts "==> Building Mac OSX Installers"
+      config = get_config(:runtime, :osx)
       version = config[:version]
-
-      osx_dir = "#{STAGE_DIR}/installer/osx"
-      name = "Appcelerator"
       
-      clean_dir(osx_dir)
-      FileUtils.mkdir_p osx_dir 
-      FileUtils.mkdir_p "#{osx_dir}/installer/build/osx"
-  
-      copy_dir "#{RUNTIME_DIR}/src/cmdline", "#{osx_dir}/installer"
-      copy_dir "#{RUNTIME_DIR}/src/titanium", "#{osx_dir}/installer"
-      copy_dir "#{RUNTIME_DIR}/src/installer/osx", "#{osx_dir}/installer/build/osx"
-      FileUtils.mkdir_p("#{osx_dir}/lib")
-      FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{osx_dir}/lib/uuid.rb"
+      def makeit(config,version,name,build,readme,url)
+        osx_dir = "#{STAGE_DIR}/installer#{build}/osx"
 
-      search_and_replace_in_file("#{osx_dir}/installer/console.rb","__VERSION__", CONFIG[:version])
-  
-      # dynamically make our list of files into the pmdoc before we build
-      make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
-      make_pkg_file "#{osx_dir}/installer/build/osx/installer.pmdoc/06lib-contents.xml","#{osx_dir}/installer/lib"
+        clean_dir(osx_dir)
+        FileUtils.mkdir_p osx_dir 
+        FileUtils.mkdir_p "#{osx_dir}/installer#{build}/build/osx"
+
+        copy_dir "#{RUNTIME_DIR}/src/cmdline", "#{osx_dir}/installer#{build}"
+        copy_dir "#{RUNTIME_DIR}/src/titanium", "#{osx_dir}/installer#{build}"
+        copy_dir "#{RUNTIME_DIR}/src/installer/osx", "#{osx_dir}/installer#{build}/build/osx"
+        FileUtils.mkdir_p("#{osx_dir}/lib")
+        FileUtils.cp "#{SERVICES_DIR}/common/ruby/agent/uuid.rb", "#{osx_dir}/lib/uuid.rb"
+
+        search_and_replace_in_file("#{osx_dir}/installer#{build}/console.rb","__VERSION__", CONFIG[:version])
+
+        # dynamically make our list of files into the pmdoc before we build
+        make_pkg_file "#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc/05commands-contents.xml","#{osx_dir}/installer/commands"
+        make_pkg_file "#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc/06lib-contents.xml","#{osx_dir}/installer/lib"
+
+        fix_paths "#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc","#{osx_dir}/installer/build/osx"
+
+        index = File.read "#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc/index.xml"
+
+        file = File.open "#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc/index.xml",'w+'
+        file.puts index.gsub(/<build>(.*?)<\/build>/,"<build>#{osx_dir}/installer#{build}/installer.mpkg</build>")
+        file.close
+
+        Dir["#{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc/**/*.xml"].each do |file|
+          f = File.open(file,'r+')
+          c = f.read
+          f.rewind
+          c.gsub!(/ o="(.*?)"/," o=\"root\"")
+          c.gsub!(/ g="(.*?)"/," g=\"admin\"")
+          f.puts c
+          f.close
+        end
+
+        system "hdiutil eject /Volumes/#{name} 2>/dev/null"
+
+        FileUtils.chmod 0755, "#{osx_dir}/installer#{build}/appcelerator"
+        
+        build_yaml = File.join(osx_dir,"installer#{build}",'build.yml')
+        dump_yaml(config, build_yaml)
+
+        # build the package structure
+        if File.exists? "/Developer/Tools/packagemaker"
+          STDERR.puts "ERROR: Cannot build Mac OSX Installer using xcode version < 3.0. Please upgrade to the latest xcode."
+          exit 1
+        elsif File.exists? "/Developer/usr/bin/packagemaker"
+          system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer#{build}/build/osx/installer#{build}.pmdoc --out #{osx_dir}/installer#{build}/#{name}.mpkg"
+        else
+          STDERR.puts "ERROR: Couldn't find xcode packagemaker"
+          exit 1
+        end
+
+        # more details on how to do what we're doing are at:
+        # http://digital-sushi.org/entry/how-to-create-a-disk-image-installer-for-apple-mac-os-x/
+
+        # add in our postflight install script
+        postflight = File.open "#{osx_dir}/installer#{build}/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight",'w+'
+        postflight.puts "#!/bin/sh"
+        postflight.puts "/usr/bin/appcelerator '--postflight--' '#{url}'"
+        postflight.puts "exit 0"
+        postflight.close
+        FileUtils.chmod 0755, "#{osx_dir}/installer#{build}/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight"
+
+        FileUtils.mkdir_p "#{osx_dir}/installer#{build}/build/osx/installer"
+        system "hdiutil convert #{osx_dir}/installer#{build}/build/osx/#{name}.dmg -format UDSP -o #{osx_dir}/installer#{build}/build/osx/installer/#{name}"
+        system "hdiutil mount #{osx_dir}/installer#{build}/build/osx/installer/#{name}.sparseimage"
+
+        FileUtils.cp_r "#{osx_dir}/installer#{build}/#{name}.mpkg/Contents", "/Volumes/#{name}/Run Installer.mpkg"
+        FileUtils.cp_r "#{osx_dir}/installer#{build}/build/osx/README#{build}", "/Volumes/#{name}/Read Me.txt" if readme
+        system "hdiutil eject /Volumes/#{name}"
+        system "hdiutil convert #{osx_dir}/installer#{build}/build/osx/installer/#{name}.sparseimage -format UDBZ -o #{osx_dir}/#{name}.dmg"
+
+        FileUtils.rm_r "#{STAGE_DIR}/installer#{build}_osx_#{version}.dmg" rescue nil
+        system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer#{build}_osx_#{version}.dmg #{osx_dir}/#{name}.dmg"
+
+        FileUtils.rm_rf "#{STAGE_DIR}/installer#{build}_osx_#{version}.zip" 
+        Zip::ZipFile.open("#{STAGE_DIR}/installer#{build}_osx_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
+          zipfile.add "installer_osx_#{version}.dmg","#{STAGE_DIR}/installer#{build}_osx_#{version}.dmg"
+          zipfile.add("build.yml", build_yaml)
+        end
+
+        FileUtils.rm_rf osx_dir
+      end
       
-      fix_paths "#{osx_dir}/installer/build/osx/installer.pmdoc","#{osx_dir}/installer/build/osx"
-  
-      index = File.read "#{osx_dir}/installer/build/osx/installer.pmdoc/index.xml"
-  
-      file = File.open "#{osx_dir}/installer/build/osx/installer.pmdoc/index.xml",'w+'
-      file.puts index.gsub(/<build>(.*?)<\/build>/,"<build>#{osx_dir}/installer/installer.mpkg</build>")
-      file.close
-  
-      Dir["#{osx_dir}/installer/build/osx/installer.pmdoc/**/*.xml"].each do |file|
-        f = File.open(file,'r+')
-        c = f.read
-        f.rewind
-        c.gsub!(/ o="(.*?)"/," o=\"root\"")
-        c.gsub!(/ g="(.*?)"/," g=\"admin\"")
-        f.puts c
-        f.close
-      end
-  
-      system "hdiutil eject /Volumes/Appcelerator 2>/dev/null"
-  
-      FileUtils.chmod 0755, "#{osx_dir}/installer/appcelerator"
-      build_yaml = File.join(osx_dir,'installer','build.yml')
-      dump_yaml(config, build_yaml)
-  
-      # build the package structure
-      if File.exists? "/Developer/Tools/packagemaker"
-        STDERR.puts "ERROR: Cannot build Mac OSX Installer using xcode version < 3.0. Please upgrade to the latest xcode."
-        exit 1
-      elsif File.exists? "/Developer/usr/bin/packagemaker"
-        system "/Developer/usr/bin/packagemaker --target 10.4 --doc #{osx_dir}/installer/build/osx/installer.pmdoc --out #{osx_dir}/installer/#{name}.mpkg"
-      else
-        STDERR.puts "ERROR: Couldn't find xcode packagemaker"
-        exit 1
-      end
-  
-  
-      # add in our postflight install script
-      postflight = File.open "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight",'w+'
-      postflight.puts "#!/bin/sh"
-      postflight.puts "/usr/bin/appcelerator '--postflight--'"
-      postflight.puts "exit 0"
-      postflight.close
-      FileUtils.chmod 0755, "#{osx_dir}/installer/#{name}.mpkg/Contents/Packages/appcelerator.pkg/Contents/Resources/postflight"
-  
-      FileUtils.mkdir_p "#{osx_dir}/installer/build/osx/installer"
-      system "hdiutil convert #{osx_dir}/installer/build/osx/Appcelerator.dmg -format UDSP -o #{osx_dir}/installer/build/osx/installer/Appcelerator"
-      system "hdiutil mount #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage"
-  
-      FileUtils.cp_r "#{osx_dir}/installer/#{name}.mpkg/Contents", "/Volumes/Appcelerator/Run Installer.mpkg"
-      FileUtils.cp_r "#{osx_dir}/installer/build/osx/README", "/Volumes/Appcelerator/Read Me.txt"
-      system "hdiutil eject /Volumes/Appcelerator"
-      system "hdiutil convert #{osx_dir}/installer/build/osx/installer/Appcelerator.sparseimage -format UDBZ -o #{osx_dir}/Appcelerator.dmg"
-  
-      FileUtils.rm_r "#{STAGE_DIR}/installer_osx_#{version}.dmg" rescue nil
-      system "hdiutil convert -format UDZO -imagekey zlib-level=9 -o #{STAGE_DIR}/installer_osx_#{version}.dmg #{osx_dir}/Appcelerator.dmg"
-  
-      FileUtils.rm_rf "#{STAGE_DIR}/installer_osx_#{version}.zip" 
-      Zip::ZipFile.open("#{STAGE_DIR}/installer_osx_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
-        zipfile.add "installer_osx_#{version}.dmg","#{STAGE_DIR}/installer_osx_#{version}.dmg"
-        zipfile.add("build.yml", build_yaml)
-      end
-  
-      FileUtils.rm_rf osx_dir
-      puts "Mac OSX Installer is now ready"
+      makeit(config,version,'Appcelerator','',true,'http://appcelerator.org/gettingstarted')
+      makeit(config,version,'Titanium','_titanium',false,'http://titaniumapp.com/gettingstarted')
+
+      puts "Mac OSX Installers are now ready"
     end
     
   end
