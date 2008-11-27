@@ -383,7 +383,8 @@ end
 
 def call_command(cmd)
   if is_win32
-    cmd= "cmd.exe /c #{cmd}"
+    cmd="cmd.exe /c #{cmd}"
+    puts "executing: #{cmd}" if VERBOSE
     result = system(cmd)
     if !result
       puts "failed running #{cmd}"
@@ -391,6 +392,7 @@ def call_command(cmd)
     end
     result
   else
+    puts "executing: #{cmd}" if VERBOSE
     system cmd
   end
 end

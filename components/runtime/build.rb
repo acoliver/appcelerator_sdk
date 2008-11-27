@@ -56,10 +56,9 @@ namespace :runtime do
   task :win32 do
 
     if not system "makensis -VERSION"
-      STDERR.puts "Cannot build Win32 installer -- couldn't find `makensis` in your path ... Skipping..."
-
+      STDERR.puts "Cannot build Win32 installers -- couldn't find `makensis` in your path ... Skipping..."
     else
-      puts "==> Building Win32 Installer"
+      puts "==> Building Win32 Installers"
       config = get_config(:runtime, :win32)
       version = config[:version]
 
@@ -78,7 +77,7 @@ namespace :runtime do
       search_and_replace_in_file("#{win32_dir}/console.rb","__VERSION__", CONFIG[:version])
 
       # NSIS requires 0.0.0.0
-      win32_version = "#{version}.0"
+      win32_version = "#{version}.#{Time.now.strftime '%m%d%y'}"
 
       build_yaml = File.join(win32_dir,'build.yml')
       dump_yaml(config, build_yaml)    
@@ -87,6 +86,10 @@ namespace :runtime do
         call_command "makensis -DVERSION=\"#{win32_version}\" installer.nsi" if VERBOSE
         call_command "makensis -DVERSION=\"#{win32_version}\" -Oinstaller.log installer.nsi" unless VERBOSE
         FileUtils.cp_r "installer.exe", "#{STAGE_DIR}/installer_win32_#{version}.exe"
+
+        call_command "makensis -DVERSION=\"#{win32_version}\" installer_titanium.nsi" if VERBOSE
+        call_command "makensis -DVERSION=\"#{win32_version}\" -Oinstaller_titanium.log installer_titanium.nsi" unless VERBOSE
+        FileUtils.cp_r "installer_titanium.exe", "#{STAGE_DIR}/installer_titanium_win32_#{version}.exe"
       end
   
       FileUtils.rm_rf "#{STAGE_DIR}/installer_win32_#{version}.zip" 
@@ -94,9 +97,15 @@ namespace :runtime do
         zipfile.add "installer_win32_#{version}.exe","#{STAGE_DIR}/installer_win32_#{version}.exe"
         zipfile.add("build.yml", build_yaml)
       end
+
+      FileUtils.rm_rf "#{STAGE_DIR}/installer_titanium_win32_#{version}.zip" 
+      Zip::ZipFile.open("#{STAGE_DIR}/installer_titanium_win32_#{version}.zip", Zip::ZipFile::CREATE) do |zipfile|
+        zipfile.add "installer_titanium_win32_#{version}.exe","#{STAGE_DIR}/installer_titanium_win32_#{version}.exe"
+        zipfile.add("build.yml", build_yaml)
+      end
   
       FileUtils.rm_rf win32_dir
-      puts "Win32 Installer is now ready"
+      puts "Win32 Installers are now ready"
     end
   end
 
