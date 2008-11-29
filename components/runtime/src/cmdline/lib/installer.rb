@@ -759,7 +759,7 @@ HELP
             skip_install(component, options)
           
           else
-            msg = 'Component was not found locally or remotely'
+            msg = "Component #{type}:#{name} was not found locally or remotely"
             msg += ' (no network connection available)' if e
             raise UserError.new(msg)
           end
@@ -778,7 +778,7 @@ HELP
               component = install_from_devnetwork(remote, options)
               finish_install(component, options)
             rescue SocketError => e
-              raise UserError.new("Component was not found locally or remotely (no network connection available)")
+              raise UserError.new("Component #{type}:#{name} was not found locally or remotely (no network connection available)")
             end
           end
         end
@@ -979,7 +979,7 @@ HELP
         component[:type] = component[:type].to_sym
         component
       else
-        die 'Sorry, that version isn\'t available'
+        die "Sorry, that version (#{component_info[:version]}) isn't available for #{component_info[:type]}:#{component_info[:name]}"
       end
     end
     

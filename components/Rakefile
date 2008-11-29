@@ -19,6 +19,7 @@ cwd = File.expand_path(File.dirname(__FILE__))
 require File.join(cwd, '..', 'build', 'build.rb')
 require File.join(RUNTIME_DIR, 'build.rb')
 require File.join(WEBSDK_DIR, 'build.rb')
+require File.join(TITANIUM_DIR, 'build.rb') if File.exists? TITANIUM_DIR # titanium build not required
 
 directory_to_namespace(:service, SERVICES_DIR, ['common'])
 directory_to_namespace(:behavior, BEHAVIORS_DIR)

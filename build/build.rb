@@ -37,6 +37,7 @@ WIDGETS_DIR = File.join(COMPONENTS_DIR, 'widgets')
 THEMES_DIR = File.join(COMPONENTS_DIR, 'themes')
 WEBSDK_DIR = File.join(COMPONENTS_DIR, 'websdk')
 RUNTIME_DIR = File.join(COMPONENTS_DIR, 'runtime')
+TITANIUM_DIR = File.expand_path(ENV['TITANIUM_DIR'] || File.join(ROOT_DIR,'..','titanium'))
 
 VERBOSE = ENV['v'] || ENV['verbose'] || ENV['VERBOSE']
 COMPRESS = ENV['nomin'] ? false : true 
@@ -51,47 +52,57 @@ TRANSPORT = S3Transport.new(DISTRO_BUCKET, CONFIG)
 MANIFEST = TRANSPORT.manifest
 
 # inject defaults for build configurations
-CONFIG[:releases].each_pair {|type, rels|
-  to_add = {}
-  rels.each_pair { |name, rel_config|
-    
-    # if no config is found, create a default config
-    if rel_config.nil?
-        rel_config = to_add[name] = {}
-    end
+def build_config(cfg)
+  cfg[:releases].each_pair {|type, rels|
+    to_add = {}
+    rels.each_pair { |name, rel_config|
+      # if no config is found, create a default config
+      if rel_config.nil?
+          rel_config = to_add[name] = {}
+      end
 
-    # inject name and type into config
-    str_name = name.to_s
-    rel_config[:name] = str_name
+      # inject name and type into config
+      str_name = name.to_s
+      rel_config[:name] = str_name
 
-    # duplicate config replacing : with _ if we are trying
-    # to look for it that way
-    if str_name.include?(':')
-        to_add[str_name.sub(':', '_').to_sym] = rel_config
-    end
+      # duplicate config replacing : with _ if we are trying
+      # to look for it that way
+      if str_name.include?(':')
+          to_add[str_name.sub(':', '_').to_sym] = rel_config
+      end
 
-    typename = type.to_s
-    if (typename =~ /^theme_/)
-        rel_config[:type] = "theme"
-        rel_config[:control] = typename.sub("theme_", "")
-    else
-        rel_config[:type] = typename
-    end
+      typename = type.to_s
+      if (typename =~ /^theme_/)
+          rel_config[:type] = "theme"
+          rel_config[:control] = typename.sub("theme_", "")
+      else
+          rel_config[:type] = typename
+      end
 
-    # inject the default license
-    rel_config[:licenses] = (rel_config[:licenses] || []) | CONFIG[:licenses]
+      # inject the default license
+      rel_config[:licenses] = (rel_config[:licenses] || []) | cfg[:licenses]
 
-    # inject the current version as the version
-    version = MANIFEST.get_current_version(type, name)
-    rel_config[:version] = version
+      # inject the current version as the version
+      version = MANIFEST.get_current_version(type, name)
+      rel_config[:version] ||= version
 
-    # inject the output file path
-    output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}.zip")
-    rel_config[:output_filename] = output_file 
+      # inject the output file path
+      output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}.zip")
+      rel_config[:output_filename] = output_file 
+    }
+
+    rels.merge!(to_add)
   }
+end
 
-  rels.merge!(to_add)
-}
+build_config(CONFIG)
+
+def merge_config(config)
+  releases = config[:releases]
+  if releases
+    CONFIG[:releases].merge!(releases)
+  end
+end
 
 def get_config(type, name)
     type = type.join('_').to_sym if type.class == Array
@@ -100,28 +111,28 @@ def get_config(type, name)
     config
 end
 
-# Convert a directoyr of directories into a namespace of Rake tasks
+# Convert a directory of directories into a namespace of Rake tasks
 # If a Rakefile exists in one of those directories, don't add it as
 # a task for that namespace, instead just source the Rakefile
 #
 # types can be an array of nested types which will result in nested namespaces
 # excludes are directories that you want to ignore
 def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
-  return directory_to_namespace([types], dir, excludes) if types.class != Array
+  return directory_to_namespace([types], dir, excludes, i, nspace) if types.class != Array
 
   # recursively define this namespace 
   if i < types.length
       namespace types[i] do
-          nspace = "#{nspace}#{types[i].to_s}:"
+          nspace = "#{nspace}#{types[i].to_s}:" 
           directory_to_namespace(types, dir, excludes, i + 1, nspace)
           all_task(nspace) # create an all task for this namespace
       end
       return
   end
-
+  
   # no more namespaces to enter, simply create our tasks
   dirs = Dir["#{dir}/*"].reject { |f| not File.directory?(f) }
-  dirs.each { |subdir|
+  dirs.each do |subdir|
     next if excludes.include?(File.basename(subdir))
 
     subdir = File.expand_path(subdir)
@@ -130,7 +141,6 @@ def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
 
     if File.exists?(rfile) # first try build.rb in directory
         require rfile
-
     else # otherwise try a simple build
         task name do
             config = get_config(types, name)
@@ -143,8 +153,8 @@ def directory_to_namespace(types, dir, excludes=[], i=0, nspace="")
         config = get_config(types, name)
         add_config_to_zip(config)
     end
+  end
 
-  }
 end
 
 def all_task(nspace)

@@ -36,23 +36,24 @@ module Appcelerator
     def default_paths
         @@paths
     end
-
+    
     def Project.create(path, project_name, service_type, service_version)
       if Project.is_project_dir?(path)
         die 'This directory looks like it\'s already an Appcelerator project.'
       end
-
+      
       # make a fake config
       config = {
          :name => project_name,
          :service => service_type,
          :service_version => service_version
       }
+
       project = Project.create_project_object(config)
 
       project.path = path
       project.config_path = "#{path}/config/appcelerator.config"
-
+      
       project
     end
 
@@ -163,7 +164,7 @@ module Appcelerator
         get_websdk_path("widgets")
     end
     
-    def create_project_on_disk(tx)
+    def create_project_on_disk(tx,project)
 
       # creates project directories
       @config[:paths].keys.each { |path_key|
@@ -180,7 +181,7 @@ module Appcelerator
       # write out project config here, just in case any commands
       # misbehave and don't try to read the project we pass in
       save_config()
-      if not install_websdk_late?
+      if not install_websdk_late? and install_websdk?
         Installer.install_websdk(self, tx)
       end
 
@@ -191,13 +192,21 @@ module Appcelerator
         success = service_installer.create_project(@service_dir, @path, @config, tx)
       end
       
-      if install_websdk_late?
+      if install_websdk_late? and install_websdk?
         Installer.install_websdk(self, tx)
       end
       
       save_config()
 
       success
+    end
+    
+    def install_titanium?
+      true
+    end
+    
+    def install_websdk?
+      true
     end
     
     def install_websdk_late?

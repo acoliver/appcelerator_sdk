@@ -44,7 +44,7 @@ CommandRegistry.registerCommand('create:plugin','create a new plugin project',[
   class_name = args[:name].gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
   plugin_name = args[:name].gsub ':', '_'
 
-  dir = args[:path].path
+  dir = args[:path]
   if Project.is_project_dir?(dir)
     project = Project.load(dir)
     dir = project.get_path(:plugins)

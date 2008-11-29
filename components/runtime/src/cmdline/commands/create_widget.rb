@@ -57,7 +57,7 @@ ERROR_MESSAGE
   class_name = name.gsub(/\/(.?)/) { "::" + $1.upcase }.gsub(/(^|_|:)(.)/) { $2.upcase }
   widget_name = name.gsub ':', '_'
   
-  dir = args[:path].path
+  dir = args[:path]
   if Project.is_project_dir?(dir)
     project = Project.load(dir)
     dir = project.get_widget_path(widget_name)

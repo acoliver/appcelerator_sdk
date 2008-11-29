@@ -15,10 +15,11 @@
 #   limitations under the License.
 #
 
+APPC_ROOT_DIR = File.expand_path(File.dirname(__FILE__))
 
 require 'rubygems' 
 require 'rake' 
-load 'components/Rakefile' 
+load "#{APPC_ROOT_DIR}/components/Rakefile"
 
 
 puts "*" * 80

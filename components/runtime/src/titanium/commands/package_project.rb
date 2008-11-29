@@ -16,38 +16,26 @@
 include Appcelerator
 include Titanium
 
-CommandRegistry.registerCommand('bundle:app', 'bundle a Titanium app as a native executable', [
+TITANIUM_OS_TYPES = %w(win32 osx linux) 
+
+CommandRegistry.registerCommand('package:project', 'package a Titanium app as a native executable', [
   {
-    :name=>'path',
-    :help=>'path to bundle',
+    :name=>'os',
+    :help=>'operating system',
     :required=>false,
-    :default=>nil,
+    :default=>TITANIUM_OS_TYPES,
     :type=>[
-      Types::FileType,
-      Types::DirectoryType,
-      Types::AlphanumericType
+      Types::EnumerationType.new(TITANIUM_OS_TYPES)
     ],
-    :conversion=>Types::DirectoryType
+    :conversion=>Types::EnumerationType
   },
   {
-    :name=>'executable_name',
-    :help=>'name of the executable',
+    :name=>'dest',
+    :help=>'destination directory of output',
     :required=>false,
-    :default=>nil,
+    :default=>'stage',
     :type=>[
-      Types::AlphanumericType
-    ],
-    :conversion=>Types::AnyType
-  },
-  {
-    :name=>'destination',
-    :help=>'destination directory of the executable',
-    :required=>false,
-    :default=>nil,
-    :type=>[
-      Types::FileType,
-      Types::DirectoryType,
-      Types::AlphanumericType
+      Types::DirectoryType
     ],
     :conversion=>Types::DirectoryType
   }
@@ -63,37 +51,30 @@ CommandRegistry.registerCommand('bundle:app', 'bundle a Titanium app as a native
     :display=>"--launch",
     :help=>"launch the project after bundling",
     :value=>true
-  },
-  {
-    :name=>'xml',
-    :display=>'--xml',
-    :help=>'specify the path to your tiapp.xml',
-    :value=>nil
-  },
-  {
-    :name=>'platform',
-    :display=>'--platform',
-    :help=>'bundle app for the specified platform (default: bundle for the current platform)',
-    :value=>nil
   }
 ], [
   'bundle:app',
-  'bundle:app ~/myapp',
-  'bundle:app ~/myapp MyApp',
-  'bundle:app ~/myapp MyApp --xml=mytiapp.xml',
-  'bundle:app ~/myapp MyApp --platform=win32',
-  'bundle:app ~/myapp MyApp ~/bin'
+  'bundle:app osx',
+  'bundle:app --launch',
+  'bundle:app osx,win32',
+  'bundle:app osx --launch',
+  'bundle:app osx --dest=/tmp'
 ]) do |args,options|
-    Titanium::Titanium.init
-    
-    platform = options[:platform] || platform_string()
-    path = File.expand_path(args[:path] || Dir.pwd)
-    project = nil
-    if Project.is_project_dir?(path)
-      project = options[:project] || Project.load(path)
+    project = Project.load(Dir.pwd)
+    config = project.config
+    options[:quiet_if_installed]=true unless options[:quiet_if_installed]
+    dest_dir = args[:dest]
+    FileUtils.mkdir_p dest_dir unless File.exists?(dest_dir)
+    args[:os].each do |os|
+      runtime = Installer.require_component(:titanium, os.to_sym, options[:version], options)
+      require File.join(runtime[:dir],'packager.rb')
+      cls = eval "Titanium::#{os.upcase}::Packager"
+      puts "Packaging Titanium for target os: #{os}" unless options[:quiet]
+      cls.package(project,dest_dir,runtime[:version])
     end
-    executable_name = args[:executable_name] || project.nil? ? File.basename(path) : project.config[:name]
-    dest = args[:destination] || project.nil? ? path : project.path
-    
-    Bundler.bundle_app(path, executable_name, dest, platform, options[:endpoint], options[:launch], options[:xml])
+    if args[:os].length == 1
+      puts "Your Titanium application is located in #{dest_dir}" unless options[:quiet]
+    else
+      puts "Your Titanium applications are located in #{dest_dir}" unless options[:quiet]
+    end
 end

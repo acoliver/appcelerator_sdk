@@ -9,8 +9,8 @@ module Appcelerator
       end
       
       class EnumerationType
-        def initialize(types)
-          @types = types
+        def initialize(types=nil)
+          @types = types || []
         end
         def to_s
           "Enumeration of: #{@types.join(' or ')}"
@@ -19,7 +19,12 @@ module Appcelerator
           @types.include?(value)
         end
         def convert(value)
-          value
+          if value.class == String
+            return value.strip.split(',').compact
+          elsif value.class == Array
+            return value.compact
+          end
+          raise "Unknown type for Enumeration conversion: #{value.class}"
         end
       end
       
@@ -28,12 +33,15 @@ module Appcelerator
           File.directory?(value) and File.exists?(value)
         end
         def convert(value)
-          return Dir.new(value) if File.exists?(value)
+          if value.class == Dir
+            return value.path
+          end
+          return Dir.new(File.expand_path(value)).path if File.exists?(value)
           if not OPTIONS[:quiet]
             confirm "Create directory [#{File.expand_path(value)}]? (Y)es,(N)o,(A)ll [Y]"
           end
-          FileUtils.mkdir(value)
-          Dir.new(value)
+          FileUtils.mkdir_p(value)
+          Dir.new(File.expand_path(value)).path
         end
       end
       
@@ -264,11 +272,11 @@ module Appcelerator
             raise UserError.new("Invalid argument value: #{value} for argument: #{argdef[:name]}. Must be of type: #{typestr}")
           end
           
-          if argdef[:conversion]
-            value = argdef[:conversion].new.convert(value)
-          end
         end
-        return value
+        if argdef[:conversion]
+          value = argdef[:conversion].new.convert(value)
+        end
+        value
       end
       
       def CommandRegistry.isType?(type,value)

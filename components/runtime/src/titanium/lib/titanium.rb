@@ -44,9 +44,9 @@ def platform_string
   return "linux" if is_linux?
 end
 
-
 module Titanium
   class Titanium
+    
     def Titanium.create_config_from_dir(dir)
       if Project.is_project_dir?(dir)
         return Titanium.create_config_from_project(Project.load(dir))

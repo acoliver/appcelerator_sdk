@@ -2,7 +2,10 @@ require 'rubygems'
 require 'json'
 require 'zip/zip'
 require 'digest/md5'
-require 'aws/s3'
+begin
+  require 'aws/s3'
+rescue
+end
 require 'yaml'
 require 'open-uri'
 

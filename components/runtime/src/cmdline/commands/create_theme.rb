@@ -67,7 +67,7 @@ ERROR_MESSAGE
   control = args[:name][0,args[:name].index(':')]
   theme_name = args[:name][args[:name].index(':')+1..-1]
 
-  dir = args[:path].path
+  dir = args[:path]
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
     dir = project.get_theme_path(control_type, control, theme_name)

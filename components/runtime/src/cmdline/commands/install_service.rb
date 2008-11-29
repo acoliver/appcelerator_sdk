@@ -15,10 +15,10 @@
 
 
 include Appcelerator
-CommandRegistry.registerCommand('install:service','install an SOA integration point',[
+CommandRegistry.registerCommand('install:service','install a project service type',[
   {
     :name=>'location',
-    :help=>'path or URL to plugin file or name of a service integration from the network',
+    :help=>'path or URL to plugin file or name of a project service type from the network',
     :required=>true,
     :default=>nil,
     :type=>Types::StringType

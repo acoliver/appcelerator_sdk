@@ -53,7 +53,7 @@ ERROR_MESSAGE
     raise UserError.new(message)
   end
 
-  dir = args[:path].path
+  dir = args[:path]
   if Project.is_project_dir?(out_dir)
     project = Project.load(out_dir)
     dir = project.get_control_path(name)

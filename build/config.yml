@@ -37,6 +37,8 @@
         :dependencies: [{type: websdk, name: websdk}]
       :struts:
         :dependencies: [{type: websdk, name: websdk}]
+      :titanium:
+        :dependencies: []
       :websdk:
         :dependencies: [{type: websdk, name: websdk}]
       :zend:
@@ -179,28 +181,28 @@
         :licenses: [1, 6] 
       :app:ext_tree:
       :app:field:
-        :description: > app:field is a ui control that supports laying
+        :description: > app:field is a ui control that supports laying 
                         out different types of fields for collecting
                         or displaying values
       :app:folder:
-        :description: > app:folder is a simple tree-like ui control
+        :description: > app:folder is a simple tree-like ui control 
                         for displaying items in a set of folders
       :app:graphical_music_player:
       :app:http:
-        :description: > app:http is a non-visual control for executing
+        :description: > app:http is a non-visual control for executing 
                         REST-style services
       :app:if:
         :description: > app:if is a non-visual control for conditional
                         execution of content based on a Javascript expression
       :app:image_cropper:
       :app:imagetransition:
-        :description: > app:imagetransition is a control for transition
+        :description: > app:imagetransition is a control for transition 
                         from one image to another
       :app:iterator:
         :description: > app:iterator is a UI control for iterating
                         over a set of array values from a message
       :app:message:
-        :description: > app:message is a non-visual widget for sending
+        :description: > app:message is a non-visual widget for sending 
                         a message either locally or remotely
       :app:modalbox:
         :description: > app:modalbox is a UI control for displaying
@@ -267,3 +269,4 @@
       :app:yui_map:
         :description: > app:yui_map is a Yahoo! based map UI control
                         which supports dynamic mapping from messages
+            

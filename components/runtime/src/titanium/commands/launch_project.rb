@@ -16,7 +16,7 @@
 include Appcelerator
 include Titanium
 
-CommandRegistry.registerCommand('launch:app', 'launch a Titanium app', [
+CommandRegistry.registerCommand('launch:project', 'launch a Titanium app', [
   {
     :name=>'path',
     :help=>'path to start in (starts in current directory by default)',

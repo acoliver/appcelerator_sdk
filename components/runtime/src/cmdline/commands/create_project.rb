@@ -47,34 +47,29 @@ CommandRegistry.registerCommand('create:project','create a new project',[
   'create:project C:\mydir myproject ruby'
 ]) do |args,options|
 
-
   service_type = args[:service]
   service_version = args[:version]
   project_name = args[:name]
   path = args[:path]
 
-  to = File.expand_path(File.join(path.path,project_name))
+  to = File.expand_path(File.join(path,project_name))
   puts "Using service #{service_type} #{service_version}" unless OPTIONS[:quiet]
   puts "Creating #{service_type}-#{service_version} project from: #{@service_dir}, to: #{to}" if OPTIONS[:verbose]
 
-  success = true
   project = Project.create(to, project_name, service_type, service_version)
 
   with_io_transaction(to) do |tx|
 
     event = {:project=>project, :tx=>tx}
     PluginManager.dispatchEvents('create_project', event) do
-
-      project.create_project_on_disk(tx)
-
-      if success
-          puts "Appcelerator #{project.service_type} project created ... !" unless OPTIONS[:quiet]
-      end
-
-      event[:success] = success
+      project.create_project_on_disk(tx,project)
+      event[:success] = true
     end
 
   end
 
-  success
+  puts "Your project was created in #{File.expand_path(to)}" unless OPTIONS[:quiet]
+  puts "Appcelerator #{args[:service]} project created ... Code strong!" unless OPTIONS[:quiet]
+
+  true
 end

@@ -37,7 +37,6 @@ CommandRegistry.registerCommand('install:titanium','install the titanium runtime
 ]) do |args,options|
 
     args[:location].split(',').uniq.each do |plugin|
-      
       component = Installer.require_component(:titanium,plugin.strip,options[:version])
     end
 end

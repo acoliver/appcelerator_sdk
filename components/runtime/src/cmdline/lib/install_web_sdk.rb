@@ -33,10 +33,15 @@ module Appcelerator
       FileUtils.mkdir_p sdk_path unless File.exists? sdk_path
 
       paths = ["images", "stylesheets", "swf", "widgets"]
+      found_count = 0
       paths.each do |path|
         path = project.get_websdk_path(path)
+        found_count +=1 if File.exists? path
         FileUtils.mkdir_p path unless File.exists? path
       end
+
+      # we already have an SDK installed, don't overwrite unless force
+      return nil if found_count==paths.length and !(OPTIONS[:force] or OPTIONS[:force_update])
 
       source_dir = Installer.get_component_directory(sdk)
 
@@ -45,6 +50,7 @@ module Appcelerator
       project.config[:widgets] = []
 
       puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
+      
       if OPTIONS[:verbose]
         path = project.get_web_path('.')
         if update
