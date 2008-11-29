@@ -53,24 +53,27 @@ CommandRegistry.registerCommand('package:project', 'package a Titanium app as a 
     :value=>true
   }
 ], [
-  'bundle:app',
-  'bundle:app osx',
-  'bundle:app --launch',
-  'bundle:app osx,win32',
-  'bundle:app osx --launch',
-  'bundle:app osx --dest=/tmp'
+  'package:project',
+  'package:project osx',
+  'package:project --launch',
+  'package:project osx,win32',
+  'package:project osx --launch',
+  'package:project osx --dest=/tmp'
 ]) do |args,options|
     project = Project.load(Dir.pwd)
-    config = project.config
     options[:quiet_if_installed]=true unless options[:quiet_if_installed]
     dest_dir = args[:dest]
     FileUtils.mkdir_p dest_dir unless File.exists?(dest_dir)
     args[:os].each do |os|
-      runtime = Installer.require_component(:titanium, os.to_sym, options[:version], options)
-      require File.join(runtime[:dir],'packager.rb')
-      cls = eval "Titanium::#{os.upcase}::Packager"
-      puts "Packaging Titanium for target os: #{os}" unless options[:quiet]
-      cls.package(project,dest_dir,runtime[:version])
+      event = {:project=>project, :tx=>nil, :os=>os.to_s}
+      PluginManager.dispatchEvents('package_project', event) do
+        runtime = Installer.require_component(:titanium, os.to_sym, options[:version], options)
+        require File.join(runtime[:dir],'packager.rb')
+        cls = eval "Titanium::#{os.upcase}::Packager"
+        puts "Packaging Titanium for target os: #{os}" unless options[:quiet]
+        cls.package(project,dest_dir,runtime[:version])
+        event[:success] = true
+      end
     end
     if args[:os].length == 1
       puts "Your Titanium application is located in #{dest_dir}" unless options[:quiet]

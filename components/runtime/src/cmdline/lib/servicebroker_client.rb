@@ -243,16 +243,20 @@ module Appcelerator
         #
         m = body.match(/<message (.*?)><!\[CDATA\[(.*?)\]\]><\/message>/)
         
-        #
-        # split the attributes of message into hash
-        #
-        m[1].split(' ').map do |item|
-            t = item.split('=')
-            k = strip_quotes t[0]
-            v = strip_quotes t[1]
-            response[k]=v
+        if m and m[1]  # check to see if we have a response (not required)
+          #
+          # split the attributes of message into hash
+          #
+          m[1].split(' ').map do |item|
+              t = item.split('=')
+              k = strip_quotes t[0]
+              v = strip_quotes t[1]
+              response[k]=v
+          end
+          json_response = json_decode(m[2])
+        else
+          json_response = {}
         end
-        json_response = json_decode(m[2])
       else
         puts "received error: #{res.code} => #{res.body}" if @debug
       end

@@ -24,6 +24,7 @@ module Appcelerator
     attr_accessor :config_path
     attr_accessor :service_dir
     attr_accessor :service_installer
+    attr_accessor :name
 
     @@paths = {
       :services => ["app/services", "appcelerator services"],
@@ -50,7 +51,7 @@ module Appcelerator
       }
 
       project = Project.create_project_object(config)
-
+      project.name = project_name
       project.path = path
       project.config_path = "#{path}/config/appcelerator.config"
       
@@ -71,6 +72,7 @@ module Appcelerator
 
       project = Project.create_project_object(config)
 
+      project.name = config[:name]
       project.path = path
       project.config_path = config_path
       project
@@ -126,6 +128,7 @@ module Appcelerator
         project = service_obj
       end
 
+      project.name = config[:name]
       project.service_dir = service[:dir]
       project.config = config
 
@@ -286,6 +289,7 @@ module Appcelerator
 
       project.config.merge!(@config)
       project.fill_default_paths()
+      project.name = @config[:name]
 
       project.service_dir = service[:dir]
       project.config[:service_version] = service[:version] # might have been nil

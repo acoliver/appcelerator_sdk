@@ -33,6 +33,9 @@ module Appcelerator
           File.directory?(value) and File.exists?(value)
         end
         def convert(value)
+          if value.nil?
+            value = Dir.pwd
+          end
           if value.class == Dir
             return value.path
           end

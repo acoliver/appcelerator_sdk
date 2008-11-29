@@ -30,26 +30,26 @@ CommandRegistry.registerCommand('launch:project', 'launch a Titanium app', [
     :conversion=>Types::DirectoryType
   }
 ],
+[],
 [
-  {
-    :name=>'xml',
-    :display=>'--xml=custom_tiapp.xml',
-    :help=>'point to a specific tiapp.xml rather than looking for it in the current directory',
-    :value=>nil
-  }
-],
-[
-  'launch:app',
-  'launch:app ~/myapp',
-  'launch:app ~/myapp --xml=custom_tiapp.xml'
+  'launch:project',
+  'launch:project ~/myapp'
 ]) do |args,options|
-    Titanium::Titanium.init
     
-    pwd = File.expand_path(args[:path] || Dir.pwd)
-    tiapp_xml = File.expand_path(options[:xml] || File.join(pwd,'tiapp.xml'))
-    
-    if pwd
-      FileUtils.cd(pwd)
-      Launcher.launchApp(tiapp_xml)
+    dir = Dir.pwd
+    project = Project.load(dir)
+    os = platform_string.to_sym
+    dest_dir = File.expand_path(args[:path] || File.join(Dir.pwd,'stage'))
+    options[:quiet_if_installed] = true unless options[:quiet_if_installed]
+    FileUtils.cd(dest_dir) do
+      event = {:project=>project, :tx=>nil, :os=>os.to_s}
+      PluginManager.dispatchEvents('launch_project', event) do
+        runtime = Installer.require_component(:titanium, os, options[:version], options)
+        require File.join(runtime[:dir],'launcher.rb')
+        cls = eval "Titanium::#{os.to_s.upcase}::Launcher"
+        puts "Launching Titanium for target os: #{os.to_s}" unless options[:quiet]
+        cls.launch(project,dir)
+        event[:success] = true
+      end
     end
 end
