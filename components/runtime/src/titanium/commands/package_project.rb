@@ -14,7 +14,6 @@
 # limitations under the License. 
 
 include Appcelerator
-include Titanium
 
 TITANIUM_OS_TYPES = %w(win32 osx linux) 
 

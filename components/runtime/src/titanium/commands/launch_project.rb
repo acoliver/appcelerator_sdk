@@ -14,7 +14,6 @@
 # limitations under the License. 
 
 include Appcelerator
-include Titanium
 
 CommandRegistry.registerCommand('launch:project', 'launch a Titanium app', [
   {
