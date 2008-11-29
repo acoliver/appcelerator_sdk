@@ -23,6 +23,12 @@ darwinports installed, you can install NSIS with:
 
   > port install nsis
 
+If you would like to build Titanium alongside the SDK, you will need to checkout
+titanium from http://github.com/marshall/titanium/tree/master and then set the 
+environment variable 'TITANIUM_DIR' to the directory.  You will also need to follow build
+instructions in the titanium project before building.  If you don't want to build 
+titanium or don't have it checked out, you can still build the SDK with no problems.
+
 --------------------
  Build Instructions
 --------------------
