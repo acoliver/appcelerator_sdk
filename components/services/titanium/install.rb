@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 
-
 include Appcelerator
 module Appcelerator
   class Titanium < Project
@@ -33,10 +32,12 @@ module Appcelerator
     # remote server which handles packaging. we do this so that it
     # can be downloaded separately (and more often) than the installer
     #
-    def get_delete
+    def get_delegate(tx)
       component = Installer.require_component(:titanium, :project, nil, {:quiet_if_installed=>true})
-      require File.join(component[:dir],'installer.rb')
-      cls = eval "Titanium::Project"
+      dir = File.join(component[:dir],'installer.rb')
+      puts "loading: #{dir}" if OPTIONS[:debug]
+      load dir
+      eval "TitaniumProject.new"
     end
     
     #
@@ -46,7 +47,7 @@ module Appcelerator
     # version to the next
     #
     def update_project(from_version, to_version, tx)
-      return get_delete.update_project(from_version,to_version,tx,self)
+      return get_delegate(tx).update_project(from_version,to_version,tx,self)
     end
 
     # 
@@ -55,7 +56,7 @@ module Appcelerator
     # ran --force-update on an existing project using create:project
     #
     def create_project(tx)
-      return get_delete.create_project(tx,self)
+      return get_delegate(tx).create_project(tx,self)
     end
 
   end

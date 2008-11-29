@@ -44,10 +44,10 @@ After running the installer, you can get more information on all the cool comman
 \b > app help
 \b0 \
 \
-For example, to bundle a titanium project, execute the following in your console:\
+For example, to create a titanium project, execute the following in your console:\
 \
 
-\f1\b > app bundle:app
+\f1\b > app create:project . my_project titanium
 \f0\b0 \
 \
 \

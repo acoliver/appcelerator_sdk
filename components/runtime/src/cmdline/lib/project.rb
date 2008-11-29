@@ -268,7 +268,7 @@ module Appcelerator
           remove_const :Java
         end
         GC.start 
-
+        puts "loading: #{service[:dir]}" if OPTIONS[:debug]
         load File.join(service[:dir], 'install.rb') # load service class
         service_obj = Appcelerator.const_get(service[:name].capitalize).new
       rescue

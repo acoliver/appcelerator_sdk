@@ -40,6 +40,10 @@ class ProjectPlugin < Appcelerator::Plugin
                    'target_os' => event[:os]}
         response = Installer.get_client.send('project.package.request', message)[:data]
       rescue
+        if OPTIONS[:debug]
+          $stderr.puts e.backtrace 
+          $stderr.puts "received error: #{e}"
+        end
       end
     end
 
