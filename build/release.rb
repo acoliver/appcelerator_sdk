@@ -394,7 +394,7 @@ class S3Transport
         if not man_text
             man_text = load_manifest_via_web() || '{}'
         end
-
+        
         @manifest = Manifest.new(man_text, config)
 
     end

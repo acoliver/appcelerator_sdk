@@ -892,6 +892,10 @@ HELP
       
     def Installer.most_recent_version(components)
       if components and not components.empty?
+        components.delete_if do |c|
+          dir = Installer.get_component_directory(c)
+          !File.exists?(dir)
+        end
         components.compact!
         components.sort! do |a,b|
           compare_versions(a[:version],b[:version])

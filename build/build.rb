@@ -52,7 +52,7 @@ TRANSPORT = S3Transport.new(DISTRO_BUCKET, CONFIG)
 MANIFEST = TRANSPORT.manifest
 
 # inject defaults for build configurations
-def build_config(cfg)
+def build_config(cfg,manifest=MANIFEST)
   cfg[:releases].each_pair {|type, rels|
     to_add = {}
     rels.each_pair { |name, rel_config|
@@ -82,8 +82,9 @@ def build_config(cfg)
       # inject the default license
       rel_config[:licenses] = (rel_config[:licenses] || []) | cfg[:licenses]
 
-      # inject the current version as the version
-      version = MANIFEST.get_current_version(type, name)
+      # inject the current version as the version, using the 
+      # config version as the overriding determinant
+      version = manifest.get_current_version(type, name)
       rel_config[:version] ||= version
 
       # inject the output file path
@@ -443,3 +444,34 @@ def compress_js_in_zip(zf)
   FileUtils.rm_rf path
 end
 
+def is_mac?
+  RUBY_PLATFORM.downcase.include?("darwin")
+end
+
+def is_cygwin?
+	RUBY_PLATFORM.downcase.include?("cygwin")
+end
+
+def is_win?
+  RUBY_PLATFORM.downcase.include?("mswin") || is_cygwin?
+  
+end
+
+def is_linux?
+  RUBY_PLATFORM.downcase.include?("linux")
+end
+
+def cygpath(path)
+  return `cygpath --windows #{path}`.chomp
+end
+
+def platform_string
+  return "osx" if is_mac?
+  return "win32" if is_win?
+  return "linux" if is_linux?
+end
+
+def die(msg)
+  $stderr.puts msg
+  exit 1
+end
