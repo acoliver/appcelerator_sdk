@@ -56,7 +56,7 @@ class ServiceBroker < Application
       raise BadRequest
     end
     
-    session_id = cookies[_session_id_key] || ''
+	 session_id = cookies[Merb::Config[:session_id_key]] || ''
     
     #
     # security check - make sure our hash is correct 
