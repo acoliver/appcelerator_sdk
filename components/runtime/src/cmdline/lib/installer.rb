@@ -557,6 +557,7 @@ HELP
           
           dependencies << dep_comp
           horizon << dep_comp
+          checked << dep_comp
 
         }
       end
@@ -614,7 +615,7 @@ HELP
             name = d[:name]
             version = d[:version]
             filesize = d[:filesize]
-            puts "| #{type.center(9)} | #{name.ljust(72)} | #{version.center(10)} | #{number_to_human_size(filesize).rjust(16)} |"
+            puts "| #{type.center(9)} | #{name.ljust(72)} | #{version.to_s.center(10)} | #{number_to_human_size(filesize).rjust(16)} |"
             puts "-"*120
             total+=filesize
           end
