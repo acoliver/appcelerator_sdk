@@ -28,6 +28,12 @@ module Appcelerator
       end
       die "Couldn't find a version of the websdk to install" unless sdk
 
+      # project needs to know websdk version
+      # to decide where the websdk path is
+      web_version = sdk[:version]
+      project.config[:websdk] = web_version
+      old_style_websdk = web_version.split('.')[0].to_i < 3
+
       # make web folder directories
       sdk_path = project.get_websdk_path()
       FileUtils.mkdir_p sdk_path unless File.exists? sdk_path
@@ -45,8 +51,6 @@ module Appcelerator
 
       source_dir = Installer.get_component_directory(sdk)
 
-      web_version = sdk[:version]
-      project.config[:websdk] = web_version
       project.config[:widgets] = []
 
       puts "Using websdk #{web_version}" unless OPTIONS[:quiet]
@@ -68,7 +72,13 @@ module Appcelerator
       PluginManager.dispatchEvents('copy_web',event) do
 
         # TODO: make web directories configurable
-        Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_websdk_path())
+    
+        if not old_style_websdk
+            Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_websdk_path())
+        else
+            Installer.copy(tx, "#{source_dir}/javascripts/.", project.get_websdk_path("javascripts"))
+        end
+            
         Installer.copy(tx, "#{source_dir}/swf/.", project.get_websdk_path("swf"))
         Installer.copy(tx, "#{source_dir}/common/.", project.get_websdk_path("widgets/common"))
 
