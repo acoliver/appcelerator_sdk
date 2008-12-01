@@ -167,7 +167,7 @@ module Appcelerator
         get_websdk_path("widgets")
     end
     
-    def create_project_on_disk(tx,project)
+    def create_project_on_disk(tx)
 
       # creates project directories
       @config[:paths].keys.each { |path_key|
