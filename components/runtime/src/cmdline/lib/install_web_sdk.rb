@@ -116,6 +116,7 @@ module Appcelerator
           Installer.copy(tx, Dir.glob("#{source_dir}/*.html"), project.get_path(:web))
 
           widgets = Installer.find_dependencies_for(sdk) || []
+          widgets = widgets.reject{|d| d[:type] != 'widget'}
 
           # install our widgets
           widgets.each do |widget|
