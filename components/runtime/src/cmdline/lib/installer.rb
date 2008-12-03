@@ -500,7 +500,7 @@ HELP
         Installer.message('distribution_query')
 
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
-        response = get_client().send('distribution.query.request', {})
+        response = get_client().send('distribution.query.request', {'version' => APPCELERATOR_VERSION})
 
         @@distributions = response[:data]['distributions'].keys_to_sym
         with_site_config do |site_config|
