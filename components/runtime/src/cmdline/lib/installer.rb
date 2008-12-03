@@ -95,7 +95,24 @@ module Appcelerator
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
       puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
       client = get_client
-      result = client.send 'account.login.request', {'email'=>email,'password'=>password}
+
+      config = get_config()
+      mysid = config[:sid]
+
+      args = {
+        'email' => email,
+        'password' => password,
+        'os' => RUBY_PLATFORM
+      }
+      args['sid'] = mysid unless mysid.nil?
+      result = client.send('account.login.request', args)
+
+      r_sid = result[:data]['sid']
+      if not r_sid.nil? and mysid != r_sid
+        config[:sid] = r_sid
+        save_config()
+      end
+
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
       return result[:data]['success'] if result
       false
@@ -476,23 +493,50 @@ HELP
       true
     end
         
-    def Installer.fetch_distribution_list(ping=false)
+    def Installer.fetch_distribution_list()
         return @@distributions if @@distributions # caching this
-        login_if_required
-        client = get_client
+
+        login_if_required()
+        Installer.message('distribution_query')
+
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
-        config = get_config
-        args = {'ping'=>ping,'sid'=>config[:sid],'os'=>RUBY_PLATFORM,'version'=>APPCELERATOR_VERSION}
-        response = client.send('distribution.query.request',args)
-        if config[:sid].nil? or config[:sid]!=response[:data]['sid']
-          config[:sid] = response[:data]['sid']
-          save_config
-        end
+        response = get_client().send('distribution.query.request', {})
+
         @@distributions = response[:data]['distributions'].keys_to_sym
         with_site_config do |site_config|
           site_config[:distributions] = @@distributions
         end
         @@distributions
+
+    end
+
+    def Installer.message(type, args = {})
+      config = get_config()
+      args['type'] = type
+      args['os'] = RUBY_PLATFORM
+      args['version'] = APPCELERATOR_VERSION
+      args['sid'] = config[:sid]
+
+      begin
+          escape_regex = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
+          url = "notimplementedyet"
+          args.each_pair { |arg, value|
+             next unless value
+             arg = URI.escape(arg, escape_regex)
+             value = URI.escape(value, escape_regex)
+             url += "#{arg}=#{value}&"
+          }   
+            
+          # disable until we set up S3 target
+          #Net::HTTP.get(URI.parse(url))
+
+      rescue => e
+        if OPTIONS[:debug]
+          $stderr.puts e.backtrace 
+          $stderr.puts "received error: #{e}"
+        end
+      end
+
     end
 
 
@@ -917,7 +961,7 @@ HELP
 
         components = all_components[type] || []
         matching_components = components.select do |cm|
-          cm[:name] == name and (version.nil? or cm[:version] == version)
+          cm[:name] == name and (version.nil? or cm[:version].to_s == version.to_s)
         end
         
         if matching_components.empty? and location == :remote and component_info[:version]

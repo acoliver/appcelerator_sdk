@@ -1,119 +1,50 @@
 
 class ProjectPlugin < Appcelerator::Plugin
 
-    def after_update_project(event)
-      project = event[:project]
+    def project_request(project, type, args_in = {})
+      begin 
+        Installer.login_if_required
 
-      begin
+        config = Installer.get_config()
+        sid = config[:sid]
+
         if project.config[:aid].nil?
-          sid = Installer.get_config[:sid]
-          aid = AID.generate(project.path,sid,false)
-          message = {'sid' => sid,
-                     'aid' => aid,
-                     'os' => RUBY_PLATFORM,
-                     'name' => project.name,
-                     'directory' => project.path,
-                     'service' => project.service_type}
-          response = Installer.get_client.send('project.update.request', message)[:data]
+          AID.generate(project, sid, false)
         end
+        args = {
+          'aid' => project.config[:aid],
+          'name' => project.name,
+          'directory' => project.path,
+          'service' => project.service_type
+        }
+        args.merge!(args_in)
+        Installer.message("project_#{type}", args)
+
       rescue => e
         if OPTIONS[:debug]
           $stderr.puts e.backtrace 
           $stderr.puts "received error: #{e}"
         end
       end
+    end
+
+    def after_update_project(event)
+      project_request(event[:project], 'update')
     end
     
     def after_package_project(event)
-      project = event[:project]
-
-      begin
-        Installer.login_if_required
-        sid = Installer.get_config[:sid]
-        aid = AID.generate(project, sid)
-        message = {'sid' => sid,
-                   'aid' => aid,
-                   'os' => RUBY_PLATFORM,
-                   'name' => project.name,
-                   'directory' => project.path,
-                   'service' => project.service_type,
-                   'target_os' => event[:os]}
-        response = Installer.get_client.send('project.package.request', message)[:data]
-      rescue
-        if OPTIONS[:debug]
-          $stderr.puts e.backtrace 
-          $stderr.puts "received error: #{e}"
-        end
-      end
+      project_request(event[:project], 'package', {'target_os' => event[:os]})
     end
 
     def after_launch_project(event)
-      project = event[:project]
-
-      begin
-        Installer.login_if_required
-        sid = Installer.get_config[:sid]
-        aid = AID.generate(project, sid)
-        message = {'sid' => sid,
-                   'aid' => aid,
-                   'os' => RUBY_PLATFORM,
-                   'name' => project.name,
-                   'directory' => project.path,
-                   'service' => project.service_type,
-                   'target_os' => event[:os]}
-        response = Installer.get_client.send('project.launch.request', message)[:data]
-      rescue => e
-        if OPTIONS[:debug]
-          $stderr.puts e.backtrace 
-          $stderr.puts "received error: #{e}"
-        end
-      end
+      project_request(event[:project], 'launch')
     end
 
     def after_create_project(event)
-      project = event[:project]
-
-      begin
-        Installer.login_if_required
-        sid = Installer.get_config[:sid]
-        aid = AID.generate(project, sid)
-        message = {'sid' => sid,
-                   'aid' => aid,
-                   'os' => RUBY_PLATFORM,
-                   'name' => project.name,
-                   'directory' => project.path,
-                   'service' => project.service_type }
-        response = Installer.get_client.send('project.create.request', message)[:data]
-      rescue => e
-        if OPTIONS[:debug]
-          $stderr.puts e.backtrace 
-          $stderr.puts "received error: #{e}"
-        end
-      end
+      project_request(event[:project], 'create')
     end
 
     def before_run_server(event)
-      project = event[:project]
-
-      begin
-        Installer.login_if_required(true)
-        sid = Installer.get_config[:sid]
-        aid = project.config[:aid]
-        if aid.nil?
-          aid = AID.create(project.path, sid) rescue nil
-        end
-        message = {'sid' => sid,
-                   'aid' => aid,
-                   'os' => RUBY_PLATFORM,
-                   'name' => project.config[:name],
-                   'directory' => project.path,
-                   'service' => project.service_type }
-        response = Installer.get_client.send('project.run.request', message)[:data]
-      rescue => e
-        if OPTIONS[:debug]
-          $stderr.puts e.backtrace 
-          $stderr.puts "received error: #{e}"
-        end
-      end
+      project_request(event[:project], 'run')
     end
 end

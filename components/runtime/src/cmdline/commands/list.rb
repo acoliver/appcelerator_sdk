@@ -59,11 +59,6 @@ CommandRegistry.makeGroup(:list) do |group|
   ],
   [
     {
-       :name=>:ping,
-       :display=>'--ping',
-       :value=>false
-    },
-    {
        :name=>:format,
        :display=>'--format=yaml',
        :help=>'format for printing results, human-readable by default, can also be yaml',
@@ -72,11 +67,10 @@ CommandRegistry.makeGroup(:list) do |group|
     },
   ]) do |args,options|
     
-    ping = options[:ping]
     type = args[:type]
     name = args[:name]
     
-    list = Installer.fetch_distribution_list(ping)
+    list = Installer.fetch_distribution_list()
     
     if options[:format] == 'yaml'
       showYaml(list, args)

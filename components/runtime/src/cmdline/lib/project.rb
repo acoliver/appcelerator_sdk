@@ -24,6 +24,7 @@ module Appcelerator
     attr_accessor :config_path
     attr_accessor :service_dir
     attr_accessor :service_installer
+
     attr_accessor :name
 
     @@paths = {
