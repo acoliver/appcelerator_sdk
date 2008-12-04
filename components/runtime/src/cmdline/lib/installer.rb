@@ -30,6 +30,7 @@ module Appcelerator
     @@site_config = nil
     @@site_config_file = nil
     @@installed_this_session = Set.new
+    @@offline = false
 
     def Installer.user_home
       if ENV['HOME']
@@ -93,7 +94,7 @@ module Appcelerator
         die("--no-remote has been specified and you need to go to the Dev Network for content.", 2)
       end
       puts "Using network URL: #{OPTIONS[:server]}" if OPTIONS[:debug]
-      puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet]
+      puts "Connecting to update server ..." unless OPTIONS[:silent] or silent or OPTIONS[:quiet] or @@offline
       client = get_client
       result = client.send 'account.login.request', {'email'=>email,'password'=>password}
       puts "result=>#{result.to_yaml}" if OPTIONS[:debug] and result
@@ -736,6 +737,8 @@ HELP
             remote = get_current_remote_component(component_info)
           rescue SocketError => e
             # if we have no internet connection, just use local version
+            puts "No network connection found. That's OK." unless OPTIONS[:quiet] or @@offline
+            @@offline = true
           end
           
           if (local.nil? and remote)
@@ -779,6 +782,7 @@ HELP
               finish_install(component, options)
             rescue SocketError => e
               raise UserError.new("Component #{type}:#{name} was not found locally or remotely (no network connection available)")
+              @@offline = true
             end
           end
         end
