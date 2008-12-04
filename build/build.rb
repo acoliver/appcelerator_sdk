@@ -20,6 +20,7 @@ require 'find'
 require 'zip/zip'
 require 'yaml'
 require 'digest/md5'
+require 'fileutils'
 
 cwd = File.expand_path(File.dirname(__FILE__))
 
@@ -50,6 +51,8 @@ puts("Connecting to release server...")
 TRANSPORT = S3Transport.new(DISTRO_BUCKET, CONFIG)
 #TRANSPORT = FileTransport.new("/Users/martin/test", CONFIG)
 MANIFEST = TRANSPORT.manifest
+
+FileUtils.mkdir_p(STAGE_DIR)
 
 # inject defaults for build configurations
 def build_config(cfg,manifest=MANIFEST)

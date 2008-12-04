@@ -62,7 +62,7 @@ CommandRegistry.registerCommand('create:project','create a new project',[
 
     event = {:project=>project, :tx=>tx}
     PluginManager.dispatchEvents('create_project', event) do
-      project.create_project_on_disk(tx,project)
+      project.create_project_on_disk(tx)
       event[:success] = true
     end
 

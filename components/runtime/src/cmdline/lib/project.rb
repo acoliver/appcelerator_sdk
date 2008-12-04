@@ -167,7 +167,7 @@ module Appcelerator
         get_websdk_path("widgets")
     end
     
-    def create_project_on_disk(tx,project)
+    def create_project_on_disk(tx)
 
       # creates project directories
       @config[:paths].keys.each { |path_key|
@@ -246,7 +246,13 @@ module Appcelerator
     end
 
     def get_websdk_path(rel_path="")
-      File.join(get_path(:web), "appcelerator", rel_path)
+      version = @config[:websdk].split('.')[0].to_i
+      
+      if version >= 3
+          File.join(get_path(:web), "appcelerator", rel_path)
+      else
+          File.join(get_path(:web), rel_path)
+      end
     end
 
     def save_config()
