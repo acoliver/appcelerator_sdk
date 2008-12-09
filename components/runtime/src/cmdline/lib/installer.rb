@@ -523,8 +523,8 @@ HELP
       eregex = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
       args.each_pair { |arg, value|
          next unless value
-         arg = URI.escape(arg, eregex)
-         value = URI.escape(value, eregex)
+         arg = URI.escape(arg.to_s, eregex)
+         value = URI.escape(value.to_s, eregex)
          path += "#{arg}=#{value}&"
       }   
         
@@ -1150,7 +1150,7 @@ HELP
     
     def Installer.selfupdate(version=nil,options={})
     
-      build_config = YAML::load_file(File.expand_path("#{SCRIPTDIR}/build.yml"))
+      build_config = YAML::load_file(File.expand_path("#{SYSTEMDIR}/build.yml"))
       cm = {:type=>:runtime, :name=>'update', :version=>version}
       update = Installer.get_component(:remote, cm)
 
@@ -1163,7 +1163,7 @@ HELP
             finish_install(update_component, options)
 
             build_config[:version] = update[:version]
-            cf = File.open("#{SCRIPTDIR}/build.yml",'w+')
+            cf = File.open("#{SYSTEMDIR}/build.yml",'w+')
             cf.puts(build_config.to_yaml)
             cf.close
             puts "This program has been self-updated. Please run your command again."

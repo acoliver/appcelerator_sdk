@@ -186,7 +186,7 @@ module Appcelerator
 
         if not command_info
           if name.nil? and OPTIONS[:version]
-            build_yaml = File.expand_path("#{SCRIPTDIR}/build.yml")
+            build_yaml = File.expand_path("#{SYSTEMDIR}/build.yml")
             version = YAML::load_file(build_yaml)[:version] rescue 'unknown version'
             puts "Appcelerator Command-Line #{version}"
           elsif name != 'help'
