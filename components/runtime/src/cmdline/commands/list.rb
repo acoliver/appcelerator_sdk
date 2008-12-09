@@ -103,7 +103,7 @@ def listComponents(type, components)
   puts "The following #{type} versions are available remotely:"
   puts
   
-  components ||= []  
+  components = only_latest_versions(components) || []  
   components.each do |cm|
     puts "          >  #{cm[:name].ljust(32)} [#{cm[:version]}]"
   end
@@ -133,3 +133,16 @@ def showYaml(list, args)
   end
 end
 
+def only_latest_versions(releases)
+    return nil if not releases
+
+    latest = {}
+    releases.each { |rel|
+        key = rel[:type] + ':' + rel[:name]
+        if not latest[key] \
+             or Installer.compare_versions(latest[key], rel)
+            latest[key] = rel
+        end
+    }
+    return latest.values()
+end
