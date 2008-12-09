@@ -725,7 +725,7 @@ HELP
       
       event = component.clone_keys(:dir, :url, :type, :name, :version)
       PluginManager.dispatchEvents('install_component',event) do
-        Installer.http_fetch_into("(#{idx}/#{total}) #{component[:name]}",url,dir)
+        Installer.http_fetch_into("(#{idx}/#{total}) #{component[:type]}:#{component[:name]}",url,dir)
       end
     end
     
@@ -862,7 +862,7 @@ HELP
       Installer.add_installed_component(component)
       
       puts unless OPTIONS[:quiet]
-      puts "Installed #{component[:name]} #{component[:version]}" unless OPTIONS[:quiet]
+      puts "Installed #{component[:type]}:#{component[:name]} #{component[:version]}" unless OPTIONS[:quiet]
     end
     
     def Installer.skip_install(component, options)
