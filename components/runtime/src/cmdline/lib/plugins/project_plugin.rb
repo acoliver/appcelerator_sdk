@@ -18,7 +18,6 @@ class ProjectPlugin < Appcelerator::Plugin
           'service' => project.service_type
         }
         args.merge!(args_in)
-        puts args.inspect()
         Installer.message("project_#{type}", args)
 
       rescue => e
