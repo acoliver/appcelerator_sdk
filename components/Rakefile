@@ -123,7 +123,7 @@ task :unrelease do |t, args|
         puts "\t[#{i}] #{rel.type}:#{rel.name} #{rel.version}"
     }
 
-    option = Readline::readline("Enter letter of release to unrelease: ")
+    option = Readline::readline("\n   Enter number of release to unrelease: ")
     if option == nil or option == ''
         puts 'I\'m detecting a mistake'
         exit
@@ -136,11 +136,12 @@ task :unrelease do |t, args|
 
     MANIFEST.rm_release(releases[option])    
 
-    puts 'I\'m going to unrelease:'
+    puts ''
+    puts '   I\'m going to unrelease:'
     MANIFEST.to_remove.each { |rel|
         puts "\t#{rel.type}:#{rel.name} #{rel.version}"
     }
-    option = Readline::readline("Are you *sure* you want to do this? [yN]")
+    option = Readline::readline("\nAre you *sure* you want to do this? [yN]")
 
     if (option == 'Y' || option == 'y')
         puts 'Okay, unreleasing now...'
