@@ -104,5 +104,49 @@ task :release, :name, :version do |t, args|
         release_file([config[:output_filename]])
 
     end
+end
 
+desc 'Unrelease a component'
+task :unrelease do |t, args|
+    require 'readline'
+
+    if ARGV.length > 1:
+        (type, name) = ARGV[1].split(':', 2)
+    else
+        type = name = nil
+    end
+
+    releases = MANIFEST.get_releases({:type => type, :name => name})
+
+    releases.each_index { |i|
+        rel = releases[i]
+        puts "\t[#{i}] #{rel.type}:#{rel.name} #{rel.version}"
+    }
+
+    option = Readline::readline("Enter letter of release to unrelease: ")
+    if option == nil or option == ''
+        puts 'I\'m detecting a mistake'
+        exit
+    end
+
+    option = option.to_i
+    if option < 0 or option >= releases.length
+        puts 'Not a valid option'
+    end
+
+    MANIFEST.rm_release(releases[option])    
+
+    puts 'I\'m going to unrelease:'
+    MANIFEST.to_remove.each { |rel|
+        puts "\t#{rel.type}:#{rel.name} #{rel.version}"
+    }
+    option = Readline::readline("Are you *sure* you want to do this? [yN]")
+
+    if (option == 'Y' || option == 'y')
+        puts 'Okay, unreleasing now...'
+        TRANSPORT.push()
+    end
+    
+    exit
+    
 end

@@ -163,10 +163,12 @@ end
 class Manifest
     attr_accessor :model
     attr_accessor :config
+    attr_accessor :to_remove
 
     def initialize(text, config)
         @config = config
         @model = JSON.parse(text)
+        @to_remove = []
 
         @model.each_pair { |ctype, creleases|
             @model[ctype] = creleases.collect {|hash|
@@ -233,6 +235,17 @@ class Manifest
         @model[rel.type].reject! {|r| r == rel}
 
         @model[rel.type] << rel
+    end
+
+    def rm_release(rel)
+        if not @model.has_key?(rel.type)
+            return
+        end
+
+        # remove releases with same type, name, version
+        @model[rel.type].reject! {|r| r == rel}
+        @to_remove << rel
+
     end
 
     def get_latest_release(type, name)
@@ -449,20 +462,35 @@ class S3Transport
         )
     end
 
+    def remove(path)
+        AWS::S3::S3Object.delete(
+            path,
+            @bucket_name
+        )
+    end
+
     def add_release(rel)
         @manifest.add_release(rel)
+    end
+
+    def get_path_for_rel(rel)
+      "#{@release_path}/#{rel.type}/#{rel.name}-#{rel.version}.zip"
     end
 
     def push
         enable_logging()
         @manifest.get_releases.each { | release |
             if release.local
-                out_path = File.join(@release_path,
-                                      release.type,
-                                      "#{release.name}-#{release.version}.zip")
+                out_path = get_path_for_rel(release)
                 put(out_path, File.open(release.url), "application/zip")
-
                 release.url = "#{@url_prefix}/#{out_path}"
+            end
+        }
+
+        @manifest.to_remove.each { | release |
+            if not release.local
+                out_path = get_path_for_rel(release)
+                remove(out_path)
             end
         }
 
