@@ -799,7 +799,7 @@ HELP
                         
           elsif remote and should_update(local[:version],remote[:version],local[:checksum],remote[:checksum])
             # upgrading
-            if OPTIONS[:force_update] or confirm_yes("There is a newer version of '#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
+            if OPTIONS[:force_update] or confirm_yes("There is a newer version of '#{local[:type]}:#{local[:name]}' (yours: #{local[:version]}, available: #{remote[:version]})  Install? [Yna]")
               component = install_from_devnetwork(remote, options)
               finish_install(component, options)
             else
