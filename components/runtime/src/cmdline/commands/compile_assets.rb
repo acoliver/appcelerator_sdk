@@ -71,8 +71,7 @@ CommandRegistry.registerCommand('compile:assets','compile files to setup asset h
   # this is used to make sure we're in a project directory
   project = Project.load(Dir.pwd)
   
-  dep = Gem::Dependency.new('hpricot', Gem::Requirement.default)
-  if Gem.cache.search(dep).empty?
+  if Gem.cache.search('hpricot').empty?
     $stderr.puts "This plugin requires the Ruby hpricot gem. Please run `gem install hpricot` and re-run this command."
     exit 1
   end
