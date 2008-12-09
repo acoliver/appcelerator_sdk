@@ -118,6 +118,7 @@ Section
   File *.dll
   File /r "commands"
   File /r "lib"
+  File "rubygems-update-1.3.1.gem"
   File "rubyzip-0.9.1.gem"
 
   StrCmp $NeedsRuby "0" 0 +2
@@ -190,6 +191,7 @@ Section
   ; attempt to install gem dependencies
   DetailPrint "Installing required dependencies ... this will take several minutes (possibly)"
 
+  nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install rubygems-update-1.3.1.gem --no-ri --no-rdoc' $R1
   nsExec::Exec '"$0" /c "$R0\bin\gem.bat" install rubyzip-0.9.1.gem --no-ri --no-rdoc' $R1
 
   DetailPrint "Executing postflight installer script"
