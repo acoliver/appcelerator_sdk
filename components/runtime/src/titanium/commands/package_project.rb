@@ -15,7 +15,8 @@
 
 include Appcelerator
 
-TITANIUM_OS_TYPES = %w(win32 osx linux) 
+#TITANIUM_OS_TYPES = %w(win32 osx linux) 
+TITANIUM_OS_TYPES = %w(win32 osx) 
 
 CommandRegistry.registerCommand('package:project', 'package a Titanium app as a native executable', [
   {
