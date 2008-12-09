@@ -497,12 +497,12 @@ HELP
         return @@distributions if @@distributions # caching this
 
         login_if_required()
-        Installer.message('distribution_query')
 
         puts "Fetching release info from distribution server..." unless OPTIONS[:quiet]
-        response = get_client().send('distribution.query.request', {'version' => APPCELERATOR_VERSION})
+        response = Installer.distro_site(DISTRIBUTION_PATH,
+                                         {'version' => APPCELERATOR_VERSION})
 
-        @@distributions = response[:data]['distributions'].keys_to_sym
+        @@distributions = response['distributions'].keys_to_sym
         with_site_config do |site_config|
           site_config[:distributions] = @@distributions
         end
@@ -510,35 +510,41 @@ HELP
 
     end
 
-    def Installer.message(type, args = {})
+    def Installer.distro_site(path, args={})
+      uri = URI.parse(ET_PHONE_HOME)
+
       config = get_config()
-      args['type'] = type
       args['os'] = RUBY_PLATFORM
       args['version'] = APPCELERATOR_VERSION
       args['sid'] = config[:sid]
 
-      begin
-          escape_regex = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
-          url = "notimplementedyet"
-          args.each_pair { |arg, value|
-             next unless value
-             arg = URI.escape(arg, escape_regex)
-             value = URI.escape(value, escape_regex)
-             url += "#{arg}=#{value}&"
-          }   
-            
-          # disable until we set up S3 target
-          #Net::HTTP.get(URI.parse(url))
-
-      rescue => e
-        if OPTIONS[:debug]
-          $stderr.puts e.backtrace 
-          $stderr.puts "received error: #{e}"
-        end
+      path += '?'
+      eregex = Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")
+      args.each_pair { |arg, value|
+         next unless value
+         arg = URI.escape(arg, eregex)
+         value = URI.escape(value, eregex)
+         path += "#{arg}=#{value}&"
+      }   
+        
+      res = @@client.get_http(uri.host, uri.port) do |http|
+          http.get(path)
       end
-
+      return JSON.parse(res.body)
     end
 
+    def Installer.message(type, args = {})
+      args['type'] = type
+      begin
+        Installer.distro_site(MESSAGE_PATH, args)
+      rescue => e
+         if OPTIONS[:debug]
+           $stderr.puts e.backtrace 
+           $stderr.puts "received error: #{e}"
+         end
+       end
+
+    end
 
     def Installer.each_installed_component_type
       with_site_config(false) do |site_config|

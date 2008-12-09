@@ -10,6 +10,7 @@ require 'yaml'
 require 'open-uri'
 
 DISTRO_BUCKET = 'distro.appcelerator.org'
+LOG_BUCKET = 'logging.appcelerator.org'
 
 class Release
     attr_accessor :local
@@ -453,6 +454,7 @@ class S3Transport
     end
 
     def push
+        enable_logging()
         @manifest.get_releases.each { | release |
             if release.local
                 out_path = File.join(@release_path,
@@ -465,6 +467,17 @@ class S3Transport
         }
 
         put(@manifest_path, @manifest.serialize(), "text/javascript")
+    end
+
+    def enable_logging
+      if not AWS::S3::Bucket.logging_enabled_for? @bucket_name
+         puts "Enabling logging for: #{@bucket_name}"
+         AWS::S3::Bucket.enable_logging_for(
+            @bucket_name,
+            'target_bucket'=>LOG_BUCKET, 
+            'target_prefix'=> "#{@bucket_name}_log_"
+         )
+      end 
     end
 
 end

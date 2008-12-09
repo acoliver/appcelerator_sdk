@@ -18,6 +18,7 @@ class ProjectPlugin < Appcelerator::Plugin
           'service' => project.service_type
         }
         args.merge!(args_in)
+        puts args.inspect()
         Installer.message("project_#{type}", args)
 
       rescue => e
@@ -28,23 +29,38 @@ class ProjectPlugin < Appcelerator::Plugin
       end
     end
 
+    def get_project(event)
+
+        if event[:project]
+          return event[:project]
+        elsif event[:project_dir]
+          return Project.load(event[:project_dir])
+        end
+
+    end
+
     def after_update_project(event)
-      project_request(event[:project], 'update')
+      p = get_project(event)
+      project_request(p, 'update')
     end
     
     def after_package_project(event)
-      project_request(event[:project], 'package', {'target_os' => event[:os]})
+      p = get_project(event)
+      project_request(p, 'package', {'target_os' => event[:os]})
     end
 
     def after_launch_project(event)
-      project_request(event[:project], 'launch')
+      p = get_project(event)
+      project_request(p, 'launch')
     end
 
     def after_create_project(event)
-      project_request(event[:project], 'create')
+      p = get_project(event)
+      project_request(p, 'create')
     end
 
     def before_run_server(event)
-      project_request(event[:project], 'run')
+      p = get_project(event)
+      project_request(p, 'run')
     end
 end
