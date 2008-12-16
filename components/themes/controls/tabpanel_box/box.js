@@ -1,4 +1,4 @@
-Appcelerator.Core.registerTheme('control','tabpanel','box',
+Appcelerator.UI.registerTheme('control','tabpanel','box',
 {
 	/**
 	 * The attributes supported by the themes. This metadata is 

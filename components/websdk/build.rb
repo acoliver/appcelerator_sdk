@@ -75,7 +75,7 @@ END_LICENSE
       jslite_prefiles << File.basename(f) unless jslite_prefiles.include? File.basename(f)
     end
 
-    %w(actions conditions processors).each do |name|
+    %w(actions conditions processors ui).each do |name|
       Dir["#{js_source}/#{name}/*.js"].each do |f|
         jslite_prefiles << "#{name}/#{File.basename(f)}"
       end
