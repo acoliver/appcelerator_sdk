@@ -1,1 +1,0 @@
-regCSSAction('hidden','visibility');

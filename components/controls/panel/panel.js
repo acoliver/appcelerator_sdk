@@ -1,14 +1,12 @@
-Appcelerator.UI.registerUIComponent('control','panel',
+Appcelerator.Control.Panel = function()
 {
-	/**
-	 * The attributes supported by the controls. This metadata is 
-	 * important so that your control can automatically be type checked, documented, 
-	 * so the IDE can auto-sense the widgets metadata for autocomplete, etc.
-	 */
-	getAttributes: function()
+	
+	this.options = null;
+	this.id = null;
+	this.getAttributes = function()
 	{
 		var T = Appcelerator.Types;
-		
+
 		return [{name: 'theme', optional: true, description: "theme for the panel",defaultValue: Appcelerator.UI.UIManager.getDefaultTheme('panel')},
 				{name: 'height', optional: true, description: " height for panel" ,defaultValue: 'auto', type: T.cssDimension},		 
 				{name: 'width', optional: true, description: " width for panel" ,defaultValue: 'auto', type: T.cssDimension},		 
@@ -16,91 +14,121 @@ Appcelerator.UI.registerUIComponent('control','panel',
 				{name: 'title', optional: true, description: " title for panel" , defaultValue: ''},
 				{name: 'closeable', optional: true, description: " is panel closeable" , defaultValue: true}
 				];
-	},
+	}
+
 	/**
 	 * The version of the control. This will automatically be corrected when you
 	 * publish the component.
 	 */
-	getVersion: function()
+	this.getVersion = function()
 	{
 		// leave this as-is and only configure from the build.yml file 
 		// and this will automatically get replaced on build of your distro
 		return '1.0';
-	},
+	}
 	/**
 	 * The control spec version.  This is used to maintain backwards compatability as the
 	 * Widget API needs to change.
 	 */
-	getSpecVersion: function()
+	this.getSpecVersion = function()
 	{
 		return 1.0;
-	},
-	title:function(id,parameters,data,scope,version,attrs,direction,action)
+	}
+	this.title =  function(value)
 	{
-		var key = 'value';
-		if (attrs && typeof(v) == 'string')
+		var title = value
+		if (typeof(value) == "object")
 		{
-			attrs = attrs.evalJSON();
+			if (value)
+			{
+				title = value.args[0].value
+			}
 		}
-		if (attrs && attrs.length > 0)
-		{
-			key = attrs[0].key;
-		}
-		$(id + '_title').innerHTML = Object.getNestedProperty(data,key) || '';
-	},
-	
-	footer:function(id,parameters,data,scope,version,attrs,direction,action)
+		$(this.id+'_title').innerHTML = title;
+	}
+	this.footer = function(value)
 	{
-		var key = 'value';
-		if (attrs && typeof(v) == 'string')
+		var value = value
+		if (typeof(value) == "object")
 		{
-			attrs = attrs.evalJSON();
+			if (value)
+			{
+				value = value.args[0].value
+			}
 		}
-		if (attrs && attrs.length > 0)
+		$(this.id+'_footer').innerHTML = value;
+	}
+	this.content = function(value)
+	{
+		var value = value
+		if (typeof(value) == "object")
 		{
-			key = attrs[0].key;
+			if (value)
+			{
+				value = value.args[0].value
+			}
 		}
-		$(id + '_footer').innerHTML = Object.getNestedProperty(data,key) || '';
-	},
+		$(this.id+'_content').innerHTML = value;
+	}
+	this.theme = function(value)
+	{
+		var theme = value
+		if (typeof(value) == "object")
+		{
+			if (value)
+			{
+				theme = value.args[0].value
+			}
+		}
+		Appcelerator.Core.loadTheme('control','panel',theme,$(this.id),this.options);
+		var oldTheme = this.options.theme;
+		$$('.' + oldTheme).each(function(el)
+		{
+			Element.removeClassName(el,oldTheme);
+			Element.addClassName(el,theme)					
+		});
+		this.options['theme'] = theme;
 
-	getActions: function()
+	}
+	this.getActions = function()
 	{
-		return ['title','footer'];
-	},
-	
-	build: function(element,options)
+		return ['title','footer','theme','content'];
+	}
+
+	this.build = function(element,options)
 	{
-		var classPrefix = "panel_" + options['theme'];
-		
-		var html = '<div id="'+element.id+'_panel" style="width:'+options['width']+'" class="'+classPrefix+'">';
-		html += '<div id="'+element.id+'_hdr" class="' + classPrefix + '_hdr">';				
-		html += '<div  id="'+element.id+'_tl" class="'+classPrefix+'_tl"></div>';
-		html += '<div id="' + element.id + '_title" class="'+classPrefix+'_title">'+options['title']+'</div>';			
+		this.options = options;
+		this.id = element.id
+		var theme =  options['theme'];
+
+		var html = '<div id="'+element.id+'_hdr" class="panel ' + theme + ' header">';				
+		html += '<div  id="'+element.id+'_tl" class="panel '+theme+' top_left"></div>';
+		html += '<div id="' + element.id + '_title" class="panel '+theme+' title">'+options['title']+'</div>';			
 
 		if (options['closeable'] == true)
 		{
-			html += '<div id="' + element.id + '_close" class="'+classPrefix+'_close"></div>';			
+			html += '<div id="' + element.id + '_close" class="panel '+theme+' close"></div>';			
 		}
-		html += '<div  id="'+element.id+'_tr" class="'+classPrefix+'_tr"></div>';
+		html += '<div  id="'+element.id+'_tr" class="panel '+theme+' top_right"></div>';
 		html += '</div>';
-		
+
 		if (Appcelerator.Browser.isIE6)
 		{
 			options['height'] = (options['height']=='auto')?'30px':options['height'];
 		}
-		html += '<div  class="panel_body '+classPrefix+'_body" style="height:'+options['height']+'">';
+		html += '<div id="'+element.id+'_content" class="panel '+theme+ ' body" style="height:'+options['height']+'">';
 		html += element.innerHTML;
 		html += '</div>';
-		html += '<div  id="'+element.id+'_btm" class="'+classPrefix+'_btm">';
-		html += '<div  id="'+element.id+'_bl" class="'+classPrefix+'_bl"></div>';
-		html += '<div id="' + element.id + '_footer" class="'+classPrefix+'_btm_text ">'+options['footer']+'</div>';			
-		html += '<div  id="'+element.id+'_br" class="'+classPrefix+'_br"></div>';
+		html += '<div  id="'+element.id+'_btm" class="panel '+theme+' bottom">';
+		html += '<div  id="'+element.id+'_bl" class="panel '+theme+' bottom_left"></div>';
+		html += '<div id="' + element.id + '_footer" class="panel '+theme+' bottom_text ">'+options['footer']+'</div>';			
+		html += '<div  id="'+element.id+'_br" class="'+theme+' bottom_right"></div>';
 		html += '</div>';			
 		html += '</div>';			
 		element.innerHTML = html;
 		element.style.width = options['width'];
 		element.style.height = "auto";
-		Element.addClassName(element,classPrefix);
+		element.className = "panel container "+theme;
 
 		// wire close	
 		if (options['closeable'] == true)
@@ -109,7 +137,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			{
 				Element.hide(element.id);
 				Appcelerator.Compiler.fireCustomCondition(element.id, 'hide', {'id': element.id});
-				
+
 			});			
 
 		}
@@ -131,7 +159,7 @@ Appcelerator.UI.registerUIComponent('control','panel',
 		{
 			var parentWidth = Element.getStyle(element.parentNode,'width');
 			var width = "220px"
-			
+
 			// use parent if we are in a grid layout
 			if (parentWidth && parentWidth.endsWith('px') && element.parentNode.getAttribute('cols'))
 			{
@@ -173,6 +201,15 @@ Appcelerator.UI.registerUIComponent('control','panel',
 			}
 		}
 
-		Appcelerator.Core.loadTheme('control','panel',options['theme'],element,options);	
+		Appcelerator.Core.loadTheme('control','panel',options['theme'],element,options);
+	}
+		
+}
+
+Appcelerator.UI.registerUIComponent('control','panel',
+{
+	create: function()
+	{
+		return new Appcelerator.Control.Panel();
 	}
 });

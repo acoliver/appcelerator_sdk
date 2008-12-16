@@ -1,17 +1,16 @@
-.panel_dark
+.panel.dark.container
 {
 	position:relative;
 	border:1px solid #555;
 	background-color:#666;
 	padding:0px;
-	margin:0px;
 }
-.panel_dark div
+.panel.dark.container div
 {
-	padding:0px;
-	margin:0px;
+	padding:0;
+	margin:0;
 }
-.panel_dark_hdr
+.panel.dark .header
 {
 	background:#5E5E5E url(images/header.png) repeat-x scroll left bottom;
 	border-bottom:1px solid #505050;
@@ -23,22 +22,22 @@
 	border-right:1px solid #7d7d7d;	
 }
 
-.panel_dark_tl
+.panel.dark .top_left
 {
 }
 
-.panel_dark_title
+.panel.dark .title
 {
 	color:white;
 	vertical-align:middle; 
 	line-height:24px; 
 }
 
-.panel_dark_tr
+.panel.dark .top_right
 {
 }
 
-.panel_dark_close 
+.panel.dark .close 
 { 
 	cursor:pointer;
 	background:transparent url(images/close.png) no-repeat left top;
@@ -50,30 +49,25 @@
 	top:10px;
 	width:16px;
 } 
-body.ie6 .panel_dark_close
-{
-	height:32px;
-	clip:rect(0px 16px 16px 0px);
-}
 
-.panel_dark_btm
+.panel.dark .bottom
 {
 	border-bottom:1px solid #7d7d7d;	
 	border-left:1px solid #7d7d7d;	
 	border-right:1px solid #7d7d7d;	
 }
 
-.panel_dark_bl
+.panel.dark .bottom_left
 {
 	border:none;
 }
 
-.panel_dark_br
+.panel.dark .bottom_right
 {
 	border:none;
 }
 
-.panel_dark_btm_text
+.panel.dark .bottom_text
 {
 	color:white;
 	font-size:11px;
@@ -82,17 +76,15 @@ body.ie6 .panel_dark_close
 	left:5px;
 }
 
-.panel_dark_close:hover
+.panel.dark .close:hover
 { 
 } 
 
-.panel_dark_body
+.panel.dark .body
 {
 	color:white;
 	padding:10px !important;
 	border-left:1px solid #7d7d7d;	
 	border-right:1px solid #7d7d7d;	
-	
+
 }
-
-

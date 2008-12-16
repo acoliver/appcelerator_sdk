@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:app="http://www.appcelerator.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <noscript><meta http-equiv="refresh" content="0;upgrade_script.html"/></noscript>
+    <title>RIASure - Dashboard</title>
+
+    <script src="appcelerator/appcelerator-debug.js" type="text/javascript"></script>
+ </head>
+<body>
+	<div set="control[panel,theme=dark]" style="width:400px">
+	</div>
+
+	<div id="foo" class="test" style="width:400px">
+	</div>
+	<div id="bar" class="test" on="click then title[i changed my title]" style="width:400px">
+	</div>
+	
+	<script>
+	
+	var panelBar = null;
+	jQuery('#foo').createControl('panel',{},function()
+	{
+		this.title('From JQuery')
+	})
+	jQuery('#bar').createControl('panel',{},function()
+	{
+		panelBar = this;
+		this.title('hmmm')
+		this.footer('foo')
+	})
+
+//	$('selector').AppControl('panel',{options},function()
+	</script>
+</body>
+</html

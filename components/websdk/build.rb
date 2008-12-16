@@ -4,28 +4,28 @@
 #
 # Copyright 2006-2008 Appcelerator, Inc.
 #
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 require 'tempfile'
 require 'tmpdir'
-
+ 
 WEBSDK_STAGE_DIR = File.join(STAGE_DIR, 'websdk')
 JS_PATH = "javascripts"
-
+ 
 namespace :websdk do
-
+ 
   build_config = get_config(:websdk, :websdk)
-
+ 
   task :all => [:test] do
   end
   
@@ -49,44 +49,54 @@ namespace :websdk do
     rel = build_config[:version].to_s.split('.')
     
     LICENSE_HEADER=<<END_LICENSE
-  /*!(c) 2006-#{Time.now.strftime('%Y')} Appcelerator, Inc. http://appcelerator.org
-   * Licensed under the Apache License, Version 2.0. Please visit
-   * http://license.appcelerator.com for full copy of the License.
-   * Version: #{build_config[:version]}, Released: #{Time.now.strftime('%m/%d/%Y')}
-   **/
+/*!(c) 2006-#{Time.now.strftime('%Y')} Appcelerator, Inc. http://appcelerator.org
+* Licensed under the Apache License, Version 2.0. Please visit
+* http://license.appcelerator.com for full copy of the License.
+* Version: #{build_config[:version]}, Released: #{Time.now.strftime('%m/%d/%Y')}
+**/
 END_LICENSE
   
-    compat_file = "#{js_dir}/appcelerator-compat.js"
+    #compat_file = "#{js_dir}/appcelerator-compat.js"
     
-    append_file(LICENSE_HEADER,compat_file,true)
-    append_file("#{js_source}/compat.js", compat_file)
+    #append_file(LICENSE_HEADER,compat_file,true)
+    #append_file("#{js_source}/compat.js", compat_file)
   
     
     # fix the release information in the file
     rel = build_config[:version].to_s.split('.')
    
-    PREINCLUDES = ["#{js_source}/prolog.js","#{js_source}/lib/uri.js","#{js_source}/bootstrap.js","#{js_source}/lib/jquery.js", "#{js_source}/lib/types.js","#{js_source}/lib/action.js", "#{js_source}/lib/parser.js", "#{js_source}/lib/event.js", "#{js_source}/plugins/cookie.js","#{js_source}/plugins/trash.js"]
+    PREINCLUDES = %w(prolog.js bootstrap.js core.js debug.js string.js object.js datetime.js config.js compiler.js dom.js cookie.js servicebroker.js types.js)
+   
+    #PREINCLUDES = ["#{js_source}/prolog.js","#{js_source}/bootstrap.js"]
    
     jslite_prefiles = PREINCLUDES
-    Dir["#{js_source}/lib/*.js"].each do |f|
-      jslite_prefiles << f unless jslite_prefiles.include? f
+    
+    Dir["#{js_source}/*.js"].each do |f|
+      jslite_prefiles << File.basename(f) unless jslite_prefiles.include? File.basename(f)
     end
-    jslite_prefiles.delete_if {|f| File.basename(f)=='action_adapters.js' }
+
+    %w(actions conditions processors).each do |name|
+      Dir["#{js_source}/#{name}/*.js"].each do |f|
+        jslite_prefiles << "#{name}/#{File.basename(f)}"
+      end
+    end
+
+    #jslite_prefiles.delete_if {|f| File.basename(f)=='action_adapters.js' }
   
-    Dir["#{js_source}/plugins/*.js"].each do |f|
-      jslite_prefiles << f unless jslite_prefiles.include? f
-    end
+    #Dir["#{js_source}/plugins/*.js"].each do |f|
+    #  jslite_prefiles << f unless jslite_prefiles.include? f
+    #end
     jslite_prefiles.delete_if {|f| f=~/_action\.js$/ or f=~/-patch\.js$/ or File.basename(f)=='tracker.js'}
     
-    jslite_prefiles << "#{js_source}/lib/action_adapters.js"
-    jslite_prefiles << "#{js_source}/lib/tracker.js"
-    jslite_prefiles << "#{js_source}/epilog.js"
+    #jslite_prefiles << "#{js_source}/lib/action_adapters.js"
+    jslite_prefiles << "tracker.js"
+    jslite_prefiles << "epilog.js"
     
     puts jslite_prefiles.join("\n")
   
     jslite_prefiles.each do |file|
       append_file("\n/* #{File.basename(file)} */\n\n",jslite,true)
-      append_file(file, jslite)
+      append_file(File.join(js_source,file), jslite)
       append_file("\n//" + ("-"*80) + "\n",jslite,true)
     end
     
@@ -108,18 +118,29 @@ END_LICENSE
     append_file(LICENSE_HEADER, jsdebug, true)
   
     append_file("\n/*- The following file(s) are subject to license agreements by their respective license owners. Ends at text: END THIRD PARTY SOURCE */\n", jsdebug, true)
-    thirdparty = ['jquery/jquery.js']
+    thirdparty = [
+      'prototype/prototype.js',
+       'scriptaculous/scriptaculous.js',
+       'scriptaculous/effects.js',
+       'scriptaculous/dragdrop.js',
+       'scriptaculous/resizable.js',
+       'jquery/jquery.js'
+       
+       ]
+
     thirdparty.each do |file|
-      append_file("\nif (typeof(jQuery)=='undefined'){\n", jsdebug, true)
+#      append_file("\nif (typeof(jQuery)=='undefined'){\n", jsdebug, true)
       append_file(WEBSDK_DIR+'/lib/'+file, jsdebug)
-      append_file("\n}\n", jsdebug, true)
+      append_file(";", jsdebug, true)
+
+ #     append_file("\n}\n", jsdebug, true)
     end
     
     # patch jQuery
     puts "+ patching jQuery ... "
     j = File.read(jsdebug)
     patch = File.read(WEBSDK_DIR+'/src/js/jquery-patch.js')
-    idx = j.index "// Handle HTML strings"  # this is the marker that we insert before (from jQuery)
+    idx = j.index "// Handle HTML strings" # this is the marker that we insert before (from jQuery)
     c = j[0,idx]
     c << patch
     c << j[idx..-1]
@@ -134,8 +155,8 @@ END_LICENSE
     jsout = js_dir+'/appcelerator.js'
     jstemp = js_dir+'/appcelerator-temp.js'
   
-    jscompat_debug = js_dir+'/appcelerator-compat-debug.js'
-    jscompat = js_dir+'/appcelerator-compat.js'
+    #jscompat_debug = js_dir+'/appcelerator-compat-debug.js'
+    #jscompat = js_dir+'/appcelerator-compat.js'
     
     if COMPRESS
       puts "Compressing appcelerator.js"
@@ -162,18 +183,18 @@ END_LICENSE
       FileUtils.rm jstemp
   
   
-      FileUtils.cp_r jscompat,jscompat_debug
+      #FileUtils.cp_r jscompat,jscompat_debug
   
-      jscompt = jscompat+'.tmp'
-      js = compress_and_mangle(jscompat,File.read(jscompat))
-      f = File.open(jscompt,'w+')
-      f.write js
-      f.close
+      #jscompt = jscompat+'.tmp'
+      #js = compress_and_mangle(jscompat,File.read(jscompat))
+      #f = File.open(jscompt,'w+')
+      #f.write js
+      #f.close
       
-      FileUtils.rm_rf jscompat
-      append_file(LICENSE_HEADER, jscompat, true)
-      append_file(jscompt, jscompat)
-      FileUtils.rm_rf jscompt
+      #FileUtils.rm_rf jscompat
+      #append_file(LICENSE_HEADER, jscompat, true)
+      #append_file(jscompt, jscompat)
+      #FileUtils.rm_rf jscompt
   
     else
       FileUtils.cp jsdebug, jsout
@@ -185,8 +206,8 @@ END_LICENSE
     Zip::ZipFile.open(zipfile, Zip::ZipFile::CREATE) do |zipfile|
       zipfile.add("#{JS_PATH}/appcelerator-lite.js",jslite)
       zipfile.add("#{JS_PATH}/appcelerator-debug.js",jsdebug)
-      zipfile.add("#{JS_PATH}/appcelerator-compat.js",jscompat)
-      zipfile.add("#{JS_PATH}/appcelerator-compat-debug.js",jscompat_debug) if COMPRESS
+      #zipfile.add("#{JS_PATH}/appcelerator-compat.js",jscompat)
+      #zipfile.add("#{JS_PATH}/appcelerator-compat-debug.js",jscompat_debug) if COMPRESS
       zipfile.add("#{JS_PATH}/appcelerator.js",jsout)
       zipfile.get_output_stream('build.yml') {|f| f.puts build_config.to_yaml }
       %w(control layout theme behavior).each do |type|
@@ -214,14 +235,14 @@ END_LICENSE
   end
   
   task :test => [:default] do
-    #copy_tests("#{WEBSDK_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
+    copy_tests("#{WEBSDK_DIR}/test/webunit", "#{STAGE_DIR}/webunit")
     #copy_tests("#{WEBSDK_DIR}/test/appunit", "#{STAGE_DIR}/appunit")
     #copy_tests("#{WEBSDK_DIR}/test/performance", "#{STAGE_DIR}/performance")
     
-	 copy_tests("#{WEBSDK_DIR}/test/testmonkey", "#{STAGE_DIR}/testmonkey")
+   copy_tests("#{WEBSDK_DIR}/test/testmonkey", "#{STAGE_DIR}/testmonkey")
   end
   task :testrun => [:test] do
-	 system "open #{STAGE_DIR}/testmonkey/index.html"
+   system "open #{STAGE_DIR}/testmonkey/index.html"
   end
 end
   
@@ -230,23 +251,23 @@ def copy_tests(test_src_path, test_dst_path)
   widgets_src_path = "#{WEBSDK_DIR}/../widgets"
   widgets_dst_path = "#{test_sdk_path}/widgets"
   
-#  FileUtils.rm_rf test_dst_path
+# FileUtils.rm_rf test_dst_path
   FileUtils.mkdir_p test_sdk_path unless File.exists? test_sdk_path
   
   cp_r(test_src_path, test_dst_path)
   FileUtils.rm_rf "#{test_sdk_path}/appcelerator.js"
   FileUtils.rm_rf "#{test_sdk_path}/appcelerator-debug.js"
   Dir["#{WEBSDK_STAGE_DIR}/#{JS_PATH}/*.js"].each do |js|
-    dest =  "#{test_sdk_path}/#{File.basename(js)}"
+    dest = "#{test_sdk_path}/#{File.basename(js)}"
     FileUtils.rm_rf dest if File.exists? dest
     FileUtils.cp_r(js,dest)
   end
   FileUtils.mkdir_p(widgets_dst_path, :verbose => VERBOSE)
-
-  cp_r("#{WEBSDK_DIR}/src/common",       "#{test_sdk_path}/widgets/common")
+ 
+  cp_r("#{WEBSDK_DIR}/src/common", "#{test_sdk_path}/widgets/common")
   cp_r("#{WEBSDK_DIR}/src/web/images/", "#{test_sdk_path}/images/")
   cp_r("#{WEBSDK_DIR}/src/web/swf/", "#{test_sdk_path}/swf/")
-
+ 
   actions_src_path = "#{WEBSDK_DIR}/src/js/plugins"
   actions_dest_path = "#{test_sdk_path}/components/plugins"
   FileUtils.mkdir_p(actions_dest_path,:verbose=>VERBOSE) unless File.exists? actions_dest_path
@@ -282,7 +303,7 @@ def copy_tests(test_src_path, test_dst_path)
     f = File.open(utf,'w')
     f.write js
     f.close
-  end  
+  end
   
   %w(controls layouts behaviors).each do |name|
     FileUtils.mkdir_p "#{test_sdk_path}/components/#{name}"
@@ -341,46 +362,46 @@ def copy_tests(test_src_path, test_dst_path)
   end
   #FileUtils.cp_r("#{WEBSDK_DIR}/src/web/component_notfound.html","#{test_sdk_path}")
 end
-
+ 
 namespace :websdk do
-  namespace :selenium do 
+  namespace :selenium do
     task :start do
         start_selenium()
     end
     
-    task :stop do 
+    task :stop do
         stop_selenium()
     end
     
-    task :all => [:test] do 
+    task :all => [:test] do
         run_test([{:browser_name=>"Firefox Tests", :browser=>"firefox"},
                   {:browser_name=>'IE Tests', :browser=>'iexplore'}])
     end
     
-    task :firefox => [:test] do 
+    task :firefox => [:test] do
         run_test([{:browser_name=>"Firefox Tests", :browser=>"firefox"}])
     end
   
-    task :safari => [:test] do 
+    task :safari => [:test] do
         run_test([{:browser_name=>"Safari Tests", :browser=>'safari'}])
     end
     
-    task :ie => [:test] do 
+    task :ie => [:test] do
         run_test([{:browser_name=>'IE Tests', :browser=>"iexplore"}])
     end
   end
   
-  namespace :webrick do 
+  namespace :webrick do
     task :start do
       start_webrick()
     end
     
-    task :stop do 
+    task :stop do
       stop_webrick()
     end
   end
 end
-
+ 
 # copies everything except hidden directories
 def cp_r(src,dst)
   src_root = Pathname.new(src)
@@ -399,7 +420,7 @@ def cp_r(src,dst)
     end
   end
 end
-
+ 
 def start_webrick()
   if(File.exists?("#{STAGE_DIR}/tmp/webrick.pid"))
     return false
@@ -410,24 +431,24 @@ def start_webrick()
   
   if RUBY_PLATFORM.match(/win32/)
     require 'win32/process'
-    process_info = Process.create(:app_name => "ruby  #{WEBSDK_DIR}\\test\\lib\\start_webrick.rb #{STAGE_DIR}")
-    File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file| 
+    process_info = Process.create(:app_name => "ruby #{WEBSDK_DIR}\\test\\lib\\start_webrick.rb #{STAGE_DIR}")
+    File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file|
       file.puts(process_info.process_id)
     }
-  else 
+  else
     pid = fork
-    if pid 
-      File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file| 
+    if pid
+      File.open("#{STAGE_DIR}/tmp/webrick.pid", "w") { |file|
         file.puts(pid)
       }
-    else 
-      exec "ruby  #{WEBSDK_DIR}/test/lib/start_webrick.rb #{STAGE_DIR}"
+    else
+      exec "ruby #{WEBSDK_DIR}/test/lib/start_webrick.rb #{STAGE_DIR}"
     end
   end
   
   return true
-end 
-
+end
+ 
 def kill_process(file_name)
   signum = 15
   if RUBY_PLATFORM.match(/win32/)
@@ -441,7 +462,7 @@ def kill_process(file_name)
   Process.kill(signum, pid)
   File.delete(file_name)
 end
-
+ 
 def end_tests(success)
     stop_selenium() if selenium
     stop_webrick() if webrick
@@ -450,11 +471,11 @@ def end_tests(success)
         exit -1
     end
 end
-
+ 
 def stop_webrick()
   kill_process("#{STAGE_DIR}/tmp/webrick.pid")
 end
-
+ 
 def start_selenium()
   if(File.exists?("#{STAGE_DIR}/tmp/selenium.pid"))
     return false
@@ -471,18 +492,18 @@ def start_selenium()
         :startup_info => {:stdout => log},
         :creation_flags => Windows::Process::CREATE_NEW_PROCESS_GROUP
     )
-    File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
+    File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file|
       file.puts(process_info.process_id)
     }
-  else 
+  else
     pid = fork
-    if pid 
-      File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file| 
+    if pid
+      File.open("#{STAGE_DIR}/tmp/selenium.pid", "w") { |file|
         file.puts(pid)
       }
     else
       $stdout.close
-      $stdout = open("#{STAGE_DIR}/tmp/selenium.log", "w") 
+      $stdout = open("#{STAGE_DIR}/tmp/selenium.log", "w")
       exec "java -jar #{WEBSDK_DIR}/test/lib/selenium-server.jar -browserSessionReuse"
       p "Shouldn't get here"
     end
@@ -490,11 +511,11 @@ def start_selenium()
   
   return true
 end
-
+ 
 def stop_selenium()
   kill_process("#{STAGE_DIR}/tmp/selenium.pid")
 end
-
+ 
 def run_test(browsers)
     selenium = start_selenium()
     webrick = start_webrick()
@@ -502,12 +523,12 @@ def run_test(browsers)
     sleep 5 if( selenium or webrick)
     
     success = true
-    browsers.each { |browser| 
+    browsers.each { |browser|
         success = success && run_selenium_tests(browser[:browser_name], browser[:browser])
-        system('taskkill /IM firefox.exe')  if RUBY_PLATFORM.match(/win32/) && browser[:browser] == "firefox"
+        system('taskkill /IM firefox.exe') if RUBY_PLATFORM.match(/win32/) && browser[:browser] == "firefox"
     }
     
-    # make selenium clean up on windows.  Bad assumption
+    # make selenium clean up on windows. Bad assumption
     # that nobody is developing the sdk and running the
     # selenium tests with firefox running
     
@@ -518,16 +539,16 @@ def run_test(browsers)
         throw "Selenium Tests Failed"
     end
 end
-
+ 
 def run_selenium_tests(browser_name, browser)
   require 'test/unit/testsuite'
   require 'test/unit/ui/console/testrunner'
   require 'test/lib/selenium'
   require 'test/lib/selenium_unit.rb'
-
+ 
   #
   # You need to manually include the tests
-  # to be run here.  
+  # to be run here.
   #
   require 'test/selenium/app_button_test'
   require 'test/selenium/app_calendar_test'
@@ -539,7 +560,7 @@ def run_selenium_tests(browser_name, browser)
   # End includes for unit test files
   #
   
-  results = Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser, 
+  results = Test::Unit::UI::Console::TestRunner.run(build_suite(browser_name, browser,
          "http://localhost:9002"))
          
   if(results.error_count > 0 or results.failure_count > 0)
@@ -548,18 +569,18 @@ def run_selenium_tests(browser_name, browser)
   
   return true
 end
-
+ 
 def build_suite(name, browser, location)
     tests = ENV['tests']
-    if tests 
+    if tests
         tests = tests.split(',')
     end
     
     suite = Test::Unit::SeleniumTestSuite.new(name, browser, location, "#{STAGE_DIR}/reports/#{browser}")
-    ObjectSpace::each_object(Class) { |klass| 
+    ObjectSpace::each_object(Class) { |klass|
         if klass < Test::Unit::SeleniumTestCase and (tests.nil? or tests.include?(klass.to_s))
             puts "Adding: #{klass}"
-            suite << klass.suite 
+            suite << klass.suite
         end
     }
     return suite

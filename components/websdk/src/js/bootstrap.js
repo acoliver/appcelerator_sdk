@@ -1,348 +1,484 @@
+/**
+ * Appcelerator bootstrap loader
+ */
 
-/*- Appcelerator + jQuery - a match made in heaven */
-
-//
-// App is the private namespace that is used internally. This API is not stable and should not be used.
-// AppC is the semi-stable API that can be used externally.
-//
-App = AppC = {};
-
-AppC.Version = 
+/** THESE CHECKS ARE NEEDED IN CASE THE NON-BUNDLED VERSION OF PROTOTYPE/SCRIPTACULOUS IS USED **/
+ 
+if (typeof Prototype=='undefined')
 {
-	value: '${version.major}.${version.minor}.${version.rev}',
+    var msg = 'Required javascript library "Prototype" not found';
+    alert(msg);
+    throw msg;
+}
+
+if (typeof Effect=='undefined')
+{
+    var msg = 'Required javascript library "Scriptaculous" not found';
+    alert(msg);
+    throw msg;
+}
+
+//
+// run JQuery in no conflict while running prototype
+//        
+jQuery.noConflict()
+
+if (Object.isUndefined(window['$sl']))
+{
+	/**
+	 * create a non-conflicting alias to $$
+	 */
+	window.$sl = function()
+	{
+	    return Selector.findChildElements(document, $A(arguments));
+	}
+}
+if (Object.isUndefined(window['$el']))
+{
+	/**
+	 * create a non-conflicting alias to $
+	 */
+	window.$el = eval('window["$"]');
+}
+
+var Appcelerator = {};
+Appcelerator.Util={};
+Appcelerator.Browser={};
+Appcelerator.Compiler={};
+Appcelerator.Config={};
+Appcelerator.Core={};
+Appcelerator.Localization={};
+Appcelerator.Validator={};
+Appcelerator.Decorator={};
+Appcelerator.Module={};
+Appcelerator.Widget={};
+Appcelerator.Shortcuts={}; // please do not touch this
+
+Appcelerator.started = new Date;
+Appcelerator.loadTime = -1;
+Appcelerator.compileTime = -1;
+
+Appcelerator.Version = 
+{
 	major: parseInt('${version.major}'),
 	minor: parseInt('${version.minor}'),
 	revision: parseInt('${version.rev}'),
-	date: '${build.date}',
 	toString:function()
 	{
-		return this.value;
+		return this.major + "." + this.minor + '.' + this.revision;
 	}
 };
 
-var started = new Date;
-var compileTime;
-var loadTime;
+Appcelerator.LicenseType = 'Apache License Version 2.0 - see http://license.appcelerator.org';
+Appcelerator.Copyright = 'Copyright (c) 2006-2008 by Appcelerator, Inc. All Rights Reserved.';
+Appcelerator.LicenseMessage = 'Appcelerator is licensed under ' + Appcelerator.LicenseType;
+Appcelerator.Parameters = $H({});
 
-AppC.LicenseType = 'Apache License Version 2.0 - see http://license.appcelerator.org';
-AppC.Copyright = 'Copyright (c) 2006-'+(1900+started.getYear())+' by Appcelerator, Inc. All Rights Reserved.';
-AppC.LicenseMessage = 'Appcelerator is licensed under ' + AppC.LicenseType;
-
-
-//
-// these are parameters that can be set by the developer to customize appcelerator based on app needs
-//
-AppC.config = 
+// 
+// basic initialization for the core
+// 
+(function()
 {
-	track_stats:true,    /* true to turn on simple usage tracking to help us improve product */
-	report_stats:true,   /* true to send a remote message with client stats to server on page load */
-	browser_check:true,  /* true to check for valid grade-A browser support when document is loaded */
-	auto_locale:false    /* true to attempt to auto load localization bundle based on users locale when page is loaded */
-};
-
-//
-// these are parameters that can be used to customize appcelerator from a users perspective
-//
-AppC.params = 
-{
-	debug: 0                 /* set to 1 to turn on verbose logging, 2 to turn on only pub/sub logging */,
-	delayCompile: false      /* generally don't touch this unless you really know why */
-};
-
-function queryString(uri,params)
-{
-	idx = uri.indexOf('?');
-	params = params || {};
-	if (idx > 0)
-	{
-		var qs = uri.substring(idx+1);
-		$.each(qs.split('&'),function()
-		{
-			var e = this.split('=');
-			var v = decodeURIComponent(e[1]||'');
-			var k = decodeURIComponent(e[0]);
-			switch(v)
-			{
-				case '1':
-				case 'true':
-				case 'yes':
-				{
-					v = true;
-					break;
-				}
-				case '0':
-				case 'false':
-				case 'no':
-				{
-					v = false;
-					break;
-				}
-			}
-			params[k]=v;
-		});
-	}
-	return params;
-}
-
-
-// get config parameters for app from the URI of the page
-queryString(window.document.location.href,AppC.params);
-
-var removeLastElement = function(uri) {
-    var idx = uri.lastIndexOf('/');
-    if (idx != 1)
-    {
-        uri = uri.substring(0, idx) + "/";
-    }
-    return uri;
-}
-
-// top is important such that if the JS file is in a different location (hosted)
-// than the primary document, we use the primary document's path (cross site scripting)
-var documentRoot = removeLastElement(top.window.document.location.href);
-
-// get appcelerator.js and base paths
-// and ensure these uris are absolute
-var jsLocation = $('script[@src~=appcelerator]').get(0).src;
-var baseLocation = $('base[@href]').attr('href');
-baseLocation = baseLocation ? URI.absolutizeURI(baseLocation, documentRoot) : "";
-jsLocation = jsLocation ? URI.absolutizeURI(jsLocation, documentRoot) : "";
-
-if (jsLocation)
-{
-	AppC.sdkJS = URI.absolutizeURI(jsLocation,documentRoot);
-    AppC.sdkRoot = removeLastElement(jsLocation); // parent directory of js
-    var docHost = URI.splitUriRef(documentRoot)[1];
-    var jsHost = URI.splitUriRef(jsLocation)[1];
-
-    // we need to know where appcelerator.xml is located
-    if (docHost == jsHost) // locally hosted
-    {
-        AppC.docRoot = URI.absolutizeURI(".", AppC.sdkRoot + "..");
-    }
-    else if (docHost != jsHost && baseLocation) // remote js -- use base location
-    {
-        AppC.docRoot = baseLocation;
-    }
-    else
-    {
-        AppC.docRoot = URI.absolutizeURI(".", documentRoot);
-    }
-}
-else
-{
-    $.error("Can't find appcelerator.js or appcelerator-debug.js");
-	return false;
-}
-
-// add a slash if the path is missing one
-if (!AppC.sdkRoot.charAt(AppC.sdkRoot.length - 1) == '/')
-{
-    AppC.sdkRoot += '/'; 
-}
-if (!AppC.docRoot.charAt(AppC.docRoot.length - 1) == '/')
-{
-    AppC.docRoot += '/'; 
-}
-
-AppC.compRoot = AppC.sdkRoot + 'components/';
-AppC.pluginRoot = AppC.sdkRoot + 'plugins/';
-
-// override the configuration for appcelerator from the appcelerator JS query string
-queryString(jsLocation, AppC.config);
-
-
-var appid = 0;
-
-App.ensureId=function(el)
-{
-	var rootEl = el.nodeType ? el : $(el).get(0);
-	var id = rootEl.id;
-	if (!id)
-	{
-		rootEl.id = rootEl.nodeName == 'BODY' ? 'app_body' : 'app_' + (appid++);
-	}
-	return el;
-};
-
-$.fn.compile = function()
-{
-	if (arguments.length == 2 && typeof(arguments[0])=='object')
-	{
-		var state = arguments[1];
-		$.each(arguments[0],function()
-		{
-			$(this).compile(state);
-		});
-	}
-	else if (arguments.length == 1 && typeof(arguments[0].count)=='number')
-	{
-		// compile a single element
-		var state = arguments[0];
-		var node = $(this).get(0);
-		var el = App.ensureId(node);
-		var e = $(el);
-		App.incState(state);
-		var myid = e.attr('id');
-		var compiled = App.runProcessors(el,state);
-		$.debug(' + compiled #'+myid+' ('+getTagName(node)+') => '+compiled);
-		// if false, means that the attribute processor will call
-		// checkState when he's done
-		if (compiled)
-		{
-			App.checkState(state,el);
-		}
-	}
-	return this;
-};
-
-$.fn.compileChildren = function(state,self)
-{
-	var node = $(this).get(0);
-	App.ensureId(node);
-	var set = getTargetCompileSet(node,self);
-	this.compile(set,state);
-	return this;
-}
-
-var state = function(el)
-{
-	this.count = 1;
-	this.el = el;
-	this.completed = [];
-};
-
-App.createState = function(el)
-{
-	return new state(el)
-};
-
-App.incState=function(state)
-{
-	if (state)
-	{
-		var count = ++state.count;
-		return count;
-	}
-};
-
-var bodyCompiled = false;
-
-App.checkState=function(state,el)
-{
-	if (state)
-	{
-		if (el) state.completed.push($(el).get(0));
-		var count = --state.count;
-		if (count == 0)
-		{
-			$.each($.unique(state.completed),function()
-			{
-				if (this != document.body)
-				{
-					$(this).trigger('compiled');
-				}
-			});
-			// we must always fire compiled on body and do it last
-			// but we only ever fire it once for a document load
-			if (!bodyCompiled)
-			{
-				bodyCompiled=true;
-				$(document.body).trigger('compiled');
-			}
-		}
-	}
-};
-
-function getTargetCompileSet(node,self)
-{
-	var expr = null, filter = null;
+	var baseHref = null;
 	
-	if (node!=null)
+	$A(document.getElementsByTagName("script")).findAll( function(s) 
 	{
-		node = typeof(node.nodeType)=='undefined' ? node.get(0) : node;
-		var parent = node.nodeName == 'BODY' ? 'body' : '#'+node.id;
-		expr = (self ? (parent + ',') : '')  + parent + ' ' + App.selectors.join(', ' + parent + ' ');
-	}
-	else
+	    if (s.src && s.src.match(/appcelerator(-debug){0,1}\.js(\?.*)?$/))
+	    {
+	    	Appcelerator.jsFileLocation = s.src;
+	    	return true;
+	    }
+	    return false;
+	}).each( function(s) 
 	{
-		expr = App.selectors.join(',');
-		filter = function()
-		{
-			// this filter prevents us from compiling an element has is child of
-			// any parent where it has set attribute
-			var exclude = App.delegateCompilers.join(',');
-			return !$(this).parents(exclude).length;
-		};
-	}
-	
-	if (filter)
-	{
-		return $.unique($(expr).filter(filter));
-	}
-	
-	return $.unique($(expr));
-};
+		Appcelerator.Parameters = $H(s.src.toQueryParams());
+	});	
 
-var beforeCompilers = [];
-
-AppC.beforeCompile = function(f)
-{
-	if (!beforeCompilers)
+	$A(document.getElementsByTagName("base")).each( function(s) 
 	{
-		f();
-	}
-	else
-	{
-		beforeCompilers.push(f);
-	}
-	return AppC;
-};
-
-AppC.compileDocument = function()
-{
-	var compileStarted = new Date;
-	var body = $(document.body);
-	
-	// call any pending guys waiting for us to get 
-	// started (means they're waiting for document.ready)
-	if (beforeCompilers)
-	{
-		$.each(beforeCompilers,function()
+		if (s.href)
 		{
-			this(body);
-		});
-		beforeCompilers=null;
-	}
-	
-	body.bind('compiled',function()
-	{
-		body.pub('l:app.compiled',{
-			event:{id:document.body.id||'body'}
-		});
-		$(document).trigger('compiled');
-		body.css('display','block');
-		compileFinished = new Date;
-		loadTime = compileFinished - started;
-		compileTime = compileFinished - compileStarted;
-		
-		if (top.window === window)
-		{
-			$.info(AppC.Copyright);
-			$.info(AppC.LicenseMessage);
-			$.info('loaded in ' + (loadTime) + ' ms, compiler took ~'+(compileTime)+' ms');
-			$.info('Appcelerator is ready!');
+			baseHref = s.href;
+			throw $break;
 		}
 	});
 	
-	var s = new state(body);
-	$(document).compile(getTargetCompileSet(),s);
-	App.checkState(s); // state starts at 1, call to dec
-};
+	if (baseHref)
+	{
+		Appcelerator.DocumentPath = baseHref;
+	}
+	else
+	{
+		//
+		// top is important such that if the JS file is in a different location (hosted)
+		// than the primary document, we use the primary document's path (cross site scripting)
+		//
+		var idx = top.window.document.location.href.lastIndexOf('/');
+	    if (idx == top.window.document.location.href.length - 1)
+	    {
+	    	Appcelerator.DocumentPath = top.window.document.location.href;
+	    }
+	    else
+	    {
+	        Appcelerator.DocumentPath  = top.window.document.location.href.substr(0, idx);
+	        if (Appcelerator.DocumentPath.substring(Appcelerator.DocumentPath.length - 1) != '/')
+	        {
+	            Appcelerator.DocumentPath  = Appcelerator.DocumentPath + '/';
+	        }
+	    }
+	}
+	if (Appcelerator.jsFileLocation)
+	{
+		if (!baseHref)
+		{
+			// see if it's a full URI
+			var hostIdx = Appcelerator.jsFileLocation.indexOf(':/');
+			if (hostIdx > 0)
+			{
+				var jsHostPath = Appcelerator.jsFileLocation.substring(hostIdx + 3, Appcelerator.jsFileLocation.indexOf('/',hostIdx + 4));
+				var docIdx = Appcelerator.DocumentPath.indexOf(':/');
+				if (docIdx > 0)
+				{
+					var docHostPath = Appcelerator.DocumentPath.substring(docIdx + 3, Appcelerator.DocumentPath.indexOf('/',docIdx+4));
+					if (docHostPath == jsHostPath)
+					{
+						// if on the same host then always prefer the JS location (one directory up) as the base href
+						// such that we can have multiple content directories that include the JS relatively from the top
+						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,Appcelerator.jsFileLocation.lastIndexOf('/')) + '/'
+					}
+				}
+			}
+			else
+			{
+				// relative URI we need to adjust the DocumentPath
+				if (Appcelerator.jsFileLocation.startsWith('/') || Appcelerator.jsFileLocation.startsWith('.'))
+				{
+					var idx = Appcelerator.jsFileLocation.lastIndexOf('/');
+					if (idx!=-1)
+					{
+						Appcelerator.DocumentPath = Appcelerator.jsFileLocation.substring(0,idx+1) + '../';
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		Appcelerator.ScriptNotFound = true;
+	}
+	
+    Appcelerator.ScriptPath = Appcelerator.DocumentPath + 'javascripts/';
+    Appcelerator.ImagePath = Appcelerator.DocumentPath + 'images/';
+    Appcelerator.StylePath = Appcelerator.DocumentPath + 'stylesheets/';
+    Appcelerator.ContentPath = Appcelerator.DocumentPath + 'content/';
+    Appcelerator.ModulePath = Appcelerator.DocumentPath + 'widgets/';
+    Appcelerator.WidgetPath = Appcelerator.DocumentPath + 'widgets/';
 
-if (!AppC.params.delayCompile) $(AppC.compileDocument);
+	if (Appcelerator.jsFileLocation.indexOf('code.appcelerator.org') != -1)
+	{
+		var codepath = (('https:' == document.location.protocol) ? 'https://s3.amazonaws.com/code.appcelerator.org' : 'http://code.appcelerator.org' );
+		Appcelerator.ModulePath = codepath + Appcelerator.Version + '/widgets/';
+		Appcelerator.WidgetPath = Appcelerator.ModulePath;
+	}
+	
+    Appcelerator.Parameters = Appcelerator.Parameters.merge(window.location.href.toQueryParams());
+    
+	if (Appcelerator.Parameters.get('instanceid'))
+	{
+		Appcelerator.instanceid = Appcelerator.Parameters.get('instanceid');
+	}
+	else
+	{
+		Appcelerator.instanceid = Math.round(9999*Math.random()) + '-' + Math.round(999*Math.random());
+	}
+	
+	var ua = navigator.userAgent.toLowerCase();
+	Appcelerator.Browser.isPreCompiler = (ua.indexOf('Appcelerator Compiler') > -1);
+	Appcelerator.Browser.isOpera = (ua.indexOf('opera') > -1);
+	Appcelerator.Browser.isSafari = (ua.indexOf('safari') > -1);
+	Appcelerator.Browser.isSafari2 = false;
+	Appcelerator.Browser.isSafari3 = false;
+	Appcelerator.Browser.isIE = !!(window.ActiveXObject);
+	Appcelerator.Browser.isIE6 = false;
+	Appcelerator.Browser.isIE7 = false;
+	Appcelerator.Browser.isIE8 = false;
 
-// we do a little trickery here to hide the body while we're loading
-// and then we can display it once compiled - this prevents crazy
-// components to be displayed before they're finished compiling
-document.write('<style>body{display:none}</style>');
+	if (Appcelerator.Browser.isIE)
+	{
+		var arVersion = navigator.appVersion.split("MSIE");
+		var version = parseFloat(arVersion[1]);
+		Appcelerator.Browser.isIE6 = version >= 6.0 && version < 7;
+		Appcelerator.Browser.isIE7 = version >= 7.0 && version < 8;
+		Appcelerator.Browser.isIE8 = version >= 8.0 && version < 9;
+	}
+	
+	if (Appcelerator.Browser.isSafari)
+	{
+		var webKitFields = RegExp("( applewebkit/)([^ ]+)").exec(ua);
+		if (webKitFields[2] > 400 && webKitFields[2] < 500)
+		{
+			Appcelerator.Browser.isSafari2 = true;
+		}
+		else if (webKitFields[2] > 500 && webKitFields[2] < 600)
+		{
+			Appcelerator.Browser.isSafari3 = true;
+		}
+	}
+
+	Appcelerator.Browser.isGecko = !Appcelerator.Browser.isSafari && (ua.indexOf('gecko') > -1);
+	Appcelerator.Browser.isCamino = Appcelerator.Browser.isGecko && ua.indexOf('camino') > -1;
+	Appcelerator.Browser.isFirefox = Appcelerator.Browser.isGecko && (ua.indexOf('firefox') > -1 || Appcelerator.Browser.isCamino || ua.indexOf('minefield') > -1 || ua.indexOf('granparadiso') > -1 || ua.indexOf('bonecho') > -1);
+	Appcelerator.Browser.isIPhone = Appcelerator.Browser.isSafari && ua.indexOf('iphone') > -1;
+	Appcelerator.Browser.isMozilla = Appcelerator.Browser.isGecko && ua.indexOf('mozilla/') > -1;
+	Appcelerator.Browser.isWebkit = Appcelerator.Browser.isMozilla && Appcelerator.Browser.isGecko && ua.indexOf('applewebkit') > 0;
+	Appcelerator.Browser.isSeamonkey = Appcelerator.Browser.isMozilla && ua.indexOf('seamonkey') > -1;
+	Appcelerator.Browser.isPrism = Appcelerator.Browser.isMozilla && ua.indexOf('prism/') > 0;
+    Appcelerator.Browser.isIceweasel = Appcelerator.Browser.isMozilla && ua.indexOf('iceweasel') > 0;
+    Appcelerator.Browser.isEpiphany = Appcelerator.Browser.isMozilla && ua.indexOf('epiphany') > 0;
+	Appcelerator.Browser.isFluid = (window.fluid != null);
+	Appcelerator.Browser.isGears = (window.google && google.gears) != null;
+	Appcelerator.Browser.isChromium = Appcelerator.Browser.isWebkit && ua.indexOf('chrome/') > 0;
+    
+	Appcelerator.Browser.isWindows = false;
+	Appcelerator.Browser.isMac = false;
+	Appcelerator.Browser.isLinux = false;
+	Appcelerator.Browser.isSunOS = false;
+	
+	var platform = null;
+
+	if(ua.indexOf("windows") != -1 || ua.indexOf("win32") != -1)
+	{
+	    Appcelerator.Browser.isWindows = true;
+		platform = 'win32';
+	}
+	else if(ua.indexOf("macintosh") != -1 || ua.indexOf('mac os x') != -1)
+	{
+		Appcelerator.Browser.isMac = true;
+		platform = 'mac';
+	}
+	else if (ua.indexOf('linux')!=-1)
+	{
+		Appcelerator.Browser.isLinux = true;
+		platform = 'linux';
+	}
+	else if (ua.indexOf('sunos')!=-1)
+	{
+		Appcelerator.Browser.isSunOS = true;
+		platform = 'sun';
+	}
+	
+	// silverlight detection
+	// thanks to http://www.nikhilk.net/Silverlight-Analytics.aspx
+    Appcelerator.Browser.isSilverlight = false;
+	Appcelerator.Browser.silverlightVersion = 0;
+	Event.observe(window,'load',function()
+	{
+	    var container = null;
+	    try {
+	        var control = null;
+	        if (window.ActiveXObject) {
+	            control = new ActiveXObject('AgControl.AgControl');
+	        }
+	        else {
+	            if (navigator.plugins['Silverlight Plug-In']) {
+	                container = document.createElement('div');
+	                document.body.appendChild(container);
+	                container.innerHTML= '<embed type="application/x-silverlight" src="data:," />';
+	                control = container.childNodes[0];
+	            }
+	        }
+	        if (control) {
+	            if (control.isVersionSupported('2.0')) 
+				{ 
+					Appcelerator.Browser.silverlightVersion = 2.0; 
+				}
+	            else if (control.isVersionSupported('1.0')) 
+				{ 
+					Appcelerator.Browser.silverlightVersion = 1.0; 
+				}
+				Appcelerator.Browser.isSilverlight = Appcelerator.Browser.silverlightVersion > 0;
+	        }
+	    }
+	    catch (e) { }
+	    if (container) {
+	        document.body.removeChild(container);
+	    }
+	});
+	
+	// flash detection
+	Appcelerator.Browser.isFlash = false;
+	Appcelerator.Browser.flashVersion = 0;
+	if (Appcelerator.Browser.isIE)
+	{
+			try
+			{
+				var flash = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
+				var ver = flash.GetVariable("$version");
+				var idx = ver.indexOf(' ');
+				var tokens = ver.substring(idx+1).split(',');
+				var version = tokens[0];
+				Appcelerator.Browser.flashVersion = parseInt(version);
+				Appcelerator.Browser.isFlash = true;
+			}
+			catch(e)
+			{
+				// we currently don't support lower than 7 anyway
+			}
+	}
+	else
+	{
+		var plugin = navigator.plugins && navigator.plugins.length;
+		if (plugin)
+		{
+			 plugin = navigator.plugins["Shockwave Flash"] || navigator.plugins["Shockwave Flash 2.0"];
+			 if (plugin)
+			 {
+				if (plugin.description)
+				{
+					var ver = plugin.description;
+					Appcelerator.Browser.flashVersion = parseInt(ver.charAt(ver.indexOf('.')-1));
+					Appcelerator.Browser.isFlash = true;
+				}			 	
+				else
+				{
+					// not sure what version... ?
+					Appcelerator.Browser.flashVersion = 7;
+					Appcelerator.Browser.isFlash = true;
+				}
+			 }
+		}
+		else
+		{
+			plugin = (navigator.mimeTypes && 
+		                    navigator.mimeTypes["application/x-shockwave-flash"] &&
+		                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin) ?
+		                    navigator.mimeTypes["application/x-shockwave-flash"].enabledPlugin : 0;
+			if (plugin && plugin.description) 
+			{
+				Appcelerator.Browser.isFlash = true;
+		    	Appcelerator.Browser.flashVersion = parseInt(plugin.description.substring(plugin.description.indexOf(".")-1));
+			}
+		}
+	}
+	Appcelerator.Browser.isBrowserSupported = false;
+	$w('Firefox IE6 IE7 IE8 Safari Camino Opera Webkit Seamonkey Prism Iceweasel Epiphany').each(function(name)
+	{
+        if (Appcelerator.Browser['is'+name]===true)
+        {
+            Appcelerator.Browser.isBrowserSupported=true;
+			Event.observe(window,'load',function()
+			{
+				if (platform) Element.addClassName(document.body,platform);
+				Element.addClassName(document.body,name.toLowerCase());
+				if (Appcelerator.Browser.isMozilla)
+				{
+					Element.addClassName(document.body,'mozilla');
+				}
+				if (Appcelerator.Browser.isIPhone)
+				{
+					Element.addClassName(document.body,'iphone');
+					Element.addClassName(document.body,'webkit');
+					Element.addClassName(document.body,'safari');
+				}
+				if (Appcelerator.Browser.isChromium)
+				{
+					Element.addClassName(document.body,'chromium');
+				}
+				if (Appcelerator.Browser.isSafari)
+				{
+					Element.addClassName(document.body,'webkit');
+					if (Appcelerator.Browser.isSafari2)
+					{
+						Element.addClassName(document.body,'safari2');
+					}
+					else if (Appcelerator.Browser.isSafari3)
+					{
+						Element.addClassName(document.body,'safari3');
+					}
+				}
+				else if (Appcelerator.Browser.isGecko)
+				{
+					Element.addClassName(document.body,'gecko');
+				}
+				if (Appcelerator.Browser.isFirefox)
+				{
+					if (ua.indexOf('firefox/3')>0)
+					{
+						Element.addClassName(document.body,'firefox3');
+					}
+					else if (ua.indexOf('firefox/2')>0)
+					{
+						Element.addClassName(document.body,'firefox2');
+					}
+				}
+				else if (Appcelerator.Browser.isIE)
+				{
+					Element.addClassName(document.body,'msie');
+				}
+				if (Appcelerator.Browser.isIPhone)
+				{
+					Element.addClassName(document.body,'width_narrow');
+					Element.addClassName(document.body,'height_short');
+				}
+				else
+				{
+					function calcDim()
+					{
+						var cn = Element.classNames(document.body);
+						if (cn)
+						{
+							cn._each(function(name)
+							{
+								if (name.startsWith('height_') || name.startsWith('width_'))
+								{
+									cn.remove(name);
+								}
+							});
+						}
+                        var width = document.documentElement.clientWidth || window.screen.width;
+                        var height = document.documentElement.clientHeight || window.screen.height;
+
+						if (height < 480)
+						{
+							Element.addClassName(document.body,'height_tiny');
+						}
+						else if (height >= 480 && height <= 768)
+						{
+							Element.addClassName(document.body,'height_small');
+						}
+						else if (height > 768  && height < 1100)
+						{
+							Element.addClassName(document.body,'height_medium');
+						}
+						else if (height >= 1100)
+						{
+							Element.addClassName(document.body,'height_large');
+						}
+						if (width <= 640)
+						{
+							Element.addClassName(document.body,'width_tiny');
+						}
+						else if (width > 640 && width <= 1024)
+						{
+							Element.addClassName(document.body,'width_small');
+						}
+						else if (width > 1024 && width <=1280 )
+						{
+							Element.addClassName(document.body,'width_medium');
+						}
+						else if (width > 1280)
+						{
+							Element.addClassName(document.body,'width_large');
+						}
+					}
+					Event.observe(window,'resize',calcDim);
+					calcDim();
+				}
+			});
+            throw $break;
+        }
+	});
+	Appcelerator.Browser.unsupportedBrowserMessage = "<h1>Browser Upgrade Required</h1><p>We're sorry, but your browser version is not supported by this application.</p><p>This application requires a modern browser, such as <a href='http://www.getfirefox.com'>Firefox 2.0+</a>, <a href='http://www.apple.com/safari/'>Safari 2.0+</a>, <a href='http://www.microsoft.com/windows/products/winfamily/ie/default.mspx'>Internet Explorer 6.0+</a> or <a href='http://www.opera.com'>Opera 9.0+</a>.</p><p>Your browser reported: <font face='courier'>" + ua + "</font></p>";
+	Appcelerator.Browser.upgradePath = Appcelerator.DocumentPath + 'upgrade.html';
+})();
+
