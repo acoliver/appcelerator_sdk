@@ -47,7 +47,7 @@ if defined?(RAILS_ROOT)
     
     # just do this once, make rails do the implicit loading for us
     Dir[RAILS_ROOT + '/app/services/*_service.rb'].each do |file|
-        name = Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
+        name = ActiveSupport::Inflector.camelize(File.basename(file).chomp('_service.rb')) + 'Service'
         instance = Object.const_get name
         instance.instance.autoload_services
     end
