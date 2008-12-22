@@ -230,21 +230,35 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         {
             if (postmethodException != null)
             {
-            	try {
-                	if (e instanceof InvocationTargetException)
-                		postmethodException.invoke(this.instance,request,response, ((InvocationTargetException)e).getCause());
-                	else
-                		postmethodException.invoke(this.instance,request,response, e);
-            	} catch (Exception fatal) {
-            		throw new RuntimeException("major problem invoking poastMethod for "+ request.getType(), fatal);
-            	}
+                try {
+                    if(e instanceof InvocationTargetException) { 
+                        Throwable x = unwrap(e);
+                        postmethodException.invoke(this.instance,request,response, x);
+                     } else {
+                        postmethodException.invoke(this.instance,request,response, e);                
+                     }
+                } catch (Exception fatal) {
+                    throw new RuntimeException("major problem invoking postMethod for "+ request.getType(), fatal);
+                }
             }
             else
             {
                 e.printStackTrace();
+                Throwable x = unwrap(e);
+
                 response.getData().put("success",false);
-                response.getData().put("exception",e.getMessage());
+                response.getData().put("exception",x.getMessage());
             }
         }
+    }
+
+    private Throwable unwrap(Throwable e) {
+        Throwable x = e;
+        if(x instanceof InvocationTargetException) {
+            while(x instanceof InvocationTargetException  && ((InvocationTargetException)e).getCause() != null) {
+                x = x.getCause();
+            }
+        }
+        return x;
     }
 }
