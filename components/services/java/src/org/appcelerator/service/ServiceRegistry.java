@@ -231,12 +231,22 @@ public class ServiceRegistry
                     response.setType(adapter.getResponse());
                 }
 
-                adapter.dispatch(request, response);
+                Message exceptionResponse = null;
+                if (adapter.getExceptionResponse() != null && !adapter.getExceptionResponse().equals(""))
+                {
+                    exceptionResponse = MessageUtils.createResponseMessage(request);
+                    exceptionResponse.setType(adapter.getExceptionResponse());
+                }
+
+                adapter.dispatch(request, response, exceptionResponse);
 
                 if (response != null)
                 {
                     responses.add(response);
                 }
+                if (exceptionResponse != null && exceptionResponse.getData().optString("thrown").equals(Boolean.TRUE.toString()) ) {
+                    responses.add(exceptionResponse); 
+                } 
                 
             }
         }

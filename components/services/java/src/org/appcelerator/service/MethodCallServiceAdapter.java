@@ -59,6 +59,7 @@ public class MethodCallServiceAdapter extends ServiceAdapter
 
         this.request = service.request();
         this.response = service.response();
+        this.exceptionResponse = service.exceptionResponse();
         this.version = service.version();
     }
 
@@ -149,11 +150,15 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         }
     }
 
+    public void dispatch (Message request, Message response) { 
+        this.dispatch(request,response);
+    }
+
     /* (non-Javadoc)
      * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
      */
     @SuppressWarnings("unchecked")
-    public void dispatch (Message request, Message response)
+    public void dispatch (Message request, Message response, Message exceptionResponse)
     {
         try
         {
@@ -228,6 +233,9 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         }
         catch (Throwable e)
         {
+            if (exceptionResponse != null) {
+               exceptionResponse.getData().put("thrown",Boolean.TRUE.toString());
+            }
             if (postmethodException != null)
             {
                 try {

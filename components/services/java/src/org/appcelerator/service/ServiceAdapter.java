@@ -30,8 +30,17 @@ public abstract class ServiceAdapter
 {
     protected String request = "";
     protected String response = "";
+    protected String exceptionResponse = "";
     protected String version = "";
     
+
+	/**
+	 * call the service, capture any exception response object
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	public abstract void dispatch(Message request, Message response, Message exceptionResponse);
 
 	/**
 	 * call the service
@@ -83,6 +92,10 @@ public abstract class ServiceAdapter
     public String getResponse() 
 	{
         return response;
+    }
+
+    public String getExceptionResponse() {
+        return exceptionResponse;
     }
 
     /**

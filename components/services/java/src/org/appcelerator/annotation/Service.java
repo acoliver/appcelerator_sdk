@@ -67,4 +67,9 @@ public @interface Service
 	 * method which will be invoked after the service is handled when an exception occurs. the method signature is (Message request, Message response, Throwable e)
 	 */
     String postmessageException() default "";
+
+    /**
+     * message to be returned if there is an exception
+     */
+    String exceptionResponse() default "";
 }
