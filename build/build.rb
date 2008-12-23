@@ -88,10 +88,10 @@ def build_config(cfg,manifest=MANIFEST)
       # inject the current version as the version, using the 
       # config version as the overriding determinant
       version = manifest.get_current_version(type, name)
-      rel_config[:version] ||= version
+      rel_config[:version] ||= version.to_s
 
       # inject the output file path
-      output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{version.to_s}.zip")
+      output_file = File.join(STAGE_DIR, "#{type.to_s}-#{name.to_s}-#{rel_config[:version]}.zip")
       rel_config[:output_filename] = output_file 
     }
 
