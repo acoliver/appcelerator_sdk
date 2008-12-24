@@ -18,9 +18,9 @@
 package org.appcelerator.service;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sf.json.JSONObject;
 
@@ -28,6 +28,7 @@ import org.appcelerator.annotation.Service;
 import org.appcelerator.annotation.ServiceProperty;
 import org.appcelerator.messaging.Message;
 import org.appcelerator.messaging.MessageUtils;
+import org.appcelerator.util.Util;
 
 /**
  * an adapter which wraps an object and specific @Service method which is
@@ -35,31 +36,24 @@ import org.appcelerator.messaging.MessageUtils;
  * results from the invocation
  */
 public class MethodCallServiceAdapter extends ServiceAdapter
-{
+{ 
     private final Object instance;
     private final Method method;
 
     @SuppressWarnings("unchecked")
     private Class serviceClass;
 
-    private Method premethod;
-    private Method postmethod;
-    private Method postmethodException;
-
+  
     public MethodCallServiceAdapter(Object i, Method m, Service service) throws Exception
     {
         this.instance = i;
         this.method = m;
         this.serviceClass = i.getClass();
 
-        this.postmethod = getMethod(i,service.postmessage(), Message.class, Message.class);
-        this.premethod = getMethod(i,service.premessage(), Message.class, Message.class);
-        this.postmethodException = getMethod(i,service.postmessageException(), Message.class, Message.class, Throwable.class);
         this.method.setAccessible(true);
 
         this.request = service.request();
         this.response = service.response();
-        this.exceptionResponse = service.exceptionResponse();
         this.version = service.version();
     }
 
@@ -154,119 +148,81 @@ public class MethodCallServiceAdapter extends ServiceAdapter
         this.dispatch(request,response);
     }
 
-    /* (non-Javadoc)
-     * @see org.appcelerator.dispatcher.ServiceAdapter#dispatch(org.appcelerator.messaging.Message, org.appcelerator.messaging.Message)
-     */
-    @SuppressWarnings("unchecked")
-    public void dispatch (Message request, Message response, Message exceptionResponse)
-    {
-        try
-        {
-            if (premethod != null)
-            {
-                premethod.invoke(this.instance,request,response);
-            }
-
+    public Object dispatch(Message request, Message response, List<Message> responses, Object retValue) throws Exception {
+    //TODO: move object response mapping to a generic interceptor at the front of the stack
             response.getData().put("success",true);
 
             Class types[]  = this.method.getParameterTypes();
             Annotation annotations[][] = this.method.getParameterAnnotations();
             Object returnValue = null;
 
-            switch(types.length)
-            {
-                case 1:
+            try {
+                switch(types.length)
                 {
-                    // first see if the parameter is a message
-                    if (Message.class.equals(types[0]))
+                    case 1:
                     {
-                        returnValue = this.method.invoke(this.instance, request);
-                    }
-                    else
-                    {
-                        // this must be a automapping javabean
-                        returnValue = this.method.invoke(this.instance, getParameterFromProperty(request,types[0],annotations[0]));
-                    }
-                    break;
-                }
-                case 2:
-                {
-                    // first see if the parameters are messages
-                    if (Message.class.equals(types[0]) && Message.class.equals(types[1]))
-                    {
-                        returnValue = this.method.invoke(this.instance, request, response);
-                        break;
-                    }
-                }
-                default:
-                {
-                    Object args [] = new Object[types.length];
-                    for (int c=0;c<types.length;c++)
-                    {
-                        if (Message.class.equals(types[c]))
+                        // first see if the parameter is a message
+                        if (Message.class.equals(types[0]))
                         {
-                            args[c] = request;
+                            returnValue = this.method.invoke(this.instance, request);
                         }
                         else
                         {
-                            args[c] = getParameterFromProperty(request,types[c],annotations[c]);
+                            // this must be a automapping javabean
+                            returnValue = this.method.invoke(this.instance, getParameterFromProperty(request,types[0],annotations[0]));
+                        }
+                        break;
+                    }
+                    case 2:
+                    {
+                        // first see if the parameters are messages
+                        if (Message.class.equals(types[0]) && Message.class.equals(types[1]))
+                        { 
+                            returnValue = this.method.invoke(this.instance, request, response);                   
+                            returnValue = returnValue == null && retValue != null ? retValue : returnValue;
+                            
+                            break;
                         }
                     }
-                    returnValue = this.method.invoke(this.instance, args);
+                    default:
+                    {
+                        Object args [] = new Object[types.length];
+                        for (int c=0;c<types.length;c++)
+                        {
+                            if (Message.class.equals(types[c]))
+                            {
+                                args[c] = request;
+                            }
+                            else
+                            {
+                                args[c] = getParameterFromProperty(request,types[c],annotations[c]);
+                            }
+                        }
+                        returnValue = this.method.invoke(this.instance, args);
+                    }
                 }
-            }
-
-            if (postmethod != null)
-            {
-                postmethod.invoke(this.instance,request,response);
-            }
-
-            if (returnValue != null && false == Void.class.equals(returnValue.getClass()))
-            {
-                JSONObject jsonObject = JSONObject.fromObject(returnValue);
-                for (Iterator iter = jsonObject.keys(); iter.hasNext();)
+    
+    
+                if (returnValue != null && false == Void.class.equals(returnValue.getClass()))
                 {
-                    String key = (String)iter.next();
-                    response.getData().put(key,jsonObject.get(key));
+                    JSONObject jsonObject = JSONObject.fromObject(returnValue);
+                    for (Iterator iter = jsonObject.keys(); iter.hasNext();)
+                    {
+                        String key = (String)iter.next();
+                        response.getData().put(key,jsonObject.get(key));
+                    }
                 }
-            }
-        }
-        catch (Throwable e)
-        {
-            if (exceptionResponse != null) {
-               exceptionResponse.getData().put("thrown",Boolean.TRUE.toString());
-            }
-            if (postmethodException != null)
-            {
-                try {
-                    if(e instanceof InvocationTargetException) { 
-                        Throwable x = unwrap(e);
-                        postmethodException.invoke(this.instance,request,response, x);
-                     } else {
-                        postmethodException.invoke(this.instance,request,response, e);                
-                     }
-                } catch (Exception fatal) {
-                    throw new RuntimeException("major problem invoking postMethod for "+ request.getType(), fatal);
+            } catch (Throwable e) {
+                response.getData().put("success",Boolean.FALSE.toString());
+                response.getData().put("exception", Util.unwrap(e).getLocalizedMessage());
+                if (!(e instanceof Exception)) {
+                    throw (new RuntimeException(e)); // original code catches throwable
+                } else {                             // which we can't rethrow
+                    throw (Exception)e;              // so we rethrow exceptions only
                 }
-            }
-            else
-            {
-                e.printStackTrace();
-                Throwable x = unwrap(e);
-
-                response.getData().put("success",false);
-                response.getData().put("exception",x.getMessage());
-            }
-        }
+            } 
+            return getNext() != null ? getNext().dispatch(request, response, responses, returnValue) : returnValue;
     }
 
-    private Throwable unwrap(Throwable e) {
-        Throwable x = e;
-        if(x instanceof InvocationTargetException) {
-            while(x instanceof InvocationTargetException  && ((InvocationTargetException)e).getCause() != null) {
-                x = x.getCause();
-            }
-        }
-        return x;
-    }
+
 }

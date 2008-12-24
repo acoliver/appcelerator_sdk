@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -1272,6 +1273,16 @@ public class Util
             }
         }
         return null;
+    }
+    
+    public static Throwable unwrap(Throwable e) {
+        Throwable x = e;
+        if(x instanceof InvocationTargetException) {
+            while(x instanceof InvocationTargetException  && ((InvocationTargetException)e).getCause() != null) {
+                x = x.getCause();
+            }
+        }
+        return x;
     }
 
 }

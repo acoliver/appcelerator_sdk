@@ -26,22 +26,14 @@ import org.appcelerator.messaging.Message;
  * 
  * @author Martin Robinson <mrobinson@appcelerator.com>
  */
-public abstract class ServiceAdapter 
+public abstract class ServiceAdapter extends GenericInterceptorAdapter implements InterceptorAdapter
 {
     protected String request = "";
     protected String response = "";
     protected String exceptionResponse = "";
     protected String version = "";
+    private InterceptorStack stack;
     
-
-	/**
-	 * call the service, capture any exception response object
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	public abstract void dispatch(Message request, Message response, Message exceptionResponse);
-
 	/**
 	 * call the service
 	 * 
@@ -104,6 +96,14 @@ public abstract class ServiceAdapter
     public String getVersion() 
 	{
         return version;
+    }
+    
+    public InterceptorStack getStack() {
+        return stack;
+    }
+    
+    public void setStack(InterceptorStack stack) {
+        this.stack = stack;
     }
 
 }

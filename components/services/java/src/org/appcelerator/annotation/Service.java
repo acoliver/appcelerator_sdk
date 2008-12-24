@@ -51,25 +51,4 @@ public @interface Service
      */
     String version() default "1.0";
 
-	/** 
-	 * method which will be invoked before the service is handled. 	the method must take two
-	 * parameters of Message type. The first is the incoming message, the second is the outgoing response.
-	 */
-    String premessage() default "";
-
-	/** 
-	 * method which will be invoked after the service is handled. the method must take two
-	 * parameters of Message type. The first is the incoming message, the second is the outgoing response.
-	 */
-    String postmessage() default "";
-
-    /** 
-	 * method which will be invoked after the service is handled when an exception occurs. the method signature is (Message request, Message response, Throwable e)
-	 */
-    String postmessageException() default "";
-
-    /**
-     * message to be returned if there is an exception
-     */
-    String exceptionResponse() default "";
 }

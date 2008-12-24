@@ -36,9 +36,11 @@ import javassist.CtClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.appcelerator.annotation.Service;
+import org.appcelerator.service.InterceptorStack;
 import org.appcelerator.service.MethodCallServiceAdapter;
 import org.appcelerator.service.ServiceAdapter;
 import org.appcelerator.service.ServiceRegistry;
+import org.appcelerator.service.StackConstructor;
 
 /**
  * This class is responsible for scanning a directory for Java based files which contain
@@ -283,10 +285,14 @@ public class ServiceDirectoryScanner implements Runnable
             for (Method method : clz.getDeclaredMethods())
             {
                 Service serviceAnnotation = method.getAnnotation(Service.class);
+
                 if (serviceAnnotation == null)
                     continue;
 
                 MethodCallServiceAdapter adapter = new MethodCallServiceAdapter(instance, method, serviceAnnotation);
+                
+                InterceptorStack stack = StackConstructor.construct(method, adapter);
+                adapter.setStack(stack); 
                 ServiceRegistry.registerService(adapter, true);
                 registrations.add(adapter);
             }

@@ -231,23 +231,25 @@ public class ServiceRegistry
                     response.setType(adapter.getResponse());
                 }
 
-                Message exceptionResponse = null;
-                if (adapter.getExceptionResponse() != null && !adapter.getExceptionResponse().equals(""))
-                {
-                    exceptionResponse = MessageUtils.createResponseMessage(request);
-                    exceptionResponse.setType(adapter.getExceptionResponse());
+                InterceptorStack stack = adapter.getStack();
+                List<Message> additionalResponses = new ArrayList<Message>();
+                if (stack == null) {
+                    try {
+                        adapter.dispatch(request, response, additionalResponses, null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    stack.dispatch(request, response, additionalResponses);
                 }
-
-                adapter.dispatch(request, response, exceptionResponse);
 
                 if (response != null)
                 {
-                    responses.add(response);
+                    responses.add(response);                    
                 }
-                if (exceptionResponse != null && exceptionResponse.getData().optString("thrown").equals(Boolean.TRUE.toString()) ) {
-                    responses.add(exceptionResponse); 
-                } 
-                
+                for (Message message : additionalResponses) {
+                    responses.add(message);
+                }              
             }
         }
 
